@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,12 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.issuetracker.jira.server;
 
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
@@ -35,14 +34,26 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class JiraServerProperties {
+    public static final String KEY_ADD_COMMENTS = "channel.jira.server.add.comments";
+    public static final String KEY_ISSUE_CREATOR = "channel.jira.server.issue.creator";
+    public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.server.project.name";
+    public static final String KEY_ISSUE_TYPE = "channel.jira.server.issue.type";
+    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.server.resolve.workflow";
+    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.server.reopen.workflow";
+
+    public static final String KEY_SERVER_URL = "jira.server.url";
+    public static final String KEY_SERVER_USERNAME = "jira.server.username";
+    public static final String KEY_SERVER_PASSWORD = "jira.server.password";
+    public static final String KEY_JIRA_SERVER_CONFIGURE_PLUGIN = "jira.server.configure.plugin";
+
     private final String url;
     private final String password;
     private final String username;
 
     public JiraServerProperties(FieldAccessor fieldAccessor) {
-        url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
-        password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        url = fieldAccessor.getStringOrNull(KEY_SERVER_URL);
+        password = fieldAccessor.getStringOrNull(KEY_SERVER_PASSWORD);
+        username = fieldAccessor.getStringOrNull(KEY_SERVER_USERNAME);
     }
 
     public JiraServerProperties(String url, String password, String username) {

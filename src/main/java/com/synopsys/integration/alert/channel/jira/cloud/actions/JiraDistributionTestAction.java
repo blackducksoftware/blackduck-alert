@@ -29,13 +29,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.issuetracker.TransitionValidator;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
+import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;

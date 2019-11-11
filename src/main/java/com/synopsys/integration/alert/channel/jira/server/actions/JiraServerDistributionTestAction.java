@@ -28,14 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.issuetracker.TransitionValidator;
+import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.server.service.IssueService;

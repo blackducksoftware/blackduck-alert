@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,12 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud;
+package com.synopsys.integration.alert.issuetracker.jira.cloud;
 
 import java.util.Collection;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.common.JiraIssueConfigValidator;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueConfigValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
@@ -47,37 +46,37 @@ public class JiraCloudIssueConfigValidator extends JiraIssueConfigValidator {
 
     @Override
     public String getProjectFieldKey() {
-        return JiraDescriptor.KEY_JIRA_PROJECT_NAME;
+        return JiraProperties.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     public String getIssueTypeFieldKey() {
-        return JiraDescriptor.KEY_ISSUE_TYPE;
+        return JiraProperties.KEY_ISSUE_TYPE;
     }
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraDescriptor.KEY_ISSUE_CREATOR;
+        return JiraProperties.KEY_ISSUE_CREATOR;
     }
 
     @Override
     public String getAddCommentsFieldKey() {
-        return JiraDescriptor.KEY_ADD_COMMENTS;
+        return JiraProperties.KEY_ADD_COMMENTS;
     }
 
     @Override
     public String getResolveTransitionFieldKey() {
-        return JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getOpenTransitionFieldKey() {
-        return JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraProperties.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getDefaultIssueCreatorFieldKey() {
-        return JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
+        return JiraProperties.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
     }
 
     @Override

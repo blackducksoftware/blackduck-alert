@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,16 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.util;
+package com.synopsys.integration.alert.issuetracker.jira.cloud.util;
 
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
-import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraMessageParser;
+import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
@@ -54,6 +55,11 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     @Override
     public IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException {
         return issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, List.of()));
+    }
+
+    @Override
+    public String getIssueCreatorFieldKey() {
+        return JiraServerProperties.KEY_ISSUE_CREATOR;
     }
 
     @Override

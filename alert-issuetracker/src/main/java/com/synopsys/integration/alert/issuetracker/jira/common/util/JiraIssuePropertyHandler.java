@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.util;
+package com.synopsys.integration.alert.issuetracker.jira.common.util;
 
 import java.util.Optional;
 import java.util.Set;
@@ -28,10 +28,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
+import com.synopsys.integration.alert.issuetracker.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraIssuePropertyHandler<T> {

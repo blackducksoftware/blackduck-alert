@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,26 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server.util;
+package com.synopsys.integration.alert.issuetracker.jira.cloud.util;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.server.service.IssueService;
 
-public class JiraServerTransitionHandler extends JiraTransitionHandler {
+public class JiraCloudTransitionHandler extends JiraTransitionHandler {
     private IssueService issueService;
 
-    public JiraServerTransitionHandler(IssueService issueService) {
+    public JiraCloudTransitionHandler(IssueService issueService) {
         this.issueService = issueService;
     }
 

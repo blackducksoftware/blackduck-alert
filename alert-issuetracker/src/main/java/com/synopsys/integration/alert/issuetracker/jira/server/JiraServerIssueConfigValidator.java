@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,12 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.issuetracker.jira.server;
 
 import java.util.Collection;
 
-import com.synopsys.integration.alert.channel.jira.common.JiraIssueConfigValidator;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueConfigValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
@@ -46,37 +45,37 @@ public class JiraServerIssueConfigValidator extends JiraIssueConfigValidator {
 
     @Override
     public String getProjectFieldKey() {
-        return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
+        return JiraServerProperties.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     public String getIssueTypeFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_TYPE;
+        return JiraServerProperties.KEY_ISSUE_TYPE;
     }
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_CREATOR;
+        return JiraServerProperties.KEY_ISSUE_CREATOR;
     }
 
     @Override
     public String getAddCommentsFieldKey() {
-        return JiraServerDescriptor.KEY_ADD_COMMENTS;
+        return JiraServerProperties.KEY_ADD_COMMENTS;
     }
 
     @Override
     public String getResolveTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraServerProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getOpenTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraServerProperties.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getDefaultIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_SERVER_USERNAME;
+        return JiraServerProperties.KEY_SERVER_USERNAME;
     }
 
     @Override

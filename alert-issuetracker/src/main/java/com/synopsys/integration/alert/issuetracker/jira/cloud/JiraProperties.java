@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,12 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud;
+package com.synopsys.integration.alert.issuetracker.jira.cloud;
 
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
@@ -35,14 +34,26 @@ import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class JiraProperties {
+    public static final String KEY_JIRA_URL = "jira.cloud.url";
+    public static final String KEY_JIRA_ADMIN_EMAIL_ADDRESS = "jira.cloud.admin.email.address";
+    public static final String KEY_JIRA_ADMIN_API_TOKEN = "jira.cloud.admin.api.token";
+    public static final String KEY_JIRA_CONFIGURE_PLUGIN = "jira.cloud.configure.plugin";
+
+    public static final String KEY_ADD_COMMENTS = "channel.jira.cloud.add.comments";
+    public static final String KEY_ISSUE_CREATOR = "channel.jira.cloud.issue.creator";
+    public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.cloud.project.name";
+    public static final String KEY_ISSUE_TYPE = "channel.jira.cloud.issue.type";
+    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.cloud.resolve.workflow";
+    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.cloud.reopen.workflow";
+
     private final String url;
     private final String accessToken;
     private final String username;
 
     public JiraProperties(FieldAccessor fieldAccessor) {
-        url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
-        accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        url = fieldAccessor.getStringOrNull(KEY_JIRA_URL);
+        accessToken = fieldAccessor.getStringOrNull(KEY_JIRA_ADMIN_API_TOKEN);
+        username = fieldAccessor.getStringOrNull(KEY_JIRA_ADMIN_EMAIL_ADDRESS);
     }
 
     public JiraProperties(String url, String accessToken, String username) {
@@ -52,7 +63,7 @@ public class JiraProperties {
     }
 
     public JiraCloudRestConfig createJiraServerConfig() throws AlertException {
-        final JiraCloudRestConfigBuilder jiraServerConfigBuilder = new JiraCloudRestConfigBuilder();
+        JiraCloudRestConfigBuilder jiraServerConfigBuilder = new JiraCloudRestConfigBuilder();
 
         jiraServerConfigBuilder.setUrl(url);
         jiraServerConfigBuilder.setApiToken(accessToken);
