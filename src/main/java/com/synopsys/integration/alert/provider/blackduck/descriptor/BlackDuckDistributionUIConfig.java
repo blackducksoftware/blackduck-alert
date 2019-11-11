@@ -28,10 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
+    private final String LABEL_BLACKDUCK_NOTIFICATION_TYPE_FILTER = "Notification Type Filter";
+
+    private final String DESCRIPTION_BLACKDUCK_NOTIFICATION_TYPE_FILTER = "List of options you can choose from to further filter our which notifications you want sent via this job.";
 
     @Autowired
     public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent) {
@@ -40,7 +45,13 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        return List.of();
+        ConfigField notificationTypeFilter = new EndpointTableSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_NOTIFICATION_TYPE_FILTER, LABEL_BLACKDUCK_NOTIFICATION_TYPE_FILTER, DESCRIPTION_BLACKDUCK_NOTIFICATION_TYPE_FILTER)
+                                                 .applyColumn(new TableSelectColumn("name", "Name", true, true))
+                                                 .applyColumn(new TableSelectColumn("notificationType", "Type", false, false))
+                                                 .applyPaged(true)
+                                                 .applyRequestedDataFieldKey(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+
+        return List.of(notificationTypeFilter);
     }
 
 }

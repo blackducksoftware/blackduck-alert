@@ -33,6 +33,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String KEY_BLACKDUCK_URL = "blackduck.url";
     public static final String KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
     public static final String KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
+    public static final String KEY_BLACKDUCK_NOTIFICATION_TYPE_FILTER = "blackduck.notification.filter";
 
     public static final String BLACKDUCK_LABEL = "Black Duck";
     public static final String BLACKDUCK_URL = "blackduck";
