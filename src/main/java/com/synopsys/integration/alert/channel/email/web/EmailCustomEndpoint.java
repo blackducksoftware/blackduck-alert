@@ -52,7 +52,7 @@ public class EmailCustomEndpoint {
     private Gson gson;
 
     @Autowired
-    public EmailCustomEndpoint(final CustomEndpointManager customEndpointManager, final ResponseFactory responseFactory, final ProviderDataAccessor providerDataAccessor, final Gson gson) throws AlertException {
+    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ProviderDataAccessor providerDataAccessor, Gson gson) throws AlertException {
         this.responseFactory = responseFactory;
         this.providerDataAccessor = providerDataAccessor;
         this.gson = gson;
@@ -60,8 +60,13 @@ public class EmailCustomEndpoint {
         customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ResponseEntity<String> createEmailOptions(final Map<String, FieldValueModel> fieldValueModels) {
-        final String provider = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).getValue().orElse("");
+    public ResponseEntity<String> createEmailOptions(Map<String, FieldValueModel> fieldValueModels) {
+        FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+
+        String provider = null;
+        if (null != fieldValueModel) {
+            provider = fieldValueModel.getValue().orElse("");
+        }
 
         if (StringUtils.isBlank(provider)) {
             logger.debug("Received provider user email data request with a blank provider");
@@ -69,15 +74,16 @@ public class EmailCustomEndpoint {
         }
 
         try {
-            final List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
+            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", provider);
             }
-            final String usersJson = gson.toJson(pageOfUsers);
+            String usersJson = gson.toJson(pageOfUsers);
             return responseFactory.createOkContentResponse(usersJson);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
 }

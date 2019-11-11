@@ -35,16 +35,16 @@ public class ResponseFactory {
     public static final String MISSING_REQUEST_BODY = "Required request body is missing";
     public static final String UNAUTHORIZED_REQUEST_MESSAGE = "User not authorized to perform the request";
 
-    public ResponseEntity<String> createMessageResponse(final HttpStatus status, final String id, final String message) {
-        final String responseBody = new ResponseBodyBuilder(id, message).build();
+    public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
+        String responseBody = new ResponseBodyBuilder(id, message).build();
         return new ResponseEntity<>(responseBody, status);
     }
 
-    public ResponseEntity<String> createMessageResponse(final HttpStatus status, final Long id, final String message) {
+    public ResponseEntity<String> createMessageResponse(HttpStatus status, Long id, String message) {
         return createMessageResponse(status, String.valueOf(id), message);
     }
 
-    public ResponseEntity<String> createMessageResponse(final HttpStatus status, final String message) {
+    public ResponseEntity<String> createMessageResponse(HttpStatus status, String message) {
         return createMessageResponse(status, EMPTY_ID, message);
     }
 
@@ -52,7 +52,7 @@ public class ResponseFactory {
         return new ResponseEntity<>(status);
     }
 
-    public ResponseEntity<String> createNotFoundResponse(final String message) {
+    public ResponseEntity<String> createNotFoundResponse(String message) {
         return createMessageResponse(HttpStatus.NOT_FOUND, message);
     }
 
@@ -60,13 +60,13 @@ public class ResponseFactory {
         return createForbiddenResponse(UNAUTHORIZED_REQUEST_MESSAGE);
     }
 
-    public ResponseEntity<String> createForbiddenResponse(final String message) {return createMessageResponse(HttpStatus.FORBIDDEN, message);}
+    public ResponseEntity<String> createForbiddenResponse(String message) {return createMessageResponse(HttpStatus.FORBIDDEN, message);}
 
-    public ResponseEntity<String> createCreatedResponse(final String id, final String message) {
+    public ResponseEntity<String> createCreatedResponse(String id, String message) {
         return createMessageResponse(HttpStatus.CREATED, id, message);
     }
 
-    public ResponseEntity<String> createAcceptedResponse(final String id, final String message) {
+    public ResponseEntity<String> createAcceptedResponse(String id, String message) {
         return createMessageResponse(HttpStatus.ACCEPTED, id, message);
     }
 
@@ -74,49 +74,50 @@ public class ResponseFactory {
         return createEmptyResponse(HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<String> createOkResponse(final String id, final String message) {
+    public ResponseEntity<String> createOkResponse(String id, String message) {
         return createMessageResponse(HttpStatus.OK, id, message);
     }
 
-    public ResponseEntity<String> createGoneResponse(final String id, final String message) {
+    public ResponseEntity<String> createGoneResponse(String id, String message) {
         return createMessageResponse(HttpStatus.GONE, id, message);
     }
 
-    public ResponseEntity<String> createMethodNotAllowedResponse(final String message) {
+    public ResponseEntity<String> createMethodNotAllowedResponse(String message) {
         return createMessageResponse(HttpStatus.METHOD_NOT_ALLOWED, message);
     }
 
-    public ResponseEntity<String> createBadRequestResponse(final String id, final String message) {
+    public ResponseEntity<String> createBadRequestResponse(String id, String message) {
         return createMessageResponse(HttpStatus.BAD_REQUEST, id, message);
     }
 
-    public ResponseEntity<String> createInternalServerErrorResponse(final String id, final String message) {
+    public ResponseEntity<String> createInternalServerErrorResponse(String id, String message) {
         return createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, message);
     }
 
-    public ResponseEntity<String> createConflictResponse(final String id, final String message) {
+    public ResponseEntity<String> createConflictResponse(String id, String message) {
         return createMessageResponse(HttpStatus.CONFLICT, id, message);
     }
 
-    public ResponseEntity<String> createFieldErrorResponse(final String id, final String message, final Map<String, String> fieldErrors) {
-        final ResponseBodyBuilder responseBody = new ResponseBodyBuilder(id, message);
+    public ResponseEntity<String> createFieldErrorResponse(String id, String message, Map<String, String> fieldErrors) {
+        ResponseBodyBuilder responseBody = new ResponseBodyBuilder(id, message);
         responseBody.putErrors(fieldErrors);
         return new ResponseEntity<>(responseBody.build(), HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<String> createResponse(final HttpStatus status, final HttpHeaders headers, final String message) {
+    public ResponseEntity<String> createResponse(HttpStatus status, HttpHeaders headers, String message) {
         return new ResponseEntity<>(message, headers, status);
     }
 
-    public ResponseEntity<String> createContentResponse(final HttpStatus status, final String jsonContent) {
+    public ResponseEntity<String> createContentResponse(HttpStatus status, String jsonContent) {
         return new ResponseEntity<>(jsonContent, status);
     }
 
-    public ResponseEntity<String> createCreatedContentResponse(final String jsonContent) {
+    public ResponseEntity<String> createCreatedContentResponse(String jsonContent) {
         return createContentResponse(HttpStatus.CREATED, jsonContent);
     }
 
-    public ResponseEntity<String> createOkContentResponse(final String jsonContent) {
+    public ResponseEntity<String> createOkContentResponse(String jsonContent) {
         return createContentResponse(HttpStatus.OK, jsonContent);
     }
+
 }

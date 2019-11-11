@@ -56,4 +56,5 @@ public class CustomEndpointManager {
 
         return endpointFunctions.get(endpointKey).apply(fieldModelValues);
     }
+
 }
