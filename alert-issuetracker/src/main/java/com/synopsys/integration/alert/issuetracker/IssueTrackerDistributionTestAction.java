@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-issuetracker
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
