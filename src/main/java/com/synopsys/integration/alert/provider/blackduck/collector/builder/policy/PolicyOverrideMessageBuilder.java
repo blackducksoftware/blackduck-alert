@@ -36,11 +36,13 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -80,7 +82,9 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
                                                                               .applyProviderCreationTime(providerCreationDate);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
-            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, notificationId, overrideContent.getProjectVersion());
+            FieldAccessor fieldAccessor = job.getFieldAccessor();
+            Collection<String> policyFilter = fieldAccessor.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
+            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, notificationId, overrideContent.getProjectVersion(), policyFilter);
             projectVersionMessageBuilder.applyAllComponentItems(items);
             return List.of(projectVersionMessageBuilder.build());
         } catch (AlertException ex) {
@@ -91,7 +95,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
     }
 
     private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, PolicyOverrideNotificationContent overrideContent,
-        Collection<PolicyInfo> policies, Long notificationId, String projectVersionUrl) {
+        Collection<PolicyInfo> policies, Long notificationId, String projectVersionUrl, Collection<String> policyFilter) {
         String firstName = overrideContent.getFirstName();
         String lastName = overrideContent.getLastName();
 
@@ -101,7 +105,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
-        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, null, List.of(policyOverride));
+        return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, null, List.of(policyOverride), policyFilter);
     }
 
 }
