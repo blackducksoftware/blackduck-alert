@@ -120,7 +120,7 @@ public class EmailActionHelper {
             }
             String errorField = ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
             boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
-            if (!filterByProject && !projectOwnerOnly) {
+            if (!filterByProject) {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }
             throw AlertFieldException.singleFieldError(errorField, errorMessage);
