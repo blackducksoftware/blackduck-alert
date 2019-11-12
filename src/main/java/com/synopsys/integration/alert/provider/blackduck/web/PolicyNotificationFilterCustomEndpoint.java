@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,17 +75,16 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
             return List.of();
         }
 
-        List<NotificationFilterModel> options = new LinkedList<>();
         if (isFilterablePolicy(selectedNotificationTypes)) {
             try {
-                options.addAll(retrieveBlackDuckPolicyOptions());
+                return retrieveBlackDuckPolicyOptions();
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
                 throw new AlertException("Was unable to communicate with Black Duck.", e);
             }
         }
-        return options;
+        return List.of();
     }
 
     private boolean isFilterablePolicy(Collection<String> notificationTypes) {
