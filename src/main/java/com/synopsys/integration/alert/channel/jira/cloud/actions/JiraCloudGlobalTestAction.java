@@ -51,7 +51,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
@@ -60,13 +60,20 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        String username = jiraProperties.getUsername();
         UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+        String username = jiraProperties.getUsername();
         return userSearchService.findUser(username).stream()
                    .map(UserDetailsResponseModel::getEmailAddress)
                    .noneMatch(email -> email.equals(username));
+    }
+
+    private JiraProperties createJiraProperties(FieldAccessor fieldAccessor) {
+        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        return new JiraProperties(url, username, accessToken);
     }
 
     @Override

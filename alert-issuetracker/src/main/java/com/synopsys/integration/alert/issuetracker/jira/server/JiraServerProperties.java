@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;
@@ -49,12 +48,6 @@ public class JiraServerProperties {
     private final String url;
     private final String password;
     private final String username;
-
-    public JiraServerProperties(FieldAccessor fieldAccessor) {
-        url = fieldAccessor.getStringOrNull(KEY_SERVER_URL);
-        password = fieldAccessor.getStringOrNull(KEY_SERVER_PASSWORD);
-        username = fieldAccessor.getStringOrNull(KEY_SERVER_USERNAME);
-    }
 
     public JiraServerProperties(String url, String password, String username) {
         this.url = url;

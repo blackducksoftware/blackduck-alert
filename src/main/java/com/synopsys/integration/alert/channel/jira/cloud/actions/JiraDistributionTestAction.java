@@ -74,7 +74,7 @@ public class JiraDistributionTestAction extends IssueTrackerDistributionTestActi
 
     @Override
     protected TransitionValidator<TransitionComponent> createTransitionValidator(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         return new JiraCloudTransitionHandler(issueService);
@@ -83,13 +83,20 @@ public class JiraDistributionTestAction extends IssueTrackerDistributionTestActi
     @Override
     protected void safelyCleanUpIssue(FieldAccessor fieldAccessor, String issueKey) {
         try {
-            JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+            JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
             JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             IssueService issueService = jiraCloudServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
         } catch (IntegrationException e) {
             logger.warn("There was a problem trying to delete a the Jira Cloud distribution test issue, {}: {}", issueKey, e);
         }
+    }
+
+    private JiraProperties createJiraProperties(FieldAccessor fieldAccessor) {
+        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
+        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        String token = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        return new JiraProperties(url, token, username);
     }
 
 }

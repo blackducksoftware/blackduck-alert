@@ -74,7 +74,7 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
 
     @Override
     protected TransitionValidator<TransitionComponent> createTransitionValidator(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        JiraServerProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         IssueService issueService = jiraServerServiceFactory.createIssueService();
         return new JiraServerTransitionHandler(issueService);
@@ -83,12 +83,19 @@ public class JiraServerDistributionTestAction extends IssueTrackerDistributionTe
     @Override
     protected void safelyCleanUpIssue(FieldAccessor fieldAccessor, String issueKey) {
         try {
-            JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+            JiraServerProperties jiraProperties = createJiraProperties(fieldAccessor);
             JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             IssueService issueService = jiraServerServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
         } catch (IntegrationException e) {
             logger.warn("There was a problem trying to delete a the Jira Server distribution test issue, {}: {}", issueKey, e);
         }
+    }
+
+    private JiraServerProperties createJiraProperties(FieldAccessor fieldAccessor) {
+        String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
+        String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        return new JiraServerProperties(url, username, password);
     }
 }

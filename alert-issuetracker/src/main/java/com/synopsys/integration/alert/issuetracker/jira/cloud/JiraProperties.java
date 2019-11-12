@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -49,12 +48,6 @@ public class JiraProperties {
     private final String url;
     private final String accessToken;
     private final String username;
-
-    public JiraProperties(FieldAccessor fieldAccessor) {
-        url = fieldAccessor.getStringOrNull(KEY_JIRA_URL);
-        accessToken = fieldAccessor.getStringOrNull(KEY_JIRA_ADMIN_API_TOKEN);
-        username = fieldAccessor.getStringOrNull(KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-    }
 
     public JiraProperties(String url, String accessToken, String username) {
         this.url = url;

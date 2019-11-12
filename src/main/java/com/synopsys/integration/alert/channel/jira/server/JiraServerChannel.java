@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -71,7 +72,10 @@ public class JiraServerChannel extends IssueTrackerChannel {
     public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         MessageContentGroup content = event.getContent();
-        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
+        String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
+        String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        JiraServerProperties jiraProperties = new JiraServerProperties(url, username, password);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira server...");

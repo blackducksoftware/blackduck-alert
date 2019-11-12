@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.jira;
+package com.synopsys.integration.alert.issuetracker.jira.cloud;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,27 +8,26 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.issuetracker.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerIssueConfigValidator;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
+import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
-import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
-public class JiraServerIssueConfigValidatorTest {
+public class JiraCloudIssueConfigValidatorTest {
+
     @Test
     public void validateSuccessTest() throws IntegrationException {
         ProjectService projectService = Mockito.mock(ProjectService.class);
@@ -36,21 +35,21 @@ public class JiraServerIssueConfigValidatorTest {
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
         Mockito.when(issueMetaDataService.doesProjectContainIssueType(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
+        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
-        ConfigurationFieldModel project = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME);
+        ConfigurationFieldModel project = ConfigurationFieldModel.create(JiraProperties.KEY_JIRA_PROJECT_NAME);
         String projectName = "ProjectName";
         project.setFieldValue(projectName);
 
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_ISSUE_TYPE);
+        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
         issueType.setFieldValue(issueTypeString);
 
-        ConfigurationFieldModel issueCreator = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_ISSUE_CREATOR);
+        ConfigurationFieldModel issueCreator = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_CREATOR);
         String issueCreatorString = "IssueCreator";
         issueCreator.setFieldValue(issueCreatorString);
 
@@ -67,12 +66,14 @@ public class JiraServerIssueConfigValidatorTest {
         Mockito.when(issueTypeService.getAllIssueTypes()).thenReturn(List.of(issue));
 
         UserDetailsResponseModel user = Mockito.mock(UserDetailsResponseModel.class);
-        Mockito.when(user.getName()).thenReturn(issueCreatorString);
-        Mockito.when(userSearchService.findUserByUsername(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(user.getEmailAddress()).thenReturn(issueCreatorString);
+        Mockito.when(userSearchService.findUser(Mockito.anyString())).thenReturn(List.of(user));
 
         ProjectComponent projectComponent = Mockito.mock(ProjectComponent.class);
         Mockito.when(projectComponent.getName()).thenReturn(projectName);
-        Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(List.of(projectComponent));
+        PageOfProjectsResponseModel projectResponse = Mockito.mock(PageOfProjectsResponseModel.class);
+        Mockito.when(projectResponse.getProjects()).thenReturn(List.of(projectComponent));
+        Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectResponse);
 
         try {
             IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
@@ -91,13 +92,13 @@ public class JiraServerIssueConfigValidatorTest {
         UserSearchService userSearchService = Mockito.mock(UserSearchService.class);
         IssueTypeService issueTypeService = Mockito.mock(IssueTypeService.class);
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
-        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
+        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraServerDescriptor.KEY_ISSUE_TYPE);
+        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
         issueType.setFieldValue(issueTypeString);
 
@@ -115,9 +116,9 @@ public class JiraServerIssueConfigValidatorTest {
             jiraIssueConfigValidator.validate(fieldAccessor);
             fail();
         } catch (AlertFieldException e) {
-            assertTrue(e.getFieldErrors().containsKey(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME));
-            assertTrue(e.getFieldErrors().containsKey(JiraServerDescriptor.KEY_ISSUE_CREATOR));
-            assertFalse(e.getFieldErrors().containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
+            assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_JIRA_PROJECT_NAME));
+            assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_CREATOR));
+            assertFalse(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_TYPE));
         }
     }
 }
