@@ -93,7 +93,7 @@ public class PolicyCommonBuilder {
                     componentItems.add(builder.build());
                 } catch (Exception ex) {
                     logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
-                    logger.error("Error building policy component cause ", ex);
+                    logger.debug("Error building policy component cause ", ex);
                 }
             }
         }

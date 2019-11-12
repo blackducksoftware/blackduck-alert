@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -20,6 +21,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
@@ -55,6 +57,7 @@ public class PolicyOverrideMessageBuilderTest {
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
+        Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
         List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(1L, new Date(), job, notification, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());
         Set<String> categories = new HashSet<>();
