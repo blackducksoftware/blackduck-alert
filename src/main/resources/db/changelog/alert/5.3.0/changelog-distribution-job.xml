@@ -13,9 +13,7 @@
     <changeSet author="bmandel" id="1573514262314">
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_CHANNEL_FIELD('blackduck.policy.notification.filter', 'provider_blackduck');
-            CALL DEFINE_CHANNEL_FIELD('blackduck.policy.notification.filter.enabled', 'provider_blackduck');
             CALL DEFINE_CHANNEL_FIELD('blackduck.vulnerability.notification.filter', 'provider_blackduck');
-            CALL DEFINE_CHANNEL_FIELD('blackduck.vulnerability.notification.filter.enabled', 'provider_blackduck');
         </sql>
     </changeSet>
 </databaseChangeLog>

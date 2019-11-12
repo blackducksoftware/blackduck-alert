@@ -34,9 +34,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
     public static final String KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
     public static final String KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "blackduck.policy.notification.filter";
-    public static final String KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER_ENABLED = "blackduck.policy.notification.filter.enabled";
     public static final String KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "blackduck.vulnerability.notification.filter";
-    public static final String KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER_ENABLED = "blackduck.vulnerability.notification.filter.enabled";
 
     public static final String BLACKDUCK_LABEL = "Black Duck";
     public static final String BLACKDUCK_URL = "blackduck";
