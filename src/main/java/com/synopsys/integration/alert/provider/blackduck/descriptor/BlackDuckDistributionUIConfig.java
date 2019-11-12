@@ -41,7 +41,7 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
     private final String DESCRIPTION_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply).";
     private final String DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply).";
 
-    private final String PANEL_ADVANCED = "Black Duck Notification Filtering";
+    private final String PANEL_NOTIFICATION_FILTERING = "Black Duck Notification Filtering";
 
     @Autowired
     public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent) {
@@ -55,14 +55,14 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
                                                        .applyColumn(new TableSelectColumn("name", "Name", true, true))
                                                        .applyPaged(true)
                                                        .applyRequestedDataFieldKey(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
-                                                       .applyPanel(PANEL_ADVANCED);
+                                                       .applyPanel(PANEL_NOTIFICATION_FILTERING);
 
         ConfigField vulnerabilityNotificationTypeFilter = new EndpointSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
             DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER)
                                                               .applyRequestedDataFieldKey(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                               .applyMultiSelect(true)
                                                               .applyClearable(true)
-                                                              .applyPanel(PANEL_ADVANCED);
+                                                              .applyPanel(PANEL_NOTIFICATION_FILTERING);
 
         return List.of(policyNotificationTypeFilter, vulnerabilityNotificationTypeFilter);
     }
