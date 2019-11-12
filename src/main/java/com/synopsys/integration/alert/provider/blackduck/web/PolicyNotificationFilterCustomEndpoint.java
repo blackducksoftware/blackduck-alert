@@ -81,7 +81,7 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
-                throw new AlertException("Was unable to communicate with Black Duck.", e);
+                throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
         return List.of();
