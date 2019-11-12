@@ -23,18 +23,26 @@
 package com.synopsys.integration.alert.issuetracker;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class IssueTrackerChannel extends DistributionChannel {
-    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility) {
-        super(gson, auditUtility);
+public abstract class IssueTrackerService {
+    private Gson gson;
+    private IssueTrackerMessageParser messageParser;
+
+    public IssueTrackerService(Gson gson, IssueTrackerMessageParser messageParser) {
+        this.gson = gson;
     }
 
-    @Override
-    public abstract IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException;
+    public abstract IssueTrackerMessageResult sendMessage(IssueTrackerRequest request) throws IntegrationException;
 
+    public Gson getGson() {
+        return gson;
+    }
+
+    public IssueTrackerMessageParser getMessageParser() {
+        return messageParser;
+    }
 }

@@ -22,16 +22,26 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.util.Stringable;
 
-public class IssueTrackerMessageResult extends MessageResult {
+public class IssueTrackerMessageResult extends Stringable implements Serializable {
+    private String statusMessage;
     private Collection<String> updatedIssueKeys;
 
     public IssueTrackerMessageResult(String statusMessage, Collection<String> updatedIssueKeys) {
-        super(statusMessage);
+        this.statusMessage = statusMessage;
         this.updatedIssueKeys = updatedIssueKeys;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 
     public Collection<String> getUpdatedIssueKeys() {

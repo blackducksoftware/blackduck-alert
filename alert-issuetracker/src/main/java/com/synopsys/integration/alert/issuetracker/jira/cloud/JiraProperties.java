@@ -26,13 +26,14 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-public class JiraProperties {
+public class JiraProperties implements IssueTrackerServiceConfig {
     public static final String KEY_JIRA_URL = "jira.cloud.url";
     public static final String KEY_JIRA_ADMIN_EMAIL_ADDRESS = "jira.cloud.admin.email.address";
     public static final String KEY_JIRA_ADMIN_API_TOKEN = "jira.cloud.admin.api.token";

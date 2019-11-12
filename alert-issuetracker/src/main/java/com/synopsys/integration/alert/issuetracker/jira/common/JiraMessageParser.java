@@ -22,11 +22,8 @@
  */
 package com.synopsys.integration.alert.issuetracker.jira.common;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
 
-@Component
 public class JiraMessageParser extends IssueTrackerMessageParser {
     @Override
     protected String encodeString(String txt) {

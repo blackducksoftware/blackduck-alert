@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.issuetracker;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,49 +31,42 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.RestConstants;
 
-public abstract class IssueTrackerDistributionTestAction extends ChannelDistributionTestAction {
+public abstract class IssueTrackerDistributionTestAction {
+    public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
+    public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private IssueTrackerService issueTrackerService;
 
-    public IssueTrackerDistributionTestAction(IssueTrackerChannel issueTrackerDistributionChannel) {
-        super(issueTrackerDistributionChannel);
+    public IssueTrackerDistributionTestAction(IssueTrackerService issueTrackerService) {
+        this.issueTrackerService = issueTrackerService;
     }
 
-    @Override
-    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public IssueTrackerMessageResult testConfig(IssueTrackerContext issueTrackerContext, String topic, String messageContent) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
-        IssueTrackerMessageResult initialTestResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+        IssueTrackerMessageResult initialTestResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
         String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
                                      .stream()
                                      .findFirst()
                                      .orElseThrow(() -> new AlertException("Failed to create a new issue"));
 
-        Optional<String> optionalResolveTransitionName = fieldAccessor.getString(getResolveTransitionFieldKey()).filter(StringUtils::isNotBlank);
+        Optional<String> optionalResolveTransitionName = issueTrackerContext.getIssueConfig().getResolveTransition().filter(StringUtils::isNotBlank);
         if (optionalResolveTransitionName.isPresent()) {
             String resolveTransitionName = optionalResolveTransitionName.get();
-            return testTransitions(jobId, fieldAccessor, messageId, resolveTransitionName, initialIssueKey);
+            return testTransitions(issueTrackerContext, messageId, resolveTransitionName, initialIssueKey, topic, messageContent);
         }
         return initialTestResult;
-    }
-
-    @Override
-    public IssueTrackerChannel getDistributionChannel() {
-        return (IssueTrackerChannel) super.getDistributionChannel();
     }
 
     protected abstract String getOpenTransitionFieldKey();
@@ -85,12 +77,12 @@ public abstract class IssueTrackerDistributionTestAction extends ChannelDistribu
 
     protected abstract String getDoneStatusFieldKey();
 
-    protected abstract <T> TransitionValidator<T> createTransitionValidator(FieldAccessor fieldAccessor) throws IntegrationException;
+    protected abstract <T> TransitionValidator<T> createTransitionValidator(IssueTrackerContext issueTrackerContext) throws IntegrationException;
 
-    protected abstract void safelyCleanUpIssue(FieldAccessor fieldAccessor, String issueKey);
+    protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
-    private <T> IssueTrackerMessageResult testTransitions(String jobId, FieldAccessor fieldAccessor, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        TransitionValidator<T> transitionValidator = createTransitionValidator(fieldAccessor);
+    private <T> IssueTrackerMessageResult testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey, String topic, String messageContent) throws IntegrationException {
+        TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
@@ -98,15 +90,15 @@ public abstract class IssueTrackerDistributionTestAction extends ChannelDistribu
             Map<String, String> transitionErrors = new HashMap<>();
             Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-            IssueTrackerMessageResult finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
+            IssueTrackerMessageResult finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
 
-            Optional<String> optionalReopenTransitionName = fieldAccessor.getString(getOpenTransitionFieldKey()).filter(StringUtils::isNotBlank);
+            Optional<String> optionalReopenTransitionName = issueTrackerContext.getIssueConfig().getOpenTransition().filter(StringUtils::isNotBlank);
             if (optionalReopenTransitionName.isPresent()) {
                 fromStatus = toStatus;
                 toStatus = "Reopen";
                 Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
-                IssueTrackerMessageResult reopenResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.ADD, messageId);
+                IssueTrackerMessageResult reopenResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
                                              .stream()
                                              .findFirst()
@@ -117,7 +109,7 @@ public abstract class IssueTrackerDistributionTestAction extends ChannelDistribu
                     toStatus = "Resolve";
                     Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
                     reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-                    finalResult = createAndSendMessage(jobId, fieldAccessor, ItemOperation.DELETE, messageId);
+                    finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
                 }
             }
 
@@ -127,30 +119,26 @@ public abstract class IssueTrackerDistributionTestAction extends ChannelDistribu
                 throw new AlertFieldException(transitionErrors);
             }
         } catch (AlertFieldException fieldException) {
-            safelyCleanUpIssue(fieldAccessor, initialIssueKey);
+            safelyCleanUpIssue(issueTrackerContext, initialIssueKey);
             throw fieldException;
         } catch (AlertException alertException) {
-            logger.debug(String.format("Error testing %s config", getDistributionChannel().getDestinationName()), alertException);
+            logger.debug(String.format("Error testing %s config", issueTrackerContext.getClass().getSimpleName()), alertException);
             String errorMessage = String.format("There were problems transitioning the test issue from the %s status to the %s status: %s", fromStatus, toStatus, alertException.getMessage());
-            possibleSecondIssueKey.ifPresent(key -> safelyCleanUpIssue(fieldAccessor, key));
+            possibleSecondIssueKey.ifPresent(key -> safelyCleanUpIssue(issueTrackerContext, key));
             throw new AlertException(errorMessage);
         }
     }
 
-    private DistributionEvent createChannelTestEvent(String jobId, FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
-        ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, operation, messageId);
+    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String customMessage) throws AlertException {
+        ProviderMessageContent messageContent = createTestNotificationContent(issueTrackerContext, operation, messageId, topic, customMessage);
 
-        String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        String providerName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-        String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
-
-        return new DistributionEvent(jobId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+        return new IssueTrackerRequest(issueTrackerContext, MessageContentGroup.singleton(messageContent));
     }
 
-    private IssueTrackerMessageResult createAndSendMessage(String jobId, FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws IntegrationException {
+    private IssueTrackerMessageResult createAndSendMessage(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String messageContent) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
-        DistributionEvent resolveIssueEvent = createChannelTestEvent(jobId, fieldAccessor, operation, messageId);
-        IssueTrackerMessageResult messageResult = getDistributionChannel().sendMessage(resolveIssueEvent);
+        IssueTrackerRequest request = createChannelTestRequest(issueTrackerContext, operation, messageId, topic, messageContent);
+        IssueTrackerMessageResult messageResult = this.issueTrackerService.sendMessage(request);
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
     }
@@ -166,6 +154,25 @@ public abstract class IssueTrackerDistributionTestAction extends ChannelDistribu
             return Optional.of("The provided transition is not possible from the issue state that it would transition from.");
         }
         return Optional.empty();
+    }
+
+    private ProviderMessageContent createTestNotificationContent(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {
+        return new ProviderMessageContent.Builder()
+                   .applyProvider("Alert")
+                   .applyTopic("Test Topic", customTopic)
+                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
+                   .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
+                   .build();
+    }
+
+    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId, String customMessage) throws AlertException {
+        return new ComponentItem.Builder()
+                   .applyOperation(operation)
+                   .applyCategory("Test Category")
+                   .applyComponentData("Message ID", messageId)
+                   .applyCategoryItem("Details", customMessage)
+                   .applyNotificationId(1L)
+                   .build();
     }
 
 }

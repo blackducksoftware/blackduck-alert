@@ -30,8 +30,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
@@ -67,44 +67,22 @@ public abstract class JiraIssueConfigValidator {
 
     public abstract boolean isUserValid(String issueCreator) throws IntegrationException;
 
-    public IssueConfig validate(FieldAccessor fieldAccessor) throws AlertFieldException {
-        IssueConfig jiraIssueConfig = new IssueConfig();
+    public void validate(IssueTrackerContext context) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
+        IssueConfig issueConfig = context.getIssueConfig();
+        // TODO populate the ids and keys for the project in issue config?
+        validateProject(issueConfig, fieldErrors);
+        validateIssueCreator(issueConfig, fieldErrors);
+        validateIssueType(issueConfig, fieldErrors);
 
-        ProjectComponent projectComponent = validateProject(fieldAccessor, fieldErrors);
-        if (projectComponent != null) {
-            jiraIssueConfig.setProjectId(projectComponent.getId());
-            jiraIssueConfig.setProjectKey(projectComponent.getKey());
-            jiraIssueConfig.setProjectName(projectComponent.getName());
-        }
-
-        String issueCreator = validateIssueCreator(fieldAccessor, fieldErrors);
-        jiraIssueConfig.setIssueCreator(issueCreator);
-
-        String issueType = validateIssueType(fieldAccessor, fieldErrors);
-        jiraIssueConfig.setIssueType(issueType);
-
-        Boolean commentOnIssue = fieldAccessor.getBooleanOrFalse(getAddCommentsFieldKey());
-        jiraIssueConfig.setCommentOnIssues(commentOnIssue);
-
-        String resolveTransition = fieldAccessor.getStringOrNull(getResolveTransitionFieldKey());
-        jiraIssueConfig.setResolveTransition(resolveTransition);
-
-        String openTransition = fieldAccessor.getStringOrNull(getOpenTransitionFieldKey());
-        jiraIssueConfig.setOpenTransition(openTransition);
-
-        if (fieldErrors.isEmpty()) {
-            return jiraIssueConfig;
-        } else {
+        if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
     }
 
-    private ProjectComponent validateProject(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        String projectNameFieldKey = getProjectFieldKey();
-        Optional<String> optionalProjectName = fieldAccessor.getString(projectNameFieldKey);
-        if (optionalProjectName.isPresent()) {
-            String jiraProjectName = optionalProjectName.get();
+    private ProjectComponent validateProject(IssueConfig config, Map<String, String> fieldErrors) {
+        String jiraProjectName = config.getProjectName();
+        if (StringUtils.isNotBlank(jiraProjectName)) {
             try {
                 Collection<ProjectComponent> projectsResponseModel = getProjectsByName(jiraProjectName);
                 Optional<ProjectComponent> optionalProject = projectsResponseModel
@@ -114,52 +92,43 @@ public abstract class JiraIssueConfigValidator {
                 if (optionalProject.isPresent()) {
                     return optionalProject.get();
                 } else {
-                    fieldErrors.put(projectNameFieldKey, String.format("No project named '%s' was found", jiraProjectName));
+                    fieldErrors.put(getProjectFieldKey(), String.format("No project named '%s' was found", jiraProjectName));
                 }
             } catch (IntegrationException e) {
-                fieldErrors.put(projectNameFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "projects"));
+                fieldErrors.put(getProjectFieldKey(), String.format(CONNECTION_ERROR_FORMAT_STRING, "projects"));
             }
         } else {
-            requireField(fieldErrors, projectNameFieldKey);
+            requireField(fieldErrors, getProjectFieldKey());
         }
         return null;
     }
 
-    private String validateIssueCreator(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
+    private String validateIssueCreator(IssueConfig config, Map<String, String> fieldErrors) {
         String issueCreatorFieldKey = getIssueCreatorFieldKey();
-        Optional<String> optionalIssueCreator = fieldAccessor.getString(issueCreatorFieldKey)
-                                                    .filter(StringUtils::isNotBlank)
-                                                    .or(() -> fieldAccessor.getString(getDefaultIssueCreatorFieldKey()));
-        if (optionalIssueCreator.isPresent()) {
-            String issueCreator = optionalIssueCreator.get();
-            try {
-                if (isUserValid(issueCreator)) {
-                    return issueCreator;
-                } else {
-                    fieldErrors.put(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));
-                }
-            } catch (IntegrationException e) {
-                fieldErrors.put(issueCreatorFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
+        String issueCreator = StringUtils.isNotBlank(config.getIssueCreator()) ? config.getIssueCreator() : getDefaultIssueCreatorFieldKey();
+        try {
+            if (isUserValid(issueCreator)) {
+                return issueCreator;
+            } else {
+                fieldErrors.put(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));
             }
-        } else {
-            requireField(fieldErrors, issueCreatorFieldKey);
+        } catch (IntegrationException e) {
+            fieldErrors.put(issueCreatorFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
         }
         return null;
     }
 
-    private String validateIssueType(FieldAccessor fieldAccessor, Map<String, String> fieldErrors) {
-        String projectNameFieldKey = getProjectFieldKey();
+    private String validateIssueType(IssueConfig config, Map<String, String> fieldErrors) {
         String issueTypeFieldKey = getIssueTypeFieldKey();
-        Optional<String> optionalProjectName = fieldAccessor.getString(projectNameFieldKey);
-        String issueType = fieldAccessor.getString(issueTypeFieldKey).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);
+        String issueType = config.getIssueType();
         try {
             boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                            .stream()
                                            .map(IssueTypeResponseModel::getName)
                                            .anyMatch(issueType::equals);
             if (isValidIssueType) {
-                if (optionalProjectName.isPresent()) {
-                    String projectName = optionalProjectName.get();
+                String projectName = config.getProjectName();
+                if (StringUtils.isNotBlank(projectName)) {
                     boolean isValidForProject = issueMetaDataService.doesProjectContainIssueType(projectName, issueType);
                     if (isValidForProject) {
                         return issueType;

@@ -26,13 +26,14 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-public class JiraServerProperties {
+public class JiraServerProperties implements IssueTrackerServiceConfig {
     public static final String KEY_ADD_COMMENTS = "channel.jira.server.add.comments";
     public static final String KEY_ISSUE_CREATOR = "channel.jira.server.issue.creator";
     public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.server.project.name";

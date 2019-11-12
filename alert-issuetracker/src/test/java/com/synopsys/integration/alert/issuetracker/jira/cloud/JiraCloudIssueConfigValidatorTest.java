@@ -5,17 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.issuetracker.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
@@ -53,13 +51,11 @@ public class JiraCloudIssueConfigValidatorTest {
         String issueCreatorString = "IssueCreator";
         issueCreator.setFieldValue(issueCreatorString);
 
-        Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        fields.put(resolveTransition.getFieldKey(), resolveTransition);
-        fields.put(project.getFieldKey(), project);
-        fields.put(issueType.getFieldKey(), issueType);
-        fields.put(issueCreator.getFieldKey(), issueCreator);
-
-        FieldAccessor fieldAccessor = new FieldAccessor(fields);
+        IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setResolveTransition(resolveTransitionString);
+        issueConfig.setProjectName(projectName);
+        issueConfig.setIssueType(issueTypeString);
+        issueConfig.setIssueCreator(issueCreatorString);
 
         IssueTypeResponseModel issue = Mockito.mock(IssueTypeResponseModel.class);
         Mockito.when(issue.getName()).thenReturn(issueTypeString);
@@ -76,11 +72,12 @@ public class JiraCloudIssueConfigValidatorTest {
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectResponse);
 
         try {
-            IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
-            assertEquals(resolveTransitionString, jiraIssueConfig.getResolveTransition().orElse(""));
-            assertEquals(projectName, jiraIssueConfig.getProjectName());
-            assertEquals(issueCreatorString, jiraIssueConfig.getIssueCreator());
-            assertEquals(issueTypeString, jiraIssueConfig.getIssueType());
+            IssueTrackerContext context = new IssueTrackerContext(null, issueConfig);
+            jiraIssueConfigValidator.validate(context);
+            assertEquals(resolveTransitionString, issueConfig.getResolveTransition().orElse(""));
+            assertEquals(projectName, issueConfig.getProjectName());
+            assertEquals(issueCreatorString, issueConfig.getIssueCreator());
+            assertEquals(issueTypeString, issueConfig.getIssueType());
         } catch (AlertFieldException e) {
             fail();
         }
@@ -102,18 +99,17 @@ public class JiraCloudIssueConfigValidatorTest {
         String issueTypeString = "IssueType";
         issueType.setFieldValue(issueTypeString);
 
-        Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        fields.put(resolveTransition.getFieldKey(), resolveTransition);
-        fields.put(issueType.getFieldKey(), issueType);
-
-        FieldAccessor fieldAccessor = new FieldAccessor(fields);
+        IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setResolveTransition(resolveTransitionString);
+        issueConfig.setIssueType(issueTypeString);
 
         IssueTypeResponseModel issue = Mockito.mock(IssueTypeResponseModel.class);
         Mockito.when(issue.getName()).thenReturn(issueTypeString);
         Mockito.when(issueTypeService.getAllIssueTypes()).thenReturn(List.of(issue));
 
         try {
-            jiraIssueConfigValidator.validate(fieldAccessor);
+            IssueTrackerContext context = new IssueTrackerContext(null, issueConfig);
+            jiraIssueConfigValidator.validate(context);
             fail();
         } catch (AlertFieldException e) {
             assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_JIRA_PROJECT_NAME));
