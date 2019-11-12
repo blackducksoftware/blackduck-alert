@@ -35,7 +35,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 
 public class AlertSAMLEntryPoint extends SAMLEntryPoint {
-    private static final Logger logger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
+    // SonarCloud will fail the build if this variable is named 'logger' because there is a variable with the same name in a parent class.
+    private final Logger alertLogger = LoggerFactory.getLogger(AlertSAMLEntryPoint.class);
     private final SAMLContext samlContext;
 
     public AlertSAMLEntryPoint(SAMLContext samlContext) {
@@ -51,13 +52,14 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         if (samlContext.isSAMLEnabled()) {
-            logger.debug("SAML Enabled commencing SAML entry point.");
+            alertLogger.debug("SAML Enabled commencing SAML entry point.");
             super.commence(request, response, e);
             return;
         }
-        logger.debug("AuthenticationException: {}", e);
+        alertLogger.debug("AuthenticationException", e);
         if (e instanceof InsufficientAuthenticationException) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
     }
+
 }
