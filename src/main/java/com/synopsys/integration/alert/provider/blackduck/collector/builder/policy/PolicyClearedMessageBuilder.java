@@ -122,7 +122,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
 
         for (PolicyInfo policyInfo : policies) {
             String policyName = policyInfo.getPolicyName();
-            if (policyFilter.contains(policyName)) {
+            if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
                 Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
                 List<PolicyRuleExpressionView> expressions = optionalPolicyRule.map(rule -> rule.getExpression().getExpressions()).orElse(List.of());

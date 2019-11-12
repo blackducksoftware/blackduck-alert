@@ -66,7 +66,7 @@ public class PolicyCommonBuilder {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
             String policyName = policyInfo.getPolicyName();
-            if (policyFilter.contains(policyName)) {
+            if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
                 ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
                 Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);

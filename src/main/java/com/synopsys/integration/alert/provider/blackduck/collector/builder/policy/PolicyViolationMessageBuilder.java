@@ -136,7 +136,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation, componentVersionStatus.getBomComponent(), List.of(), policyFilters));
         for (PolicyInfo policyInfo : policies) {
             String policyName = policyInfo.getPolicyName();
-            if (policyFilters.contains(policyName)) {
+            if (policyFilters.isEmpty() || policyFilters.contains(policyName)) {
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
                 LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
                 Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
