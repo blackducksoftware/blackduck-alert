@@ -27,7 +27,7 @@ import java.util.List;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 
 /**
- * By extending this class you are going to use a component predefined in tha javascript UI code rather than field generation.
+ * By extending this class you are going to use a component predefined in the javascript UI code rather than field generation.
  * The javascript components need to be located in the js/component/dynamic/loaded directory.
  * The javascript component that exists for this CustomUIConfig class needs to be registered in the DescriptorContentLoader.js file.
  */
