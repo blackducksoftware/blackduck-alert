@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueHandler;
+import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
 import com.synopsys.integration.exception.IntegrationException;
@@ -141,11 +142,10 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
         String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
 
-        jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
-            componentItem.getCategory(),
-            component.getName(), component.getValue(), subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null),
-            alertIssueUniqueId
-        );
+        IssueProperties properties = new IssueProperties(provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(),
+            subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), alertIssueUniqueId);
+
+        jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, properties);
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {

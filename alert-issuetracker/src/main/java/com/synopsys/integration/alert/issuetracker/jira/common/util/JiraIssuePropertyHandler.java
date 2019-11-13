@@ -30,8 +30,8 @@ import org.springframework.lang.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.alert.issuetracker.jira.common.model.AlertJiraIssueProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraIssuePropertyHandler<T> {
@@ -40,7 +40,7 @@ public abstract class JiraIssuePropertyHandler<T> {
 
     public abstract T queryForIssues(String query) throws IntegrationException;
 
-    public abstract void addPropertiesToIssue(String issueKey, AlertJiraIssueProperties properties) throws IntegrationException;
+    public abstract void addPropertiesToIssue(String issueKey, IssueProperties properties) throws IntegrationException;
 
     public Optional<T> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalKey) throws IntegrationException {
         String subTopicName = null;
@@ -102,24 +102,6 @@ public abstract class JiraIssuePropertyHandler<T> {
             return Optional.of(queryForIssues(jql));
         }
         return Optional.empty();
-    }
-
-    public void addPropertiesToIssue(
-        String issueKey,
-        String provider,
-        String topicName,
-        String topicValue,
-        String subTopicName,
-        String subTopicValue,
-        String category,
-        String componentName,
-        String componentValue,
-        String subComponentName,
-        String subComponentValue,
-        String additionalKey
-    ) throws IntegrationException {
-        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, topicName, topicValue, subTopicName, subTopicValue, category, componentName, componentValue, subComponentName, subComponentValue, additionalKey);
-        addPropertiesToIssue(issueKey, properties);
     }
 
     private void appendPropertySearchString(StringBuilder jqlBuilder, String key, String value) {

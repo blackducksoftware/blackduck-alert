@@ -20,11 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker.jira.common.model;
+package com.synopsys.integration.alert.issuetracker;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AlertJiraIssueProperties extends AlertSerializableModel {
+public class IssueProperties extends AlertSerializableModel {
     private String provider;
     private String topicName;
     private String topicValue;
@@ -37,11 +37,11 @@ public class AlertJiraIssueProperties extends AlertSerializableModel {
     private String subComponentValue;
     private String additionalKey;
 
-    public AlertJiraIssueProperties() {
+    public IssueProperties() {
         // For serialization
     }
 
-    public AlertJiraIssueProperties(
+    public IssueProperties(
         String provider,
         String topicName,
         String topicValue,
