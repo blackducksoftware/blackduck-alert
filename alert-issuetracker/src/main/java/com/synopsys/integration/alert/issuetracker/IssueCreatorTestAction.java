@@ -37,26 +37,22 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-//TODO rename to createIssueTestAction
-public abstract class IssueTrackerDistributionTestAction {
-    public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
-    public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
-
+public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IssueTrackerService issueTrackerService;
 
-    public IssueTrackerDistributionTestAction(IssueTrackerService issueTrackerService) {
+    public IssueCreatorTestAction(IssueTrackerService issueTrackerService) {
         this.issueTrackerService = issueTrackerService;
     }
 
-    public IssueTrackerMessageResult testConfig(IssueTrackerContext issueTrackerContext, String topic, String messageContent) throws IntegrationException {
+    public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext, String topic, String messageContent) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
-        IssueTrackerMessageResult initialTestResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
+        IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
         String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
                                      .stream()
                                      .findFirst()
@@ -82,7 +78,7 @@ public abstract class IssueTrackerDistributionTestAction {
 
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
-    private <T> IssueTrackerMessageResult testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey, String topic, String messageContent) throws IntegrationException {
+    private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey, String topic, String messageContent) throws IntegrationException {
         TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
@@ -91,7 +87,7 @@ public abstract class IssueTrackerDistributionTestAction {
             Map<String, String> transitionErrors = new HashMap<>();
             Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-            IssueTrackerMessageResult finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
+            IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
 
             Optional<String> optionalReopenTransitionName = issueTrackerContext.getIssueConfig().getOpenTransition().filter(StringUtils::isNotBlank);
             if (optionalReopenTransitionName.isPresent()) {
@@ -99,7 +95,7 @@ public abstract class IssueTrackerDistributionTestAction {
                 toStatus = "Reopen";
                 Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
-                IssueTrackerMessageResult reopenResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
+                IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
                                              .stream()
                                              .findFirst()
@@ -136,10 +132,10 @@ public abstract class IssueTrackerDistributionTestAction {
         return new IssueTrackerRequest(issueTrackerContext, MessageContentGroup.singleton(messageContent));
     }
 
-    private IssueTrackerMessageResult createAndSendMessage(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String messageContent) throws IntegrationException {
+    private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String messageContent) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
         IssueTrackerRequest request = createChannelTestRequest(issueTrackerContext, operation, messageId, topic, messageContent);
-        IssueTrackerMessageResult messageResult = this.issueTrackerService.sendMessage(request);
+        IssueTrackerResponse messageResult = this.issueTrackerService.sendMessage(request);
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
     }

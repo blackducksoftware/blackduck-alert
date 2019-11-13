@@ -27,11 +27,11 @@ import java.util.Collection;
 
 import com.synopsys.integration.util.Stringable;
 
-public class IssueTrackerMessageResult extends Stringable implements Serializable {
+public class IssueTrackerResponse extends Stringable implements Serializable {
     private String statusMessage;
     private Collection<String> updatedIssueKeys;
 
-    public IssueTrackerMessageResult(String statusMessage, Collection<String> updatedIssueKeys) {
+    public IssueTrackerResponse(String statusMessage, Collection<String> updatedIssueKeys) {
         this.statusMessage = statusMessage;
         this.updatedIssueKeys = updatedIssueKeys;
     }

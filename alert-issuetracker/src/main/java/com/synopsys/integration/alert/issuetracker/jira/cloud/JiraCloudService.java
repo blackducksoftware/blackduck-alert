@@ -34,8 +34,8 @@ import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssu
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -55,8 +55,9 @@ public class JiraCloudService extends IssueTrackerService {
     }
 
     @Override
-    public IssueTrackerMessageResult sendMessage(IssueTrackerRequest request) throws IntegrationException {
+    public IssueTrackerResponse sendMessage(IssueTrackerRequest request) throws IntegrationException {
         IssueTrackerContext context = request.getContext();
+        //TODO Investigate how to make the API more expressive to avoid the type casting.
         JiraProperties jiraProperties = (JiraProperties) context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();

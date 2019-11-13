@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.IssueCreatorTestAction;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerDistributionTestAction;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
 import com.synopsys.integration.alert.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
@@ -38,7 +38,7 @@ import com.synopsys.integration.jira.common.model.components.TransitionComponent
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 
-public class JiraServerCreateIssueTestAction extends IssueTrackerDistributionTestAction {
+public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCreateIssueTestAction.class);
     private Gson gson;
 

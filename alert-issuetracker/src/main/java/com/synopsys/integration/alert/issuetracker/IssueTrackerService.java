@@ -24,8 +24,8 @@ package com.synopsys.integration.alert.issuetracker;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueTrackerService {
@@ -37,7 +37,7 @@ public abstract class IssueTrackerService {
         this.messageParser = messageParser;
     }
 
-    public abstract IssueTrackerMessageResult sendMessage(IssueTrackerRequest request) throws IntegrationException;
+    public abstract IssueTrackerResponse sendMessage(IssueTrackerRequest request) throws IntegrationException;
 
     public Gson getGson() {
         return gson;

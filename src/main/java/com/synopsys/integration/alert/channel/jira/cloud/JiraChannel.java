@@ -34,8 +34,8 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -56,7 +56,7 @@ public class JiraChannel extends DistributionChannel {
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
         IssueTrackerRequest request = new IssueTrackerRequest(context, content);
         JiraCloudService jiraService = new JiraCloudService(getGson());
-        IssueTrackerMessageResult result = jiraService.sendMessage(request);
+        IssueTrackerResponse result = jiraService.sendMessage(request);
         return new MessageResult(result.getStatusMessage());
     }
 

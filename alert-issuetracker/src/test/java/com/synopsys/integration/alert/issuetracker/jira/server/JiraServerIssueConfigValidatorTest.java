@@ -13,8 +13,8 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;

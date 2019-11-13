@@ -34,8 +34,8 @@ import com.synopsys.integration.alert.issuetracker.jira.common.JiraMessageParser
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIssuePropertyHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerTransitionHandler;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
@@ -55,7 +55,7 @@ public class JiraServerService extends IssueTrackerService {
     }
 
     @Override
-    public IssueTrackerMessageResult sendMessage(IssueTrackerRequest request) throws IntegrationException {
+    public IssueTrackerResponse sendMessage(IssueTrackerRequest request) throws IntegrationException {
         IssueTrackerContext context = request.getContext();
         JiraServerProperties jiraProperties = (JiraServerProperties) request.getContext().getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());

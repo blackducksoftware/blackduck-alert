@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerCreateIssueTestAction;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -56,7 +56,7 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson);
         String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
         String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
-        IssueTrackerMessageResult result = testAction.testConfig(context, topic, customMessage);
+        IssueTrackerResponse result = testAction.testConfig(context, topic, customMessage);
         return new MessageResult(result.getStatusMessage());
     }
 }

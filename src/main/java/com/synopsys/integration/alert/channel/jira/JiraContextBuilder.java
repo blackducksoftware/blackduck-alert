@@ -23,9 +23,9 @@
 package com.synopsys.integration.alert.channel.jira;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 
 public abstract class JiraContextBuilder {

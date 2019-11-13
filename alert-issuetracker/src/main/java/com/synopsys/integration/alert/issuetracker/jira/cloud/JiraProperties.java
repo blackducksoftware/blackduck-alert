@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;

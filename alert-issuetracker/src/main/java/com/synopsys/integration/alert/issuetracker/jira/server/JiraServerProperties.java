@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;

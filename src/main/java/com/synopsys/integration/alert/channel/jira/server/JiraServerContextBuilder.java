@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira.server;
 import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 
 public class JiraServerContextBuilder extends JiraContextBuilder {

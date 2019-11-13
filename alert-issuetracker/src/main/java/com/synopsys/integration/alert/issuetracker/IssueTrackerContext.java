@@ -22,6 +22,9 @@
  */
 package com.synopsys.integration.alert.issuetracker;
 
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
+
 public class IssueTrackerContext {
     private IssueTrackerServiceConfig issueTrackerConfig;
     private IssueConfig issueConfig;

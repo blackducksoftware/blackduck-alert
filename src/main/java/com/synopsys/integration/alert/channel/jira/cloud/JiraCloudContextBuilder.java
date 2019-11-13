@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
 
 public class JiraCloudContextBuilder extends JiraContextBuilder {

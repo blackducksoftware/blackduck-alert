@@ -40,8 +40,10 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
 /**
@@ -56,7 +58,7 @@ public abstract class IssueHandler<T> {
         this.issueTrackerMessageParser = issueTrackerMessageParser;
     }
 
-    public final IssueTrackerMessageResult createOrUpdateIssues(IssueConfig issueConfig, MessageContentGroup content) throws IntegrationException {
+    public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, MessageContentGroup content) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         for (ProviderMessageContent messageContent : content.getSubContent()) {
             Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(messageContent, issueConfig);
@@ -64,7 +66,7 @@ public abstract class IssueHandler<T> {
         }
 
         String statusMessage = createStatusMessage(issueKeys);
-        return new IssueTrackerMessageResult(statusMessage, issueKeys);
+        return new IssueTrackerResponse(statusMessage, issueKeys);
     }
 
     protected Set<String> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
