@@ -34,6 +34,7 @@ public abstract class IssueTrackerService {
 
     public IssueTrackerService(Gson gson, IssueTrackerMessageParser messageParser) {
         this.gson = gson;
+        this.messageParser = messageParser;
     }
 
     public abstract IssueTrackerMessageResult sendMessage(IssueTrackerRequest request) throws IntegrationException;

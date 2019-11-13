@@ -73,7 +73,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
         String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        return new JiraProperties(url, username, accessToken);
+        return new JiraProperties(url, accessToken, username);
     }
 
     @Override

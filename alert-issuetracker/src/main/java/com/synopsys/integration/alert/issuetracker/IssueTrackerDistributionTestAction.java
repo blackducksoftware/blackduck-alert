@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageRe
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
 
+//TODO rename to createIssueTestAction
 public abstract class IssueTrackerDistributionTestAction {
     public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
     public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";

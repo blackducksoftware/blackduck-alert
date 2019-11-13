@@ -22,28 +22,24 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.actions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
+import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerDistributionTestAction;
-import com.synopsys.integration.alert.issuetracker.TransitionValidator;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
-import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 
 @Component
-public class JiraDistributionTestAction extends IssueTrackerDistributionTestAction {
-    private final Logger logger = LoggerFactory.getLogger(JiraDistributionTestAction.class);
+public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     private Gson gson;
 
     @Autowired
@@ -53,50 +49,14 @@ public class JiraDistributionTestAction extends IssueTrackerDistributionTestActi
     }
 
     @Override
-    protected String getOpenTransitionFieldKey() {
-        return JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
+        IssueTrackerContext context = contextBuilder.build(fieldAccessor);
+        JiraCloudService jiraService = new JiraCloudService(gson);
+        JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson);
+        String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
+        String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
+        IssueTrackerMessageResult result = testAction.testConfig(context, topic, customMessage);
+        return new MessageResult(result.getStatusMessage());
     }
-
-    @Override
-    protected String getResolveTransitionFieldKey() {
-        return JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getTodoStatusFieldKey() {
-        return JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY;
-    }
-
-    @Override
-    protected String getDoneStatusFieldKey() {
-        return JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY;
-    }
-
-    @Override
-    protected TransitionValidator<TransitionComponent> createTransitionValidator(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
-        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        IssueService issueService = jiraCloudServiceFactory.createIssueService();
-        return new JiraCloudTransitionHandler(issueService);
-    }
-
-    @Override
-    protected void safelyCleanUpIssue(FieldAccessor fieldAccessor, String issueKey) {
-        try {
-            JiraProperties jiraProperties = createJiraProperties(fieldAccessor);
-            JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-            IssueService issueService = jiraCloudServiceFactory.createIssueService();
-            issueService.deleteIssue(issueKey);
-        } catch (IntegrationException e) {
-            logger.warn("There was a problem trying to delete a the Jira Cloud distribution test issue, {}: {}", issueKey, e);
-        }
-    }
-
-    private JiraProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
-        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        String token = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        return new JiraProperties(url, token, username);
-    }
-
 }

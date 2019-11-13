@@ -70,8 +70,15 @@ public abstract class JiraIssueConfigValidator {
     public void validate(IssueTrackerContext context) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         IssueConfig issueConfig = context.getIssueConfig();
-        // TODO populate the ids and keys for the project in issue config?
-        validateProject(issueConfig, fieldErrors);
+        // TODO Get rid of fieldkeys.
+        // TODO Refactor class to indicate mutation of IssueConfig or create a new object.
+        ProjectComponent projectComponent = validateProject(issueConfig, fieldErrors);
+        if (projectComponent != null) {
+            issueConfig.setProjectId(projectComponent.getId());
+            issueConfig.setProjectKey(projectComponent.getKey());
+            issueConfig.setProjectName(projectComponent.getName());
+        }
+
         validateIssueCreator(issueConfig, fieldErrors);
         validateIssueType(issueConfig, fieldErrors);
 

@@ -71,7 +71,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        return new JiraServerProperties(url, username, password);
+        return new JiraServerProperties(url, password, username);
     }
 
     @Override

@@ -26,16 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageResult;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
@@ -53,15 +50,10 @@ public class JiraServerChannel extends DistributionChannel {
 
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
-        //TODO build the issueConfig
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         MessageContentGroup content = event.getContent();
-        String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
-        String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
-        String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        JiraServerProperties jiraProperties = new JiraServerProperties(url, username, password);
-        IssueConfig issueConfig = new IssueConfig();
-        IssueTrackerContext context = new IssueTrackerContext(jiraProperties, issueConfig);
+        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
+        IssueTrackerContext context = contextBuilder.build(fieldAccessor);
         IssueTrackerRequest request = new IssueTrackerRequest(context, content);
         JiraServerService jiraService = new JiraServerService(getGson());
         IssueTrackerMessageResult result = jiraService.sendMessage(request);
