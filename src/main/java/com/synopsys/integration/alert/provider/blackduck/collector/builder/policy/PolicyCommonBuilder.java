@@ -62,36 +62,39 @@ public class PolicyCommonBuilder {
     private final Logger logger = LoggerFactory.getLogger(PolicyCommonBuilder.class);
 
     public List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
-        Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes) {
+        Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes, Collection<String> policyFilter) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
-            ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
+            String policyName = policyInfo.getPolicyName();
+            if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
+                ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
-            Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+                Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
 
-            List<LinkableItem> policyAttributes = new ArrayList<>();
-            LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
-            LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
-            optionalBomComponent.ifPresent(bomComponent -> {
-                policyAttributes.addAll(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent));
-                policyAttributes.addAll(ComponentBuilderUtil.getUsageLinkableItems(bomComponent));
-            });
-            policyAttributes.addAll(customAttributes);
+                List<LinkableItem> policyAttributes = new ArrayList<>();
+                LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
+                LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
+                optionalBomComponent.ifPresent(bomComponent -> {
+                    policyAttributes.addAll(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent));
+                    policyAttributes.addAll(ComponentBuilderUtil.getUsageLinkableItems(bomComponent));
+                });
+                policyAttributes.addAll(customAttributes);
 
-            try {
-                ComponentItem.Builder builder = new ComponentItem.Builder()
-                                                    .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
-                                                    .applyOperation(operation)
-                                                    .applyPriority(priority)
-                                                    .applyCategoryItem(policyNameItem)
-                                                    .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
-                                                    .applyAllComponentAttributes(policyAttributes)
-                                                    .applyNotificationId(notificationId);
-                ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
-                componentItems.add(builder.build());
-            } catch (Exception ex) {
-                logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
-                logger.error("Error building policy component cause ", ex);
+                try {
+                    ComponentItem.Builder builder = new ComponentItem.Builder()
+                                                        .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_POLICY)
+                                                        .applyOperation(operation)
+                                                        .applyPriority(priority)
+                                                        .applyCategoryItem(policyNameItem)
+                                                        .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
+                                                        .applyAllComponentAttributes(policyAttributes)
+                                                        .applyNotificationId(notificationId);
+                    ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                    componentItems.add(builder.build());
+                } catch (Exception ex) {
+                    logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
+                    logger.debug("Error building policy component cause ", ex);
+                }
             }
         }
         return componentItems;

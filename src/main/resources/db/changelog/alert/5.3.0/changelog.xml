@@ -4,4 +4,5 @@
     <include file="changelog-distribution-job.xml" relativeToChangelogFile="true"/>
     <include file="changelog-email-channel.xml" relativeToChangelogFile="true"/>
     <include file="changelog-update-stored-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-user-management.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

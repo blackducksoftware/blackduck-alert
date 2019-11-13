@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,25 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.provider.blackduck.web;
 
-import java.util.List;
+public class NotificationFilterModel {
+    private String name;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-
-/**
- * By extending this class you are going to use a component predefined in the javascript UI code rather than field generation.
- * The javascript components need to be located in the js/component/dynamic/loaded directory.
- * The javascript component that exists for this CustomUIConfig class needs to be registered in the DescriptorContentLoader.js file.
- */
-public abstract class CustomUIConfig extends UIConfig {
-
-    public CustomUIConfig(String label, String description, String urlName, String componentPath) {
-        super(label, description, urlName, componentPath);
+    public NotificationFilterModel(String name) {
+        this.name = name;
     }
 
-    @Override
-    public List<ConfigField> createFields() {
-        return List.of();
+    public String getName() {
+        return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }
