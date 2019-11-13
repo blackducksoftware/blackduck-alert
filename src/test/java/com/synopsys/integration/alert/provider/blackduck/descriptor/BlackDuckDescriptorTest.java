@@ -27,7 +27,7 @@ public class BlackDuckDescriptorTest {
         assertEquals(3, fields.size());
 
         fields = descriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION);
-        assertEquals(5, fields.size());
+        assertEquals(7, fields.size());
     }
 
 }
