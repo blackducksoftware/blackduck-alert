@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -28,7 +29,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     private DefaultUserAccessor userAccessor;
 
     @Test
-    public void testGetUsers() {
+    public void testGetUsers() throws AlertDatabaseConstraintException {
         String userName_1 = "testUser_1";
         String password_1 = "testPassword_1";
         String email_1 = "testEmail_1";
@@ -62,7 +63,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAddUser() {
+    public void testAddUser() throws AlertDatabaseConstraintException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -77,7 +78,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testUpdateUser() {
+    public void testUpdateUser() throws AlertDatabaseConstraintException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -92,7 +93,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
+        UserModel updatedModel = userAccessor.addUser(UserModel.newUser(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
@@ -104,7 +105,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserPassword() {
+    public void testChangeUserPassword() throws AlertDatabaseConstraintException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -132,7 +133,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserEmailAddress() {
+    public void testChangeUserEmailAddress() throws AlertDatabaseConstraintException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
