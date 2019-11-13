@@ -23,12 +23,22 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum AccessOperation {
-    CREATE,
-    DELETE,
-    READ,
-    WRITE,
-    EXECUTE,
-    UPLOAD_FILE_READ,
-    UPLOAD_FILE_WRITE,
-    UPLOAD_FILE_DELETE
+    CREATE(0),
+    DELETE(1),
+    READ(2),
+    WRITE(3),
+    EXECUTE(4),
+    UPLOAD_FILE_READ(5),
+    UPLOAD_FILE_WRITE(6),
+    UPLOAD_FILE_DELETE(7);
+
+    private int bit;
+
+    AccessOperation(int bitPosition) {
+        this.bit = 1 << bitPosition;
+    }
+
+    boolean isPermitted(int permissions) {
+        return (bit & permissions) == bit;
+    }
 }
