@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,25 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.component.users;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
-/**
- * By extending this class you are going to use a component predefined in the javascript UI code rather than field generation.
- * The javascript components need to be located in the js/component/dynamic/loaded directory.
- * The javascript component that exists for this CustomUIConfig class needs to be registered in the DescriptorContentLoader.js file.
- */
-public abstract class CustomUIConfig extends UIConfig {
-
-    public CustomUIConfig(String label, String description, String urlName, String componentPath) {
-        super(label, description, urlName, componentPath);
-    }
+@Component
+public class UserManagementDescriptorKey extends DescriptorKey {
+    public static final String USER_MANAGEMENT_COMPONENT = "component_users";
 
     @Override
-    public List<ConfigField> createFields() {
-        return List.of();
+    public String getUniversalKey() {
+        return USER_MANAGEMENT_COMPONENT;
     }
 }
