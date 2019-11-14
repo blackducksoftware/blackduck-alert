@@ -38,6 +38,18 @@ public enum AccessOperation {
         this.bit = 1 << bitPosition;
     }
 
+    int getBit() {
+        return bit;
+    }
+
+    int addToPermissions(int permissions) {
+        return bit | permissions;
+    }
+
+    int removeFromPermissions(int permissions) {
+        return ~bit & permissions;
+    }
+
     boolean isPermitted(int permissions) {
         return (bit & permissions) == bit;
     }
