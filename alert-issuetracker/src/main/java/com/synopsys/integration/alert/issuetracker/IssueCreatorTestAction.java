@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.issuetracker;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,12 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
@@ -44,15 +41,17 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IssueTrackerService issueTrackerService;
+    private IssueCreator issueCreator;
 
-    public IssueCreatorTestAction(IssueTrackerService issueTrackerService) {
+    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, IssueCreator issueCreator) {
         this.issueTrackerService = issueTrackerService;
+        this.issueCreator = issueCreator;
     }
 
-    public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext, String topic, String messageContent) throws IntegrationException {
+    public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
-        IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
+        IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, OperationType.CREATE, messageId);
         String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
                                      .stream()
                                      .findFirst()
@@ -61,7 +60,7 @@ public abstract class IssueCreatorTestAction {
         Optional<String> optionalResolveTransitionName = issueTrackerContext.getIssueConfig().getResolveTransition().filter(StringUtils::isNotBlank);
         if (optionalResolveTransitionName.isPresent()) {
             String resolveTransitionName = optionalResolveTransitionName.get();
-            return testTransitions(issueTrackerContext, messageId, resolveTransitionName, initialIssueKey, topic, messageContent);
+            return testTransitions(issueTrackerContext, messageId, resolveTransitionName, initialIssueKey);
         }
         return initialTestResult;
     }
@@ -78,7 +77,7 @@ public abstract class IssueCreatorTestAction {
 
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
-    private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey, String topic, String messageContent) throws IntegrationException {
+    private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
         TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
@@ -87,7 +86,7 @@ public abstract class IssueCreatorTestAction {
             Map<String, String> transitionErrors = new HashMap<>();
             Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-            IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
+            IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, OperationType.RESOLVE, messageId);
 
             Optional<String> optionalReopenTransitionName = issueTrackerContext.getIssueConfig().getOpenTransition().filter(StringUtils::isNotBlank);
             if (optionalReopenTransitionName.isPresent()) {
@@ -95,7 +94,7 @@ public abstract class IssueCreatorTestAction {
                 toStatus = "Reopen";
                 Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
-                IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, ItemOperation.ADD, messageId, topic, messageContent);
+                IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, OperationType.CREATE, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
                                              .stream()
                                              .findFirst()
@@ -106,7 +105,7 @@ public abstract class IssueCreatorTestAction {
                     toStatus = "Resolve";
                     Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
                     reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-                    finalResult = createAndSendMessage(issueTrackerContext, ItemOperation.DELETE, messageId, topic, messageContent);
+                    finalResult = createAndSendMessage(issueTrackerContext, OperationType.RESOLVE, messageId);
                 }
             }
 
@@ -126,15 +125,15 @@ public abstract class IssueCreatorTestAction {
         }
     }
 
-    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String customMessage) throws AlertException {
-        ProviderMessageContent messageContent = createTestNotificationContent(issueTrackerContext, operation, messageId, topic, customMessage);
+    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws AlertException {
+        IssueContentModel messageContent = issueCreator.createContent(operation, messageId);
 
-        return new IssueTrackerRequest(issueTrackerContext, MessageContentGroup.singleton(messageContent));
+        return new IssueTrackerRequest(issueTrackerContext, List.of(messageContent));
     }
 
-    private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String topic, String messageContent) throws IntegrationException {
+    private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
-        IssueTrackerRequest request = createChannelTestRequest(issueTrackerContext, operation, messageId, topic, messageContent);
+        IssueTrackerRequest request = createChannelTestRequest(issueTrackerContext, operation, messageId);
         IssueTrackerResponse messageResult = this.issueTrackerService.sendMessage(request);
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
@@ -151,25 +150,6 @@ public abstract class IssueCreatorTestAction {
             return Optional.of("The provided transition is not possible from the issue state that it would transition from.");
         }
         return Optional.empty();
-    }
-
-    private ProviderMessageContent createTestNotificationContent(IssueTrackerContext issueTrackerContext, ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {
-        return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert")
-                   .applyTopic("Test Topic", customTopic)
-                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
-                   .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
-                   .build();
-    }
-
-    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId, String customMessage) throws AlertException {
-        return new ComponentItem.Builder()
-                   .applyOperation(operation)
-                   .applyCategory("Test Category")
-                   .applyComponentData("Message ID", messageId)
-                   .applyCategoryItem("Details", customMessage)
-                   .applyNotificationId(1L)
-                   .build();
     }
 
 }

@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
@@ -54,8 +54,8 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
     }
 
-    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, ItemOperation operation) throws IntegrationException {
-        if (ItemOperation.UPDATE.equals(operation)) {
+    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, OperationType operation) throws IntegrationException {
+        if (OperationType.UPDATE.equals(operation)) {
             logger.debug("No transition required for this issue: {}.", issueKey);
             return false;
         }
@@ -75,12 +75,12 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         return false;
     }
 
-    private boolean isTransitionRequired(ItemOperation operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
+    private boolean isTransitionRequired(OperationType operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
         StatusCategory statusCategory = statusDetailsComponent.getStatusCategory();
-        if (ItemOperation.ADD.equals(operation)) {
+        if (OperationType.CREATE.equals(operation)) {
             // Should reopen?
             return DONE_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
-        } else if (ItemOperation.DELETE.equals(operation)) {
+        } else if (OperationType.RESOLVE.equals(operation)) {
             // Should resolve?
             return TODO_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
         }
@@ -98,9 +98,9 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         }
     }
 
-    private Optional<String> determineTransitionName(ItemOperation operation, IssueConfig jiraIssueConfig) {
-        if (!ItemOperation.UPDATE.equals(operation)) {
-            if (ItemOperation.DELETE.equals(operation)) {
+    private Optional<String> determineTransitionName(OperationType operation, IssueConfig jiraIssueConfig) {
+        if (!OperationType.UPDATE.equals(operation)) {
+            if (OperationType.RESOLVE.equals(operation)) {
                 return jiraIssueConfig.getResolveTransition();
             } else {
                 return jiraIssueConfig.getOpenTransition();

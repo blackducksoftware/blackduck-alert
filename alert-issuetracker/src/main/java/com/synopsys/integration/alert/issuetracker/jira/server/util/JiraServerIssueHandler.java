@@ -29,11 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -51,9 +49,9 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
 
     private final JiraServerIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraServerIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, IssueTrackerMessageParser messageParser, Gson gson, JiraServerTransitionHandler jiraTransitionHandler,
+    public JiraServerIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, Gson gson, JiraServerTransitionHandler jiraTransitionHandler,
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler) {
-        super(messageParser, gson, jiraTransitionHandler, jiraIssuePropertyHandler);
+        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
@@ -70,10 +68,10 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
+    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueProperties issueProperties)
         throws IntegrationException {
         List<IssueSearchIssueComponent> searchIssueModels = jiraIssuePropertyHelper
-                                                                .findIssues(projectKey, provider, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
+                                                                .findIssues(projectSearchIdentifier, issueProperties)
                                                                 .map(IssueSearchResponseModel::getIssues)
                                                                 .orElse(List.of());
         List<IssueResponseModel> issues = new LinkedList<>();

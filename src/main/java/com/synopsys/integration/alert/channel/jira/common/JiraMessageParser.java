@@ -1,5 +1,5 @@
 /**
- * alert-issuetracker
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,10 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker.jira.common;
+package com.synopsys.integration.alert.channel.jira.common;
+
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerMessageParser;
 
+@Component
 public class JiraMessageParser extends IssueTrackerMessageParser {
     @Override
     protected String encodeString(String txt) {

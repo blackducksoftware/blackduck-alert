@@ -22,16 +22,19 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
@@ -41,19 +44,21 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class JiraChannel extends DistributionChannel {
     private final JiraChannelKey jiraChannelKey;
+    private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
-    public JiraChannel(JiraChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility) {
+    public JiraChannel(JiraChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter) {
         super(gson, auditUtility);
         this.jiraChannelKey = jiraChannelKey;
+        this.jiraContentConverter = jiraContentConverter;
     }
 
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        MessageContentGroup content = event.getContent();
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
+        Collection<IssueContentModel> content = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
         IssueTrackerRequest request = new IssueTrackerRequest(context, content);
         JiraCloudService jiraService = new JiraCloudService(getGson());
         IssueTrackerResponse result = jiraService.sendMessage(request);

@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssu
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
@@ -51,7 +50,7 @@ public class JiraCloudService extends IssueTrackerService {
     private Logger logger = LoggerFactory.getLogger(JiraCloudService.class);
 
     public JiraCloudService(Gson gson) {
-        super(gson, new JiraMessageParser());
+        super(gson);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class JiraCloudService extends IssueTrackerService {
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, getMessageParser(), getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
+        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
         return jiraIssueHandler.createOrUpdateIssues(context.getIssueConfig(), request.getRequestContent());
     }
 }

@@ -108,7 +108,7 @@ public abstract class IssueHandler<T> {
                         .map(this::getIssueKey)
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
-                    IssueContentModel contentModel = issueTrackerMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
+                    IssueContentModel contentModel = issueTrackerMessageParser.createIssueContentModel(OperationType.CREATE, trackingKey, providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
                     T issueModel = createIssue(issueConfig, providerName, topic, nullableSubTopic, arbitraryItem, trackingKey, contentModel);
                     String issueKey = getIssueKey(issueModel);
                     issueKeys.add(issueKey);

@@ -28,15 +28,32 @@ public class IssueContentModel {
     private final String title;
     private final String description;
     private final Collection<String> additionalComments;
+    private final IssueProperties issueProperties;
+    private final OperationType operation;
 
-    private IssueContentModel(String title, String description, Collection<String> additionalComments) {
+    private IssueContentModel(IssueProperties issueProperties, OperationType operation, String title, String description, Collection<String> additionalComments) {
+        this.issueProperties = issueProperties;
+        this.operation = operation;
         this.title = title;
         this.description = description;
         this.additionalComments = additionalComments;
     }
 
+    //TODO remove this once the new issue handler in place.
     public static final IssueContentModel of(String title, String description, Collection<String> additionalComments) {
-        return new IssueContentModel(title, description, additionalComments);
+        return new IssueContentModel(null, null, title, description, additionalComments);
+    }
+
+    public static final IssueContentModel of(IssueProperties issueProperties, OperationType operation, String title, String description, Collection<String> additionalComments) {
+        return new IssueContentModel(issueProperties, operation, title, description, additionalComments);
+    }
+
+    public IssueProperties getIssueProperties() {
+        return issueProperties;
+    }
+
+    public OperationType getOperation() {
+        return operation;
     }
 
     public String getTitle() {

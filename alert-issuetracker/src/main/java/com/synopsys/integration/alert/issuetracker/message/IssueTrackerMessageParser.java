@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.issuetracker.message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,9 +37,13 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.IssueProperties;
+import com.synopsys.integration.alert.issuetracker.OperationType;
 
 public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
-    public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
+    public IssueContentModel createIssueContentModel(OperationType operation, String trackingKey, String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
+        ComponentItem arbitraryItem) {
+        IssueProperties issueProperties = createIssueProperties(providerName, topic, subTopic, arbitraryItem, trackingKey);
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
@@ -54,7 +59,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         List<String> additionalComments = new ArrayList<>();
         String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
         description.append(additionalDescriptionInfo);
-        return IssueContentModel.of(title, description.toString(), additionalComments);
+        return IssueContentModel.of(issueProperties, operation, title, description.toString(), additionalComments);
     }
 
     protected abstract int getTitleSizeLimit();
@@ -93,16 +98,18 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
             title.append(createTitlePartStringPrefixedWithComma(subTopic));
         }
 
-        title.append(createTitlePartStringPrefixedWithComma(arbitraryItem.getComponent()));
-        arbitraryItem
-            .getSubComponent()
-            .ifPresent(linkableItem -> title.append(createTitlePartStringPrefixedWithComma(linkableItem)));
+        if (null != arbitraryItem) {
+            title.append(createTitlePartStringPrefixedWithComma(arbitraryItem.getComponent()));
+            arbitraryItem
+                .getSubComponent()
+                .ifPresent(linkableItem -> title.append(createTitlePartStringPrefixedWithComma(linkableItem)));
 
-        if (arbitraryItem.collapseOnCategory()) {
-            title.append(", ");
-            title.append(arbitraryItem.getCategory());
-        } else {
-            title.append(createTitlePartStringPrefixedWithComma(arbitraryItem.getCategoryItem()));
+            if (arbitraryItem.collapseOnCategory()) {
+                title.append(", ");
+                title.append(arbitraryItem.getCategory());
+            } else {
+                title.append(createTitlePartStringPrefixedWithComma(arbitraryItem.getCategoryItem()));
+            }
         }
 
         return StringUtils.abbreviate(title.toString(), getTitleSizeLimit());
@@ -135,6 +142,18 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {
         return String.format(", %s: %s", linkableItem.getName(), linkableItem.getValue());
+    }
+
+    private IssueProperties createIssueProperties(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
+        Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
+
+        String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
+        String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
+        String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
+        String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
+
+        return new IssueProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
+            componentItem.getCategory(), componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
 
 }

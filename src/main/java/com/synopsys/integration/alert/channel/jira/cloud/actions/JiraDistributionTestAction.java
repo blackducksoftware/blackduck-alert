@@ -28,7 +28,8 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -40,12 +41,14 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JiraDistributionTestAction extends ChannelDistributionTestAction {
-    private Gson gson;
+    private final Gson gson;
+    private final JiraMessageParser jiraMessageParser;
 
     @Autowired
-    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson) {
+    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser) {
         super(jiraChannel);
         this.gson = gson;
+        this.jiraMessageParser = jiraMessageParser;
     }
 
     @Override
@@ -53,10 +56,9 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
         JiraCloudService jiraService = new JiraCloudService(gson);
-        JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson);
-        String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-        String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
-        IssueTrackerResponse result = testAction.testConfig(context, topic, customMessage);
+        JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
+        JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson, issueCreator);
+        IssueTrackerResponse result = testAction.testConfig(context);
         return new MessageResult(result.getStatusMessage());
     }
 }

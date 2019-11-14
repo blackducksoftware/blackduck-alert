@@ -26,10 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.exception.IntegrationException;
@@ -42,24 +39,23 @@ public abstract class JiraIssuePropertyHandler<T> {
 
     public abstract void addPropertiesToIssue(String issueKey, IssueProperties properties) throws IntegrationException;
 
-    public Optional<T> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalKey) throws IntegrationException {
+    public Optional<T> findIssues(String jiraProjectKey, IssueProperties issueProperties) throws IntegrationException {
         String subTopicName = null;
         String subTopicValue = null;
-        if (null != subTopic) {
-            subTopicName = subTopic.getName();
-            subTopicValue = subTopic.getValue();
+        if (null != issueProperties.getSubTopicName()) {
+            subTopicName = issueProperties.getSubTopicName();
+            subTopicValue = issueProperties.getSubTopicValue();
         }
 
-        if (null != componentItem) {
-            LinkableItem component = componentItem.getComponent();
-            Optional<LinkableItem> optionalSubComponent = componentItem.getSubComponent();
-            String subComponentName = optionalSubComponent.map(LinkableItem::getName).orElse(null);
-            String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
+        if (null != issueProperties.getSubComponentName()) {
+            String subComponentName = issueProperties.getSubComponentName();
+            String subComponentValue = issueProperties.getSubComponentValue();
 
             return findIssues(
-                jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+                jiraProjectKey, issueProperties.getProvider(), issueProperties.getTopicName(), issueProperties.getTopicValue(), subTopicName, subTopicValue, issueProperties.getCategory(), issueProperties.getComponentName(),
+                issueProperties.getComponentValue(), subComponentName, subComponentValue, issueProperties.getAdditionalKey());
         } else {
-            return findIssues(jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, null, null, null, null, null, additionalKey);
+            return findIssues(jiraProjectKey, issueProperties.getProvider(), issueProperties.getTopicName(), issueProperties.getTopicValue(), subTopicName, subTopicValue, null, null, null, null, null, issueProperties.getAdditionalKey());
         }
     }
 

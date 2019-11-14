@@ -22,14 +22,16 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import java.util.Collection;
+
+import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 
 public class IssueTrackerRequest {
     private IssueTrackerContext context;
-    private MessageContentGroup requestContent;
+    private Collection<IssueContentModel> requestContent;
 
-    public IssueTrackerRequest(IssueTrackerContext context, MessageContentGroup requestContent) {
+    public IssueTrackerRequest(IssueTrackerContext context, Collection<IssueContentModel> requestContent) {
         this.context = context;
         this.requestContent = requestContent;
     }
@@ -38,7 +40,7 @@ public class IssueTrackerRequest {
         return context;
     }
 
-    public MessageContentGroup getRequestContent() {
+    public Collection<IssueContentModel> getRequestContent() {
         return requestContent;
     }
 }
