@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 @Component
 @Transactional
 public class DefaultUserAccessor implements UserAccessor {
+    private static final Set<Long> RESERVED_USER_IDS = Set.of(UserAccessor.DEFAULT_ADMIN_USER_ID, UserAccessor.DEFAULT_JOB_MANAGER_ID, UserAccessor.DEFAULT_ALERT_USER_ID);
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
@@ -151,12 +152,17 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public void deleteUser(String userName) {
-        Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
-        userEntity.ifPresent(entity -> {
-            assignRoles(entity.getUserName(), Collections.emptySet());
-            userRepository.delete(entity);
-        });
+    public void deleteUser(String userName) throws AlertDatabaseConstraintException {
+        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
+        if (optionalUser.isPresent()) {
+            UserEntity userEntity = optionalUser.get();
+            assignRoles(userEntity.getUserName(), Collections.emptySet());
+            if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
+                userRepository.delete(userEntity);
+            } else {
+                throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userName));
+            }
+        }
     }
 
     private UserModel createModel(UserEntity user) {

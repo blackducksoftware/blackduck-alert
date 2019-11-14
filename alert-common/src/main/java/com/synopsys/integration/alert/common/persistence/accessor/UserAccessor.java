@@ -52,6 +52,6 @@ public interface UserAccessor {
 
     boolean changeUserEmailAddress(String username, String emailAddress);
 
-    void deleteUser(String userName);
+    void deleteUser(String userName) throws AlertDatabaseConstraintException;
 
 }
