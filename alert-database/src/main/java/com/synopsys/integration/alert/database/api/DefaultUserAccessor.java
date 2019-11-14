@@ -45,7 +45,6 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 @Component
 @Transactional
 public class DefaultUserAccessor implements UserAccessor {
-    public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
@@ -63,6 +62,11 @@ public class DefaultUserAccessor implements UserAccessor {
     public List<UserModel> getUsers() {
         List<UserEntity> userList = userRepository.findAll();
         return userList.stream().map(this::createModel).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<UserModel> getUser(Long userId) {
+        return userRepository.findById(userId).map(this::createModel);
     }
 
     @Override
