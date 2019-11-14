@@ -156,7 +156,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isPresent()) {
             UserEntity userEntity = optionalUser.get();
-            assignRoles(userEntity.getUserName(), Collections.emptySet());
+            assignRoles(userEntity.getUserName(), Set.of());
             if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
                 userRepository.delete(userEntity);
             } else {
