@@ -26,26 +26,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public interface UserAccessor {
 
     List<UserModel> getUsers();
 
-    Optional<UserModel> getUser(final String username);
+    Optional<UserModel> getUser(String username);
 
-    UserModel addOrUpdateUser(final UserModel user);
+    UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException;
 
-    UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded);
+    UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
 
-    UserModel addUser(final String userName, final String password, final String emailAddress);
+    UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
 
-    boolean assignRoles(final String username, final Set<Long> roleIds);
+    boolean assignRoles(String username, Set<Long> roleIds);
 
-    boolean changeUserPassword(final String username, final String newPassword);
+    boolean changeUserPassword(String username, String newPassword);
 
-    boolean changeUserEmailAddress(final String username, final String emailAddress);
+    boolean changeUserEmailAddress(String username, String emailAddress);
 
-    void deleteUser(final String userName);
+    void deleteUser(String userName);
 
 }
