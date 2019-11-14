@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -52,7 +53,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetUserByUserName() {
-        Optional<UserModel> user = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        Optional<UserModel> user = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(user.isPresent());
     }
 

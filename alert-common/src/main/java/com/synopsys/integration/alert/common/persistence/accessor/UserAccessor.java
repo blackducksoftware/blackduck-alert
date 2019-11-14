@@ -30,8 +30,13 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public interface UserAccessor {
+    public static final Long DEFAULT_ADMIN_USER_ID = 1L;
+    public static final Long DEFAULT_JOB_MANAGER_ID = 2L;
+    public static final Long DEFAULT_ALERT_USER_ID = 3L;
 
     List<UserModel> getUsers();
+
+    Optional<UserModel> getUser(Long userId);
 
     Optional<UserModel> getUser(String username);
 
@@ -47,6 +52,6 @@ public interface UserAccessor {
 
     boolean changeUserEmailAddress(String username, String emailAddress);
 
-    void deleteUser(String userName);
+    void deleteUser(String userName) throws AlertDatabaseConstraintException;
 
 }
