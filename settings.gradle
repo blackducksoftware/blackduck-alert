@@ -1,4 +1,10 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+}
+
 include 'alert-database'
 rootProject.name = 'blackduck-alert'
 include 'alert-common'
-
