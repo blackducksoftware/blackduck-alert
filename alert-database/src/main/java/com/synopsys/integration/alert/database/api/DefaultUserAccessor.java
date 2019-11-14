@@ -52,8 +52,7 @@ public class DefaultUserAccessor implements UserAccessor {
     private final DefaultAuthorizationUtility authorizationUtility;
 
     @Autowired
-    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder,
-        DefaultAuthorizationUtility authorizationUtility) {
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
