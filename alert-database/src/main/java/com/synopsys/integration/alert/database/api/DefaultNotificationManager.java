@@ -169,7 +169,7 @@ public class DefaultNotificationManager implements NotificationManager {
         }
         Sort.Order sortingOrder = Sort.Order.desc(sortingField);
         if (StringUtils.isNotBlank(sortOrder) && sortQuery && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
-            sortingOrder = Sort.Order.asc(sortField);
+            sortingOrder = Sort.Order.asc(sortingField);
         }
         return PageRequest.of(page, size, Sort.by(sortingOrder));
     }
