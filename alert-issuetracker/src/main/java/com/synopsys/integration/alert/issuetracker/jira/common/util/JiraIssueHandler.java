@@ -33,13 +33,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueHandler;
 import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -96,14 +96,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
     }
 
-    private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
+    private IssueTrackerException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
         JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
         List<String> responseErrors = new ArrayList<>();
         if (null != responseContent) {
             JsonObject errors = responseContent.get("errors").getAsJsonObject();
             JsonElement reporterErrorMessage = errors.get("reporter");
             if (null != reporterErrorMessage) {
-                return AlertFieldException.singleFieldError(
+                return IssueTrackerFieldException.singleFieldError(
                     getIssueCreatorFieldKey(), String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)
                 );
             }
@@ -120,7 +120,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             message += " | Details: " + StringUtils.join(responseErrors, ", ");
         }
 
-        return new AlertException(message, restException);
+        return new IssueTrackerException(message, restException);
     }
 
     private void addIssueProperties(String issueKey, IssueProperties issueProperties) throws IntegrationException {

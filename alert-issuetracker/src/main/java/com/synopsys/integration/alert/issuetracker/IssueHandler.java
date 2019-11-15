@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.SetMap;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -90,7 +90,7 @@ public abstract class IssueHandler<T> {
             }
 
             String errorMessage = String.format("For Provider: %s. Project: %s. %s.", issueProperties.getProvider(), projectName, missingTransitions.toString());
-            throw new AlertException(errorMessage);
+            throw new IssueTrackerException(errorMessage);
         }
         return issueKeys;
     }

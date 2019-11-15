@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.issuetracker.jira.server;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;
@@ -56,7 +56,7 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
         this.username = username;
     }
 
-    public JiraServerRestConfig createJiraServerConfig() throws AlertException {
+    public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
         JiraServerRestConfigBuilder jiraServerConfigBuilder = new JiraServerRestConfigBuilder();
 
         jiraServerConfigBuilder.setUrl(url);
@@ -65,11 +65,11 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
         try {
             return jiraServerConfigBuilder.build();
         } catch (IllegalArgumentException e) {
-            throw new AlertException("There was an issue building the configuration: " + e.getMessage());
+            throw new IssueTrackerException("There was an issue building the configuration: " + e.getMessage());
         }
     }
 
-    public JiraServerServiceFactory createJiraServicesServerFactory(Logger logger, Gson gson) throws AlertException {
+    public JiraServerServiceFactory createJiraServicesServerFactory(Logger logger, Gson gson) throws IssueTrackerException {
         JiraServerRestConfig jiraServerConfig = createJiraServerConfig();
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
         JiraHttpClient jiraHttpClient = jiraServerConfig.createJiraHttpClient(intLogger);

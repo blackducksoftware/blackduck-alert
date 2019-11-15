@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIssuePropertyHandler;
@@ -62,7 +62,7 @@ public class JiraServerService extends IssueTrackerService {
         logger.debug("Verifying the required application is installed on the Jira server...");
         boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
         if (missingApp) {
-            throw new AlertException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
+            throw new IssueTrackerException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
         }
 
         ProjectService projectService = jiraServerServiceFactory.createProjectService();

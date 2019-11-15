@@ -22,22 +22,27 @@
  */
 package com.synopsys.integration.alert.issuetracker.exception;
 
-public class IssueMissingTransitionException extends IssueTrackerException {
-    private static final long serialVersionUID = 9152514378880170516L;
-    private final String issueKey;
-    private final String transition;
+import com.synopsys.integration.exception.IntegrationException;
 
-    public IssueMissingTransitionException(String issueKey, String transition) {
-        this.issueKey = issueKey;
-        this.transition = transition;
+public class IssueTrackerException extends IntegrationException {
+    private static final long serialVersionUID = -156290045811635478L;
+
+    public IssueTrackerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public String getIssueKey() {
-        return issueKey;
+    public IssueTrackerException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public String getTransition() {
-        return transition;
+    public IssueTrackerException(String message) {
+        super(message);
     }
 
+    public IssueTrackerException(Throwable cause) {
+        super(cause);
+    }
+
+    public IssueTrackerException() {
+    }
 }

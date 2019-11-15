@@ -32,8 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
@@ -55,7 +55,7 @@ public abstract class IssueCreatorTestAction {
         String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
                                      .stream()
                                      .findFirst()
-                                     .orElseThrow(() -> new AlertException("Failed to create a new issue"));
+                                     .orElseThrow(() -> new IssueTrackerException("Failed to create a new issue"));
 
         Optional<String> optionalResolveTransitionName = issueTrackerContext.getIssueConfig().getResolveTransition().filter(StringUtils::isNotBlank);
         if (optionalResolveTransitionName.isPresent()) {
@@ -112,20 +112,20 @@ public abstract class IssueCreatorTestAction {
             if (transitionErrors.isEmpty()) {
                 return finalResult;
             } else {
-                throw new AlertFieldException(transitionErrors);
+                throw new IssueTrackerFieldException(transitionErrors);
             }
-        } catch (AlertFieldException fieldException) {
+        } catch (IssueTrackerFieldException fieldException) {
             safelyCleanUpIssue(issueTrackerContext, initialIssueKey);
             throw fieldException;
-        } catch (AlertException alertException) {
+        } catch (IssueTrackerException alertException) {
             logger.debug(String.format("Error testing %s config", issueTrackerContext.getClass().getSimpleName()), alertException);
             String errorMessage = String.format("There were problems transitioning the test issue from the %s status to the %s status: %s", fromStatus, toStatus, alertException.getMessage());
             possibleSecondIssueKey.ifPresent(key -> safelyCleanUpIssue(issueTrackerContext, key));
-            throw new AlertException(errorMessage);
+            throw new IssueTrackerException(errorMessage);
         }
     }
 
-    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws AlertException {
+    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) {
         IssueContentModel messageContent = issueCreator.createContent(operation, messageId);
 
         return new IssueTrackerRequest(issueTrackerContext, List.of(messageContent));
