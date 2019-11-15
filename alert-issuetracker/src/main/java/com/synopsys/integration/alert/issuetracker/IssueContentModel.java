@@ -39,11 +39,6 @@ public class IssueContentModel {
         this.additionalComments = additionalComments;
     }
 
-    //TODO remove this once the new issue handler in place.
-    public static final IssueContentModel of(String title, String description, Collection<String> additionalComments) {
-        return new IssueContentModel(null, null, title, description, additionalComments);
-    }
-
     public static final IssueContentModel of(IssueProperties issueProperties, OperationType operation, String title, String description, Collection<String> additionalComments) {
         return new IssueContentModel(issueProperties, operation, title, description, additionalComments);
     }

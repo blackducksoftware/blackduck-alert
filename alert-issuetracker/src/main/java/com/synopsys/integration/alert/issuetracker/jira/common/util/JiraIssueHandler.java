@@ -36,7 +36,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.IssueHandler2;
+import com.synopsys.integration.alert.issuetracker.IssueHandler;
 import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
@@ -46,7 +46,7 @@ import com.synopsys.integration.jira.common.model.request.builder.IssueRequestMo
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class JiraIssueHandler extends IssueHandler2<IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

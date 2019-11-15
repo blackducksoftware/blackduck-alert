@@ -87,7 +87,6 @@ public class JiraMessageContentConverter {
     protected Collection<IssueContentModel> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
         Collection<IssueContentModel> issues = new LinkedList<>();
-        String projectName = issueConfig.getProjectName();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
@@ -100,6 +99,8 @@ public class JiraMessageContentConverter {
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
                 IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(operationMap.get(operation), trackingKey, providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
                 if (ItemOperation.DELETE == operation || ItemOperation.INFO == operation) {
+                    // keep the properties only add the comments.
+                    issueContentModel = IssueContentModel.of(issueContentModel.getIssueProperties(), issueContentModel.getOperation(), StringUtils.EMPTY, StringUtils.EMPTY, new LinkedList<>());
                     updateExistingIssues(issueConfig, providerName, topic.getName(), operation, componentItems, issueContentModel);
                 }
                 issues.add(issueContentModel);
@@ -121,7 +122,7 @@ public class JiraMessageContentConverter {
     protected void updateExistingIssues(IssueConfig issueConfig, String providerName, String category, ItemOperation operation, Set<ComponentItem> componentItems, IssueContentModel issueContentModel)
         throws IntegrationException {
         if (issueConfig.getCommentOnIssues()) {
-            List<String> operationComments = jiraMessageParser.createOperationComment(providerName, category, operation, componentItems);
+            List<String> operationComments = jiraMessageParser.createOperationComment(providerName, category, operationMap.get(operation), componentItems);
             issueContentModel.getAdditionalComments().addAll(operationComments);
         }
     }
