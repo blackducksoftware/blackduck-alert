@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 public class SettingsGlobalApiAction extends ApiAction {
@@ -61,7 +60,7 @@ public class SettingsGlobalApiAction extends ApiAction {
 
     @Override
     public FieldModel afterGetAction(FieldModel fieldModel) {
-        Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        Optional<UserModel> defaultUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         FieldModel fieldModelCopy = createFieldModelCopy(fieldModel);
         String defaultUserEmail = defaultUser.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).orElse("");
         boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
@@ -128,14 +127,24 @@ public class SettingsGlobalApiAction extends ApiAction {
     private void saveDefaultAdminUserPassword(FieldModel fieldModel) {
         String password = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
         if (StringUtils.isNotBlank(password)) {
-            userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
+            Optional<UserModel> adminUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
+            if (adminUser.isPresent()) {
+                userAccessor.changeUserPassword(adminUser.get().getName(), password);
+            } else {
+                logger.error("Critical Error. Default admin user could not be found in the database.");
+            }
         }
     }
 
     private void saveDefaultAdminUserEmail(FieldModel fieldModel) {
         Optional<FieldValueModel> optionalEmail = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
         if (optionalEmail.isPresent()) {
-            userAccessor.changeUserEmailAddress(DefaultUserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
+            Optional<UserModel> adminUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
+            if (adminUser.isPresent()) {
+                userAccessor.changeUserEmailAddress(adminUser.get().getName(), optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
+            } else {
+                logger.error("Critical Error. Default admin user could not be found in the database.");
+            }
         }
     }
 

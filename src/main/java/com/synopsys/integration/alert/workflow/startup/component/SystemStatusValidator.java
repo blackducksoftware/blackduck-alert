@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUt
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 @Order(2)
@@ -64,7 +63,7 @@ public class SystemStatusValidator extends StartupComponent {
 
     private boolean isAdminUserConfigured() {
         return userAccessor
-                   .getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)
+                   .getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)
                    .filter(this::isUserEmailSet)
                    .filter(this::isUserPasswordSet)
                    .isPresent();

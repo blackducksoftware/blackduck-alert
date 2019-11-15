@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 public class SettingsValidator {
@@ -58,7 +57,7 @@ public class SettingsValidator {
     public Map<String, String> validateUser() {
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
 
-        Optional<UserModel> userModel = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         Map<String, String> fieldErrors = new HashMap<>();
 
         boolean hasEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();

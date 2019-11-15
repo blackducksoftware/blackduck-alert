@@ -50,7 +50,7 @@ public class UserEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(final String userName, final String password, final String emailAddress) {
+    public UserEntity(String userName, String password, String emailAddress) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -60,7 +60,7 @@ public class UserEntity extends DatabaseEntity {
         this.enabled = true;
     }
 
-    public UserEntity(final String userName, final String password, final String emailAddress, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -97,4 +97,5 @@ public class UserEntity extends DatabaseEntity {
     public boolean isEnabled() {
         return this.enabled;
     }
+
 }
