@@ -32,11 +32,12 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class CheckboxConfigField extends ConfigField {
     public CheckboxConfigField(String key, String label, String description) {
         this(key, label, description, FieldType.CHECKBOX_INPUT);
-        applyValidationFunctions(this::validateValueIsBoolean);
     }
 
     protected CheckboxConfigField(String key, String label, String description, FieldType fieldType) {
         super(key, label, description, fieldType);
+        applyValidationFunctions(this::validateValueIsBoolean);
+        applyDefaultValue(Boolean.FALSE.toString());
     }
 
     private Collection<String> validateValueIsBoolean(FieldValueModel fieldToValidate, FieldModel fieldModel) {
