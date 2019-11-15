@@ -89,7 +89,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                 .collect(Collectors.toList()));
 
         final ConfigField filterByProject = HideCheckboxConfigField.create(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
-                                                .addRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
+                                                .addRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT)
+                                                .addDefaultValue(Boolean.FALSE.toString());
         final ConfigField projectNamePattern = TextInputConfigField.create(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, DESCRIPTION_PROJECT_NAME_PATTERN, this::validateProjectNamePattern);
         final ConfigField configuredProject = EndpointTableSelectField.createSearchable(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS, this::validateConfiguredProject)
                                                   .addColumn(new TableSelectColumn("name", "Project Name", true, true))
