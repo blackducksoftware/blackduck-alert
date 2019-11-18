@@ -13,7 +13,6 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -30,7 +29,6 @@ public class AuthorizationUtilityTest {
         RoleRepository roleRepository = Mockito.mock(RoleRepository.class);
         UserRoleRepository userRoleRepository = Mockito.mock(UserRoleRepository.class);
         PermissionMatrixRepository permissionMatrixRepository = Mockito.mock(PermissionMatrixRepository.class);
-        AccessOperationRepository accessOperationRepository = Mockito.mock(AccessOperationRepository.class);
         RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
         ConfigContextRepository configContextRepository = Mockito.mock(ConfigContextRepository.class);
 
@@ -80,7 +78,7 @@ public class AuthorizationUtilityTest {
         Mockito.when(permissionMatrixRepository.findAllByRoleIdIn(Mockito.eq(roleIds))).thenReturn(List.of(adminRelation_1, adminRelation_3, userRelation_1, userRelation_2));
 
         DefaultAuthorizationUtility authorizationUtility =
-            new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, accessOperationRepository, registeredDescriptorRepository, configContextRepository);
+            new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         // order matters here.  The userRole has less privileges so we want to test that the more restrictive privileges don't overwrite the admin privileges.  We want a union of the permissions
         List<String> roles = List.of(adminRole.getRoleName(), userRole.getRoleName());

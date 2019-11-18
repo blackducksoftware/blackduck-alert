@@ -38,7 +38,7 @@ public enum AccessOperation {
 
     private int bit;
 
-    // We use an assigned value here instead of ordinal so that there's no "magic" happening to determine the bit values.
+    // We use an assigned value here instead of ordinal so that we know exactly which item has what bit representation and people have to intentionally change them.
     AccessOperation(int bitPosition) {
         this.bit = 1 << bitPosition;
     }

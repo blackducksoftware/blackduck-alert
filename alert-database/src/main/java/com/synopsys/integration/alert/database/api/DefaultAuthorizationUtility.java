@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -61,17 +60,15 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PermissionMatrixRepository permissionMatrixRepository;
-    private final AccessOperationRepository accessOperationRepository;
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final ConfigContextRepository configContextRepository;
 
     @Autowired
-    public DefaultAuthorizationUtility(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository, AccessOperationRepository accessOperationRepository,
+    public DefaultAuthorizationUtility(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository,
         RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository) {
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.permissionMatrixRepository = permissionMatrixRepository;
-        this.accessOperationRepository = accessOperationRepository;
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.configContextRepository = configContextRepository;
     }
@@ -217,7 +214,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
                 if (optionalDescriptorName.isPresent() && optionalContext.isPresent()) {
                     PermissionKey permissionKey = new PermissionKey(optionalContext.get(), optionalDescriptorName.get());
                     int existingPermissions = permissionOperations.getOrDefault(permissionKey, 0);
-                    permissionOperations.put(permissionKey, existingPermissions | relation.getAccessOperations());
+                    permissionOperations.put(permissionKey, existingPermissions | relation.getOperations());
                 }
             }
         }
