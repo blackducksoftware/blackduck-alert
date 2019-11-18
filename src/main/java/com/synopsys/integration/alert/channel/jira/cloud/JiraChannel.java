@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
