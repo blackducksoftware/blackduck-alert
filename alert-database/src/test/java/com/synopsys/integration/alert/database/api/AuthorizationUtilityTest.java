@@ -13,7 +13,6 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationEntity;
 import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
@@ -71,28 +70,14 @@ public class AuthorizationUtilityTest {
         PermissionKey permission_2 = new PermissionKey(contextString, descriptorName_2);
         PermissionKey permission_3 = new PermissionKey(contextString, descriptorName_3);
 
-        AccessOperationEntity access_read = new AccessOperationEntity(AccessOperation.READ.name());
-        access_read.setId(Long.valueOf(AccessOperation.READ.ordinal()));
-        AccessOperationEntity access_write = new AccessOperationEntity(AccessOperation.WRITE.name());
-        access_write.setId(Long.valueOf(AccessOperation.WRITE.ordinal()));
-        AccessOperationEntity access_execute = new AccessOperationEntity(AccessOperation.EXECUTE.name());
-        access_execute.setId(Long.valueOf(AccessOperation.EXECUTE.ordinal()));
-
-        PermissionMatrixRelation adminRelation_1 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_1.getId(), access_read.getId());
-        PermissionMatrixRelation adminRelation_2 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_1.getId(), access_write.getId());
-        PermissionMatrixRelation adminRelation_3 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_3.getId(), access_read.getId());
-        PermissionMatrixRelation adminRelation_4 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_3.getId(), access_write.getId());
-        PermissionMatrixRelation userRelation_1 = new PermissionMatrixRelation(userRole.getId(), contextEntity.getId(), registeredDescriptorEntity_1.getId(), access_read.getId());
-        PermissionMatrixRelation userRelation_2 = new PermissionMatrixRelation(userRole.getId(), contextEntity.getId(), registeredDescriptorEntity_2.getId(), access_read.getId());
-        PermissionMatrixRelation userRelation_3 = new PermissionMatrixRelation(userRole.getId(), contextEntity.getId(), registeredDescriptorEntity_2.getId(), access_execute.getId());
+        PermissionMatrixRelation adminRelation_1 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_1.getId(), AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit());
+        PermissionMatrixRelation adminRelation_3 = new PermissionMatrixRelation(adminRole.getId(), contextEntity.getId(), registeredDescriptorEntity_3.getId(), AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit());
+        PermissionMatrixRelation userRelation_1 = new PermissionMatrixRelation(userRole.getId(), contextEntity.getId(), registeredDescriptorEntity_1.getId(), AccessOperation.READ.getBit());
+        PermissionMatrixRelation userRelation_2 = new PermissionMatrixRelation(userRole.getId(), contextEntity.getId(), registeredDescriptorEntity_2.getId(), AccessOperation.READ.getBit() + AccessOperation.EXECUTE.getBit());
         List<Long> roleIds = List.of(adminRole.getId(), userRole.getId());
-        Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(adminRole.getId()))).thenReturn(List.of(adminRelation_1, adminRelation_2, adminRelation_3, adminRelation_4));
-        Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(userRole.getId()))).thenReturn(List.of(userRelation_1, userRelation_2, userRelation_3));
-        Mockito.when(permissionMatrixRepository.findAllByRoleIdIn(Mockito.eq(roleIds))).thenReturn(List.of(adminRelation_1, adminRelation_2, adminRelation_3, adminRelation_4, userRelation_1, userRelation_2, userRelation_3));
-
-        Mockito.when(accessOperationRepository.findById(Mockito.eq(access_read.getId()))).thenReturn(Optional.of(access_read));
-        Mockito.when(accessOperationRepository.findById(Mockito.eq(access_write.getId()))).thenReturn(Optional.of(access_write));
-        Mockito.when(accessOperationRepository.findById(Mockito.eq(access_execute.getId()))).thenReturn(Optional.of(access_execute));
+        Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(adminRole.getId()))).thenReturn(List.of(adminRelation_1, adminRelation_3));
+        Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(userRole.getId()))).thenReturn(List.of(userRelation_1, userRelation_2));
+        Mockito.when(permissionMatrixRepository.findAllByRoleIdIn(Mockito.eq(roleIds))).thenReturn(List.of(adminRelation_1, adminRelation_3, userRelation_1, userRelation_2));
 
         DefaultAuthorizationUtility authorizationUtility =
             new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, accessOperationRepository, registeredDescriptorRepository, configContextRepository);

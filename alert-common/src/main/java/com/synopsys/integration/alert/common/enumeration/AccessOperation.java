@@ -22,6 +22,10 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public enum AccessOperation {
     CREATE(0),
     DELETE(1),
@@ -34,23 +38,29 @@ public enum AccessOperation {
 
     private int bit;
 
+    // We use an assigned value here instead of ordinal so that there's no "magic" happening to determine the bit values.
     AccessOperation(int bitPosition) {
         this.bit = 1 << bitPosition;
     }
 
-    int getBit() {
+    public int getBit() {
         return bit;
     }
 
-    int addToPermissions(int permissions) {
+    public int addToPermissions(int permissions) {
         return bit | permissions;
     }
 
-    int removeFromPermissions(int permissions) {
+    public int removeFromPermissions(int permissions) {
         return ~bit & permissions;
     }
 
-    boolean isPermitted(int permissions) {
+    public boolean isPermitted(int permissions) {
         return (bit & permissions) == bit;
     }
+
+    public static Set<AccessOperation> getAllAccessOperations(int permissions) {
+        return Stream.of(AccessOperation.values()).filter(operation -> operation.isPermitted(permissions)).collect(Collectors.toSet());
+    }
+
 }

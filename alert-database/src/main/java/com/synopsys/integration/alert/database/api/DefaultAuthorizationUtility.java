@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.database.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,12 +39,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
-import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.authorization.AccessOperationEntity;
 import com.synopsys.integration.alert.database.authorization.AccessOperationRepository;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
@@ -186,23 +183,17 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         }
 
         List<PermissionMatrixRelation> matrixEntries = new ArrayList<>();
-        Map<PermissionKey, EnumSet<AccessOperation>> permissions = permissionMatrix.getPermissions();
-        for (Map.Entry<PermissionKey, EnumSet<AccessOperation>> permission : permissions.entrySet()) {
+        Map<PermissionKey, Integer> permissions = permissionMatrix.getPermissions();
+        for (Map.Entry<PermissionKey, Integer> permission : permissions.entrySet()) {
             PermissionKey permissionKey = permission.getKey();
             ConfigContextEntity dbContext = configContextRepository.findFirstByContext(permissionKey.getContext())
                                                 .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal context specified for permission"));
             RegisteredDescriptorEntity registeredDescriptor = registeredDescriptorRepository.findFirstByName(permissionKey.getDescriptorName())
                                                                   .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal descriptor name specified for permission"));
 
-            Set<String> accessOperations = permission.getValue()
-                                               .stream()
-                                               .map(AccessOperation::name)
-                                               .collect(Collectors.toSet());
-            List<AccessOperationEntity> dbAccessOperations = accessOperationRepository.findOperationEntitiesByOperationName(accessOperations);
-            for (AccessOperationEntity accessOperation : dbAccessOperations) {
-                PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), dbContext.getId(), registeredDescriptor.getId(), accessOperation.getId());
-                matrixEntries.add(permissionMatrixRelation);
-            }
+            int accessOperations = permission.getValue();
+            PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), dbContext.getId(), registeredDescriptor.getId(), accessOperations);
+            matrixEntries.add(permissionMatrixRelation);
         }
         if (!matrixEntries.isEmpty()) {
             return permissionMatrixRepository.saveAll(matrixEntries);
@@ -217,7 +208,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     private PermissionMatrixModel createModelFromPermission(List<PermissionMatrixRelation> permissions) {
-        Map<PermissionKey, EnumSet<AccessOperation>> permissionOperations = new HashMap<>();
+        Map<PermissionKey, Integer> permissionOperations = new HashMap<>();
 
         if (null != permissions) {
             for (PermissionMatrixRelation relation : permissions) {
@@ -225,8 +216,8 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
                 Optional<String> optionalDescriptorName = registeredDescriptorRepository.findById(relation.getDescriptorId()).map(RegisteredDescriptorEntity::getName);
                 if (optionalDescriptorName.isPresent() && optionalContext.isPresent()) {
                     PermissionKey permissionKey = new PermissionKey(optionalContext.get(), optionalDescriptorName.get());
-                    permissionOperations.computeIfAbsent(permissionKey, ignored -> EnumSet.noneOf(AccessOperation.class));
-                    accessOperationRepository.findById(relation.getAccessOperationId()).ifPresent(operation -> permissionOperations.get(permissionKey).add(AccessOperation.valueOf(operation.getOperationName())));
+                    int existingPermissions = permissionOperations.getOrDefault(permissionKey, 0);
+                    permissionOperations.put(permissionKey, existingPermissions | relation.getAccessOperations());
                 }
             }
         }
