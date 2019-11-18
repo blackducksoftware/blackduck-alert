@@ -67,9 +67,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     public abstract String getIssueCreatorFieldKey();
 
     @Override
-    protected IssueResponseModel createIssue(IssueConfig issueConfig, IssueContentModel contentModel)
+    protected IssueResponseModel createIssue(IssueConfig issueConfig, IssueProperties issueProperties, IssueContentModel contentModel)
         throws IntegrationException {
-        IssueProperties issueProperties = contentModel.getIssueProperties();
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
         fieldsBuilder.setProject(issueConfig.getProjectId());
         fieldsBuilder.setIssueType(issueConfig.getIssueType());

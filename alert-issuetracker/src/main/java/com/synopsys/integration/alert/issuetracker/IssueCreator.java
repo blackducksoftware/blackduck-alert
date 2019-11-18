@@ -22,7 +22,8 @@
  */
 package com.synopsys.integration.alert.issuetracker;
 
-//TODO revisit this to make sure it is correct
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+
 public interface IssueCreator {
-    IssueContentModel createContent(OperationType operation, String messageId);
+    IssueCreationRequest createRequest(String messageId);
 }

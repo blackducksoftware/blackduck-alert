@@ -125,16 +125,14 @@ public abstract class IssueCreatorTestAction {
         }
     }
 
-    private IssueTrackerRequest createChannelTestRequest(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) {
-        IssueContentModel messageContent = issueCreator.createContent(operation, messageId);
-
-        return new IssueTrackerRequest(issueTrackerContext, List.of(messageContent));
+    private IssueTrackerRequest createChannelTestRequest(String messageId) {
+        return issueCreator.createRequest(messageId);
     }
 
     private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
-        IssueTrackerRequest request = createChannelTestRequest(issueTrackerContext, operation, messageId);
-        IssueTrackerResponse messageResult = this.issueTrackerService.sendMessage(request);
+        IssueTrackerRequest request = createChannelTestRequest(messageId);
+        IssueTrackerResponse messageResult = this.issueTrackerService.sendMessage(issueTrackerContext, List.of(request));
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
     }

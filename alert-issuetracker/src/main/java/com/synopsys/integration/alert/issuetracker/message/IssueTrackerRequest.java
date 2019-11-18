@@ -22,25 +22,31 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import java.util.Collection;
-
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.IssueProperties;
+import com.synopsys.integration.alert.issuetracker.OperationType;
 
+// TODO maybe have multiple types of requests.
 public class IssueTrackerRequest {
-    private IssueTrackerContext context;
-    private Collection<IssueContentModel> requestContent;
+    private final IssueProperties issueProperties;
+    private final OperationType operation;
+    private final IssueContentModel requestContent;
 
-    public IssueTrackerRequest(IssueTrackerContext context, Collection<IssueContentModel> requestContent) {
-        this.context = context;
+    public IssueTrackerRequest(OperationType operation, IssueProperties issueProperties, IssueContentModel requestContent) {
+        this.operation = operation;
+        this.issueProperties = issueProperties;
         this.requestContent = requestContent;
     }
 
-    public IssueTrackerContext getContext() {
-        return context;
+    public IssueProperties getIssueProperties() {
+        return issueProperties;
     }
 
-    public Collection<IssueContentModel> getRequestContent() {
+    public OperationType getOperation() {
+        return operation;
+    }
+
+    public IssueContentModel getRequestContent() {
         return requestContent;
     }
 }

@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.issuetracker;
 
+import java.util.Collection;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
@@ -34,7 +36,7 @@ public abstract class IssueTrackerService {
         this.gson = gson;
     }
 
-    public abstract IssueTrackerResponse sendMessage(IssueTrackerRequest request) throws IntegrationException;
+    public abstract IssueTrackerResponse sendMessage(IssueTrackerContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException;
 
     public Gson getGson() {
         return gson;

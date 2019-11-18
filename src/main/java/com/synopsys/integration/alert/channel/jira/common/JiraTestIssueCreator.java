@@ -32,9 +32,8 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueCreator;
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 
 public class JiraTestIssueCreator implements IssueCreator {
     private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueCreator.class);
@@ -47,7 +46,7 @@ public class JiraTestIssueCreator implements IssueCreator {
     }
 
     @Override
-    public IssueContentModel createContent(OperationType operation, String messageId) {
+    public IssueCreationRequest createRequest(String messageId) {
         try {
             String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
             String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
@@ -55,7 +54,7 @@ public class JiraTestIssueCreator implements IssueCreator {
             ComponentItem arbitraryItem = providerMessageContent.getComponentItems().stream()
                                               .findAny()
                                               .orElseThrow(() -> new AlertException("No actionable component items were found. Cannot create test message content."));
-            return jiraMessageParser.createIssueContentModel(operation, StringUtils.EMPTY, providerMessageContent.getProvider().getValue(), providerMessageContent.getTopic(), providerMessageContent.getSubTopic().orElse(null),
+            return jiraMessageParser.createIssueContentModel(StringUtils.EMPTY, providerMessageContent.getProvider().getValue(), providerMessageContent.getTopic(), providerMessageContent.getSubTopic().orElse(null),
                 providerMessageContent.getComponentItems(), arbitraryItem);
         } catch (AlertException ex) {
             logger.error("Error create test issue content", ex);

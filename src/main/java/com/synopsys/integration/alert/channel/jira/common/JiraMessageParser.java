@@ -39,10 +39,11 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
-    public IssueContentModel createIssueContentModel(OperationType operation, String trackingKey, String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
+    public IssueCreationRequest createIssueContentModel(String trackingKey, String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
         ComponentItem arbitraryItem) {
         IssueProperties issueProperties = createIssueProperties(providerName, topic, subTopic, arbitraryItem, trackingKey);
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
@@ -60,7 +61,8 @@ public class JiraMessageParser extends ChannelMessageParser {
         List<String> additionalComments = new ArrayList<>();
         String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
         description.append(additionalDescriptionInfo);
-        return IssueContentModel.of(issueProperties, operation, title, description.toString(), additionalComments);
+        IssueContentModel contentModel = IssueContentModel.of(title, description.toString(), additionalComments);
+        return IssueCreationRequest.of(issueProperties, contentModel);
     }
 
     public List<String> createOperationComment(String provider, String category, OperationType operation, Set<ComponentItem> componentItems) {

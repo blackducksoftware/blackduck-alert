@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
@@ -58,10 +57,9 @@ public class JiraServerChannel extends DistributionChannel {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
-        Collection<IssueContentModel> content = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
-        IssueTrackerRequest request = new IssueTrackerRequest(context, content);
+        Collection<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
         JiraServerService jiraService = new JiraServerService(getGson());
-        IssueTrackerResponse result = jiraService.sendMessage(request);
+        IssueTrackerResponse result = jiraService.sendMessage(context, requests);
         return new MessageResult(result.getStatusMessage());
     }
 

@@ -36,16 +36,17 @@ import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueHandler<T> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueContentModel> contentModels) throws IntegrationException {
+    public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueTrackerRequest> requests) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
-        for (IssueContentModel messageContent : contentModels) {
-            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, messageContent);
+        for (IssueTrackerRequest request : requests) {
+            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, request);
             issueKeys.addAll(issueKeysForMessage);
         }
 
@@ -53,26 +54,26 @@ public abstract class IssueHandler<T> {
         return new IssueTrackerResponse(statusMessage, issueKeys);
     }
 
-    protected Set<String> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueContentModel contentModel)
+    protected Set<String> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         String projectName = issueConfig.getProjectName();
-        IssueProperties issueProperties = contentModel.getIssueProperties();
+        IssueProperties issueProperties = request.getIssueProperties();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
-            OperationType operation = contentModel.getOperation();
+            OperationType operation = request.getOperation();
 
             List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
             logIssueAction(operation, projectName, issueProperties);
             if (!existingIssues.isEmpty()) {
-                Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, contentModel);
+                Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
                 updatedIssues
                     .stream()
                     .map(this::getIssueKey)
                     .forEach(issueKeys::add);
             } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
-                T issueModel = createIssue(issueConfig, contentModel);
+                T issueModel = createIssue(issueConfig, request.getIssueProperties(), request.getRequestContent());
                 String issueKey = getIssueKey(issueModel);
                 issueKeys.add(issueKey);
             } else {
@@ -95,7 +96,7 @@ public abstract class IssueHandler<T> {
         return issueKeys;
     }
 
-    protected abstract T createIssue(IssueConfig issueConfig, IssueContentModel contentModel) throws IntegrationException;
+    protected abstract T createIssue(IssueConfig issueConfig, IssueProperties issueProperties, IssueContentModel contentModel) throws IntegrationException;
 
     protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, IssueProperties issueProperties) throws IntegrationException;
 
@@ -107,20 +108,20 @@ public abstract class IssueHandler<T> {
 
     protected abstract String getIssueTrackerUrl();
 
-    protected Set<T> updateExistingIssues(List<T> issuesToUpdate, IssueConfig issueConfig, IssueContentModel issueContentModel)
+    protected Set<T> updateExistingIssues(List<T> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
         Set<T> updatedIssues = new HashSet<>();
         for (T issue : issuesToUpdate) {
             String issueKey = getIssueKey(issue);
             if (issueConfig.getCommentOnIssues()) {
-                Collection<String> operationComments = issueContentModel.getAdditionalComments();
+                Collection<String> operationComments = request.getRequestContent().getAdditionalComments();
                 for (String operationComment : operationComments) {
                     addComment(issueKey, operationComment);
                 }
                 updatedIssues.add(issue);
             }
 
-            boolean didUpdateIssue = transitionIssue(issue, issueConfig, issueContentModel.getOperation());
+            boolean didUpdateIssue = transitionIssue(issue, issueConfig, request.getOperation());
             if (didUpdateIssue) {
                 updatedIssues.add(issue);
             }
