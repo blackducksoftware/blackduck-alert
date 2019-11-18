@@ -93,7 +93,7 @@ public class AuthenticationEventManager {
                                             .map(UserRoleModel::of)
                                             .collect(Collectors.toSet());
 
-        UserModel userModel = UserModel.of(username, null, emailAddress, alertRoles);
+        UserModel userModel = UserModel.newUser(username, null, emailAddress, alertRoles);
         AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
         eventManager.sendEvent(authEvent);
     }

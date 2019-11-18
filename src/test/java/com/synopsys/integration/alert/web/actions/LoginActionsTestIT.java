@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
@@ -83,7 +84,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAuthenticateDBUserRoleFailIT() {
+    public void testAuthenticateDBUserRoleFailIT() throws AlertDatabaseConstraintException {
         // add a user test then delete a user.
         String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);

@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class UserModel extends AlertSerializableModel {
     public static final String ROLE_PREFIX = "ROLE_";
+    private final Long id;
     private final String name;
     private final String password;
     private final String emailAddress;
@@ -43,7 +44,8 @@ public class UserModel extends AlertSerializableModel {
     private final boolean passwordExpired;
     private final boolean enabled;
 
-    private UserModel(final String name, final String password, final String emailAddress, final Set<UserRoleModel> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
+        this.id = id;
         this.name = name;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -59,8 +61,16 @@ public class UserModel extends AlertSerializableModel {
         }
     }
 
-    public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<UserRoleModel> roles) {
-        return new UserModel(userName, password, emailAddress, roles, false, false, false, true);
+    public static UserModel newUser(String userName, String password, String emailAddress, Set<UserRoleModel> roles) {
+        return existingUser(null, userName, password, emailAddress, roles);
+    }
+
+    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, Set<UserRoleModel> roles) {
+        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, true);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -88,7 +98,7 @@ public class UserModel extends AlertSerializableModel {
                    .collect(Collectors.toList());
     }
 
-    public boolean hasRole(final String role) {
+    public boolean hasRole(String role) {
         return roleNames.contains(role);
     }
 
@@ -107,4 +117,5 @@ public class UserModel extends AlertSerializableModel {
     public boolean isEnabled() {
         return enabled;
     }
+
 }

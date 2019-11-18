@@ -33,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -44,15 +45,14 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 @Component
 @Transactional
 public class DefaultUserAccessor implements UserAccessor {
-    public static final String DEFAULT_ADMIN_USER = "sysadmin";
+    private static final Set<Long> RESERVED_USER_IDS = Set.of(UserAccessor.DEFAULT_ADMIN_USER_ID, UserAccessor.DEFAULT_JOB_MANAGER_ID, UserAccessor.DEFAULT_ALERT_USER_ID);
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
     private final DefaultAuthorizationUtility authorizationUtility;
 
     @Autowired
-    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder,
-        DefaultAuthorizationUtility authorizationUtility) {
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
@@ -66,53 +66,65 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    public Optional<UserModel> getUser(Long userId) {
+        return userRepository.findById(userId).map(this::createModel);
+    }
+
+    @Override
     public Optional<UserModel> getUser(String username) {
         return userRepository.findByUserName(username).map(this::createModel);
     }
 
-    private UserModel createModel(UserEntity user) {
-        List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
-        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
+    @Override
+    public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
+        return addUser(UserModel.newUser(userName, password, emailAddress, Collections.emptySet()), false);
     }
 
     @Override
-    public UserModel addOrUpdateUser(UserModel user) {
-        return addOrUpdateUser(user, false);
-    }
-
-    @Override
-    public UserModel addOrUpdateUser(UserModel user, boolean passwordEncoded) {
-        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
-
-        Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
-        Long userId = null;
-        if (existingUser.isPresent()) {
-            userId = existingUser.get().getId();
-            userEntity.setId(userId);
+    public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
+        String username = user.getName();
+        Optional<UserEntity> userWithSameUsername = userRepository.findByUserName(username);
+        if (userWithSameUsername.isPresent()) {
+            throw new AlertDatabaseConstraintException(String.format("A user with username '%s' is already present", username));
         }
+
+        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress());
+        UserEntity savedEntity = userRepository.save(newEntity);
+        UserModel model = createModel(savedEntity);
+
+        authorizationUtility.updateUserRoles(model.getId(), user.getRoles());
+
+        return model;
+    }
+
+    @Override
+    public UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
+        Long userId = user.getId();
+        if (null == userId) {
+            throw new AlertDatabaseConstraintException("A user id must be specified");
+        }
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No user found with id '%s'", userId)));
+
+        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
+        UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled());
+        newEntity.setId(userId);
 
         authorizationUtility.updateUserRoles(userId, user.getRoles());
 
-        return createModel(userRepository.save(userEntity));
-    }
-
-    @Override
-    public UserModel addUser(String userName, String password, String emailAddress) {
-        return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
+        return createModel(userRepository.save(newEntity));
     }
 
     @Override
     public boolean assignRoles(String username, Set<Long> roleIds) {
-        Optional<UserEntity> entity = userRepository.findByUserName(username);
-        boolean assigned = false;
-        if (entity.isPresent()) {
-            UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.getRoles(roleIds)));
-            assigned = model.getName().equals(username) && model.getRoles().size() == roleIds.size();
+        Optional<Long> optionalUserId = userRepository.findByUserName(username).map(UserEntity::getId);
+        if (optionalUserId.isPresent()) {
+            authorizationUtility.updateUserRoles(optionalUserId.get(), authorizationUtility.getRoles(roleIds));
+            return true;
         }
-        return assigned;
+        return false;
     }
 
     @Override
@@ -140,11 +152,24 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public void deleteUser(String userName) {
-        Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
-        userEntity.ifPresent(entity -> {
-            assignRoles(entity.getUserName(), Collections.emptySet());
-            userRepository.delete(entity);
-        });
+    public void deleteUser(String userName) throws AlertDatabaseConstraintException {
+        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
+        if (optionalUser.isPresent()) {
+            UserEntity userEntity = optionalUser.get();
+            assignRoles(userEntity.getUserName(), Set.of());
+            if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
+                userRepository.delete(userEntity);
+            } else {
+                throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userName));
+            }
+        }
     }
+
+    private UserModel createModel(UserEntity user) {
+        List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
+        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
+        Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
+        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
+    }
+
 }

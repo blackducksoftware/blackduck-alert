@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -50,7 +52,7 @@ public class SettingsGlobalApiActionTest {
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
         UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
-        Mockito.when(userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER)).thenReturn(Optional.of(userModel));
+        Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
         FieldModel withFields = actionApi.afterGetAction(fieldModel);
         assertFieldsPresent(withFields);
     }
@@ -61,6 +63,9 @@ public class SettingsGlobalApiActionTest {
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, Set.of());
+        Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -80,6 +85,10 @@ public class SettingsGlobalApiActionTest {
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, Set.of());
+        Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
+
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
@@ -97,14 +106,14 @@ public class SettingsGlobalApiActionTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
-        SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
+        SettingsGlobalApiAction actionApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
 
         Mockito.doThrow(new IllegalArgumentException()).when(encryptionUtility).updatePasswordField(Mockito.anyString());
-        FieldModel handleNewAndUpdatedConfig = actionaApi.beforeSaveAction(fieldModel);
+        FieldModel handleNewAndUpdatedConfig = actionApi.beforeSaveAction(fieldModel);
         assertFieldsMissing(handleNewAndUpdatedConfig);
     }
 
