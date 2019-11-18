@@ -22,11 +22,9 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.alert.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 
-// TODO maybe have multiple types of requests.
 public class IssueTrackerRequest {
     private final IssueProperties issueProperties;
     private final OperationType operation;

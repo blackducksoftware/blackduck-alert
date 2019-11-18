@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;

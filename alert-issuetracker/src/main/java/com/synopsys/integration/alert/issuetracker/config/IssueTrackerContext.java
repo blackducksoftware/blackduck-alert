@@ -20,10 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker;
-
-import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
+package com.synopsys.integration.alert.issuetracker.config;
 
 public class IssueTrackerContext {
     private IssueTrackerServiceConfig issueTrackerConfig;
@@ -34,8 +31,8 @@ public class IssueTrackerContext {
         this.issueConfig = issueConfig;
     }
 
-    public IssueTrackerServiceConfig getIssueTrackerConfig() {
-        return issueTrackerConfig;
+    public <T extends IssueTrackerServiceConfig> T getIssueTrackerConfig() {
+        return (T) issueTrackerConfig;
     }
 
     public IssueConfig getIssueConfig() {

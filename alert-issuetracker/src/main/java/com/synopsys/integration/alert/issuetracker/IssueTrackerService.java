@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.issuetracker;
 import java.util.Collection;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;

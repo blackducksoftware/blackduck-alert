@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
@@ -57,8 +57,7 @@ public class JiraCloudService extends IssueTrackerService {
 
     @Override
     public IssueTrackerResponse sendMessage(IssueTrackerContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException {
-        //TODO Investigate how to make the API more expressive to avoid the type casting.
-        JiraProperties jiraProperties = (JiraProperties) context.getIssueTrackerConfig();
+        JiraProperties jiraProperties = context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
