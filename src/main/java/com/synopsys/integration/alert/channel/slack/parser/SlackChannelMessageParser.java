@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.ChannelMessageParser;
+import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 
 @Component
 public class SlackChannelMessageParser extends ChannelMessageParser {

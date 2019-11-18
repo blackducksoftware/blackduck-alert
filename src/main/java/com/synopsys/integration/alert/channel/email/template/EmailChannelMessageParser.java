@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.email.template;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.ChannelMessageParser;
+import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 
 @Component
 public class EmailChannelMessageParser extends ChannelMessageParser {
