@@ -32,8 +32,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.model.IssueContentModel;
-import com.synopsys.integration.alert.common.channel.ChannelMessageParser;
-import com.synopsys.integration.alert.common.channel.MessageSplitter;
+import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

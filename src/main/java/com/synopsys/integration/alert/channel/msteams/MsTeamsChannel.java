@@ -23,14 +23,16 @@
 package com.synopsys.integration.alert.channel.msteams;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.channel.AutoActionable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -43,26 +45,32 @@ import com.synopsys.integration.rest.request.Request;
 public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
     private RestChannelUtility restChannelUtility;
     private MsTeamsEventParser msTeamsEventParser;
+    private MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, final Gson gson, final AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser) {
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
+        MsTeamsMessageParser msTeamsMessageParser) {
         super(msTeamsKey, gson, auditUtility);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
+        this.msTeamsMessageParser = msTeamsMessageParser;
     }
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
-                                   .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
+        FieldAccessor fields = event.getFieldAccessor();
+        String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
+                             .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
-        MsTeamsMessage msTeamsMessage = msTeamsEventParser.createMessage(event);
-        String json = msTeamsEventParser.toJson(msTeamsMessage);
+        MsTeamsMessage msTeamsMessage = msTeamsMessageParser.createMsTeamsMessage(event.getContent());
+        List<Request> teamsRequests = new LinkedList<>();
+        for (MsTeamsMessage message : msTeamsEventParser.splitMessages(msTeamsMessage)) {
+            String json = msTeamsEventParser.toJson(message);
+            Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), json);
+            teamsRequests.add(request);
+        }
 
-        Request request = restChannelUtility.createPostMessageRequest(webhook, new HashMap<>(), json);
-
-        restChannelUtility.sendSingleMessage(request, event.getDestination());
+        restChannelUtility.sendMessage(teamsRequests, event.getDestination());
     }
 
 }
