@@ -75,6 +75,7 @@ public abstract class ConfigField extends AlertSerializableModel {
     private boolean readOnly;
     private String panel;
     private String header;
+
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
     private Set<String> defaultValues;
@@ -272,6 +273,18 @@ public abstract class ConfigField extends AlertSerializableModel {
 
     public Set<String> getDefaultValues() {
         return defaultValues;
+    }
+
+    public void setRequiredRelatedFields(Set<String> requiredRelatedFields) {
+        this.requiredRelatedFields = requiredRelatedFields;
+    }
+
+    public void setDisallowedRelatedFields(Set<String> disallowedRelatedFields) {
+        this.disallowedRelatedFields = disallowedRelatedFields;
+    }
+
+    public void setDefaultValues(Set<String> defaultValues) {
+        this.defaultValues = defaultValues;
     }
 
     private void validateRequiredField(FieldValueModel fieldToValidate, Collection<String> errors) {
