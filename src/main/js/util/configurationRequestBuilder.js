@@ -1,6 +1,7 @@
 export const ALERT_API_URL = '/alert/api';
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
+export const ROLE_API_URL = `${ALERT_API_URL}/configuration/role`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
     const queryParams = Object.assign({}, {
