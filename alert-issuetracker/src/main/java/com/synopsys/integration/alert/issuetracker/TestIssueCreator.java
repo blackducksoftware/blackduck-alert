@@ -24,6 +24,6 @@ package com.synopsys.integration.alert.issuetracker;
 
 import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 
-public interface IssueCreator {
+public interface TestIssueCreator {
     IssueCreationRequest createRequest(String messageId);
 }

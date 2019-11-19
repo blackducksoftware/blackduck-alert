@@ -75,11 +75,6 @@ public class JiraCloudIssueConfigValidator extends JiraIssueConfigValidator {
     }
 
     @Override
-    public String getDefaultIssueCreatorFieldKey() {
-        return JiraProperties.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
-    }
-
-    @Override
     public Collection<ProjectComponent> getProjectsByName(String jiraProjectName) throws IntegrationException {
         PageOfProjectsResponseModel projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
         return projectsResponseModel.getProjects();

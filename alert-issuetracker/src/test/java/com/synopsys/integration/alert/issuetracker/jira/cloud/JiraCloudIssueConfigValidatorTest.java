@@ -10,10 +10,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
@@ -52,6 +52,7 @@ public class JiraCloudIssueConfigValidatorTest {
         issueCreator.setFieldValue(issueCreatorString);
 
         IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setCommentOnIssues(true);
         issueConfig.setResolveTransition(resolveTransitionString);
         issueConfig.setProjectName(projectName);
         issueConfig.setIssueType(issueTypeString);
@@ -73,12 +74,12 @@ public class JiraCloudIssueConfigValidatorTest {
 
         try {
             IssueTrackerContext context = new IssueTrackerContext(null, issueConfig);
-            jiraIssueConfigValidator.validate(context);
+            jiraIssueConfigValidator.createValidIssueConfig(context);
             assertEquals(resolveTransitionString, issueConfig.getResolveTransition().orElse(""));
             assertEquals(projectName, issueConfig.getProjectName());
             assertEquals(issueCreatorString, issueConfig.getIssueCreator());
             assertEquals(issueTypeString, issueConfig.getIssueType());
-        } catch (AlertFieldException e) {
+        } catch (IssueTrackerFieldException e) {
             fail();
         }
     }
@@ -100,6 +101,7 @@ public class JiraCloudIssueConfigValidatorTest {
         issueType.setFieldValue(issueTypeString);
 
         IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setCommentOnIssues(true);
         issueConfig.setResolveTransition(resolveTransitionString);
         issueConfig.setIssueType(issueTypeString);
 
@@ -109,9 +111,9 @@ public class JiraCloudIssueConfigValidatorTest {
 
         try {
             IssueTrackerContext context = new IssueTrackerContext(null, issueConfig);
-            jiraIssueConfigValidator.validate(context);
+            jiraIssueConfigValidator.createValidIssueConfig(context);
             fail();
-        } catch (AlertFieldException e) {
+        } catch (IssueTrackerFieldException e) {
             assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_JIRA_PROJECT_NAME));
             assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_CREATOR));
             assertFalse(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_TYPE));

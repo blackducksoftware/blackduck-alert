@@ -29,9 +29,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
@@ -61,30 +61,32 @@ public abstract class JiraIssueConfigValidator {
 
     public abstract String getOpenTransitionFieldKey();
 
-    public abstract String getDefaultIssueCreatorFieldKey();
-
     public abstract Collection<ProjectComponent> getProjectsByName(String jiraProjectName) throws IntegrationException;
 
     public abstract boolean isUserValid(String issueCreator) throws IntegrationException;
 
-    public void validate(IssueTrackerContext context) throws AlertFieldException {
+    public IssueConfig createValidIssueConfig(IssueTrackerContext context) throws IssueTrackerFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         IssueConfig issueConfig = context.getIssueConfig();
-        // TODO Get rid of fieldkeys.
-        // TODO Refactor class to indicate mutation of IssueConfig or create a new object.
+        IssueConfig newConfig = new IssueConfig();
+        newConfig.setCommentOnIssues(issueConfig.getCommentOnIssues());
+        newConfig.setOpenTransition(issueConfig.getOpenTransition().orElse(null));
+        newConfig.setResolveTransition(issueConfig.getResolveTransition().orElse(null));
         ProjectComponent projectComponent = validateProject(issueConfig, fieldErrors);
         if (projectComponent != null) {
-            issueConfig.setProjectId(projectComponent.getId());
-            issueConfig.setProjectKey(projectComponent.getKey());
-            issueConfig.setProjectName(projectComponent.getName());
+            newConfig.setProjectId(projectComponent.getId());
+            newConfig.setProjectKey(projectComponent.getKey());
+            newConfig.setProjectName(projectComponent.getName());
         }
 
-        validateIssueCreator(issueConfig, fieldErrors);
-        validateIssueType(issueConfig, fieldErrors);
+        newConfig.setIssueCreator(validateIssueCreator(issueConfig, fieldErrors));
+        newConfig.setIssueType(validateIssueType(issueConfig, fieldErrors));
 
         if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
+            throw new IssueTrackerFieldException(fieldErrors);
         }
+
+        return newConfig;
     }
 
     private ProjectComponent validateProject(IssueConfig config, Map<String, String> fieldErrors) {
@@ -112,9 +114,9 @@ public abstract class JiraIssueConfigValidator {
 
     private String validateIssueCreator(IssueConfig config, Map<String, String> fieldErrors) {
         String issueCreatorFieldKey = getIssueCreatorFieldKey();
-        String issueCreator = StringUtils.isNotBlank(config.getIssueCreator()) ? config.getIssueCreator() : getDefaultIssueCreatorFieldKey();
+        String issueCreator = config.getIssueCreator();
         try {
-            if (isUserValid(issueCreator)) {
+            if (StringUtils.isNotBlank(issueCreator) && isUserValid(issueCreator)) {
                 return issueCreator;
             } else {
                 fieldErrors.put(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));

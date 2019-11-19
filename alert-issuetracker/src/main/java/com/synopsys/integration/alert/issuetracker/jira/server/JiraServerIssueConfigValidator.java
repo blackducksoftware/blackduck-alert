@@ -74,11 +74,6 @@ public class JiraServerIssueConfigValidator extends JiraIssueConfigValidator {
     }
 
     @Override
-    public String getDefaultIssueCreatorFieldKey() {
-        return JiraServerProperties.KEY_SERVER_USERNAME;
-    }
-
-    @Override
     public Collection<ProjectComponent> getProjectsByName(String jiraProjectName) throws IntegrationException {
         return projectService.getProjectsByName(jiraProjectName);
     }

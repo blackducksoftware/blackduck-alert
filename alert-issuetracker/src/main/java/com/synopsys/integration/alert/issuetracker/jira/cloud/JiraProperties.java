@@ -34,17 +34,12 @@ import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class JiraProperties implements IssueTrackerServiceConfig {
-    public static final String KEY_JIRA_URL = "jira.cloud.url";
-    public static final String KEY_JIRA_ADMIN_EMAIL_ADDRESS = "jira.cloud.admin.email.address";
-    public static final String KEY_JIRA_ADMIN_API_TOKEN = "jira.cloud.admin.api.token";
-    public static final String KEY_JIRA_CONFIGURE_PLUGIN = "jira.cloud.configure.plugin";
-
-    public static final String KEY_ADD_COMMENTS = "channel.jira.cloud.add.comments";
-    public static final String KEY_ISSUE_CREATOR = "channel.jira.cloud.issue.creator";
-    public static final String KEY_JIRA_PROJECT_NAME = "channel.jira.cloud.project.name";
-    public static final String KEY_ISSUE_TYPE = "channel.jira.cloud.issue.type";
-    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "channel.jira.cloud.resolve.workflow";
-    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "channel.jira.cloud.reopen.workflow";
+    public static final String KEY_ADD_COMMENTS = "jira.cloud.add.comments";
+    public static final String KEY_ISSUE_CREATOR = "jira.cloud.issue.creator";
+    public static final String KEY_JIRA_PROJECT_NAME = "jira.cloud.project.name";
+    public static final String KEY_ISSUE_TYPE = "jira.cloud.issue.type";
+    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "jira.cloud.resolve.workflow";
+    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "jira.cloud.reopen.workflow";
 
     private final String url;
     private final String accessToken;

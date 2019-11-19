@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
@@ -72,7 +73,7 @@ public class JiraServerService extends IssueTrackerService {
         IssueMetaDataService issueMetaDataService = jiraServerServiceFactory.createIssueMetadataService();
 
         JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
-        jiraIssueConfigValidator.validate(context);
+        IssueConfig validIssueConfig = jiraIssueConfigValidator.createValidIssueConfig(context);
 
         IssueService issueService = jiraServerServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
@@ -80,7 +81,7 @@ public class JiraServerService extends IssueTrackerService {
         JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
-        return jiraIssueHandler.createOrUpdateIssues(context.getIssueConfig(), requests);
+        return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
 
     }
 }

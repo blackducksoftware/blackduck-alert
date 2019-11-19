@@ -28,9 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
@@ -61,9 +62,13 @@ public class JiraCloudService extends IssueTrackerService {
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
-        boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
-        if (missingApp) {
-            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
+        try {
+            boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
+            if (missingApp) {
+                throw new IssueTrackerException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
+            }
+        } catch (IntegrationException ex) {
+            throw new IssueTrackerException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.", ex);
         }
 
         ProjectService projectService = jiraCloudServiceFactory.createProjectService();
@@ -72,7 +77,7 @@ public class JiraCloudService extends IssueTrackerService {
         IssueMetaDataService issueMetaDataService = jiraCloudServiceFactory.createIssueMetadataService();
 
         JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
-        jiraIssueConfigValidator.validate(context);
+        IssueConfig validIssueConfig = jiraIssueConfigValidator.createValidIssueConfig(context);
 
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
@@ -80,6 +85,6 @@ public class JiraCloudService extends IssueTrackerService {
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
-        return jiraIssueHandler.createOrUpdateIssues(context.getIssueConfig(), requests);
+        return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 }

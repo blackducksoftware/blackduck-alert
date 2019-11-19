@@ -42,11 +42,11 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IssueTrackerService issueTrackerService;
-    private IssueCreator issueCreator;
+    private TestIssueCreator testIssueCreator;
 
-    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, IssueCreator issueCreator) {
+    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueCreator testIssueCreator) {
         this.issueTrackerService = issueTrackerService;
-        this.issueCreator = issueCreator;
+        this.testIssueCreator = testIssueCreator;
     }
 
     public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext) throws IntegrationException {
@@ -127,7 +127,7 @@ public abstract class IssueCreatorTestAction {
     }
 
     private IssueTrackerRequest createChannelTestRequest(String messageId) {
-        return issueCreator.createRequest(messageId);
+        return testIssueCreator.createRequest(messageId);
     }
 
     private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws IntegrationException {
