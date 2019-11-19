@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.util.BitwiseUtil;
+
 public class AccessOperationTest {
 
     @Test
@@ -45,8 +47,8 @@ public class AccessOperationTest {
         }
 
         int newPermissions = noPermissions;
-        newPermissions = AccessOperation.CREATE.addToPermissions(newPermissions);
-        newPermissions = AccessOperation.EXECUTE.addToPermissions(newPermissions);
+        newPermissions = BitwiseUtil.combineBits(newPermissions, AccessOperation.CREATE.getBit());
+        newPermissions = BitwiseUtil.combineBits(newPermissions, AccessOperation.EXECUTE.getBit());
 
         assertTrue(AccessOperation.CREATE.isPermitted(newPermissions));
         assertTrue(AccessOperation.EXECUTE.isPermitted(newPermissions));
@@ -61,8 +63,8 @@ public class AccessOperationTest {
         }
 
         int newPermissions = allPermissions;
-        newPermissions = AccessOperation.CREATE.removeFromPermissions(newPermissions);
-        newPermissions = AccessOperation.DELETE.removeFromPermissions(newPermissions);
+        newPermissions = BitwiseUtil.removeBits(newPermissions, AccessOperation.CREATE.getBit());
+        newPermissions = BitwiseUtil.removeBits(newPermissions, AccessOperation.DELETE.getBit());
 
         assertFalse(AccessOperation.CREATE.isPermitted(newPermissions));
         assertFalse(AccessOperation.DELETE.isPermitted(newPermissions));

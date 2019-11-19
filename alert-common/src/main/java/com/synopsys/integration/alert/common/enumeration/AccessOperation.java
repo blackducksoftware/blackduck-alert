@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.synopsys.integration.alert.common.util.BitwiseUtil;
+
 public enum AccessOperation {
     CREATE(0),
     DELETE(1),
@@ -40,23 +42,15 @@ public enum AccessOperation {
 
     // We use an assigned value here instead of ordinal so that we know exactly which item has what bit representation and people have to intentionally change them.
     AccessOperation(int bitPosition) {
-        this.bit = 1 << bitPosition;
+        this.bit = BitwiseUtil.shiftBitLeft(bitPosition);
     }
 
     public int getBit() {
         return bit;
     }
 
-    public int addToPermissions(int permissions) {
-        return bit | permissions;
-    }
-
-    public int removeFromPermissions(int permissions) {
-        return ~bit & permissions;
-    }
-
     public boolean isPermitted(int permissions) {
-        return (bit & permissions) == bit;
+        return BitwiseUtil.containsBits(permissions, bit);
     }
 
     public static Set<AccessOperation> getAllAccessOperations(int permissions) {
