@@ -37,13 +37,20 @@ import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class IssueHandler<P, R> {
+public abstract class IssueHandler<P extends IssueProperties, R> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final IssueContentLengthValidator contentLengthValidator;
+
+    public IssueHandler(IssueContentLengthValidator contentLengthValidator) {
+        this.contentLengthValidator = contentLengthValidator;
+    }
 
     public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueTrackerRequest> requests) throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
@@ -64,22 +71,24 @@ public abstract class IssueHandler<P, R> {
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
-            OperationType operation = request.getOperation();
+            if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
+                OperationType operation = request.getOperation();
 
-            List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
-            logIssueAction(operation, projectName, issueProperties);
-            if (!existingIssues.isEmpty()) {
-                Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
-                updatedIssues
-                    .stream()
-                    .map(this::getIssueKey)
-                    .forEach(issueKeys::add);
-            } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
-                R issueModel = createIssue(issueConfig, issueProperties, request.getRequestContent());
-                String issueKey = getIssueKey(issueModel);
-                issueKeys.add(issueKey);
-            } else {
-                logger.warn("Expected to find an existing issue, but none existed.");
+                List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
+                logIssueAction(operation, projectName, issueProperties);
+                if (!existingIssues.isEmpty()) {
+                    Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
+                    updatedIssues
+                        .stream()
+                        .map(this::getIssueKey)
+                        .forEach(issueKeys::add);
+                } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
+                    R issueModel = createIssue(issueConfig, issueProperties, request.getRequestContent());
+                    String issueKey = getIssueKey(issueModel);
+                    issueKeys.add(issueKey);
+                } else {
+                    logger.warn("Expected to find an existing issue, but none existed.");
+                }
             }
         } catch (IssueMissingTransitionException e) {
             missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());

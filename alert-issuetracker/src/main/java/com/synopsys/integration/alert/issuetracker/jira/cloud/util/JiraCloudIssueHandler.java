@@ -27,6 +27,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.exception.IntegrationException;
@@ -43,8 +44,8 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
     public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
-        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler) {
-        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler);
+        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator) {
+        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHandler = jiraIssuePropertyHandler;
