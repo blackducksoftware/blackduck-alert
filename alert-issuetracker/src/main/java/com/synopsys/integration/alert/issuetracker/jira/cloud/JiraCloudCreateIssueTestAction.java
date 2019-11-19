@@ -26,13 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.IssueCreatorTestAction;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
-import com.synopsys.integration.alert.issuetracker.TestIssueCreator;
-import com.synopsys.integration.alert.issuetracker.TransitionValidator;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.issuetracker.service.IssueCreatorTestAction;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.service.TestIssueCreator;
+import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -49,12 +49,12 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
 
     @Override
     protected String getOpenTransitionFieldKey() {
-        return JiraProperties.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraCloudProperties.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     protected String getResolveTransitionFieldKey() {
-        return JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
 
     @Override
     protected TransitionValidator<TransitionComponent> createTransitionValidator(IssueTrackerContext context) throws IntegrationException {
-        JiraProperties jiraProperties = createJiraProperties(context);
+        JiraCloudProperties jiraProperties = createJiraProperties(context);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         return new JiraCloudTransitionHandler(issueService);
@@ -78,7 +78,7 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
     @Override
     protected void safelyCleanUpIssue(IssueTrackerContext context, String issueKey) {
         try {
-            JiraProperties jiraProperties = createJiraProperties(context);
+            JiraCloudProperties jiraProperties = createJiraProperties(context);
             JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             IssueService issueService = jiraCloudServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
@@ -87,7 +87,7 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
         }
     }
 
-    private JiraProperties createJiraProperties(IssueTrackerContext context) {
-        return (JiraProperties) context.getIssueTrackerConfig();
+    private JiraCloudProperties createJiraProperties(IssueTrackerContext context) {
+        return (JiraCloudProperties) context.getIssueTrackerConfig();
     }
 }

@@ -46,32 +46,32 @@ public class JiraCloudIssueConfigValidator extends JiraIssueConfigValidator {
 
     @Override
     public String getProjectFieldKey() {
-        return JiraProperties.KEY_JIRA_PROJECT_NAME;
+        return JiraCloudProperties.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     public String getIssueTypeFieldKey() {
-        return JiraProperties.KEY_ISSUE_TYPE;
+        return JiraCloudProperties.KEY_ISSUE_TYPE;
     }
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraProperties.KEY_ISSUE_CREATOR;
+        return JiraCloudProperties.KEY_ISSUE_CREATOR;
     }
 
     @Override
     public String getAddCommentsFieldKey() {
-        return JiraProperties.KEY_ADD_COMMENTS;
+        return JiraCloudProperties.KEY_ADD_COMMENTS;
     }
 
     @Override
     public String getResolveTransitionFieldKey() {
-        return JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getOpenTransitionFieldKey() {
-        return JiraProperties.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraCloudProperties.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override

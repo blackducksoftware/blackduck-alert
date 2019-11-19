@@ -24,11 +24,9 @@ package com.synopsys.integration.alert.channel.jira;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 
-public abstract class JiraContextBuilder {
+public abstract class JiraContextBuilder<T> {
 
     public abstract String getProjectFieldKey();
 
@@ -44,15 +42,9 @@ public abstract class JiraContextBuilder {
 
     public abstract String getDefaultIssueCreatorFieldKey();
 
-    public abstract IssueTrackerServiceConfig createJiraProperties(FieldAccessor fieldAccessor);
+    public abstract T build(FieldAccessor fieldAccessor);
 
-    public IssueTrackerContext build(FieldAccessor fieldAccessor) {
-        IssueTrackerServiceConfig jiraProperties = createJiraProperties(fieldAccessor);
-        IssueConfig issueConfig = createIssueConfig(fieldAccessor);
-        return new IssueTrackerContext(jiraProperties, issueConfig);
-    }
-
-    private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
+    protected IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
         String projectName = fieldAccessor.getStringOrNull(getProjectFieldKey());
         String issueCreator = fieldAccessor.getString(getIssueCreatorFieldKey()).orElseGet(() -> fieldAccessor.getStringOrNull(getDefaultIssueCreatorFieldKey()));
         String issueType = fieldAccessor.getString(getIssueTypeFieldKey()).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);

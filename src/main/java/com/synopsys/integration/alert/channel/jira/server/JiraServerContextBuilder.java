@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.channel.jira.server;
 import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerContext;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 
-public class JiraServerContextBuilder extends JiraContextBuilder {
+public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
     @Override
     public String getProjectFieldKey() {
         return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
@@ -65,7 +65,11 @@ public class JiraServerContextBuilder extends JiraContextBuilder {
     }
 
     @Override
-    public IssueTrackerServiceConfig createJiraProperties(FieldAccessor fieldAccessor) {
+    public JiraServerContext build(FieldAccessor fieldAccessor) {
+        return new JiraServerContext(createJiraProperties(fieldAccessor), createIssueConfig(fieldAccessor));
+    }
+
+    private JiraServerProperties createJiraProperties(FieldAccessor fieldAccessor) {
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);

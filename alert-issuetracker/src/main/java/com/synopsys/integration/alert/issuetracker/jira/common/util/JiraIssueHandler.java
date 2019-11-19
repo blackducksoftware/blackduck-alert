@@ -33,20 +33,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.issuetracker.IssueHandler;
-import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.service.IssueHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<JiraIssueProperties, IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,7 +67,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     public abstract String getIssueCreatorFieldKey();
 
     @Override
-    protected IssueResponseModel createIssue(IssueConfig issueConfig, IssueProperties issueProperties, IssueContentModel contentModel)
+    protected IssueResponseModel createIssue(IssueConfig issueConfig, JiraIssueProperties issueProperties, IssueContentModel contentModel)
         throws IntegrationException {
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
         fieldsBuilder.setProject(issueConfig.getProjectId());
@@ -122,7 +122,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return new IssueTrackerException(message, restException);
     }
 
-    private void addIssueProperties(String issueKey, IssueProperties issueProperties) throws IntegrationException {
+    private void addIssueProperties(String issueKey, JiraIssueProperties issueProperties) throws IntegrationException {
         jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, issueProperties);
     }
 
@@ -132,5 +132,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
+    }
+
+    @Override
+    protected void logIssueAction(OperationType operation, String issueTrackerProjectName, JiraIssueProperties issueProperties) {
+        String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
+        String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
+        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
+            operation.name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
+            arbitraryItemSubComponent);
     }
 }

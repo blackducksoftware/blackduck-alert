@@ -36,10 +36,11 @@ import com.synopsys.integration.alert.common.channel.message.ChannelMessageParse
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
@@ -151,7 +152,7 @@ public class JiraMessageParser extends ChannelMessageParser {
         String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
         String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
 
-        return new IssueProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
+        return new JiraIssueProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
             componentItem.getCategory(), componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
 

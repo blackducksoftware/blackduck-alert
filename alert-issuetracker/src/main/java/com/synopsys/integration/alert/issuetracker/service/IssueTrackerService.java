@@ -20,18 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker;
+package com.synopsys.integration.alert.issuetracker.service;
 
-import java.util.Optional;
+import java.util.Collection;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-/**
- * @param <T> A class that represents a transition.
- */
-public interface TransitionValidator<T> {
-    boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
+public abstract class IssueTrackerService<T> {
+    private Gson gson;
 
-    Optional<T> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException;
+    public IssueTrackerService(Gson gson) {
+        this.gson = gson;
+    }
 
+    public abstract IssueTrackerResponse sendRequests(T context, Collection<IssueTrackerRequest> requests) throws IntegrationException;
+
+    public Gson getGson() {
+        return gson;
+    }
 }

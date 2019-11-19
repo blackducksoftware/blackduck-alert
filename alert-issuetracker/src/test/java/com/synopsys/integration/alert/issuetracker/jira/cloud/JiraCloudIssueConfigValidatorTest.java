@@ -35,19 +35,19 @@ public class JiraCloudIssueConfigValidatorTest {
         Mockito.when(issueMetaDataService.doesProjectContainIssueType(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
-        ConfigurationFieldModel project = ConfigurationFieldModel.create(JiraProperties.KEY_JIRA_PROJECT_NAME);
+        ConfigurationFieldModel project = ConfigurationFieldModel.create(JiraCloudProperties.KEY_JIRA_PROJECT_NAME);
         String projectName = "ProjectName";
         project.setFieldValue(projectName);
 
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_TYPE);
+        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraCloudProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
         issueType.setFieldValue(issueTypeString);
 
-        ConfigurationFieldModel issueCreator = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_CREATOR);
+        ConfigurationFieldModel issueCreator = ConfigurationFieldModel.create(JiraCloudProperties.KEY_ISSUE_CREATOR);
         String issueCreatorString = "IssueCreator";
         issueCreator.setFieldValue(issueCreatorString);
 
@@ -92,11 +92,11 @@ public class JiraCloudIssueConfigValidatorTest {
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
         JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
         resolveTransition.setFieldValue(resolveTransitionString);
 
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraProperties.KEY_ISSUE_TYPE);
+        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraCloudProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
         issueType.setFieldValue(issueTypeString);
 
@@ -114,9 +114,9 @@ public class JiraCloudIssueConfigValidatorTest {
             jiraIssueConfigValidator.createValidIssueConfig(context);
             fail();
         } catch (IssueTrackerFieldException e) {
-            assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_JIRA_PROJECT_NAME));
-            assertTrue(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_CREATOR));
-            assertFalse(e.getFieldErrors().containsKey(JiraProperties.KEY_ISSUE_TYPE));
+            assertTrue(e.getFieldErrors().containsKey(JiraCloudProperties.KEY_JIRA_PROJECT_NAME));
+            assertTrue(e.getFieldErrors().containsKey(JiraCloudProperties.KEY_ISSUE_CREATOR));
+            assertFalse(e.getFieldErrors().containsKey(JiraCloudProperties.KEY_ISSUE_TYPE));
         }
     }
 }

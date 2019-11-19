@@ -22,28 +22,6 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.alert.issuetracker.OperationType;
+public interface IssueProperties {
 
-public class IssueTrackerRequest {
-    private final IssueProperties issueProperties;
-    private final OperationType operation;
-    private final IssueContentModel requestContent;
-
-    public IssueTrackerRequest(OperationType operation, IssueProperties issueProperties, IssueContentModel requestContent) {
-        this.operation = operation;
-        this.issueProperties = issueProperties;
-        this.requestContent = requestContent;
-    }
-
-    public <T extends IssueProperties> T getIssueProperties() {
-        return (T) issueProperties;
-    }
-
-    public OperationType getOperation() {
-        return operation;
-    }
-
-    public IssueContentModel getRequestContent() {
-        return requestContent;
-    }
 }

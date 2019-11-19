@@ -20,10 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker;
+package com.synopsys.integration.alert.issuetracker.service;
 
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+import java.util.Optional;
 
-public interface TestIssueCreator {
-    IssueCreationRequest createRequest(String messageId);
+import com.synopsys.integration.exception.IntegrationException;
+
+/**
+ * @param <T> A class that represents a transition.
+ */
+public interface TransitionValidator<T> {
+    boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
+
+    Optional<T> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException;
+
 }

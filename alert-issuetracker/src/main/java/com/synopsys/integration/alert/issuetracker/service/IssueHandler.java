@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker;
+package com.synopsys.integration.alert.issuetracker.service;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
@@ -41,7 +42,7 @@ import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class IssueHandler<T> {
+public abstract class IssueHandler<P, R> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueTrackerRequest> requests) throws IntegrationException {
@@ -59,22 +60,22 @@ public abstract class IssueHandler<T> {
         throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         String projectName = issueConfig.getProjectName();
-        IssueProperties issueProperties = request.getIssueProperties();
+        P issueProperties = request.getIssueProperties();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
             OperationType operation = request.getOperation();
 
-            List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
+            List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
             logIssueAction(operation, projectName, issueProperties);
             if (!existingIssues.isEmpty()) {
-                Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
+                Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
                 updatedIssues
                     .stream()
                     .map(this::getIssueKey)
                     .forEach(issueKeys::add);
             } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
-                T issueModel = createIssue(issueConfig, request.getIssueProperties(), request.getRequestContent());
+                R issueModel = createIssue(issueConfig, issueProperties, request.getRequestContent());
                 String issueKey = getIssueKey(issueModel);
                 issueKeys.add(issueKey);
             } else {
@@ -91,28 +92,30 @@ public abstract class IssueHandler<T> {
                 missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issues));
             }
 
-            String errorMessage = String.format("For Provider: %s. Project: %s. %s.", issueProperties.getProvider(), projectName, missingTransitions.toString());
+            String errorMessage = String.format("For Project: %s. %s.", projectName, missingTransitions.toString());
             throw new IssueTrackerException(errorMessage);
         }
         return issueKeys;
     }
 
-    protected abstract T createIssue(IssueConfig issueConfig, IssueProperties issueProperties, IssueContentModel contentModel) throws IntegrationException;
+    protected abstract R createIssue(IssueConfig issueConfig, P issueProperties, IssueContentModel contentModel) throws IntegrationException;
 
-    protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, IssueProperties issueProperties) throws IntegrationException;
+    protected abstract List<R> retrieveExistingIssues(String projectSearchIdentifier, P issueProperties) throws IntegrationException;
 
-    protected abstract boolean transitionIssue(T issueModel, IssueConfig issueConfig, OperationType operation) throws IntegrationException;
+    protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, OperationType operation) throws IntegrationException;
 
     protected abstract void addComment(String issueKey, String comment) throws IntegrationException;
 
-    protected abstract String getIssueKey(T issueModel);
+    protected abstract String getIssueKey(R issueModel);
 
     protected abstract String getIssueTrackerUrl();
 
-    protected Set<T> updateExistingIssues(List<T> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request)
+    protected abstract void logIssueAction(OperationType operation, String issueTrackerProjectName, P issueProperties);
+
+    protected Set<R> updateExistingIssues(List<R> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
-        Set<T> updatedIssues = new HashSet<>();
-        for (T issue : issuesToUpdate) {
+        Set<R> updatedIssues = new HashSet<>();
+        for (R issue : issuesToUpdate) {
             String issueKey = getIssueKey(issue);
             if (issueConfig.getCommentOnIssues()) {
                 Collection<String> operationComments = request.getRequestContent().getAdditionalComments();
@@ -139,11 +142,4 @@ public abstract class IssueHandler<T> {
         return String.format("Successfully created issue at %s. Issue Keys: (%s)", getIssueTrackerUrl(), concatenatedKeys);
     }
 
-    private void logIssueAction(OperationType operation, String issueTrackerProjectName, IssueProperties issueProperties) {
-        String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            operation.name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
-            arbitraryItemSubComponent);
-    }
 }

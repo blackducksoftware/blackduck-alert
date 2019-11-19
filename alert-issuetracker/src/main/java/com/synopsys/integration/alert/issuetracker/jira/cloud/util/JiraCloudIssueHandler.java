@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.issuetracker.jira.cloud.util;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.IssueProperties;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.exception.IntegrationException;
@@ -39,10 +39,10 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final IssueService issueService;
-    private final JiraProperties jiraProperties;
+    private final JiraCloudProperties jiraProperties;
     private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
-    public JiraCloudIssueHandler(IssueService issueService, JiraProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
+    public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler) {
         super(gson, jiraTransitionHandler, jiraIssuePropertyHandler);
         this.issueService = issueService;
@@ -61,7 +61,7 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueProperties issueProperties) throws IntegrationException {
+    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, JiraIssueProperties issueProperties) throws IntegrationException {
         return jiraIssuePropertyHandler
                    .findIssues(projectSearchIdentifier, issueProperties)
                    .map(IssueSearchResponseModel::getIssues)

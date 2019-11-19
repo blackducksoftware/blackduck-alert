@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker;
+package com.synopsys.integration.alert.issuetracker.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.issuetracker.OperationType;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
@@ -133,7 +134,7 @@ public abstract class IssueCreatorTestAction {
     private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
         IssueTrackerRequest request = createChannelTestRequest(messageId);
-        IssueTrackerResponse messageResult = this.issueTrackerService.sendMessage(issueTrackerContext, List.of(request));
+        IssueTrackerResponse messageResult = this.issueTrackerService.sendRequests(issueTrackerContext, List.of(request));
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
     }

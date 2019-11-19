@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 
 public class IssueResolutionRequest extends IssueTrackerRequest {

@@ -27,8 +27,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.issuetracker.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraIssuePropertyHandler<T> {
@@ -37,61 +37,41 @@ public abstract class JiraIssuePropertyHandler<T> {
 
     public abstract T queryForIssues(String query) throws IntegrationException;
 
-    public abstract void addPropertiesToIssue(String issueKey, IssueProperties properties) throws IntegrationException;
+    public abstract void addPropertiesToIssue(String issueKey, JiraIssueProperties properties) throws IntegrationException;
 
-    public Optional<T> findIssues(String jiraProjectKey, IssueProperties issueProperties) throws IntegrationException {
-        String subTopicName = null;
-        String subTopicValue = null;
-        if (null != issueProperties.getSubTopicName()) {
-            subTopicName = issueProperties.getSubTopicName();
-            subTopicValue = issueProperties.getSubTopicValue();
-        }
-
-        if (null != issueProperties.getSubComponentName()) {
-            String subComponentName = issueProperties.getSubComponentName();
-            String subComponentValue = issueProperties.getSubComponentValue();
-
-            return findIssues(
-                jiraProjectKey, issueProperties.getProvider(), issueProperties.getTopicName(), issueProperties.getTopicValue(), subTopicName, subTopicValue, issueProperties.getCategory(), issueProperties.getComponentName(),
-                issueProperties.getComponentValue(), subComponentName, subComponentValue, issueProperties.getAdditionalKey());
-        } else {
-            return findIssues(jiraProjectKey, issueProperties.getProvider(), issueProperties.getTopicName(), issueProperties.getTopicValue(), subTopicName, subTopicValue, null, null, null, null, null, issueProperties.getAdditionalKey());
-        }
-    }
-
-    public Optional<T> findIssues(
-        String jiraProjectKey,
-        String provider,
-        String topicName,
-        String topicValue,
-        String subTopicName,
-        String subTopicValue,
-        String category,
-        String componentName,
-        String componentValue,
-        String subComponentName,
-        String subComponentValue,
-        String additionalKey
-    ) throws IntegrationException {
+    public Optional<T> findIssues(String jiraProjectKey, JiraIssueProperties jiraIssueProperties) throws IntegrationException {
         StringBuilder jqlBuilder = new StringBuilder();
         jqlBuilder.append(JiraConstants.JIRA_SEARCH_KEY_JIRA_PROJECT);
         jqlBuilder.append(" = '");
         jqlBuilder.append(escapeSearchString(jiraProjectKey));
         jqlBuilder.append("' ");
 
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, topicName);
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, topicValue);
+        String subTopicName = null;
+        String subTopicValue = null;
+        String subComponentName = null;
+        String subComponentValue = null;
+        if (null != jiraIssueProperties.getSubTopicName()) {
+            subTopicName = jiraIssueProperties.getSubTopicName();
+            subTopicValue = jiraIssueProperties.getSubTopicValue();
+        }
+
+        if (null != jiraIssueProperties.getSubComponentName()) {
+            subComponentName = jiraIssueProperties.getSubComponentName();
+            subComponentValue = jiraIssueProperties.getSubComponentValue();
+        }
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, jiraIssueProperties.getProvider());
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, jiraIssueProperties.getTopicName());
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, jiraIssueProperties.getTopicValue());
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME, subTopicName);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_VALUE, subTopicValue);
 
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_NAME, componentName);
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE, componentValue);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, jiraIssueProperties.getCategory());
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_NAME, jiraIssueProperties.getComponentName());
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE, jiraIssueProperties.getComponentValue());
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_NAME, subComponentName);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE, subComponentValue);
 
-        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, jiraIssueProperties.getAdditionalKey());
 
         String jql = jqlBuilder.toString();
         if (!jql.isBlank()) {

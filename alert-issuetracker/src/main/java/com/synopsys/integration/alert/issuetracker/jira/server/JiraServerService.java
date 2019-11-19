@@ -28,9 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.IssueTrackerService;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIssueHandler;
@@ -38,6 +36,7 @@ import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerIs
 import com.synopsys.integration.alert.issuetracker.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
@@ -49,7 +48,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
-public class JiraServerService extends IssueTrackerService {
+public class JiraServerService extends IssueTrackerService<JiraServerContext> {
     private Logger logger = LoggerFactory.getLogger(JiraServerService.class);
 
     public JiraServerService(Gson gson) {
@@ -57,7 +56,7 @@ public class JiraServerService extends IssueTrackerService {
     }
 
     @Override
-    public IssueTrackerResponse sendMessage(IssueTrackerContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException {
+    public IssueTrackerResponse sendRequests(JiraServerContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException {
         JiraServerProperties jiraProperties = context.getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();

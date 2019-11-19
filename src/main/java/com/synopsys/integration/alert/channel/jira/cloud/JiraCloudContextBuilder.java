@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraProperties;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudContext;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudProperties;
 
-public class JiraCloudContextBuilder extends JiraContextBuilder {
+public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
     @Override
     public String getProjectFieldKey() {
         return JiraDescriptor.KEY_JIRA_PROJECT_NAME;
@@ -65,10 +65,14 @@ public class JiraCloudContextBuilder extends JiraContextBuilder {
     }
 
     @Override
-    public IssueTrackerServiceConfig createJiraProperties(FieldAccessor fieldAccessor) {
+    public JiraCloudContext build(FieldAccessor fieldAccessor) {
+        return new JiraCloudContext(createJiraProperties(fieldAccessor), createIssueConfig(fieldAccessor));
+    }
+
+    private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
         String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
         String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        return new JiraProperties(url, accessToken, username);
+        return new JiraCloudProperties(url, accessToken, username);
     }
 }

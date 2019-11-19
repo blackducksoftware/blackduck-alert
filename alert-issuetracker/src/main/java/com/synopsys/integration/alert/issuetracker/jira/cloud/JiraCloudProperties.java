@@ -33,7 +33,7 @@ import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactor
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-public class JiraProperties implements IssueTrackerServiceConfig {
+public class JiraCloudProperties implements IssueTrackerServiceConfig {
     public static final String KEY_ADD_COMMENTS = "jira.cloud.add.comments";
     public static final String KEY_ISSUE_CREATOR = "jira.cloud.issue.creator";
     public static final String KEY_JIRA_PROJECT_NAME = "jira.cloud.project.name";
@@ -45,7 +45,7 @@ public class JiraProperties implements IssueTrackerServiceConfig {
     private final String accessToken;
     private final String username;
 
-    public JiraProperties(String url, String accessToken, String username) {
+    public JiraCloudProperties(String url, String accessToken, String username) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
