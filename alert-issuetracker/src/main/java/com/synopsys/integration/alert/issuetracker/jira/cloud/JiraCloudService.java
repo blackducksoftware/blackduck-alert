@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudIssueHandler;
@@ -36,7 +37,6 @@ import com.synopsys.integration.alert.issuetracker.jira.cloud.util.JiraCloudTran
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;

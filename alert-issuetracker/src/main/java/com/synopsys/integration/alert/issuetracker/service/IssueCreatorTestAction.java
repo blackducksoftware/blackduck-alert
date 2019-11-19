@@ -119,9 +119,9 @@ public abstract class IssueCreatorTestAction {
         } catch (IssueTrackerFieldException fieldException) {
             safelyCleanUpIssue(issueTrackerContext, initialIssueKey);
             throw fieldException;
-        } catch (IssueTrackerException alertException) {
-            logger.debug(String.format("Error testing %s config", issueTrackerContext.getClass().getSimpleName()), alertException);
-            String errorMessage = String.format("There were problems transitioning the test issue from the %s status to the %s status: %s", fromStatus, toStatus, alertException.getMessage());
+        } catch (IssueTrackerException exception) {
+            logger.debug(String.format("Error testing %s config", issueTrackerContext.getClass().getSimpleName()), exception);
+            String errorMessage = String.format("There were problems transitioning the test issue from the %s status to the %s status: %s", fromStatus, toStatus, exception.getMessage());
             possibleSecondIssueKey.ifPresent(key -> safelyCleanUpIssue(issueTrackerContext, key));
             throw new IssueTrackerException(errorMessage);
         }

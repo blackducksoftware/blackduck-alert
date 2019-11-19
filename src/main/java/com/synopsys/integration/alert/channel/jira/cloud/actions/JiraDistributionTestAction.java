@@ -28,12 +28,14 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
+import com.synopsys.integration.alert.channel.jira.common.IssueTrackerFieldExceptionConverter;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
@@ -43,12 +45,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
+    private final IssueTrackerFieldExceptionConverter exceptionConverter;
 
     @Autowired
-    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser, IssueTrackerFieldExceptionConverter exceptionConverter) {
         super(jiraChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
+        this.exceptionConverter = exceptionConverter;
     }
 
     @Override
@@ -58,7 +62,12 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         JiraCloudService jiraService = new JiraCloudService(gson);
         JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson, issueCreator);
-        IssueTrackerResponse result = testAction.testConfig(context);
-        return new MessageResult(result.getStatusMessage());
+
+        try {
+            IssueTrackerResponse result = testAction.testConfig(context);
+            return new MessageResult(result.getStatusMessage());
+        } catch (IssueTrackerFieldException ex) {
+            throw exceptionConverter.convert(ex);
+        }
     }
 }

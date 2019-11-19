@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.IssueTrackerFieldExceptionConverter;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
@@ -34,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActi
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerCreateIssueTestAction;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
@@ -43,12 +45,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
+    private final IssueTrackerFieldExceptionConverter exceptionConverter;
 
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel, Gson gson, JiraMessageParser jiraMessageParser, IssueTrackerFieldExceptionConverter exceptionConverter) {
         super(distributionChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
+        this.exceptionConverter = exceptionConverter;
     }
 
     @Override
@@ -58,7 +62,11 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
         JiraServerService jiraService = new JiraServerService(gson);
         JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson, issueCreator);
-        IssueTrackerResponse result = testAction.testConfig(context);
-        return new MessageResult(result.getStatusMessage());
+        try {
+            IssueTrackerResponse result = testAction.testConfig(context);
+            return new MessageResult(result.getStatusMessage());
+        } catch (IssueTrackerFieldException ex) {
+            throw exceptionConverter.convert(ex);
+        }
     }
 }

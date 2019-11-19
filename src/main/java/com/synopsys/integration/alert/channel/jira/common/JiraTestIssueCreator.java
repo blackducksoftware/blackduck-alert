@@ -32,8 +32,8 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.issuetracker.service.TestIssueCreator;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 
 public class JiraTestIssueCreator implements TestIssueCreator {
     private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueCreator.class);
