@@ -36,7 +36,7 @@ public enum AccessOperation {
     UPLOAD_FILE_WRITE(6),
     UPLOAD_FILE_DELETE(7);
 
-    private int bit;
+    private final int bit;
 
     // We use an assigned value here instead of ordinal so that we know exactly which item has what bit representation and people have to intentionally change them.
     AccessOperation(int bitPosition) {

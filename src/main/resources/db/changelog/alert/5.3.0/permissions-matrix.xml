@@ -3,280 +3,280 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
     <changeSet author="bmandel" id="2019-11-18-14-48-50-829">
+        <delete tableName="PERMISSION_MATRIX" schemaName="ALERT"/>
         <renameColumn tableName="PERMISSION_MATRIX" oldColumnName="ACCESS_OPERATION_ID" newColumnName="OPERATIONS" schemaName="ALERT"/>
         <modifyDataType tableName="PERMISSION_MATRIX" columnName="OPERATIONS" schemaName="ALERT" newDataType="int"/>
         <dropTable tableName="ACCESS_OPERATIONS" schemaName="ALERT"/>
-        <delete tableName="PERMISSION_MATRIX" schemaName="ALERT"/>
 
         <!-- Admin permissions -->
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_blackduck'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_blackduck'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_polaris'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_polaris'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_slack'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_slack'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_cloud'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_cloud'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_server'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_server'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_email'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_email'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'msteamskey'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'msteamskey'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
-            <column name="OPERATIONS" value="255"/>
-        </insert>
-
-        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'component_authentication'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'component_users'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'component_scheduling'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'component_settings'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_ADMIN'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'component_audit'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_authentication')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_users')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+            <column name="OPERATIONS" value="255"/>
+        </insert>
+
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_audit')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <!-- Job Manager permissions -->
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_slack'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_slack'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_email'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_email'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'msteamskey'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'msteamskey'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_server'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_server'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_cloud'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_cloud'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_blackduck'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_blackduck'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_polaris'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'GLOBAL'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_JOB_MANAGER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_polaris'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="255"/>
         </insert>
 
         <!-- User Permissions -->
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_polaris'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'provider_blackduck'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_slack'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_email'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'msteamskey'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_server'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="SELECT ID FROM ALERT.ROLES WHERE ROLENAME = 'ALERT_USER'"/>
-            <column name="DESCRIPTOR_ID" valueComputed="SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE NAME = 'channel_jira_cloud'"/>
-            <column name="CONTEXT_ID" valueComputed="SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONTEXT = 'DISTRIBUTION'"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_USER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
             <column name="OPERATIONS" value="4"/>
         </insert>
     </changeSet>
