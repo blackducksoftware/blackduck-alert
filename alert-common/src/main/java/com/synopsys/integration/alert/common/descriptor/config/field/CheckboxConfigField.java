@@ -23,7 +23,10 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -52,4 +55,18 @@ public class CheckboxConfigField extends ConfigField {
         return List.of();
     }
 
+    @Override
+    public ConfigField applyDefaultValue(String defaultValue) {
+        setDefaultValues(new HashSet<>());
+        return super.applyDefaultValue(defaultValue);
+    }
+
+    @Override
+    public ConfigField applyDefaultValues(Set<String> defaultValues) {
+        Optional<String> firstValue = defaultValues.stream().findFirst();
+        if (firstValue.isPresent()) {
+            applyDefaultValue(firstValue.get());
+        }
+        return this;
+    }
 }
