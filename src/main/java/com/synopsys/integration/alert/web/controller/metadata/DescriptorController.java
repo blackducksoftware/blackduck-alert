@@ -120,13 +120,17 @@ public class DescriptorController extends MetadataController {
             return Optional.empty();
         }
 
-        Set<AccessOperation> operationSet = authorizationManager.getOperations(context, descriptorName);
+        Set<AccessOperation> operationSet = new HashSet<>();
+        for (int operations : authorizationManager.getOperations(context, descriptorName)) {
+            operationSet.addAll(AccessOperation.getAllAccessOperations(operations));
+        }
+
         boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorName);
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
 
         if (isReadOnly) {
-            descriptorMetadata.getFields().forEach(field -> field.applyReadOnly(isReadOnly));
+            descriptorMetadata.getFields().forEach(field -> field.applyReadOnly(true));
         }
         return Optional.of(descriptorMetadata);
     }
