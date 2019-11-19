@@ -9,4 +9,5 @@
     <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
     <include file="changelog-global-slack.xml" relativeToChangelogFile="true"/>
     <include file="changelog-distribution-msteams.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-update-broken-jobs.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
