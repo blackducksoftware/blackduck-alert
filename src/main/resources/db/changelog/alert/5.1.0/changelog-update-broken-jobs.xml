@@ -47,7 +47,7 @@
                         }
 
                         for (java.lang.Integer configId : configsToUpdate) {
-                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId.intValue() + ", " + filterByProjectFieldId.intValue() + ", FALSE);");
+                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId.intValue() + ", " + filterByProjectFieldId.intValue() + ", 'false');");
                         }
                     }
                     return null;
