@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,29 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.authorization;
+package com.synopsys.integration.alert.common.util;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.DatabaseEntity;
-
-@Entity
-@Table(schema = "alert", name = "access_operations")
-public class AccessOperationEntity extends DatabaseEntity {
-    @Column(name = "operation_name")
-    private String operationName;
-
-    public AccessOperationEntity() {
-        // JPA requires default constructor definitions
+public class BitwiseUtil {
+    public static int shiftBitLeft(int bitShifts) {
+        return 1 << bitShifts;
     }
 
-    public AccessOperationEntity(final String operationName) {
-        this.operationName = operationName;
+    public static int combineBits(int originalBits, int newBits) {
+        return originalBits | newBits;
     }
 
-    public String getOperationName() {
-        return operationName;
+    public static int removeBits(int originalBits, int oldBits) {
+        return ~oldBits & originalBits;
     }
+
+    public static boolean containsBits(int bitContainer, int containedBits) {
+        return (containedBits & bitContainer) == containedBits;
+    }
+
 }
