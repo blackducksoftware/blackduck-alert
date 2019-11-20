@@ -23,20 +23,27 @@
 package com.synopsys.integration.alert.issuetracker.message;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 public class IssueContentModel {
     private final String title;
     private final String description;
+    private final Collection<String> descriptionComments;
     private final Collection<String> additionalComments;
 
-    private IssueContentModel(String title, String description, Collection<String> additionalComments) {
+    private IssueContentModel(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {
         this.title = title;
         this.description = description;
+        this.descriptionComments = descriptionComments;
         this.additionalComments = additionalComments;
     }
 
-    public static final IssueContentModel of(String title, String description, Collection<String> additionalComments) {
-        return new IssueContentModel(title, description, additionalComments);
+    public static final IssueContentModel of(String title, String description, Collection<String> descriptionComments) {
+        return new IssueContentModel(title, description, descriptionComments, new LinkedList<>());
+    }
+
+    public static final IssueContentModel of(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {
+        return new IssueContentModel(title, description, descriptionComments, additionalComments);
     }
 
     public String getTitle() {
@@ -45,6 +52,10 @@ public class IssueContentModel {
 
     public String getDescription() {
         return description;
+    }
+
+    public Collection<String> getDescriptionComments() {
+        return descriptionComments;
     }
 
     public Collection<String> getAdditionalComments() {

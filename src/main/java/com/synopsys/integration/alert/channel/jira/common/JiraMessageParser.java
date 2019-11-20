@@ -35,12 +35,12 @@ import com.synopsys.integration.alert.common.channel.message.ChannelMessageParse
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
-    public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
+    public IssueContentModel createIssueContentModel(String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
         ComponentItem arbitraryItem) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
@@ -54,13 +54,14 @@ public class JiraMessageParser extends ChannelMessageParser {
             description.append(getLineSeparator());
         }
 
-        List<String> additionalComments = new ArrayList<>();
-        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
+        List<String> descriptionComments = new ArrayList<>();
+        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, descriptionComments);
         description.append(additionalDescriptionInfo);
-        return IssueContentModel.of(title, description.toString(), additionalComments);
+        List<String> operationComments = createOperationComment(providerName, topic.getName(), issueOperation, componentItems);
+        return IssueContentModel.of(title, description.toString(), descriptionComments, operationComments);
     }
 
-    public List<String> createOperationComment(String provider, String category, OperationType operation, Set<ComponentItem> componentItems) {
+    private List<String> createOperationComment(String provider, String category, IssueOperation operation, Set<ComponentItem> componentItems) {
         List<String> categoryItemMessagePieces = createCategoryMessagePieces(componentItems);
         List<String> attributesPieces = createComponentAttributeMessagePieces(componentItems);
         Collection<String> text = new ArrayList<>();

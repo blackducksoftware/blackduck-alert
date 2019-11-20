@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
@@ -54,7 +54,7 @@ public class JiraTestIssueCreator implements TestIssueCreator {
     }
 
     @Override
-    public IssueTrackerRequest createRequest(OperationType operation, String messageId) {
+    public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
         try {
             String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
             String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
@@ -68,16 +68,19 @@ public class JiraTestIssueCreator implements TestIssueCreator {
             LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
 
-            IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, topicItem, subTopicItem, componentItems, arbitraryItem);
             IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
 
             switch (operation) {
-                case RESOLVE:
+                case RESOLVE: {
+                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
                     return IssueResolutionRequest.of(issueProperties, contentModel);
-                case CREATE:
+                }
+                case OPEN:
                 case UPDATE:
-                default:
+                default: {
+                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
                     return IssueCreationRequest.of(issueProperties, contentModel);
+                }
             }
 
         } catch (AlertException ex) {

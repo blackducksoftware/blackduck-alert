@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.issuetracker;
 
-public enum OperationType {
-    CREATE,
+public enum IssueOperation {
+    OPEN,
     RESOLVE,
     UPDATE
 }

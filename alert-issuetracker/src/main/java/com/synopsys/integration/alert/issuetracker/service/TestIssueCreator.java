@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.issuetracker.service;
 
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 
 public interface TestIssueCreator {
-    IssueTrackerRequest createRequest(OperationType operation, String messageId);
+    IssueTrackerRequest createRequest(IssueOperation operation, String messageId);
 }

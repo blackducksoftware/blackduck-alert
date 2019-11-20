@@ -22,14 +22,16 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 
 public class IssueCreationRequest extends IssueTrackerRequest {
-    private IssueCreationRequest(OperationType operation, IssueProperties issueProperties, IssueContentModel requestContent) {
-        super(operation, issueProperties, requestContent);
+    public static final IssueOperation OPERATION = IssueOperation.OPEN;
+
+    private IssueCreationRequest(IssueProperties issueProperties, IssueContentModel requestContent) {
+        super(OPERATION, issueProperties, requestContent);
     }
 
     public static final IssueCreationRequest of(IssueProperties issueProperties, IssueContentModel content) {
-        return new IssueCreationRequest(OperationType.CREATE, issueProperties, content);
+        return new IssueCreationRequest(issueProperties, content);
     }
 }

@@ -33,11 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.SetMap;
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentLengthValidator;
+import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
@@ -68,8 +69,9 @@ public abstract class IssueHandler<R> {
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
+            //TODO this validates the length of the title description and comments.  Should that validation be done when the request is constructed in the request class.
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
-                OperationType operation = request.getOperation();
+                IssueOperation operation = request.getOperation();
 
                 List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), request);
                 logIssueAction(projectName, request);
@@ -79,7 +81,7 @@ public abstract class IssueHandler<R> {
                         .stream()
                         .map(this::getIssueKey)
                         .forEach(issueKeys::add);
-                } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
+                } else if (IssueOperation.OPEN == operation || IssueOperation.UPDATE == operation) {
                     R issueModel = createIssue(issueConfig, request);
                     String issueKey = getIssueKey(issueModel);
                     issueKeys.add(issueKey);
@@ -108,7 +110,7 @@ public abstract class IssueHandler<R> {
 
     protected abstract List<R> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException;
 
-    protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, OperationType operation) throws IntegrationException;
+    protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException;
 
     protected abstract void addComment(String issueKey, String comment) throws IntegrationException;
 
@@ -124,10 +126,12 @@ public abstract class IssueHandler<R> {
         for (R issue : issuesToUpdate) {
             String issueKey = getIssueKey(issue);
             if (issueConfig.getCommentOnIssues()) {
-                Collection<String> operationComments = request.getRequestContent().getAdditionalComments();
+                IssueContentModel contentModel = request.getRequestContent();
+                Collection<String> operationComments = contentModel.getAdditionalComments();
                 for (String operationComment : operationComments) {
                     addComment(issueKey, operationComment);
                 }
+
                 updatedIssues.add(issue);
             }
 

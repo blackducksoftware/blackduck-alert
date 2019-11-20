@@ -33,7 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
@@ -83,7 +83,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             String issueKey = issue.getKey();
             addIssueProperties(issueKey, issueProperties);
             addComment(issueKey, "This issue was automatically created by Alert.");
-            for (String additionalComment : contentModel.getAdditionalComments()) {
+            for (String additionalComment : contentModel.getDescriptionComments()) {
                 String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
                 addComment(issueKey, comment);
             }
@@ -94,7 +94,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     }
 
     @Override
-    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, OperationType operation) throws IntegrationException {
+    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
         return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
     }
 

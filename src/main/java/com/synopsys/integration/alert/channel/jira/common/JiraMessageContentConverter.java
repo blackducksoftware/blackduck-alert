@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
@@ -74,10 +73,9 @@ public class JiraMessageContentConverter {
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             String trackingKey = createAdditionalTrackingKey(null);
             IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, null, trackingKey);
-            IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, Set.of(), null);
+            IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topic, nullableSubTopic, Set.of(), null);
             IssueTrackerRequest issueRequest = IssueResolutionRequest.of(issueProperties, issueContentModel);
-            updateExistingIssues(issueConfig, providerName, topic.getName(), Set.of(), issueRequest);
-            return List.of();
+            return List.of(issueRequest);
         } else {
             logger.debug("The top level action was not a DELETE action so it will be ignored");
         }
@@ -88,32 +86,28 @@ public class JiraMessageContentConverter {
         throws IntegrationException {
         Collection<IssueTrackerRequest> issues = new LinkedList<>();
 
-        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
-            try {
-                ComponentItem arbitraryItem = componentItems
-                                                  .stream()
-                                                  .findAny()
-                                                  .orElseThrow(() -> new AlertException(String.format("No actionable component items were found. Provider: %s, Topic: %s, SubTopic: %s", providerName, topic, nullableSubTopic)));
-                ItemOperation operation = arbitraryItem.getOperation();
-                String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
-                IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
-                IssueTrackerRequest issueRequest = IssueCreationRequest.of(issueProperties, issueContentModel);
-                if (ItemOperation.DELETE == operation || ItemOperation.INFO == operation) {
-                    // keep the properties only add the comments.
-                    IssueContentModel issueContent = IssueContentModel.of(StringUtils.EMPTY, StringUtils.EMPTY, new LinkedList<>());
-                    if (ItemOperation.DELETE == operation) {
-                        issueRequest = IssueResolutionRequest.of(issueRequest.getIssueProperties(), issueContent);
-                    }
-                    if (ItemOperation.INFO == operation) {
-                        issueRequest = IssueCommentRequest.of(issueRequest.getIssueProperties(), issueContent);
-                    }
-                    updateExistingIssues(issueConfig, providerName, topic.getName(), componentItems, issueRequest);
-                }
+            ComponentItem arbitraryItem = componentItems
+                                              .stream()
+                                              .findAny()
+                                              .orElseThrow(() -> new AlertException(String.format("No actionable component items were found. Provider: %s, Topic: %s, SubTopic: %s", providerName, topic, nullableSubTopic)));
+            ItemOperation operation = arbitraryItem.getOperation();
+            String trackingKey = createAdditionalTrackingKey(arbitraryItem);
+            IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
+
+            IssueTrackerRequest issueRequest = null;
+            if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
+                IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topic, nullableSubTopic, componentItems, arbitraryItem);
+                issueRequest = IssueCreationRequest.of(issueProperties, issueContentModel);
+            } else if (ItemOperation.DELETE == operation) {
+                IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topic, nullableSubTopic, componentItems, arbitraryItem);
+                issueRequest = IssueResolutionRequest.of(issueProperties, issueContentModel);
+            } else if (ItemOperation.INFO == operation) {
+                IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCommentRequest.OPERATION, topic, nullableSubTopic, componentItems, arbitraryItem);
+                issueRequest = IssueCommentRequest.of(issueProperties, issueContentModel);
+            }
+            if (null != issueRequest) {
                 issues.add(issueRequest);
-            } catch (IssueMissingTransitionException e) {
-                missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());
             }
         }
         return issues;
@@ -125,14 +119,6 @@ public class JiraMessageContentConverter {
             return categoryItem.getName() + categoryItem.getValue();
         }
         return StringUtils.EMPTY;
-    }
-
-    protected void updateExistingIssues(IssueConfig issueConfig, String providerName, String category, Set<ComponentItem> componentItems, IssueTrackerRequest issueTrackerRequest)
-        throws IntegrationException {
-        if (issueConfig.getCommentOnIssues()) {
-            List<String> operationComments = jiraMessageParser.createOperationComment(providerName, category, issueTrackerRequest.getOperation(), componentItems);
-            issueTrackerRequest.getRequestContent().getAdditionalComments().addAll(operationComments);
-        }
     }
 
     private Collection<IssueTrackerRequest> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, ProviderMessageContent messageContent) throws IntegrationException {

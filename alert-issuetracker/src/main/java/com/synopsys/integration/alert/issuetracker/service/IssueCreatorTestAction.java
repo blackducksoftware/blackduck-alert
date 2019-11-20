@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.issuetracker.OperationType;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
@@ -53,7 +53,7 @@ public abstract class IssueCreatorTestAction {
     public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext) throws IntegrationException {
         String messageId = UUID.randomUUID().toString();
 
-        IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, OperationType.CREATE, messageId);
+        IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
         String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
                                      .stream()
                                      .findFirst()
@@ -88,7 +88,7 @@ public abstract class IssueCreatorTestAction {
             Map<String, String> transitionErrors = new HashMap<>();
             Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-            IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, OperationType.RESOLVE, messageId);
+            IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
 
             Optional<String> optionalReopenTransitionName = issueTrackerContext.getIssueConfig().getOpenTransition().filter(StringUtils::isNotBlank);
             if (optionalReopenTransitionName.isPresent()) {
@@ -96,7 +96,7 @@ public abstract class IssueCreatorTestAction {
                 toStatus = "Reopen";
                 Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
-                IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, OperationType.CREATE, messageId);
+                IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
                                              .stream()
                                              .findFirst()
@@ -107,7 +107,7 @@ public abstract class IssueCreatorTestAction {
                     toStatus = "Resolve";
                     Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
                     reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
-                    finalResult = createAndSendMessage(issueTrackerContext, OperationType.RESOLVE, messageId);
+                    finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
                 }
             }
 
@@ -127,7 +127,7 @@ public abstract class IssueCreatorTestAction {
         }
     }
 
-    private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, OperationType operation, String messageId) throws IntegrationException {
+    private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, IssueOperation operation, String messageId) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
         IssueTrackerRequest request = testIssueCreator.createRequest(operation, messageId);
         IssueTrackerResponse messageResult = this.issueTrackerService.sendRequests(issueTrackerContext, List.of(request));

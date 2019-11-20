@@ -28,10 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.issuetracker.OperationType;
-import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
+import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;
@@ -54,8 +54,8 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         return StringUtils.equals(expectedStatusCategoryKey, statusCategory.getKey());
     }
 
-    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, OperationType operation) throws IntegrationException {
-        if (OperationType.UPDATE.equals(operation)) {
+    public boolean transitionIssueIfNecessary(String issueKey, IssueConfig jiraIssueConfig, IssueOperation operation) throws IntegrationException {
+        if (IssueOperation.UPDATE.equals(operation)) {
             logger.debug("No transition required for this issue: {}.", issueKey);
             return false;
         }
@@ -75,12 +75,12 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         return false;
     }
 
-    private boolean isTransitionRequired(OperationType operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
+    private boolean isTransitionRequired(IssueOperation operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
         StatusCategory statusCategory = statusDetailsComponent.getStatusCategory();
-        if (OperationType.CREATE.equals(operation)) {
+        if (IssueOperation.OPEN.equals(operation)) {
             // Should reopen?
             return DONE_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
-        } else if (OperationType.RESOLVE.equals(operation)) {
+        } else if (IssueOperation.RESOLVE.equals(operation)) {
             // Should resolve?
             return TODO_STATUS_CATEGORY_KEY.equals(statusCategory.getKey());
         }
@@ -98,9 +98,9 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         }
     }
 
-    private Optional<String> determineTransitionName(OperationType operation, IssueConfig jiraIssueConfig) {
-        if (!OperationType.UPDATE.equals(operation)) {
-            if (OperationType.RESOLVE.equals(operation)) {
+    private Optional<String> determineTransitionName(IssueOperation operation, IssueConfig jiraIssueConfig) {
+        if (!IssueOperation.UPDATE.equals(operation)) {
+            if (IssueOperation.RESOLVE.equals(operation)) {
                 return jiraIssueConfig.getResolveTransition();
             } else {
                 return jiraIssueConfig.getOpenTransition();
