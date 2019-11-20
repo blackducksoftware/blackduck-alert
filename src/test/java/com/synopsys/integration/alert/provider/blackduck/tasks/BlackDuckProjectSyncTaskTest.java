@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,9 +22,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
-import com.synopsys.integration.blackduck.api.core.BlackDuckPathMultipleResponses;
 import com.synopsys.integration.blackduck.api.core.BlackDuckPathSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -38,77 +37,79 @@ public class BlackDuckProjectSyncTaskTest {
 
     @Test
     public void testRun() throws Exception {
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
+        BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
         configurationFieldModel.setFieldValues(List.of("project", "project2"));
-        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
         configurationModel.put(configurationFieldModel);
-        final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
+        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
         Mockito.when(configurationAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));
 
-        final String email1 = "user1@email.com";
-        final String email2 = "user2@email.com";
-        final String email3 = "user3@email.com";
-        final String email4 = "user4@email.com";
+        String email1 = "user1@email.com";
+        String email2 = "user2@email.com";
+        String email3 = "user3@email.com";
+        String email4 = "user4@email.com";
 
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckHttpClient.class)));
-        final BlackDuckServicesFactory BlackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
-        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(BlackDuckServicesFactory);
+        BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(blackDuckServicesFactory);
 
-        final BlackDuckService hubService = Mockito.mock(BlackDuckService.class);
-        Mockito.when(BlackDuckServicesFactory.createBlackDuckService()).thenReturn(hubService);
+        BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
+        Mockito.when(blackDuckServicesFactory.createBlackDuckService()).thenReturn(blackDuckService);
 
-        final ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
-        Mockito.when(BlackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
+        ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
+        Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
-        final ProjectView projectView = createProjectView("project", "description1", "projectUrl1");
-        final ProjectView projectView2 = createProjectView("project2", "description2", "projectUrl2");
-        final ProjectView projectView3 = createProjectView("project3", "description3", "projectUrl3");
+        ProjectView projectView = createProjectView("project", "description1", "projectUrl1");
+        ProjectView projectView2 = createProjectView("project2", "description2", "projectUrl2");
+        ProjectView projectView3 = createProjectView("project3", "description3", "projectUrl3");
 
-        Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2, projectView3));
-        Mockito.doReturn(null).when(hubService).getResponse(Mockito.any(BlackDuckPathSingleResponse.class));
+        Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.PROJECTS_LINK_RESPONSE))).thenReturn(List.of(projectView, projectView2, projectView3));
+        Mockito.doReturn(null).when(blackDuckService).getResponse(Mockito.any(BlackDuckPathSingleResponse.class));
 
-        final UserView user1 = createUserView(email1, true);
-        final UserView user2 = createUserView(email2, true);
-        final UserView user3 = createUserView(email3, true);
-        final UserView user4 = createUserView(email4, true);
+        UserView user1 = createUserView(email1, true);
+        UserView user2 = createUserView(email2, true);
+        UserView user3 = createUserView(email3, true);
+        UserView user4 = createUserView(email4, true);
 
-        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
-        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
-        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
+        Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.USERS_LINK_RESPONSE))).thenReturn(List.of(user1, user2, user3, user4));
+
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(List.of(user2, user4)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(List.of(user1, user2, user3)));
         Mockito.doNothing().when(projectUsersService).addUserToProject(Mockito.any(), Mockito.any(UserView.class));
 
-        final BlackDuckProjectSyncTask projectSyncTask = new BlackDuckProjectSyncTask(null, blackDuckProperties, providerDataAccessor, configurationAccessor, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(null, blackDuckProperties, providerDataAccessor, configurationAccessor, BLACK_DUCK_PROVIDER_KEY);
         projectSyncTask.run();
 
         assertEquals(3, providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).size());
 
-        Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
+        Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.PROJECTS_LINK_RESPONSE))).thenReturn(List.of(projectView, projectView2));
 
-        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
-        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(List.of(user2, user4)));
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));
 
-        Mockito.when(hubService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(Collections.emptyList());
+        Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(Collections.emptyList());
         projectSyncTask.run();
 
         assertEquals(2, providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).size());
     }
 
-    public UserView createUserView(final String email, final Boolean active) {
-        final UserView userView = new UserView();
+    private UserView createUserView(String email, Boolean active) {
+        UserView userView = new UserView();
         userView.setEmail(email);
         userView.setActive(active);
         return userView;
     }
 
-    public ProjectView createProjectView(final String name, final String description, final String href) {
-        final ProjectView projectView = new ProjectView();
+    private ProjectView createProjectView(String name, String description, String href) {
+        ProjectView projectView = new ProjectView();
         projectView.setName(name);
         projectView.setDescription(description);
-        final ResourceMetadata resourceMetadata = new ResourceMetadata();
+        ResourceMetadata resourceMetadata = new ResourceMetadata();
         resourceMetadata.setHref(href);
         projectView.setMeta(resourceMetadata);
         return projectView;

@@ -30,7 +30,7 @@ public class ProviderProject extends AlertSerializableModel {
     private final String href;
     private final String projectOwnerEmail;
 
-    public ProviderProject(final String name, final String description, final String href, final String projectOwnerEmail) {
+    public ProviderProject(String name, String description, String href, String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;
@@ -52,4 +52,5 @@ public class ProviderProject extends AlertSerializableModel {
     public String getProjectOwnerEmail() {
         return projectOwnerEmail;
     }
+
 }

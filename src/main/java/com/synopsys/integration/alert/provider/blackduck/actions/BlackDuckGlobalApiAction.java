@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
@@ -56,33 +56,33 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(final FieldModel fieldModel) throws AlertException {
+    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
         return super.afterSaveAction(fieldModel);
     }
 
     @Override
-    public FieldModel afterUpdateAction(final FieldModel fieldModel) throws AlertException {
+    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
         handleNewOrUpdatedConfig();
         return super.afterUpdateAction(fieldModel);
     }
 
     @Override
-    public void afterDeleteAction(final String descriptorName, final String context) {
+    public void afterDeleteAction(String descriptorName, String context) {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unScheduleTask(BlackDuckProjectSyncTask.TASK_NAME);
+        taskManager.unScheduleTask(BlackDuckDataSyncTask.TASK_NAME);
 
-        final List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderKey(blackDuckProviderKey);
+        List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderKey(blackDuckProviderKey);
         providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
     }
 
     private void handleNewOrUpdatedConfig() {
-        final boolean valid = blackDuckValidator.validate();
+        boolean valid = blackDuckValidator.validate();
         if (valid) {
-            final Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+            Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {
                 taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckProjectSyncTask.TASK_NAME);
+                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckDataSyncTask.TASK_NAME);
             }
         }
     }

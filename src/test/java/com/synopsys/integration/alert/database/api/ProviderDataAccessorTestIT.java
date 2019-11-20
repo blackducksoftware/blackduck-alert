@@ -12,11 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
@@ -41,8 +40,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.deleteAllInBatch();
     }
 
-    private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
+    private ProviderKey createProviderKey(String key) {
+        ProviderKey testDescriptorKey = new ProviderKey() {
             @Override
             public String getUniversalKey() {
                 return key;
@@ -76,7 +75,6 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void saveProjectTest() {
-
         String name = "name";
         String description = "description";
         String href = "hyperlink reference";
@@ -84,7 +82,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         String providerName = "provider name";
         ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
 
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+        ProviderKey descriptorKey = createProviderKey(providerName);
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         providerDataAccessor.saveProject(descriptorKey, providerProject);
@@ -128,7 +126,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
                                                      .stream()
                                                      .map(this::convertToProjectModel)
                                                      .collect(Collectors.toList());
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+        ProviderKey descriptorKey = createProviderKey(providerName);
 
         providerDataAccessor.deleteProjects(descriptorKey, projectsToDelete);
         savedEntities = providerProjectRepository.findAll();
@@ -162,7 +160,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         assertEquals(3, providerProjectRepository.findAll().size());
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.deleteByHref(oldProjectHref2);
+        providerDataAccessor.deleteProjectByHref(oldProjectHref2);
         List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
         assertEquals(2, foundProjects.size());
         assertTrue(foundProjects.stream().noneMatch(project -> oldProjectHref2.equals(project.getHref())), "A project with the deleted href still existed");
@@ -318,7 +316,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
 
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+        ProviderKey descriptorKey = createProviderKey(providerName);
 
         providerDataAccessor.deleteUsers(descriptorKey, oldUsers);
         assertEquals(0, providerUserRepository.findAll().size());

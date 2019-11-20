@@ -1,12 +1,5 @@
 package com.synopsys.integration.alert.provider.blackduck.mock;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,9 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.polaris.PolarisProviderKey;
 
 public final class MockProviderDataAccessor extends DefaultProviderDataAccessor {
     private final Map<String, Set<ProviderProject>> providerProjectMap;
@@ -36,13 +33,13 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public ProviderProject saveProject(DescriptorKey descriptorKey, ProviderProject providerProject) {
+    public ProviderProject saveProject(ProviderKey descriptorKey, ProviderProject providerProject) {
         providerProjectMap.get(descriptorKey.getUniversalKey()).add(providerProject);
         return providerProject;
     }
 
     @Override
-    public void deleteProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
+    public void deleteProjects(ProviderKey descriptorKey, Collection<ProviderProject> providerProjects) {
         Set<ProviderProject> projects = providerProjectMap.get(descriptorKey.getUniversalKey());
         if (null == projects) {
             projects = new HashSet<>();
@@ -52,7 +49,7 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderProject> saveProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
+    public List<ProviderProject> saveProjects(ProviderKey descriptorKey, Collection<ProviderProject> providerProjects) {
         Set<ProviderProject> projects = providerProjectMap.get(descriptorKey.getUniversalKey());
         if (null == projects) {
             projects = new HashSet<>();
@@ -63,12 +60,12 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public void deleteByHref(String href) {
+    public void deleteProjectByHref(String href) {
         providerProjectMap.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(providerProject -> href.equals(providerProject.getHref()))
-                .findFirst();
+            .stream()
+            .flatMap(Collection::stream)
+            .filter(providerProject -> href.equals(providerProject.getHref()))
+            .findFirst();
     }
 
     @Override
@@ -84,10 +81,10 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     @Override
     public Optional<ProviderProject> findFirstByName(String name) {
         return providerProjectMap.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(providerProject -> name.equals(providerProject.getName()))
-                .findFirst();
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(providerProject -> name.equals(providerProject.getName()))
+                   .findFirst();
     }
 
     @Override
@@ -95,9 +92,8 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         return new ArrayList<>(providerProjectMap.get(providerName));
     }
 
-
     @Override
-    public List<ProviderProject> findByProviderKey(DescriptorKey descriptorKey) {
+    public List<ProviderProject> findByProviderKey(ProviderKey descriptorKey) {
         return new ArrayList<>(providerProjectMap.get(descriptorKey.getUniversalKey()));
     }
 
@@ -111,15 +107,14 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-
-    public void deleteUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> userEntities) {
+    public void deleteUsers(ProviderKey descriptorKey, Collection<ProviderUserModel> userEntities) {
         for (ProviderUserModel user : userEntities) {
             users.remove(user);
         }
     }
 
     @Override
-    public List<ProviderUserModel> saveUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> userEntities) {
+    public List<ProviderUserModel> saveUsers(ProviderKey descriptorKey, Collection<ProviderUserModel> userEntities) {
         for (ProviderUserModel user : userEntities) {
             users.add(user);
         }
