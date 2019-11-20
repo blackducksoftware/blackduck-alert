@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import CollapsiblePane from "component/common/CollapsiblePane";
 import { connect } from 'react-redux';
-import ConfigurationLabel from "component/common/ConfigurationLabel";
-import RoleTable from "dynamic/loaded/users/RoleTable";
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import RoleTable from 'dynamic/loaded/users/RoleTable';
 
 class UserManagement extends Component {
 
@@ -25,17 +24,7 @@ class UserManagement extends Component {
         return (
             <div>
                 <ConfigurationLabel configurationName="User Management" />
-                <CollapsiblePane
-                    title='Users'
-                    expanded={expanded}
-                >
-                </CollapsiblePane>
-                <CollapsiblePane
-                    title='Roles'
-                    expanded={expanded}
-                >
-                    <RoleTable />
-                </CollapsiblePane>
+                <RoleTable />
             </div>
         );
     }

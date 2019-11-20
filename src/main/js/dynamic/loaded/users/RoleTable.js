@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from "prop-types";
-import { createNewRole, fetchRoles } from 'store/actions/roles';
+import PropTypes from 'prop-types';
+import TableDisplay from 'field/TableDisplay';
+import RoleConfiguration from "./RoleConfiguration";
 
 class RoleTable extends Component {
 
     constructor(props) {
         super(props);
+
+        this.retrieveData = this.retrieveData.bind(this);
+        this.createColumns = this.createColumns.bind(this);
+
         this.state = {
             items: [],
             currentPage: 1,
@@ -20,13 +25,35 @@ class RoleTable extends Component {
     }
 
     componentDidMount() {
-        this.props.fetchRoles();
+        // this.props.fetchRoles();
+    }
+
+    createColumns() {
+        const nameColumn = {
+            header: 'name',
+            headerLabel: 'Name',
+            isKey: true
+        }
+
+        const permissions = {
+            header: 'permissions',
+            headerLabel: 'Permissions',
+            isKey: false
+        }
+
+        return [nameColumn, permissions];
+    }
+
+    retrieveData() {
+        return [];
     }
 
     render() {
         return (
             <div>
-                <div>Role Table Goes Here....</div>
+                <div>
+                    <TableDisplay retrieveData={this.retrieveData} columns={this.createColumns()} insertModal={() => <RoleConfiguration />} />
+                </div>
             </div>
         );
     }
@@ -50,14 +77,14 @@ RoleTable.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    inProgress: state.roles.inProgress,
-    items: state.roles.data,
-    descriptors: state.descriptors.items
+    // inProgress: state.roles.inProgress,
+    // items: state.roles.data,
+    // descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({
-    createRole: (roleName) => dispatch(createNewRole(roleName)),
-    fetchRoles: () => dispatch(fetchRoles())
+    // createRole: (roleName) => dispatch(createNewRole(roleName)),
+    // fetchRoles: () => dispatch(fetchRoles())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoleTable);
