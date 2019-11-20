@@ -87,14 +87,13 @@ public class BlackDuckDataSyncTask extends ScheduledTask {
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
 
-                Set<String> allBlackDuckUsers = getAllBlackDuckUserEmailAddresses(blackDuckService);
-                blackDuckDataAccessor.updateUserData(providerKey, allBlackDuckUsers);
-
                 List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
                 Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(blackDuckToAlertProjects.values());
+
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
-                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses);
+                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
+                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses, allRelevantBlackDuckUsers);
 
                 blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();
@@ -105,13 +104,6 @@ public class BlackDuckDataSyncTask extends ScheduledTask {
         } catch (IntegrationException | AlertRuntimeException e) {
             logger.error("Could not retrieve the current data from the BlackDuck server: " + e.getMessage(), e);
         }
-    }
-
-    private Set<String> getAllBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
-        return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
-                   .stream()
-                   .map(UserView::getEmail)
-                   .collect(Collectors.toSet());
     }
 
     private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
@@ -143,6 +135,7 @@ public class BlackDuckDataSyncTask extends ScheduledTask {
                     ProviderProject alertProject = entry.getValue();
                     Set<String> projectUserEmailAddresses = projectUsersService.getAllActiveUsersForProject(blackDuckProjectView)
                                                                 .stream()
+                                                                .filter(UserView::getActive)
                                                                 .map(UserView::getEmail)
                                                                 .filter(StringUtils::isNotBlank)
                                                                 .collect(Collectors.toSet());
@@ -172,6 +165,15 @@ public class BlackDuckDataSyncTask extends ScheduledTask {
         }
 
         return configuredProjectNames;
+    }
+
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
+        return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
+                   .stream()
+                   .filter(UserView::getActive)
+                   .map(UserView::getEmail)
+                   .filter(StringUtils::isNotBlank)
+                   .collect(Collectors.toSet());
     }
 
     private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckService blackDuckService) throws IntegrationException {

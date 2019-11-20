@@ -51,8 +51,8 @@ public interface ProviderDataAccessor {
 
     AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer offset, Integer limit, String q) throws AlertDatabaseConstraintException;
 
-    void updateUserData(ProviderKey providerKey, Set<String> emailAddresses);
-
     void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData);
+
+    void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 
 }

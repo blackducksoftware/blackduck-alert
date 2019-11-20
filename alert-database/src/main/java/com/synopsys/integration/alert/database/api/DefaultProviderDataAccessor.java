@@ -158,14 +158,15 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public void updateUserData(ProviderKey providerKey, Set<String> emailAddresses) {
-        updateUserDB(providerKey, emailAddresses);
+    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData) {
+        updateProjectAndUserData(providerKey, projectToUserData, Set.of());
     }
 
     @Override
-    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData) {
+    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
         updateProjectDB(providerKey, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        userData.addAll(additionalRelevantUsers);
         updateUserDB(providerKey, userData);
         updateUserProjectRelations(projectToUserData);
     }
