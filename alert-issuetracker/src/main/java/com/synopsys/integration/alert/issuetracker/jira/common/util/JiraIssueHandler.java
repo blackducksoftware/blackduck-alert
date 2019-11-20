@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerExcepti
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.service.IssueHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
@@ -46,7 +47,7 @@ import com.synopsys.integration.jira.common.model.request.builder.IssueRequestMo
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class JiraIssueHandler extends IssueHandler<JiraIssueProperties, IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,8 +68,10 @@ public abstract class JiraIssueHandler extends IssueHandler<JiraIssueProperties,
     public abstract String getIssueCreatorFieldKey();
 
     @Override
-    protected IssueResponseModel createIssue(IssueConfig issueConfig, JiraIssueProperties issueProperties, IssueContentModel contentModel)
+    protected IssueResponseModel createIssue(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
+        JiraIssueProperties issueProperties = request.getIssueProperties();
+        IssueContentModel contentModel = request.getRequestContent();
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
         fieldsBuilder.setProject(issueConfig.getProjectId());
         fieldsBuilder.setIssueType(issueConfig.getIssueType());
@@ -135,11 +138,12 @@ public abstract class JiraIssueHandler extends IssueHandler<JiraIssueProperties,
     }
 
     @Override
-    protected void logIssueAction(OperationType operation, String issueTrackerProjectName, JiraIssueProperties issueProperties) {
+    protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
+        JiraIssueProperties issueProperties = request.getIssueProperties();
         String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            operation.name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
+            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
             arbitraryItemSubComponent);
     }
 }

@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperti
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
@@ -62,7 +63,8 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, JiraIssueProperties issueProperties) throws IntegrationException {
+    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException {
+        JiraIssueProperties issueProperties = request.getIssueProperties();
         return jiraIssuePropertyHandler
                    .findIssues(projectSearchIdentifier, issueProperties)
                    .map(IssueSearchResponseModel::getIssues)

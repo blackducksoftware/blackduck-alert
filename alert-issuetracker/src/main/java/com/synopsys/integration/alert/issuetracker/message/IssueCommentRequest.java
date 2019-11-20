@@ -25,9 +25,7 @@ package com.synopsys.integration.alert.issuetracker.message;
 import com.synopsys.integration.alert.issuetracker.OperationType;
 
 public class IssueCommentRequest extends IssueTrackerRequest {
-
-    private IssueCommentRequest(OperationType operation,
-        IssueProperties issueProperties, IssueContentModel requestContent) {
+    private IssueCommentRequest(OperationType operation, IssueProperties issueProperties, IssueContentModel requestContent) {
         super(operation, issueProperties, requestContent);
     }
 

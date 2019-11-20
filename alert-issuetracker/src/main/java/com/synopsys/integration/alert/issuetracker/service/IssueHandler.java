@@ -38,13 +38,11 @@ import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentLengthValidator;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class IssueHandler<P extends IssueProperties, R> {
+public abstract class IssueHandler<R> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueContentLengthValidator contentLengthValidator;
 
@@ -67,15 +65,14 @@ public abstract class IssueHandler<P extends IssueProperties, R> {
         throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         String projectName = issueConfig.getProjectName();
-        P issueProperties = request.getIssueProperties();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
                 OperationType operation = request.getOperation();
 
-                List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), issueProperties);
-                logIssueAction(operation, projectName, issueProperties);
+                List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), request);
+                logIssueAction(projectName, request);
                 if (!existingIssues.isEmpty()) {
                     Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
                     updatedIssues
@@ -83,7 +80,7 @@ public abstract class IssueHandler<P extends IssueProperties, R> {
                         .map(this::getIssueKey)
                         .forEach(issueKeys::add);
                 } else if (OperationType.CREATE == operation || OperationType.UPDATE == operation) {
-                    R issueModel = createIssue(issueConfig, issueProperties, request.getRequestContent());
+                    R issueModel = createIssue(issueConfig, request);
                     String issueKey = getIssueKey(issueModel);
                     issueKeys.add(issueKey);
                 } else {
@@ -107,9 +104,9 @@ public abstract class IssueHandler<P extends IssueProperties, R> {
         return issueKeys;
     }
 
-    protected abstract R createIssue(IssueConfig issueConfig, P issueProperties, IssueContentModel contentModel) throws IntegrationException;
+    protected abstract R createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException;
 
-    protected abstract List<R> retrieveExistingIssues(String projectSearchIdentifier, P issueProperties) throws IntegrationException;
+    protected abstract List<R> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException;
 
     protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, OperationType operation) throws IntegrationException;
 
@@ -119,7 +116,7 @@ public abstract class IssueHandler<P extends IssueProperties, R> {
 
     protected abstract String getIssueTrackerUrl();
 
-    protected abstract void logIssueAction(OperationType operation, String issueTrackerProjectName, P issueProperties);
+    protected abstract void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request);
 
     protected Set<R> updateExistingIssues(List<R> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {

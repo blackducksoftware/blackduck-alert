@@ -31,7 +31,6 @@ import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 
 public class JiraCloudIssuePropertyHandler extends JiraIssuePropertyHandler<IssueSearchResponseModel> {
-
     private final IssueSearchService issueSearchService;
     private final IssuePropertyService issuePropertyService;
 

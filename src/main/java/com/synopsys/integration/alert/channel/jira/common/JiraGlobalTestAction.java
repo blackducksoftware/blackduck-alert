@@ -1,5 +1,5 @@
 /**
- * alert-issuetracker
+ * blackduck-alert
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
