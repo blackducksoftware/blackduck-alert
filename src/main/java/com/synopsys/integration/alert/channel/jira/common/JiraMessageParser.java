@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.jira.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,16 +36,12 @@ import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.issuetracker.OperationType;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
-    public IssueCreationRequest createIssueContentModel(String trackingKey, String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
+    public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
         ComponentItem arbitraryItem) {
-        IssueProperties issueProperties = createIssueProperties(providerName, topic, subTopic, arbitraryItem, trackingKey);
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
@@ -62,8 +57,7 @@ public class JiraMessageParser extends ChannelMessageParser {
         List<String> additionalComments = new ArrayList<>();
         String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
         description.append(additionalDescriptionInfo);
-        IssueContentModel contentModel = IssueContentModel.of(title, description.toString(), additionalComments);
-        return IssueCreationRequest.of(issueProperties, contentModel);
+        return IssueContentModel.of(title, description.toString(), additionalComments);
     }
 
     public List<String> createOperationComment(String provider, String category, OperationType operation, Set<ComponentItem> componentItems) {
@@ -142,18 +136,6 @@ public class JiraMessageParser extends ChannelMessageParser {
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {
         return String.format(", %s: %s", linkableItem.getName(), linkableItem.getValue());
-    }
-
-    private IssueProperties createIssueProperties(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
-        Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
-
-        String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
-        String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
-        String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
-        String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
-
-        return new JiraIssueProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
-            componentItem.getCategory(), componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
 
     @Override

@@ -44,6 +44,8 @@ import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,9 +73,11 @@ public class JiraMessageContentConverter {
         if (ItemOperation.DELETE == action) {
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             String trackingKey = createAdditionalTrackingKey(null);
-            IssueTrackerRequest issueRequest = jiraMessageParser.createIssueContentModel(trackingKey, providerName, topic, nullableSubTopic, Set.of(), null);
+            IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, null, trackingKey);
+            IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, Set.of(), null);
+            IssueTrackerRequest issueRequest = IssueResolutionRequest.of(issueProperties, issueContentModel);
             updateExistingIssues(issueConfig, providerName, topic.getName(), Set.of(), issueRequest);
-            return List.of(issueRequest);
+            return List.of();
         } else {
             logger.debug("The top level action was not a DELETE action so it will be ignored");
         }
@@ -93,7 +97,9 @@ public class JiraMessageContentConverter {
                                                   .orElseThrow(() -> new AlertException(String.format("No actionable component items were found. Provider: %s, Topic: %s, SubTopic: %s", providerName, topic, nullableSubTopic)));
                 ItemOperation operation = arbitraryItem.getOperation();
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-                IssueTrackerRequest issueRequest = jiraMessageParser.createIssueContentModel(trackingKey, providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
+                IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
+                IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
+                IssueTrackerRequest issueRequest = IssueCreationRequest.of(issueProperties, issueContentModel);
                 if (ItemOperation.DELETE == operation || ItemOperation.INFO == operation) {
                     // keep the properties only add the comments.
                     IssueContentModel issueContent = IssueContentModel.of(StringUtils.EMPTY, StringUtils.EMPTY, new LinkedList<>());
