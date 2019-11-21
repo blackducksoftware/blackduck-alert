@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.issuetracker.service;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
@@ -36,7 +36,14 @@ public abstract class IssueTrackerService<T> {
         this.gson = gson;
     }
 
-    public abstract IssueTrackerResponse sendRequests(T context, Collection<IssueTrackerRequest> requests) throws IntegrationException;
+    /**
+     * This method will send requests to an Issue Tracker to create, update, or resolve issues.
+     * @param context  The object containing the configuration of the issue tracker server and the configuration of how to map and manage issues.
+     * @param requests The list of requests to submit to the issue tracker.  Must be a list because the order requests are added matter.
+     * @return A response object containing the aggregate status of sending the requests passed.
+     * @throws IntegrationException
+     */
+    public abstract IssueTrackerResponse sendRequests(T context, List<IssueTrackerRequest> requests) throws IntegrationException;
 
     public Gson getGson() {
         return gson;

@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.issuetracker.jira.cloud;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class JiraCloudService extends IssueTrackerService<JiraCloudContext> {
     }
 
     @Override
-    public IssueTrackerResponse sendRequests(JiraCloudContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException {
+    public IssueTrackerResponse sendRequests(JiraCloudContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
         JiraCloudProperties jiraProperties = context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();

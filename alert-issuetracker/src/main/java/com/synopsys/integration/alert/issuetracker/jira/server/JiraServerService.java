@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.issuetracker.jira.server;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class JiraServerService extends IssueTrackerService<JiraServerContext> {
     }
 
     @Override
-    public IssueTrackerResponse sendRequests(JiraServerContext context, Collection<IssueTrackerRequest> requests) throws IntegrationException {
+    public IssueTrackerResponse sendRequests(JiraServerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
         JiraServerProperties jiraProperties = context.getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();

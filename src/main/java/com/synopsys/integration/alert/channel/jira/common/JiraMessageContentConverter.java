@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -59,16 +58,16 @@ public class JiraMessageContentConverter {
         this.jiraMessageParser = jiraMessageParser;
     }
 
-    public Collection<IssueTrackerRequest> convertMessageContents(IssueConfig issueConfig, MessageContentGroup content) throws IntegrationException {
-        Collection<IssueTrackerRequest> issues = new LinkedList<>();
+    public List<IssueTrackerRequest> convertMessageContents(IssueConfig issueConfig, MessageContentGroup content) throws IntegrationException {
+        List<IssueTrackerRequest> issues = new LinkedList<>();
         for (ProviderMessageContent messageContent : content.getSubContent()) {
-            Collection<IssueTrackerRequest> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, messageContent);
+            List<IssueTrackerRequest> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, messageContent);
             issues.addAll(issueKeysForMessage);
         }
         return issues;
     }
 
-    protected Collection<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
+    protected List<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
         if (ItemOperation.DELETE == action) {
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             String trackingKey = createAdditionalTrackingKey(null);
@@ -82,9 +81,9 @@ public class JiraMessageContentConverter {
         return List.of();
     }
 
-    protected Collection<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
+    protected List<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
-        Collection<IssueTrackerRequest> issues = new LinkedList<>();
+        List<IssueTrackerRequest> issues = new LinkedList<>();
 
         for (Set<ComponentItem> componentItems : groupedComponentItems.values()) {
             ComponentItem arbitraryItem = componentItems
@@ -121,12 +120,12 @@ public class JiraMessageContentConverter {
         return StringUtils.EMPTY;
     }
 
-    private Collection<IssueTrackerRequest> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, ProviderMessageContent messageContent) throws IntegrationException {
+    private List<IssueTrackerRequest> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, ProviderMessageContent messageContent) throws IntegrationException {
         String providerName = messageContent.getProvider().getValue();
         LinkableItem topic = messageContent.getTopic();
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
-        Collection<IssueTrackerRequest> requests;
+        List<IssueTrackerRequest> requests;
         if (messageContent.isTopLevelActionOnly()) {
             requests = updateIssueByTopLevelAction(issueConfig, providerName, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
         } else {

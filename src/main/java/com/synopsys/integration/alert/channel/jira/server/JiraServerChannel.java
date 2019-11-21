@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,7 +59,7 @@ public class JiraServerChannel extends DistributionChannel {
         JiraServerContext context = contextBuilder.build(fieldAccessor);
         JiraServerService jiraService = new JiraServerService(getGson());
 
-        Collection<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+        List<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
         IssueTrackerResponse result = jiraService.sendRequests(context, requests);
         return new MessageResult(result.getStatusMessage());
     }
