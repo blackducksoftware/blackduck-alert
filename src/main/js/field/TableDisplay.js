@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
+import { Modal } from 'react-bootstrap';
+import ConfigButtons from 'component/common/ConfigButtons';
 
 class TableDisplay extends Component {
     constructor(props) {
@@ -12,10 +13,13 @@ class TableDisplay extends Component {
         this.createTableColumns = this.createTableColumns.bind(this);
         this.createButtonGroup = this.createButtonGroup.bind(this);
         this.createInsertModal = this.createInsertModal.bind(this);
-        this.checkPermissions = this.checkPermissions.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.flipShowSwitch = this.flipShowSwitch.bind(this);
 
         this.state = {
-            data: []
+            data: [],
+            show: false
         };
     }
 
@@ -50,7 +54,10 @@ class TableDisplay extends Component {
         return (
             <div>
                 {buttons.insertBtn
-                && <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
+                && <InsertButton className="addJobButton btn-md" onClick={() => {
+                    insertOnClick();
+                    this.flipShowSwitch()
+                }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
@@ -66,22 +73,54 @@ class TableDisplay extends Component {
         );
     }
 
-    createInsertModal() {
-        return this.props.insertModal();
+    handleClose() {
+        this.refs.table.cleanSelected();
+        this.flipShowSwitch();
     }
 
-    checkPermissions(operation) {
-        const { descriptor } = this.props;
-        if (descriptor) {
-            return DescriptorUtilities.isOperationAssigned(descriptor, operation)
-        }
-        return false;
+    handleSubmit() {
+        this.refs.table.cleanSelected();
+        this.flipShowSwitch();
+    }
+
+    flipShowSwitch() {
+        this.setState({
+            show: !this.state.show
+        });
+    }
+
+    createInsertModal(onModalClose) {
+        return (
+            <Modal size="lg" show={this.state.show} onHide={() => {
+                this.handleClose();
+                onModalClose()
+            }}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Role</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
+                        {this.props.createInsertFields()}
+                        <ConfigButtons
+                            cancelId="job-cancel"
+                            submitId="job-submit"
+                            includeCancel
+                            onCancelClick={() => {
+                                this.handleClose();
+                                onModalClose()
+                            }}
+                            isFixed={false}
+                        />
+                    </form>
+                </Modal.Body>
+            </Modal>
+        );
     }
 
     render() {
         const tableColumns = this.createTableColumns();
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage } = this.props;
+        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton } = this.props;
         const { data } = this.state;
 
         const tableOptions = {
@@ -104,19 +143,17 @@ class TableDisplay extends Component {
             }
         };
 
-        const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
-
         const content = (
-            <div>
-                <BootstrapTable
+            <
+                div>
+                < BootstrapTable
                     version="4"
                     hover
                     condensed
                     data={data}
                     containerClass="table"
-                    insertRow={canCreate}
-                    deleteRow={canDelete}
+                    insertRow={newButton}
+                    deleteRow={deleteButton}
                     selectRow={selectRow}
                     options={tableOptions}
                     search
@@ -156,14 +193,15 @@ TableDisplay.propTypes = {
         headerLabel: PropTypes.string.isRequired,
         isKey: PropTypes.bool.isRequired
     })).isRequired,
-    insertModal: PropTypes.func.isRequired,
+    createInsertFields: PropTypes.func.isRequired,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
     selectRowBox: PropTypes.bool,
     tableMessage: PropTypes.string,
     autoRefresh: PropTypes.bool,
-    descriptor: PropTypes.object,
+    newButton: PropTypes.bool,
+    deleteButton: PropTypes.bool,
     inProgress: PropTypes.bool
 };
 
@@ -174,7 +212,8 @@ TableDisplay.defaultProps = {
     selectRowBox: true,
     tableMessage: '',
     autoRefresh: true,
-    descriptor: null,
+    newButton: true,
+    deleteButton: true,
     inProgress: false
 };
 

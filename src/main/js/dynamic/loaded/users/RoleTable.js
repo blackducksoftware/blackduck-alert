@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
-import RoleConfiguration from "./RoleConfiguration";
+import RoleConfiguration from 'dynamic/loaded/users/RoleConfiguration';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class RoleTable extends Component {
 
@@ -11,6 +12,10 @@ class RoleTable extends Component {
 
         this.retrieveData = this.retrieveData.bind(this);
         this.createColumns = this.createColumns.bind(this);
+        this.createConfiguration = this.createConfiguration.bind(this);
+        this.checkPermissions = this.checkPermissions.bind(this);
+
+        const descriptor = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)[0];
 
         this.state = {
             items: [],
@@ -20,7 +25,8 @@ class RoleTable extends Component {
             sortField: 'lastSent',
             sortOrder: 'desc',
             currentRowSelected: {},
-            showDetailModal: false
+            showDetailModal: false,
+            descriptor: descriptor
         };
     }
 
@@ -48,11 +54,27 @@ class RoleTable extends Component {
         return [];
     }
 
+    createConfiguration() {
+        return <RoleConfiguration />;
+    }
+
+    checkPermissions(operation) {
+        const { descriptor } = this.state;
+        console.log(descriptor);
+        if (descriptor) {
+            return DescriptorUtilities.isOperationAssigned(descriptor, operation)
+        }
+        return false;
+    }
+
     render() {
+        const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
+
         return (
             <div>
                 <div>
-                    <TableDisplay retrieveData={this.retrieveData} columns={this.createColumns()} insertModal={() => <RoleConfiguration />} />
+                    <TableDisplay retrieveData={this.retrieveData} columns={this.createColumns()} createInsertFields={this.createConfiguration} newButton={canCreate} deleteButton={canDelete} />
                 </div>
             </div>
         );
@@ -79,7 +101,7 @@ RoleTable.propTypes = {
 const mapStateToProps = state => ({
     // inProgress: state.roles.inProgress,
     // items: state.roles.data,
-    // descriptors: state.descriptors.items
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({
