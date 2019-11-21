@@ -45,7 +45,7 @@ public abstract class IssueTrackerService<T> {
      */
     public abstract IssueTrackerResponse sendRequests(T context, List<IssueTrackerRequest> requests) throws IntegrationException;
 
-    public Gson getGson() {
+    protected Gson getGson() {
         return gson;
     }
 }

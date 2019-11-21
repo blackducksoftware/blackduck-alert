@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
-import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
+import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerContext;
@@ -30,37 +30,37 @@ import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerPropert
 
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
     @Override
-    public String getProjectFieldKey() {
+    protected String getProjectFieldKey() {
         return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
-    public String getIssueTypeFieldKey() {
+    protected String getIssueTypeFieldKey() {
         return JiraServerDescriptor.KEY_ISSUE_TYPE;
     }
 
     @Override
-    public String getIssueCreatorFieldKey() {
+    protected String getIssueCreatorFieldKey() {
         return JiraServerDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
-    public String getAddCommentsFieldKey() {
+    protected String getAddCommentsFieldKey() {
         return JiraServerDescriptor.KEY_ADD_COMMENTS;
     }
 
     @Override
-    public String getResolveTransitionFieldKey() {
+    protected String getResolveTransitionFieldKey() {
         return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
-    public String getOpenTransitionFieldKey() {
+    protected String getOpenTransitionFieldKey() {
         return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
-    public String getDefaultIssueCreatorFieldKey() {
+    protected String getDefaultIssueCreatorFieldKey() {
         return JiraServerDescriptor.KEY_SERVER_USERNAME;
     }
 

@@ -22,45 +22,45 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import com.synopsys.integration.alert.channel.jira.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudContext;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudProperties;
 
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
     @Override
-    public String getProjectFieldKey() {
+    protected String getProjectFieldKey() {
         return JiraDescriptor.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
-    public String getIssueTypeFieldKey() {
+    protected String getIssueTypeFieldKey() {
         return JiraDescriptor.KEY_ISSUE_TYPE;
     }
 
     @Override
-    public String getIssueCreatorFieldKey() {
+    protected String getIssueCreatorFieldKey() {
         return JiraDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
-    public String getAddCommentsFieldKey() {
+    protected String getAddCommentsFieldKey() {
         return JiraDescriptor.KEY_ADD_COMMENTS;
     }
 
     @Override
-    public String getResolveTransitionFieldKey() {
+    protected String getResolveTransitionFieldKey() {
         return JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
-    public String getOpenTransitionFieldKey() {
+    protected String getOpenTransitionFieldKey() {
         return JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
-    public String getDefaultIssueCreatorFieldKey() {
+    protected String getDefaultIssueCreatorFieldKey() {
         return JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
     }
 

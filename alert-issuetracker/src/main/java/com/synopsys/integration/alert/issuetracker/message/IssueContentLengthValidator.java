@@ -27,11 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerContentFormatException;
 
 public abstract class IssueContentLengthValidator {
-    public abstract int getTitleLength();
+    protected abstract int getTitleLength();
 
-    public abstract int getDescriptionLength();
+    protected abstract int getDescriptionLength();
 
-    public abstract int getCommentLength();
+    protected abstract int getCommentLength();
 
     public boolean validateContentLength(IssueContentModel issueContent) throws IssueTrackerContentFormatException {
         StringBuilder errors = new StringBuilder();

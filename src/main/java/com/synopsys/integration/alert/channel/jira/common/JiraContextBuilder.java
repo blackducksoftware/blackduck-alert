@@ -20,27 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira;
+package com.synopsys.integration.alert.channel.jira.common;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
 
 public abstract class JiraContextBuilder<T> {
+    protected abstract String getProjectFieldKey();
 
-    public abstract String getProjectFieldKey();
+    protected abstract String getIssueTypeFieldKey();
 
-    public abstract String getIssueTypeFieldKey();
+    protected abstract String getIssueCreatorFieldKey();
 
-    public abstract String getIssueCreatorFieldKey();
+    protected abstract String getAddCommentsFieldKey();
 
-    public abstract String getAddCommentsFieldKey();
+    protected abstract String getResolveTransitionFieldKey();
 
-    public abstract String getResolveTransitionFieldKey();
+    protected abstract String getOpenTransitionFieldKey();
 
-    public abstract String getOpenTransitionFieldKey();
-
-    public abstract String getDefaultIssueCreatorFieldKey();
+    protected abstract String getDefaultIssueCreatorFieldKey();
 
     public abstract T build(FieldAccessor fieldAccessor);
 
