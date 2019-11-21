@@ -28,6 +28,7 @@ import java.util.LinkedList;
 public class IssueContentModel {
     private final String title;
     private final String description;
+    //TODO add comments to the difference.
     private final Collection<String> descriptionComments;
     private final Collection<String> additionalComments;
 

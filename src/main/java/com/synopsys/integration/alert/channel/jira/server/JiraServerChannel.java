@@ -42,6 +42,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JiraServerChannel extends DistributionChannel {
+    // TODO create IssueTrackerChannel that has protected methods.
     private final JiraServerChannelKey descriptorKey;
     private final JiraMessageContentConverter jiraContentConverter;
 

@@ -46,6 +46,8 @@ public abstract class IssueContentLengthValidator {
             errors.append(String.format("Description longer than the limit of %d characters. ", getTitleLength()));
         }
 
+        //TODO Validate the additional comments too.
+
         boolean commentTooLong = issueContent.getDescriptionComments().stream()
                                      .anyMatch(comment -> StringUtils.length(comment) > getCommentLength());
         if (commentTooLong) {

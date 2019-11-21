@@ -26,5 +26,6 @@ import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 
 public interface TestIssueCreator {
+    // This method could create a creation request or a resolution request.
     IssueTrackerRequest createRequest(IssueOperation operation, String messageId);
 }

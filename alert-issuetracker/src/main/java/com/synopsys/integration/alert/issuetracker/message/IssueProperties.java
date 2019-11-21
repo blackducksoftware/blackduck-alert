@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
+//TODO IssueSearchProperties
 public interface IssueProperties {
 
 }
