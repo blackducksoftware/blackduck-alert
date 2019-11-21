@@ -22,78 +22,46 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudContext;
+import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
-import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
-public class JiraChannel extends IssueTrackerChannel {
-    private final Logger logger = LoggerFactory.getLogger(JiraChannel.class);
-
+public class JiraChannel extends DistributionChannel {
     private final JiraChannelKey jiraChannelKey;
-    private final JiraMessageParser jiraMessageParser;
+    private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
-    public JiraChannel(JiraChannelKey jiraChannelKey, JiraMessageParser jiraMessageParser, Gson gson, AuditUtility auditUtility) {
+    public JiraChannel(JiraChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter) {
         super(gson, auditUtility);
         this.jiraChannelKey = jiraChannelKey;
-        this.jiraMessageParser = jiraMessageParser;
+        this.jiraContentConverter = jiraContentConverter;
     }
 
     @Override
-    public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
+    public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        MessageContentGroup content = event.getContent();
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
-        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
-        PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
-        logger.debug("Verifying the required application is installed on the Jira Cloud server...");
-        boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
-        if (missingApp) {
-            throw new AlertException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
-        }
+        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
+        JiraCloudContext context = contextBuilder.build(fieldAccessor);
+        JiraCloudService jiraService = new JiraCloudService(getGson());
 
-        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
-        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-        IssueTypeService issueTypeService = jiraCloudServiceFactory.createIssueTypeService();
-        IssueMetaDataService issueMetaDataService = jiraCloudServiceFactory.createIssueMetadataService();
-
-        JiraCloudIssueConfigValidator jiraIssueConfigValidator = new JiraCloudIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
-        IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
-
-        IssueService issueService = jiraCloudServiceFactory.createIssueService();
-        IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
-        IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
-        JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
-        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
-        return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
+        List<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+        IssueTrackerResponse result = jiraService.sendRequests(context, requests);
+        return new MessageResult(result.getStatusMessage());
     }
 
     @Override

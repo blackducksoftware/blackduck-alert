@@ -22,73 +22,51 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.actions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.IssueTrackerFieldExceptionConverter;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerDistributionTestAction;
-import com.synopsys.integration.alert.common.channel.issuetracker.TransitionValidator;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerCreateIssueTestAction;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.server.service.IssueService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 
 @Component
-public class JiraServerDistributionTestAction extends IssueTrackerDistributionTestAction {
-    private final Logger logger = LoggerFactory.getLogger(JiraServerDistributionTestAction.class);
-    private Gson gson;
+public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
+    private final Gson gson;
+    private final JiraMessageParser jiraMessageParser;
+    private final IssueTrackerFieldExceptionConverter exceptionConverter;
 
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel, Gson gson) {
+    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel, Gson gson, JiraMessageParser jiraMessageParser, IssueTrackerFieldExceptionConverter exceptionConverter) {
         super(distributionChannel);
         this.gson = gson;
+        this.jiraMessageParser = jiraMessageParser;
+        this.exceptionConverter = exceptionConverter;
     }
 
     @Override
-    protected String getOpenTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getResolveTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getTodoStatusFieldKey() {
-        return JiraTransitionHandler.TODO_STATUS_CATEGORY_KEY;
-    }
-
-    @Override
-    protected String getDoneStatusFieldKey() {
-        return JiraTransitionHandler.DONE_STATUS_CATEGORY_KEY;
-    }
-
-    @Override
-    protected TransitionValidator<TransitionComponent> createTransitionValidator(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
-        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-        IssueService issueService = jiraServerServiceFactory.createIssueService();
-        return new JiraServerTransitionHandler(issueService);
-    }
-
-    @Override
-    protected void safelyCleanUpIssue(FieldAccessor fieldAccessor, String issueKey) {
+    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
+        IssueTrackerContext context = contextBuilder.build(fieldAccessor);
+        JiraServerService jiraService = new JiraServerService(gson);
+        JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
+        JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson, issueCreator);
         try {
-            JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
-            JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-            IssueService issueService = jiraServerServiceFactory.createIssueService();
-            issueService.deleteIssue(issueKey);
-        } catch (IntegrationException e) {
-            logger.warn("There was a problem trying to delete a the Jira Server distribution test issue, {}: {}", issueKey, e);
+            IssueTrackerResponse result = testAction.testConfig(context);
+            return new MessageResult(result.getStatusMessage());
+        } catch (IssueTrackerFieldException ex) {
+            throw exceptionConverter.convert(ex);
         }
     }
 }
