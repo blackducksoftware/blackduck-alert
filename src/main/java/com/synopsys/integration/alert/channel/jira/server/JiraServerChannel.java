@@ -22,77 +22,47 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageResult;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
+import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerContext;
+import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.IssueService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
-import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
-public class JiraServerChannel extends IssueTrackerChannel {
-    private static final Logger logger = LoggerFactory.getLogger(JiraServerChannel.class);
-    private final JiraMessageParser jiraMessageParser;
+public class JiraServerChannel extends DistributionChannel {
+    // TODO create IssueTrackerChannel that has protected methods.
     private final JiraServerChannelKey descriptorKey;
+    private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
-    public JiraServerChannel(Gson gson, AuditUtility auditUtility, JiraServerChannelKey descriptorKey, JiraMessageParser jiraMessageParser) {
+    public JiraServerChannel(Gson gson, JiraServerChannelKey descriptorKey, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter) {
         super(gson, auditUtility);
         this.descriptorKey = descriptorKey;
-        this.jiraMessageParser = jiraMessageParser;
+        this.jiraContentConverter = jiraContentConverter;
     }
 
     @Override
-    public IssueTrackerMessageResult sendMessage(DistributionEvent event) throws IntegrationException {
+    public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        MessageContentGroup content = event.getContent();
-        JiraServerProperties jiraProperties = new JiraServerProperties(fieldAccessor);
-        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
-        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
-        logger.debug("Verifying the required application is installed on the Jira server...");
-        boolean missingApp = jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isEmpty();
-        if (missingApp) {
-            throw new AlertException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
-        }
+        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
+        JiraServerContext context = contextBuilder.build(fieldAccessor);
+        JiraServerService jiraService = new JiraServerService(getGson());
 
-        ProjectService projectService = jiraServerServiceFactory.createProjectService();
-        UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
-        IssueTypeService issueTypeService = jiraServerServiceFactory.createIssueTypeService();
-        IssueMetaDataService issueMetaDataService = jiraServerServiceFactory.createIssueMetadataService();
-
-        JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
-        IssueConfig jiraIssueConfig = jiraIssueConfigValidator.validate(fieldAccessor);
-
-        IssueService issueService = jiraServerServiceFactory.createIssueService();
-        IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
-        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
-        JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
-        JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, jiraMessageParser, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler);
-        return jiraIssueHandler.createOrUpdateIssues(jiraIssueConfig, content);
+        List<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+        IssueTrackerResponse result = jiraService.sendRequests(context, requests);
+        return new MessageResult(result.getStatusMessage());
     }
 
     @Override
