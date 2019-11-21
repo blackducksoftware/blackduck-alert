@@ -68,7 +68,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
                                                    .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
-                                                   .applySearchable(true);
+                                                   .applySearchable(true)
+                                                   .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
                                                        .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly);
         ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY);
