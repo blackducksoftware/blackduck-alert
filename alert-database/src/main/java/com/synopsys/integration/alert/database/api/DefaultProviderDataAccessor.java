@@ -59,8 +59,7 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     public static final Integer DEFAULT_OFFSET = 0;
     public static final Integer DEFAULT_LIMIT = 100;
-
-    private static final int MAX_DESCRIPTION_LENGTH = 250;
+    public static final int MAX_DESCRIPTION_LENGTH = 250;
 
     private final Logger logger = LoggerFactory.getLogger(DefaultProviderDataAccessor.class);
     private final ProviderProjectRepository providerProjectRepository;
@@ -171,11 +170,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         updateUserProjectRelations(projectToUserData);
     }
 
-    // ========================
-    // Non-interface public API
-    // ========================
-
-    public void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    private void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
         ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
                                             .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
         Long projectId = project.getId();
@@ -187,7 +182,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         }
     }
 
-    public List<ProviderUserModel> saveUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+    private List<ProviderUserModel> saveUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
         return users
                    .stream()
                    .map(user -> convertToUserEntity(providerKey, user))
@@ -196,11 +191,11 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toList());
     }
 
-    public void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+    private void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
         users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerKey.getUniversalKey(), user.getEmailAddress()));
     }
 
-    public List<ProviderProject> saveProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
+    private List<ProviderProject> saveProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
         Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
                                                                       .stream()
                                                                       .map(project -> convertToProjectEntity(providerKey, project))
@@ -211,19 +206,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .map(this::convertToProjectModel)
                    .collect(Collectors.toList());
     }
-
-    public ProviderProject saveProject(ProviderKey providerKey, ProviderProject providerProject) {
-        ProviderProjectEntity trimmedBlackDuckProjectEntity = convertToProjectEntity(providerKey, providerProject);
-        return convertToProjectModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
-    }
-
-    public void deleteProjectByHref(String projectHref) {
-        providerProjectRepository.deleteByHref(projectHref);
-    }
-
-    // ============
-    // Abstractions
-    // ============
 
     private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
         return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),

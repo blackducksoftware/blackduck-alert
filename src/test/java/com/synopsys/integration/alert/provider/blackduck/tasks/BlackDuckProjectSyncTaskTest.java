@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(List.of(user2, user4)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));
 
-        Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(Collections.emptyList());
+        Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(List.of());
         projectSyncTask.run();
 
         assertEquals(2, providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).size());
