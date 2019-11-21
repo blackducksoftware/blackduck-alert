@@ -60,16 +60,16 @@ import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckProjectSyncTask extends ScheduledTask {
+public class BlackDuckDataSyncTask extends ScheduledTask {
     public static final String TASK_NAME = "blackduck-sync-project-task";
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectSyncTask.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckProjectSyncTask(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, BlackDuckProviderKey providerKey) {
+    public BlackDuckDataSyncTask(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, BlackDuckProviderKey providerKey) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckDataAccessor = blackDuckDataAccessor;
@@ -80,17 +80,20 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
     @Override
     public void runTask() {
         try {
-            final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+            Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
             if (optionalBlackDuckHttpClient.isPresent()) {
-                final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
+                BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-                final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
-                final Map<ProviderProject, ProjectView> currentDataMap = getCurrentData(projectViews, blackDuckService);
-                final Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(currentDataMap.keySet());
-                final Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, projectUsersService);
-                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses);
+                BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+
+                List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
+                Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
+                Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(blackDuckToAlertProjects.values());
+
+                Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
+                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
+                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses, allRelevantBlackDuckUsers);
 
                 blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();
@@ -98,50 +101,49 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
-        } catch (final IntegrationException | AlertRuntimeException e) {
+        } catch (IntegrationException | AlertRuntimeException e) {
             logger.error("Could not retrieve the current data from the BlackDuck server: " + e.getMessage(), e);
         }
     }
 
-    private Map<ProviderProject, ProjectView> getCurrentData(final List<ProjectView> projectViews, final BlackDuckService blackDuckService) {
-        final Map<ProviderProject, ProjectView> projectMap = new ConcurrentHashMap<>();
+    private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
+        Map<ProjectView, ProviderProject> projectMap = new ConcurrentHashMap<>();
         projectViews
             .parallelStream()
             .forEach(projectView -> {
                 String projectOwnerEmail = null;
                 if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
                     try {
-                        final UserView projectOwner = blackDuckService.getResponse(projectView.getProjectOwner(), UserView.class);
+                        UserView projectOwner = blackDuckService.getResponse(projectView.getProjectOwner(), UserView.class);
                         projectOwnerEmail = projectOwner.getEmail();
-                    } catch (final IntegrationException e) {
+                    } catch (IntegrationException e) {
                         logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
                     }
                 }
-                projectMap.put(new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref(), projectOwnerEmail), projectView);
+                projectMap.put(projectView, new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref(), projectOwnerEmail));
             });
         return projectMap;
     }
 
-    private Map<ProviderProject, Set<String>> getEmailsPerProject(final Map<ProviderProject, ProjectView> currentDataMap, final ProjectUsersService projectUsersService) {
-        final Map<ProviderProject, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
-        currentDataMap.entrySet()
+    private Map<ProviderProject, Set<String>> getEmailsPerProject(Map<ProjectView, ProviderProject> blackDuckToAlertProjects, ProjectUsersService projectUsersService) {
+        Map<ProviderProject, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
+        blackDuckToAlertProjects.entrySet()
             .parallelStream()
             .forEach(entry -> {
                 try {
-                    final ProviderProject blackDuckProject = entry.getKey();
-                    final ProjectView projectView = entry.getValue();
-
-                    final Set<String> projectUserEmailAddresses = projectUsersService.getAllActiveUsersForProject(projectView)
-                                                                      .stream()
-                                                                      .map(UserView::getEmail)
-                                                                      .filter(StringUtils::isNotBlank)
-                                                                      .collect(Collectors.toSet());
-                    if (StringUtils.isNotBlank(blackDuckProject.getProjectOwnerEmail())) {
-                        projectUserEmailAddresses.add(blackDuckProject.getProjectOwnerEmail());
+                    ProjectView blackDuckProjectView = entry.getKey();
+                    ProviderProject alertProject = entry.getValue();
+                    Set<String> projectUserEmailAddresses = projectUsersService.getAllActiveUsersForProject(blackDuckProjectView)
+                                                                .stream()
+                                                                .filter(UserView::getActive)
+                                                                .map(UserView::getEmail)
+                                                                .filter(StringUtils::isNotBlank)
+                                                                .collect(Collectors.toSet());
+                    if (StringUtils.isNotBlank(alertProject.getProjectOwnerEmail())) {
+                        projectUserEmailAddresses.add(alertProject.getProjectOwnerEmail());
                     }
-                    projectToEmailAddresses.put(blackDuckProject, projectUserEmailAddresses);
-
-                } catch (final IntegrationException e) {
+                    projectToEmailAddresses.put(alertProject, projectUserEmailAddresses);
+                } catch (IntegrationException e) {
                     // We do this to break out of the stream
                     throw new AlertRuntimeException(e.getMessage(), e);
                 }
@@ -149,29 +151,37 @@ public class BlackDuckProjectSyncTask extends ScheduledTask {
         return projectToEmailAddresses;
     }
 
-    private Set<String> retrieveAllProjectsInJobs(final Set<ProviderProject> foundProjects) {
-        final Set<String> configuredProjectNames = new HashSet<>();
-        for (final ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
-            final FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-            final String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+    private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
+        Set<String> configuredProjectNames = new HashSet<>();
+        for (ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
+            FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
+            String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (StringUtils.isNotBlank(projectNamePattern)) {
-                final Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
+                Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
                 configuredProjectNames.addAll(matchedProjectNames);
             }
-            final Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             configuredProjectNames.addAll(configuredProjects);
         }
 
         return configuredProjectNames;
     }
 
-    private void updateBlackDuckProjectPermissions(final Set<String> configuredProjects, final List<ProjectView> projectViews, final ProjectUsersService projectUsersService, final BlackDuckService blackDuckService)
-        throws IntegrationException {
-        final UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
-        final Set<ProjectView> matchingProjects = projectViews.parallelStream()
-                                                      .filter(projectView -> configuredProjects.contains(projectView.getName()))
-                                                      .collect(Collectors.toSet());
-        for (final ProjectView projectView : matchingProjects) {
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
+        return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
+                   .stream()
+                   .filter(UserView::getActive)
+                   .map(UserView::getEmail)
+                   .filter(StringUtils::isNotBlank)
+                   .collect(Collectors.toSet());
+    }
+
+    private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckService blackDuckService) throws IntegrationException {
+        UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
+        Set<ProjectView> matchingProjects = projectViews.parallelStream()
+                                                .filter(projectView -> configuredProjects.contains(projectView.getName()))
+                                                .collect(Collectors.toSet());
+        for (ProjectView projectView : matchingProjects) {
             logger.debug("Adding user to Project {}", projectView.getName());
             projectUsersService.addUserToProject(projectView, currentUser);
         }

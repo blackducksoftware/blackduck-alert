@@ -41,12 +41,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
@@ -60,8 +59,7 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     public static final Integer DEFAULT_OFFSET = 0;
     public static final Integer DEFAULT_LIMIT = 100;
-
-    private static final int MAX_DESCRIPTION_LENGTH = 250;
+    public static final int MAX_DESCRIPTION_LENGTH = 250;
 
     private final Logger logger = LoggerFactory.getLogger(DefaultProviderDataAccessor.class);
     private final ProviderProjectRepository providerProjectRepository;
@@ -98,40 +96,16 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderProject> findByProviderKey(DescriptorKey descriptorKey) {
-        return providerProjectRepository.findByProvider(descriptorKey.getUniversalKey())
+    public List<ProviderProject> findByProviderKey(ProviderKey providerKey) {
+        return providerProjectRepository.findByProvider(providerKey.getUniversalKey())
                    .stream()
                    .map(this::convertToProjectModel)
                    .collect(Collectors.toList());
     }
 
     @Override
-    public ProviderProject saveProject(DescriptorKey descriptorKey, ProviderProject providerProject) {
-        ProviderProjectEntity trimmedBlackDuckProjectEntity = convertToProjectEntity(descriptorKey, providerProject);
-        return convertToProjectModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
-    }
-
-    @Override
-    public void deleteProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
+    public void deleteProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
         providerProjects.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
-    }
-
-    @Override
-    public List<ProviderProject> saveProjects(DescriptorKey descriptorKey, Collection<ProviderProject> providerProjects) {
-        Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
-                                                                      .stream()
-                                                                      .map(project -> convertToProjectEntity(descriptorKey, project))
-                                                                      .collect(Collectors.toSet());
-        List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
-        return savedEntities
-                   .stream()
-                   .map(this::convertToProjectModel)
-                   .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteByHref(String projectHref) {
-        providerProjectRepository.deleteByHref(projectHref);
     }
 
     @Override
@@ -149,19 +123,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                        .collect(Collectors.toSet());
         }
         return Set.of();
-    }
-
-    @Override
-    public void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
-        ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
-                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
-        Long projectId = project.getId();
-        for (String emailAddress : emailAddresses) {
-            providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
-                .stream()
-                .map(ProviderUserEntity::getId)
-                .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));
-        }
     }
 
     @Override
@@ -196,27 +157,54 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public void deleteUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> users) {
-        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(descriptorKey.getUniversalKey(), user.getEmailAddress()));
+    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData) {
+        updateProjectAndUserData(providerKey, projectToUserData, Set.of());
     }
 
     @Override
-    public List<ProviderUserModel> saveUsers(DescriptorKey descriptorKey, Collection<ProviderUserModel> users) {
-        List<ProviderUserModel> savedUsers = users
-                                                 .stream()
-                                                 .map(user -> convertToUserEntity(descriptorKey, user))
-                                                 .map(providerUserRepository::save)
-                                                 .map(entity -> convertToUserModel(entity))
-                                                 .collect(Collectors.toList());
-        return savedUsers;
-    }
-
-    @Override
-    public void updateProjectAndUserData(DescriptorKey descriptorKey, Map<ProviderProject, Set<String>> projectToUserData) {
-        updateProjectDB(descriptorKey, projectToUserData.keySet());
+    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
+        updateProjectDB(providerKey, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-        updateUserDB(descriptorKey, userData);
+        userData.addAll(additionalRelevantUsers);
+        updateUserDB(providerKey, userData);
         updateUserProjectRelations(projectToUserData);
+    }
+
+    private void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+        ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
+                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
+        Long projectId = project.getId();
+        for (String emailAddress : emailAddresses) {
+            providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
+                .stream()
+                .map(ProviderUserEntity::getId)
+                .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));
+        }
+    }
+
+    private List<ProviderUserModel> saveUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+        return users
+                   .stream()
+                   .map(user -> convertToUserEntity(providerKey, user))
+                   .map(providerUserRepository::save)
+                   .map(this::convertToUserModel)
+                   .collect(Collectors.toList());
+    }
+
+    private void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerKey.getUniversalKey(), user.getEmailAddress()));
+    }
+
+    private List<ProviderProject> saveProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
+        Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
+                                                                      .stream()
+                                                                      .map(project -> convertToProjectEntity(providerKey, project))
+                                                                      .collect(Collectors.toSet());
+        List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
+        return savedEntities
+                   .stream()
+                   .map(this::convertToProjectModel)
+                   .collect(Collectors.toList());
     }
 
     private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
@@ -224,41 +212,41 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
             providerProjectEntity.getProjectOwnerEmail());
     }
 
-    private ProviderProjectEntity convertToProjectEntity(DescriptorKey descriptorKey, ProviderProject providerProject) {
+    private ProviderProjectEntity convertToProjectEntity(ProviderKey providerKey, ProviderProject providerProject) {
         String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), descriptorKey.getUniversalKey());
+        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerKey.getUniversalKey());
     }
 
     private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
         return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
     }
 
-    private ProviderUserEntity convertToUserEntity(DescriptorKey descriptorKey, ProviderUserModel providerUserModel) {
-        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), descriptorKey.getUniversalKey());
+    private ProviderUserEntity convertToUserEntity(ProviderKey providerKey, ProviderUserModel providerUserModel) {
+        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerKey.getUniversalKey());
     }
 
-    private List<ProviderProject> updateProjectDB(DescriptorKey descriptorKey, Set<ProviderProject> currentProjects) {
+    private List<ProviderProject> updateProjectDB(ProviderKey providerKey, Set<ProviderProject> currentProjects) {
         Set<ProviderProject> projectsToAdd = new HashSet<>();
         Set<ProviderProject> projectsToRemove = new HashSet<>();
-        List<ProviderProject> storedProjects = findByProviderKey(descriptorKey);
+        List<ProviderProject> storedProjects = findByProviderKey(providerKey);
 
         projectsToRemove.addAll(storedProjects);
-        projectsToRemove.removeIf(project -> currentProjects.contains(project));
+        projectsToRemove.removeIf(currentProjects::contains);
 
         projectsToAdd.addAll(currentProjects);
-        projectsToAdd.removeIf(project -> storedProjects.contains(project));
+        projectsToAdd.removeIf(storedProjects::contains);
 
         logger.info("Adding {} projects", projectsToAdd.size());
         logger.info("Removing {} projects", projectsToRemove.size());
-        deleteProjects(descriptorKey, projectsToRemove);
-        return saveProjects(descriptorKey, projectsToAdd);
+        deleteProjects(providerKey, projectsToRemove);
+        return saveProjects(providerKey, projectsToAdd);
     }
 
-    private void updateUserDB(DescriptorKey descriptorKey, Set<String> userEmailAddresses) {
+    private void updateUserDB(ProviderKey providerKey, Set<String> userEmailAddresses) {
         Set<String> emailsToAdd = new HashSet<>();
         Set<String> emailsToRemove = new HashSet<>();
 
-        List<ProviderUserModel> providerUserEntities = getAllUsers(descriptorKey.getUniversalKey());
+        List<ProviderUserModel> providerUserEntities = getAllUsers(providerKey.getUniversalKey());
         Set<String> storedEmails = providerUserEntities
                                        .stream()
                                        .map(ProviderUserModel::getEmailAddress)
@@ -286,16 +274,15 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                                                                    .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
                                                                    .collect(Collectors.toList());
 
-        List<ProviderUserModel> providerUserEntityList = emailsToAdd
-                                                             .stream()
-                                                             .map(email -> new ProviderUserModel(email, false))
-                                                             .collect(Collectors.toList());
-        deleteUsers(descriptorKey, providerUserEntitiesToRemove);
-        saveUsers(descriptorKey, providerUserEntityList);
+        List<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
+                                                                .stream()
+                                                                .map(email -> new ProviderUserModel(email, false))
+                                                                .collect(Collectors.toList());
+        deleteUsers(providerKey, providerUserEntitiesToRemove);
+        saveUsers(providerKey, providerUserEntitiesToAdd);
     }
 
     private void updateUserProjectRelations(Map<ProviderProject, Set<String>> projectToEmailAddresses) {
-        Set<ProviderUserProjectRelation> userProjectRelations = new HashSet<>();
         for (Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
                 mapUsersToProjectByEmail(projectToEmail.getKey().getHref(), projectToEmail.getValue());
@@ -303,7 +290,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                 logger.error("Problem mapping users to projects", e);
             }
         }
-        logger.info("User to project relationships {}", userProjectRelations.size());
     }
 
     private boolean isUsableParam(Integer param) {

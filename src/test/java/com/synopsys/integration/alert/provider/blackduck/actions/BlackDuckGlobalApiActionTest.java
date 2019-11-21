@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
 public class BlackDuckGlobalApiActionTest {
     public static final Long CONSTANT_TIME = 1000L;
@@ -36,7 +36,7 @@ public class BlackDuckGlobalApiActionTest {
             @Override
             public void runTask() {}
         });
-        taskManager.registerTask(new ScheduledTask(taskScheduler, BlackDuckProjectSyncTask.TASK_NAME) {
+        taskManager.registerTask(new ScheduledTask(taskScheduler, BlackDuckDataSyncTask.TASK_NAME) {
             @Override
             public void runTask() {}
         });
@@ -45,7 +45,7 @@ public class BlackDuckGlobalApiActionTest {
     @AfterEach
     public void unregisterTask() {
         taskManager.unregisterTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unregisterTask(BlackDuckProjectSyncTask.TASK_NAME);
+        taskManager.unregisterTask(BlackDuckDataSyncTask.TASK_NAME);
     }
 
     @Test
@@ -56,15 +56,15 @@ public class BlackDuckGlobalApiActionTest {
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, blackDuckValidator, taskManager, providerDataAccessor);
 
-        final Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-        final Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckProjectSyncTask.TASK_NAME);
+        Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
 
         assertTrue(initialAccumulatorNextRunTime.isEmpty());
         assertTrue(initialSyncNextRunTime.isEmpty());
 
         blackDuckGlobalApiAction.afterSaveAction(null);
-        final Optional<String> accumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-        final Optional<String> syncNextRunTime = taskManager.getNextRunTime(BlackDuckProjectSyncTask.TASK_NAME);
+        Optional<String> accumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        Optional<String> syncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
 
         assertTrue(accumulatorNextRunTime.isPresent());
         assertTrue(syncNextRunTime.isPresent());
@@ -78,15 +78,15 @@ public class BlackDuckGlobalApiActionTest {
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, blackDuckValidator, taskManager, providerDataAccessor);
 
-        final Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-        final Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckProjectSyncTask.TASK_NAME);
+        Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
 
         assertTrue(initialAccumulatorNextRunTime.isEmpty());
         assertTrue(initialSyncNextRunTime.isEmpty());
 
         blackDuckGlobalApiAction.afterUpdateAction(null);
-        final Optional<String> accumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-        final Optional<String> syncNextRunTime = taskManager.getNextRunTime(BlackDuckProjectSyncTask.TASK_NAME);
+        Optional<String> accumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+        Optional<String> syncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
 
         assertTrue(accumulatorNextRunTime.isPresent());
         assertTrue(syncNextRunTime.isPresent());

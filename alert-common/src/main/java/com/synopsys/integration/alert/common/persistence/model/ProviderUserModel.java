@@ -28,7 +28,7 @@ public class ProviderUserModel extends AlertSerializableModel {
     private String emailAddress;
     private Boolean optOut;
 
-    public ProviderUserModel(final String emailAddress, final Boolean optOut) {
+    public ProviderUserModel(String emailAddress, Boolean optOut) {
         this.emailAddress = emailAddress;
         this.optOut = optOut;
     }
@@ -40,5 +40,5 @@ public class ProviderUserModel extends AlertSerializableModel {
     public Boolean getOptOut() {
         return optOut;
     }
-    
+
 }

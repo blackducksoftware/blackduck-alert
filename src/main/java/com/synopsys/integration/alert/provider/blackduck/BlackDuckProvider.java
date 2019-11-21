@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMess
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckProjectSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
@@ -61,7 +61,7 @@ public class BlackDuckProvider extends Provider {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;
-    private final BlackDuckProjectSyncTask projectSyncTask;
+    private final BlackDuckDataSyncTask projectSyncTask;
     private final TaskManager taskManager;
     private final BlackDuckProperties blackDuckProperties;
 
@@ -70,7 +70,7 @@ public class BlackDuckProvider extends Provider {
 
     @Autowired
     public BlackDuckProvider(
-        BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckProjectSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager, BlackDuckProperties blackDuckProperties,
+        BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckDataSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager, BlackDuckProperties blackDuckProperties,
         ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
@@ -87,7 +87,7 @@ public class BlackDuckProvider extends Provider {
         taskManager.registerTask(accumulatorTask);
         taskManager.registerTask(projectSyncTask);
 
-        final Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
+        Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
         blackDuckServerConfig.ifPresent(globalConfig -> {
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, accumulatorTask.getTaskName());
             taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, projectSyncTask.getTaskName());
