@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import TableDisplay from 'field/TableDisplay';
-import RoleConfiguration from 'dynamic/loaded/users/RoleConfiguration';
+import UserConfiguration from 'dynamic/loaded/users/UserConfiguration';
 
-class RoleTable extends Component {
+class UserTable extends Component {
 
     constructor(props) {
         super(props);
@@ -24,13 +24,13 @@ class RoleTable extends Component {
             isKey: true
         }
 
-        const permissions = {
-            header: 'permissions',
-            headerLabel: 'Permissions',
+        const email = {
+            header: 'email',
+            headerLabel: 'email',
             isKey: false
         }
 
-        return [nameColumn, permissions];
+        return [nameColumn, email];
     }
 
     retrieveData() {
@@ -38,7 +38,7 @@ class RoleTable extends Component {
     }
 
     createConfiguration() {
-        return <RoleConfiguration />;
+        return <UserConfiguration />;
     }
 
     render() {
@@ -54,14 +54,14 @@ class RoleTable extends Component {
     }
 }
 
-RoleTable.defaultProps = {
+UserTable.defaultProps = {
     canCreate: true,
     canDelete: true
 };
 
-RoleTable.propTypes = {
+UserTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool
 };
 
-export default RoleTable;
+export default UserTable;
