@@ -292,4 +292,4 @@
             <column name="OPERATIONS" value="4"/>
         </insert>
     </changeSet>
-        </databaseChangeLog>
+</databaseChangeLog>
