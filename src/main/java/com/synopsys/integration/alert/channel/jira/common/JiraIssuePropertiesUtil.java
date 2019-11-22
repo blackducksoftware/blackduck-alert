@@ -26,8 +26,8 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {
     public static final IssueSearchProperties create(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
