@@ -3,11 +3,23 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
     <changeSet author="bmandel" id="2019-11-18-14-48-50-829">
+        <preConditions onFail="HALT">
+            <columnExists schemaName="ALERT" tableName="PERMISSION_MATRIX" columnName="ACCESS_OPERATION_ID"/>
+        </preConditions>
         <delete tableName="PERMISSION_MATRIX" schemaName="ALERT"/>
+        <dropForeignKeyConstraint baseTableSchemaName="ALERT"
+                                  baseTableName="PERMISSION_MATRIX"
+                                  constraintName="FK_PERMISSION_OPERATION"/>
         <renameColumn tableName="PERMISSION_MATRIX" oldColumnName="ACCESS_OPERATION_ID" newColumnName="OPERATIONS" schemaName="ALERT"/>
         <modifyDataType tableName="PERMISSION_MATRIX" columnName="OPERATIONS" schemaName="ALERT" newDataType="int"/>
+    </changeSet>
+    <changeSet author="bmandel" id="2019-11-22-06-18-02-093">
         <dropTable tableName="ACCESS_OPERATIONS" schemaName="ALERT"/>
-
+    </changeSet>
+    <changeSet author="bmandel" id="2019-11-21-18-37-17-985">
+        <preConditions onFail="HALT">
+            <columnExists schemaName="ALERT" tableName="PERMISSION_MATRIX" columnName="OPERATIONS"/>
+        </preConditions>
         <!-- Admin permissions -->
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
