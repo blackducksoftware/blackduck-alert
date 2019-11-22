@@ -14,23 +14,42 @@ class UserTable extends Component {
     }
 
     componentDidMount() {
-        // this.props.fetchRoles();
+        this.retrieveData();
     }
 
     createColumns() {
-        const nameColumn = {
-            header: 'name',
-            headerLabel: 'Name',
-            isKey: true
-        }
-
-        const email = {
-            header: 'email',
-            headerLabel: 'email',
-            isKey: false
-        }
-
-        return [nameColumn, email];
+        return [
+            {
+                header: 'username',
+                headerLabel: 'Username',
+                isKey: true
+            },
+            {
+                header: 'email_address',
+                headerLabel: 'Email',
+                isKey: false
+            },
+            {
+                header: 'expired',
+                headerLabel: 'Expired',
+                isKey: false
+            },
+            {
+                header: 'locked',
+                headerLabel: 'Locked',
+                isKey: false
+            },
+            {
+                header: 'password_expired',
+                headerLabel: 'Password Expired',
+                isKey: false
+            },
+            {
+                header: 'enabled',
+                headerLabel: 'Enabled',
+                isKey: false
+            }
+        ];
     }
 
     retrieveData() {

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import RoleTable from 'dynamic/loaded/users/RoleTable';
 import UserTable from 'dynamic/loaded/users/UserTable';
-import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import CollapsiblePane from 'component/common/CollapsiblePane';
 
 class UserManagement extends Component {
 

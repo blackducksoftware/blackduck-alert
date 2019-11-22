@@ -14,23 +14,15 @@ class RoleTable extends Component {
     }
 
     componentDidMount() {
-        // this.props.fetchRoles();
+        this.retrieveData();
     }
 
     createColumns() {
-        const nameColumn = {
+        return [{
             header: 'name',
             headerLabel: 'Name',
             isKey: true
-        }
-
-        const permissions = {
-            header: 'permissions',
-            headerLabel: 'Permissions',
-            isKey: false
-        }
-
-        return [nameColumn, permissions];
+        }];
     }
 
     retrieveData() {

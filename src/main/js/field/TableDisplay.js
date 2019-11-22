@@ -193,7 +193,7 @@ TableDisplay.propTypes = {
         headerLabel: PropTypes.string.isRequired,
         isKey: PropTypes.bool.isRequired
     })).isRequired,
-    createInsertFields: PropTypes.func.isRequired,
+    createInsertFields: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -214,7 +214,8 @@ TableDisplay.defaultProps = {
     autoRefresh: true,
     newButton: true,
     deleteButton: true,
-    inProgress: false
+    inProgress: false,
+    createInsertFields: () => null
 };
 
 export default TableDisplay;
