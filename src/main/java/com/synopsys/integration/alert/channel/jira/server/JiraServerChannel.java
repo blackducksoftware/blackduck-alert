@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.IssueTrackerChannel;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
+import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;

@@ -11,7 +11,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
@@ -34,21 +33,10 @@ public class JiraServerIssueConfigValidatorTest {
         Mockito.when(issueMetaDataService.doesProjectContainIssueType(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraServerProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
-        resolveTransition.setFieldValue(resolveTransitionString);
-
-        ConfigurationFieldModel project = ConfigurationFieldModel.create(JiraServerProperties.KEY_JIRA_PROJECT_NAME);
         String projectName = "ProjectName";
-        project.setFieldValue(projectName);
-
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraServerProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
-        issueType.setFieldValue(issueTypeString);
-
-        ConfigurationFieldModel issueCreator = ConfigurationFieldModel.create(JiraServerProperties.KEY_ISSUE_CREATOR);
         String issueCreatorString = "IssueCreator";
-        issueCreator.setFieldValue(issueCreatorString);
 
         IssueConfig issueConfig = new IssueConfig();
         issueConfig.setCommentOnIssues(true);
@@ -89,13 +77,8 @@ public class JiraServerIssueConfigValidatorTest {
         IssueMetaDataService issueMetaDataService = Mockito.mock(IssueMetaDataService.class);
         JiraServerIssueConfigValidator jiraIssueConfigValidator = new JiraServerIssueConfigValidator(projectService, userSearchService, issueTypeService, issueMetaDataService);
 
-        ConfigurationFieldModel resolveTransition = ConfigurationFieldModel.create(JiraServerProperties.KEY_RESOLVE_WORKFLOW_TRANSITION);
         String resolveTransitionString = "Resolve";
-        resolveTransition.setFieldValue(resolveTransitionString);
-
-        ConfigurationFieldModel issueType = ConfigurationFieldModel.create(JiraServerProperties.KEY_ISSUE_TYPE);
         String issueTypeString = "IssueType";
-        issueType.setFieldValue(issueTypeString);
 
         IssueConfig issueConfig = new IssueConfig();
         issueConfig.setCommentOnIssues(true);
