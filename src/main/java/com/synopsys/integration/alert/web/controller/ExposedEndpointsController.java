@@ -33,14 +33,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import com.synopsys.integration.alert.common.SetMap;
+import com.synopsys.integration.datastructure.SetMap;
 
 @RestController
 public class ExposedEndpointsController extends BaseController {
     public final RequestMappingHandlerMapping handlerMapping;
 
     @Autowired
-    public ExposedEndpointsController(final RequestMappingHandlerMapping handlerMapping) {
+    public ExposedEndpointsController(RequestMappingHandlerMapping handlerMapping) {
         this.handlerMapping = handlerMapping;
     }
 
@@ -48,8 +48,8 @@ public class ExposedEndpointsController extends BaseController {
     public Map<String, Set<RequestMethod>> get() {
         SetMap<String, RequestMethod> restMappings = new SetMap(new TreeMap());
 
-        for (final RequestMappingInfo info : handlerMapping.getHandlerMethods().keySet()) {
-            for (final String apiPath : info.getPatternsCondition().getPatterns()) {
+        for (RequestMappingInfo info : handlerMapping.getHandlerMethods().keySet()) {
+            for (String apiPath : info.getPatternsCondition().getPatterns()) {
                 if (apiPath != null) {
                     restMappings.addAll(apiPath, info.getMethodsCondition().getMethods());
                 }
