@@ -11,16 +11,14 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
@@ -28,24 +26,25 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.google.gson.Gson;
+
 public class ExposedEndpointsControllerTest {
     @Test
     public void getTest() {
-        final RequestMappingHandlerMapping handlerMapping = Mockito.mock(RequestMappingHandlerMapping.class);
-        final ExposedEndpointsController controller = new ExposedEndpointsController(handlerMapping);
+        RequestMappingHandlerMapping handlerMapping = Mockito.mock(RequestMappingHandlerMapping.class);
+        ExposedEndpointsController controller = new ExposedEndpointsController(new Gson(), handlerMapping);
 
-        final String endpoint1 = "/api/test";
-        final String endpoint2 = "/api/other/test";
-        final Set<RequestMethod> expectedSet = new HashSet<>(Arrays.asList(RequestMethod.GET, RequestMethod.POST));
+        String endpoint1 = "/api/test";
+        String endpoint2 = "/api/other/test";
 
-        final Map<RequestMappingInfo, HandlerMethod> handlerMethods = new HashMap<>();
-        final RequestMappingInfo info = new RequestMappingInfo(new PatternsRequestCondition(endpoint1, endpoint2), new RequestMethodsRequestCondition(RequestMethod.GET, RequestMethod.POST), null, null, null, null, null);
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = new HashMap<>();
+        RequestMappingInfo info = new RequestMappingInfo(new PatternsRequestCondition(endpoint1, endpoint2), new RequestMethodsRequestCondition(RequestMethod.GET, RequestMethod.POST), null, null, null, null, null);
         handlerMethods.put(info, null);
 
         Mockito.when(handlerMapping.getHandlerMethods()).thenReturn(handlerMethods);
 
-        final Map<String, Set<RequestMethod>> mappings = controller.get();
-        assertEquals(mappings.get(endpoint1), expectedSet);
+        ResponseEntity<String> responseEntity = controller.get();
+        Assertions.assertTrue(StringUtils.isNotBlank(responseEntity.getBody()), "Expected the response body to contain json");
     }
 
 }
