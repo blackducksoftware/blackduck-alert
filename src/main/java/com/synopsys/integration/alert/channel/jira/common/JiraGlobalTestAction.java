@@ -23,9 +23,9 @@
 package com.synopsys.integration.alert.channel.jira.common;
 
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraGlobalTestAction extends TestAction {
@@ -39,14 +39,14 @@ public abstract class JiraGlobalTestAction extends TestAction {
     public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
         try {
             if (isUserMissing(fieldAccessor)) {
-                throw new AlertException("User did not match any known users.");
+                throw new IssueTrackerException("User did not match any known users.");
             }
 
             if (isAppMissing(fieldAccessor)) {
-                throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
+                throw new IssueTrackerException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
             }
         } catch (IntegrationException e) {
-            throw new AlertException("An error occurred during testing: " + e.getMessage());
+            throw new IssueTrackerException("An error occurred during testing: " + e.getMessage());
         }
         return new MessageResult(String.format("Successfully connected to %s instance.", getChannelDisplayName()));
     }

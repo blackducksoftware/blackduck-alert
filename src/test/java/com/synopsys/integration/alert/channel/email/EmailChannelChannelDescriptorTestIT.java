@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +42,14 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
+import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelationRepository;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
@@ -61,6 +68,12 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Autowired
     private DefaultProviderDataAccessor providerDataAccessor;
     @Autowired
+    private ProviderProjectRepository providerProjectRepository;
+    @Autowired
+    private ProviderUserRepository providerUserRepository;
+    @Autowired
+    private ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
+    @Autowired
     private ProviderUserRepository blackDuckUserRepository;
     @Autowired
     private EmailDescriptor emailDescriptor;
@@ -78,25 +91,25 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @BeforeEach
     public void testSetup() throws Exception {
         List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
-        providerDataAccessor.deleteUsers(BLACK_DUCK_PROVIDER_KEY, allUsers);
+        deleteUsers(BLACK_DUCK_PROVIDER_KEY, allUsers);
         List<ProviderProject> allProjects = providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey());
         providerDataAccessor.deleteProjects(BLACK_DUCK_PROVIDER_KEY, allProjects);
 
-        ProviderProject project1 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
-        ProviderProject project2 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("TestProject2", "", "", ""));
-        ProviderProject project3 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project three", "", "", ""));
-        ProviderProject project4 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project four", "", "", ""));
-        ProviderProject project5 = providerDataAccessor.saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
+        ProviderProject project1 = saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));
+        ProviderProject project2 = saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("TestProject2", "", "", ""));
+        ProviderProject project3 = saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project three", "", "", ""));
+        ProviderProject project4 = saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project four", "", "", ""));
+        ProviderProject project5 = saveProject(BLACK_DUCK_PROVIDER_KEY, new ProviderProject("Project UnitTest five", "", "", "noreply@blackducksoftware.com"));
 
         ProviderUserEntity user1 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
         ProviderUserEntity user2 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
         ProviderUserEntity user3 = blackDuckUserRepository.save(new ProviderUserEntity("noreply@blackducksoftware.com", false, BLACK_DUCK_PROVIDER_KEY.getUniversalKey()));
 
-        providerDataAccessor.mapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
-        providerDataAccessor.mapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
+        mapUsersToProjectByEmail(project1.getHref(), Set.of(user1.getEmailAddress()));
+        mapUsersToProjectByEmail(project2.getHref(), Set.of(user1.getEmailAddress()));
+        mapUsersToProjectByEmail(project3.getHref(), Set.of(user2.getEmailAddress()));
+        mapUsersToProjectByEmail(project4.getHref(), Set.of(user3.getEmailAddress()));
+        mapUsersToProjectByEmail(project5.getHref(), Set.of(user3.getEmailAddress()));
 
         String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
@@ -257,4 +270,34 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         testDistributionConfig();
     }
 
+    private void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+        ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
+                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
+        Long projectId = project.getId();
+        for (String emailAddress : emailAddresses) {
+            providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
+                .stream()
+                .map(ProviderUserEntity::getId)
+                .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));
+        }
+    }
+
+    private void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerKey.getUniversalKey(), user.getEmailAddress()));
+    }
+
+    private ProviderProject saveProject(ProviderKey providerKey, ProviderProject providerProject) {
+        ProviderProjectEntity trimmedBlackDuckProjectEntity = convertToProjectEntity(providerKey, providerProject);
+        return convertToProjectModel(providerProjectRepository.save(trimmedBlackDuckProjectEntity));
+    }
+
+    private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
+        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
+            providerProjectEntity.getProjectOwnerEmail());
+    }
+
+    private ProviderProjectEntity convertToProjectEntity(ProviderKey providerKey, ProviderProject providerProject) {
+        String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), DefaultProviderDataAccessor.MAX_DESCRIPTION_LENGTH);
+        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerKey.getUniversalKey());
+    }
 }

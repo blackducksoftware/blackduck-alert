@@ -29,7 +29,7 @@ public class PermissionMatrixPK implements Serializable {
     private Long roleId;
     private Long contextId;
     private Long descriptorId;
-    private Long accessOperationId;
+    private Integer operations;
 
     public PermissionMatrixPK() {
         // JPA requires default constructor definitions
@@ -39,7 +39,7 @@ public class PermissionMatrixPK implements Serializable {
         return roleId;
     }
 
-    public void setRoleId(final Long roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
@@ -59,12 +59,12 @@ public class PermissionMatrixPK implements Serializable {
         this.descriptorId = descriptorId;
     }
 
-    public Long getAccessOperationId() {
-        return accessOperationId;
+    public Integer getOperations() {
+        return operations;
     }
 
-    public void setAccessOperationId(final Long accessOperationId) {
-        this.accessOperationId = accessOperationId;
+    public void setOperations(Integer operations) {
+        this.operations = operations;
     }
 
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2019-11-19-09-39-19-816">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS UPDATE_BROKEN_JOBS AS $$
+                java.lang.Void updateBrokenJobs(java.sql.Connection connection) throws java.sql.SQLException {
+                    java.lang.Integer filterByProjectFieldId = null;
+                    try (java.sql.ResultSet channelKeyQuery = connection.createStatement().executeQuery("CALL GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.filter.by.project');")) {
+                        if (channelKeyQuery.next()) {
+                            filterByProjectFieldId = channelKeyQuery.getInt(1);
+                        }
+                    }
+
+                    if (null == filterByProjectFieldId) {
+                        return null;
+                    }
+
+                    try (java.sql.ResultSet fieldValues = connection.createStatement().executeQuery("SELECT * FROM ALERT.FIELD_VALUES vals "
+                                                                                                        + "WHERE vals.CONFIG_ID IN ( "
+                                                                                                        + "    SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS confs "
+                                                                                                        + "    WHERE confs.CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('distribution') "
+                                                                                                        + "    AND confs.DESCRIPTOR_ID in ( "
+                                                                                                        + "        SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS descs "
+                                                                                                        + "        WHERE descs.TYPE_ID = GET_ID_FOR_DESCRIPTOR_TYPE('provider') "
+                                                                                                        + "    )"
+                                                                                                        + ") ORDER BY CONFIG_ID;")) {
+                        java.util.Set&lt;java.lang.Integer&gt; configsToUpdate = new java.util.HashSet();
+                        java.lang.Integer currentConfigId;
+                        java.lang.Integer previousConfigId = null;
+                        java.lang.Boolean configNeedsUpdate = true;
+                        while (fieldValues.next()) {
+                            currentConfigId = fieldValues.getInt("CONFIG_ID");
+                            if (null != previousConfigId &amp;&amp; !previousConfigId.equals(currentConfigId) &amp;&amp; configNeedsUpdate) {
+                                configsToUpdate.add(previousConfigId);
+                                configNeedsUpdate = true;
+                            }
+
+                            java.lang.Integer fieldId = fieldValues.getInt("FIELD_ID");
+                            if (filterByProjectFieldId.equals(fieldId)) {
+                                configNeedsUpdate = false;
+                            }
+                            previousConfigId = currentConfigId;
+                        }
+
+                        for (java.lang.Integer configId : configsToUpdate) {
+                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId.intValue() + ", " + filterByProjectFieldId.intValue() + ", 'false');");
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="gavink" id="2019-11-19-09-40-34-193">
+        <sql dbms="h2" stripComments="true">
+            CALL UPDATE_BROKEN_JOBS();
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-11-19-09-40-47-634">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS UPDATE_BROKEN_JOBS;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

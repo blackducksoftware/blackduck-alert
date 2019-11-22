@@ -5,4 +5,5 @@
     <include file="changelog-email-channel.xml" relativeToChangelogFile="true"/>
     <include file="changelog-update-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-user-management.xml" relativeToChangelogFile="true"/>
+    <include file="permissions-matrix.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

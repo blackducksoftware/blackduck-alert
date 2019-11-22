@@ -54,14 +54,13 @@ public class AuthorizationManager {
         this.permissionCache = new HashMap<>();
     }
 
-    public final Set<AccessOperation> getOperations(String context, String descriptorName) {
+    public final Set<Integer> getOperations(String context, String descriptorName) {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(permissionCache::containsKey)
                    .map(permissionCache::get)
                    .map(object -> object.getOperations(permissionKey))
-                   .flatMap(Collection::stream)
                    .collect(Collectors.toSet());
     }
 
