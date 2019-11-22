@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
     <changeSet author="bmandel" id="2019-11-18-14-48-50-829">
-        <preConditions onFail="WARN">
+        <preConditions onFail="HALT">
             <columnExists schemaName="ALERT" tableName="PERMISSION_MATRIX" columnName="ACCESS_OPERATION_ID"/>
         </preConditions>
         <delete tableName="PERMISSION_MATRIX" schemaName="ALERT"/>
