@@ -26,19 +26,19 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
-import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {
-    public static final IssueProperties create(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
+    public static final IssueSearchProperties create(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
         Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
-
+        String category = componentItem != null ? componentItem.getCategory() : null;
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
         String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
         String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
         String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
 
-        return new JiraIssueProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
-            componentItem.getCategory(), componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
+        return new JiraIssueSearchProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
+            category, componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
 }

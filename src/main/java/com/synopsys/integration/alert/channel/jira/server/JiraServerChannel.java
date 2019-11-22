@@ -28,46 +28,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.IssueTrackerChannel;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerContext;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class JiraServerChannel extends DistributionChannel {
-    // TODO create IssueTrackerChannel that has protected methods.
-    private final JiraServerChannelKey descriptorKey;
+public class JiraServerChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
     public JiraServerChannel(Gson gson, JiraServerChannelKey descriptorKey, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter) {
-        super(gson, auditUtility);
-        this.descriptorKey = descriptorKey;
+        super(gson, auditUtility, descriptorKey);
         this.jiraContentConverter = jiraContentConverter;
     }
 
     @Override
-    public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fieldAccessor = event.getFieldAccessor();
-        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
-        JiraServerContext context = contextBuilder.build(fieldAccessor);
-        JiraServerService jiraService = new JiraServerService(getGson());
-
-        List<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
-        IssueTrackerResponse result = jiraService.sendRequests(context, requests);
-        return new MessageResult(result.getStatusMessage());
+    protected IssueTrackerService<?> getIssueTrackerService() {
+        return new JiraServerService(getGson());
     }
 
     @Override
-    public String getDestinationName() {
-        return descriptorKey.getUniversalKey();
+    protected IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event) {
+        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
+        return contextBuilder.build(fieldAccessor);
     }
 
+    @Override
+    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException {
+        return jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+    }
 }

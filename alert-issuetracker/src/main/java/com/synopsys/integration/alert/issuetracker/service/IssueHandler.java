@@ -69,7 +69,6 @@ public abstract class IssueHandler<R> {
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
-            //TODO this validates the length of the title description and comments.  Should that validation be done when the request is constructed in the request class.
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
                 IssueOperation operation = request.getOperation();
 

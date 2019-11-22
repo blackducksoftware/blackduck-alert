@@ -38,18 +38,17 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.service.TestIssueCreator;
+import com.synopsys.integration.alert.issuetracker.service.TestIssueRequestCreator;
 
-//TODO TestIssueRequestCreator
-public class JiraTestIssueCreator implements TestIssueCreator {
-    private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueCreator.class);
+public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
+    private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
     private final FieldAccessor fieldAccessor;
     private final JiraMessageParser jiraMessageParser;
 
-    public JiraTestIssueCreator(FieldAccessor fieldAccessor, JiraMessageParser jiraMessageParser) {
+    public JiraTestIssueRequestCreator(FieldAccessor fieldAccessor, JiraMessageParser jiraMessageParser) {
         this.fieldAccessor = fieldAccessor;
         this.jiraMessageParser = jiraMessageParser;
     }
@@ -69,18 +68,18 @@ public class JiraTestIssueCreator implements TestIssueCreator {
             LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
 
-            IssueProperties issueProperties = JiraIssuePropertiesUtil.create(providerName, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
+            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
 
             switch (operation) {
                 case RESOLVE: {
                     IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-                    return IssueResolutionRequest.of(issueProperties, contentModel);
+                    return IssueResolutionRequest.of(issueSearchProperties, contentModel);
                 }
                 case OPEN:
                 case UPDATE:
                 default: {
                     IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-                    return IssueCreationRequest.of(issueProperties, contentModel);
+                    return IssueCreationRequest.of(issueSearchProperties, contentModel);
                 }
             }
 

@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraIssuePropertyHandler<T> {
@@ -37,9 +37,9 @@ public abstract class JiraIssuePropertyHandler<T> {
 
     public abstract T queryForIssues(String query) throws IntegrationException;
 
-    public abstract void addPropertiesToIssue(String issueKey, JiraIssueProperties properties) throws IntegrationException;
+    public abstract void addPropertiesToIssue(String issueKey, JiraIssueSearchProperties properties) throws IntegrationException;
 
-    public Optional<T> findIssues(String jiraProjectKey, JiraIssueProperties jiraIssueProperties) throws IntegrationException {
+    public Optional<T> findIssues(String jiraProjectKey, JiraIssueSearchProperties jiraIssueProperties) throws IntegrationException {
         StringBuilder jqlBuilder = new StringBuilder();
         jqlBuilder.append(JiraConstants.JIRA_SEARCH_KEY_JIRA_PROJECT);
         jqlBuilder.append(" = '");

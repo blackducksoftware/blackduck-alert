@@ -20,9 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker.message;
+package com.synopsys.integration.alert.issuetracker.service;
 
-//TODO IssueSearchProperties
-public interface IssueProperties {
+import com.synopsys.integration.alert.issuetracker.IssueOperation;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 
+public interface TestIssueRequestCreator {
+    // This method could create a creation request or a resolution request.
+    IssueTrackerRequest createRequest(IssueOperation operation, String messageId);
 }

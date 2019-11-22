@@ -28,8 +28,9 @@ import java.util.LinkedList;
 public class IssueContentModel {
     private final String title;
     private final String description;
-    //TODO add comments to the difference.
+    // This member contains comments to add to the comments section of a ticket because the description is longer than the limit allowed by the issue tracker.
     private final Collection<String> descriptionComments;
+    // These are comments to add to the issue when an existing issue is updated.
     private final Collection<String> additionalComments;
 
     private IssueContentModel(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {

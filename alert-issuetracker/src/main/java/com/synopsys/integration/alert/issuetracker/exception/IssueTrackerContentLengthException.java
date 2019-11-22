@@ -20,12 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.issuetracker.service;
+package com.synopsys.integration.alert.issuetracker.exception;
 
-import com.synopsys.integration.alert.issuetracker.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+public class IssueTrackerContentLengthException extends IssueTrackerException {
+    private static final long serialVersionUID = -796650409951066155L;
 
-public interface TestIssueCreator {
-    // This method could create a creation request or a resolution request.
-    IssueTrackerRequest createRequest(IssueOperation operation, String messageId);
+    public IssueTrackerContentLengthException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public IssueTrackerContentLengthException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public IssueTrackerContentLengthException(String message) {
+        super(message);
+    }
+
+    public IssueTrackerContentLengthException(Throwable cause) {
+        super(cause);
+    }
+
+    public IssueTrackerContentLengthException() {
+    }
 }

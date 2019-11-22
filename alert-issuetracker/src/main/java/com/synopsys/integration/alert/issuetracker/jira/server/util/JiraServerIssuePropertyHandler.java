@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.issuetracker.jira.server.util;
 
 import com.synopsys.integration.alert.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssuePropertyHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
@@ -45,7 +45,7 @@ public class JiraServerIssuePropertyHandler extends JiraIssuePropertyHandler<Iss
     }
 
     @Override
-    public void addPropertiesToIssue(String issueKey, JiraIssueProperties properties) throws IntegrationException {
+    public void addPropertiesToIssue(String issueKey, JiraIssueSearchProperties properties) throws IntegrationException {
         issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, properties);
     }
 }

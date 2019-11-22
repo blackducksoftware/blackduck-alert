@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
@@ -72,7 +72,7 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     @Override
     protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request)
         throws IntegrationException {
-        JiraIssueProperties issueProperties = request.getIssueProperties();
+        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         List<IssueSearchIssueComponent> searchIssueModels = jiraIssuePropertyHelper
                                                                 .findIssues(projectSearchIdentifier, issueProperties)
                                                                 .map(IssueSearchResponseModel::getIssues)

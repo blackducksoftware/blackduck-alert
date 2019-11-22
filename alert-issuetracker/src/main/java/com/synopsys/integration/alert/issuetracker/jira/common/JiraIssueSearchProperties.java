@@ -24,10 +24,10 @@ package com.synopsys.integration.alert.issuetracker.jira.common;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.issuetracker.message.IssueProperties;
+import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.util.Stringable;
 
-public class JiraIssueProperties extends Stringable implements Serializable, IssueProperties {
+public class JiraIssueSearchProperties extends Stringable implements Serializable, IssueSearchProperties {
     private static final long serialVersionUID = -7384976347665315153L;
     private String provider;
     private String topicName;
@@ -41,11 +41,11 @@ public class JiraIssueProperties extends Stringable implements Serializable, Iss
     private String subComponentValue;
     private String additionalKey;
 
-    public JiraIssueProperties() {
+    public JiraIssueSearchProperties() {
         // For serialization
     }
 
-    public JiraIssueProperties(
+    public JiraIssueSearchProperties(
         String provider,
         String topicName,
         String topicValue,

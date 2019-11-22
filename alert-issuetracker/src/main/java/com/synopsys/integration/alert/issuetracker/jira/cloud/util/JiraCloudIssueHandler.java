@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudProperties;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerProperties;
@@ -64,7 +64,7 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
 
     @Override
     protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException {
-        JiraIssueProperties issueProperties = request.getIssueProperties();
+        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         return jiraIssuePropertyHandler
                    .findIssues(projectSearchIdentifier, issueProperties)
                    .map(IssueSearchResponseModel::getIssues)

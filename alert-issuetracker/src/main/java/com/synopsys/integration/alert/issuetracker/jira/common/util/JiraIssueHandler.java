@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.issuetracker.IssueOperation;
 import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
-import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueProperties;
+import com.synopsys.integration.alert.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.issuetracker.service.IssueHandler;
@@ -70,7 +70,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     @Override
     protected IssueResponseModel createIssue(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
-        JiraIssueProperties issueProperties = request.getIssueProperties();
+        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel contentModel = request.getRequestContent();
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
         fieldsBuilder.setProject(issueConfig.getProjectId());
@@ -125,7 +125,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return new IssueTrackerException(message, restException);
     }
 
-    private void addIssueProperties(String issueKey, JiraIssueProperties issueProperties) throws IntegrationException {
+    private void addIssueProperties(String issueKey, JiraIssueSearchProperties issueProperties) throws IntegrationException {
         jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, issueProperties);
     }
 
@@ -139,7 +139,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
 
     @Override
     protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
-        JiraIssueProperties issueProperties = request.getIssueProperties();
+        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
