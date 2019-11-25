@@ -96,7 +96,7 @@ class TableDisplay extends Component {
                 onModalClose()
             }}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Role</Modal.Title>
+                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
@@ -202,7 +202,8 @@ TableDisplay.propTypes = {
     autoRefresh: PropTypes.bool,
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    modalTitle: PropTypes.string
 };
 
 TableDisplay.defaultProps = {
@@ -215,7 +216,8 @@ TableDisplay.defaultProps = {
     newButton: true,
     deleteButton: true,
     inProgress: false,
-    onConfigSave: () => null
+    onConfigSave: () => null,
+    modalTitle: 'New'
 };
 
 export default TableDisplay;

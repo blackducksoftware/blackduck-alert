@@ -86,7 +86,7 @@ class UserTable extends Component {
         return (
             <div>
                 <div>
-                    <TableDisplay onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
+                    <TableDisplay modalTitle="User" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
                         <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state[usernameKey]} />
                         <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state[passwordKey]} />
                         <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state[emailKey]} />

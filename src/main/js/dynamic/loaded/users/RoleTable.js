@@ -105,7 +105,7 @@ class RoleTable extends Component {
         return (
             <div>
                 <div>
-                    <TableDisplay onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
+                    <TableDisplay modalTitle="Role" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
                         <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
                         <TableDisplay columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
                     </TableDisplay>

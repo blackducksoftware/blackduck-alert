@@ -9,8 +9,8 @@ import {
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING
 } from 'store/actions/types'
-import * as ConfigRequestBuilder from "util/configurationRequestBuilder";
-import { verifyLoginByStatus } from "store/actions/session";
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 function fetchingAllUsers() {
     return {
