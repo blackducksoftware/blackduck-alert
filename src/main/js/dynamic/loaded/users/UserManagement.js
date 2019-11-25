@@ -31,12 +31,14 @@ class UserManagement extends Component {
         const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
 
+        const roles = <RoleTable canCreate={canCreate} canDelete={canDelete} />;
+
         return (
             <div>
                 <ConfigurationLabel configurationName="User Management" description="Create, edit, or delete Users and Role to customize what the user can do in Alert." />
                 <UserTable canCreate={canCreate} canDelete={canDelete} />
                 <CollapsiblePane title="Modify Roles">
-                    <RoleTable canCreate={canCreate} canDelete={canDelete} />
+                    {[roles]}
                 </CollapsiblePane>
             </div>
         );

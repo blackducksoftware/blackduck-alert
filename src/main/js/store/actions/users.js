@@ -1,80 +1,80 @@
 import {
-    USER_MANAGEMENT_ROLE_DELETE_ERROR,
-    USER_MANAGEMENT_ROLE_DELETED,
-    USER_MANAGEMENT_ROLE_DELETING,
-    USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_ROLE_FETCHED_ALL,
-    USER_MANAGEMENT_ROLE_FETCHING_ALL,
-    USER_MANAGEMENT_ROLE_SAVE_ERROR,
-    USER_MANAGEMENT_ROLE_SAVED,
-    USER_MANAGEMENT_ROLE_SAVING
+    USER_MANAGEMENT_USER_DELETE_ERROR,
+    USER_MANAGEMENT_USER_DELETED,
+    USER_MANAGEMENT_USER_DELETING,
+    USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
+    USER_MANAGEMENT_USER_FETCHED_ALL,
+    USER_MANAGEMENT_USER_FETCHING_ALL,
+    USER_MANAGEMENT_USER_SAVE_ERROR,
+    USER_MANAGEMENT_USER_SAVED,
+    USER_MANAGEMENT_USER_SAVING
 } from 'store/actions/types'
 import * as ConfigRequestBuilder from "util/configurationRequestBuilder";
 import { verifyLoginByStatus } from "store/actions/session";
 
-function fetchingAllRoles() {
+function fetchingAllUsers() {
     return {
-        type: USER_MANAGEMENT_ROLE_FETCHING_ALL
+        type: USER_MANAGEMENT_USER_FETCHING_ALL
     };
 }
 
-function fetchedAllRoles(roles) {
+function fetchedAllUsers(users) {
     return {
-        type: USER_MANAGEMENT_ROLE_FETCHED_ALL,
-        data: roles
+        type: USER_MANAGEMENT_USER_FETCHED_ALL,
+        data: users
     };
 }
 
-function fetchingAllRolesError(message) {
+function fetchingAllUsersError(message) {
     return {
-        type: USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
-        roleFetchError: message
+        type: USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
+        userFetchError: message
     };
 }
 
-function savingRole() {
+function savingUser() {
     return {
-        type: USER_MANAGEMENT_ROLE_SAVING
+        type: USER_MANAGEMENT_USER_SAVING
     };
 }
 
-function savedRole() {
+function savedUser() {
     return {
-        type: USER_MANAGEMENT_ROLE_SAVED
+        type: USER_MANAGEMENT_USER_SAVED
     };
 }
 
-function saveRoleError(message) {
+function saveUserError(message) {
     return {
-        type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleSaveError: message
+        type: USER_MANAGEMENT_USER_SAVE_ERROR,
+        userSaveError: message
     };
 }
 
-function deletingRole() {
+function deletingUser() {
     return {
-        type: USER_MANAGEMENT_ROLE_DELETING
+        type: USER_MANAGEMENT_USER_DELETING
     };
 }
 
-function deletedRole() {
+function deletedUser() {
     return {
-        type: USER_MANAGEMENT_ROLE_DELETED
+        type: USER_MANAGEMENT_USER_DELETED
     };
 }
 
-function deletingRoleError(message) {
+function deletingUserError(message) {
     return {
-        type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleDeleteError: message
+        type: USER_MANAGEMENT_USER_DELETE_ERROR,
+        userDeleteError: message
     };
 }
 
-export function fetchRoles() {
+export function fetchUsers() {
     return (dispatch, getState) => {
-        dispatch(fetchingAllRoles());
+        dispatch(fetchingAllUsers());
         const { csrfToken } = getState().session;
-        fetch(ConfigRequestBuilder.ROLE_API_URL, {
+        fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -83,7 +83,7 @@ export function fetchRoles() {
         }).then((response) => {
             if (response.ok) {
                 response.json().then((jsonArray) => {
-                    dispatch(fetchedAllRoles(jsonArray));
+                    dispatch(fetchedAllUsers(jsonArray));
                 });
             } else {
                 switch (response.status) {
@@ -98,40 +98,40 @@ export function fetchRoles() {
                                 // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
                                 message = json.message.toString();
                             }
-                            dispatch(fetchingAllRolesError(message));
+                            dispatch(fetchingAllUsersError(message));
                         });
                 }
             }
         }).catch((error) => {
             console.log(error);
-            dispatch(fetchingAllRolesError(error));
+            dispatch(fetchingAllUsersError(error));
         });
     };
 }
 
-export function createNewRole(roleName) {
+export function createNewUser(userName) {
     return (dispatch, getState) => {
-        dispatch(savingRole());
+        dispatch(savingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleName);
+        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
-                    dispatch(savedRole());
+                    dispatch(savedUser());
                 });
             } else {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(saveRoleError(data.message));
+                                return dispatch(saveUserError(data.message));
                             case 401:
-                                dispatch(saveRoleError(data.message));
+                                dispatch(saveUserError(data.message));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(saveRoleError(data.message));
+                                return dispatch(saveUserError(data.message));
                             default: {
-                                return dispatch(saveRoleError(data.message, null));
+                                return dispatch(saveUserError(data.message, null));
                             }
                         }
                     });
@@ -140,27 +140,28 @@ export function createNewRole(roleName) {
     };
 }
 
-export function deleteRole(roleName) {
+export function deleteUser(user) {
     return (dispatch, getState) => {
-        dispatch(deletingRole());
+        const { userName } = user;
+        dispatch(deletingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleName);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);
         request.then((response) => {
             if (response.ok) {
-                dispatch(deletedRole());
+                dispatch(deletedUser());
             } else {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(deletingRoleError(data.message));
+                                return dispatch(deletingUserError(data.message));
                             case 401:
-                                dispatch(deletingRoleError(data.message));
+                                dispatch(deletingUserError(data.message));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(deletingRoleError(data.message));
+                                return dispatch(deletingUserError(data.message));
                             default: {
-                                return dispatch(deletingRoleError(data.message, null));
+                                return dispatch(deletingUserError(data.message, null));
                             }
                         }
                     });

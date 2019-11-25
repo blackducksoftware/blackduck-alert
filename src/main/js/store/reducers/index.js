@@ -11,6 +11,7 @@ import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
 import globalConfiguration from 'store/reducers/globalConfiguration';
 import roles from 'store/reducers/roles';
+import users from 'store/reducers/users';
 
 
 const rootReducer = combineReducers({
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     system,
     refresh,
     routing,
-    roles
+    roles,
+    users
 });
 
 export default rootReducer;

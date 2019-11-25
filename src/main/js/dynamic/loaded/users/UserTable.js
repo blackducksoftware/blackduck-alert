@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import TableDisplay from 'field/TableDisplay';
-import UserConfiguration from 'dynamic/loaded/users/UserConfiguration';
+import TextInput from 'field/input/TextInput';
+import PasswordInput from 'field/input/PasswordInput';
+import CheckboxInput from 'field/input/CheckboxInput';
+import { connect } from 'react-redux';
+import { createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
 
 class UserTable extends Component {
-
     constructor(props) {
         super(props);
 
         this.retrieveData = this.retrieveData.bind(this);
         this.createColumns = this.createColumns.bind(this);
-        this.createConfiguration = this.createConfiguration.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.onSave = this.onSave.bind(this);
+
+        this.state = {};
     }
 
     componentDidMount() {
@@ -53,20 +59,39 @@ class UserTable extends Component {
     }
 
     retrieveData() {
-        return [];
+        this.props.getUsers();
+        return this.props.users;
     }
 
-    createConfiguration() {
-        return <UserConfiguration />;
+    handleChange(e) {
+        const { name, value, type, checked } = e.target;
+        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        this.setState({
+            [name]: updatedValue
+        });
+    }
+
+    onSave() {
+        this.props.createUser(this.state['username']);
     }
 
     render() {
         const { canCreate, canDelete } = this.props;
 
+        const usernameKey = 'username';
+        const passwordKey = 'password';
+        const emailKey = 'email_address';
+        const enabledKey = 'enabled';
+
         return (
             <div>
                 <div>
-                    <TableDisplay retrieveData={this.retrieveData} columns={this.createColumns()} createInsertFields={this.createConfiguration} newButton={canCreate} deleteButton={canDelete} />
+                    <TableDisplay onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
+                        <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state[usernameKey]} />
+                        <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state[passwordKey]} />
+                        <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state[emailKey]} />
+                        <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state[enabledKey]} />
+                    </TableDisplay>
                 </div>
             </div>
         );
@@ -83,4 +108,14 @@ UserTable.propTypes = {
     canDelete: PropTypes.bool
 };
 
-export default UserTable;
+const mapStateToProps = state => ({
+    users: state.users.data
+});
+
+const mapDispatchToProps = dispatch => ({
+    createUser: username => dispatch(createNewUser(username)),
+    deleteUser: username => dispatch(deleteUser(username)),
+    getUsers: () => dispatch(fetchUsers())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserTable);

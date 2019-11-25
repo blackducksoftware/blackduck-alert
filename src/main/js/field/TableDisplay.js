@@ -79,8 +79,8 @@ class TableDisplay extends Component {
     }
 
     handleSubmit() {
-        this.refs.table.cleanSelected();
-        this.flipShowSwitch();
+        this.handleClose();
+        this.props.onConfigSave();
     }
 
     flipShowSwitch() {
@@ -100,7 +100,7 @@ class TableDisplay extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
-                        {this.props.createInsertFields()}
+                        {this.props.children}
                         <ConfigButtons
                             cancelId="job-cancel"
                             submitId="job-submit"
@@ -193,7 +193,7 @@ TableDisplay.propTypes = {
         headerLabel: PropTypes.string.isRequired,
         isKey: PropTypes.bool.isRequired
     })).isRequired,
-    createInsertFields: PropTypes.func,
+    onConfigSave: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -215,7 +215,7 @@ TableDisplay.defaultProps = {
     newButton: true,
     deleteButton: true,
     inProgress: false,
-    createInsertFields: () => null
+    onConfigSave: () => null
 };
 
 export default TableDisplay;

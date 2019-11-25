@@ -11,7 +11,7 @@ import CounterField from 'field/CounterField';
 import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
-import UploadFileButtonField from "field/UploadFileButtonField";
+import UploadFileButtonField from 'field/UploadFileButtonField';
 
 function extractFirstValue(items) {
     const { value } = items;
