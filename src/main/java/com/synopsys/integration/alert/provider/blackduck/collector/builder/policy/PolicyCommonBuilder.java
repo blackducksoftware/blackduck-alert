@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -56,6 +55,7 @@ import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponent
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.datastructure.SetMap;
 
 @Component
 public class PolicyCommonBuilder {

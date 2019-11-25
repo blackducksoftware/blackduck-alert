@@ -28,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
@@ -51,7 +51,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
@@ -60,13 +60,20 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraProperties jiraProperties = new JiraProperties(fieldAccessor);
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        String username = jiraProperties.getUsername();
         UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
+        String username = jiraProperties.getUsername();
         return userSearchService.findUser(username).stream()
                    .map(UserDetailsResponseModel::getEmailAddress)
                    .noneMatch(email -> email.equals(username));
+    }
+
+    private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
+        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        return new JiraCloudProperties(url, accessToken, username);
     }
 
     @Override

@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -62,6 +61,7 @@ import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNo
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.datastructure.SetMap;
 
 @Component
 public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {

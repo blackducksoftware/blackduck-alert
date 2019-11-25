@@ -3,20 +3,21 @@ package com.synopsys.integration.alert.database.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
@@ -41,14 +42,13 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.deleteAllInBatch();
     }
 
-    private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
+    private ProviderKey createProviderKey(String key) {
+        return new ProviderKey() {
             @Override
             public String getUniversalKey() {
                 return key;
             }
         };
-        return testDescriptorKey;
     }
 
     @Test
@@ -72,32 +72,6 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         List<ProviderProject> foundProjects = providerDataAccessor.findByProviderName(providerName);
         assertEquals(1, foundProjects.size());
-    }
-
-    @Test
-    public void saveProjectTest() {
-
-        String name = "name";
-        String description = "description";
-        String href = "hyperlink reference";
-        String projectOwnerEmail = "WhoStillUsesHotmail@hotmail.com";
-        String providerName = "provider name";
-        ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
-
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
-
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.saveProject(descriptorKey, providerProject);
-
-        List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
-        assertEquals(1, foundProjects.size());
-
-        ProviderProjectEntity foundProject = foundProjects.get(0);
-        assertEquals(name, foundProject.getName());
-        assertEquals(description, foundProject.getDescription());
-        assertEquals(href, foundProject.getHref());
-        assertEquals(projectOwnerEmail, foundProject.getProjectOwnerEmail());
-        assertEquals(providerName, foundProject.getProvider());
     }
 
     @Test
@@ -128,44 +102,17 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
                                                      .stream()
                                                      .map(this::convertToProjectModel)
                                                      .collect(Collectors.toList());
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+        ProviderKey descriptorKey = createProviderKey(providerName);
 
         providerDataAccessor.deleteProjects(descriptorKey, projectsToDelete);
         savedEntities = providerProjectRepository.findAll();
         assertEquals(0, savedEntities.size());
 
-        List<ProviderProject> savedProjects = providerDataAccessor.saveProjects(descriptorKey, newProjects);
+        List<ProviderProject> savedProjects = saveProjects(descriptorKey, newProjects);
 
         assertEquals(2, savedProjects.size());
         savedEntities = providerProjectRepository.findAll();
         assertEquals(2, savedEntities.size());
-    }
-
-    private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
-        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
-            providerProjectEntity.getProjectOwnerEmail());
-    }
-
-    @Test
-    public void deleteByHrefTest() {
-        String oldProjectHref1 = "href1";
-        String oldProjectHref2 = "href2";
-        String oldProjectHref3 = "href3";
-        String providerName = "provider name";
-
-        ProviderProjectEntity oldEntity1 = new ProviderProjectEntity(null, null, oldProjectHref1, null, providerName);
-        ProviderProjectEntity oldEntity2 = new ProviderProjectEntity(null, null, oldProjectHref2, null, providerName);
-        ProviderProjectEntity oldEntity3 = new ProviderProjectEntity(null, null, oldProjectHref3, null, providerName);
-        providerProjectRepository.save(oldEntity1);
-        providerProjectRepository.save(oldEntity2);
-        providerProjectRepository.save(oldEntity3);
-        assertEquals(3, providerProjectRepository.findAll().size());
-
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.deleteByHref(oldProjectHref2);
-        List<ProviderProjectEntity> foundProjects = providerProjectRepository.findAll();
-        assertEquals(2, foundProjects.size());
-        assertTrue(foundProjects.stream().noneMatch(project -> oldProjectHref2.equals(project.getHref())), "A project with the deleted href still existed");
     }
 
     @Test
@@ -206,37 +153,6 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
         Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref("expecting no results");
         assertEquals(0, foundEmailAddresses.size());
-    }
-
-    @Test
-    public void mapUsersToProjectByEmailTest() throws AlertDatabaseConstraintException {
-        String projectHref = "some value";
-        String providerName = "provider name";
-        ProviderProjectEntity projectToSave = new ProviderProjectEntity(null, null, projectHref, null, providerName);
-        ProviderProjectEntity savedProject = providerProjectRepository.save(projectToSave);
-
-        String oldEmailAddress = "oldEmail@yahoo.com";
-        ProviderUserEntity existingUser = new ProviderUserEntity(oldEmailAddress, false, providerName);
-        ProviderUserEntity savedExistingUser = providerUserRepository.save(existingUser);
-
-        providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedExistingUser.getId(), savedProject.getId()));
-        assertEquals(1, providerUserProjectRelationRepository.findAll().size());
-        providerUserProjectRelationRepository.deleteAllInBatch();
-
-        String newUserEmail1 = "newEmail1@gmail.com";
-        String newUserEmail2 = "newEmail2@gmail.com";
-        String newUserEmail3 = "newEmail3@gmail.com";
-        Set<String> userEmailsToMap = Set.of(newUserEmail1, newUserEmail2, newUserEmail3);
-        ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerName);
-        ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerName);
-        ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerName);
-        providerUserRepository.save(newUser1);
-        providerUserRepository.save(newUser2);
-        providerUserRepository.save(newUser3);
-
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
-        providerDataAccessor.mapUsersToProjectByEmail(projectHref, userEmailsToMap);
-        assertEquals(3, providerUserProjectRelationRepository.findAll().size());
     }
 
     @Test
@@ -318,15 +234,58 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository);
 
-        DescriptorKey descriptorKey = createDescriptorKey(providerName);
+        ProviderKey descriptorKey = createProviderKey(providerName);
 
-        providerDataAccessor.deleteUsers(descriptorKey, oldUsers);
+        deleteUsers(descriptorKey, oldUsers);
         assertEquals(0, providerUserRepository.findAll().size());
 
-        List<ProviderUserModel> savedUsers = providerDataAccessor.saveUsers(descriptorKey, newUsers);
+        List<ProviderUserModel> savedUsers = saveUsers(descriptorKey, newUsers);
 
         assertEquals(3, savedUsers.size());
         assertEquals(3, providerUserRepository.findAll().size());
+    }
+
+    private List<ProviderUserModel> saveUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+        return users
+                   .stream()
+                   .map(user -> convertToUserEntity(providerKey, user))
+                   .map(providerUserRepository::save)
+                   .map(this::convertToUserModel)
+                   .collect(Collectors.toList());
+    }
+
+    private void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerKey.getUniversalKey(), user.getEmailAddress()));
+    }
+
+    private List<ProviderProject> saveProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
+        Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
+                                                                      .stream()
+                                                                      .map(project -> convertToProjectEntity(providerKey, project))
+                                                                      .collect(Collectors.toSet());
+        List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
+        return savedEntities
+                   .stream()
+                   .map(this::convertToProjectModel)
+                   .collect(Collectors.toList());
+    }
+
+    private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
+        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
+            providerProjectEntity.getProjectOwnerEmail());
+    }
+
+    private ProviderProjectEntity convertToProjectEntity(ProviderKey providerKey, ProviderProject providerProject) {
+        String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), DefaultProviderDataAccessor.MAX_DESCRIPTION_LENGTH);
+        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerKey.getUniversalKey());
+    }
+
+    private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
+        return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
+    }
+
+    private ProviderUserEntity convertToUserEntity(ProviderKey providerKey, ProviderUserModel providerUserModel) {
+        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerKey.getUniversalKey());
     }
 
 }

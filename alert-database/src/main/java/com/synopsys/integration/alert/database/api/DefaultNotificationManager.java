@@ -62,8 +62,8 @@ public class DefaultNotificationManager implements NotificationManager {
     private final EventManager eventManager;
 
     @Autowired
-    public DefaultNotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository,
-        final EventManager eventManager) {
+    public DefaultNotificationManager(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
+        EventManager eventManager) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -71,33 +71,33 @@ public class DefaultNotificationManager implements NotificationManager {
     }
 
     @Override
-    public List<AlertNotificationWrapper> saveAllNotifications(final Collection<AlertNotificationWrapper> notifications) {
-        final List<AlertNotificationWrapper> notificationContents = notifications.stream()
-                                                                        .map(notification -> notificationContentRepository.save((NotificationContent) notification))
-                                                                        .collect(Collectors.toList());
+    public List<AlertNotificationWrapper> saveAllNotifications(Collection<AlertNotificationWrapper> notifications) {
+        List<AlertNotificationWrapper> notificationContents = notifications.stream()
+                                                                  .map(notification -> notificationContentRepository.save((NotificationContent) notification))
+                                                                  .collect(Collectors.toList());
         if (!notificationContents.isEmpty()) {
-            final List<Long> notificationIds = notificationContents.stream()
-                                                   .map(AlertNotificationWrapper::getId)
-                                                   .collect(Collectors.toList());
+            List<Long> notificationIds = notificationContents.stream()
+                                             .map(AlertNotificationWrapper::getId)
+                                             .collect(Collectors.toList());
             eventManager.sendEvent(new NotificationEvent(notificationIds));
         }
         return notificationContents;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Page<AlertNotificationWrapper> findAll(final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
+    public Page<AlertNotificationWrapper> findAll(PageRequest pageRequest, boolean onlyShowSentNotifications) {
         if (onlyShowSentNotifications) {
-            final Page<NotificationContent> allSentNotifications = notificationContentRepository.findAllSentNotifications(pageRequest);
+            Page<NotificationContent> allSentNotifications = notificationContentRepository.findAllSentNotifications(pageRequest);
             return safelyConvertToGenericPage(allSentNotifications);
         }
         return safelyConvertToGenericPage(notificationContentRepository.findAll(pageRequest));
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Page<AlertNotificationWrapper> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
-        final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
+    public Page<AlertNotificationWrapper> findAllWithSearch(String searchTerm, PageRequest pageRequest, boolean onlyShowSentNotifications) {
+        String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
 
-        final Page<NotificationContent> matchingNotifications;
+        Page<NotificationContent> matchingNotifications;
         if (onlyShowSentNotifications) {
             matchingNotifications = notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
         } else {
@@ -108,54 +108,54 @@ public class DefaultNotificationManager implements NotificationManager {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationWrapper> findByIds(final List<Long> notificationIds) {
+    public List<AlertNotificationWrapper> findByIds(List<Long> notificationIds) {
         return safelyConvertToGenericList(notificationContentRepository.findAllById(notificationIds));
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<AlertNotificationWrapper> findById(final Long notificationId) {
+    public Optional<AlertNotificationWrapper> findById(Long notificationId) {
         return safelyConvertToGenericOptional(notificationContentRepository.findById(notificationId));
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationWrapper> findByCreatedAtBetween(final Date startDate, final Date endDate) {
-        final List<NotificationContent> byCreatedAtBetween = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
+    public List<AlertNotificationWrapper> findByCreatedAtBetween(Date startDate, Date endDate) {
+        List<NotificationContent> byCreatedAtBetween = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
         return safelyConvertToGenericList(byCreatedAtBetween);
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationWrapper> findByCreatedAtBefore(final Date date) {
-        final List<NotificationContent> byCreatedAtBefore = notificationContentRepository.findByCreatedAtBefore(date);
+    public List<AlertNotificationWrapper> findByCreatedAtBefore(Date date) {
+        List<NotificationContent> byCreatedAtBefore = notificationContentRepository.findByCreatedAtBefore(date);
         return safelyConvertToGenericList(byCreatedAtBefore);
     }
 
     @Override
-    public List<AlertNotificationWrapper> findByCreatedAtBeforeDayOffset(final int dayOffset) {
+    public List<AlertNotificationWrapper> findByCreatedAtBeforeDayOffset(int dayOffset) {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.minusDays(dayOffset);
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
-        final Date date = Date.from(zonedDate.toInstant());
+        Date date = Date.from(zonedDate.toInstant());
         return findByCreatedAtBefore(date);
     }
 
     @Override
-    public void deleteNotificationList(final List<AlertNotificationWrapper> notifications) {
+    public void deleteNotificationList(List<AlertNotificationWrapper> notifications) {
         notifications.forEach(this::deleteNotification);
     }
 
     @Override
-    public void deleteNotification(final AlertNotificationWrapper notification) {
+    public void deleteNotification(AlertNotificationWrapper notification) {
         deleteAuditEntries(notification.getId());
         notificationContentRepository.deleteById(notification.getId());
     }
 
-    public PageRequest getPageRequestForNotifications(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
-        final Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
-        final Integer size = ObjectUtils.defaultIfNull(pageSize, Integer.MAX_VALUE);
+    public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, String sortField, String sortOrder) {
+        Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
+        Integer size = ObjectUtils.defaultIfNull(pageSize, Integer.MAX_VALUE);
         boolean sortQuery = false;
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
@@ -167,33 +167,33 @@ public class DefaultNotificationManager implements NotificationManager {
             sortingField = sortField;
             sortQuery = true;
         }
-        Sort.Direction sortingOrder = Sort.Direction.DESC;
+        Sort.Order sortingOrder = Sort.Order.desc(sortingField);
         if (StringUtils.isNotBlank(sortOrder) && sortQuery && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
-            sortingOrder = Sort.Direction.ASC;
+            sortingOrder = Sort.Order.asc(sortingField);
         }
-        return PageRequest.of(page, size, new Sort(sortingOrder, sortingField));
+        return PageRequest.of(page, size, Sort.by(sortingOrder));
     }
 
-    private void deleteAuditEntries(final Long notificationId) {
-        final List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
-        final List<Long> auditIdList = foundRelations
-                                           .stream()
-                                           .map(AuditNotificationRelation::getAuditEntryId)
-                                           .collect(Collectors.toList());
-        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
+    private void deleteAuditEntries(Long notificationId) {
+        List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
+        List<Long> auditIdList = foundRelations
+                                     .stream()
+                                     .map(AuditNotificationRelation::getAuditEntryId)
+                                     .collect(Collectors.toList());
+        List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
         auditEntryRepository.deleteAll(auditEntryList);
     }
 
-    private Page<AlertNotificationWrapper> safelyConvertToGenericPage(final Page<NotificationContent> notificationPage) {
+    private Page<AlertNotificationWrapper> safelyConvertToGenericPage(Page<NotificationContent> notificationPage) {
         return notificationPage.map(AlertNotificationWrapper.class::cast);
     }
 
-    private Optional<AlertNotificationWrapper> safelyConvertToGenericOptional(final Optional<NotificationContent> notificationContent) {
+    private Optional<AlertNotificationWrapper> safelyConvertToGenericOptional(Optional<NotificationContent> notificationContent) {
         return notificationContent.map(AlertNotificationWrapper.class::cast);
     }
 
-    private List<AlertNotificationWrapper> safelyConvertToGenericList(final List<NotificationContent> notificationContents) {
-        final List<AlertNotificationWrapper> wrappers = new ArrayList<>(notificationContents.size());
+    private List<AlertNotificationWrapper> safelyConvertToGenericList(List<NotificationContent> notificationContents) {
+        List<AlertNotificationWrapper> wrappers = new ArrayList<>(notificationContents.size());
         notificationContents.forEach(wrappers::add);
         return wrappers;
     }

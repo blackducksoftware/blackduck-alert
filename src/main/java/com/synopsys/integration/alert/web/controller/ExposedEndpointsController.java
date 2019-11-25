@@ -22,40 +22,44 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import com.synopsys.integration.alert.common.SetMap;
+import com.google.gson.Gson;
+import com.synopsys.integration.datastructure.SetMap;
+
 
 @RestController
 public class ExposedEndpointsController extends BaseController {
-    public final RequestMappingHandlerMapping handlerMapping;
+    private Gson gson;
+    private RequestMappingHandlerMapping handlerMapping;
 
     @Autowired
-    public ExposedEndpointsController(final RequestMappingHandlerMapping handlerMapping) {
+    public ExposedEndpointsController(Gson gson, RequestMappingHandlerMapping handlerMapping) {
+        this.gson = gson;
         this.handlerMapping = handlerMapping;
     }
 
     @GetMapping
-    public Map<String, Set<RequestMethod>> get() {
-        SetMap<String, RequestMethod> restMappings = new SetMap(new TreeMap());
+    public ResponseEntity<String> get() {
+        SetMap<String, RequestMethod> restMappings = new SetMap<>(new TreeMap<>());
 
-        for (final RequestMappingInfo info : handlerMapping.getHandlerMethods().keySet()) {
-            for (final String apiPath : info.getPatternsCondition().getPatterns()) {
+        for (RequestMappingInfo info : handlerMapping.getHandlerMethods().keySet()) {
+            for (String apiPath : info.getPatternsCondition().getPatterns()) {
                 if (apiPath != null) {
                     restMappings.addAll(apiPath, info.getMethodsCondition().getMethods());
                 }
             }
         }
-        return restMappings.getMap();
+        String jsonString = gson.toJson(restMappings.getMap());
+        return ResponseEntity.ok(jsonString);
     }
 
 }

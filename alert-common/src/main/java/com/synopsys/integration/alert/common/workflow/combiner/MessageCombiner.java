@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -42,6 +41,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.datastructure.SetMap;
 
 @Component
 public class MessageCombiner {
@@ -78,11 +78,11 @@ public class MessageCombiner {
     }
 
     protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
-        final List<ComponentItem> allComponentItems = groupedMessages
-                                                          .stream()
-                                                          .map(ProviderMessageContent::getComponentItems)
-                                                          .flatMap(Set::stream)
-                                                          .collect(Collectors.toList());
+        List<ComponentItem> allComponentItems = groupedMessages
+                                                    .stream()
+                                                    .map(ProviderMessageContent::getComponentItems)
+                                                    .flatMap(Set::stream)
+                                                    .collect(Collectors.toList());
         return combineComponentItems(allComponentItems);
     }
 
