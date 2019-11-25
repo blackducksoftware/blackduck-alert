@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 
-//TODO move into alert-common when SetMap is in integration-common
 public abstract class IssueTrackerChannel extends DistributionChannel {
     private final DescriptorKey descriptorKey;
 
