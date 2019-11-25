@@ -25,18 +25,18 @@ package com.synopsys.integration.alert.issuetracker.message;
 import com.synopsys.integration.alert.issuetracker.IssueOperation;
 
 public class IssueTrackerRequest {
-    private final IssueProperties issueProperties;
+    private final IssueSearchProperties issueSearchProperties;
     private final IssueOperation operation;
     private final IssueContentModel requestContent;
 
-    public IssueTrackerRequest(IssueOperation operation, IssueProperties issueProperties, IssueContentModel requestContent) {
+    public IssueTrackerRequest(IssueOperation operation, IssueSearchProperties issueSearchProperties, IssueContentModel requestContent) {
         this.operation = operation;
-        this.issueProperties = issueProperties;
+        this.issueSearchProperties = issueSearchProperties;
         this.requestContent = requestContent;
     }
 
-    public <T extends IssueProperties> T getIssueProperties() {
-        return (T) issueProperties;
+    public <T extends IssueSearchProperties> T getIssueSearchProperties() {
+        return (T) issueSearchProperties;
     }
 
     public IssueOperation getOperation() {

@@ -1,6 +1,6 @@
 project.ext.moduleName = 'com.synopsys.integration.alert.issuetracker'
 
 dependencies {
-    implementation project(':alert-common')
-    implementation 'com.synopsys.integration:int-jira-common:0.6.1'
+    api 'com.blackducksoftware.integration:blackduck-common:44.4.6'
+    
 }

@@ -22,9 +22,11 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
+import java.util.function.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerContentFormatException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerContentLengthException;
 
 public abstract class IssueContentLengthValidator {
     protected abstract int getTitleLength();
@@ -33,7 +35,7 @@ public abstract class IssueContentLengthValidator {
 
     protected abstract int getCommentLength();
 
-    public boolean validateContentLength(IssueContentModel issueContent) throws IssueTrackerContentFormatException {
+    public boolean validateContentLength(IssueContentModel issueContent) throws IssueTrackerContentLengthException {
         StringBuilder errors = new StringBuilder();
         int titleLength = StringUtils.length(issueContent.getTitle());
         int descriptionLength = StringUtils.length(issueContent.getDescription());
@@ -46,16 +48,21 @@ public abstract class IssueContentLengthValidator {
             errors.append(String.format("Description longer than the limit of %d characters. ", getTitleLength()));
         }
 
-        //TODO Validate the additional comments too.
+        Predicate<String> commentLengthTest = comment -> StringUtils.length(comment) > getCommentLength();
+        boolean descriptorCommentsTooLong = issueContent.getDescriptionComments().stream()
+                                                .anyMatch(commentLengthTest);
+        if (descriptorCommentsTooLong) {
+            errors.append(String.format("One of the comments is longer than the limit of %d characters. ", getCommentLength()));
+        }
 
-        boolean commentTooLong = issueContent.getDescriptionComments().stream()
-                                     .anyMatch(comment -> StringUtils.length(comment) > getCommentLength());
-        if (commentTooLong) {
+        boolean additionalCommentsTooLong = issueContent.getAdditionalComments().stream()
+                                                .anyMatch(commentLengthTest);
+        if (additionalCommentsTooLong) {
             errors.append(String.format("One of the comments is longer than the limit of %d characters. ", getCommentLength()));
         }
 
         if (errors.length() > 0) {
-            throw new IssueTrackerContentFormatException(errors.toString());
+            throw new IssueTrackerContentLengthException(errors.toString());
         }
 
         return true;

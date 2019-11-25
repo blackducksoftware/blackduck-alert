@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.IssueTrackerFieldExceptionConverter;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
@@ -36,10 +36,10 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
-import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerCreateIssueTestAction;
-import com.synopsys.integration.alert.issuetracker.jira.server.JiraServerService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.issuetracker.jira.server.JiraServerCreateIssueTestAction;
+import com.synopsys.integration.issuetracker.jira.server.JiraServerService;
 
 @Component
 public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
@@ -60,7 +60,7 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
         JiraServerService jiraService = new JiraServerService(gson);
-        JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
+        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(fieldAccessor, jiraMessageParser);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson, issueCreator);
         try {
             IssueTrackerResponse result = testAction.testConfig(context);

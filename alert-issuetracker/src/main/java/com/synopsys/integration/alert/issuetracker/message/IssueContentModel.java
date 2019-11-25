@@ -28,10 +28,16 @@ import java.util.LinkedList;
 public class IssueContentModel {
     private final String title;
     private final String description;
-    //TODO add comments to the difference.
     private final Collection<String> descriptionComments;
     private final Collection<String> additionalComments;
 
+    /**
+     * Model constructor.
+     * @param title               The title of the issue.  This may be abbreviated.
+     * @param description         The description of the issue.  This may have size limits associated.  If the size limit is exceeded then any additional text should be in the descriptionComments.
+     * @param descriptionComments Contains comments to add to the comments section of a ticket because the description is longer than the limit allowed by the issue tracker.
+     * @param additionalComments  Comments to add to the issue when an existing issue is updated.
+     */
     private IssueContentModel(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {
         this.title = title;
         this.description = description;
@@ -39,11 +45,11 @@ public class IssueContentModel {
         this.additionalComments = additionalComments;
     }
 
-    public static final IssueContentModel of(String title, String description, Collection<String> descriptionComments) {
+    public static IssueContentModel of(String title, String description, Collection<String> descriptionComments) {
         return new IssueContentModel(title, description, descriptionComments, new LinkedList<>());
     }
 
-    public static final IssueContentModel of(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {
+    public static IssueContentModel of(String title, String description, Collection<String> descriptionComments, Collection<String> additionalComments) {
         return new IssueContentModel(title, description, descriptionComments, additionalComments);
     }
 

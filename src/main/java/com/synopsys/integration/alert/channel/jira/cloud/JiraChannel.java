@@ -29,44 +29,40 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
+import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudContext;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudService;
 
 @Component
-public class JiraChannel extends DistributionChannel {
-    private final JiraChannelKey jiraChannelKey;
+public class JiraChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
     public JiraChannel(JiraChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter) {
-        super(gson, auditUtility);
-        this.jiraChannelKey = jiraChannelKey;
+        super(gson, auditUtility, jiraChannelKey);
         this.jiraContentConverter = jiraContentConverter;
     }
 
     @Override
-    public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fieldAccessor = event.getFieldAccessor();
-        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
-        JiraCloudContext context = contextBuilder.build(fieldAccessor);
-        JiraCloudService jiraService = new JiraCloudService(getGson());
-
-        List<IssueTrackerRequest> requests = jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
-        IssueTrackerResponse result = jiraService.sendRequests(context, requests);
-        return new MessageResult(result.getStatusMessage());
+    protected IssueTrackerService<?> getIssueTrackerService() {
+        return new JiraCloudService(getGson());
     }
 
     @Override
-    public String getDestinationName() {
-        return jiraChannelKey.getUniversalKey();
+    protected IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event) {
+        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
+        return contextBuilder.build(fieldAccessor);
     }
 
+    @Override
+    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException {
+        return jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+    }
 }

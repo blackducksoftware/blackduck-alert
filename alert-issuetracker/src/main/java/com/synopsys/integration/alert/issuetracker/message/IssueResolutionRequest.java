@@ -27,11 +27,11 @@ import com.synopsys.integration.alert.issuetracker.IssueOperation;
 public class IssueResolutionRequest extends IssueTrackerRequest {
     public static final IssueOperation OPERATION = IssueOperation.RESOLVE;
 
-    private IssueResolutionRequest(IssueProperties issueProperties, IssueContentModel requestContent) {
-        super(OPERATION, issueProperties, requestContent);
+    private IssueResolutionRequest(IssueSearchProperties issueSearchProperties, IssueContentModel requestContent) {
+        super(OPERATION, issueSearchProperties, requestContent);
     }
 
-    public static final IssueResolutionRequest of(IssueProperties issueProperties, IssueContentModel content) {
-        return new IssueResolutionRequest(issueProperties, content);
+    public static final IssueResolutionRequest of(IssueSearchProperties issueSearchProperties, IssueContentModel content) {
+        return new IssueResolutionRequest(issueSearchProperties, content);
     }
 }

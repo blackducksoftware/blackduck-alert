@@ -43,11 +43,11 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IssueTrackerService issueTrackerService;
-    private TestIssueCreator testIssueCreator;
+    private TestIssueRequestCreator testIssueRequestCreator;
 
-    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueCreator testIssueCreator) {
+    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueRequestCreator testIssueRequestCreator) {
         this.issueTrackerService = issueTrackerService;
-        this.testIssueCreator = testIssueCreator;
+        this.testIssueRequestCreator = testIssueRequestCreator;
     }
 
     public IssueTrackerResponse testConfig(IssueTrackerContext issueTrackerContext) throws IntegrationException {
@@ -129,7 +129,7 @@ public abstract class IssueCreatorTestAction {
 
     private IssueTrackerResponse createAndSendMessage(IssueTrackerContext issueTrackerContext, IssueOperation operation, String messageId) throws IntegrationException {
         logger.debug("Sending {} test message...", operation.name());
-        IssueTrackerRequest request = testIssueCreator.createRequest(operation, messageId);
+        IssueTrackerRequest request = testIssueRequestCreator.createRequest(operation, messageId);
         IssueTrackerResponse messageResult = this.issueTrackerService.sendRequests(issueTrackerContext, List.of(request));
         logger.debug("{} test message sent!", operation.name());
         return messageResult;

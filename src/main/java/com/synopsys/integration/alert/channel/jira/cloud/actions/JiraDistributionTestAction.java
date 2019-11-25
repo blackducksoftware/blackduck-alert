@@ -30,16 +30,16 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
 import com.synopsys.integration.alert.channel.jira.common.IssueTrackerFieldExceptionConverter;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueCreator;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
-import com.synopsys.integration.alert.issuetracker.jira.cloud.JiraCloudService;
 import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
+import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudService;
 
 @Component
 public class JiraDistributionTestAction extends ChannelDistributionTestAction {
@@ -60,7 +60,7 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
         IssueTrackerContext context = contextBuilder.build(fieldAccessor);
         JiraCloudService jiraService = new JiraCloudService(gson);
-        JiraTestIssueCreator issueCreator = new JiraTestIssueCreator(fieldAccessor, jiraMessageParser);
+        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(fieldAccessor, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson, issueCreator);
 
         try {
