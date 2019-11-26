@@ -84,7 +84,9 @@ class TableDisplay extends Component {
         this.flipShowSwitch();
     }
 
-    handleSubmit() {
+    handleSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.handleClose();
         this.props.onConfigSave();
     }

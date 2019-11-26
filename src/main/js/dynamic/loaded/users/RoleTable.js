@@ -18,10 +18,6 @@ class RoleTable extends Component {
         this.state = {};
     }
 
-    componentDidMount() {
-        this.retrieveData();
-    }
-
     handleChange(e) {
         const { name, value, type, checked } = e.target;
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;

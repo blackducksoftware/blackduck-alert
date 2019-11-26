@@ -39,12 +39,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.model.UserRoleModel;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)
@@ -77,12 +77,12 @@ public class UserController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody UserModel userModel) {
+    public ResponseEntity<String> createUser(@RequestBody UserRoleModel userModel) {
         if (!hasPermission(authorizationManager::hasCreatePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.createUser(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress());
+            userActions.createUser(userModel.getUsername(), userModel.getPassword(), userModel.getEmailAddress());
             return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Created.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
