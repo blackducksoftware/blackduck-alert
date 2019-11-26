@@ -9,7 +9,9 @@ import distributionConfigs from 'store/reducers/distributionConfigs';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
-import globalConfiguration from './globalConfiguration';
+import globalConfiguration from 'store/reducers/globalConfiguration';
+import roles from 'store/reducers/roles';
+import users from 'store/reducers/users';
 
 
 const rootReducer = combineReducers({
@@ -22,7 +24,9 @@ const rootReducer = combineReducers({
     session,
     system,
     refresh,
-    routing
+    routing,
+    roles,
+    users
 });
 
 export default rootReducer;
