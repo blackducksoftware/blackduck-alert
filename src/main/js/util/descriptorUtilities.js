@@ -79,6 +79,9 @@ export function isOneOperationAssigned(descriptor, operationArray) {
 }
 
 export function isOperationAssigned(descriptor, operationName) {
-    return descriptor.operations.find(operation => operation === operationName) !== undefined;
+    if (descriptor) {
+        return descriptor.operations.find(operation => operation === operationName) !== undefined;
+    }
+    return false;
 }
 

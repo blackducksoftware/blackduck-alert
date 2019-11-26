@@ -34,26 +34,6 @@ class UserTable extends Component {
                 header: 'email_address',
                 headerLabel: 'Email',
                 isKey: false
-            },
-            {
-                header: 'expired',
-                headerLabel: 'Expired',
-                isKey: false
-            },
-            {
-                header: 'locked',
-                headerLabel: 'Locked',
-                isKey: false
-            },
-            {
-                header: 'password_expired',
-                headerLabel: 'Password Expired',
-                isKey: false
-            },
-            {
-                header: 'enabled',
-                headerLabel: 'Enabled',
-                isKey: false
             }
         ];
     }

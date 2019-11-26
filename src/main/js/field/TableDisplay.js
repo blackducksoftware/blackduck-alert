@@ -102,8 +102,8 @@ class TableDisplay extends Component {
                     <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                         {this.props.children}
                         <ConfigButtons
-                            cancelId="job-cancel"
-                            submitId="job-submit"
+                            cancelId="usermanagement-cancel"
+                            submitId="usermanagement-submit"
                             includeCancel
                             onCancelClick={() => {
                                 this.handleClose();
@@ -144,8 +144,7 @@ class TableDisplay extends Component {
         };
 
         const content = (
-            <
-                div>
+            <div>
                 < BootstrapTable
                     version="4"
                     hover

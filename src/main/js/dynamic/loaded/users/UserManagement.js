@@ -19,17 +19,10 @@ class UserManagement extends Component {
         };
     }
 
-    checkPermissions(operation) {
-        const { descriptor } = this.state;
-        if (descriptor) {
-            return DescriptorUtilities.isOperationAssigned(descriptor, operation)
-        }
-        return false;
-    }
-
     render() {
-        const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
+        const { descriptor } = this.state;
+        const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
 
         const roles = <RoleTable canCreate={canCreate} canDelete={canDelete} />;
 
