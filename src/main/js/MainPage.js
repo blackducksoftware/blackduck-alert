@@ -43,7 +43,7 @@ class MainPage extends Component {
         const {
             urlName, name, automaticallyGenerateUI, componentNamespace
         } = component;
-        if (automaticallyGenerateUI) {
+        if (!automaticallyGenerateUI) {
             return (<Route
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}

@@ -43,12 +43,13 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
+import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)
 public class UserController extends BaseController {
-    public static final String USER_BASE_PATH = BaseController.BASE_PATH + "/users";
+    public static final String USER_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/user";
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final ContentConverter contentConverter;

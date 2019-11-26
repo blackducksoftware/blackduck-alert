@@ -35,14 +35,14 @@ public abstract class UIConfig extends Stringable {
     private final String urlName;
     private final String componentNamespace;
 
-    protected UIConfig(final String label, final String description, final String urlName, final String componentNamespace) {
+    protected UIConfig(String label, String description, String urlName, String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
         this.componentNamespace = componentNamespace;
     }
 
-    public UIConfig(final String label, final String description, final String urlName) {
+    public UIConfig(String label, String description, String urlName) {
         this(label, description, urlName, "");
     }
 
@@ -65,7 +65,7 @@ public abstract class UIConfig extends Stringable {
     }
 
     public boolean autoGenerateUI() {
-        return StringUtils.isNotBlank(getComponentNamespace());
+        return StringUtils.isBlank(getComponentNamespace());
     }
 
     public String getComponentNamespace() {

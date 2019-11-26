@@ -16,6 +16,7 @@ class TableDisplay extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.flipShowSwitch = this.flipShowSwitch.bind(this);
+        this.updateData = this.updateData.bind(this);
 
         this.state = {
             data: [],
@@ -23,18 +24,16 @@ class TableDisplay extends Component {
         };
     }
 
+    componentDidMount() {
+        this.updateData();
+    }
+
     createTableColumns() {
         const assignDataFormat = (cell, row) => {
-            const cellContent = (cell && cell !== '') ?
-                <span className="missingData">
-                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-                </span>
-                : cell;
-
             if (cell) {
-                return <div title={cell.toString()}> {cellContent} </div>;
+                return <div title={cell.toString()}> {cell} </div>;
             }
-            return <div> {cellContent} </div>;
+            return <div> {cell} </div>;
         }
 
         return this.props.columns.map(column => (
@@ -43,12 +42,19 @@ class TableDisplay extends Component {
         ));
     }
 
+    updateData() {
+        const data = this.props.retrieveData();
+        this.setState({
+            data
+        });
+    }
+
     createButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const refreshButton = !this.props.autoRefresh &&
-            (<button type="button" tabUserTable={0} className={classes} onClick={this.props.retrieveData}>
+            (<button type="button" tabUserTable={0} className={classes} onClick={this.updateData()}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
             </button>);
         return (

@@ -32,7 +32,7 @@ class UserTable extends Component {
                 isKey: true
             },
             {
-                header: 'email_address',
+                header: 'emailAddress',
                 headerLabel: 'Email',
                 isKey: false
             }
@@ -59,7 +59,7 @@ class UserTable extends Component {
     createModalFields() {
         const usernameKey = 'username';
         const passwordKey = 'password';
-        const emailKey = 'email_address';
+        const emailKey = 'emailAddress';
         const enabledKey = 'enabled';
 
         return (

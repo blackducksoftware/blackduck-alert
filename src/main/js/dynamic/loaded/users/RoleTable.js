@@ -78,7 +78,7 @@ class RoleTable extends Component {
 
     createColumns() {
         return [{
-            header: 'name',
+            header: 'roleName',
             headerLabel: 'Name',
             isKey: true
         }];
@@ -94,17 +94,17 @@ class RoleTable extends Component {
     }
 
     onSave() {
-        this.props.createRole(this.state['rolename']);
+        this.props.createRole(this.state['roleName']);
     }
 
     createModalFields() {
-        const roleNameKey = 'rolename';
+        const roleNameKey = 'roleName';
         const roleNameValue = this.state[roleNameKey];
 
         return (
             <div>
                 <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
-                <TableDisplay columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
+                <TableDisplay newConfigFields={() => null} columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
             </div>
         );
     }
