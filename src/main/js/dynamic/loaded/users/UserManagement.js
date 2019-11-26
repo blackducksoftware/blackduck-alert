@@ -38,8 +38,6 @@ class UserManagement extends Component {
     }
 }
 
-UserManagement.defaultProps = {};
-
 UserManagement.propTypes = {
     descriptors: PropTypes.array
 };
@@ -48,6 +46,4 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = () => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserManagement);
+export default connect(mapStateToProps, null)(UserManagement);
