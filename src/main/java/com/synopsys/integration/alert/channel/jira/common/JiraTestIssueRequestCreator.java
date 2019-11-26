@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.service.TestIssueRequestCreator;
+import com.synopsys.integration.issuetracker.common.IssueOperation;
+import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
+import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
+import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
+import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
+import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
+import com.synopsys.integration.issuetracker.common.service.TestIssueRequestCreator;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
