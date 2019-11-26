@@ -243,7 +243,7 @@
         </insert>
 
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
-            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_ADMIN')"/>
+            <column name="ROLE_ID" valueComputed="GET_ID_FOR_USER_ROLE('ALERT_JOB_MANAGER')"/>
             <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
             <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
             <column name="OPERATIONS" value="4"/>
