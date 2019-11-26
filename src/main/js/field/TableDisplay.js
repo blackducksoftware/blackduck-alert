@@ -100,7 +100,7 @@ class TableDisplay extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
-                        {this.props.children}
+                        {this.props.newConfigFields()}
                         <ConfigButtons
                             cancelId="usermanagement-cancel"
                             submitId="usermanagement-submit"
@@ -192,6 +192,7 @@ TableDisplay.propTypes = {
         headerLabel: PropTypes.string.isRequired,
         isKey: PropTypes.bool.isRequired
     })).isRequired,
+    newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,

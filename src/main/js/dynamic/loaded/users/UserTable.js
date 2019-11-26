@@ -15,6 +15,7 @@ class UserTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.createModalFields = this.createModalFields.bind(this);
 
         this.state = {};
     }
@@ -55,9 +56,7 @@ class UserTable extends Component {
         this.props.createUser(this.state['username']);
     }
 
-    render() {
-        const { canCreate, canDelete } = this.props;
-
+    createModalFields() {
         const usernameKey = 'username';
         const passwordKey = 'password';
         const emailKey = 'email_address';
@@ -65,13 +64,21 @@ class UserTable extends Component {
 
         return (
             <div>
+                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state[emailKey]} />
+                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state[enabledKey]} />
+            </div>
+        );
+    }
+
+    render() {
+        const { canCreate, canDelete } = this.props;
+
+        return (
+            <div>
                 <div>
-                    <TableDisplay modalTitle="User" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
-                        <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state[usernameKey]} />
-                        <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state[passwordKey]} />
-                        <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state[emailKey]} />
-                        <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state[enabledKey]} />
-                    </TableDisplay>
+                    <TableDisplay newConfigFields={this.createModalFields} modalTitle="User" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete} />
                 </div>
             </div>
         );

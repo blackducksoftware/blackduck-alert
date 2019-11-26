@@ -13,6 +13,7 @@ class RoleTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.createModalFields = this.createModalFields.bind(this);
 
         this.state = {};
     }
@@ -96,19 +97,25 @@ class RoleTable extends Component {
         this.props.createRole(this.state['rolename']);
     }
 
-    render() {
-        const { canCreate, canDelete } = this.props;
-
+    createModalFields() {
         const roleNameKey = 'rolename';
         const roleNameValue = this.state[roleNameKey];
 
         return (
             <div>
+                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
+                <TableDisplay columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
+            </div>
+        );
+    }
+
+    render() {
+        const { canCreate, canDelete } = this.props;
+
+        return (
+            <div>
                 <div>
-                    <TableDisplay modalTitle="Role" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete}>
-                        <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
-                        <TableDisplay columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
-                    </TableDisplay>
+                    <TableDisplay newConfigFields={this.createModalFields} modalTitle="Role" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete} />
                 </div>
             </div>
         );
