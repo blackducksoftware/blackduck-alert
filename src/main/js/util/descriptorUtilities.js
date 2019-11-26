@@ -17,7 +17,8 @@ export const DESCRIPTOR_NAME = {
     COMPONENT_SCHEDULING: 'component_scheduling',
     COMPONENT_SETTINGS: 'component_settings',
     PROVIDER_BLACKDUCK: 'provider_blackduck',
-    PROVIDER_POLARIS: 'provider_polaris'
+    PROVIDER_POLARIS: 'provider_polaris',
+    COMPONENT_USERS: 'component_users'
 };
 
 export const OPERATIONS = {
@@ -78,6 +79,9 @@ export function isOneOperationAssigned(descriptor, operationArray) {
 }
 
 export function isOperationAssigned(descriptor, operationName) {
-    return descriptor.operations.find(operation => operation === operationName) !== undefined;
+    if (descriptor) {
+        return descriptor.operations.find(operation => operation === operationName) !== undefined;
+    }
+    return false;
 }
 
