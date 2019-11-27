@@ -17,9 +17,9 @@ class TableDisplay extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.flipShowSwitch = this.flipShowSwitch.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.deleteItems = this.deleteItems.bind(this);
 
         this.state = {
-            data: [],
             show: false
         };
     }
@@ -43,10 +43,7 @@ class TableDisplay extends Component {
     }
 
     updateData() {
-        const data = this.props.retrieveData();
-        this.setState({
-            data
-        });
+        this.props.refreshData();
     }
 
     createButtonGroup(buttons) {
@@ -89,6 +86,7 @@ class TableDisplay extends Component {
         event.stopPropagation();
         this.handleClose();
         this.props.onConfigSave();
+        this.props.refreshData();
     }
 
     flipShowSwitch() {
@@ -125,17 +123,23 @@ class TableDisplay extends Component {
         );
     }
 
+    deleteItems(next, dropRowKeys) {
+        dropRowKeys.forEach(row => {
+            this.props.onConfigDelete(row);
+        });
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton } = this.props;
-        const { data } = this.state;
+        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data } = this.props;
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
             noDataText: 'No Data',
             clearSearch: true,
             insertModal: this.createInsertModal,
+            handleConfirmDeleteRow: this.deleteItems,
             defaultSortName: sortName,
             defaultSortOrder: sortOrder
         };
@@ -184,7 +188,7 @@ class TableDisplay extends Component {
         return (
             <div>
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.props.retrieveData} autoRefresh={autoRefresh} />
+                    <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
                 </div>
                 {content}
             </div>
@@ -194,7 +198,8 @@ class TableDisplay extends Component {
 }
 
 TableDisplay.propTypes = {
-    retrieveData: PropTypes.func.isRequired,
+    refreshData: PropTypes.func.isRequired,
+    data: PropTypes.array.isRequired,
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
@@ -202,6 +207,7 @@ TableDisplay.propTypes = {
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
+    onConfigDelete: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -225,6 +231,7 @@ TableDisplay.defaultProps = {
     deleteButton: true,
     inProgress: false,
     onConfigSave: () => null,
+    onConfigDelete: () => null,
     modalTitle: 'New'
 };
 

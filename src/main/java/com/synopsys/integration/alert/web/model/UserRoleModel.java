@@ -24,15 +24,20 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Set;
 
-public class UserRoleModel {
-    private final String username;
-    private final String password;
-    private final String emailAddress;
-    private final Set<String> roleNames;
-    private final boolean expired;
-    private final boolean locked;
-    private final boolean passwordExpired;
-    private final boolean enabled;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class UserRoleModel extends AlertSerializableModel {
+    private String username;
+    private String password;
+    private String emailAddress;
+    private Set<String> roleNames;
+    private boolean expired;
+    private boolean locked;
+    private boolean passwordExpired;
+    private boolean enabled;
+
+    public UserRoleModel() {
+    }
 
     public UserRoleModel(String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
         this.username = username;

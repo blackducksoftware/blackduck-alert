@@ -26,11 +26,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class RolePermissionsModel extends Stringable {
-    private final String roleName;
-    private final Map<PermissionKey, Set<String>> operations;
+public class RolePermissionsModel extends AlertSerializableModel {
+    private String roleName;
+    private Map<PermissionKey, Set<String>> operations;
+
+    public RolePermissionsModel() {
+    }
 
     public RolePermissionsModel(String roleName, Map<PermissionKey, Set<String>> operations) {
         this.roleName = roleName;
@@ -43,5 +46,13 @@ public class RolePermissionsModel extends Stringable {
 
     public Map<PermissionKey, Set<String>> getOperations() {
         return operations;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setOperations(Map<PermissionKey, Set<String>> operations) {
+        this.operations = operations;
     }
 }

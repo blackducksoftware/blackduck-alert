@@ -28,7 +28,7 @@ class UserManagement extends Component {
 
         return (
             <div>
-                <ConfigurationLabel configurationName="User Management" description="Create, edit, or delete Users and Role to customize what the user can do in Alert." />
+                <ConfigurationLabel configurationName="User Management" description="Create, edit, or delete Users and Roles to customize what the user can do in Alert." />
                 <UserTable canCreate={canCreate} canDelete={canDelete} />
                 <CollapsiblePane title="Modify Roles">
                     {[roles]}

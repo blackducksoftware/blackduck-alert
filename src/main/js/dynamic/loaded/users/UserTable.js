@@ -43,7 +43,6 @@ class UserTable extends Component {
 
     retrieveData() {
         this.props.getUsers();
-        return this.props.users;
     }
 
     handleChange(e) {
@@ -64,16 +63,10 @@ class UserTable extends Component {
     }
 
     retrieveRoles() {
-        console.log('Retrieving roles');
-        this.props.getRoles();
-        const roleMapping = this.props.roles.forEach(role => {
+        return this.props.roles.map(role => {
             const rolename = role.roleName;
             return { label: rolename, value: rolename }
         });
-        this.setState({
-            roles: roleMapping
-        });
-        console.log(this.state.roles);
     }
 
     createModalFields() {
@@ -89,21 +82,35 @@ class UserTable extends Component {
                 <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state.user[passwordKey]} />
                 <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state.user[emailKey]} />
                 <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state.user[enabledKey]} />
-                <DynamicSelectInput name={roleNames} label="Roles" description="Select the roles you want associated with the user." onChange={this.handleChange} multiSelect={true} options={this.state.roles}
-                                    value={this.state.user[roleNames]} onFocus={this.retrieveRoles} />
+                <DynamicSelectInput
+                    name={roleNames}
+                    id={roleNames}
+                    label="Roles"
+                    description="Select the roles you want associated with the user."
+                    onChange={this.handleChange}
+                    multiSelect={true}
+                    options={this.retrieveRoles()}
+                    value={this.state.user[roleNames]}
+                    onFocus={this.props.getRoles} />
             </div>
         );
     }
 
     render() {
-        console.log('Render');
-        console.log(this.state.roles);
         const { canCreate, canDelete } = this.props;
 
         return (
             <div>
                 <div>
-                    <TableDisplay newConfigFields={this.createModalFields} modalTitle="User" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete} />
+                    <TableDisplay
+                        newConfigFields={this.createModalFields}
+                        modalTitle="User"
+                        onConfigSave={this.onSave}
+                        refreshData={this.retrieveData}
+                        data={this.props.users}
+                        columns={this.createColumns()}
+                        newButton={canCreate}
+                        deleteButton={canDelete} />
                 </div>
             </div>
         );

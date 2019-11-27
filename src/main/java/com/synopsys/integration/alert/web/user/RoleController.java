@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.user;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,8 +74,8 @@ public class RoleController extends BaseController {
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
     }
 
-    @PostMapping
-    public ResponseEntity<String> createRole(@RequestBody(required = true) RolePermissionsModel rolePermissionsModel) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createRole(@RequestBody RolePermissionsModel rolePermissionsModel) {
         if (!hasPermission(authorizationManager::hasCreatePermission)) {
             return responseFactory.createForbiddenResponse();
         }
