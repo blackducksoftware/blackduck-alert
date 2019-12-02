@@ -1,6 +1,0 @@
-project.ext.moduleName = 'com.synopsys.integration.alert.issuetracker'
-
-dependencies {
-    api 'com.blackducksoftware.integration:blackduck-common:44.4.6'
-    
-}
