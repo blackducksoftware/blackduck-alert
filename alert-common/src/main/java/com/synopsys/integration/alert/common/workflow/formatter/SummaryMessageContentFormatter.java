@@ -70,7 +70,7 @@ public class SummaryMessageContentFormatter extends MessageContentFormatter {
         for (ProviderMessageContent message : collapsedMessages) {
             ProviderMessageContent summarizedMessage = summarizeMessageContent(message);
 
-            if (!summarizedMessage.getComponentItems().isEmpty()) {
+            if (summarizedMessage.getAction().isPresent() || !summarizedMessage.getComponentItems().isEmpty()) {
                 newGroups
                     .stream()
                     .filter(group -> group.applies(summarizedMessage))
