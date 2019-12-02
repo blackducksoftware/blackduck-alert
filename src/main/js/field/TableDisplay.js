@@ -105,7 +105,10 @@ class TableDisplay extends Component {
                     <Modal.Title>{this.props.modalTitle}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
+                    <form className="form-horizontal" onSubmit={(event) => {
+                        this.handleSubmit(event);
+                        onModalClose();
+                    }} noValidate>
                         {this.props.newConfigFields()}
                         <ConfigButtons
                             cancelId="usermanagement-cancel"
@@ -157,7 +160,7 @@ class TableDisplay extends Component {
 
         const content = (
             <div>
-                < BootstrapTable
+                <BootstrapTable
                     version="4"
                     hover
                     condensed

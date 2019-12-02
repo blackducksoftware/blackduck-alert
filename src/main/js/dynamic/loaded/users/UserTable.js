@@ -17,6 +17,7 @@ class UserTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
 
@@ -60,6 +61,12 @@ class UserTable extends Component {
         this.setState({
             user: {}
         });
+        this.retrieveData();
+    }
+
+    onDelete(username) {
+        this.props.deleteUser(username);
+        this.retrieveData();
     }
 
     retrieveRoles() {
@@ -106,6 +113,7 @@ class UserTable extends Component {
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
                         onConfigSave={this.onSave}
+                        onConfigDelete={this.onDelete}
                         refreshData={this.retrieveData}
                         data={this.props.users}
                         columns={this.createColumns()}

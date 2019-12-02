@@ -140,9 +140,8 @@ export function createNewUser(user) {
     };
 }
 
-export function deleteUser(user) {
+export function deleteUser(userName) {
     return (dispatch, getState) => {
-        const { userName } = user;
         dispatch(deletingUser());
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);
