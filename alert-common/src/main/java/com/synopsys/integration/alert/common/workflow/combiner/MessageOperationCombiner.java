@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
-public class MessageOperationCombiner extends MessageCombiner {
+public class MessageOperationCombiner extends AbstractMessageCombiner {
     private final Map<ItemOperation, BiConsumer<Map<String, ComponentItem>, ComponentItem>> operationFunctionMap;
 
     @Autowired

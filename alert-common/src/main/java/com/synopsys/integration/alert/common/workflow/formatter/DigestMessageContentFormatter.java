@@ -22,89 +22,34 @@
  */
 package com.synopsys.integration.alert.common.workflow.formatter;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCombiner;
 
 @Component
 public class DigestMessageContentFormatter extends MessageContentFormatter {
+    private final TopLevelActionCombiner topLevelActionCombiner;
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public DigestMessageContentFormatter(MessageOperationCombiner messageOperationCombiner) {
+    public DigestMessageContentFormatter(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.DIGEST);
+        this.topLevelActionCombiner = topLevelActionCombiner;
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
-        List<ProviderMessageContent> collapsedMessages = collapseTopLevelAction(messages);
-        List<ProviderMessageContent> combinedMessages = messageOperationCombiner.combine(collapsedMessages);
-        return createMessageContentGroups(combinedMessages);
-    }
-
-    private List<ProviderMessageContent> collapseTopLevelAction(List<ProviderMessageContent> messages) {
-        Map<String, List<ProviderMessageContent>> cache = new LinkedHashMap<>();
-        for (ProviderMessageContent message : messages) {
-            String cacheKey = flattenProviderAndTopic(message);
-            if (isTopLevelDelete(message)) {
-                List<ProviderMessageContent> cachedMessages = cache.get(cacheKey);
-                boolean didUpdate = updateCache(message, cachedMessages);
-                if (didUpdate) {
-                    continue;
-                }
-            }
-            cache.computeIfAbsent(cacheKey, ignored -> new LinkedList<>()).add(message);
-        }
-
-        return Stream
-                   .of(cache.values())
-                   .flatMap(Collection::stream)
-                   .flatMap(List::stream)
-                   .collect(Collectors.toList());
-    }
-
-    private boolean isTopLevelDelete(ProviderMessageContent message) {
-        return message.isTopLevelActionOnly() && message.getAction().filter(action -> action.equals(ItemOperation.DELETE)).isPresent();
-    }
-
-    private String flattenProviderAndTopic(ProviderMessageContent message) {
-        LinkableItem topic = message.getTopic();
-        return message.getProvider().getValue() + topic.getName() + topic.getValue();
-    }
-
-    private String flattenSubTopic(LinkableItem subTopic) {
-        return subTopic.getName() + subTopic.getValue();
-    }
-
-    private boolean updateCache(ProviderMessageContent currentMessage, List<ProviderMessageContent> cachedMessages) {
-        String subTopicString = currentMessage.getSubTopic().map(this::flattenSubTopic).orElse(null);
-        Set<ProviderMessageContent> removalCandidates = new HashSet<>();
-        for (ProviderMessageContent cachedMessage : cachedMessages) {
-            if (cachedMessage.isTopLevelActionOnly() && !isTopLevelDelete(cachedMessage)) {
-                String cachedSubTopic = cachedMessage.getSubTopic().map(this::flattenSubTopic).orElse(null);
-                if (null == subTopicString || subTopicString.equals(cachedSubTopic)) {
-                    removalCandidates.add(cachedMessage);
-                }
-            }
-        }
-        return cachedMessages.removeAll(removalCandidates);
+        List<ProviderMessageContent> messagesCombinedAtTopLevel = topLevelActionCombiner.combine(messages);
+        List<ProviderMessageContent> messagesCombinedAtComponentLevel = messageOperationCombiner.combine(messagesCombinedAtTopLevel);
+        return createMessageContentGroups(messagesCombinedAtComponentLevel);
     }
 
 }
