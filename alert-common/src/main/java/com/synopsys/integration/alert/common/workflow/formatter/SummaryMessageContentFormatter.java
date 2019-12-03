@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCombiner;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -54,20 +55,23 @@ public class SummaryMessageContentFormatter extends MessageContentFormatter {
     public static final String COMPONENT_ITEM_NAME_SUMMARY_LABEL = "Format";
 
     private final Logger logger = LoggerFactory.getLogger(SummaryMessageContentFormatter.class);
+    private final TopLevelActionCombiner topLevelActionCombiner;
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentFormatter(MessageOperationCombiner messageOperationCombiner) {
+    public SummaryMessageContentFormatter(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.SUMMARY);
+        this.topLevelActionCombiner = topLevelActionCombiner;
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
     public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
-        List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
+        List<ProviderMessageContent> messagesCombinedAtTopLevel = topLevelActionCombiner.combine(messages);
+        List<ProviderMessageContent> messagesCombinedAtComponentLevel = messageOperationCombiner.combine(messagesCombinedAtTopLevel);
 
         List<MessageContentGroup> newGroups = new ArrayList<>();
-        for (ProviderMessageContent message : collapsedMessages) {
+        for (ProviderMessageContent message : messagesCombinedAtComponentLevel) {
             ProviderMessageContent summarizedMessage = summarizeMessageContent(message);
 
             if (filterEmptyContent(summarizedMessage)) {

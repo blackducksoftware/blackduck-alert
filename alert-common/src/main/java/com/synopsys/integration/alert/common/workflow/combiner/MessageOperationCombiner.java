@@ -29,7 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,14 +39,14 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
-public class MessageOperationCombiner extends MessageCombiner {
-    private final Map<ItemOperation, BiFunction<Map<String, ComponentItem>, ComponentItem, Void>> operationFunctionMap;
+public class MessageOperationCombiner extends AbstractMessageCombiner {
+    private final Map<ItemOperation, BiConsumer<Map<String, ComponentItem>, ComponentItem>> operationFunctionMap;
 
     @Autowired
     public MessageOperationCombiner() {
-        final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> addFunction = createAddFunction();
-        final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> deleteFunction = createDeleteFunction();
-        final BiFunction<Map<String, ComponentItem>, ComponentItem, Void> infoFunction = createInfoFunction();
+        BiConsumer<Map<String, ComponentItem>, ComponentItem> addFunction = createAddFunction();
+        BiConsumer<Map<String, ComponentItem>, ComponentItem> deleteFunction = createDeleteFunction();
+        BiConsumer<Map<String, ComponentItem>, ComponentItem> infoFunction = createInfoFunction();
         operationFunctionMap = new EnumMap<>(ItemOperation.class);
         operationFunctionMap.put(ItemOperation.ADD, addFunction);
         operationFunctionMap.put(ItemOperation.UPDATE, addFunction);
@@ -68,15 +68,14 @@ public class MessageOperationCombiner extends MessageCombiner {
         return combineComponentItems(new ArrayList<>(groupDataCache.values()));
     }
 
-    private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createAddFunction() {
+    private BiConsumer<Map<String, ComponentItem>, ComponentItem> createAddFunction() {
         return (categoryDataCache, componentItem) -> {
             String key = componentItem.createKey(false, true);
             categoryDataCache.put(key, componentItem);
-            return null;
         };
     }
 
-    private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createDeleteFunction() {
+    private BiConsumer<Map<String, ComponentItem>, ComponentItem> createDeleteFunction() {
         return (categoryDataCache, componentItem) -> {
             String key = componentItem.createKey(false, true);
             if (categoryDataCache.containsKey(key)) {
@@ -84,23 +83,21 @@ public class MessageOperationCombiner extends MessageCombiner {
             } else {
                 categoryDataCache.put(key, componentItem);
             }
-            return null;
         };
     }
 
-    private BiFunction<Map<String, ComponentItem>, ComponentItem, Void> createInfoFunction() {
+    private BiConsumer<Map<String, ComponentItem>, ComponentItem> createInfoFunction() {
         return (categoryDataCache, componentItem) -> {
             String key = componentItem.createKey(true, true);
             categoryDataCache.put(key, componentItem);
-            return null;
         };
     }
 
     private void processOperation(Map<String, ComponentItem> componentItemDataCache, ComponentItem item) {
         ItemOperation operation = item.getOperation();
         if (operationFunctionMap.containsKey(operation)) {
-            BiFunction<Map<String, ComponentItem>, ComponentItem, Void> operationFunction = operationFunctionMap.get(operation);
-            operationFunction.apply(componentItemDataCache, item);
+            BiConsumer<Map<String, ComponentItem>, ComponentItem> operationFunction = operationFunctionMap.get(operation);
+            operationFunction.accept(componentItemDataCache, item);
         }
     }
 
