@@ -65,8 +65,13 @@ class UserTable extends Component {
         this.retrieveData();
     }
 
-    onDelete() {
-        this.props.deleteUser(this.state.user['username']);
+    onDelete(usersToDelete) {
+        if (usersToDelete) {
+            usersToDelete.forEach(userName => {
+                this.props.deleteUser(userName);
+            });
+            this.retrieveData();
+        }
     }
 
     retrieveRoles() {
