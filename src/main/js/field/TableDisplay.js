@@ -93,7 +93,7 @@ class TableDisplay extends Component {
 
     flipShowSwitch() {
         this.setState({
-            show: !this.state.showConfiguration
+            showConfiguration: !this.state.showConfiguration
         });
     }
 
