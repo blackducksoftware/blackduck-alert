@@ -31,21 +31,25 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCombiner;
 
 @Component
 public class DigestMessageContentFormatter extends MessageContentFormatter {
+    private final TopLevelActionCombiner topLevelActionCombiner;
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public DigestMessageContentFormatter(final MessageOperationCombiner messageOperationCombiner) {
+    public DigestMessageContentFormatter(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
         super(FormatType.DIGEST);
+        this.topLevelActionCombiner = topLevelActionCombiner;
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> format(final List<ProviderMessageContent> messages) {
-        final List<ProviderMessageContent> collapsedMessages = messageOperationCombiner.combine(messages);
-
-        return createMessageContentGroups(collapsedMessages);
+    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
+        List<ProviderMessageContent> messagesCombinedAtTopLevel = topLevelActionCombiner.combine(messages);
+        List<ProviderMessageContent> messagesCombinedAtComponentLevel = messageOperationCombiner.combine(messagesCombinedAtTopLevel);
+        return createMessageContentGroups(messagesCombinedAtComponentLevel);
     }
+
 }

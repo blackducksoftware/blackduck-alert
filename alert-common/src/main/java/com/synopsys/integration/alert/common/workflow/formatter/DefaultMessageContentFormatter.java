@@ -30,14 +30,14 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.workflow.combiner.MessageCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
 
 @Component
 public class DefaultMessageContentFormatter extends MessageContentFormatter {
-    private final MessageCombiner messageCombiner;
+    private final AbstractMessageCombiner messageCombiner;
 
     @Autowired
-    public DefaultMessageContentFormatter(MessageCombiner messageCombiner) {
+    public DefaultMessageContentFormatter(AbstractMessageCombiner messageCombiner) {
         super(FormatType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
