@@ -107,12 +107,13 @@ public class DefaultUserAccessor implements UserAccessor {
 
         UserEntity existingUser = userRepository.findById(userId)
                                       .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No user found with id '%s'", userId)));
+        Long existingUserId = existingUser.getId();
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
         UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled());
-        newEntity.setId(existingUser.getId());
+        newEntity.setId(existingUserId);
 
-        authorizationUtility.updateUserRoles(existingUser.getId(), user.getRoles());
+        authorizationUtility.updateUserRoles(existingUserId, user.getRoles());
 
         return createModel(userRepository.save(newEntity));
     }
