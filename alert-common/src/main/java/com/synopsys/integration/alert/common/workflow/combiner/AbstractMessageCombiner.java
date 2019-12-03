@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 
 @Component
 public class AbstractMessageCombiner implements MessageCombiner {
+    @Override
     public final List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
         SetMap<ContentKey, ProviderMessageContent> messagesGroupedByKey = SetMap.createLinked();
         messages.forEach(message -> messagesGroupedByKey.add(message.getContentKey(), message));
@@ -97,10 +98,8 @@ public class AbstractMessageCombiner implements MessageCombiner {
             Set<LinkableItem> combinedAttributes = new LinkedHashSet<>();
             if (null != oldItem) {
                 combinedAttributes.addAll(oldItem.getComponentAttributes());
-                combinedAttributes.addAll(componentAttributes);
-            } else {
-                combinedAttributes.addAll(componentAttributes);
             }
+            combinedAttributes.addAll(componentAttributes);
 
             try {
                 ComponentItem newComponentItem = createNewComponentItem(componentItem, combinedAttributes);
