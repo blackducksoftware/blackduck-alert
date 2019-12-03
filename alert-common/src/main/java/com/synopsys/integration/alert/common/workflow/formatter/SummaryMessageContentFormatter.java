@@ -69,11 +69,14 @@ public class SummaryMessageContentFormatter extends MessageContentFormatter {
         List<MessageContentGroup> newGroups = new ArrayList<>();
         for (ProviderMessageContent message : collapsedMessages) {
             ProviderMessageContent summarizedMessage = summarizeMessageContent(message);
-            newGroups
-                .stream()
-                .filter(group -> group.applies(summarizedMessage))
-                .findAny()
-                .ifPresentOrElse(group -> group.add(summarizedMessage), () -> newGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+
+            if (filterEmptyContent(summarizedMessage)) {
+                newGroups
+                    .stream()
+                    .filter(group -> group.applies(summarizedMessage))
+                    .findAny()
+                    .ifPresentOrElse(group -> group.add(summarizedMessage), () -> newGroups.add(MessageContentGroup.singleton(summarizedMessage)));
+            }
         }
         return newGroups;
     }
