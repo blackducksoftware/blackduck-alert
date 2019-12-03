@@ -20,6 +20,7 @@ class UserTable extends Component {
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
+        this.onDelete = this.onDelete.bind(this);
 
         this.state = {
             user: {},
@@ -64,9 +65,8 @@ class UserTable extends Component {
         this.retrieveData();
     }
 
-    onDelete(username) {
-        this.props.deleteUser(username);
-        this.retrieveData();
+    onDelete() {
+        this.props.deleteUser(this.state.user['username']);
     }
 
     retrieveRoles() {

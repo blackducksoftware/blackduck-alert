@@ -13,6 +13,7 @@ class RoleTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
 
         this.state = {
@@ -99,6 +100,10 @@ class RoleTable extends Component {
         });
     }
 
+    onDelete() {
+        this.props.deleteRole(this.state.role['roleName']);
+    }
+
     createModalFields() {
         const roleNameKey = 'roleName';
         const roleNameValue = this.state.role[roleNameKey];
@@ -121,6 +126,7 @@ class RoleTable extends Component {
                         newConfigFields={this.createModalFields}
                         modalTitle="Role"
                         onConfigSave={this.onSave}
+                        onConfigDelete={this.onDelete}
                         refreshData={this.retrieveData}
                         data={this.props.roles}
                         columns={this.createColumns()}

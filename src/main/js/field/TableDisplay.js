@@ -20,7 +20,9 @@ class TableDisplay extends Component {
         this.deleteItems = this.deleteItems.bind(this);
 
         this.state = {
-            show: false
+            showConfiguration: false,
+            showDelete: false,
+            rowsToDelete: []
         };
     }
 
@@ -91,13 +93,13 @@ class TableDisplay extends Component {
 
     flipShowSwitch() {
         this.setState({
-            show: !this.state.show
+            show: !this.state.showConfiguration
         });
     }
 
     createInsertModal(onModalClose) {
         return (
-            <Modal size="lg" show={this.state.show} onHide={() => {
+            <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                 this.handleClose();
                 onModalClose()
             }}>
@@ -126,9 +128,23 @@ class TableDisplay extends Component {
         );
     }
 
-    deleteItems(next, dropRowKeys) {
-        dropRowKeys.forEach(row => {
-            this.props.onConfigDelete(row);
+    deleteItems() {
+        this.setState({
+            showDelete: true
+        });
+        this.closeDeleteModal();
+    }
+
+    closeDeleteModal() {
+        this.flipDeleteModalShowFlag();
+        this.setState({
+            rowsToDelete: []
+        });
+    }
+
+    flipDeleteModalShowFlag() {
+        this.setState({
+            showDelete: !this.state.showDelete
         });
     }
 
@@ -151,12 +167,23 @@ class TableDisplay extends Component {
             mode: 'checkbox',
             clickToSelect: true,
             bgColor(row, isSelect) {
-                if (isSelect) {
-                    return '#e8e8e8';
-                }
-                return null;
+                return isSelect && '#e8e8e8';
             }
         };
+
+        const deleteModal = (
+            <Modal size="lg" show={this.state.showDelete} onHide={this.closeDeleteModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form className="form-horizontal" onSubmit={this.deleteItems}>
+                        <p name="tableDeleteMessage">Are you sure you want to delete these items?</p>
+                        <ConfigButtons performingAction={this.props.inProgress} cancelId="delete-cancel" submitId="delete-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.closeDeleteModal} isFixed={false} />
+                    </form>
+                </Modal.Body>
+            </Modal>
+        );
 
         const content = (
             <div>
@@ -193,11 +220,11 @@ class TableDisplay extends Component {
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
                 </div>
+                {deleteModal}
                 {content}
             </div>
         );
     }
-
 }
 
 TableDisplay.propTypes = {
