@@ -56,7 +56,7 @@ public abstract class MessageContentFormatter {
         return new ArrayList<>(messageGroups.values());
     }
 
-    private boolean filterEmptyContent(ProviderMessageContent message) {
+    protected boolean filterEmptyContent(ProviderMessageContent message) {
         return !message.getComponentItems().isEmpty() || message.isTopLevelActionOnly();
     }
 

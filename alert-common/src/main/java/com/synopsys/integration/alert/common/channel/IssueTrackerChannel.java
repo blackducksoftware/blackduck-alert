@@ -29,11 +29,11 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
+import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
+import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
+import com.synopsys.integration.issuetracker.common.service.IssueTrackerService;
 
 public abstract class IssueTrackerChannel extends DistributionChannel {
     private final DescriptorKey descriptorKey;

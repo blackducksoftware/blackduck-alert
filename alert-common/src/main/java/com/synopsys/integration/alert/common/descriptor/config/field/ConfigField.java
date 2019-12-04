@@ -63,7 +63,6 @@ public abstract class ConfigField extends AlertSerializableModel {
     public static final String FIELD_HEADER_EMPTY = "";
     public static final String FIELD_PANEL_DEFAULT = "";
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);
-    public static final ConfigValidationFunction[] NO_VALIDATION = null;
 
     private final String key;
     private final String label;

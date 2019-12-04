@@ -114,25 +114,25 @@ public class AuthenticationUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         List<ConfigField> ldapPanelFields = createLDAPPanel();
+        ldapPanelFields.stream().forEach(field -> field.applyPanel(AUTHENTICATION_HEADER_LDAP).applyHeader(AUTHENTICATION_HEADER_LDAP));
         List<ConfigField> samlPanelFields = createSAMLPanel();
+        samlPanelFields.stream().forEach(field -> field.applyPanel(AUTHENTICATION_HEADER_SAML).applyHeader(AUTHENTICATION_HEADER_SAML));
         List<ConfigField> userManagement = createUserManagementPanel();
+        userManagement.stream().forEach(field -> field.applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT));
+
         List<List<ConfigField>> fieldLists = List.of(ldapPanelFields, samlPanelFields, userManagement);
         return fieldLists.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     private List<ConfigField> createUserManagementPanel() {
         ConfigField adminRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_ROLE_MAPPING_ADMIN, AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION)
-                                           .applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT)
                                            .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
         ConfigField jobManagerRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER,
             AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION)
-                                                .applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT)
                                                 .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
         ConfigField userRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER, AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION)
-                                          .applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT)
                                           .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
         ConfigField samlAttributeMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
-                                               .applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT)
                                                .applyHeader(AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML);
 
         return List.of(adminRoleMapping, jobManagerRoleMapping, userRoleMapping, samlAttributeMapping);
@@ -141,37 +141,29 @@ public class AuthenticationUIConfig extends UIConfig {
     private List<ConfigField> createLDAPPanel() {
         ConfigField ldapServer = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, AUTHENTICATION_LDAP_SERVER_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
         ConfigField ldapManagerDn = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, AUTHENTICATION_LDAP_MANAGER_DN_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapManagerPassword = new PasswordConfigField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, AUTHENTICATION_LDAP_MANAGER_PASSWORD_DESCRIPTION, encryptionValidator)
-                                              .applyHeader(AUTHENTICATION_HEADER_LDAP);
+        ConfigField ldapManagerPassword = new PasswordConfigField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, LABEL_LDAP_MANAGER_PASSWORD, AUTHENTICATION_LDAP_MANAGER_PASSWORD_DESCRIPTION, encryptionValidator);
         ConfigField ldapAuthenticationType = new SelectConfigField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, LABEL_LDAP_AUTHENTICATION_TYPE, AUTHENTICATION_LDAP_AUTHENTICATION_TYPE_DESCRIPTION, List.of(
             new LabelValueSelectOption("Simple", "simple"),
             new LabelValueSelectOption("None", "none"),
             new LabelValueSelectOption("Digest-MD5", "digest"))
-        )
-                                                 .applyHeader(AUTHENTICATION_HEADER_LDAP);
+        );
         ConfigField ldapReferral = new SelectConfigField(AuthenticationDescriptor.KEY_LDAP_REFERRAL, LABEL_LDAP_REFERRAL, AUTHENTICATION_LDAP_REFERRAL_DESCRIPTION, List.of(
             new LabelValueSelectOption("Ignore", "ignore"),
             new LabelValueSelectOption("Follow", "follow"),
             new LabelValueSelectOption("Throw", "throw"))
-        )
-                                       .applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapUserSearchBase = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE, LABEL_LDAP_USER_SEARCH_BASE, AUTHENTICATION_LDAP_USER_SEARCH_BASE_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapUserSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER, LABEL_LDAP_USER_SEARCH_FILTER, AUTHENTICATION_LDAP_USER_SEARCH_FILTER_DESCRIPTION)
-                                               .applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapUserDNPatterns = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS, LABEL_LDAP_USER_DN_PATTERNS, AUTHENTICATION_LDAP_USER_DN_PATTERNS_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapUserAttributes = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES, LABEL_LDAP_USER_ATTRIBUTES, AUTHENTICATION_LDAP_USER_ATTRIBUTES_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapGroupSearchBase = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, AUTHENTICATION_LDAP_GROUP_SEARCH_BASE_DESCRIPTION)
-                                              .applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapGroupSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION)
-                                                .applyHeader(AUTHENTICATION_HEADER_LDAP);
-        ConfigField ldapGroupRoleAttribute = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, AUTHENTICATION_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION)
-                                                 .applyHeader(AUTHENTICATION_HEADER_LDAP);
+        );
+        ConfigField ldapUserSearchBase = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE, LABEL_LDAP_USER_SEARCH_BASE, AUTHENTICATION_LDAP_USER_SEARCH_BASE_DESCRIPTION);
+        ConfigField ldapUserSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER, LABEL_LDAP_USER_SEARCH_FILTER, AUTHENTICATION_LDAP_USER_SEARCH_FILTER_DESCRIPTION);
+        ConfigField ldapUserDNPatterns = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS, LABEL_LDAP_USER_DN_PATTERNS, AUTHENTICATION_LDAP_USER_DN_PATTERNS_DESCRIPTION);
+        ConfigField ldapUserAttributes = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES, LABEL_LDAP_USER_ATTRIBUTES, AUTHENTICATION_LDAP_USER_ATTRIBUTES_DESCRIPTION);
+        ConfigField ldapGroupSearchBase = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, AUTHENTICATION_LDAP_GROUP_SEARCH_BASE_DESCRIPTION);
+        ConfigField ldapGroupSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION);
+        ConfigField ldapGroupRoleAttribute = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, AUTHENTICATION_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION);
         ConfigField ldapEnabled = new CheckboxConfigField(AuthenticationDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, AUTHENTICATION_LDAP_ENABLED_DESCRIPTION)
                                       .applyRequiredRelatedField(ldapServer.getKey())
                                       .applyRequiredRelatedField(ldapManagerDn.getKey())
                                       .applyRequiredRelatedField(ldapManagerPassword.getKey())
-                                      .applyDisallowedRelatedField(AuthenticationDescriptor.KEY_SAML_ENABLED)
-                                      .applyHeader(AUTHENTICATION_HEADER_LDAP);
+                                      .applyDisallowedRelatedField(AuthenticationDescriptor.KEY_SAML_ENABLED);
         return List.of(ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword, ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase,
             ldapGroupSearchFilter, ldapGroupRoleAttribute);
     }
@@ -179,25 +171,21 @@ public class AuthenticationUIConfig extends UIConfig {
     private List<ConfigField> createSAMLPanel() {
         ConfigField samlForceAuth = new CheckboxConfigField(AuthenticationDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, AUTHENTICATION_SAML_FORCE_AUTH_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_SAML);
         ConfigField samlMetaDataURL = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, AUTHENTICATION_SAML_METADATA_URL_DESCRIPTION)
-                                          .applyValidationFunctions(this::validateMetaDataUrl)
-                                          .applyHeader(AUTHENTICATION_HEADER_SAML);
+                                          .applyValidationFunctions(this::validateMetaDataUrl);
         ConfigField samlMetaDataFile = new UploadFileButtonField(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, LABEL_SAML_METADATA_FILE, AUTHENTICATION_SAML_METADATA_FILE_DESCRIPTION, LABEL_SAML_METADATA_FILE_UPLOAD, List.of(
             "text/xml",
             "application/xml",
             ".xml"),
             "", false)
-                                           .applyValidationFunctions(this::validateMetaDataFile)
-                                           .applyHeader(AUTHENTICATION_HEADER_SAML);
-        ConfigField samlEntityId = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, AUTHENTICATION_SAML_ENTITY_ID_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_SAML);
+                                           .applyValidationFunctions(this::validateMetaDataFile);
+        ConfigField samlEntityId = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, LABEL_SAML_ENTITY_ID, AUTHENTICATION_SAML_ENTITY_ID_DESCRIPTION);
         ConfigField samlEntityBaseURL = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, LABEL_SAML_ENTITY_BASE_URL, AUTHENTICATION_SAML_ENTITY_BASE_URL_DESCRIPTION)
-                                            .applyValidationFunctions(this::validateMetaDataUrl)
-                                            .applyHeader(AUTHENTICATION_HEADER_SAML);
+                                            .applyValidationFunctions(this::validateMetaDataUrl);
         ConfigField samlEnabled = new CheckboxConfigField(AuthenticationDescriptor.KEY_SAML_ENABLED, LABEL_SAML_ENABLED, AUTHENTICATION_SAML_ENABLED_DESCRIPTION)
                                       .applyRequiredRelatedField(samlForceAuth.getKey())
                                       .applyRequiredRelatedField(samlEntityId.getKey())
                                       .applyRequiredRelatedField(samlEntityBaseURL.getKey())
-                                      .applyDisallowedRelatedField(AuthenticationDescriptor.KEY_LDAP_ENABLED)
-                                      .applyHeader(AUTHENTICATION_HEADER_SAML);
+                                      .applyDisallowedRelatedField(AuthenticationDescriptor.KEY_LDAP_ENABLED);
         return List.of(samlEnabled, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL);
     }
 
