@@ -31,7 +31,7 @@ class UserManagement extends Component {
                         <UserTable canCreate={canCreate} canDelete={canDelete} />
                     </Tab>
                     <Tab eventKey={2} title="Roles">
-                        <RoleTable canCreate={canCreate} canDelete={canDelete} />;
+                        <RoleTable canCreate={canCreate} canDelete={canDelete} />
                     </Tab>
                 </Tabs>
             </div>
