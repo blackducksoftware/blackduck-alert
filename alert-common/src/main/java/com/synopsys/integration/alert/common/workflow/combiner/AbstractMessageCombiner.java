@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.SetMap;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -43,8 +41,7 @@ import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
-@Component
-public class AbstractMessageCombiner implements MessageCombiner {
+public abstract class AbstractMessageCombiner implements MessageCombiner {
     @Override
     public final List<ProviderMessageContent> combine(List<ProviderMessageContent> messages) {
         SetMap<ContentKey, ProviderMessageContent> messagesGroupedByKey = SetMap.createLinked();
@@ -78,14 +75,7 @@ public class AbstractMessageCombiner implements MessageCombiner {
                    .build();
     }
 
-    protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
-        List<ComponentItem> allComponentItems = groupedMessages
-                                                    .stream()
-                                                    .map(ProviderMessageContent::getComponentItems)
-                                                    .flatMap(Set::stream)
-                                                    .collect(Collectors.toList());
-        return combineComponentItems(allComponentItems);
-    }
+    protected abstract LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages);
 
     protected LinkedHashSet<ComponentItem> combineComponentItems(List<ComponentItem> allComponentItems) {
         // The amount of collapsing we do makes this impossible to map back to a single notification.

@@ -31,13 +31,14 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.DefaultMessageCombiner;
 
 @Component
 public class DefaultMessageContentFormatter extends MessageContentFormatter {
     private final AbstractMessageCombiner messageCombiner;
 
     @Autowired
-    public DefaultMessageContentFormatter(AbstractMessageCombiner messageCombiner) {
+    public DefaultMessageContentFormatter(DefaultMessageCombiner messageCombiner) {
         super(FormatType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
