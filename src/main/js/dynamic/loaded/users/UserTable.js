@@ -70,8 +70,8 @@ class UserTable extends Component {
             usersToDelete.forEach(userName => {
                 this.props.deleteUser(userName);
             });
-            this.retrieveData();
         }
+        this.retrieveData();
     }
 
     retrieveRoles() {

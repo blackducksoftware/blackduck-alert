@@ -133,10 +133,9 @@ class TableDisplay extends Component {
 
     collectItemsToDelete(next, dropRowKeys) {
         this.setState({
-            rowsToDelete: dropRowKeys
+            rowsToDelete: dropRowKeys,
+            showDelete: true
         });
-        this.props.onConfigDelete();
-        this.closeDeleteModal();
     }
 
     closeDeleteModal() {
@@ -152,7 +151,8 @@ class TableDisplay extends Component {
         });
     }
 
-    deleteItems() {
+    deleteItems(event) {
+        event.preventDefault();
         this.props.onConfigDelete(this.state.rowsToDelete);
         this.closeDeleteModal();
     }
