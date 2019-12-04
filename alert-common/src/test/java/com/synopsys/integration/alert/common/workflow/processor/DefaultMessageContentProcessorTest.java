@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.DefaultMessageCombiner;
 import com.synopsys.integration.alert.common.workflow.formatter.DefaultMessageContentFormatter;
 
 public class DefaultMessageContentProcessorTest extends ProcessorTest {
     @Test
     public void processTest() throws AlertException {
-        DefaultMessageContentFormatter defaultMessageContentProcessor = new DefaultMessageContentFormatter(new AbstractMessageCombiner());
+        DefaultMessageContentFormatter defaultMessageContentProcessor = new DefaultMessageContentFormatter(new DefaultMessageCombiner());
         List<ProviderMessageContent> messages = createDefaultMessages();
 
         List<MessageContentGroup> messageGroups = defaultMessageContentProcessor.format(messages);
