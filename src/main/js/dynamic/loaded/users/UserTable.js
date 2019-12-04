@@ -6,6 +6,8 @@ import PasswordInput from 'field/input/PasswordInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { connect } from 'react-redux';
 import { createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
+import DynamicSelectInput from 'field/input/DynamicSelect';
+import { fetchRoles } from 'store/actions/roles';
 
 class UserTable extends Component {
     constructor(props) {
@@ -15,13 +17,15 @@ class UserTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
+        this.retrieveRoles = this.retrieveRoles.bind(this);
+        this.onDelete = this.onDelete.bind(this);
 
-        this.state = {};
-    }
-
-    componentDidMount() {
-        this.retrieveData();
+        this.state = {
+            user: {},
+            roles: []
+        };
     }
 
     createColumns() {
@@ -32,7 +36,7 @@ class UserTable extends Component {
                 isKey: true
             },
             {
-                header: 'email_address',
+                header: 'emailAddress',
                 headerLabel: 'Email',
                 isKey: false
             }
@@ -41,33 +45,65 @@ class UserTable extends Component {
 
     retrieveData() {
         this.props.getUsers();
-        return this.props.users;
     }
 
     handleChange(e) {
         const { name, value, type, checked } = e.target;
+        const { user } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
-            [name]: updatedValue
+            user: newUser
         });
     }
 
     onSave() {
-        this.props.createUser(this.state['username']);
+        this.props.createUser(this.state.user);
+        this.setState({
+            user: {}
+        });
+        this.retrieveData();
+    }
+
+    onDelete(usersToDelete) {
+        if (usersToDelete) {
+            usersToDelete.forEach(userName => {
+                this.props.deleteUser(userName);
+            });
+        }
+        this.retrieveData();
+    }
+
+    retrieveRoles() {
+        return this.props.roles.map(role => {
+            const rolename = role.roleName;
+            return { label: rolename, value: rolename }
+        });
     }
 
     createModalFields() {
         const usernameKey = 'username';
         const passwordKey = 'password';
-        const emailKey = 'email_address';
+        const emailKey = 'emailAddress';
         const enabledKey = 'enabled';
+        const roleNames = 'roleNames';
 
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state[emailKey]} />
-                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state[enabledKey]} />
+                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state.user[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state.user[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state.user[emailKey]} />
+                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state.user[enabledKey]} />
+                <DynamicSelectInput
+                    name={roleNames}
+                    id={roleNames}
+                    label="Roles"
+                    description="Select the roles you want associated with the user."
+                    onChange={this.handleChange}
+                    multiSelect={true}
+                    options={this.retrieveRoles()}
+                    value={this.state.user[roleNames]}
+                    onFocus={this.props.getRoles} />
             </div>
         );
     }
@@ -78,7 +114,16 @@ class UserTable extends Component {
         return (
             <div>
                 <div>
-                    <TableDisplay newConfigFields={this.createModalFields} modalTitle="User" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete} />
+                    <TableDisplay
+                        newConfigFields={this.createModalFields}
+                        modalTitle="User"
+                        onConfigSave={this.onSave}
+                        onConfigDelete={this.onDelete}
+                        refreshData={this.retrieveData}
+                        data={this.props.users}
+                        columns={this.createColumns()}
+                        newButton={canCreate}
+                        deleteButton={canDelete} />
                 </div>
             </div>
         );
@@ -96,13 +141,15 @@ UserTable.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    users: state.users.data
+    users: state.users.data,
+    roles: state.roles.data
 });
 
 const mapDispatchToProps = dispatch => ({
-    createUser: username => dispatch(createNewUser(username)),
+    createUser: user => dispatch(createNewUser(user)),
     deleteUser: username => dispatch(deleteUser(username)),
-    getUsers: () => dispatch(fetchUsers())
+    getUsers: () => dispatch(fetchUsers()),
+    getRoles: () => dispatch(fetchRoles())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserTable);

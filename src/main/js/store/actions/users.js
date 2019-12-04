@@ -109,11 +109,11 @@ export function fetchUsers() {
     };
 }
 
-export function createNewUser(userName) {
+export function createNewUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);
+        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
@@ -140,9 +140,8 @@ export function createNewUser(userName) {
     };
 }
 
-export function deleteUser(user) {
+export function deleteUser(userName) {
     return (dispatch, getState) => {
-        const { userName } = user;
         dispatch(deletingUser());
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);

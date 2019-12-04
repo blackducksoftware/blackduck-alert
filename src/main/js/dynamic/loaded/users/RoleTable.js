@@ -13,20 +13,21 @@ class RoleTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
 
-        this.state = {};
-    }
-
-    componentDidMount() {
-        this.retrieveData();
+        this.state = {
+            role: {}
+        };
     }
 
     handleChange(e) {
         const { name, value, type, checked } = e.target;
+        const { role } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        const newRole = Object.assign(role, { [name]: updatedValue });
         this.setState({
-            [name]: updatedValue
+            role: newRole
         });
     }
 
@@ -78,7 +79,7 @@ class RoleTable extends Component {
 
     createColumns() {
         return [{
-            header: 'name',
+            header: 'roleName',
             headerLabel: 'Name',
             isKey: true
         }];
@@ -90,21 +91,27 @@ class RoleTable extends Component {
 
     retrieveData() {
         this.props.getRoles();
-        return this.props.roles;
     }
 
     onSave() {
-        this.props.createRole(this.state['rolename']);
+        this.props.createRole(this.state.role);
+        this.setState({
+            role: {}
+        });
+    }
+
+    onDelete() {
+        this.props.deleteRole(this.state.role['roleName']);
     }
 
     createModalFields() {
-        const roleNameKey = 'rolename';
-        const roleNameValue = this.state[roleNameKey];
+        const roleNameKey = 'roleName';
+        const roleNameValue = this.state.role[roleNameKey];
 
         return (
             <div>
                 <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
-                <TableDisplay columns={this.createPermissionsColumns()} retrieveData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
+                <TableDisplay newConfigFields={() => null} columns={this.createPermissionsColumns()} data={[]} refreshData={this.retrievePermissionsData} deleteButton={false} newButton={false} />
             </div>
         );
     }
@@ -115,7 +122,16 @@ class RoleTable extends Component {
         return (
             <div>
                 <div>
-                    <TableDisplay newConfigFields={this.createModalFields} modalTitle="Role" onConfigSave={this.onSave} retrieveData={this.retrieveData} columns={this.createColumns()} newButton={canCreate} deleteButton={canDelete} />
+                    <TableDisplay
+                        newConfigFields={this.createModalFields}
+                        modalTitle="Role"
+                        onConfigSave={this.onSave}
+                        onConfigDelete={this.onDelete}
+                        refreshData={this.retrieveData}
+                        data={this.props.roles}
+                        columns={this.createColumns()}
+                        newButton={canCreate}
+                        deleteButton={canDelete} />
                 </div>
             </div>
         );
@@ -137,7 +153,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    createRole: rolename => dispatch(createNewRole(rolename)),
+    createRole: role => dispatch(createNewRole(role)),
     deleteRole: rolename => dispatch(deleteRole(rolename)),
     getRoles: () => dispatch(fetchRoles())
 });

@@ -51,6 +51,7 @@ export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
         method: 'POST',
         body: JSON.stringify(fieldModel),
         headers: {
+            'accept': 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }

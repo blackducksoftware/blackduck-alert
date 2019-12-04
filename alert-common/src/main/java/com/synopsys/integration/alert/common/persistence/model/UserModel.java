@@ -85,7 +85,7 @@ public class UserModel extends AlertSerializableModel {
         return emailAddress;
     }
 
-    public Collection<UserRoleModel> getRoles() {
+    public Set<UserRoleModel> getRoles() {
         return roles;
     }
 
@@ -116,6 +116,10 @@ public class UserModel extends AlertSerializableModel {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Set<String> getRoleNames() {
+        return roleNames;
     }
 
 }

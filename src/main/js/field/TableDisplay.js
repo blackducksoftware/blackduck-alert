@@ -16,25 +16,29 @@ class TableDisplay extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.flipShowSwitch = this.flipShowSwitch.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
+        this.closeDeleteModal = this.closeDeleteModal.bind(this);
+        this.flipDeleteModalShowFlag = this.flipDeleteModalShowFlag.bind(this);
+        this.deleteItems = this.deleteItems.bind(this);
 
         this.state = {
-            data: [],
-            show: false
+            showConfiguration: false,
+            showDelete: false,
+            rowsToDelete: []
         };
+    }
+
+    componentDidMount() {
+        this.updateData();
     }
 
     createTableColumns() {
         const assignDataFormat = (cell, row) => {
-            const cellContent = (cell && cell !== '') ?
-                <span className="missingData">
-                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />{cell}
-                </span>
-                : cell;
-
             if (cell) {
-                return <div title={cell.toString()}> {cellContent} </div>;
+                return <div title={cell.toString()}> {cell} </div>;
             }
-            return <div> {cellContent} </div>;
+            return <div> {cell} </div>;
         }
 
         return this.props.columns.map(column => (
@@ -43,12 +47,16 @@ class TableDisplay extends Component {
         ));
     }
 
+    updateData() {
+        this.props.refreshData();
+    }
+
     createButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const refreshButton = !this.props.autoRefresh &&
-            (<button type="button" tabUserTable={0} className={classes} onClick={this.props.retrieveData}>
+            (<button type="button" tabUserTable={0} className={classes} onClick={this.updateData()}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
             </button>);
         return (
@@ -78,20 +86,23 @@ class TableDisplay extends Component {
         this.flipShowSwitch();
     }
 
-    handleSubmit() {
+    handleSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.handleClose();
         this.props.onConfigSave();
+        this.props.refreshData();
     }
 
     flipShowSwitch() {
         this.setState({
-            show: !this.state.show
+            showConfiguration: !this.state.showConfiguration
         });
     }
 
     createInsertModal(onModalClose) {
         return (
-            <Modal size="lg" show={this.state.show} onHide={() => {
+            <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                 this.handleClose();
                 onModalClose()
             }}>
@@ -99,7 +110,10 @@ class TableDisplay extends Component {
                     <Modal.Title>{this.props.modalTitle}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
+                    <form className="form-horizontal" onSubmit={(event) => {
+                        this.handleSubmit(event);
+                        onModalClose();
+                    }} noValidate>
                         {this.props.newConfigFields()}
                         <ConfigButtons
                             cancelId="usermanagement-cancel"
@@ -117,17 +131,43 @@ class TableDisplay extends Component {
         );
     }
 
+    collectItemsToDelete(next, dropRowKeys) {
+        this.setState({
+            rowsToDelete: dropRowKeys,
+            showDelete: true
+        });
+    }
+
+    closeDeleteModal() {
+        this.flipDeleteModalShowFlag();
+        this.setState({
+            rowsToDelete: []
+        });
+    }
+
+    flipDeleteModalShowFlag() {
+        this.setState({
+            showDelete: !this.state.showDelete
+        });
+    }
+
+    deleteItems(event) {
+        event.preventDefault();
+        this.props.onConfigDelete(this.state.rowsToDelete);
+        this.closeDeleteModal();
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton } = this.props;
-        const { data } = this.state;
+        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data } = this.props;
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
             noDataText: 'No Data',
             clearSearch: true,
             insertModal: this.createInsertModal,
+            handleConfirmDeleteRow: this.collectItemsToDelete,
             defaultSortName: sortName,
             defaultSortOrder: sortOrder
         };
@@ -136,16 +176,27 @@ class TableDisplay extends Component {
             mode: 'checkbox',
             clickToSelect: true,
             bgColor(row, isSelect) {
-                if (isSelect) {
-                    return '#e8e8e8';
-                }
-                return null;
+                return isSelect && '#e8e8e8';
             }
         };
 
+        const deleteModal = (
+            <Modal size="lg" show={this.state.showDelete} onHide={this.closeDeleteModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form className="form-horizontal" onSubmit={this.deleteItems}>
+                        <p name="tableDeleteMessage">Are you sure you want to delete these items?</p>
+                        <ConfigButtons performingAction={this.props.inProgress} cancelId="delete-cancel" submitId="delete-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.closeDeleteModal} isFixed={false} />
+                    </form>
+                </Modal.Body>
+            </Modal>
+        );
+
         const content = (
             <div>
-                < BootstrapTable
+                <BootstrapTable
                     version="4"
                     hover
                     condensed
@@ -176,17 +227,18 @@ class TableDisplay extends Component {
         return (
             <div>
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.props.retrieveData} autoRefresh={autoRefresh} />
+                    <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
                 </div>
+                {deleteModal}
                 {content}
             </div>
         );
     }
-
 }
 
 TableDisplay.propTypes = {
-    retrieveData: PropTypes.func.isRequired,
+    refreshData: PropTypes.func.isRequired,
+    data: PropTypes.array.isRequired,
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
@@ -194,6 +246,7 @@ TableDisplay.propTypes = {
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
+    onConfigDelete: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -217,6 +270,7 @@ TableDisplay.defaultProps = {
     deleteButton: true,
     inProgress: false,
     onConfigSave: () => null,
+    onConfigDelete: () => null,
     modalTitle: 'New'
 };
 
