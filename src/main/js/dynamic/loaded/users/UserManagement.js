@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Tab, Tabs } from 'react-bootstrap';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import RoleTable from 'dynamic/loaded/users/RoleTable';
 import UserTable from 'dynamic/loaded/users/UserTable';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import CollapsiblePane from 'component/common/CollapsiblePane';
 
 class UserManagement extends Component {
 
@@ -23,16 +23,17 @@ class UserManagement extends Component {
         const { descriptor } = this.state;
         const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
-
-        const roles = <RoleTable canCreate={canCreate} canDelete={canDelete} />;
-
         return (
             <div>
                 <ConfigurationLabel configurationName="User Management" description="Create, edit, or delete Users and Roles to customize what the user can do in Alert." />
-                <UserTable canCreate={canCreate} canDelete={canDelete} />
-                <CollapsiblePane title="Modify Roles">
-                    {[roles]}
-                </CollapsiblePane>
+                <Tabs defaultActiveKey={1} id="user-management-tabs">
+                    <Tab eventKey={1} title="Users">
+                        <UserTable canCreate={canCreate} canDelete={canDelete} />
+                    </Tab>
+                    <Tab eventKey={2} title="Roles">
+                        <RoleTable canCreate={canCreate} canDelete={canDelete} />
+                    </Tab>
+                </Tabs>
             </div>
         );
     }

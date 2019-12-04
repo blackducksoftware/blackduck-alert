@@ -20,33 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.formatter;
+package com.synopsys.integration.alert.common.workflow.combiner;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
-import com.synopsys.integration.alert.common.workflow.combiner.DefaultMessageCombiner;
 
 @Component
-public class DefaultMessageContentFormatter extends MessageContentFormatter {
-    private final AbstractMessageCombiner messageCombiner;
-
-    @Autowired
-    public DefaultMessageContentFormatter(DefaultMessageCombiner messageCombiner) {
-        super(FormatType.DEFAULT);
-        this.messageCombiner = messageCombiner;
-    }
-
+public class DefaultMessageCombiner extends AbstractMessageCombiner {
     @Override
-    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
-        List<ProviderMessageContent> combinedMessages = messageCombiner.combine(messages);
-        return createMessageContentGroups(combinedMessages);
+    protected LinkedHashSet<ComponentItem> gatherComponentItems(Collection<ProviderMessageContent> groupedMessages) {
+        List<ComponentItem> allComponentItems = groupedMessages
+                                                    .stream()
+                                                    .map(ProviderMessageContent::getComponentItems)
+                                                    .flatMap(Set::stream)
+                                                    .collect(Collectors.toList());
+        return combineComponentItems(allComponentItems);
     }
 
 }

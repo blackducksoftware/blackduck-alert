@@ -61,10 +61,16 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
         BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
+
+        String projectUrl = null;
+        if (!projectLevelAction.equals(ItemOperation.DELETE)) {
+            projectUrl = notificationContent.getProject();
+        }
+
         try {
             ProviderMessageContent.Builder projectMessageBuilder = new ProviderMessageContent.Builder()
                                                                        .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                       .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                                                                       .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), projectUrl)
                                                                        .applyAction(projectLevelAction)
                                                                        .applyNotificationId(notificationId)
                                                                        .applyProviderCreationTime(providerCreationDate);

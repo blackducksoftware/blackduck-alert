@@ -61,11 +61,19 @@ public class ProjectVersionMessageBuilder implements BlackDuckMessageBuilder<Pro
         BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectVersionNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
+
+        String projectUrl = null;
+        String projectVersionUrl = null;
+        if (!projectLevelAction.equals(ItemOperation.DELETE)) {
+            projectUrl = notificationContent.getProject();
+            projectVersionUrl = notificationContent.getProjectVersion();
+        }
+
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
                                                                               .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                              .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
-                                                                              .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
+                                                                              .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), projectUrl)
+                                                                              .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), projectVersionUrl)
                                                                               .applyAction(projectLevelAction)
                                                                               .applyNotificationId(notificationId)
                                                                               .applyProviderCreationTime(providerCreationDate);

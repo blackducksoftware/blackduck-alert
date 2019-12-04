@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -44,6 +45,7 @@ import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
+@Disabled
 public class PolarisGlobalTestActionTest {
     private static final PolarisProviderKey POLARIS_PROVIDER_KEY = new PolarisProviderKey();
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
@@ -60,18 +62,18 @@ public class PolarisGlobalTestActionTest {
 
     @Test
     public void validateConfigWhenValidTest() {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        final FieldModel fieldModel = Mockito.mock(FieldModel.class);
-        final FieldValueModel accessTokenField = Mockito.mock(FieldValueModel.class);
-        final FieldValueModel timeoutField = Mockito.mock(FieldValueModel.class);
+        Map<String, String> fieldErrors = new HashMap<>();
+        FieldModel fieldModel = Mockito.mock(FieldModel.class);
+        FieldValueModel accessTokenField = Mockito.mock(FieldValueModel.class);
+        FieldValueModel timeoutField = Mockito.mock(FieldValueModel.class);
         Mockito.when(fieldModel.getFieldValueModel(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)).thenReturn(Optional.of(accessTokenField));
         Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of("X".repeat(40)));
         Mockito.when(accessTokenField.hasValues()).thenReturn(true);
         Mockito.when(fieldModel.getFieldValueModel(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("100"));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN), "Api token should be populated with valid token");
         assertNull(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT), "Timeout should be populated with valid timeout");
@@ -79,11 +81,11 @@ public class PolarisGlobalTestActionTest {
 
     @Test
     public void validateConfigWhenInvalidTest() {
-        final Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
 
-        final FieldModel fieldModel = Mockito.mock(FieldModel.class);
-        final FieldValueModel accessTokenField = Mockito.mock(FieldValueModel.class);
-        final FieldValueModel timeoutField = Mockito.mock(FieldValueModel.class);
+        FieldModel fieldModel = Mockito.mock(FieldModel.class);
+        FieldValueModel accessTokenField = Mockito.mock(FieldValueModel.class);
+        FieldValueModel timeoutField = Mockito.mock(FieldValueModel.class);
         Mockito.when(fieldModel.getFieldValueModel(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)).thenReturn(Optional.of(accessTokenField));
         final String shortTokenString = "too short";
         Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of(shortTokenString));
@@ -94,8 +96,8 @@ public class PolarisGlobalTestActionTest {
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of(textTimeout));
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(textTimeout));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(polarisGlobalUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertTrue(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT).contains(ERROR_POLARIS_TIMEOUT));
@@ -121,33 +123,33 @@ public class PolarisGlobalTestActionTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigWithRealConnectionTestIT() {
-        final TestProperties testProperties = new TestProperties();
+        TestProperties testProperties = new TestProperties();
 
-        final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
-        final String polarisAccessToken = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_ACCESS_TOKEN);
-        final String polarisTimeout = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_TIMEOUT);
+        String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
+        String polarisAccessToken = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_ACCESS_TOKEN);
+        String polarisTimeout = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_TIMEOUT);
 
         Assumptions.assumeTrue(StringUtils.isNotBlank(polarisUrl), "The Polaris URL is required for this test to run.");
         Assumptions.assumeTrue(StringUtils.isNotBlank(polarisAccessToken), "The Polaris Access Token is required for this test to run.");
         Assumptions.assumeTrue(StringUtils.isNotBlank(polarisTimeout), "The Polaris Timeout is required for this test to run.");
 
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, polarisUrl);
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, polarisAccessToken);
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_TIMEOUT, polarisTimeout);
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final PolarisProperties polarisProperties = new PolarisProperties(POLARIS_PROVIDER_KEY, alertProperties, null, proxyManager, new Gson());
+        PolarisProperties polarisProperties = new PolarisProperties(POLARIS_PROVIDER_KEY, alertProperties, null, proxyManager, new Gson());
 
-        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
+        PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
         try {
             actionApi.testConfig(null, null, fieldAccessor);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
         }
@@ -155,17 +157,17 @@ public class PolarisGlobalTestActionTest {
 
     @Test
     public void testConfigWithInvalidFieldsTest() {
-        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(null);
+        PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(null);
 
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, "");
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
         try {
             actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
 
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "");
@@ -174,7 +176,7 @@ public class PolarisGlobalTestActionTest {
         try {
             actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
 
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "good enough to satisfy the check");
@@ -182,37 +184,37 @@ public class PolarisGlobalTestActionTest {
         try {
             actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected exception to be thrown");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
         }
     }
 
     @Test
     public void testConfigThrowsIOExceptionTest() throws IntegrationException {
-        final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
+        AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
         Mockito.when(accessTokenPolarisHttpClient.attemptAuthentication()).thenThrow(new IntegrationException("Do these exceptions really still happen? Wow!"));
 
-        final PolarisServerConfig mockConfig = Mockito.mock(PolarisServerConfig.class);
+        PolarisServerConfig mockConfig = Mockito.mock(PolarisServerConfig.class);
         Mockito.when(mockConfig.createPolarisHttpClient(Mockito.any(IntLogger.class))).thenReturn(accessTokenPolarisHttpClient);
 
-        final PolarisServerConfigBuilder mockBuilder = Mockito.mock(PolarisServerConfigBuilder.class);
+        PolarisServerConfigBuilder mockBuilder = Mockito.mock(PolarisServerConfigBuilder.class);
         Mockito.when(mockBuilder.validateAndGetBuilderStatus()).thenReturn(new BuilderStatus());
         Mockito.when(mockBuilder.build()).thenReturn(mockConfig);
 
-        final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
+        PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
         Mockito.when(polarisProperties.createInitialPolarisServerConfigBuilder(Mockito.any(IntLogger.class))).thenReturn(mockBuilder);
 
-        final PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
+        PolarisGlobalTestAction actionApi = new PolarisGlobalTestAction(polarisProperties);
 
-        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_URL, "good enough to satisfy the check");
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_TIMEOUT, "100");
         addConfigurationFieldToMap(keyToValues, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "good enough to satisfy the check");
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
         try {
             actionApi.testConfig(null, null, fieldAccessor);
             fail("Expected wrapped IOException to be thrown");
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             assertNotNull(e);
         }
     }

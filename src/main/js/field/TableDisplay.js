@@ -17,6 +17,9 @@ class TableDisplay extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.flipShowSwitch = this.flipShowSwitch.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
+        this.closeDeleteModal = this.closeDeleteModal.bind(this);
+        this.flipDeleteModalShowFlag = this.flipDeleteModalShowFlag.bind(this);
         this.deleteItems = this.deleteItems.bind(this);
 
         this.state = {
@@ -128,11 +131,11 @@ class TableDisplay extends Component {
         );
     }
 
-    deleteItems() {
+    collectItemsToDelete(next, dropRowKeys) {
         this.setState({
+            rowsToDelete: dropRowKeys,
             showDelete: true
         });
-        this.closeDeleteModal();
     }
 
     closeDeleteModal() {
@@ -148,6 +151,12 @@ class TableDisplay extends Component {
         });
     }
 
+    deleteItems(event) {
+        event.preventDefault();
+        this.props.onConfigDelete(this.state.rowsToDelete);
+        this.closeDeleteModal();
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
 
@@ -158,7 +167,7 @@ class TableDisplay extends Component {
             noDataText: 'No Data',
             clearSearch: true,
             insertModal: this.createInsertModal,
-            handleConfirmDeleteRow: this.deleteItems,
+            handleConfirmDeleteRow: this.collectItemsToDelete,
             defaultSortName: sortName,
             defaultSortOrder: sortOrder
         };
