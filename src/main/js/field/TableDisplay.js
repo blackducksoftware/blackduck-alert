@@ -64,16 +64,16 @@ class TableDisplay extends Component {
                     this.flipShowSwitch()
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    New
+                    {this.props.tableNewButtonLabel}
                 </InsertButton>
                 }
                 {buttons.deleteBtn
                 && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
                     <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    Delete
+                    {this.props.tableDeleteButtonLabel}
                 </DeleteButton>
                 }
-                {refreshButton}
+                {this.props.tableRefresh && refreshButton}
             </div>
         );
     }
@@ -151,7 +151,7 @@ class TableDisplay extends Component {
     render() {
         const tableColumns = this.createTableColumns();
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data } = this.props;
+        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable } = this.props;
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
@@ -197,7 +197,7 @@ class TableDisplay extends Component {
                     deleteRow={deleteButton}
                     selectRow={selectRow}
                     options={tableOptions}
-                    search
+                    search={tableSearchable}
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
@@ -215,11 +215,16 @@ class TableDisplay extends Component {
                 <p name="tableMessage">{tableMessage}</p>
             </div>
         );
+
+        const refresh = this.props.tableRefresh && (
+            <div className="pull-right">
+                <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
+            </div>
+        );
+
         return (
             <div>
-                <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
-                </div>
+                {refresh}
                 {deleteModal}
                 {content}
             </div>
@@ -247,7 +252,11 @@ TableDisplay.propTypes = {
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
     inProgress: PropTypes.bool,
-    modalTitle: PropTypes.string
+    modalTitle: PropTypes.string,
+    tableNewButtonLabel: PropTypes.string,
+    tableDeleteButtonLabel: PropTypes.string,
+    tableSearchable: PropTypes.bool,
+    tableRefresh: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -262,7 +271,11 @@ TableDisplay.defaultProps = {
     inProgress: false,
     onConfigSave: () => null,
     onConfigDelete: () => null,
-    modalTitle: 'New'
+    modalTitle: 'New',
+    tableNewButtonLabel: 'New',
+    tableDeleteButtonLabel: 'Delete',
+    tableSearchable: true,
+    tableRefresh: true
 };
 
 export default TableDisplay;
