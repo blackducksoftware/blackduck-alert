@@ -202,7 +202,14 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
     def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
+
                                 '--spring.h2.console.enabled=true',
+                                '--spring.jpa.hibernate.ddl-auto=none',
+                                '--spring.datasource.driver-class-name=org.h2.Driver',
+                                '--spring.jpa.database-platform=org.hibernate.dialect.H2Dialect',
+                                '--spring.datasource.url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb}',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb}',
+
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
                                 "--alert.templates.dir=${project.buildDir}/resources/main/templates",
                                 "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]

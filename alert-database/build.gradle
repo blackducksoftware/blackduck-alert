@@ -2,6 +2,7 @@ project.ext.moduleName = 'com.synopsys.integration.alert.database'
 
 dependencies {
     runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql:42.2.8'
     runtimeOnly 'org.liquibase:liquibase-core'
 
     // Connection Pool
