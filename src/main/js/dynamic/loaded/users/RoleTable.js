@@ -48,7 +48,8 @@ class RoleTable extends Component {
         const { name, value, type, checked } = e.target;
         const { permissionsData } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
-        const newPermissions = Object.assign(permissionsData, { [name]: updatedValue });
+        const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
+        const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
         this.setState({
             permissionsData: newPermissions
         });
@@ -74,6 +75,10 @@ class RoleTable extends Component {
 
     retrievePermissionsData() {
         const { permissions } = this.state.role;
+
+        if (!permissions) {
+            return [];
+        }
 
         return permissions.map(permission => {
             const permissionShorthand = [];
@@ -155,8 +160,16 @@ class RoleTable extends Component {
         }
     }
 
-    onDeletePermissions() {
-
+    onDeletePermissions(permissionsToDelete) {
+        if (permissionsToDelete) {
+            const { permissions } = this.state.role;
+            const newPermissions = permissions.filter(permission => !permissionsToDelete.includes(permission.descriptorName));
+            this.setState({
+                role: {
+                    permissions: newPermissions
+                }
+            });
+        }
     }
 
     handleChange(e) {
@@ -182,9 +195,12 @@ class RoleTable extends Component {
     }
 
     onSave() {
-        this.props.createRole(this.state.role);
+        const { role } = this.state;
+        this.props.createRole(role);
         this.setState({
-            role: {}
+            role: {
+                permissions: []
+            }
         });
     }
 
@@ -209,6 +225,7 @@ class RoleTable extends Component {
                     autoRefresh={false}
                     tableRefresh={false}
                     onConfigSave={this.onSavePermissions}
+                    onConfigDelete={this.onDeletePermissions}
                     newConfigFields={this.createPermissionsModal}
                     columns={this.createPermissionsColumns()}
                     data={this.retrievePermissionsData()}
