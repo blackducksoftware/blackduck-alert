@@ -202,10 +202,16 @@ class RoleTable extends Component {
                 permissions: []
             }
         });
+        this.retrieveData();
     }
 
-    onDelete() {
-        this.props.deleteRole(this.state.role['roleName']);
+    onDelete(rolesToDelete) {
+        if (rolesToDelete) {
+            rolesToDelete.forEach(roleName => {
+                this.props.deleteRole(roleName);
+            });
+        }
+        this.retrieveData();
     }
 
     createModalFields() {
@@ -216,7 +222,7 @@ class RoleTable extends Component {
 
         return (
             <div>
-                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." onChange={this.handleChange} value={roleNameValue} />
+                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} />
                 <TableDisplay
                     modalTitle="New Role Permissions"
                     tableNewButtonLabel="Add"
