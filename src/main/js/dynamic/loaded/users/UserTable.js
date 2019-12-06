@@ -81,7 +81,13 @@ class UserTable extends Component {
         });
     }
 
-    createModalFields() {
+    createModalFields(selectedRow) {
+        const { user } = this.state;
+        let newUser = user;
+        if (selectedRow) {
+            newUser = Object.assign({}, user, selectedRow);
+        }
+
         const usernameKey = 'username';
         const passwordKey = 'password';
         const emailKey = 'emailAddress';
@@ -90,10 +96,10 @@ class UserTable extends Component {
 
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={this.state.user[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={this.state.user[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={this.state.user[emailKey]} />
-                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={this.state.user[enabledKey]} />
+                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={newUser[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={newUser[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={newUser[emailKey]} />
+                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}
@@ -102,7 +108,7 @@ class UserTable extends Component {
                     onChange={this.handleChange}
                     multiSelect={true}
                     options={this.retrieveRoles()}
-                    value={this.state.user[roleNames]}
+                    value={newUser[roleNames]}
                     onFocus={this.props.getRoles} />
             </div>
         );

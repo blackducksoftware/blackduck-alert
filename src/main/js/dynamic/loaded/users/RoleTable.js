@@ -104,9 +104,15 @@ class RoleTable extends Component {
         this.props.deleteRole(this.state.role['roleName']);
     }
 
-    createModalFields() {
+    createModalFields(selectedRow) {
+        const { role } = this.state;
+        let newRole = role;
+        if (selectedRow) {
+            newRole = Object.assign({}, role, selectedRow);
+        }
+
         const roleNameKey = 'roleName';
-        const roleNameValue = this.state.role[roleNameKey];
+        const roleNameValue = newRole[roleNameKey];
 
         return (
             <div>
