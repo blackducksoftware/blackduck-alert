@@ -44,10 +44,12 @@ function savedUser() {
     };
 }
 
-function saveUserError(message) {
+function saveUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
-        userSaveError: message
+        userSaveError: message,
+        errors
+
     };
 }
 
@@ -63,10 +65,11 @@ function deletedUser() {
     };
 }
 
-function deletingUserError(message) {
+function deletingUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
-        userDeleteError: message
+        userDeleteError: message,
+        errors
     };
 }
 
@@ -124,14 +127,14 @@ export function createNewUser(user) {
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(saveUserError(data.message));
+                                return dispatch(saveUserError(data));
                             case 401:
-                                dispatch(saveUserError(data.message));
+                                dispatch(saveUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(saveUserError(data.message));
+                                return dispatch(saveUserError(data));
                             default: {
-                                return dispatch(saveUserError(data.message, null));
+                                return dispatch(saveUserError(data));
                             }
                         }
                     });
@@ -153,14 +156,14 @@ export function deleteUser(userName) {
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(deletingUserError(data.message));
+                                return dispatch(deletingUserError(data));
                             case 401:
-                                dispatch(deletingUserError(data.message));
+                                dispatch(deletingUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(deletingUserError(data.message));
+                                return dispatch(deletingUserError(data));
                             default: {
-                                return dispatch(deletingUserError(data.message, null));
+                                return dispatch(deletingUserError(data));
                             }
                         }
                     });

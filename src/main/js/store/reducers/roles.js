@@ -17,7 +17,8 @@ const initialState = {
     data: [],
     roleFetchError: '',
     roleSaveError: '',
-    roleDeleteError: ''
+    roleDeleteError: '',
+    fieldErrors: {}
 };
 
 const roles = (state = initialState, action) => {
@@ -26,12 +27,14 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleDeleteError: action.roleDeleteError
+                roleDeleteError: action.roleDeleteError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_ROLE_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: true
+                deleteSuccess: true,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_ROLE_DELETING:
             return Object.assign({}, state, {
@@ -60,12 +63,14 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleSaveError: action.roleSaveError
+                roleSaveError: action.roleSaveError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_ROLE_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: false
+                deleteSuccess: false,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_ROLE_SAVING:
             return Object.assign({}, state, {

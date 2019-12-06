@@ -17,7 +17,8 @@ const initialState = {
     data: [],
     userFetchError: '',
     userSaveError: '',
-    userDeleteError: ''
+    userDeleteError: '',
+    fieldErrors: {}
 };
 
 const users = (state = initialState, action) => {
@@ -26,12 +27,14 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userDeleteError: action.userDeleteError
+                userDeleteError: action.userDeleteError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_USER_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: true
+                deleteSuccess: true,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_USER_DELETING:
             return Object.assign({}, state, {
@@ -60,12 +63,14 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userSaveError: action.userSaveError
+                userSaveError: action.userSaveError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_USER_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: false
+                deleteSuccess: false,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_USER_SAVING:
             return Object.assign({}, state, {

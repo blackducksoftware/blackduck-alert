@@ -44,10 +44,11 @@ function savedRole() {
     };
 }
 
-function saveRoleError(message) {
+function saveRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleSaveError: message
+        roleSaveError: message,
+        errors
     };
 }
 
@@ -63,10 +64,11 @@ function deletedRole() {
     };
 }
 
-function deletingRoleError(message) {
+function deletingRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleDeleteError: message
+        roleDeleteError: message,
+        errors
     };
 }
 
@@ -124,14 +126,14 @@ export function createNewRole(roleName) {
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(saveRoleError(data.message));
+                                return dispatch(saveRoleError(data));
                             case 401:
-                                dispatch(saveRoleError(data.message));
+                                dispatch(saveRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(saveRoleError(data.message));
+                                return dispatch(saveRoleError(data));
                             default: {
-                                return dispatch(saveRoleError(data.message, null));
+                                return dispatch(saveRoleError(data));
                             }
                         }
                     });
@@ -153,14 +155,14 @@ export function deleteRole(roleName) {
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(deletingRoleError(data.message));
+                                return dispatch(deletingRoleError(data));
                             case 401:
-                                dispatch(deletingRoleError(data.message));
+                                dispatch(deletingRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(deletingRoleError(data.message));
+                                return dispatch(deletingRoleError(data));
                             default: {
-                                return dispatch(deletingRoleError(data.message, null));
+                                return dispatch(deletingRoleError(data));
                             }
                         }
                     });
