@@ -176,6 +176,10 @@ class RoleTable extends Component {
         }
     }
 
+    onUpdatePermissions() {
+
+    }
+
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
             const { permissions } = this.state.role;
@@ -221,6 +225,10 @@ class RoleTable extends Component {
         this.retrieveData();
     }
 
+    onUpdate() {
+
+    }
+
     onDelete(rolesToDelete) {
         if (rolesToDelete) {
             rolesToDelete.forEach(roleName => {
@@ -261,6 +269,7 @@ class RoleTable extends Component {
                     autoRefresh={false}
                     tableRefresh={false}
                     onConfigSave={this.onSavePermissions}
+                    onConfigUpdate={this.onUpdatePermissions}
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
                     newConfigFields={this.createPermissionsModal}
@@ -284,6 +293,7 @@ class RoleTable extends Component {
                         newConfigFields={this.createModalFields}
                         modalTitle="Role"
                         onConfigSave={this.onSave}
+                        onConfigUpdate={this.onUpdate}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onRoleClose}
                         refreshData={this.retrieveData}

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
-import CheckboxInput from 'field/input/CheckboxInput';
 import { connect } from 'react-redux';
 import { createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
@@ -91,7 +90,6 @@ class UserTable extends Component {
         const usernameKey = 'username';
         const passwordKey = 'password';
         const emailKey = 'emailAddress';
-        const enabledKey = 'enabled';
         const roleNames = 'roleNames';
 
         return (
@@ -99,7 +97,6 @@ class UserTable extends Component {
                 <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={newUser[usernameKey]} />
                 <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={newUser[passwordKey]} />
                 <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={newUser[emailKey]} />
-                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}
