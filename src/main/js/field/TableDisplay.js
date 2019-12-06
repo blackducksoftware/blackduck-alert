@@ -94,6 +94,7 @@ class TableDisplay extends Component {
     }
 
     handleClose() {
+        this.props.onConfigClose();
         this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null
@@ -323,6 +324,7 @@ TableDisplay.propTypes = {
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
     onConfigDelete: PropTypes.func,
+    onConfigClose: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -351,6 +353,7 @@ TableDisplay.defaultProps = {
     inProgress: false,
     onConfigSave: () => null,
     onConfigDelete: () => null,
+    onConfigClose: () => null,
     modalTitle: 'New',
     tableNewButtonLabel: 'New',
     tableDeleteButtonLabel: 'Delete',
