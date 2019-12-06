@@ -24,15 +24,14 @@ package com.synopsys.integration.alert.web.user;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,8 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
-import com.synopsys.integration.alert.web.model.RolePermissionsModel;
+import com.synopsys.integration.alert.web.model.PermissionModel;
+import com.synopsys.integration.alert.web.model.RolePermissionModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -59,22 +59,22 @@ public class RoleActions {
         this.authorizationUtility = authorizationUtility;
     }
 
-    public Collection<RolePermissionsModel> getRoles() {
+    public Collection<RolePermissionModel> getRoles() {
         return authorizationUtility.getRoles().stream()
                    .map(this::convertUserRoleModel)
                    .collect(Collectors.toList());
     }
 
-    public Optional<RolePermissionsModel> getRole(String roleName) {
+    public Optional<RolePermissionModel> getRole(String roleName) {
         return authorizationUtility.getRoles().stream()
                    .filter(role -> role.getName().equals(roleName))
                    .map(this::convertUserRoleModel)
                    .findFirst();
     }
 
-    public UserRoleModel createRole(RolePermissionsModel rolePermissionsModel) throws IntegrationException {
-        String roleName = rolePermissionsModel.getRoleName();
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(rolePermissionsModel.getOperations());
+    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws IntegrationException {
+        String roleName = rolePermissionModel.getRoleName();
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(rolePermissionModel.getPermissions());
         return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
     }
 
@@ -89,41 +89,68 @@ public class RoleActions {
         }
     }
 
-    private RolePermissionsModel convertUserRoleModel(UserRoleModel userRoleModel) {
+    private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
         String roleName = userRoleModel.getName();
         PermissionMatrixModel permissionModel = userRoleModel.getPermissions();
-        Map<PermissionKey, Set<String>> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
-        return new RolePermissionsModel(roleName, permissionKeyToAccess);
+        Set<PermissionModel> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
+        return new RolePermissionModel(roleName, permissionKeyToAccess);
     }
 
-    private Map<PermissionKey, Set<String>> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {
-        Map<PermissionKey, Set<String>> permissionMatrix = new HashMap<>();
+    private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {
+        Set<PermissionModel> permissionMatrix = new HashSet<>();
         for (Map.Entry<PermissionKey, Integer> matrixRow : permissionMatrixModel.getPermissions().entrySet()) {
             Integer accessOperations = matrixRow.getValue();
             PermissionKey permissionKey = matrixRow.getKey();
 
-            Set<String> allowedOperations = Stream.of(AccessOperation.values())
-                                                .filter(accessOperation -> BitwiseUtil.containsBits(accessOperations, accessOperation.getBit()))
-                                                .map(Enum::name)
-                                                .collect(Collectors.toSet());
-
-            permissionMatrix.put(permissionKey, allowedOperations);
+            PermissionModel permissionModel = new PermissionModel(
+                permissionKey.getDescriptorName(),
+                permissionKey.getContext(),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.CREATE.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.READ.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.WRITE.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.DELETE.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.EXECUTE.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.UPLOAD_FILE_READ.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.UPLOAD_FILE_WRITE.getBit()),
+                BitwiseUtil.containsBits(accessOperations, AccessOperation.UPLOAD_FILE_DELETE.getBit())
+            );
+            permissionMatrix.add(permissionModel);
         }
         return permissionMatrix;
     }
 
-    private PermissionMatrixModel convertToPermissionMatrixModel(Map<PermissionKey, Set<String>> permissionMap) {
+    private PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {
         Map<PermissionKey, Integer> permissionMatrix = new HashMap<>();
-        for (Map.Entry<PermissionKey, Set<String>> matrixRow : permissionMap.entrySet()) {
-            Set<String> accessOperations = matrixRow.getValue();
-            PermissionKey permissionKey = matrixRow.getKey();
+        for (PermissionModel permissionModel : permissionModels) {
+            String descriptorName = permissionModel.getDescriptorName();
+            String context = permissionModel.getContext();
+            PermissionKey permissionKey = new PermissionKey(context, descriptorName);
 
-            int accessOperationsBits = accessOperations.stream()
-                                           .filter(accessOperation -> EnumUtils.isValidEnum(AccessOperation.class, accessOperation))
-                                           .map(accessOperation -> EnumUtils.getEnum(AccessOperation.class, accessOperation))
-                                           .map(AccessOperation::getBit)
-                                           .reduce(BitwiseUtil::combineBits)
-                                           .orElse(0);
+            int accessOperationsBits = 0;
+            if (permissionModel.isCreate()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.CREATE.getBit());
+            }
+            if (permissionModel.isRead()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.READ.getBit());
+            }
+            if (permissionModel.isDelete()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.DELETE.getBit());
+            }
+            if (permissionModel.isExecute()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.EXECUTE.getBit());
+            }
+            if (permissionModel.isWrite()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.WRITE.getBit());
+            }
+            if (permissionModel.isUploadDelete()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_DELETE.getBit());
+            }
+            if (permissionModel.isUploadRead()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_READ.getBit());
+            }
+            if (permissionModel.isUploadWrite()) {
+                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_WRITE.getBit());
+            }
 
             permissionMatrix.put(permissionKey, accessOperationsBits);
         }

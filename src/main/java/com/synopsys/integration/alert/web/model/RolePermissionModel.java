@@ -22,37 +22,35 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.util.Map;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class RolePermissionsModel extends AlertSerializableModel {
+public class RolePermissionModel extends AlertSerializableModel {
     private String roleName;
-    private Map<PermissionKey, Set<String>> operations;
+    private Set<PermissionModel> permissions;
 
-    public RolePermissionsModel() {
+    public RolePermissionModel() {
     }
 
-    public RolePermissionsModel(String roleName, Map<PermissionKey, Set<String>> operations) {
+    public RolePermissionModel(String roleName, Set<PermissionModel> permissions) {
         this.roleName = roleName;
-        this.operations = operations;
+        this.permissions = permissions;
     }
 
     public String getRoleName() {
         return roleName;
     }
 
-    public Map<PermissionKey, Set<String>> getOperations() {
-        return operations;
+    public Set<PermissionModel> getPermissions() {
+        return permissions;
     }
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
 
-    public void setOperations(Map<PermissionKey, Set<String>> operations) {
-        this.operations = operations;
+    public void setPermissions(Set<PermissionModel> permissionModels) {
+        this.permissions = permissionModels;
     }
 }
