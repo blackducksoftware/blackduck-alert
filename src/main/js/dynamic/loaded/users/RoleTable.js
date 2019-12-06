@@ -35,6 +35,8 @@ class RoleTable extends Component {
         this.createDescriptorOptions = this.createDescriptorOptions.bind(this);
         this.onSavePermissions = this.onSavePermissions.bind(this);
         this.onDeletePermissions = this.onDeletePermissions.bind(this);
+        this.onPermissionsClose = this.onPermissionsClose.bind(this);
+        this.onRoleClose = this.onRoleClose.bind(this);
 
         this.state = {
             role: {
@@ -73,12 +75,14 @@ class RoleTable extends Component {
         ];
     }
 
-    retrievePermissionsData() {
+    retrievePermissionsData(existingPermissions) {
         const { permissions } = this.state.role;
-
         if (!permissions) {
             return [];
         }
+
+        const missingPermissions = existingPermissions.filter(permission => !permissions.includes(permission));
+        permissions.push(...missingPermissions);
 
         return permissions.map(permission => {
             const permissionShorthand = [];
@@ -94,7 +98,7 @@ class RoleTable extends Component {
             return {
                 descriptorName: permission.descriptorName,
                 context: permission.context,
-                permissionsColumn: permissionShorthand.join(', ')
+                permissionsColumn: permissionShorthand.join('-')
             };
         });
     }
@@ -128,22 +132,34 @@ class RoleTable extends Component {
         }]
     }
 
-    createPermissionsModal() {
+    onPermissionsClose() {
+        this.setState({
+            permissionsData: {}
+        });
+    }
+
+    createPermissionsModal(selectedRow) {
+        const { permissions } = this.state.role;
+        let newPermissions = permissions;
+        if (selectedRow) {
+            newPermissions = Object.assign({}, permissions, selectedRow);
+        }
+
         return (
             <div>
-                <DynamicSelectInput name={DESCRIPTOR_NAME} id={DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} onChange={this.handlePermissionsChange} value={this.state.permissionsData[DESCRIPTOR_NAME]} />
-                <DynamicSelectInput name={CONTEXT} id={CONTEXT} label="Context" options={this.createContextOptions()} onChange={this.handlePermissionsChange} value={this.state.permissionsData[CONTEXT]} />
-                <CheckboxInput name={CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange} isChecked={this.state.permissionsData[CREATE]} />
-                <CheckboxInput name={DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange} isChecked={this.state.permissionsData[DELETE_OPERATION]} />
-                <CheckboxInput name={READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={this.state.permissionsData[READ]} />
-                <CheckboxInput name={WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={this.state.permissionsData[WRITE]} />
-                <CheckboxInput name={EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange} isChecked={this.state.permissionsData[EXECUTE]} />
+                <DynamicSelectInput name={DESCRIPTOR_NAME} id={DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} onChange={this.handlePermissionsChange} value={newPermissions[DESCRIPTOR_NAME]} />
+                <DynamicSelectInput name={CONTEXT} id={CONTEXT} label="Context" options={this.createContextOptions()} onChange={this.handlePermissionsChange} value={newPermissions[CONTEXT]} />
+                <CheckboxInput name={CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[CREATE]} />
+                <CheckboxInput name={DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[DELETE_OPERATION]} />
+                <CheckboxInput name={READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={newPermissions[READ]} />
+                <CheckboxInput name={WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[WRITE]} />
+                <CheckboxInput name={EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[EXECUTE]} />
                 <CheckboxInput name={UPLOAD_READ} label="Upload Read" description="This permission shows or hides upload related content for the user." onChange={this.handlePermissionsChange}
-                               isChecked={this.state.permissionsData[UPLOAD_READ]} />
+                               isChecked={newPermissions[UPLOAD_READ]} />
                 <CheckboxInput name={UPLOAD_WRITE} label="Upload Write" description="Allow users to modify uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={this.state.permissionsData[UPLOAD_WRITE]} />
+                               isChecked={newPermissions[UPLOAD_WRITE]} />
                 <CheckboxInput name={UPLOAD_DELETE} label="Upload Delete" description="Allow users to delete uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={this.state.permissionsData[UPLOAD_DELETE]} />
+                               isChecked={newPermissions[UPLOAD_DELETE]} />
             </div>
         );
     }
@@ -214,9 +230,23 @@ class RoleTable extends Component {
         this.retrieveData();
     }
 
-    createModalFields() {
+    onRoleClose() {
+        this.setState({
+            role: {
+                permissions: []
+            }
+        });
+    }
+
+    createModalFields(selectedRow) {
+        const { role } = this.state;
+        let newRole = role;
+        if (selectedRow) {
+            newRole = Object.assign({}, role, selectedRow);
+        }
+
         const roleNameKey = 'roleName';
-        const roleNameValue = this.state.role[roleNameKey];
+        const roleNameValue = newRole[roleNameKey];
 
         const { canCreate, canDelete } = this.props;
 
@@ -232,12 +262,14 @@ class RoleTable extends Component {
                     tableRefresh={false}
                     onConfigSave={this.onSavePermissions}
                     onConfigDelete={this.onDeletePermissions}
+                    onConfigClose={this.onPermissionsClose}
                     newConfigFields={this.createPermissionsModal}
                     columns={this.createPermissionsColumns()}
-                    data={this.retrievePermissionsData()}
+                    data={this.retrievePermissionsData(newRole.permissions)}
                     refreshData={() => null}
                     deleteButton={canDelete}
-                    newButton={canCreate} />
+                    newButton={canCreate}
+                    sortName={DESCRIPTOR_NAME} />
             </div>
         );
     }
@@ -253,6 +285,7 @@ class RoleTable extends Component {
                         modalTitle="Role"
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
+                        onConfigClose={this.onRoleClose}
                         refreshData={this.retrieveData}
                         data={this.props.roles}
                         columns={this.createColumns()}
