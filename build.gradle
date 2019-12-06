@@ -119,6 +119,7 @@ distributions {
                 include 'snakeyaml*.jar'
                 into 'lib/liquibase'
             }
+            from('src/main/resources/db/scripts/') { into 'pg_resources/' }
             from('src/main/resources/db/release-locks-changelog.xml') { into 'changelogs' }
             from('src/main/resources/images/') { into 'images/' }
             from('src/main/resources/templates/email') { into 'templates/email' }

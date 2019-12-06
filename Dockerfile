@@ -1,5 +1,6 @@
 FROM blackducksoftware/hub-docker-common:1.0.4 as docker-common
 FROM adoptopenjdk/openjdk11:alpine-slim
+FROM postgres:11.6-alpine
 
 ARG VERSION
 
@@ -16,7 +17,7 @@ ENV SECURITY_DIR $ALERT_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
-ENV ALERT_DB_DIR $ALERT_DATA_DIR/alertdb
+ENV ALERT_DB_DIR $ALERT_DATA_DIR/postgres/alertdb
 ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
