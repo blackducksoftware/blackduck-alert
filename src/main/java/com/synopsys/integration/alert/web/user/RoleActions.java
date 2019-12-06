@@ -77,7 +77,7 @@ public class RoleActions {
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException {
         String roleName = rolePermissionModel.getRoleName();
         Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+        validateCreationRoleName(fieldErrors, roleName);
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -176,6 +176,14 @@ public class RoleActions {
     private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
             fieldErrors.put(fieldKey, "This field is required.");
+        }
+    }
+
+    private void validateCreationRoleName(Map<String, String> fieldErrors, String roleName) {
+        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+        boolean exists = authorizationUtility.doesRoleNameExist(roleName);
+        if (exists) {
+            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that username already exists.");
         }
     }
 
