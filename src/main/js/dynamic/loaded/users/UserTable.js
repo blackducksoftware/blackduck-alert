@@ -96,9 +96,9 @@ class UserTable extends Component {
 
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." onChange={this.handleChange} value={newUser[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." onChange={this.handleChange} value={newUser[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." onChange={this.handleChange} value={newUser[emailKey]} />
+                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} />
                 <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
                 <DynamicSelectInput
                     name={roleNames}
