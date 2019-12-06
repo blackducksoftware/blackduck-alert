@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +41,19 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.web.model.PermissionModel;
 import com.synopsys.integration.alert.web.model.RolePermissionModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 @Transactional
 public class RoleActions {
     private static final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+    private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private AuthorizationUtility authorizationUtility;
 
     @Autowired
@@ -72,13 +74,27 @@ public class RoleActions {
                    .findFirst();
     }
 
-    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws IntegrationException {
+    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException {
         String roleName = rolePermissionModel.getRoleName();
+        Map<String, String> fieldErrors = new HashMap<>();
+        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(rolePermissionModel.getPermissions());
         return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
     }
 
-    public void deleteRole(String roleName) throws AlertDatabaseConstraintException {
+    public void deleteRole(String roleName) throws AlertDatabaseConstraintException, AlertFieldException {
+        Map<String, String> fieldErrors = new HashMap<>();
+        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+
         Optional<String> userRole = authorizationUtility.getRoles().stream()
                                         .filter(role -> role.getName().equals(roleName))
                                         .filter(UserRoleModel::isCustom)
@@ -155,6 +171,12 @@ public class RoleActions {
             permissionMatrix.put(permissionKey, accessOperationsBits);
         }
         return new PermissionMatrixModel(permissionMatrix);
+    }
+
+    private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
+        if (StringUtils.isBlank(fieldValue)) {
+            fieldErrors.put(fieldKey, "This field is required.");
+        }
     }
 
 }

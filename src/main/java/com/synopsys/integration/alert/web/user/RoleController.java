@@ -37,13 +37,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.RolePermissionModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @RestController
 @RequestMapping(RoleController.ROLE_BASE_PATH)
@@ -80,9 +80,12 @@ public class RoleController extends BaseController {
         }
         try {
             roleActions.createRole(rolePermissionModel);
-        } catch (IntegrationException ex) {
+        } catch (AlertDatabaseConstraintException ex) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to create role");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
+
         return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");
     }
 
@@ -95,6 +98,8 @@ public class RoleController extends BaseController {
             roleActions.deleteRole(roleName);
         } catch (AlertDatabaseConstraintException ex) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to delete role");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }
