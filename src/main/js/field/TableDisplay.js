@@ -21,7 +21,6 @@ class TableDisplay extends Component {
         this.createInsertModal = this.createInsertModal.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.flipShowSwitch = this.flipShowSwitch.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -77,7 +76,9 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
-                    this.flipShowSwitch()
+                    this.setState({
+                        showConfiguration: true
+                    });
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     {this.props.tableNewButtonLabel}
@@ -108,12 +109,6 @@ class TableDisplay extends Component {
         this.handleClose();
         this.props.onConfigSave();
         this.props.refreshData();
-    }
-
-    flipShowSwitch() {
-        this.setState({
-            showConfiguration: !this.state.showConfiguration
-        });
     }
 
     createEditModal() {
@@ -153,9 +148,7 @@ class TableDisplay extends Component {
     }
 
     isShowModal() {
-        const fieldErrorKeys = Object.keys(this.props.fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
-        return this.state.showConfiguration || hasErrors;
+        return this.state.showConfiguration || this.props.hasFieldErrors;
     }
 
     createInsertModal(onModalClose) {
@@ -366,7 +359,7 @@ TableDisplay.propTypes = {
     tableDeleteButtonLabel: PropTypes.string,
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
-    fieldErrors: PropTypes.object
+    hasFieldErrors: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -387,7 +380,7 @@ TableDisplay.defaultProps = {
     tableDeleteButtonLabel: 'Delete',
     tableSearchable: true,
     tableRefresh: true,
-    fieldErrors: {}
+    hasFieldErrors: false
 };
 
 export default TableDisplay;

@@ -29,7 +29,6 @@ class RoleTable extends Component {
         this.handlePermissionsChange = this.handlePermissionsChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
-        this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.createPermissionsModal = this.createPermissionsModal.bind(this);
         this.retrievePermissionsData = this.retrievePermissionsData.bind(this);
@@ -137,6 +136,7 @@ class RoleTable extends Component {
         this.setState({
             permissionsData: {}
         });
+        this.props.clearFieldErrors();
     }
 
     createPermissionsModal(selectedRow) {
@@ -231,21 +231,17 @@ class RoleTable extends Component {
         this.retrieveData();
     }
 
-    onConfigClose() {
-        this.props.clearFieldErrors()
-    }
-
     onRoleClose() {
         this.setState({
             role: {
                 permissions: []
             }
         });
+        this.props.clearFieldErrors();
     }
 
     createModalFields(selectedRow) {
         const { role } = this.state;
-        const { fieldErrors } = this.props;
         let newRole = role;
         if (selectedRow) {
             newRole = Object.assign({}, role, selectedRow);
@@ -254,7 +250,7 @@ class RoleTable extends Component {
         const roleNameKey = 'roleName';
         const roleNameValue = newRole[roleNameKey];
 
-        const { canCreate, canDelete } = this.props;
+        const { canCreate, canDelete, fieldErrors } = this.props;
 
         return (
             <div>
@@ -283,7 +279,8 @@ class RoleTable extends Component {
 
     render() {
         const { canCreate, canDelete, fieldErrors } = this.props;
-
+        const fieldErrorKeys = Object.keys(fieldErrors);
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
             <div>
                 <div>
@@ -298,7 +295,7 @@ class RoleTable extends Component {
                         columns={this.createColumns()}
                         newButton={canCreate}
                         deleteButton={canDelete}
-                        fieldErrors={fieldErrors} />
+                        hasFieldErrors={hasErrors} />
                 </div>
             </div>
         );

@@ -122,7 +122,8 @@ class UserTable extends Component {
 
     render() {
         const { canCreate, canDelete, fieldErrors } = this.props;
-
+        const fieldErrorKeys = Object.keys(fieldErrors);
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
             <div>
                 <div>
@@ -137,7 +138,7 @@ class UserTable extends Component {
                         columns={this.createColumns()}
                         newButton={canCreate}
                         deleteButton={canDelete}
-                        fieldErrors={fieldErrors}
+                        hasFieldErrors={hasErrors}
                     />
                 </div>
             </div>
