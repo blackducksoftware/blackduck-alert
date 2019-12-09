@@ -139,7 +139,8 @@ export function createNewUser(user) {
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchUsers()))
+            .catch(console.error);
     };
 }
 
@@ -168,6 +169,7 @@ export function deleteUser(userName) {
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchUsers()))
+            .catch(console.error);
     };
 }

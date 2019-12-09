@@ -138,7 +138,8 @@ export function createNewRole(roleName) {
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchRoles()))
+            .catch(console.error);
     };
 }
 
@@ -167,6 +168,7 @@ export function deleteRole(roleName) {
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchRoles()))
+            .catch(console.error);
     };
 }

@@ -269,13 +269,14 @@ class RoleTable extends Component {
                     refreshData={() => null}
                     deleteButton={canDelete}
                     newButton={canCreate}
-                    sortName={DESCRIPTOR_NAME} />
+                    sortName={DESCRIPTOR_NAME}
+                />
             </div>
         );
     }
 
     render() {
-        const { canCreate, canDelete } = this.props;
+        const { canCreate, canDelete, fieldErrors } = this.props;
 
         return (
             <div>
@@ -290,7 +291,8 @@ class RoleTable extends Component {
                         data={this.props.roles}
                         columns={this.createColumns()}
                         newButton={canCreate}
-                        deleteButton={canDelete} />
+                        deleteButton={canDelete}
+                        fieldErrors={fieldErrors} />
                 </div>
             </div>
         );
@@ -299,18 +301,21 @@ class RoleTable extends Component {
 
 RoleTable.defaultProps = {
     canCreate: true,
-    canDelete: true
+    canDelete: true,
+    fieldErrors: {}
 };
 
 RoleTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    descriptors: PropTypes.array
+    descriptors: PropTypes.array,
+    fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     roles: state.roles.data,
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors.items,
+    fieldErrors: state.roles.fieldErrors
 });
 
 const mapDispatchToProps = dispatch => ({

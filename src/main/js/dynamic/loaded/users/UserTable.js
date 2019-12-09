@@ -115,7 +115,7 @@ class UserTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete } = this.props;
+        const { canCreate, canDelete, fieldErrors } = this.props;
 
         return (
             <div>
@@ -129,7 +129,9 @@ class UserTable extends Component {
                         data={this.props.users}
                         columns={this.createColumns()}
                         newButton={canCreate}
-                        deleteButton={canDelete} />
+                        deleteButton={canDelete}
+                        fieldErrors={fieldErrors}
+                    />
                 </div>
             </div>
         );
@@ -138,17 +140,20 @@ class UserTable extends Component {
 
 UserTable.defaultProps = {
     canCreate: true,
-    canDelete: true
+    canDelete: true,
+    fieldErrors: {}
 };
 
 UserTable.propTypes = {
     canCreate: PropTypes.bool,
-    canDelete: PropTypes.bool
+    canDelete: PropTypes.bool,
+    fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     users: state.users.data,
-    roles: state.roles.data
+    roles: state.roles.data,
+    fieldErrors: state.users.fieldErrors
 });
 
 const mapDispatchToProps = dispatch => ({
