@@ -39,12 +39,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.alert.web.model.UserRoleModel;
+import com.synopsys.integration.alert.web.model.UserConfig;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)
@@ -77,7 +78,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody UserRoleModel userModel) {
+    public ResponseEntity<String> createUser(@RequestBody UserConfig userModel) {
         if (!hasPermission(authorizationManager::hasCreatePermission)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -88,6 +89,8 @@ public class UserController extends BaseController {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
             return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
 
     }
@@ -104,6 +107,8 @@ public class UserController extends BaseController {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
             return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
 
     }

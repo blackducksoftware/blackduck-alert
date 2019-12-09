@@ -5,6 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
+import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
+
+const jobModificationState = {
+    EDIT: 'EDIT',
+    COPY: 'COPY'
+};
 
 class TableDisplay extends Component {
     constructor(props) {
@@ -21,8 +27,14 @@ class TableDisplay extends Component {
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
         this.flipDeleteModalShowFlag = this.flipDeleteModalShowFlag.bind(this);
         this.deleteItems = this.deleteItems.bind(this);
+        this.editButtonClicked = this.editButtonClicked.bind(this);
+        this.editButtonClick = this.editButtonClick.bind(this);
+        this.copyButtonClicked = this.copyButtonClicked.bind(this);
+        this.copyButtonClick = this.copyButtonClick.bind(this);
 
         this.state = {
+            currentRowSelected: null,
+            modificationState: jobModificationState.EDIT,
             showConfiguration: false,
             showDelete: false,
             rowsToDelete: []
@@ -67,29 +79,33 @@ class TableDisplay extends Component {
                     this.flipShowSwitch()
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    New
+                    {this.props.tableNewButtonLabel}
                 </InsertButton>
                 }
                 {buttons.deleteBtn
                 && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
                     <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    Delete
+                    {this.props.tableDeleteButtonLabel}
                 </DeleteButton>
                 }
-                {refreshButton}
+                {this.props.tableRefresh && refreshButton}
             </div>
         );
     }
 
     handleClose() {
+        this.props.onConfigClose();
         this.refs.table.cleanSelected();
-        this.flipShowSwitch();
+        this.setState({
+            currentRowSelected: null
+        });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
         this.handleClose();
+        this.flipShowSwitch();
         this.props.onConfigSave();
         this.props.refreshData();
     }
@@ -100,11 +116,41 @@ class TableDisplay extends Component {
         });
     }
 
+    createEditModal() {
+        const { currentRowSelected } = this.state;
+        return (
+            <Modal size="lg" show={currentRowSelected} onHide={() => {
+                this.handleClose();
+            }}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form className="form-horizontal" onSubmit={(event) => {
+                        this.handleSubmit(event);
+                    }} noValidate>
+                        {this.props.newConfigFields(currentRowSelected)}
+                        <ConfigButtons
+                            cancelId="usermanagement-cancel"
+                            submitId="usermanagement-submit"
+                            includeCancel
+                            onCancelClick={() => {
+                                this.handleClose();
+                            }}
+                            isFixed={false}
+                        />
+                    </form>
+                </Modal.Body>
+            </Modal>
+        );
+    }
+
     createInsertModal(onModalClose) {
         return (
             <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                 this.handleClose();
-                onModalClose()
+                this.flipShowSwitch();
+                onModalClose();
             }}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.modalTitle}</Modal.Title>
@@ -121,7 +167,8 @@ class TableDisplay extends Component {
                             includeCancel
                             onCancelClick={() => {
                                 this.handleClose();
-                                onModalClose()
+                                this.flipShowSwitch();
+                                onModalClose();
                             }}
                             isFixed={false}
                         />
@@ -157,10 +204,34 @@ class TableDisplay extends Component {
         this.closeDeleteModal();
     }
 
+    editButtonClicked(currentRowSelected) {
+        this.setState({
+            currentRowSelected,
+            modificationState: jobModificationState.EDIT
+        });
+    }
+
+    editButtonClick(cell, row) {
+        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+    }
+
+    copyButtonClicked(currentRowSelected) {
+        this.setState({
+            currentRowSelected,
+            modificationState: jobModificationState.COPY
+        });
+    }
+
+    copyButtonClick(cell, row) {
+        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
+        tableColumns.push(<TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ "text-align": "center" }}>Edit</TableHeaderColumn>);
+        tableColumns.push(<TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ "text-align": "center" }}>Copy</TableHeaderColumn>);
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data } = this.props;
+        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable } = this.props;
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
@@ -206,7 +277,7 @@ class TableDisplay extends Component {
                     deleteRow={deleteButton}
                     selectRow={selectRow}
                     options={tableOptions}
-                    search
+                    search={tableSearchable}
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
@@ -224,11 +295,17 @@ class TableDisplay extends Component {
                 <p name="tableMessage">{tableMessage}</p>
             </div>
         );
+
+        const refresh = this.props.tableRefresh && (
+            <div className="pull-right">
+                <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
+            </div>
+        );
+
         return (
             <div>
-                <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
-                </div>
+                {this.createEditModal()}
+                {refresh}
                 {deleteModal}
                 {content}
             </div>
@@ -247,6 +324,7 @@ TableDisplay.propTypes = {
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
     onConfigDelete: PropTypes.func,
+    onConfigClose: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -256,7 +334,11 @@ TableDisplay.propTypes = {
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
     inProgress: PropTypes.bool,
-    modalTitle: PropTypes.string
+    modalTitle: PropTypes.string,
+    tableNewButtonLabel: PropTypes.string,
+    tableDeleteButtonLabel: PropTypes.string,
+    tableSearchable: PropTypes.bool,
+    tableRefresh: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -271,7 +353,12 @@ TableDisplay.defaultProps = {
     inProgress: false,
     onConfigSave: () => null,
     onConfigDelete: () => null,
-    modalTitle: 'New'
+    onConfigClose: () => null,
+    modalTitle: 'New',
+    tableNewButtonLabel: 'New',
+    tableDeleteButtonLabel: 'Delete',
+    tableSearchable: true,
+    tableRefresh: true
 };
 
 export default TableDisplay;

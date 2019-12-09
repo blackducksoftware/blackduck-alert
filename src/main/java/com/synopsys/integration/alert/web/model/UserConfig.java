@@ -26,7 +26,7 @@ import java.util.Set;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class UserRoleModel extends AlertSerializableModel {
+public class UserConfig extends AlertSerializableModel {
     private String username;
     private String password;
     private String emailAddress;
@@ -36,10 +36,10 @@ public class UserRoleModel extends AlertSerializableModel {
     private boolean passwordExpired;
     private boolean enabled;
 
-    public UserRoleModel() {
+    public UserConfig() {
     }
 
-    public UserRoleModel(String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
+    public UserConfig(String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
         this.username = username;
         this.password = password;
         this.emailAddress = emailAddress;

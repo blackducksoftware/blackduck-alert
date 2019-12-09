@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.web.user;
 import java.util.function.BiFunction;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,13 +37,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.alert.web.model.RolePermissionsModel;
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.web.model.RolePermissionModel;
 
 @RestController
 @RequestMapping(RoleController.ROLE_BASE_PATH)
@@ -74,16 +73,19 @@ public class RoleController extends BaseController {
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createRole(@RequestBody RolePermissionsModel rolePermissionsModel) {
+    @PostMapping
+    public ResponseEntity<String> createRole(@RequestBody RolePermissionModel rolePermissionModel) {
         if (!hasPermission(authorizationManager::hasCreatePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            roleActions.createRole(rolePermissionsModel);
-        } catch (IntegrationException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to delete role");
+            roleActions.createRole(rolePermissionModel);
+        } catch (AlertDatabaseConstraintException ex) {
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to create role");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
+
         return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");
     }
 
@@ -96,6 +98,8 @@ public class RoleController extends BaseController {
             roleActions.deleteRole(roleName);
         } catch (AlertDatabaseConstraintException ex) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to delete role");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }
