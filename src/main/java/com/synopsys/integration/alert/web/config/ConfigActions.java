@@ -59,63 +59,63 @@ public class ConfigActions {
     private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public ConfigActions(final ConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final DescriptorProcessor descriptorProcessor, final ConfigurationFieldModelConverter modelConverter) {
+    public ConfigActions(ConfigurationAccessor configurationAccessor, FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
     }
 
-    public boolean doesConfigExist(final String id) throws AlertException {
+    public boolean doesConfigExist(String id) throws AlertException {
         return StringUtils.isNotBlank(id) && doesConfigExist(Long.parseLong(id));
     }
 
-    public boolean doesConfigExist(final Long id) throws AlertException {
+    public boolean doesConfigExist(Long id) throws AlertException {
         return id != null && configurationAccessor.getConfigurationById(id).isPresent();
     }
 
-    public List<FieldModel> getConfigs(final ConfigContextEnum context, DescriptorKey descriptorKey) throws AlertException {
-        final List<FieldModel> fields = new LinkedList<>();
+    public List<FieldModel> getConfigs(ConfigContextEnum context, DescriptorKey descriptorKey) throws AlertException {
+        List<FieldModel> fields = new LinkedList<>();
         if (context != null && descriptorKey != null) {
-            final String contextName = context.name();
-            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, context);
-            final List<FieldModel> fieldModelList = new LinkedList<>();
+            String contextName = context.name();
+            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, context);
+            List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
-                for (final ConfigurationModel configurationModel : configurationModels) {
-                    final FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
+                for (ConfigurationModel configurationModel : configurationModels) {
+                    FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
                     fieldModelList.add(fieldModel);
                 }
             }
             if (fieldModelList.isEmpty()) {
                 fieldModelList.add(new FieldModel(descriptorKey.getUniversalKey(), contextName, new HashMap<>()));
             }
-            for (final FieldModel fieldModel : fieldModelList) {
+            for (FieldModel fieldModel : fieldModelList) {
                 fields.add(fieldModelProcessor.performAfterReadAction(fieldModel));
             }
         }
         return fields;
     }
 
-    public Optional<FieldModel> getConfigById(final Long id) throws AlertException {
+    public Optional<FieldModel> getConfigById(Long id) throws AlertException {
         Optional<FieldModel> optionalModel = Optional.empty();
-        final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
-            final FieldModel configurationFieldModel = modelConverter.convertToFieldModel(configurationModel.get());
-            final FieldModel fieldModel = fieldModelProcessor.performAfterReadAction(configurationFieldModel);
+            FieldModel configurationFieldModel = modelConverter.convertToFieldModel(configurationModel.get());
+            FieldModel fieldModel = fieldModelProcessor.performAfterReadAction(configurationFieldModel);
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
     }
 
-    public void deleteConfig(final Long id) throws AlertException {
+    public void deleteConfig(Long id) throws AlertException {
         if (id != null) {
-            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+            Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
             if (configuration.isPresent()) {
-                final ConfigurationModel configurationModel = configuration.get();
-                final FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
-                final FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
-                final String descriptorName = fieldModel.getDescriptorName();
-                final String context = fieldModel.getContext();
+                ConfigurationModel configurationModel = configuration.get();
+                FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
+                FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
+                String descriptorName = fieldModel.getDescriptorName();
+                String context = fieldModel.getContext();
                 configurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
                 fieldModelProcessor.performAfterDeleteAction(descriptorName, context);
             }
@@ -124,26 +124,26 @@ public class ConfigActions {
 
     public FieldModel saveConfig(FieldModel fieldModel, DescriptorKey descriptorKey) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
-        final FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
-        final String context = modifiedFieldModel.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
-        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
-        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
-        final FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
+        FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
+        String context = modifiedFieldModel.getContext();
+        Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
+        ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+        FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
+        FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);
     }
 
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateConfig(Long id, FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
-        final FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
-        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-        final FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
-        final FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
+        FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+        Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
+        ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+        FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
+        FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(dbSavedModel);
         return dbSavedModel.fill(afterUpdateAction);
     }
 
-    public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+    public String validateConfig(FieldModel fieldModel, Map<String, String> fieldErrors) throws AlertFieldException {
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -151,17 +151,17 @@ public class ConfigActions {
         return "Valid";
     }
 
-    public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
+    public String testConfig(FieldModel restModel, String destination) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
-        final Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
+        Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
-            final FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
-            final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
-            final TestAction testAction = testActionOptional.get();
+            FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
+            FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
+            TestAction testAction = testActionOptional.get();
             testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
             return "Successfully sent test message.";
         }
-        final String descriptorName = restModel.getDescriptorName();
+        String descriptorName = restModel.getDescriptorName();
         logger.error("Test action did not exist: {}", descriptorName);
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
