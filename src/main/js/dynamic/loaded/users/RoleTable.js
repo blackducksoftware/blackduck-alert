@@ -240,6 +240,7 @@ class RoleTable extends Component {
 
     createModalFields(selectedRow) {
         const { role } = this.state;
+        const { fieldErrors } = this.props;
         let newRole = role;
         if (selectedRow) {
             newRole = Object.assign({}, role, selectedRow);
@@ -252,7 +253,7 @@ class RoleTable extends Component {
 
         return (
             <div>
-                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} />
+                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
                 <TableDisplay
                     modalTitle="New Role Permissions"
                     tableNewButtonLabel="Add"

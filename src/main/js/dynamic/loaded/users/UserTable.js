@@ -83,6 +83,8 @@ class UserTable extends Component {
 
     createModalFields(selectedRow) {
         const { user } = this.state;
+        const { fieldErrors } = this.props;
+
         let newUser = user;
         if (selectedRow) {
             newUser = Object.assign({}, user, selectedRow);
@@ -93,12 +95,11 @@ class UserTable extends Component {
         const emailKey = 'emailAddress';
         const enabledKey = 'enabled';
         const roleNames = 'roleNames';
-
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} />
+                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} errorName={passwordKey} errorValue={fieldErrors[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
                 <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
                 <DynamicSelectInput
                     name={roleNames}

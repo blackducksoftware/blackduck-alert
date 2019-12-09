@@ -105,7 +105,6 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         this.handleClose();
-        this.flipShowSwitch();
         this.props.onConfigSave();
         this.props.refreshData();
     }
@@ -167,7 +166,9 @@ class TableDisplay extends Component {
             >
                 <Modal size="lg" show={showModal} onHide={() => {
                     this.handleClose();
-                    this.flipShowSwitch();
+                    this.setState({
+                        showConfiguration: true
+                    });
                     onModalClose();
                 }}>
                     <Modal.Header closeButton>
@@ -176,7 +177,12 @@ class TableDisplay extends Component {
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={(event) => {
                             this.handleSubmit(event);
-                            onModalClose();
+                            if (!hasErrors) {
+                                this.setState({
+                                    showConfiguration: false
+                                });
+                                onModalClose();
+                            }
                         }} noValidate>
                             {this.props.newConfigFields()}
                             <ConfigButtons
@@ -185,8 +191,11 @@ class TableDisplay extends Component {
                                 includeCancel
                                 onCancelClick={() => {
                                     this.handleClose();
-                                    this.flipShowSwitch();
+                                    this.setState({
+                                        showConfiguration: false
+                                    });
                                     onModalClose();
+                                    this.updateData();
                                 }}
                                 isFixed={false}
                             />
