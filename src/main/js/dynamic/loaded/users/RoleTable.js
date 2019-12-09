@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import { createNewRole, deleteRole, fetchRoles } from 'store/actions/roles';
+import { createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
@@ -103,6 +103,24 @@ class RoleTable extends Component {
         });
     }
 
+    convertPermissionsColumn(permissions) {
+        const { permissionsColumn, descriptorName, context } = permissions;
+        const splitPermissions = permissionsColumn.split('-');
+
+        return {
+            descriptorName,
+            context,
+            [CREATE]: splitPermissions.includes('c'),
+            [DELETE_OPERATION]: splitPermissions.includes('d'),
+            [READ]: splitPermissions.includes('r'),
+            [WRITE]: splitPermissions.includes('w'),
+            [EXECUTE]: splitPermissions.includes('x'),
+            [UPLOAD_READ]: splitPermissions.includes('ur'),
+            [UPLOAD_WRITE]: splitPermissions.includes('uw'),
+            [UPLOAD_DELETE]: splitPermissions.includes('ud')
+        };
+    }
+
     createDescriptorOptions() {
         const { descriptors } = this.props;
         const descriptorOptions = [];
@@ -139,10 +157,11 @@ class RoleTable extends Component {
     }
 
     createPermissionsModal(selectedRow) {
-        const { permissions } = this.state.role;
-        let newPermissions = permissions;
+        const { permissionsData } = this.state;
+        let newPermissions = permissionsData;
         if (selectedRow) {
-            newPermissions = Object.assign({}, permissions, selectedRow);
+            const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+            newPermissions = Object.assign({}, parsedPermissions, permissionsData);
         }
 
         return (
@@ -174,10 +193,6 @@ class RoleTable extends Component {
                 permissionsData: {}
             });
         }
-    }
-
-    onUpdatePermissions() {
-
     }
 
     onDeletePermissions(permissionsToDelete) {
@@ -216,6 +231,8 @@ class RoleTable extends Component {
 
     onSave() {
         const { role } = this.state;
+        console.log('Save');
+        console.log(role);
         this.props.createRole(role);
         this.setState({
             role: {
@@ -226,7 +243,16 @@ class RoleTable extends Component {
     }
 
     onUpdate() {
-
+        const { role } = this.state;
+        console.log('Update');
+        console.log(role);
+        this.props.updateRole(role);
+        this.setState({
+            role: {
+                permissions: []
+            }
+        });
+        this.retrieveData();
     }
 
     onDelete(rolesToDelete) {
@@ -269,7 +295,7 @@ class RoleTable extends Component {
                     autoRefresh={false}
                     tableRefresh={false}
                     onConfigSave={this.onSavePermissions}
-                    onConfigUpdate={this.onUpdatePermissions}
+                    onConfigUpdate={this.onSavePermissions}
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
                     newConfigFields={this.createPermissionsModal}
@@ -325,6 +351,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     createRole: role => dispatch(createNewRole(role)),
+    updateRole: role => dispatch(updateRole(role)),
     deleteRole: rolename => dispatch(deleteRole(rolename)),
     getRoles: () => dispatch(fetchRoles())
 });

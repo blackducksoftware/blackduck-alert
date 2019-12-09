@@ -78,7 +78,10 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
-                    this.flipShowSwitch()
+                    this.flipShowSwitch();
+                    this.setState({
+                        modificationState: MODIFICATION_STATE.CREATE
+                    });
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     {this.props.tableNewButtonLabel}
@@ -112,8 +115,8 @@ class TableDisplay extends Component {
         const { modificationState } = this.state;
         if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
             this.props.onConfigSave();
-        } else if (MODIFICATION_STATE.COPY === modificationState) {
-            this.prop.onConfigUpdate();
+        } else if (MODIFICATION_STATE.EDIT === modificationState) {
+            this.props.onConfigUpdate();
         }
         this.props.refreshData();
     }
@@ -154,11 +157,6 @@ class TableDisplay extends Component {
     }
 
     createInsertModal(onModalClose) {
-        if (modificationState !== MODIFICATION_STATE.CREATE) {
-            this.setState({
-                modificationState: MODIFICATION_STATE.CREATE
-            })
-        }
         return (
             <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                 this.handleClose();

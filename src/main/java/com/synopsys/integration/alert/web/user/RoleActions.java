@@ -87,6 +87,14 @@ public class RoleActions {
         return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
     }
 
+    public UserRoleModel updateRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException {
+        String roleName = rolePermissionModel.getRoleName();
+        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
+        return new UserRoleModel(roleName, true, updatedPermissionsMatrixModel);
+    }
+
     public void deleteRole(String roleName) throws AlertDatabaseConstraintException, AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);

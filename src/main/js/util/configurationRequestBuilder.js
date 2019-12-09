@@ -71,6 +71,19 @@ export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldMod
     });
 }
 
+export function createUpdateWithoutIdRequest(apiUrl, csrfToken, model) {
+    const url = `${apiUrl}`;
+    return fetch(url, {
+        credentials: 'same-origin',
+        method: 'PUT',
+        body: JSON.stringify(model),
+        headers: {
+            'content-type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        }
+    });
+}
+
 export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
     let url = apiUrl;
     if (configurationId) {

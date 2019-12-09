@@ -140,6 +140,37 @@ export function createNewRole(roleName) {
     };
 }
 
+export function updateRole(role) {
+    return (dispatch, getState) => {
+        dispatch(savingRole());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createUpdateWithoutIdRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(savedRole());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(saveRoleError(data.message));
+                            case 401:
+                                dispatch(saveRoleError(data.message));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            case 412:
+                                return dispatch(saveRoleError(data.message));
+                            default: {
+                                return dispatch(saveRoleError(data.message, null));
+                            }
+                        }
+                    });
+            }
+        }).catch(console.error);
+    };
+}
+
 export function deleteRole(roleName) {
     return (dispatch, getState) => {
         dispatch(deletingRole());
