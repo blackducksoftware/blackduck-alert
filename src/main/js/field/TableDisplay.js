@@ -31,6 +31,7 @@ class TableDisplay extends Component {
         this.editButtonClick = this.editButtonClick.bind(this);
         this.copyButtonClicked = this.copyButtonClicked.bind(this);
         this.copyButtonClick = this.copyButtonClick.bind(this);
+        this.isShowModal = this.isShowModal.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -117,13 +118,14 @@ class TableDisplay extends Component {
 
     createEditModal() {
         const { currentRowSelected } = this.state;
+        const showModal = currentRowSelected || this.isShowModal();
         return (
             <div onKeyDown={e => e.stopPropagation()}
                  onClick={e => e.stopPropagation()}
                  onFocus={e => e.stopPropagation()}
                  onMouseOver={e => e.stopPropagation()}
             >
-                <Modal size="lg" show={currentRowSelected} onHide={() => {
+                <Modal size="lg" show={showModal} onHide={() => {
                     this.handleClose();
                 }}>
                     <Modal.Header closeButton>
@@ -150,24 +152,23 @@ class TableDisplay extends Component {
         );
     }
 
-    createInsertModal(onModalClose) {
+    isShowModal() {
         const fieldErrorKeys = Object.keys(this.props.fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
-        const showModal = this.state.showConfiguration || hasErrors;
-        // console.log("fieldErrorKeys", fieldErrorKeys);
-        // console.log("hasErrors", hasErrors);
-        // console.log("ShowModal", showModal);
-        // TODO: fix the toggle of the fields
+        return this.state.showConfiguration || hasErrors;
+    }
+
+    createInsertModal(onModalClose) {
         return (
             <div onKeyDown={e => e.stopPropagation()}
                  onClick={e => e.stopPropagation()}
                  onFocus={e => e.stopPropagation()}
                  onMouseOver={e => e.stopPropagation()}
             >
-                <Modal size="lg" show={showModal} onHide={() => {
+                <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                     this.handleClose();
                     this.setState({
-                        showConfiguration: true
+                        showConfiguration: false
                     });
                     onModalClose();
                 }}>
@@ -177,12 +178,10 @@ class TableDisplay extends Component {
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={(event) => {
                             this.handleSubmit(event);
-                            if (!hasErrors) {
-                                this.setState({
-                                    showConfiguration: false
-                                });
-                                onModalClose();
-                            }
+                            this.setState({
+                                showConfiguration: false
+                            });
+                            onModalClose();
                         }} noValidate>
                             {this.props.newConfigFields()}
                             <ConfigButtons

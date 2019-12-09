@@ -1,5 +1,6 @@
 import {
     SERIALIZE,
+    USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
@@ -77,6 +78,11 @@ const roles = (state = initialState, action) => {
                 inProgress: true,
                 deleteSuccess: false
             });
+        case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
+            return Object.assign({}, state, {
+                fieldErrors: {}
+            });
+        }
         case SERIALIZE:
             return initialState;
 

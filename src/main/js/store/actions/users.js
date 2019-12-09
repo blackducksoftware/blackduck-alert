@@ -1,4 +1,5 @@
 import {
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -71,6 +72,12 @@ function deletingUserError({ message, errors }) {
         userDeleteError: message,
         errors
     };
+}
+
+function clearFieldErrors() {
+    return {
+        type: USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS
+    }
 }
 
 export function fetchUsers() {
@@ -171,5 +178,11 @@ export function deleteUser(userName) {
             }
         }).then(() => dispatch(fetchUsers()))
             .catch(console.error);
+    };
+}
+
+export function clearUserFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

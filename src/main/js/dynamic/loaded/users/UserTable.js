@@ -5,7 +5,7 @@ import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { connect } from 'react-redux';
-import { createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
+import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 
@@ -18,6 +18,7 @@ class UserTable extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
         this.onDelete = this.onDelete.bind(this);
@@ -74,6 +75,10 @@ class UserTable extends Component {
         this.retrieveData();
     }
 
+    onConfigClose() {
+        this.props.clearFieldErrors()
+    }
+
     retrieveRoles() {
         return this.props.roles.map(role => {
             const rolename = role.roleName;
@@ -126,6 +131,7 @@ class UserTable extends Component {
                         modalTitle="User"
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
+                        onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
                         data={this.props.users}
                         columns={this.createColumns()}
@@ -161,7 +167,8 @@ const mapDispatchToProps = dispatch => ({
     createUser: user => dispatch(createNewUser(user)),
     deleteUser: username => dispatch(deleteUser(username)),
     getUsers: () => dispatch(fetchUsers()),
-    getRoles: () => dispatch(fetchRoles())
+    getRoles: () => dispatch(fetchRoles()),
+    clearFieldErrors: () => dispatch(clearUserFieldErrors())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserTable);

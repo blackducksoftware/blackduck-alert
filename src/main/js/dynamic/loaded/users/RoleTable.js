@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import { createNewRole, deleteRole, fetchRoles } from 'store/actions/roles';
+import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles } from 'store/actions/roles';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
@@ -29,6 +29,7 @@ class RoleTable extends Component {
         this.handlePermissionsChange = this.handlePermissionsChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.createPermissionsModal = this.createPermissionsModal.bind(this);
         this.retrievePermissionsData = this.retrievePermissionsData.bind(this);
@@ -230,6 +231,10 @@ class RoleTable extends Component {
         this.retrieveData();
     }
 
+    onConfigClose() {
+        this.props.clearFieldErrors()
+    }
+
     onRoleClose() {
         this.setState({
             role: {
@@ -322,7 +327,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     createRole: role => dispatch(createNewRole(role)),
     deleteRole: rolename => dispatch(deleteRole(rolename)),
-    getRoles: () => dispatch(fetchRoles())
+    getRoles: () => dispatch(fetchRoles()),
+    clearFieldErrors: () => dispatch(clearRoleFieldErrors())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoleTable);

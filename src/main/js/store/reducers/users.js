@@ -1,5 +1,6 @@
 import {
     SERIALIZE,
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -77,6 +78,11 @@ const users = (state = initialState, action) => {
                 inProgress: true,
                 deleteSuccess: false
             });
+        case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
+            return Object.assign({}, state, {
+                fieldErrors: {}
+            });
+        }
         case SERIALIZE:
             return initialState;
 

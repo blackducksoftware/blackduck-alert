@@ -1,4 +1,5 @@
 import {
+    USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
@@ -70,6 +71,12 @@ function deletingRoleError({ message, errors }) {
         roleDeleteError: message,
         errors
     };
+}
+
+function clearFieldErrors() {
+    return {
+        type: USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS
+    }
 }
 
 export function fetchRoles() {
@@ -172,3 +179,9 @@ export function deleteRole(roleName) {
             .catch(console.error);
     };
 }
+
+export function clearRoleFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
+    }
+};
