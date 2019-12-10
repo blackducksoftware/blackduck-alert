@@ -100,10 +100,12 @@ class UserTable extends Component {
         const emailKey = 'emailAddress';
         const enabledKey = 'enabled';
         const roleNames = 'roleNames';
+        const passwordSetKey = 'passwordSet';
         return (
             <div>
                 <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} errorName={passwordKey} errorValue={fieldErrors[passwordKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} isSet={newUser[passwordSetKey]} errorName={passwordKey}
+                               errorValue={fieldErrors[passwordKey]} />
                 <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
                 <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
                 <DynamicSelectInput
