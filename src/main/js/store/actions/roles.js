@@ -136,7 +136,6 @@ export function createNewRole(roleName) {
                                 dispatch(saveRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 400:
-                            case 412:
                             default: {
                                 return dispatch(saveRoleError(data));
                             }
@@ -164,7 +163,6 @@ export function deleteRole(roleName) {
                                 dispatch(deletingRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 400:
-                            case 412:
                             default: {
                                 return dispatch(deletingRoleError(data));
                             }

@@ -123,7 +123,7 @@ export function createNewUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, '', user);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
@@ -137,7 +137,6 @@ export function createNewUser(user) {
                                 dispatch(saveUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 400:
-                            case 412:
                             default: {
                                 return dispatch(saveUserError(data));
                             }
@@ -165,7 +164,6 @@ export function deleteUser(userName) {
                                 dispatch(deletingUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 400:
-                            case 412:
                             default: {
                                 return dispatch(deletingUserError(data));
                             }
