@@ -157,8 +157,8 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isPresent()) {
             UserEntity userEntity = optionalUser.get();
-            assignRoles(userEntity.getUserName(), Set.of());
             if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
+                assignRoles(userEntity.getUserName(), Set.of());
                 userRepository.delete(userEntity);
             } else {
                 throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userName));
