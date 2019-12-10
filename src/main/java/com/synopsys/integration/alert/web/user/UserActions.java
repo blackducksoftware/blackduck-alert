@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -83,7 +84,10 @@ public class UserActions {
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
-        Collection<UserRoleModel> roleNames = userConfig.getRoleNames().stream().map(UserRoleModel::of).collect(Collectors.toList());
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                  .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                  .collect(Collectors.toList());
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
         Long userId = userModel.getId();
         authorizationUtility.updateUserRoles(userId, roleNames);
