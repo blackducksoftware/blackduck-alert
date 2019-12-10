@@ -132,13 +132,11 @@ export function createNewRole(roleName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(saveRoleError(data));
                             case 401:
                                 dispatch(saveRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
                             case 412:
-                                return dispatch(saveRoleError(data));
                             default: {
                                 return dispatch(saveRoleError(data));
                             }
@@ -162,13 +160,11 @@ export function deleteRole(roleName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(deletingRoleError(data));
                             case 401:
                                 dispatch(deletingRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
                             case 412:
-                                return dispatch(deletingRoleError(data));
                             default: {
                                 return dispatch(deletingRoleError(data));
                             }

@@ -133,13 +133,11 @@ export function createNewUser(user) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(saveUserError(data));
                             case 401:
                                 dispatch(saveUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
                             case 412:
-                                return dispatch(saveUserError(data));
                             default: {
                                 return dispatch(saveUserError(data));
                             }
@@ -163,13 +161,11 @@ export function deleteUser(userName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(deletingUserError(data));
                             case 401:
                                 dispatch(deletingUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
                             case 412:
-                                return dispatch(deletingUserError(data));
                             default: {
                                 return dispatch(deletingUserError(data));
                             }
