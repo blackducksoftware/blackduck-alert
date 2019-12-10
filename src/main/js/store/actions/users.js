@@ -123,7 +123,7 @@ export function createNewUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, '', user);
+        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
