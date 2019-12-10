@@ -1,4 +1,5 @@
 import {
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -44,10 +45,12 @@ function savedUser() {
     };
 }
 
-function saveUserError(message) {
+function saveUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
-        userSaveError: message
+        userSaveError: message,
+        errors
+
     };
 }
 
@@ -63,11 +66,18 @@ function deletedUser() {
     };
 }
 
-function deletingUserError(message) {
+function deletingUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
-        userDeleteError: message
+        userDeleteError: message,
+        errors
     };
+}
+
+function clearFieldErrors() {
+    return {
+        type: USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS
+    }
 }
 
 export function fetchUsers() {
@@ -123,20 +133,18 @@ export function createNewUser(user) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(saveUserError(data.message));
                             case 401:
-                                dispatch(saveUserError(data.message));
+                                dispatch(saveUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(saveUserError(data.message));
+                            case 400:
                             default: {
-                                return dispatch(saveUserError(data.message, null));
+                                return dispatch(saveUserError(data));
                             }
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchUsers()))
+            .catch(console.error);
     };
 }
 
@@ -152,19 +160,23 @@ export function deleteUser(userName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(deletingUserError(data.message));
                             case 401:
-                                dispatch(deletingUserError(data.message));
+                                dispatch(deletingUserError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(deletingUserError(data.message));
+                            case 400:
                             default: {
-                                return dispatch(deletingUserError(data.message, null));
+                                return dispatch(deletingUserError(data));
                             }
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchUsers()))
+            .catch(console.error);
+    };
+}
+
+export function clearUserFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

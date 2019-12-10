@@ -111,15 +111,17 @@ public class UserActions {
     }
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
+        // converting to an object to return to the client; remove the password field.
         return new UserConfig(
             userModel.getName(),
-            userModel.getPassword(),
+            null,
             userModel.getEmailAddress(),
             userModel.getRoleNames(),
             userModel.isExpired(),
             userModel.isLocked(),
             userModel.isPasswordExpired(),
-            userModel.isEnabled());
+            userModel.isEnabled(),
+            StringUtils.isNotBlank(userModel.getPassword()));
     }
 
     private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
