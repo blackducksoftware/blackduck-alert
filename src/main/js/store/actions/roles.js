@@ -161,15 +161,12 @@ export function updateRole(role) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(saveRoleError(data.message));
                             case 401:
-                                dispatch(saveRoleError(data.message));
+                                dispatch(saveRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(saveRoleError(data.message));
+                            case 400:
                             default: {
-                                return dispatch(saveRoleError(data.message, null));
+                                return dispatch(saveRoleError(data));
                             }
                         }
                     });
