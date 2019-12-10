@@ -3,19 +3,8 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable from "dynamic/loaded/users/PermissionTable";
+import PermissionTable from 'dynamic/loaded/users/PermissionTable';
 import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
-
-const DESCRIPTOR_NAME = "descriptorName";
-const CONTEXT = "context";
-const CREATE = "create";
-const DELETE_OPERATION = "delete";
-const READ = "read";
-const WRITE = "write";
-const EXECUTE = "execute";
-const UPLOAD_READ = "uploadRead";
-const UPLOAD_WRITE = "uploadWrite";
-const UPLOAD_DELETE = "uploadDelete";
 
 class RoleTable extends Component {
     constructor(props) {
@@ -30,6 +19,7 @@ class RoleTable extends Component {
         this.onRoleClose = this.onRoleClose.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
         this.updatePermissions = this.updatePermissions.bind(this);
+        this.savePermissions = this.savePermissions.bind(this);
 
         this.state = {
             role: {
@@ -103,10 +93,23 @@ class RoleTable extends Component {
     updatePermissions(permission) {
         const { role } = this.state;
         const { permissions } = role;
+        const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.descriptorName === permission.descriptorName && listPermission.context === permission.context);
+        if (matchingPermissionIndex > -1) {
+            permissions[matchingPermissionIndex] = permission;
+            role.permissions = permissions;
+            this.setState({
+                role: role
+            });
+        }
+    }
+
+    savePermissions(permission) {
+        const { role } = this.state;
+        const { permissions } = role;
         permissions.push(permission);
         role.permissions = permissions;
         this.setState({
-            role
+            role: role
         });
     }
 
@@ -115,6 +118,11 @@ class RoleTable extends Component {
         let newRole = role;
         if (selectedRow) {
             newRole = Object.assign({}, role, selectedRow);
+            if (role.roleName !== newRole.roleName) {
+                this.setState({
+                    role: newRole
+                });
+            }
         }
 
         const roleNameKey = 'roleName';
@@ -125,7 +133,7 @@ class RoleTable extends Component {
         return (
             <div>
                 <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
-                <PermissionTable data={newRole.permissions} updateRole={this.updatePermissions} descriptors={this.props.descriptors} canCreate={canCreate} canDelete={canDelete} />
+                <PermissionTable data={newRole.permissions} updateRole={this.updatePermissions} saveRole={this.savePermissions} descriptors={this.props.descriptors} canCreate={canCreate} canDelete={canDelete} />
             </div>
         );
     }

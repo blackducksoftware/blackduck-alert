@@ -27,6 +27,7 @@ class PermissionTable extends Component {
         this.onSavePermissions = this.onSavePermissions.bind(this);
         this.onDeletePermissions = this.onDeletePermissions.bind(this);
         this.onPermissionsClose = this.onPermissionsClose.bind(this);
+        this.onUpdatePermissions = this.onUpdatePermissions.bind(this);
 
         this.state = {
             permissionsData: {}
@@ -42,10 +43,6 @@ class PermissionTable extends Component {
         this.setState({
             permissionsData: newPermissions
         });
-    }
-
-    componentDidUpdate() {
-
     }
 
     createPermissionsColumns() {
@@ -71,9 +68,6 @@ class PermissionTable extends Component {
         if (!data) {
             return [];
         }
-
-        // const missingPermissions = existingPermissions.filter(permission => !data.includes(permission));
-        // data.push(...missingPermissions);
 
         return data.map(permission => {
             const permissionShorthand = [];
@@ -147,12 +141,30 @@ class PermissionTable extends Component {
         });
     }
 
+    isMatchingPermissions(first, second) {
+        return first.descriptorName === second.descriptorName &&
+            first.context === second.context &&
+            first[CREATE] === second[CREATE] &&
+            first[DELETE_OPERATION] === second[DELETE_OPERATION] &&
+            first[READ] === second[READ] &&
+            first[WRITE] === second[WRITE] &&
+            first[EXECUTE] === second[EXECUTE] &&
+            first[UPLOAD_READ] === second[UPLOAD_READ] &&
+            first[UPLOAD_DELETE] === second[UPLOAD_DELETE] &&
+            first[UPLOAD_WRITE] === second[UPLOAD_WRITE];
+    }
+
     createPermissionsModal(selectedRow) {
         const { permissionsData } = this.state;
         let newPermissions = permissionsData;
         if (selectedRow) {
             const parsedPermissions = this.convertPermissionsColumn(selectedRow);
             newPermissions = Object.assign({}, parsedPermissions, permissionsData);
+            if (!this.isMatchingPermissions(permissionsData, newPermissions)) {
+                this.setState({
+                    permissionsData: newPermissions
+                });
+            }
         }
 
         return (
@@ -177,13 +189,22 @@ class PermissionTable extends Component {
     onSavePermissions() {
         const { permissionsData } = this.state;
         if (!permissionsData[DESCRIPTOR_NAME] || !permissionsData[CONTEXT]) {
-            // Create error message
+            console.log('ERROR: Did not select Descriptor name and context');
         } else {
-            this.props.updateRole(permissionsData);
+            const { permissionsData } = this.state;
+            this.props.saveRole(permissionsData);
             this.setState({
                 permissionsData: {}
             });
         }
+    }
+
+    onUpdatePermissions() {
+        const { permissionsData } = this.state;
+        this.props.updateRole(permissionsData);
+        this.setState({
+            permissionsData: {}
+        });
     }
 
     onDeletePermissions(permissionsToDelete) {
@@ -211,7 +232,7 @@ class PermissionTable extends Component {
                     autoRefresh={false}
                     tableRefresh={false}
                     onConfigSave={this.onSavePermissions}
-                    onConfigUpdate={this.onSavePermissions}
+                    onConfigUpdate={this.onUpdatePermissions}
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
                     newConfigFields={this.createPermissionsModal}
@@ -229,6 +250,7 @@ class PermissionTable extends Component {
 PermissionTable.propTypes = {
     data: PropTypes.array.isRequired,
     updateRole: PropTypes.func.isRequired,
+    saveRole: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array
