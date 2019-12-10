@@ -11,10 +11,24 @@ services:
     user: cfssl:root
     restart: always
     mem_limit: 512M
+  alertdb:
+    image: blackducksoftware/alert-database:VERSION_TOKEN
+    ports: ['5432']
+    hostname: alertdb
+    restart: always
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    environment:
+      PGDATA: /opt/blackduck/alert/alert-config/data/postgres/alertdb
+      POSTGRES_DB: alertdb
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: blackduck
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
-    links: [cfssl]
+    links: [cfssl, alertdb]
+    depends_on: [alertdb]
+    environment:
+      WAIT_HOSTS: alertdb:5432
     env_file: [blackduck-alert.env]
     user: alert:root
     healthcheck:

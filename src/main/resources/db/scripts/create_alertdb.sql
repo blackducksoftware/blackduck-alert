@@ -1,1 +1,0 @@
-CREATE DATABASE alertdb WITH OWNER = sa;

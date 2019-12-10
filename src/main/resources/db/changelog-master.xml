@@ -26,4 +26,10 @@
     <include file="changelog/alert/5.1.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/alert/5.2.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/alert/5.3.0/changelog.xml" relativeToChangelogFile="true"/>
+    <!--
+        DEV NOTE:
+        No changelogs for 6.0.0 or newer should be added here.
+        Patches for versions before 6.0.0 should be added here
+        as well as src/main/resources/db/changelog/alert/changelog-postgres-master.xml.
+    -->
 </databaseChangeLog>

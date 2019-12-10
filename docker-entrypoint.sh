@@ -446,7 +446,7 @@ else
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
-    	manageRootCertificate
+    	# FIXME manageRootCertificate
     else
         manageSelfSignedServerCertificate
     fi
@@ -461,8 +461,8 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
-  postgresPrepareDB
-  postgresPrepare600Upgrade
+  # FIXME postgresPrepareDB
+  # FIXME postgresPrepare600Upgrade
 
   if [ -f "$truststoreFile" ];
   then

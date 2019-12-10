@@ -1,6 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.4 as docker-common
 FROM adoptopenjdk/openjdk11:alpine-slim
-FROM postgres:11.6-alpine
 
 ARG VERSION
 
