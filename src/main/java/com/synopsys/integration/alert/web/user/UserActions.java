@@ -84,13 +84,16 @@ public class UserActions {
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
-        Set<String> configuredRoleNames = userConfig.getRoleNames();
-        Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
-                                                  .filter(role -> configuredRoleNames.contains(role.getName()))
-                                                  .collect(Collectors.toList());
+
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
         Long userId = userModel.getId();
-        authorizationUtility.updateUserRoles(userId, roleNames);
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
+            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                      .collect(Collectors.toList());
+            authorizationUtility.updateUserRoles(userId, roleNames);
+        }
         userModel = userAccessor.getUser(userId).orElse(userModel);
         return convertToCustomUserRoleModel(userModel);
     }
@@ -101,6 +104,16 @@ public class UserActions {
             updatePassword(userConfig.getUsername(), userConfig.getPassword());
         }
         updateEmail(userConfig.getUsername(), userConfig.getEmailAddress());
+
+        Optional<UserModel> userModel = userAccessor.getUser(userConfig.getUsername());
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
+            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                      .collect(Collectors.toList());
+            authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+        }
+
         return userAccessor.getUser(userConfig.getUsername())
                    .map(this::convertToCustomUserRoleModel)
                    .orElse(userConfig);

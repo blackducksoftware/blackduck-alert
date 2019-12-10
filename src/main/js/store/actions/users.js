@@ -148,6 +148,34 @@ export function createNewUser(user) {
     };
 }
 
+export function updateUser(user) {
+    return (dispatch, getState) => {
+        dispatch(savingUser());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createUpdateWithoutIdRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(savedUser());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 401:
+                                dispatch(saveUserError(data));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
+                            default: {
+                                return dispatch(saveUserError(data, null));
+                            }
+                        }
+                    });
+            }
+        }).catch(console.error);
+    };
+}
+
 export function deleteUser(userName) {
     return (dispatch, getState) => {
         dispatch(deletingUser());
