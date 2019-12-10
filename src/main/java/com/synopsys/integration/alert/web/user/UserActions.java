@@ -33,10 +33,12 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
@@ -47,9 +49,11 @@ public class UserActions {
     private static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private UserAccessor userAccessor;
+    private AuthorizationUtility authorizationUtility;
 
-    public UserActions(UserAccessor userAccessor) {
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility) {
         this.userAccessor = userAccessor;
+        this.authorizationUtility = authorizationUtility;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -67,7 +71,11 @@ public class UserActions {
         return userAccessor.getUser(userName).map(this::convertToCustomUserRoleModel);
     }
 
-    public UserConfig createUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException, AlertFieldException {
+    public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
+        String userName = userConfig.getUsername();
+        String password = userConfig.getPassword();
+        String emailAddress = userConfig.getEmailAddress();
+
         Map<String, String> fieldErrors = new HashMap<>();
         validateCreationUserName(fieldErrors, userName);
         validatePasswordLength(fieldErrors, password);
@@ -75,7 +83,11 @@ public class UserActions {
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
+        Collection<UserRoleModel> roleNames = userConfig.getRoleNames().stream().map(UserRoleModel::of).collect(Collectors.toList());
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
+        Long userId = userModel.getId();
+        authorizationUtility.updateUserRoles(userId, roleNames);
+        userModel = userAccessor.getUser(userId).orElse(userModel);
         return convertToCustomUserRoleModel(userModel);
     }
 
