@@ -5,16 +5,19 @@ import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 
-const DESCRIPTOR_NAME = "descriptorName";
-const CONTEXT = "context";
-const CREATE = "create";
-const DELETE_OPERATION = "delete";
-const READ = "read";
-const WRITE = "write";
-const EXECUTE = "execute";
-const UPLOAD_READ = "uploadRead";
-const UPLOAD_WRITE = "uploadWrite";
-const UPLOAD_DELETE = "uploadDelete";
+export const PERMISSIONS_TABLE = {
+    DESCRIPTOR_NAME: "descriptorName",
+    CONTEXT: "context",
+    CREATE: "create",
+    DELETE_OPERATION: "delete",
+    READ: "read",
+    WRITE: "write",
+    EXECUTE: "execute",
+    UPLOAD_READ: "uploadRead",
+    UPLOAD_WRITE: "uploadWrite",
+    UPLOAD_DELETE: "uploadDelete"
+}
+
 
 class PermissionTable extends Component {
     constructor(props) {
@@ -48,11 +51,11 @@ class PermissionTable extends Component {
     createPermissionsColumns() {
         return [
             {
-                header: 'descriptorName',
+                header: PERMISSIONS_TABLE.DESCRIPTOR_NAME,
                 headerLabel: 'Descriptor',
                 isKey: true
             }, {
-                header: 'context',
+                header: PERMISSIONS_TABLE.CONTEXT,
                 headerLabel: 'Context',
                 isKey: false
             }, {
@@ -71,18 +74,18 @@ class PermissionTable extends Component {
 
         return data.map(permission => {
             const permissionShorthand = [];
-            permission[CREATE] && permissionShorthand.push('c');
-            permission[DELETE_OPERATION] && permissionShorthand.push('d');
-            permission[READ] && permissionShorthand.push('r');
-            permission[WRITE] && permissionShorthand.push('w');
-            permission[EXECUTE] && permissionShorthand.push('x');
-            permission[UPLOAD_READ] && permissionShorthand.push('ur');
-            permission[UPLOAD_WRITE] && permissionShorthand.push('uw');
-            permission[UPLOAD_DELETE] && permissionShorthand.push('ud');
+            permission[PERMISSIONS_TABLE.CREATE] && permissionShorthand.push('c');
+            permission[PERMISSIONS_TABLE.DELETE_OPERATION] && permissionShorthand.push('d');
+            permission[PERMISSIONS_TABLE.READ] && permissionShorthand.push('r');
+            permission[PERMISSIONS_TABLE.WRITE] && permissionShorthand.push('w');
+            permission[PERMISSIONS_TABLE.EXECUTE] && permissionShorthand.push('x');
+            permission[PERMISSIONS_TABLE.UPLOAD_READ] && permissionShorthand.push('ur');
+            permission[PERMISSIONS_TABLE.UPLOAD_WRITE] && permissionShorthand.push('uw');
+            permission[PERMISSIONS_TABLE.UPLOAD_DELETE] && permissionShorthand.push('ud');
 
             return {
-                descriptorName: permission.descriptorName,
-                context: permission.context,
+                [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME],
+                [PERMISSIONS_TABLE.CONTEXT]: permission[PERMISSIONS_TABLE.CONTEXT],
                 permissionsColumn: permissionShorthand.join('-')
             };
         });
@@ -95,14 +98,14 @@ class PermissionTable extends Component {
         return {
             descriptorName,
             context,
-            [CREATE]: splitPermissions.includes('c'),
-            [DELETE_OPERATION]: splitPermissions.includes('d'),
-            [READ]: splitPermissions.includes('r'),
-            [WRITE]: splitPermissions.includes('w'),
-            [EXECUTE]: splitPermissions.includes('x'),
-            [UPLOAD_READ]: splitPermissions.includes('ur'),
-            [UPLOAD_WRITE]: splitPermissions.includes('uw'),
-            [UPLOAD_DELETE]: splitPermissions.includes('ud')
+            [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
+            [PERMISSIONS_TABLE.DELETE_OPERATION]: splitPermissions.includes('d'),
+            [PERMISSIONS_TABLE.READ]: splitPermissions.includes('r'),
+            [PERMISSIONS_TABLE.WRITE]: splitPermissions.includes('w'),
+            [PERMISSIONS_TABLE.EXECUTE]: splitPermissions.includes('x'),
+            [PERMISSIONS_TABLE.UPLOAD_READ]: splitPermissions.includes('ur'),
+            [PERMISSIONS_TABLE.UPLOAD_WRITE]: splitPermissions.includes('uw'),
+            [PERMISSIONS_TABLE.UPLOAD_DELETE]: splitPermissions.includes('ud')
         };
     }
 
@@ -142,16 +145,16 @@ class PermissionTable extends Component {
     }
 
     isMatchingPermissions(first, second) {
-        return first.descriptorName === second.descriptorName &&
-            first.context === second.context &&
-            first[CREATE] === second[CREATE] &&
-            first[DELETE_OPERATION] === second[DELETE_OPERATION] &&
-            first[READ] === second[READ] &&
-            first[WRITE] === second[WRITE] &&
-            first[EXECUTE] === second[EXECUTE] &&
-            first[UPLOAD_READ] === second[UPLOAD_READ] &&
-            first[UPLOAD_DELETE] === second[UPLOAD_DELETE] &&
-            first[UPLOAD_WRITE] === second[UPLOAD_WRITE];
+        return first[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === second[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+            first[PERMISSIONS_TABLE.CONTEXT] === second[PERMISSIONS_TABLE.CONTEXT] &&
+            first[PERMISSIONS_TABLE.CREATE] === second[PERMISSIONS_TABLE.CREATE] &&
+            first[PERMISSIONS_TABLE.DELETE_OPERATION] === second[PERMISSIONS_TABLE.DELETE_OPERATION] &&
+            first[PERMISSIONS_TABLE.READ] === second[PERMISSIONS_TABLE.READ] &&
+            first[PERMISSIONS_TABLE.WRITE] === second[PERMISSIONS_TABLE.WRITE] &&
+            first[PERMISSIONS_TABLE.EXECUTE] === second[PERMISSIONS_TABLE.EXECUTE] &&
+            first[PERMISSIONS_TABLE.UPLOAD_READ] === second[PERMISSIONS_TABLE.UPLOAD_READ] &&
+            first[PERMISSIONS_TABLE.UPLOAD_DELETE] === second[PERMISSIONS_TABLE.UPLOAD_DELETE] &&
+            first[PERMISSIONS_TABLE.UPLOAD_WRITE] === second[PERMISSIONS_TABLE.UPLOAD_WRITE];
     }
 
     createPermissionsModal(selectedRow) {
@@ -169,26 +172,31 @@ class PermissionTable extends Component {
 
         return (
             <div>
-                <DynamicSelectInput name={DESCRIPTOR_NAME} id={DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} onChange={this.handlePermissionsChange} value={newPermissions[DESCRIPTOR_NAME]} />
-                <DynamicSelectInput name={CONTEXT} id={CONTEXT} label="Context" options={this.createContextOptions()} onChange={this.handlePermissionsChange} value={newPermissions[CONTEXT]} />
-                <CheckboxInput name={CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[CREATE]} />
-                <CheckboxInput name={DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[DELETE_OPERATION]} />
-                <CheckboxInput name={READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={newPermissions[READ]} />
-                <CheckboxInput name={WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[WRITE]} />
-                <CheckboxInput name={EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[EXECUTE]} />
-                <CheckboxInput name={UPLOAD_READ} label="Upload Read" description="This permission shows or hides upload related content for the user." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[UPLOAD_READ]} />
-                <CheckboxInput name={UPLOAD_WRITE} label="Upload Write" description="Allow users to modify uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[UPLOAD_WRITE]} />
-                <CheckboxInput name={UPLOAD_DELETE} label="Upload Delete" description="Allow users to delete uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[UPLOAD_DELETE]} />
+                <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} onChange={this.handlePermissionsChange}
+                                    value={newPermissions[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
+                <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} onChange={this.handlePermissionsChange}
+                                    value={newPermissions[PERMISSIONS_TABLE.CONTEXT]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.CREATE]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.DELETE_OPERATION]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={newPermissions[PERMISSIONS_TABLE.READ]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[PERMISSIONS_TABLE.WRITE]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.EXECUTE]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_READ} label="Upload Read" description="This permission shows or hides upload related content for the user." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_READ]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_WRITE} label="Upload Write" description="Allow users to modify uploaded content with this permission." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_DELETE} label="Upload Delete" description="Allow users to delete uploaded content with this permission." onChange={this.handlePermissionsChange}
+                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_DELETE]} />
             </div>
         );
     }
 
     onSavePermissions() {
         const { permissionsData } = this.state;
-        if (!permissionsData[DESCRIPTOR_NAME] || !permissionsData[CONTEXT]) {
+        if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             console.log('ERROR: Did not select Descriptor name and context');
         } else {
             const { permissionsData } = this.state;
@@ -210,11 +218,8 @@ class PermissionTable extends Component {
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
             const { permissions } = this.state.role;
-            const newPermissions = permissions.filter(permission => !permissionsToDelete.includes(permission.descriptorName));
-            this.setState({
-                role: {
-                    permissions: newPermissions
-                }
+            permissions.filter(permission => !permissionsToDelete.includes(permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME])).forEach(permission => {
+                this.props.deleteRole(permission);
             });
         }
     }
@@ -241,7 +246,7 @@ class PermissionTable extends Component {
                     refreshData={() => null}
                     deleteButton={canDelete}
                     newButton={canCreate}
-                    sortName={DESCRIPTOR_NAME} />
+                    sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME} />
             </div>
         );
     }
@@ -251,6 +256,7 @@ PermissionTable.propTypes = {
     data: PropTypes.array.isRequired,
     updateRole: PropTypes.func.isRequired,
     saveRole: PropTypes.func.isRequired,
+    deleteRole: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array
@@ -259,6 +265,7 @@ PermissionTable.propTypes = {
 PermissionTable.defaultProps = {
     canCreate: true,
     canDelete: true,
+    descriptors: []
 };
 
 export default PermissionTable;

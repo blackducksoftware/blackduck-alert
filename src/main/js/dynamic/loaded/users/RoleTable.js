@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable from 'dynamic/loaded/users/PermissionTable';
+import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
 import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -20,6 +20,7 @@ class RoleTable extends Component {
         this.onUpdate = this.onUpdate.bind(this);
         this.updatePermissions = this.updatePermissions.bind(this);
         this.savePermissions = this.savePermissions.bind(this);
+        this.deletePermission = this.deletePermission.bind(this);
 
         this.state = {
             role: {
@@ -113,6 +114,22 @@ class RoleTable extends Component {
         });
     }
 
+    deletePermission(permission) {
+        const { role } = this.state;
+        const { permissions } = role;
+        const matchingPermissionIndex = permissions.findIndex(listPermission => {
+            return listPermission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+                listPermission[PERMISSIONS_TABLE.CONTEXT] === permission[PERMISSIONS_TABLE.CONTEXT];
+        });
+        if (matchingPermissionIndex > -1) {
+            permissions.remove(matchingPermissionIndex);
+            role.permissions = permissions;
+            this.setState({
+                role: role
+            });
+        }
+    }
+
     createModalFields(selectedRow) {
         const { role } = this.state;
         let newRole = role;
@@ -133,7 +150,8 @@ class RoleTable extends Component {
         return (
             <div>
                 <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
-                <PermissionTable data={newRole.permissions} updateRole={this.updatePermissions} saveRole={this.savePermissions} descriptors={this.props.descriptors} canCreate={canCreate} canDelete={canDelete} />
+                <PermissionTable data={newRole.permissions} updateRole={this.updatePermissions} saveRole={this.savePermissions} deleteRole={this.deletePermission} descriptors={this.props.descriptors} canCreate={canCreate}
+                                 canDelete={canDelete} />
             </div>
         );
     }

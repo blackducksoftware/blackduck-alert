@@ -85,7 +85,7 @@ public class RoleController extends BaseController {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to update role");
         }
 
-        return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");
+        return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role updated.");
     }
 
     @PostMapping
