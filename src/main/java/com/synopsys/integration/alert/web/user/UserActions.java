@@ -79,6 +79,17 @@ public class UserActions {
         return convertToCustomUserRoleModel(userModel);
     }
 
+    public UserConfig updateUser(UserConfig userConfig) throws AlertFieldException {
+        //TODO when the userId is in the user config look up the user by id and update the username.
+        if (StringUtils.isNotBlank(userConfig.getPassword())) {
+            updatePassword(userConfig.getUsername(), userConfig.getPassword());
+        }
+        updateEmail(userConfig.getUsername(), userConfig.getEmailAddress());
+        return userAccessor.getUser(userConfig.getUsername())
+                   .map(this::convertToCustomUserRoleModel)
+                   .orElse(userConfig);
+    }
+
     public void deleteUser(String userName) throws AlertDatabaseConstraintException, AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
@@ -89,7 +100,7 @@ public class UserActions {
         userAccessor.deleteUser(userName);
     }
 
-    public boolean updatePassword(String userName, String newPassword) throws AlertFieldException {
+    private boolean updatePassword(String userName, String newPassword) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         validatePasswordLength(fieldErrors, newPassword);
@@ -100,7 +111,7 @@ public class UserActions {
         return userAccessor.changeUserPassword(userName, newPassword);
     }
 
-    public boolean updateEmail(String userName, String emailAddress) throws AlertFieldException {
+    private boolean updateEmail(String userName, String emailAddress) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
