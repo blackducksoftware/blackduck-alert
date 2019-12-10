@@ -21,7 +21,6 @@ class TableDisplay extends Component {
         this.createInsertModal = this.createInsertModal.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.flipShowSwitch = this.flipShowSwitch.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -31,6 +30,7 @@ class TableDisplay extends Component {
         this.editButtonClick = this.editButtonClick.bind(this);
         this.copyButtonClicked = this.copyButtonClicked.bind(this);
         this.copyButtonClick = this.copyButtonClick.bind(this);
+        this.isShowModal = this.isShowModal.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -76,7 +76,9 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
-                    this.flipShowSwitch()
+                    this.setState({
+                        showConfiguration: true
+                    });
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     {this.props.tableNewButtonLabel}
@@ -105,76 +107,94 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         this.handleClose();
-        this.flipShowSwitch();
         this.props.onConfigSave();
         this.props.refreshData();
     }
 
-    flipShowSwitch() {
-        this.setState({
-            showConfiguration: !this.state.showConfiguration
-        });
-    }
-
     createEditModal() {
         const { currentRowSelected } = this.state;
+        const showModal = currentRowSelected || this.isShowModal();
         return (
-            <Modal size="lg" show={currentRowSelected} onHide={() => {
-                this.handleClose();
-            }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal" onSubmit={(event) => {
-                        this.handleSubmit(event);
-                    }} noValidate>
-                        {this.props.newConfigFields(currentRowSelected)}
-                        <ConfigButtons
-                            cancelId="usermanagement-cancel"
-                            submitId="usermanagement-submit"
-                            includeCancel
-                            onCancelClick={() => {
-                                this.handleClose();
-                            }}
-                            isFixed={false}
-                        />
-                    </form>
-                </Modal.Body>
-            </Modal>
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={showModal} onHide={() => {
+                    this.handleClose();
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form className="form-horizontal" onSubmit={(event) => {
+                            this.handleSubmit(event);
+                        }} noValidate>
+                            {this.props.newConfigFields(currentRowSelected)}
+                            <ConfigButtons
+                                cancelId="usermanagement-cancel"
+                                submitId="usermanagement-submit"
+                                includeCancel
+                                onCancelClick={() => {
+                                    this.handleClose();
+                                }}
+                                isFixed={false}
+                            />
+                        </form>
+                    </Modal.Body>
+                </Modal>
+            </div>
         );
+    }
+
+    isShowModal() {
+        return this.state.showConfiguration || this.props.hasFieldErrors;
     }
 
     createInsertModal(onModalClose) {
         return (
-            <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
-                this.handleClose();
-                this.flipShowSwitch();
-                onModalClose();
-            }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal" onSubmit={(event) => {
-                        this.handleSubmit(event);
-                        onModalClose();
-                    }} noValidate>
-                        {this.props.newConfigFields()}
-                        <ConfigButtons
-                            cancelId="usermanagement-cancel"
-                            submitId="usermanagement-submit"
-                            includeCancel
-                            onCancelClick={() => {
-                                this.handleClose();
-                                this.flipShowSwitch();
-                                onModalClose();
-                            }}
-                            isFixed={false}
-                        />
-                    </form>
-                </Modal.Body>
-            </Modal>
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
+                    this.handleClose();
+                    this.setState({
+                        showConfiguration: false
+                    });
+                    onModalClose();
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form className="form-horizontal" onSubmit={(event) => {
+                            this.handleSubmit(event);
+                            this.setState({
+                                showConfiguration: false
+                            });
+                            onModalClose();
+                        }} noValidate>
+                            {this.props.newConfigFields()}
+                            <ConfigButtons
+                                cancelId="usermanagement-cancel"
+                                submitId="usermanagement-submit"
+                                includeCancel
+                                onCancelClick={() => {
+                                    this.handleClose();
+                                    this.setState({
+                                        showConfiguration: false
+                                    });
+                                    onModalClose();
+                                    this.updateData();
+                                }}
+                                isFixed={false}
+                            />
+                        </form>
+                    </Modal.Body>
+                </Modal>
+            </div>
         );
     }
 
@@ -338,7 +358,8 @@ TableDisplay.propTypes = {
     tableNewButtonLabel: PropTypes.string,
     tableDeleteButtonLabel: PropTypes.string,
     tableSearchable: PropTypes.bool,
-    tableRefresh: PropTypes.bool
+    tableRefresh: PropTypes.bool,
+    hasFieldErrors: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -358,7 +379,8 @@ TableDisplay.defaultProps = {
     tableNewButtonLabel: 'New',
     tableDeleteButtonLabel: 'Delete',
     tableSearchable: true,
-    tableRefresh: true
+    tableRefresh: true,
+    hasFieldErrors: false
 };
 
 export default TableDisplay;

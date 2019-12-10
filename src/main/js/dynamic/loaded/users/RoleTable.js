@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import { createNewRole, deleteRole, fetchRoles } from 'store/actions/roles';
+import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles } from 'store/actions/roles';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
@@ -136,6 +136,7 @@ class RoleTable extends Component {
         this.setState({
             permissionsData: {}
         });
+        this.props.clearFieldErrors();
     }
 
     createPermissionsModal(selectedRow) {
@@ -236,6 +237,7 @@ class RoleTable extends Component {
                 permissions: []
             }
         });
+        this.props.clearFieldErrors();
     }
 
     createModalFields(selectedRow) {
@@ -248,11 +250,11 @@ class RoleTable extends Component {
         const roleNameKey = 'roleName';
         const roleNameValue = newRole[roleNameKey];
 
-        const { canCreate, canDelete } = this.props;
+        const { canCreate, canDelete, fieldErrors } = this.props;
 
         return (
             <div>
-                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} />
+                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
                 <TableDisplay
                     modalTitle="New Role Permissions"
                     tableNewButtonLabel="Add"
@@ -269,14 +271,16 @@ class RoleTable extends Component {
                     refreshData={() => null}
                     deleteButton={canDelete}
                     newButton={canCreate}
-                    sortName={DESCRIPTOR_NAME} />
+                    sortName={DESCRIPTOR_NAME}
+                />
             </div>
         );
     }
 
     render() {
-        const { canCreate, canDelete } = this.props;
-
+        const { canCreate, canDelete, fieldErrors } = this.props;
+        const fieldErrorKeys = Object.keys(fieldErrors);
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
             <div>
                 <div>
@@ -290,7 +294,8 @@ class RoleTable extends Component {
                         data={this.props.roles}
                         columns={this.createColumns()}
                         newButton={canCreate}
-                        deleteButton={canDelete} />
+                        deleteButton={canDelete}
+                        hasFieldErrors={hasErrors} />
                 </div>
             </div>
         );
@@ -299,24 +304,28 @@ class RoleTable extends Component {
 
 RoleTable.defaultProps = {
     canCreate: true,
-    canDelete: true
+    canDelete: true,
+    fieldErrors: {}
 };
 
 RoleTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    descriptors: PropTypes.array
+    descriptors: PropTypes.array,
+    fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     roles: state.roles.data,
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors.items,
+    fieldErrors: state.roles.fieldErrors
 });
 
 const mapDispatchToProps = dispatch => ({
     createRole: role => dispatch(createNewRole(role)),
     deleteRole: rolename => dispatch(deleteRole(rolename)),
-    getRoles: () => dispatch(fetchRoles())
+    getRoles: () => dispatch(fetchRoles()),
+    clearFieldErrors: () => dispatch(clearRoleFieldErrors())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoleTable);
