@@ -17,10 +17,10 @@ class UserTable extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
         this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
-        this.onDelete = this.onDelete.bind(this);
 
         this.state = {
             user: {},
@@ -53,14 +53,14 @@ class UserTable extends Component {
 
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
-
         this.setState({
             user: newUser
         });
     }
 
     onSave() {
-        this.props.createUser(this.state.user);
+        const { user } = this.state;
+        this.props.createUser(user);
         this.setState({
             user: {}
         });
@@ -86,11 +86,9 @@ class UserTable extends Component {
     }
 
     onConfigClose() {
-        if (this.props.fieldErrors && this.props.fieldErrors.length > 0) {
-            this.setState({
-                user: {}
-            });
-        }
+        this.setState({
+            user: {}
+        });
         this.props.clearFieldErrors()
     }
 
