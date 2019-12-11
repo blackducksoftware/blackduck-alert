@@ -84,15 +84,39 @@ public class UserActions {
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
-        Set<String> configuredRoleNames = userConfig.getRoleNames();
-        Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
-                                                  .filter(role -> configuredRoleNames.contains(role.getName()))
-                                                  .collect(Collectors.toList());
+
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
         Long userId = userModel.getId();
-        authorizationUtility.updateUserRoles(userId, roleNames);
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
+            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                      .collect(Collectors.toList());
+            authorizationUtility.updateUserRoles(userId, roleNames);
+        }
         userModel = userAccessor.getUser(userId).orElse(userModel);
         return convertToCustomUserRoleModel(userModel);
+    }
+
+    public UserConfig updateUser(UserConfig userConfig) throws AlertFieldException {
+        //TODO when the userId is in the user config look up the user by id and update the username.
+        if (StringUtils.isNotBlank(userConfig.getPassword())) {
+            updatePassword(userConfig.getUsername(), userConfig.getPassword());
+        }
+        updateEmail(userConfig.getUsername(), userConfig.getEmailAddress());
+
+        Optional<UserModel> userModel = userAccessor.getUser(userConfig.getUsername());
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
+            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                      .collect(Collectors.toList());
+            authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+        }
+
+        return userAccessor.getUser(userConfig.getUsername())
+                   .map(this::convertToCustomUserRoleModel)
+                   .orElse(userConfig);
     }
 
     public void deleteUser(String userName) throws AlertDatabaseConstraintException, AlertFieldException {
@@ -105,7 +129,7 @@ public class UserActions {
         userAccessor.deleteUser(userName);
     }
 
-    public boolean updatePassword(String userName, String newPassword) throws AlertFieldException {
+    private boolean updatePassword(String userName, String newPassword) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         validatePasswordLength(fieldErrors, newPassword);
@@ -116,7 +140,7 @@ public class UserActions {
         return userAccessor.changeUserPassword(userName, newPassword);
     }
 
-    public boolean updateEmail(String userName, String emailAddress) throws AlertFieldException {
+    private boolean updateEmail(String userName, String emailAddress) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);

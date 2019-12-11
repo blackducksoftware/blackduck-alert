@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,6 +72,20 @@ public class RoleController extends BaseController {
             return responseFactory.createForbiddenResponse();
         }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
+    }
+
+    @PutMapping
+    public ResponseEntity<String> updateRole(@RequestBody RolePermissionModel rolePermissionModel) {
+        if (!hasPermission(authorizationManager::hasWritePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
+        try {
+            roleActions.updateRole(rolePermissionModel);
+        } catch (AlertDatabaseConstraintException ex) {
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to update role");
+        }
+
+        return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role updated.");
     }
 
     @PostMapping

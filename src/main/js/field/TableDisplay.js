@@ -7,9 +7,11 @@ import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 
-const jobModificationState = {
+const MODIFICATION_STATE = {
     EDIT: 'EDIT',
-    COPY: 'COPY'
+    COPY: 'COPY',
+    CREATE: 'CREATE',
+    NONE: 'NONE'
 };
 
 class TableDisplay extends Component {
@@ -34,7 +36,7 @@ class TableDisplay extends Component {
 
         this.state = {
             currentRowSelected: null,
-            modificationState: jobModificationState.EDIT,
+            modificationState: MODIFICATION_STATE.NONE,
             showConfiguration: false,
             showDelete: false,
             rowsToDelete: []
@@ -77,6 +79,7 @@ class TableDisplay extends Component {
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
                     this.setState({
+                        modificationState: MODIFICATION_STATE.CREATE,
                         showConfiguration: true
                     });
                 }}>
@@ -99,7 +102,8 @@ class TableDisplay extends Component {
         this.props.onConfigClose();
         this.refs.table.cleanSelected();
         this.setState({
-            currentRowSelected: null
+            currentRowSelected: null,
+            modificationState: MODIFICATION_STATE.NONE
         });
     }
 
@@ -107,7 +111,12 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         this.handleClose();
-        this.props.onConfigSave();
+        const { modificationState } = this.state;
+        if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
+            this.props.onConfigSave();
+        } else if (MODIFICATION_STATE.EDIT === modificationState) {
+            this.props.onConfigUpdate();
+        }
         this.props.refreshData();
     }
 
@@ -227,7 +236,7 @@ class TableDisplay extends Component {
     editButtonClicked(currentRowSelected) {
         this.setState({
             currentRowSelected,
-            modificationState: jobModificationState.EDIT
+            modificationState: MODIFICATION_STATE.EDIT
         });
     }
 
@@ -238,7 +247,7 @@ class TableDisplay extends Component {
     copyButtonClicked(currentRowSelected) {
         this.setState({
             currentRowSelected,
-            modificationState: jobModificationState.COPY
+            modificationState: MODIFICATION_STATE.COPY
         });
     }
 
@@ -343,6 +352,7 @@ TableDisplay.propTypes = {
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
+    onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
     name: PropTypes.string,
@@ -373,6 +383,7 @@ TableDisplay.defaultProps = {
     deleteButton: true,
     inProgress: false,
     onConfigSave: () => null,
+    onConfigUpdate: () => null,
     onConfigDelete: () => null,
     onConfigClose: () => null,
     modalTitle: 'New',

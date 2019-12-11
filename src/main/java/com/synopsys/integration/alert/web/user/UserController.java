@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,6 +90,20 @@ public class UserController extends BaseController {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
             return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
+        } catch (AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
+        }
+
+    }
+
+    @PutMapping
+    public ResponseEntity<String> updateUser(@RequestBody UserConfig userModel) {
+        if (!hasPermission(authorizationManager::hasWritePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
+        try {
+            userActions.updateUser(userModel);
+            return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
