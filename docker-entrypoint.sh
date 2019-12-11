@@ -397,13 +397,11 @@ validatePostgresDatabase() {
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary."
-    # FIXME query for a count of values in the context table
     if psql alertdb -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
         echo "The database is initialized"
     else
         echo "Initializing the database to 5.3.0 state to be upgraded to 6.0.0"
-
         if [ -f $alertDatabaseDir/alertdb.mv.db ];
         then
             echo "A previous database existed"
@@ -456,8 +454,8 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
-  # FIXME validatePostgresDatabase
-  # FIXME postgresPrepare600Upgrade
+  validatePostgresDatabase
+  postgresPrepare600Upgrade
 
   if [ -f "$truststoreFile" ];
   then

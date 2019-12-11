@@ -1,4 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS ALERT;
+CREATE SCHEMA IF NOT EXISTS PUBLIC;
 
 create table if not exists ALERT.PROVIDER_PROJECTS
 (
@@ -276,4 +277,32 @@ create table if not exists ALERT.AUDIT_NOTIFICATION_RELATION
     constraint FK_AUDIT_NOTIFICATION_ID
         foreign key (NOTIFICATION_ID) references ALERT.RAW_NOTIFICATION_CONTENT (ID)
             on delete cascade
+);
+
+create table if not exists PUBLIC.DATABASECHANGELOGLOCK
+(
+    ID          INTEGER not null,
+    LOCKED      BOOLEAN not null,
+    LOCKGRANTED TIMESTAMP,
+    LOCKEDBY    VARCHAR(255),
+    constraint PK_DATABASECHANGELOGLOCK
+        primary key (ID)
+);
+
+create table if not exists PUBLIC.DATABASECHANGELOG
+(
+    ID            VARCHAR(255) not null,
+    AUTHOR        VARCHAR(255) not null,
+    FILENAME      VARCHAR(255) not null,
+    DATEEXECUTED  TIMESTAMP    not null,
+    ORDEREXECUTED INTEGER      not null,
+    EXECTYPE      VARCHAR(10)  not null,
+    MD5SUM        VARCHAR(35),
+    DESCRIPTION   VARCHAR(255),
+    COMMENTS      VARCHAR(255),
+    TAG           VARCHAR(255),
+    LIQUIBASE     VARCHAR(20),
+    CONTEXTS      VARCHAR(255),
+    LABELS        VARCHAR(255),
+    DEPLOYMENT_ID VARCHAR(10)
 );
