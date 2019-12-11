@@ -134,7 +134,8 @@ class RoleTable extends Component {
         const { role } = this.state;
         let newRole = role;
         if (selectedRow) {
-            newRole = Object.assign({}, role, selectedRow);
+            newRole.roleName = role.roleName || selectedRow.roleName;
+            newRole.permissions = selectedRow.permissions || role.permissions;
             if (role.roleName !== newRole.roleName) {
                 this.setState({
                     role: newRole
