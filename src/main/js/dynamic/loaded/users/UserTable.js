@@ -4,7 +4,7 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { connect } from 'react-redux';
-import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
+import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers, updateUser } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 
@@ -17,10 +17,10 @@ class UserTable extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
         this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
-        this.onDelete = this.onDelete.bind(this);
 
         this.state = {
             user: {},
@@ -50,6 +50,7 @@ class UserTable extends Component {
     handleChange(e) {
         const { name, value, type, checked } = e.target;
         const { user } = this.state;
+
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
@@ -58,7 +59,17 @@ class UserTable extends Component {
     }
 
     onSave() {
-        this.props.createUser(this.state.user);
+        const { user } = this.state;
+        this.props.createUser(user);
+        this.setState({
+            user: {}
+        });
+        this.retrieveData();
+    }
+
+    onUpdate() {
+        const { user } = this.state;
+        this.props.updateUser(user);
         this.setState({
             user: {}
         });
@@ -75,6 +86,9 @@ class UserTable extends Component {
     }
 
     onConfigClose() {
+        this.setState({
+            user: {}
+        });
         this.props.clearFieldErrors()
     }
 
@@ -91,7 +105,12 @@ class UserTable extends Component {
 
         let newUser = user;
         if (selectedRow) {
-            newUser = Object.assign({}, user, selectedRow);
+            newUser = Object.assign({}, selectedRow, user);
+            if (user.username !== newUser.username) {
+                this.setState({
+                    user: newUser
+                });
+            }
         }
 
         const usernameKey = 'username';
@@ -130,6 +149,7 @@ class UserTable extends Component {
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
                         onConfigSave={this.onSave}
+                        onConfigUpdate={this.onUpdate}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
@@ -165,6 +185,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     createUser: user => dispatch(createNewUser(user)),
+    updateUser: user => dispatch(updateUser(user)),
     deleteUser: username => dispatch(deleteUser(username)),
     getUsers: () => dispatch(fetchUsers()),
     getRoles: () => dispatch(fetchRoles()),
