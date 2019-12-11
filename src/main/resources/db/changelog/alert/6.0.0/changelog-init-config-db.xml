@@ -1,0 +1,2980 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Create any tables from 5.3.0 if they do not exist -->
+    <changeSet author="gavink" id="2019-12-11-10-36-41-047">
+        <sql dbms="postgresql" stripComments="true">
+            CREATE SCHEMA IF NOT EXISTS ALERT;
+            CREATE SCHEMA IF NOT EXISTS PUBLIC;
+
+            create table if not exists ALERT.PROVIDER_PROJECTS
+            (
+                ID                  SERIAL,
+                NAME                VARCHAR(255),
+                DESCRIPTION         VARCHAR(255),
+                HREF                VARCHAR(255),
+                PROJECT_OWNER_EMAIL VARCHAR(255),
+                PROVIDER            VARCHAR(255),
+                constraint BLACKDUCK_PROJECT_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.PROVIDER_USERS
+            (
+                ID            SERIAL,
+                EMAIL_ADDRESS VARCHAR(255),
+                OPT_OUT       BOOLEAN,
+                PROVIDER      VARCHAR(255),
+                constraint BLACKDUCK_USER_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.SYSTEM_STATUS
+            (
+                ID                        BIGINT not null,
+                INITIALIZED_CONFIGURATION BOOLEAN,
+                STARTUP_TIME              TIMESTAMP,
+                constraint SYSTEM_STATUS_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.SYSTEM_MESSAGES
+            (
+                ID         SERIAL,
+                CREATED_AT TIMESTAMP,
+                SEVERITY   VARCHAR(50),
+                CONTENT    VARCHAR(255),
+                TYPE       VARCHAR(255),
+                constraint SYSTEM_MESSAGES_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.POLARIS_ISSUES
+            (
+                ID             SERIAL,
+                ISSUE_TYPE     VARCHAR(255),
+                PREVIOUS_COUNT BIGINT,
+                CURRENT_COUNT  BIGINT,
+                PROJECT_ID     BIGINT,
+                constraint POLARIS_ISSUES_KEY
+                    primary key (ID),
+                constraint FK_ISSUE_PROJECT
+                    foreign key (PROJECT_ID) references ALERT.PROVIDER_PROJECTS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.RAW_NOTIFICATION_CONTENT
+            (
+                ID                     SERIAL,
+                CREATED_AT             TIMESTAMP,
+                PROVIDER               VARCHAR(255),
+                PROVIDER_CREATION_TIME TIMESTAMP,
+                NOTIFICATION_TYPE      VARCHAR(255),
+                CONTENT                JSON,
+                constraint RAW_NOTIFICATION_CONTENT_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.PROVIDER_USER_PROJECT_RELATION
+            (
+                PROVIDER_USER_ID    BIGINT not null,
+                PROVIDER_PROJECT_ID BIGINT not null,
+                constraint FK_PROVIDER_PROJECT_ID
+                    foreign key (PROVIDER_PROJECT_ID) references ALERT.PROVIDER_PROJECTS (ID)
+                        on delete cascade,
+                constraint FK_PROVIDER_USER_ID
+                    foreign key (PROVIDER_USER_ID) references ALERT.PROVIDER_USERS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.ROLES
+            (
+                ID       SERIAL,
+                ROLENAME VARCHAR(255),
+                CUSTOM   BOOLEAN default FALSE not null,
+                constraint ROLE_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.SETTINGS_KEY
+            (
+                ID    SERIAL,
+                KEY   VARCHAR(255),
+                VALUE VARCHAR(255),
+                constraint SETTINGS_KEY_KEY
+                    primary key (ID),
+                unique (KEY)
+            );
+
+            create table if not exists ALERT.REGISTERED_DESCRIPTORS
+            (
+                ID      SERIAL,
+                TYPE_ID BIGINT,
+                NAME    VARCHAR(255),
+                constraint REGISTERED_DESCRIPTORS_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.DESCRIPTOR_TYPES
+            (
+                ID   SERIAL,
+                TYPE VARCHAR(255),
+                constraint DESCRIPTOR_TYPES_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.DEFINED_FIELDS
+            (
+                ID         SERIAL,
+                SOURCE_KEY VARCHAR(255)          not null
+                    unique,
+                SENSITIVE  BOOLEAN default FALSE not null,
+                constraint DEFINED_FIELDS_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.DESCRIPTOR_FIELDS
+            (
+                DESCRIPTOR_ID BIGINT not null,
+                FIELD_ID      BIGINT not null,
+                constraint DESCRIPTOR_FIELDS_KEY
+                    primary key (DESCRIPTOR_ID, FIELD_ID),
+                constraint FK_DESCRIPTOR_FIELD
+                    foreign key (FIELD_ID) references ALERT.DEFINED_FIELDS (ID)
+                        on delete cascade,
+                constraint FK_FIELD_DESCRIPTOR
+                    foreign key (DESCRIPTOR_ID) references ALERT.REGISTERED_DESCRIPTORS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.CONFIG_CONTEXTS
+            (
+                ID      SERIAL,
+                CONTEXT VARCHAR(31)
+                    unique,
+                constraint CONFIG_CONTEXTS_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.PERMISSION_MATRIX
+            (
+                ROLE_ID       BIGINT  not null,
+                OPERATIONS    INTEGER not null,
+                DESCRIPTOR_ID BIGINT  not null,
+                CONTEXT_ID    BIGINT  not null,
+                constraint PERMISSION_MATRIX_KEY_UPDATED
+                    primary key (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID),
+                constraint FK_PERMISSION_CONTEXT_ID
+                    foreign key (CONTEXT_ID) references ALERT.CONFIG_CONTEXTS (ID)
+                        on delete cascade,
+                constraint FK_PERMISSION_DESCRIPTOR_ID
+                    foreign key (DESCRIPTOR_ID) references ALERT.REGISTERED_DESCRIPTORS (ID)
+                        on delete cascade,
+                constraint FK_PERMISSION_ROLE
+                    foreign key (ROLE_ID) references ALERT.ROLES (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.DESCRIPTOR_CONFIGS
+            (
+                ID            SERIAL,
+                DESCRIPTOR_ID BIGINT,
+                CONTEXT_ID    BIGINT,
+                CREATED_AT    TIMESTAMP,
+                LAST_UPDATED  TIMESTAMP,
+                constraint DESCRIPTOR_CONFIGS_KEY
+                    primary key (ID),
+                constraint FK_CONFIG_CONTEXT
+                    foreign key (CONTEXT_ID) references ALERT.CONFIG_CONTEXTS (ID)
+                        on delete cascade,
+                constraint FK_CONFIG_DESCRIPTOR
+                    foreign key (DESCRIPTOR_ID) references ALERT.REGISTERED_DESCRIPTORS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.FIELD_CONTEXTS
+            (
+                FIELD_ID   BIGINT not null,
+                CONTEXT_ID BIGINT not null,
+                constraint FIELD_CONTEXTS_KEY
+                    primary key (FIELD_ID, CONTEXT_ID),
+                constraint FK_CONTEXT_FIELD
+                    foreign key (FIELD_ID) references ALERT.DEFINED_FIELDS (ID)
+                        on delete cascade,
+                constraint FK_FIELD_CONTEXT
+                    foreign key (CONTEXT_ID) references ALERT.CONFIG_CONTEXTS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.CONFIG_GROUPS
+            (
+                CONFIG_ID BIGINT not null,
+                JOB_ID    UUID   not null,
+                constraint CONFIG_GROUPS_KEY
+                    primary key (CONFIG_ID),
+                constraint FK_CONFIG_GROUP_VALUE
+                    foreign key (CONFIG_ID) references ALERT.DESCRIPTOR_CONFIGS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.FIELD_VALUES
+            (
+                ID          SERIAL,
+                CONFIG_ID   BIGINT,
+                FIELD_ID    BIGINT,
+                FIELD_VALUE VARCHAR(512),
+                constraint CONFIG_VALUES_KEY
+                    primary key (ID),
+                constraint FK_DEFINED_FIELD_VALUE
+                    foreign key (FIELD_ID) references ALERT.DEFINED_FIELDS (ID)
+                        on delete cascade,
+                constraint FK_DESCRIPTOR_CONFIG_VALUE
+                    foreign key (CONFIG_ID) references ALERT.DESCRIPTOR_CONFIGS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.USERS
+            (
+                ID               SERIAL,
+                USERNAME         VARCHAR(2048)
+                    unique,
+                PASSWORD         VARCHAR(2048),
+                EMAIL_ADDRESS    VARCHAR(2048),
+                EXPIRED          BOOLEAN default FALSE,
+                LOCKED           BOOLEAN default FALSE,
+                PASSWORD_EXPIRED BOOLEAN default FALSE,
+                ENABLED          BOOLEAN default TRUE,
+                constraint USER_KEY
+                    primary key (ID)
+            );
+
+            create table if not exists ALERT.USER_ROLES
+            (
+                USER_ID BIGINT not null,
+                ROLE_ID BIGINT not null,
+                constraint FK_ROLE_ID
+                    foreign key (ROLE_ID) references ALERT.ROLES (ID)
+                        on delete cascade,
+                constraint FK_USER_ID
+                    foreign key (USER_ID) references ALERT.USERS (ID)
+                        on delete cascade
+            );
+
+            create table if not exists ALERT.AUDIT_ENTRIES
+            (
+                ID                SERIAL
+                    primary key,
+                ERROR_MESSAGE     VARCHAR(255),
+                ERROR_STACK_TRACE VARCHAR,
+                STATUS            VARCHAR(255),
+                TIME_CREATED      TIMESTAMP,
+                TIME_LAST_SENT    TIMESTAMP,
+                COMMON_CONFIG_ID  UUID
+            );
+
+            create table if not exists ALERT.AUDIT_NOTIFICATION_RELATION
+            (
+                AUDIT_ENTRY_ID  BIGINT not null,
+                NOTIFICATION_ID BIGINT not null,
+                primary key (AUDIT_ENTRY_ID, NOTIFICATION_ID),
+                constraint FK_AUDIT_ENTRY_ID
+                    foreign key (AUDIT_ENTRY_ID) references ALERT.AUDIT_ENTRIES (ID)
+                        on delete cascade,
+                constraint FK_AUDIT_NOTIFICATION_ID
+                    foreign key (NOTIFICATION_ID) references ALERT.RAW_NOTIFICATION_CONTENT (ID)
+                        on delete cascade
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize contexts -->
+    <changeSet author="gavink" id="2019-12-11-11-02-46-045">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="2">select count(*) from ALERT.CONFIG_CONTEXTS</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.CONFIG_CONTEXTS (ID, CONTEXT)
+            select (1, 'GLOBAL')
+            where not exists (
+                select * from ALERT.CONFIG_CONTEXTS where CONTEXT = 'GLOBAL'
+            );
+
+            insert into ALERT.CONFIG_CONTEXTS (ID, CONTEXT)
+            select (2, 'DISTRIBUTION')
+            where not exists (
+                select * from ALERT.CONFIG_CONTEXTS where CONTEXT = 'DISTRIBUTION'
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize descriptor types -->
+    <changeSet author="gavink" id="2019-12-11-11-35-48-436">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="3">select count(*) from ALERT.DESCRIPTOR_TYPES</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="h2" stripComments="true">
+            insert into ALERT.DESCRIPTOR_TYPES (ID, TYPE)
+            select (1, 'CHANNEL')
+            where not exists (
+                select * from ALERT.DESCRIPTOR_TYPES where type = 'CHANNEL'
+            );
+
+            insert into ALERT.DESCRIPTOR_TYPES (ID, TYPE)
+            select (2, 'PROVIDER')
+            where not exists (
+                select * from ALERT.DESCRIPTOR_TYPES where type = 'PROVIDER'
+            );
+
+            insert into ALERT.DESCRIPTOR_TYPES (ID, TYPE)
+            select (3, 'COMPONENT')
+            where not exists (
+                select * from ALERT.DESCRIPTOR_TYPES where type = 'COMPONENT'
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize registered descriptors -->
+    <changeSet author="gavink" id="2019-12-11-12-04-43-379">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="13">select count(*) from ALERT.REGISTERED_DESCRIPTORS</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (1, 2, 'provider_blackduck')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'provider_blackduck'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (2, 1, 'channel_email')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'channel_email'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (4, 1, 'channel_slack')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'channel_slack'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (5, 3, 'component_settings')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_settings'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (6, 3, 'component_scheduling')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_scheduling'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (7, 2, 'provider_polaris')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'provider_polaris'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (8, 3, 'component_audit')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_audit'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (9, 1, 'channel_jira_cloud')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'channel_jira_cloud'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (10, 1, 'msteamskey')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'msteamskey'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (11, 3, 'component_authentication')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_authentication'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (12, 1, 'channel_jira_server')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'channel_jira_server'
+            );
+
+            insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
+            select (13, 3, 'component_users')
+            where not exists (
+                select * from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_users'
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize defined fields -->
+    <changeSet author="gavink" id="2019-12-11-12-28-09-422">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="167">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (1, 'blackduck.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'blackduck.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (2, 'blackduck.api.key', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'blackduck.api.key'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (3, 'blackduck.timeout', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'blackduck.timeout'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (4, 'channel.common.filter.by.project', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.filter.by.project'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (5, 'channel.common.project.name.pattern', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.project.name.pattern'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (6, 'channel.common.configured.project', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.configured.project'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (7, 'provider.distribution.notification.types', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.distribution.notification.types'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (8, 'provider.distribution.format.type', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.distribution.format.type'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (9, 'email.subject.line', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'email.subject.line'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (10, 'project.owner.only', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'project.owner.only'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (11, 'email.addresses', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'email.addresses'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (12, 'channel.common.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (13, 'channel.common.channel.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.channel.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (14, 'channel.common.provider.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.provider.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (15, 'channel.common.frequency', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.frequency'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (16, 'mail.smtp.user', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.user'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (17, 'mail.smtp.host', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.host'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (18, 'mail.smtp.port', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.port'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (19, 'mail.smtp.connectiontimeout', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.connectiontimeout'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (20, 'mail.smtp.timeout', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.timeout'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (21, 'mail.smtp.writetimeout', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.writetimeout'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (22, 'mail.smtp.from', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.from'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (23, 'mail.smtp.localhost', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.localhost'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (24, 'mail.smtp.localaddress', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.localaddress'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (25, 'mail.smtp.localport', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.localport'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (26, 'mail.smtp.ehlo', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ehlo'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (27, 'mail.smtp.auth', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (28, 'mail.smtp.auth.mechanisms', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.mechanisms'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (29, 'mail.smtp.auth.login.disable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.login.disable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (30, 'mail.smtp.auth.plain.disable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.plain.disable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (31, 'mail.smtp.auth.digest-md5.disable', false);
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (32, 'mail.smtp.auth.ntlm.disable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.ntlm.disable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (33, 'mail.smtp.auth.ntlm.domain', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.ntlm.domain'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (34, 'mail.smtp.auth.ntlm.flags', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.auth.ntlm.flags'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (35, 'mail.smtp.auth.xoauth2.disable', false);
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (36, 'mail.smtp.submitter', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.submitter'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (37, 'mail.smtp.dsn.notify', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.dsn.notify'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (38, 'mail.smtp.dsn.ret', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.dsn.ret'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (39, 'mail.smtp.allow8bitmime', false);
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (40, 'mail.smtp.sendpartial', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sendpartial'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (41, 'mail.smtp.sasl.enable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sasl.enable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (42, 'mail.smtp.sasl.mechanisms', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sasl.mechanisms'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (43, 'mail.smtp.sasl.authorizationid', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sasl.authorizationid'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (44, 'mail.smtp.sasl.realm', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sasl.realm'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (45, 'mail.smtp.sasl.usecanonicalhostname', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.sasl.usecanonicalhostname'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (46, 'mail.smtp.quitwait', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.quitwait'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (47, 'mail.smtp.reportsuccess', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.reportsuccess'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (48, 'mail.smtp.ssl.enable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ssl.enable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (49, 'mail.smtp.ssl.checkserveridentity', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ssl.checkserveridentity'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (50, 'mail.smtp.ssl.trust', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ssl.trust'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (51, 'mail.smtp.ssl.protocols', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ssl.protocols'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (52, 'mail.smtp.ssl.ciphersuites', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.ssl.ciphersuites'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (53, 'mail.smtp.starttls.enable', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.starttls.enable'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (54, 'mail.smtp.starttls.required', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.starttls.required'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (55, 'mail.smtp.proxy.host', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.proxy.host'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (56, 'mail.smtp.proxy.port', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.proxy.port'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (57, 'mail.smtp.socks.host', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.socks.host'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (58, 'mail.smtp.socks.port', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.socks.port'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (59, 'mail.smtp.mailextension', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.mailextension'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (60, 'mail.smtp.userset', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.userset'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (61, 'mail.smtp.noop.strict', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.noop.strict'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (62, 'mail.smtp.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'mail.smtp.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (72, 'channel.slack.webhook', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.slack.webhook'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (73, 'channel.slack.channel.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.slack.channel.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (74, 'channel.slack.channel.username', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.slack.channel.username'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (79, 'settings.proxy.host', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.proxy.host'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (80, 'settings.proxy.port', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.proxy.port'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (81, 'settings.proxy.username', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.proxy.username'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (82, 'settings.proxy.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.proxy.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (83, 'settings.ldap.enabled', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.enabled'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (84, 'settings.ldap.server', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.server'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (85, 'settings.ldap.manager.dn', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.manager.dn'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (86, 'settings.ldap.manager.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.manager.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (87, 'settings.ldap.authentication.type', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.authentication.type'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (88, 'settings.ldap.referral', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.referral'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (89, 'settings.ldap.user.search.base', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.user.search.base'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (90, 'settings.ldap.user.search.filter', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.user.search.filter'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (91, 'settings.ldap.user.dn.patterns', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.user.dn.patterns'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (92, 'settings.ldap.user.attributes', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.user.attributes'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (93, 'settings.ldap.group.search.base', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.group.search.base'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (94, 'settings.ldap.group.search.filter', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.group.search.filter'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (95, 'settings.ldap.group.role.attribute', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.ldap.group.role.attribute'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (96, 'scheduling.accumulator.next.run', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.accumulator.next.run'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (97, 'scheduling.daily.processor.hour', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.daily.processor.hour'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (98, 'scheduling.daily.processor.next.run', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.daily.processor.next.run'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (99, 'scheduling.purge.data.frequency', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.purge.data.frequency'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (100, 'scheduling.purge.data.next.run', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.purge.data.next.run'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (101, 'settings.user.default.admin.email', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.user.default.admin.email'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (102, 'settings.user.default.admin.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.user.default.admin.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (103, 'settings.encryption.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.encryption.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (104, 'settings.encryption.global.salt', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.encryption.global.salt'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (105, 'settings.startup.environment.variable.override', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.startup.environment.variable.override'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (106, 'polaris.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'polaris.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (107, 'polaris.access.token', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'polaris.access.token'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (108, 'polaris.timeout', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'polaris.timeout'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (114, 'settings.saml.enabled', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.enabled'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (115, 'settings.saml.force.auth', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.force.auth'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (116, 'settings.saml.metadata.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.metadata.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (117, 'settings.saml.entity.id', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.entity.id'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (118, 'settings.saml.entity.base.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.entity.base.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (119, 'scheduling.polaris.next.run', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'scheduling.polaris.next.run'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (120, 'jira.cloud.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.cloud.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (121, 'jira.cloud.admin.email.address', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.cloud.admin.email.address'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (122, 'jira.cloud.admin.api.token', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.cloud.admin.api.token'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (123, 'jira.cloud.configure.plugin', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.cloud.configure.plugin'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (124, 'channel.jira.cloud.add.comments', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.add.comments'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (125, 'channel.jira.cloud.issue.creator', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.issue.creator'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (126, 'channel.jira.cloud.project.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.project.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (127, 'channel.jira.cloud.issue.type', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.issue.type'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (128, 'channel.jira.cloud.resolve.workflow', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.resolve.workflow'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (129, 'channel.jira.cloud.reopen.workflow', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.cloud.reopen.workflow'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (134, 'email.additional.addresses', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'email.additional.addresses'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (135, 'email.additional.addresses.only', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'email.additional.addresses.only'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (136, 'settings.saml.metadata.file', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.metadata.file'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (137, 'settings.role.mapping.name.admin', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.role.mapping.name.admin'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (138, 'settings.role.mapping.name.job.manager', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.role.mapping.name.job.manager'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (139, 'settings.role.mapping.name.user', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.role.mapping.name.user'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (140, 'settings.saml.role.attribute.mapping.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'settings.saml.role.attribute.mapping.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (145, 'channel.msteams.webhook', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.msteams.webhook'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (150, 'channel.jira.server.add.comments', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.add.comments'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (151, 'channel.jira.server.issue.creator', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.issue.creator'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (152, 'channel.jira.server.project.name', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.project.name'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (153, 'channel.jira.server.issue.type', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.issue.type'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (154, 'channel.jira.server.resolve.workflow', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.resolve.workflow'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (155, 'channel.jira.server.reopen.workflow', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.jira.server.reopen.workflow'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (156, 'jira.server.url', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.server.url'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (157, 'jira.server.username', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.server.username'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (158, 'jira.server.password', true)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.server.password'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (159, 'jira.server.configure.plugin', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'jira.server.configure.plugin'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (160, 'channel.common.enabled', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'channel.common.enabled'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (165, 'blackduck.policy.notification.filter', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'blackduck.policy.notification.filter'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (166, 'blackduck.vulnerability.notification.filter', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'blackduck.vulnerability.notification.filter'
+            );
+
+            insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
+            select (167, 'email.attachment.format', false)
+            where not exists (
+                select * from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'email.attachment.format'
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize descriptor fields -->
+    <changeSet author="gavink" id="2019-12-11-14-14-32-932">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="167">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 1)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 1
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 2)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 2
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 3)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 3
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 4)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 4
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 5)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 5
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 6)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 6
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 7)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 7
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 8)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 8
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 165)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 165
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (1, 166)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 1 and FIELD_ID = 166
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 9)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 9
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 10)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 10
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 11)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 11
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 12)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 12
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 13)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 13
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 14)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 14
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 15)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 15
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 16)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 16
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 17)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 17
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 18)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 18
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 19)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 19
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 20)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 20
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 21)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 21
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 22)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 22
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 23)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 23
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 24)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 24
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 25)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 25
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 26)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 26
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 27)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 27
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 28)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 28
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 29)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 29
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 30)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 30
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 31)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 31
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 32)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 32
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 33)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 33
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 34)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 34
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 35)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 35
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 36)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 36
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 37)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 37
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 38)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 38
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 39)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 39
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 40)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 40
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 41)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 41
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 42)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 42
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 43)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 43
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 44)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 44
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 45)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 45
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 46)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 46
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 47)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 47
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 48)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 48
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 49)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 49
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 50)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 50
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 51)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 51
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 52)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 52
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 53)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 53
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 54)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 54
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 55)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 55
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 56)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 56
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 57)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 57
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 58)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 58
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 59)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 59
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 60)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 60
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 61)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 61
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 62)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 62
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 134)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 134
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 135)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 135
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 160)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 160
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (2, 167)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 2 and FIELD_ID = 167
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 12)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 12
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 13)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 13
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 14)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 14
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 15)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 15
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 72)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 72
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 73)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 73
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 74)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 74
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (4, 160)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 4 and FIELD_ID = 160
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 79)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 79
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 80)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 80
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 81)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 81
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 82)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 82
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 101)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 101
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 102)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 102
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 103)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 103
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 104)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 104
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (5, 105)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 5 and FIELD_ID = 105
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 96)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 96
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 97)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 97
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 98)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 98
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 99)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 99
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 100)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 100
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (6, 119)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 6 and FIELD_ID = 119
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 4)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 4
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 5)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 5
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 6)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 6
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 7)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 7
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 8)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 8
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 106)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 106
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 107)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 107
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (7, 108)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 7 and FIELD_ID = 108
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 12)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 12
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 13)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 13
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 14)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 14
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 15)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 15
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 120)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 120
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 121)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 121
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 122)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 122
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 123)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 123
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 124)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 124
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 125)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 125
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 126)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 126
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 127)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 127
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 128)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 128
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 129)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 129
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 159)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 159
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (9, 160)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 9 and FIELD_ID = 160
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 12)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 12
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 13)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 13
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 14)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 14
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 15)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 15
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 145)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 145
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (10, 160)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 10 and FIELD_ID = 160
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 83)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 83
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 84)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 84
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 85)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 85
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 86)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 86
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 87)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 87
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 88)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 88
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 89)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 89
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 90)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 90
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 91)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 91
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 92)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 92
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 93)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 93
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 94)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 94
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 95)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 95
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 114)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 114
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 115)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 115
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 116)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 116
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 117)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 117
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 118)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 118
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 136)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 136
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 137)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 137
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 138)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 138
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 139)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 139
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (11, 140)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 11 and FIELD_ID = 140
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 12)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 12
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 13)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 13
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 14)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 14
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 15)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 15
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 150)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 150
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 151)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 151
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 152)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 152
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 153)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 153
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 154)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 154
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 155)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 155
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 156)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 156
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 157)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 157
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 158)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 158
+            );
+
+            insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
+            select (12, 160)
+            where not exists(
+                select * from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = 12 and FIELD_ID = 160
+            );
+        </sql>
+    </changeSet>
+    <!-- Initialize field contexts -->
+    <changeSet author="gavink" id="2019-12-11-14-38-14-264">
+        <preConditions>
+            <not>
+                <sqlCheck expectedResult="167">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (1, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 1 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (2, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 2 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (3, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 3 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (4, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 4 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (5, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 5 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (6, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 6 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (7, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 7 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (8, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 8 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (9, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 9 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (10, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 10 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (11, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 11 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (12, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 12 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (13, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 13 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (14, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 14 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (15, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 15 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (16, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 16 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (17, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 17 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (18, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 18 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (19, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 19 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (20, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 20 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (21, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 21 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (22, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 22 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (23, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 23 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (24, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 24 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (25, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 25 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (26, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 26 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (27, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 27 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (28, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 28 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (29, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 29 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (30, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 30 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (31, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 31 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (32, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 32 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (33, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 33 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (34, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 34 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (35, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 35 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (36, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 36 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (37, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 37 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (38, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 38 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (39, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 39 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (40, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 40 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (41, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 41 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (42, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 42 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (43, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 43 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (44, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 44 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (45, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 45 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (46, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 46 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (47, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 47 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (48, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 48 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (49, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 49 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (50, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 50 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (51, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 51 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (52, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 52 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (53, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 53 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (54, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 54 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (55, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 55 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (56, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 56 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (57, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 57 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (58, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 58 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (59, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 59 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (60, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 60 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (61, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 61 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (62, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 62 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (72, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 72 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (73, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 73 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (74, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 74 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (79, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 79 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (80, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 80 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (81, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 81 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (82, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 82 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (83, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 83 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (84, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 84 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (85, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 85 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (86, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 86 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (87, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 87 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (88, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 88 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (89, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 89 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (90, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 90 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (91, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 91 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (92, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 92 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (93, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 93 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (94, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 94 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (95, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 95 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (96, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 96 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (97, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 97 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (98, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 98 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (99, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 99 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (100, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 100 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (101, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 101 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (102, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 102 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (103, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 103 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (104, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 104 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (105, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 105 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (106, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 106 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (107, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 107 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (108, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 108 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (114, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 114 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (115, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 115 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (116, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 116 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (117, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 117 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (118, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 118 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (119, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 119 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (120, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 120 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (121, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 121 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (122, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 122 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (123, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 123 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (124, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 124 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (125, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 125 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (126, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 126 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (127, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 127 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (128, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 128 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (129, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 129 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (134, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 134 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (135, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 135 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (136, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 136 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (137, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 137 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (138, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 138 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (139, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 139 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (140, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 140 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (145, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 145 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (150, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 150 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (151, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 151 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (152, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 152 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (153, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 153 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (154, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 154 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (155, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 155 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (156, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 156 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (157, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 157 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (158, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 158 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (159, 1)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 159 AND CONTEXT_ID = 1
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (160, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 160 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (165, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 165 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (166, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 166 AND CONTEXT_ID = 2
+            );
+
+            insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)
+            select (167, 2)
+            where not exists (
+                select * from ALERT.FIELD_CONTEXTS where FIELD_ID = 167 AND CONTEXT_ID = 2
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
