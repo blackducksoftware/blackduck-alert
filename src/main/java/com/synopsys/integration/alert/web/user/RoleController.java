@@ -76,7 +76,7 @@ public class RoleController extends BaseController {
 
     @PutMapping
     public ResponseEntity<String> updateRole(@RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasPermission(authorizationManager::hasCreatePermission)) {
+        if (!hasPermission(authorizationManager::hasWritePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
