@@ -172,9 +172,9 @@ class PermissionTable extends Component {
 
         return (
             <div>
-                <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} onChange={this.handlePermissionsChange}
+                <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false} onChange={this.handlePermissionsChange}
                                     value={newPermissions[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
-                <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} onChange={this.handlePermissionsChange}
+                <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} clearable={false} onChange={this.handlePermissionsChange}
                                     value={newPermissions[PERMISSIONS_TABLE.CONTEXT]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange}
                                isChecked={newPermissions[PERMISSIONS_TABLE.CREATE]} />
