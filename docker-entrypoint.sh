@@ -378,59 +378,54 @@ liquibaseChangelockReset() {
   echo "End releasing liquibase changeloglock."
 }
 
-postgresPrepareDB() {
+validatePostgresDatabase() {
     if psql alertdb -c '\l' |grep -q 'List of databases';
     then
         echo "Alert database exists"
-    else
-        echo "Alert database did not exist. Attempting to create it."
-        if psql -f $pgResourcesDir/prepare_postgres_env.sql;
+        if psql alertdb -c '\dt ALERT.*' |grep -q 'field_values';
         then
-            if psql -f $pgResourcesDir/create_alertdb.sql;
-            then
-                echo "Alert database created"
-            else
-                echo "Failed to create Alert database"
-                exit 1
-            fi
+            echo "Alert database is initialized"
         else
-              echo "Failed to prepare postgres environment"
+            echo "Alert database is not initialized"
             exit 1
         fi
+    else
+        echo "Alert database does not exist"
+        exit 1
     fi
 }
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary."
-    if psql alertdb -c '\dt ALERT.*' |grep -q 'field_values';
+    # FIXME query for a count of values in the context table
+    if psql alertdb -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
-        echo "The database is initialized to the 5.3.0 state (i.e. ready for upgrade to 6.0.0)."
+        echo "The database is initialized"
     else
         echo "Initializing the database to 5.3.0 state to be upgraded to 6.0.0"
 
-        # 1. Initialize new database schema and tables
-        psql alertdb -f $pgResourcesDir/initialize_alertdb_structure.sql
-
         if [ -f $alertDatabaseDir/alertdb.mv.db ];
         then
-            echo "Migrating data from old database"
-            # 2. Call changelog-master.xml to upgrade old DB to 5.3.0
-            $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
-            liquibase.integration.commandline.Main \
-            --url="jdbc:h2:file:$alertDatabaseDir" \
-            --username="sa" \
-            --password="" \
-            --driver="org.h2.Driver" \
-            --changeLogFile="$changelogsDir/changelog-master.xml" \
-            update
-
-            # 3. Migrate the old data into the new database (order matters)
-            chmod +x $pgResourcesDir/migrate_h2_data_to_postgres.sh
-            $pgResourcesDir/migrate_h2_data_to_postgres.sh
-
+            echo "A previous database existed"
         else
-            "No previous database existed"
+            echo "No previous database existed"
+            touch $alertDatabaseDir/alertdb.mv.db
         fi
+
+        echo "Migrating data from old database"
+        # 2. Call changelog-master.xml to upgrade old DB to 5.3.0
+        $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+        liquibase.integration.commandline.Main \
+        --url="jdbc:h2:file:$alertDatabaseDir" \
+        --username="sa" \
+        --password="" \
+        --driver="org.h2.Driver" \
+        --changeLogFile="$changelogsDir/changelog-master.xml" \
+        update
+
+        # 3. Migrate the old data into the new database (order matters)
+        chmod +x $pgResourcesDir/migrate_h2_data_to_postgres.sh
+        $pgResourcesDir/migrate_h2_data_to_postgres.sh
     fi
 }
 
@@ -461,7 +456,7 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
-  # FIXME postgresPrepareDB
+  # FIXME validatePostgresDatabase
   # FIXME postgresPrepare600Upgrade
 
   if [ -f "$truststoreFile" ];
