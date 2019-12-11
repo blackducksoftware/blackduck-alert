@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.jira.server;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
@@ -31,5 +32,10 @@ public class JiraServerChannelKey extends ChannelKey {
     @Override
     public String getUniversalKey() {
         return "channel_jira_server";
+    }
+
+    @Override
+    public String getDisplayName() {
+        return JiraServerDescriptor.JIRA_LABEL;
     }
 }

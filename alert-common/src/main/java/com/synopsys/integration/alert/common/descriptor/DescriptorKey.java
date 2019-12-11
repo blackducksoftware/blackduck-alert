@@ -27,4 +27,6 @@ import com.synopsys.integration.util.Stringable;
 public abstract class DescriptorKey extends Stringable {
     public abstract String getUniversalKey();
 
+    public abstract String getDisplayName();
+
 }

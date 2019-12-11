@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.polaris;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 
 @Component
 public final class PolarisProviderKey extends ProviderKey {
@@ -33,6 +34,11 @@ public final class PolarisProviderKey extends ProviderKey {
     @Override
     public String getUniversalKey() {
         return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return PolarisDescriptor.POLARIS_LABEL;
     }
 
 }

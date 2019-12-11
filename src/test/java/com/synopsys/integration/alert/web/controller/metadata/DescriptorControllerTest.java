@@ -27,55 +27,55 @@ public class DescriptorControllerTest {
 
     @Test
     public void getDescriptorsWithNoParametersTest() {
-        final Set<DescriptorMetadata> descriptorMetadata = controller.getDescriptors(null, null, null);
+        Set<DescriptorMetadata> descriptorMetadata = controller.getDescriptors(null, null, null);
         assertEquals(descriptors.size(), descriptorMetadata.size());
     }
 
     @Test
     public void getDescriptorsWithInvalidParametersTest() {
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors("x not a real name x", null, null);
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors("x not a real name x", null, null);
         assertEquals(0, descriptorMetadata1.size());
 
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, "x not a real type x", null);
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, "x not a real type x", null);
         assertEquals(0, descriptorMetadata2.size());
 
-        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, null, "x not a real context x");
+        Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, null, "x not a real context x");
         assertEquals(0, descriptorMetadata3.size());
     }
 
     @Test
     public void getDescriptorsWithNameOnlyTest() {
-        final String componentName = getNamePrefix(DescriptorType.CHANNEL) + "_2";
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName, null, null);
+        String componentName = getNamePrefix(DescriptorType.CHANNEL) + "_2";
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName, null, null);
         assertEquals(1, descriptorMetadata1.size());
 
-        final String channelName = getNamePrefix(DescriptorType.COMPONENT) + "_2";
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(channelName, null, null);
+        String channelName = getNamePrefix(DescriptorType.COMPONENT) + "_2";
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(channelName, null, null);
         assertEquals(1, descriptorMetadata2.size());
 
-        final String providerName = getNamePrefix(DescriptorType.PROVIDER) + "_2";
-        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(providerName, null, null);
+        String providerName = getNamePrefix(DescriptorType.PROVIDER) + "_2";
+        Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(providerName, null, null);
         assertEquals(1, descriptorMetadata3.size());
     }
 
     @Test
     public void getDescriptorsWithTypeOnlyTest() {
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, DescriptorType.CHANNEL.name(), null);
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, DescriptorType.CHANNEL.name(), null);
         assertEquals(descriptors.size() / 3, descriptorMetadata1.size());
 
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, DescriptorType.COMPONENT.name(), null);
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, DescriptorType.COMPONENT.name(), null);
         assertEquals(descriptors.size() / 3, descriptorMetadata2.size());
 
-        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, DescriptorType.PROVIDER.name(), null);
+        Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, DescriptorType.PROVIDER.name(), null);
         assertEquals(descriptors.size() / 3, descriptorMetadata3.size());
     }
 
     @Test
     public void getDescriptorsWithContextOnlyTest() {
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, null, ConfigContextEnum.GLOBAL.name());
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, null, ConfigContextEnum.GLOBAL.name());
         assertEquals(descriptors.size() / 2, descriptorMetadata1.size());
 
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, null, ConfigContextEnum.DISTRIBUTION.name());
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, null, ConfigContextEnum.DISTRIBUTION.name());
         assertEquals(descriptors.size() / 2, descriptorMetadata2.size());
     }
 
@@ -83,76 +83,76 @@ public class DescriptorControllerTest {
     public void getDescriptorsWithTypeAndContextTest() {
         final DescriptorType type1 = DescriptorType.CHANNEL;
         final ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, type1.name(), context1.name());
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, type1.name(), context1.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata1.size());
 
         final DescriptorType type2 = DescriptorType.COMPONENT;
         final ConfigContextEnum context2 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, type2.name(), context2.name());
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, type2.name(), context2.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata2.size());
 
         final DescriptorType type3 = DescriptorType.PROVIDER;
         final ConfigContextEnum context3 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, type3.name(), context3.name());
+        Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, type3.name(), context3.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata3.size());
 
         final DescriptorType type4 = DescriptorType.CHANNEL;
         final ConfigContextEnum context4 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata4 = controller.getDescriptors(null, type4.name(), context4.name());
+        Set<DescriptorMetadata> descriptorMetadata4 = controller.getDescriptors(null, type4.name(), context4.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata4.size());
 
         final DescriptorType type5 = DescriptorType.COMPONENT;
         final ConfigContextEnum context5 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata5 = controller.getDescriptors(null, type5.name(), context5.name());
+        Set<DescriptorMetadata> descriptorMetadata5 = controller.getDescriptors(null, type5.name(), context5.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata5.size());
 
         final DescriptorType type6 = DescriptorType.PROVIDER;
         final ConfigContextEnum context6 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata6 = controller.getDescriptors(null, type6.name(), context6.name());
+        Set<DescriptorMetadata> descriptorMetadata6 = controller.getDescriptors(null, type6.name(), context6.name());
         assertEquals(descriptors.size() / (3 * 2), descriptorMetadata6.size());
     }
 
     @Test
     public void getDescriptorsWithNameAndContextTest() {
-        final String componentName1 = getNamePrefix(DescriptorType.CHANNEL) + "_4";
+        String componentName1 = getNamePrefix(DescriptorType.CHANNEL) + "_4";
         final ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName1, null, context1.name());
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName1, null, context1.name());
         assertEquals(1, descriptorMetadata1.size());
 
-        final String componentName2 = getNamePrefix(DescriptorType.COMPONENT) + "_4";
+        String componentName2 = getNamePrefix(DescriptorType.COMPONENT) + "_4";
         final ConfigContextEnum context2 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(componentName2, null, context2.name());
+        Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(componentName2, null, context2.name());
         assertEquals(1, descriptorMetadata2.size());
 
-        final String componentName3 = getNamePrefix(DescriptorType.PROVIDER) + "_4";
+        String componentName3 = getNamePrefix(DescriptorType.PROVIDER) + "_4";
         final ConfigContextEnum context3 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(componentName3, null, context3.name());
+        Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(componentName3, null, context3.name());
         assertEquals(1, descriptorMetadata3.size());
 
         final ConfigContextEnum context4 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata4 = controller.getDescriptors(componentName1, null, context4.name());
+        Set<DescriptorMetadata> descriptorMetadata4 = controller.getDescriptors(componentName1, null, context4.name());
         assertEquals(1, descriptorMetadata4.size());
 
         final ConfigContextEnum context5 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata5 = controller.getDescriptors(componentName2, null, context5.name());
+        Set<DescriptorMetadata> descriptorMetadata5 = controller.getDescriptors(componentName2, null, context5.name());
         assertEquals(1, descriptorMetadata5.size());
 
         final ConfigContextEnum context6 = ConfigContextEnum.DISTRIBUTION;
-        final Set<DescriptorMetadata> descriptorMetadata6 = controller.getDescriptors(componentName3, null, context6.name());
+        Set<DescriptorMetadata> descriptorMetadata6 = controller.getDescriptors(componentName3, null, context6.name());
         assertEquals(1, descriptorMetadata6.size());
     }
 
     @Test
     public void getDescriptorsWithAllParametersTest() {
         final DescriptorType type1 = DescriptorType.CHANNEL;
-        final String componentName1 = getNamePrefix(type1) + "_2";
+        String componentName1 = getNamePrefix(type1) + "_2";
         final ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
-        final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName1, type1.name(), context1.name());
+        Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(componentName1, type1.name(), context1.name());
         assertEquals(1, descriptorMetadata1.size());
     }
 
     private DescriptorController createDescriptorController() {
-        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString(), Mockito.anyString());
@@ -163,24 +163,24 @@ public class DescriptorControllerTest {
     }
 
     private Set<Descriptor> createComprehensiveSetOfDescriptors() {
-        final Set<Descriptor> descriptors = new HashSet<>();
+        Set<Descriptor> descriptors = new HashSet<>();
         descriptors.addAll(createDescriptorsOfType(DescriptorType.PROVIDER));
         descriptors.addAll(createDescriptorsOfType(DescriptorType.CHANNEL));
         descriptors.addAll(createDescriptorsOfType(DescriptorType.COMPONENT));
         return descriptors;
     }
 
-    private Set<Descriptor> createDescriptorsOfType(final DescriptorType descriptorType) {
-        final String namePrefix = getNamePrefix(descriptorType);
-        final Descriptor d1 = new TestDescriptor(namePrefix + "_1", descriptorType);
-        final Descriptor d2 = new TestDescriptor(namePrefix + "_2", descriptorType, ConfigContextEnum.GLOBAL);
-        final Descriptor d3 = new TestDescriptor(namePrefix + "_3", descriptorType, ConfigContextEnum.DISTRIBUTION);
-        final Descriptor d4 = new TestDescriptor(namePrefix + "_4", descriptorType, ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION);
+    private Set<Descriptor> createDescriptorsOfType(DescriptorType descriptorType) {
+        String namePrefix = getNamePrefix(descriptorType);
+        Descriptor d1 = new TestDescriptor(namePrefix + "_1", descriptorType);
+        Descriptor d2 = new TestDescriptor(namePrefix + "_2", descriptorType, ConfigContextEnum.GLOBAL);
+        Descriptor d3 = new TestDescriptor(namePrefix + "_3", descriptorType, ConfigContextEnum.DISTRIBUTION);
+        Descriptor d4 = new TestDescriptor(namePrefix + "_4", descriptorType, ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION);
 
         return Set.of(d1, d2, d3, d4);
     }
 
-    private String getNamePrefix(final DescriptorType descriptorType) {
+    private String getNamePrefix(DescriptorType descriptorType) {
         return descriptorType.name().toLowerCase();
     }
 
@@ -193,6 +193,11 @@ public class DescriptorControllerTest {
                 public String getUniversalKey() {
                     return descriptorName;
                 }
+
+                @Override
+                public String getDisplayName() {
+                    return descriptorName;
+                }
             }, type);
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
@@ -202,12 +207,12 @@ public class DescriptorControllerTest {
         }
 
         @Override
-        public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
+        public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
             return Set.of();
         }
 
         @Override
-        public boolean hasUIConfigForType(final ConfigContextEnum actionApiType) {
+        public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
             return contexts.contains(actionApiType);
         }
 
@@ -217,7 +222,7 @@ public class DescriptorControllerTest {
         }
 
         @Override
-        public Optional<UIConfig> getUIConfig(final ConfigContextEnum context) {
+        public Optional<UIConfig> getUIConfig(ConfigContextEnum context) {
             if (!contexts.contains(context)) {
                 return Optional.empty();
             }

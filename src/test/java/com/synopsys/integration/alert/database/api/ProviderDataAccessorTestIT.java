@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -45,6 +44,11 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         DescriptorKey testDescriptorKey = new DescriptorKey() {
             @Override
             public String getUniversalKey() {
+                return key;
+            }
+
+            @Override
+            public String getDisplayName() {
                 return key;
             }
         };
