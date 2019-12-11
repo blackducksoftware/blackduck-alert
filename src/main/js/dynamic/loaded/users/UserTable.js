@@ -107,7 +107,12 @@ class UserTable extends Component {
 
         let newUser = user;
         if (selectedRow) {
-            newUser = Object.assign({}, user, selectedRow);
+            newUser = Object.assign({}, selectedRow, user);
+            if (user.username !== newUser.username) {
+                this.setState({
+                    user: newUser
+                });
+            }
         }
 
         const usernameKey = 'username';
