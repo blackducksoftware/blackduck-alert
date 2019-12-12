@@ -52,6 +52,12 @@ public interface UserAccessor {
 
     boolean changeUserEmailAddress(String username, String emailAddress);
 
+    boolean changeUserPassword(Long userId, String newPassword);
+
+    boolean changeUserEmailAddress(Long userId, String emailAddress);
+
     void deleteUser(String userName) throws AlertDatabaseConstraintException;
+
+    void deleteUser(Long userId) throws AlertDatabaseConstraintException;
 
 }
