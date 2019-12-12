@@ -201,15 +201,11 @@ class Index extends Component {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
-        const reloadEntries = () => this.reloadJobs();
-        let refreshButton = null;
-        if (!this.props.autoRefresh) {
-            refreshButton = (
-                <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
-                    <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
-                </button>
-            );
-        }
+        let refreshButton = !this.props.autoRefresh && (
+            <button type="button" className={classes} onClick={this.reloadJobs}>
+                <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
+            </button>
+        );
         return (
             <div>
                 {buttons.insertBtn

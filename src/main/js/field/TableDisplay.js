@@ -6,6 +6,7 @@ import AutoRefresh from 'component/common/AutoRefresh';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
+import { connect } from 'react-redux';
 
 const MODIFICATION_STATE = {
     EDIT: 'EDIT',
@@ -69,10 +70,11 @@ class TableDisplay extends Component {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
-        const refreshButton = !this.props.autoRefresh &&
-            (<button type="button" tabUserTable={0} className={classes} onClick={this.updateData()}>
+        const refreshButton = !this.props.autoRefresh && (
+            <button type="button" className={classes} onClick={this.updateData}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
-            </button>);
+            </button>
+        );
         return (
             <div>
                 {buttons.insertBtn
@@ -395,4 +397,8 @@ TableDisplay.defaultProps = {
     hasFieldErrors: false
 };
 
-export default TableDisplay;
+const mapStateToProps = state => ({
+    autoRefresh: state.refresh.autoRefresh
+});
+
+export default connect(mapStateToProps, null)(TableDisplay);
