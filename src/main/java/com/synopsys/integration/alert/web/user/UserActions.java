@@ -122,7 +122,8 @@ public class UserActions {
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
         // converting to an object to return to the client; remove the password field.
-        return new UserConfig(userModel.getId().toString(),
+        return new UserConfig(
+            userModel.getId().toString(),
             userModel.getName(),
             null,
             userModel.getEmailAddress(),
