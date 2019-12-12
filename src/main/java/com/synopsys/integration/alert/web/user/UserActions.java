@@ -63,15 +63,6 @@ public class UserActions {
                    .collect(Collectors.toList());
     }
 
-    public Optional<UserConfig> getUser(String userName) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.getUser(userName).map(this::convertToCustomUserRoleModel);
-    }
-
     public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
         validateRequiredFields(userConfig);
         String userName = userConfig.getUsername();
