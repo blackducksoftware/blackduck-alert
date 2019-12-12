@@ -138,26 +138,8 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public boolean changeUserPassword(Long userId, String newPassword) {
-        Optional<UserEntity> entity = userRepository.findById(userId);
-        if (entity.isPresent()) {
-            return changeUserPassword(entity.get(), newPassword);
-        }
-        return false;
-    }
-
-    @Override
     public boolean changeUserEmailAddress(String username, String emailAddress) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
-        if (entity.isPresent()) {
-            return changeUserEmailAddress(entity.get(), emailAddress);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean changeUserEmailAddress(Long userId, String emailAddress) {
-        Optional<UserEntity> entity = userRepository.findById(userId);
         if (entity.isPresent()) {
             return changeUserEmailAddress(entity.get(), emailAddress);
         }
