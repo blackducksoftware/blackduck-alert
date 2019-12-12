@@ -101,8 +101,11 @@ class PermissionTable extends Component {
         const { permissionsColumn, descriptorName, context } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
+        const prettyNameObject = this.createDescriptorOptions().find(option => descriptorName === option.label);
+        const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
+
         return {
-            descriptorName,
+            descriptorName: prettyName,
             context,
             [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
             [PERMISSIONS_TABLE.DELETE_OPERATION]: splitPermissions.includes('d'),
