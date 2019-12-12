@@ -269,7 +269,8 @@ class TableDisplay extends Component {
             insertModal: this.createInsertModal,
             handleConfirmDeleteRow: this.collectItemsToDelete,
             defaultSortName: sortName,
-            defaultSortOrder: sortOrder
+            defaultSortOrder: sortOrder,
+            onRowDoubleClick: this.editButtonClicked
         };
 
         const selectRow = selectRowBox && {
