@@ -73,18 +73,10 @@ public class UserActions {
     }
 
     public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
+        validateRequiredFields(userConfig);
         String userName = userConfig.getUsername();
         String password = userConfig.getPassword();
         String emailAddress = userConfig.getEmailAddress();
-
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateCreationUserName(fieldErrors, userName);
-        validatePasswordLength(fieldErrors, password);
-        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
         Long userId = userModel.getId();
         Set<String> configuredRoleNames = userConfig.getRoleNames();
@@ -98,48 +90,48 @@ public class UserActions {
         return convertToCustomUserRoleModel(userModel);
     }
 
-    public UserConfig updateUser(UserConfig userConfig) throws AlertFieldException {
+    public UserConfig updateUser(UserConfig userConfig) throws AlertFieldException, AlertDatabaseConstraintException {
         Long userId = Long.valueOf(userConfig.getId());
-        if (StringUtils.isNotBlank(userConfig.getPassword())) {
-            updatePassword(userId, userConfig.getPassword());
-        }
-        updateEmail(userId, userConfig.getEmailAddress());
-
         Optional<UserModel> userModel = userAccessor.getUser(userId);
-        Set<String> configuredRoleNames = userConfig.getRoleNames();
-        if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
-            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
-                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
-                                                      .collect(Collectors.toList());
-            authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
-        }
+        if (userModel.isPresent()) {
+            UserModel existingUser = userModel.get();
+            String userName = userConfig.getUsername();
+            String password = userConfig.getPassword();
+            String emailAddress = userConfig.getEmailAddress();
+            boolean passwordHasValue = StringUtils.isNotBlank(password);
+            Map<String, String> fieldErrors = new HashMap<>();
+            validateUserName(fieldErrors, userName);
+            validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+            if (!userConfig.isPasswordSet() || passwordHasValue) {
+                validatePasswordLength(fieldErrors, password);
+            }
+            if (!fieldErrors.isEmpty()) {
+                throw new AlertFieldException(fieldErrors);
+            }
 
-        return userAccessor.getUser(userConfig.getUsername())
+            if (passwordHasValue) {
+                UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getRoles());
+                userAccessor.updateUser(newUserModel, false);
+            } else {
+                UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, existingUser.getPassword(), emailAddress, existingUser.getRoles());
+                userAccessor.updateUser(newUserModel, true);
+            }
+
+            Set<String> configuredRoleNames = userConfig.getRoleNames();
+            if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
+                Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                          .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                          .collect(Collectors.toList());
+                authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+            }
+        }
+        return userAccessor.getUser(userId)
                    .map(this::convertToCustomUserRoleModel)
                    .orElse(userConfig);
     }
 
     public void deleteUser(Long userId) throws AlertDatabaseConstraintException {
         userAccessor.deleteUser(userId);
-    }
-
-    private boolean updatePassword(Long userId, String newPassword) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validatePasswordLength(fieldErrors, newPassword);
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.changeUserPassword(userId, newPassword);
-    }
-
-    private boolean updateEmail(Long userId, String emailAddress) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.changeUserEmailAddress(userId, emailAddress);
     }
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
@@ -156,13 +148,27 @@ public class UserActions {
             StringUtils.isNotBlank(userModel.getPassword()));
     }
 
+    private void validateRequiredFields(UserConfig userConfig) throws AlertFieldException {
+        String userName = userConfig.getUsername();
+        String password = userConfig.getPassword();
+        String emailAddress = userConfig.getEmailAddress();
+
+        Map<String, String> fieldErrors = new HashMap<>();
+        validateUserName(fieldErrors, userName);
+        validatePasswordLength(fieldErrors, password);
+        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+    }
+
     private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
             fieldErrors.put(fieldKey, "This field is required.");
         }
     }
 
-    private void validateCreationUserName(Map<String, String> fieldErrors, String userName) {
+    private void validateUserName(Map<String, String> fieldErrors, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));

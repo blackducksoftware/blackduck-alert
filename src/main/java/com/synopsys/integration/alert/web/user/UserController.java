@@ -104,6 +104,10 @@ public class UserController extends BaseController {
         try {
             userActions.updateUser(userModel);
             return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("There was an issue with the DB: {}", e.getMessage());
+            logger.debug("Cause", e);
+            return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
