@@ -148,18 +148,15 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public void deleteUser(String userName) throws AlertDatabaseConstraintException {
-        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
-        if (optionalUser.isPresent()) {
-            deleteUser(optionalUser.get());
+        Optional<Long> optionalUserId = userRepository.findByUserName(userName).map(UserEntity::getId);
+        if (optionalUserId.isPresent()) {
+            deleteUserById(optionalUserId.get());
         }
     }
 
     @Override
     public void deleteUser(Long userId) throws AlertDatabaseConstraintException {
-        Optional<UserEntity> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            deleteUser(optionalUser.get());
-        }
+        deleteUserById(userId);
     }
 
     private boolean changeUserPassword(UserEntity oldEntity, String newPassword) {
@@ -174,12 +171,13 @@ public class DefaultUserAccessor implements UserAccessor {
         return userRepository.save(updatedEntity) != null;
     }
 
-    private void deleteUser(UserEntity userEntity) throws AlertDatabaseConstraintException {
-        if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
-            assignRoles(userEntity.getUserName(), Set.of());
-            userRepository.delete(userEntity);
+    private void deleteUserById(Long userId) throws AlertDatabaseConstraintException {
+        if (!RESERVED_USER_IDS.contains(userId)) {
+            authorizationUtility.updateUserRoles(userId, Set.of());
+            userRepository.deleteById(userId);
         } else {
-            throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userEntity.getUserName()));
+            String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
+            throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userIdentifier));
         }
     }
 

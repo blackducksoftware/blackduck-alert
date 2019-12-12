@@ -86,27 +86,22 @@ public class UserActions {
         Optional<UserModel> userModel = userAccessor.getUser(userId);
         if (userModel.isPresent()) {
             UserModel existingUser = userModel.get();
+            boolean passwordMissing = StringUtils.isBlank(userConfig.getPassword());
             String userName = userConfig.getUsername();
-            String password = userConfig.getPassword();
+            String password = passwordMissing ? existingUser.getPassword() : userConfig.getPassword();
             String emailAddress = userConfig.getEmailAddress();
-            boolean passwordHasValue = StringUtils.isNotBlank(password);
+
             Map<String, String> fieldErrors = new HashMap<>();
             validateUserName(fieldErrors, userName);
             validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
-            if (!userConfig.isPasswordSet() || passwordHasValue) {
+            if (!userConfig.isPasswordSet() || !passwordMissing) {
                 validatePasswordLength(fieldErrors, password);
             }
             if (!fieldErrors.isEmpty()) {
                 throw new AlertFieldException(fieldErrors);
             }
-
-            if (passwordHasValue) {
-                UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getRoles());
-                userAccessor.updateUser(newUserModel, false);
-            } else {
-                UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, existingUser.getPassword(), emailAddress, existingUser.getRoles());
-                userAccessor.updateUser(newUserModel, true);
-            }
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getRoles());
+            userAccessor.updateUser(newUserModel, passwordMissing);
 
             Set<String> configuredRoleNames = userConfig.getRoleNames();
             if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
