@@ -110,22 +110,19 @@ public class UserController extends BaseController {
 
     }
 
-    @DeleteMapping(value = "/{userName}")
-    public ResponseEntity<String> deleteUser(@PathVariable String userName) {
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         if (!hasPermission(authorizationManager::hasDeletePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.deleteUser(userName);
+            userActions.deleteUser(userId);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
             return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
-        } catch (AlertFieldException e) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
-
     }
 
     private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
