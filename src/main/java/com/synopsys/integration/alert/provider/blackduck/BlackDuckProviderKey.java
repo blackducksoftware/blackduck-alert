@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Component
 public final class BlackDuckProviderKey extends ProviderKey {
@@ -33,6 +34,11 @@ public final class BlackDuckProviderKey extends ProviderKey {
     @Override
     public String getUniversalKey() {
         return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return BlackDuckDescriptor.BLACKDUCK_LABEL;
     }
 
 }

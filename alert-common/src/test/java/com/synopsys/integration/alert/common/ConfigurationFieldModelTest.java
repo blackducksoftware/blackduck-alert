@@ -55,6 +55,11 @@ public class ConfigurationFieldModelTest {
             public String getUniversalKey() {
                 return "descriptor";
             }
+
+            @Override
+            public String getDisplayName() {
+                return "descriptor";
+            }
         };
 
         DescriptorMap descriptorMap = new DescriptorMap(List.of(descriptorKey), List.of(), List.of(), List.of());

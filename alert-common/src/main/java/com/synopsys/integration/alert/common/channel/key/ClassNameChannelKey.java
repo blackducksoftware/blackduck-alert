@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.channel.key;
 
-public class ClassNameChannelKey extends ChannelKey {
+public abstract class ClassNameChannelKey extends ChannelKey {
     @Override
     public final String getUniversalKey() {
         return getClass().getSimpleName().toLowerCase();
