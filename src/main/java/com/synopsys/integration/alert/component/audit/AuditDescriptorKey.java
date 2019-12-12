@@ -35,4 +35,9 @@ public final class AuditDescriptorKey extends DescriptorKey {
         return AUDIT_COMPONENT;
     }
 
+    @Override
+    public String getDisplayName() {
+        return AuditDescriptor.AUDIT_LABEL;
+    }
+
 }

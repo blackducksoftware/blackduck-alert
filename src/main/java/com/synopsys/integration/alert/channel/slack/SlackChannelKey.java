@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.slack;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
@@ -33,6 +34,11 @@ public final class SlackChannelKey extends ChannelKey {
     @Override
     public String getUniversalKey() {
         return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return SlackDescriptor.SLACK_LABEL;
     }
 
 }

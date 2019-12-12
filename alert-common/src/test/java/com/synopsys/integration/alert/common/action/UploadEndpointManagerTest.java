@@ -40,6 +40,11 @@ public class UploadEndpointManagerTest {
         public String getUniversalKey() {
             return "descriptor_universal_key";
         }
+
+        @Override
+        public String getDisplayName() {
+            return "descriptorName";
+        }
     };
 
     @BeforeEach
