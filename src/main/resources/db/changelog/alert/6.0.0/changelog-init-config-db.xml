@@ -2,11 +2,8 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <!-- Create any tables from 5.3.0 if they do not exist -->
-    <changeSet author="gavink" id="2019-12-11-10-36-41-047">
+    <changeSet author="gavink" id="2019-12-11-10-36-41-001">
         <sql dbms="postgresql" stripComments="true">
-            CREATE SCHEMA IF NOT EXISTS ALERT;
-            CREATE SCHEMA IF NOT EXISTS PUBLIC;
-
             create table if not exists ALERT.PROVIDER_PROJECTS
             (
                 ID                  SERIAL,
@@ -289,9 +286,12 @@
     <!-- Initialize contexts -->
     <changeSet author="gavink" id="2019-12-11-11-02-46-045">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="2">select count(*) from ALERT.CONFIG_CONTEXTS</sqlCheck>
-            </not>
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.CONFIG_CONTEXTS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="2">select count(*) from ALERT.CONFIG_CONTEXTS</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             insert into ALERT.CONFIG_CONTEXTS (ID, CONTEXT)
@@ -310,9 +310,12 @@
     <!-- Initialize descriptor types -->
     <changeSet author="gavink" id="2019-12-11-11-35-48-436">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="3">select count(*) from ALERT.DESCRIPTOR_TYPES</sqlCheck>
-            </not>
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_TYPES</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.DESCRIPTOR_TYPES</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <sql dbms="h2" stripComments="true">
             insert into ALERT.DESCRIPTOR_TYPES (ID, TYPE)
@@ -337,9 +340,8 @@
     <!-- Initialize registered descriptors -->
     <changeSet author="gavink" id="2019-12-11-12-04-43-379">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="13">select count(*) from ALERT.REGISTERED_DESCRIPTORS</sqlCheck>
-            </not>
+            <or>
+            </or>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             insert into ALERT.REGISTERED_DESCRIPTORS (ID, TYPE_ID, NAME)
@@ -418,9 +420,12 @@
     <!-- Initialize defined fields -->
     <changeSet author="gavink" id="2019-12-11-12-28-09-422">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="167">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
-            </not>
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="167">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             insert into ALERT.DEFINED_FIELDS (ID, SOURCE_KEY, SENSITIVE)
@@ -1216,9 +1221,12 @@
     <!-- Initialize descriptor fields -->
     <changeSet author="gavink" id="2019-12-11-14-14-32-932">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="167">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
-            </not>
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="167">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             insert into ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID)
@@ -2173,9 +2181,12 @@
     <!-- Initialize field contexts -->
     <changeSet author="gavink" id="2019-12-11-14-38-14-264">
         <preConditions>
-            <not>
-                <sqlCheck expectedResult="167">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
-            </not>
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="167">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             insert into ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID)

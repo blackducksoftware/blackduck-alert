@@ -1,5 +1,351 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2019-12-12-08-44-02-287">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.ROLES</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.ROLES where CUSTOM = false</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
+            select (1, 'ALERT_ADMIN', false)
+            where not exists(
+                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_ADMIN' and CUSTOM = false
+            );
 
+            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
+            select (2, 'ALERT_JOB_MANAGER', false)
+            where not exists(
+                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_JOB_MANAGER' and CUSTOM = false
+            );
+
+            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
+            select (3, 'ALERT_USER', false)
+            where not exists(
+                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_USER' and CUSTOM = false
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-12-12-09-11-55-999">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="42">select count(*) from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 or ROLE_ID = 2 or ROLE_ID = 3</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 1, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 1, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 2, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 2, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 4, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 4, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 5, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 5 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 6, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 6 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 7, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 7, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 8, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 8 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 9, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 9, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 10, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 10, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 11, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 11 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 12, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 12, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (1, 255, 13, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 13 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 4, 6, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 4 and DESCRIPTOR_ID = 6 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 1, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 2, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 4, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 7, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 8, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 8 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 9, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 10, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 20, 12, 1)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 1
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 1, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 2, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 4, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 7, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 9, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 10, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (2, 255, 12, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 1, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 2, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 4, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 7, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 9, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 10, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
+            );
+
+            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
+            select (3, 4, 12, 2)
+            where not exists(
+                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-12-12-09-24-04-466">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.USERS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.USERS where USERNAME = 'sysadmin' or USERNAME = 'jobmanager' or USERNAME = 'alertuser'</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
+            select (1, 'sysadmin', '$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy', null, false, false, false, true)
+            where not exists (
+                select * from ALERT.USERS where USERNAME = 'sysadmin'
+            );
+
+            insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
+            select (2, 'jobmanager', '$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui', null, false, false, false, true)
+            where not exists (
+                select * from ALERT.USERS where USERNAME = 'jobmanager'
+            );
+
+            insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
+            select (3, 'alertuser', '$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui', null, false, false, false, true)
+            where not exists (
+                select * from ALERT.USERS where USERNAME = 'alertuser'
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-12-12-09-34-27-326">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.USER_ROLES</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.USER_ROLES where USER_ID = 1 or USER_ID = 2 or USER_ID = 3</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
+            select (1, 1)
+            where not exists(
+                select * from ALERT.USER_ROLES where USER_ID = 1 and ROLE_ID = 1
+            );
+            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
+            select (2, 2)
+            where not exists(
+                select * from ALERT.USER_ROLES where USER_ID = 2 and ROLE_ID = 2
+            );
+            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
+            select (3, 3)
+            where not exists(
+                select * from ALERT.USER_ROLES where USER_ID = 3 and ROLE_ID = 3
+            );
+        </sql>
+    </changeSet>
 </databaseChangeLog>
