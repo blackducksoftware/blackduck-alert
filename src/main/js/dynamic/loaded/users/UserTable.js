@@ -31,14 +31,22 @@ class UserTable extends Component {
     createColumns() {
         return [
             {
+                header: 'id',
+                headerLabel: 'Id',
+                isKey: true,
+                hidden: true
+            },
+            {
                 header: 'username',
                 headerLabel: 'Username',
-                isKey: true
+                isKey: false,
+                hidden: false
             },
             {
                 header: 'emailAddress',
                 headerLabel: 'Email',
-                isKey: false
+                isKey: false,
+                hidden: false
             }
         ];
     }

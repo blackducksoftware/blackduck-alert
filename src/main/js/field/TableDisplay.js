@@ -56,7 +56,7 @@ class TableDisplay extends Component {
         }
 
         return this.props.columns.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} hidden={column.hidden} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
                                dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
         ));
     }
@@ -348,7 +348,8 @@ TableDisplay.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
-        isKey: PropTypes.bool.isRequired
+        isKey: PropTypes.bool.isRequired,
+        hidden: PropTypes.bool.isRequired
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
