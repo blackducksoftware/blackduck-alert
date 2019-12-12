@@ -40,11 +40,19 @@ class RoleTable extends Component {
     }
 
     createColumns() {
-        return [{
-            header: 'roleName',
-            headerLabel: 'Name',
-            isKey: true
-        }];
+        return [
+            {
+                header: 'id',
+                headerLabel: 'Id',
+                isKey: true,
+                hidden: true
+            },
+            {
+                header: 'roleName',
+                headerLabel: 'Name',
+                isKey: false
+            }
+        ];
     }
 
     retrieveData() {
@@ -75,8 +83,8 @@ class RoleTable extends Component {
 
     onDelete(rolesToDelete) {
         if (rolesToDelete) {
-            rolesToDelete.forEach(roleName => {
-                this.props.deleteRole(roleName);
+            rolesToDelete.forEach(roleId => {
+                this.props.deleteRole(roleId);
             });
         }
         this.retrieveData();
@@ -134,6 +142,7 @@ class RoleTable extends Component {
         const { role } = this.state;
         let newRole = role;
         if (selectedRow) {
+            newRole.id = role.id || selectedRow.id;
             newRole.roleName = role.roleName || selectedRow.roleName;
             newRole.permissions = selectedRow.permissions || role.permissions;
             if (role.roleName !== newRole.roleName) {
@@ -203,7 +212,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     createRole: role => dispatch(createNewRole(role)),
     updateRole: role => dispatch(updateRole(role)),
-    deleteRole: rolename => dispatch(deleteRole(rolename)),
+    deleteRole: roleId => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),
     clearFieldErrors: () => dispatch(clearRoleFieldErrors())
 });
