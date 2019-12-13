@@ -31,14 +31,22 @@ class UserTable extends Component {
     createColumns() {
         return [
             {
+                header: 'id',
+                headerLabel: 'Id',
+                isKey: true,
+                hidden: true
+            },
+            {
                 header: 'username',
                 headerLabel: 'Username',
-                isKey: true
+                isKey: false,
+                hidden: false
             },
             {
                 header: 'emailAddress',
                 headerLabel: 'Email',
-                isKey: false
+                isKey: false,
+                hidden: false
             }
         ];
     }
@@ -78,8 +86,8 @@ class UserTable extends Component {
 
     onDelete(usersToDelete) {
         if (usersToDelete) {
-            usersToDelete.forEach(userName => {
-                this.props.deleteUser(userName);
+            usersToDelete.forEach(userId => {
+                this.props.deleteUser(userId);
             });
         }
         this.retrieveData();
@@ -106,7 +114,7 @@ class UserTable extends Component {
         let newUser = user;
         if (selectedRow) {
             newUser = Object.assign({}, selectedRow, user);
-            if (user.username !== newUser.username) {
+            if (user.id !== newUser.id) {
                 this.setState({
                     user: newUser
                 });
@@ -186,7 +194,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     createUser: user => dispatch(createNewUser(user)),
     updateUser: user => dispatch(updateUser(user)),
-    deleteUser: username => dispatch(deleteUser(username)),
+    deleteUser: userId => dispatch(deleteUser(userId)),
     getUsers: () => dispatch(fetchUsers()),
     getRoles: () => dispatch(fetchRoles()),
     clearFieldErrors: () => dispatch(clearUserFieldErrors())

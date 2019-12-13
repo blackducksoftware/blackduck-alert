@@ -96,28 +96,14 @@ public class UserController extends BaseController {
 
     }
 
-    @PutMapping
-    public ResponseEntity<String> updateUser(@RequestBody UserConfig userModel) {
+    @PutMapping(value = "/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserConfig userModel) {
         if (!hasPermission(authorizationManager::hasWritePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.updateUser(userModel);
+            userActions.updateUser(userId, userModel);
             return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
-        } catch (AlertFieldException e) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
-        }
-
-    }
-
-    @DeleteMapping(value = "/{userName}")
-    public ResponseEntity<String> deleteUser(@PathVariable String userName) {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
-            return responseFactory.createForbiddenResponse();
-        }
-        try {
-            userActions.deleteUser(userName);
-            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
@@ -126,6 +112,21 @@ public class UserController extends BaseController {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
 
+    }
+
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
+        try {
+            userActions.deleteUser(userId);
+            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("There was an issue with the DB: {}", e.getMessage());
+            logger.debug("Cause", e);
+            return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
+        }
     }
 
     private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {

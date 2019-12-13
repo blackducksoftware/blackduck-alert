@@ -74,13 +74,14 @@ public class RoleController extends BaseController {
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
     }
 
-    @PutMapping
-    public ResponseEntity<String> updateRole(@RequestBody RolePermissionModel rolePermissionModel) {
+    @PutMapping(value = "/{roleId}")
+    public ResponseEntity<String> updateRole(@PathVariable Long roleId, @RequestBody RolePermissionModel rolePermissionModel) {
         if (!hasPermission(authorizationManager::hasWritePermission)) {
             return responseFactory.createForbiddenResponse();
         }
+
         try {
-            roleActions.updateRole(rolePermissionModel);
+            roleActions.updateRole(roleId, rolePermissionModel);
         } catch (AlertDatabaseConstraintException ex) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to update role");
         }
@@ -104,17 +105,15 @@ public class RoleController extends BaseController {
         return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");
     }
 
-    @DeleteMapping(value = "/{roleName}")
-    public ResponseEntity<String> deleteRole(@PathVariable String roleName) {
+    @DeleteMapping(value = "/{roleId}")
+    public ResponseEntity<String> deleteRole(@PathVariable Long roleId) {
         if (!hasPermission(authorizationManager::hasDeletePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            roleActions.deleteRole(roleName);
+            roleActions.deleteRole(roleId);
         } catch (AlertDatabaseConstraintException ex) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to delete role");
-        } catch (AlertFieldException e) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }

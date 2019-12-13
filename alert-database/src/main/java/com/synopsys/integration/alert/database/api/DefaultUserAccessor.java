@@ -132,10 +132,7 @@ public class DefaultUserAccessor implements UserAccessor {
     public boolean changeUserPassword(String username, String newPassword) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            UserEntity oldEntity = entity.get();
-            UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
-            updatedEntity.setId(oldEntity.getId());
-            return userRepository.save(updatedEntity) != null;
+            return changeUserPassword(entity.get(), newPassword);
         }
         return false;
     }
@@ -144,25 +141,43 @@ public class DefaultUserAccessor implements UserAccessor {
     public boolean changeUserEmailAddress(String username, String emailAddress) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            UserEntity oldEntity = entity.get();
-            UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
-            updatedEntity.setId(oldEntity.getId());
-            return userRepository.save(updatedEntity) != null;
+            return changeUserEmailAddress(entity.get(), emailAddress);
         }
         return false;
     }
 
     @Override
     public void deleteUser(String userName) throws AlertDatabaseConstraintException {
-        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
-        if (optionalUser.isPresent()) {
-            UserEntity userEntity = optionalUser.get();
-            if (!RESERVED_USER_IDS.contains(userEntity.getId())) {
-                assignRoles(userEntity.getUserName(), Set.of());
-                userRepository.delete(userEntity);
-            } else {
-                throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userName));
-            }
+        Optional<Long> optionalUserId = userRepository.findByUserName(userName).map(UserEntity::getId);
+        if (optionalUserId.isPresent()) {
+            deleteUserById(optionalUserId.get());
+        }
+    }
+
+    @Override
+    public void deleteUser(Long userId) throws AlertDatabaseConstraintException {
+        deleteUserById(userId);
+    }
+
+    private boolean changeUserPassword(UserEntity oldEntity, String newPassword) {
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
+        updatedEntity.setId(oldEntity.getId());
+        return userRepository.save(updatedEntity) != null;
+    }
+
+    private boolean changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
+        updatedEntity.setId(oldEntity.getId());
+        return userRepository.save(updatedEntity) != null;
+    }
+
+    private void deleteUserById(Long userId) throws AlertDatabaseConstraintException {
+        if (!RESERVED_USER_IDS.contains(userId)) {
+            authorizationUtility.updateUserRoles(userId, Set.of());
+            userRepository.deleteById(userId);
+        } else {
+            String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
+            throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userIdentifier));
         }
     }
 

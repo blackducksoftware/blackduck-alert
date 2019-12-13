@@ -54,4 +54,6 @@ public interface UserAccessor {
 
     void deleteUser(String userName) throws AlertDatabaseConstraintException;
 
+    void deleteUser(Long userId) throws AlertDatabaseConstraintException;
+
 }

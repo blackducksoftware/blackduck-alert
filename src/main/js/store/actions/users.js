@@ -151,8 +151,9 @@ export function createNewUser(user) {
 export function updateUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
+        const { id } = user;
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateWithoutIdRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
@@ -176,11 +177,11 @@ export function updateUser(user) {
     };
 }
 
-export function deleteUser(userName) {
+export function deleteUser(userId) {
     return (dispatch, getState) => {
         dispatch(deletingUser());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userName);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             if (response.ok) {
                 dispatch(deletedUser());

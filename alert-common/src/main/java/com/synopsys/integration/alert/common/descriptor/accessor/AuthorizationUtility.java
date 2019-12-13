@@ -40,9 +40,13 @@ public interface AuthorizationUtility {
 
     UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
 
+    void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException;
+
     PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
 
     void deleteRole(String roleName) throws AlertDatabaseConstraintException;
+
+    void deleteRole(Long roleId) throws AlertDatabaseConstraintException;
 
     PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames);
 
