@@ -72,6 +72,8 @@ class PermissionTable extends Component {
             return [];
         }
 
+        const descriptorOptions = this.createDescriptorOptions();
+
         return data.map(permission => {
             const permissionShorthand = [];
             permission[PERMISSIONS_TABLE.CREATE] && permissionShorthand.push('c');
@@ -83,8 +85,12 @@ class PermissionTable extends Component {
             permission[PERMISSIONS_TABLE.UPLOAD_WRITE] && permissionShorthand.push('uw');
             permission[PERMISSIONS_TABLE.UPLOAD_DELETE] && permissionShorthand.push('ud');
 
+            const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
+            const prettyNameObject = descriptorOptions.find(option => descriptorName === option.value);
+            const prettyName = (prettyNameObject) ? prettyNameObject.label : descriptorName;
+
             return {
-                [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME],
+                [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: prettyName,
                 [PERMISSIONS_TABLE.CONTEXT]: permission[PERMISSIONS_TABLE.CONTEXT],
                 permissionsColumn: permissionShorthand.join('-')
             };
@@ -95,8 +101,11 @@ class PermissionTable extends Component {
         const { permissionsColumn, descriptorName, context } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
+        const prettyNameObject = this.createDescriptorOptions().find(option => descriptorName === option.label);
+        const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
+
         return {
-            descriptorName,
+            descriptorName: prettyName,
             context,
             [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
             [PERMISSIONS_TABLE.DELETE_OPERATION]: splitPermissions.includes('d'),
@@ -113,6 +122,7 @@ class PermissionTable extends Component {
         const { descriptors } = this.props;
         const descriptorOptions = [];
         const nameCache = [];
+
 
         descriptors.forEach(descriptor => {
             const { label, name } = descriptor;

@@ -35,4 +35,9 @@ public final class SchedulingDescriptorKey extends DescriptorKey {
         return SCHEDULING_COMPONENT;
     }
 
+    @Override
+    public String getDisplayName() {
+        return SchedulingDescriptor.SCHEDULING_LABEL;
+    }
+
 }

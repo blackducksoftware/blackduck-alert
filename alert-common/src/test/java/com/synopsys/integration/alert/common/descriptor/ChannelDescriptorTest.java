@@ -19,6 +19,11 @@ public class ChannelDescriptorTest {
             public String getUniversalKey() {
                 return name;
             }
+
+            @Override
+            public String getDisplayName() {
+                return name;
+            }
         };
         ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, null) {
             @Override

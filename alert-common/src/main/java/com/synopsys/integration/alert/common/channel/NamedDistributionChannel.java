@@ -40,7 +40,7 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         distributeMessage(event);
-        String statusMessage = String.format("Successfully sent %s message.", getDestinationName());
+        String statusMessage = String.format("Successfully sent %s message.", channelKey.getDisplayName());
         return new MessageResult(statusMessage);
     }
 

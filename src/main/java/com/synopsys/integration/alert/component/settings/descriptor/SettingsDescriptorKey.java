@@ -35,4 +35,9 @@ public final class SettingsDescriptorKey extends DescriptorKey {
         return SETTINGS_COMPONENT;
     }
 
+    @Override
+    public String getDisplayName() {
+        return SettingsDescriptor.SETTINGS_LABEL;
+    }
+
 }
