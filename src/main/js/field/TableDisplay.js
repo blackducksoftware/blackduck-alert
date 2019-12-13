@@ -34,18 +34,28 @@ class TableDisplay extends Component {
         this.copyButtonClicked = this.copyButtonClicked.bind(this);
         this.copyButtonClick = this.copyButtonClick.bind(this);
         this.isShowModal = this.isShowModal.bind(this);
+        this.createErrorModal = this.createErrorModal.bind(this);
 
         this.state = {
             currentRowSelected: null,
             modificationState: MODIFICATION_STATE.NONE,
             showConfiguration: false,
             showDelete: false,
-            rowsToDelete: []
+            rowsToDelete: [],
+            showErrorDialog: Boolean(this.props.errorDialogMessage)
         };
     }
 
     componentDidMount() {
         this.updateData();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.errorDialogMessage !== this.props.errorDialogMessage) {
+            this.setState({
+                showErrorDialog: Boolean(this.props.errorDialogMessage)
+            });
+        }
     }
 
     createTableColumns() {
@@ -209,6 +219,31 @@ class TableDisplay extends Component {
         );
     }
 
+    createErrorModal() {
+        return (
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={this.state.showErrorDialog} onHide={() => {
+                    this.handleClose();
+                    this.setState({
+                        showErrorDialog: false
+                    });
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Error</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div>{this.props.errorDialogMessage}</div>
+                    </Modal.Body>
+                </Modal>
+            </div>
+        );
+    }
+
+
     collectItemsToDelete(next, dropRowKeys) {
         this.setState({
             rowsToDelete: dropRowKeys,
@@ -336,6 +371,7 @@ class TableDisplay extends Component {
 
         return (
             <div>
+                {this.state.showErrorDialog && this.createErrorModal()}
                 {this.createEditModal()}
                 {refresh}
                 {deleteModal}
@@ -373,7 +409,8 @@ TableDisplay.propTypes = {
     tableDeleteButtonLabel: PropTypes.string,
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
-    hasFieldErrors: PropTypes.bool
+    hasFieldErrors: PropTypes.bool,
+    errorDialogMessage: PropTypes.string
 };
 
 TableDisplay.defaultProps = {
@@ -395,7 +432,8 @@ TableDisplay.defaultProps = {
     tableDeleteButtonLabel: 'Delete',
     tableSearchable: true,
     tableRefresh: true,
-    hasFieldErrors: false
+    hasFieldErrors: false,
+    errorDialogMessage: null
 };
 
 const mapStateToProps = state => ({

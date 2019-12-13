@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -134,25 +135,12 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
-    public void deleteRole(String roleName) throws AlertDatabaseConstraintException {
-        Optional<RoleEntity> foundRole = roleRepository.findByRoleName(roleName);
-        if (foundRole.isPresent()) {
-            RoleEntity roleEntity = foundRole.get();
-            if (Boolean.FALSE.equals(roleEntity.getCustom())) {
-                throw new AlertDatabaseConstraintException("Cannot delete the role '" + roleName + "' because it is not a custom role");
-            }
-            // Deletion cascades to permissions
-            roleRepository.deleteById(roleEntity.getId());
-        }
-    }
-
-    @Override
-    public void deleteRole(Long roleId) throws AlertDatabaseConstraintException {
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
             if (Boolean.FALSE.equals(roleEntity.getCustom())) {
-                throw new AlertDatabaseConstraintException("Cannot delete the role '" + roleId + "' because it is not a custom role");
+                throw new AlertForbiddenOperationException("Cannot delete the role '" + roleId + "' because it is not a custom role.");
             }
             // Deletion cascades to permissions
             roleRepository.deleteById(roleEntity.getId());

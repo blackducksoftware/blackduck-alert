@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
@@ -122,10 +123,8 @@ public class UserController extends BaseController {
         try {
             userActions.deleteUser(userId);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("There was an issue with the DB: {}", e.getMessage());
-            logger.debug("Cause", e);
-            return responseFactory.createInternalServerErrorResponse("", "There was an issue with the DB");
+        } catch (AlertForbiddenOperationException ex) {
+            return responseFactory.createForbiddenResponse("The user is reserved and cannot be deleted.");
         }
     }
 

@@ -17,8 +17,8 @@ const initialState = {
     deleteSuccess: false,
     data: [],
     userFetchError: '',
-    userSaveError: '',
-    userDeleteError: '',
+    userSaveError: null,
+    userDeleteError: null,
     fieldErrors: {}
 };
 
@@ -80,6 +80,7 @@ const users = (state = initialState, action) => {
             });
         case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
+                userDeleteError: null,
                 fieldErrors: {}
             });
         }
