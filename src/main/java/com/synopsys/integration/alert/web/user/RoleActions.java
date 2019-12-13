@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUt
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -88,7 +89,7 @@ public class RoleActions {
         return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
     }
 
-    public void deleteRole(Long roleId) throws AlertDatabaseConstraintException {
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         authorizationUtility.deleteRole(roleId);
     }
 

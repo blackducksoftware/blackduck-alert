@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
@@ -44,9 +45,7 @@ public interface AuthorizationUtility {
 
     PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
 
-    void deleteRole(String roleName) throws AlertDatabaseConstraintException;
-
-    void deleteRole(Long roleId) throws AlertDatabaseConstraintException;
+    void deleteRole(Long roleId) throws AlertForbiddenOperationException;
 
     PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames);
 

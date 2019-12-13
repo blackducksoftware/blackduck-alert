@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
@@ -112,8 +113,8 @@ public class RoleController extends BaseController {
         }
         try {
             roleActions.deleteRole(roleId);
-        } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to delete role");
+        } catch (AlertForbiddenOperationException ex) {
+            return responseFactory.createForbiddenResponse("The role is reserved and cannot be deleted.");
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }
