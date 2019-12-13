@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,14 +89,7 @@ public class RoleActions {
     }
 
     public void deleteRole(Long roleId) throws AlertDatabaseConstraintException {
-        Optional<String> userRole = authorizationUtility.getRoles().stream()
-                                        .filter(role -> role.getId().equals(roleId))
-                                        .filter(UserRoleModel::isCustom)
-                                        .map(UserRoleModel::getName)
-                                        .findFirst();
-        if (userRole.isPresent()) {
-            authorizationUtility.deleteRole(userRole.get());
-        }
+        authorizationUtility.deleteRole(roleId);
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
