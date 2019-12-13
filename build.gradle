@@ -204,12 +204,15 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
 
+                                '--hibernate.default_schema=ALERT',
                                 '--spring.h2.console.enabled=true',
                                 '--spring.jpa.hibernate.ddl-auto=none',
                                 '--spring.datasource.driver-class-name=org.h2.Driver',
                                 '--spring.jpa.database-platform=org.hibernate.dialect.H2Dialect',
-                                '--spring.datasource.url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL',
-                                '--spring.datasource.hikari.jdbc-url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL',
+                                '--spring.datasource.username=sa',
+                                '--spring.datasource.password=blackduck',
+                                '--spring.datasource.url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
                                 "--alert.templates.dir=${project.buildDir}/resources/main/templates",
