@@ -151,7 +151,8 @@ export function updateRole(role) {
     return (dispatch, getState) => {
         dispatch(savingRole());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateWithoutIdRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
+        const { id } = role;
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, role);
         request.then((response) => {
             if (response.ok) {
                 response.json().then(() => {
@@ -175,11 +176,11 @@ export function updateRole(role) {
     };
 }
 
-export function deleteRole(roleName) {
+export function deleteRole(roleId) {
     return (dispatch, getState) => {
         dispatch(deletingRole());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleName);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
             if (response.ok) {
                 dispatch(deletedRole());

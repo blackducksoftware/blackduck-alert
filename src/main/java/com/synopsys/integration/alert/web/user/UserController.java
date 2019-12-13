@@ -96,13 +96,13 @@ public class UserController extends BaseController {
 
     }
 
-    @PutMapping
-    public ResponseEntity<String> updateUser(@RequestBody UserConfig userModel) {
+    @PutMapping(value = "/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserConfig userModel) {
         if (!hasPermission(authorizationManager::hasWritePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.updateUser(userModel);
+            userActions.updateUser(userId, userModel);
             return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());

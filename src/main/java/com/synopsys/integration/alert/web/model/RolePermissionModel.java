@@ -24,16 +24,17 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
-public class RolePermissionModel extends AlertSerializableModel {
+public class RolePermissionModel extends Config {
     private String roleName;
     private Set<PermissionModel> permissions;
 
     public RolePermissionModel() {
     }
 
-    public RolePermissionModel(String roleName, Set<PermissionModel> permissions) {
+    public RolePermissionModel(String id, String roleName, Set<PermissionModel> permissions) {
+        super(id);
         this.roleName = roleName;
         this.permissions = permissions;
     }
@@ -42,12 +43,12 @@ public class RolePermissionModel extends AlertSerializableModel {
         return roleName;
     }
 
-    public Set<PermissionModel> getPermissions() {
-        return permissions;
-    }
-
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public Set<PermissionModel> getPermissions() {
+        return permissions;
     }
 
     public void setPermissions(Set<PermissionModel> permissionModels) {

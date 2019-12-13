@@ -81,8 +81,7 @@ public class UserActions {
         return convertToCustomUserRoleModel(userModel);
     }
 
-    public UserConfig updateUser(UserConfig userConfig) throws AlertFieldException, AlertDatabaseConstraintException {
-        Long userId = Long.valueOf(userConfig.getId());
+    public UserConfig updateUser(Long userId, UserConfig userConfig) throws AlertFieldException, AlertDatabaseConstraintException {
         Optional<UserModel> userModel = userAccessor.getUser(userId);
         if (userModel.isPresent()) {
             UserModel existingUser = userModel.get();
