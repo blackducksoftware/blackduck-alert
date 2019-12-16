@@ -25,7 +25,8 @@ class RoleTable extends Component {
         this.state = {
             role: {
                 permissions: []
-            }
+            },
+            incrementalId: 1
         };
     }
 
@@ -102,7 +103,7 @@ class RoleTable extends Component {
     updatePermissions(permission) {
         const { role } = this.state;
         const { permissions } = role;
-        const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.descriptorName === permission.descriptorName && listPermission.context === permission.context);
+        const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.id === permission.id);
         if (matchingPermissionIndex > -1) {
             permissions[matchingPermissionIndex] = permission;
             role.permissions = permissions;
@@ -152,6 +153,23 @@ class RoleTable extends Component {
             }
         }
 
+        const { permissions } = newRole;
+        let incrementedId = this.state.incrementalId;
+        permissions.forEach(permission => {
+            if (!permission.id) {
+                permission.id = incrementedId;
+                incrementedId++;
+            }
+        });
+
+        if (incrementedId !== this.state.incrementalId) {
+            newRole.permissions = permissions;
+            this.setState({
+                role: newRole,
+                incrementedId: incrementedId
+            });
+        }
+
         const roleNameKey = 'roleName';
         const roleNameValue = newRole[roleNameKey];
 
@@ -160,8 +178,14 @@ class RoleTable extends Component {
         return (
             <div>
                 <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
-                <PermissionTable data={newRole.permissions} updateRole={this.updatePermissions} saveRole={this.savePermissions} deleteRole={this.deletePermission} descriptors={this.props.descriptors} canCreate={canCreate}
-                                 canDelete={canDelete} />
+                <PermissionTable
+                    data={permissions}
+                    updateRole={this.updatePermissions}
+                    saveRole={this.savePermissions}
+                    deleteRole={this.deletePermission}
+                    descriptors={this.props.descriptors}
+                    canCreate={canCreate}
+                    canDelete={canDelete} />
             </div>
         );
     }

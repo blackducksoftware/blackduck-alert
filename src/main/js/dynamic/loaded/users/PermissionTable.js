@@ -51,9 +51,14 @@ class PermissionTable extends Component {
     createPermissionsColumns() {
         return [
             {
+                header: 'id',
+                headerLabel: 'ID',
+                isKey: true,
+                hidden: true
+            }, {
                 header: PERMISSIONS_TABLE.DESCRIPTOR_NAME,
                 headerLabel: 'Descriptor',
-                isKey: true
+                isKey: false
             }, {
                 header: PERMISSIONS_TABLE.CONTEXT,
                 headerLabel: 'Context',
@@ -90,6 +95,7 @@ class PermissionTable extends Component {
             const prettyName = (prettyNameObject) ? prettyNameObject.label : descriptorName;
 
             return {
+                id: permission.id,
                 [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: prettyName,
                 [PERMISSIONS_TABLE.CONTEXT]: permission[PERMISSIONS_TABLE.CONTEXT],
                 permissionsColumn: permissionShorthand.join('-')
@@ -98,13 +104,14 @@ class PermissionTable extends Component {
     }
 
     convertPermissionsColumn(permissions) {
-        const { permissionsColumn, descriptorName, context } = permissions;
+        const { permissionsColumn, descriptorName, context, id } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
         const prettyNameObject = this.createDescriptorOptions().find(option => descriptorName === option.label);
         const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
 
         return {
+            id,
             descriptorName: prettyName,
             context,
             [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
@@ -182,6 +189,7 @@ class PermissionTable extends Component {
 
         return (
             <div>
+
                 <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false} onChange={this.handlePermissionsChange}
                                     value={newPermissions[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
                 <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} clearable={false} onChange={this.handlePermissionsChange}
