@@ -314,46 +314,119 @@
     <!-- Create stored procedures/functions for initialization operations -->
     <changeSet author="gavink" id="2019-12-13-13-57-17-245">
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION getContextId(ctx varchar(64))
+            CREATE OR REPLACE FUNCTION GET_CONTEXT_ID(varchar(64))
             RETURNS BIGINT
             AS $$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
-                    from ALERT.CONFIG_CONTEXTS where CONTEXT = ctx;
+                    from ALERT.CONFIG_CONTEXTS where CONTEXT = $1;
                 RETURN result;
                 END;
             $$
-            LANGUAGE plpgsql;
+            LANGUAGE sql;
         </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_CONTEXT_ID AS $$
+                java.lang.Integer getContextId(final java.sql.Connection connection, final java.lang.String context) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + context.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION getFieldId(key varchar(64))
+            CREATE OR REPLACE FUNCTION GET_FIELD_ID(varchar(64))
             RETURNS BIGINT
             AS $$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result from ALERT.DEFINED_FIELDS
-                    where SOURCE_KEY = key;
+                    where SOURCE_KEY = $1;
                 RETURN result;
                 END;
             $$
-            LANGUAGE plpgsql;
+            LANGUAGE sql;
         </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_FIELD_ID AS $$
+                java.lang.Integer getFieldId(final java.sql.Connection connection, final java.lang.String sourceKey) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + sourceKey + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION getDescriptorId(dName varchar(64))
+            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_TYPE_ID(varchar(64))
             RETURNS BIGINT
             AS $$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
-                    from ALERT.REGISTERED_DESCRIPTORS where NAME = dName;
+                    from ALERT.DESCRIPTOR_TYPES where TYPEs = $1;
                 RETURN result;
                 END;
             $$
-            LANGUAGE plpgsql;
+            LANGUAGE sql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_DESCRIPTOR_TYPE_ID AS $$
+                java.lang.Integer getDescriptorTypeId(final java.sql.Connection connection, final java.lang.String type) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + type.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_ID(varchar(64))
+            RETURNS BIGINT
+            AS $$
+                DECLARE result BIGINT;
+                BEGIN
+                    select ID
+                    into result
+                    from ALERT.REGISTERED_DESCRIPTORS where NAME = $1;
+                RETURN result;
+                END;
+            $$
+            LANGUAGE sql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_DESCRIPTOR_ID AS $$
+                java.lang.Integer getDescriptorId(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + descriptorName.toLowerCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
         </createProcedure>
     </changeSet>
     <!-- Initialize contexts -->
@@ -416,75 +489,61 @@
     <!-- Initialize registered descriptors -->
     <changeSet author="gavink" id="2019-12-11-12-04-43-379">
         <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.REGISTERED_DESCRIPTORS</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="13">select count(*) from ALERT.REGISTERED_DESCRIPTORS</sqlCheck>
-                </not>
-            </or>
+            <sqlCheck expectedResult="0">select count(*) from ALERT.REGISTERED_DESCRIPTORS</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID"></column>
-            <column name="NAME"></column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('PROVIDER')"/>
+            <column name="NAME">provider_blackduck</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">2</column>
-            <column name="NAME">'provider_blackduck'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">channel_email</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">1</column>
-            <column name="NAME">'channel_email'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">channel_slack</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">1</column>
-            <column name="NAME">'channel_slack'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_settings</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">3</column>
-            <column name="NAME">'component_settings'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_scheduling</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">3</column>
-            <column name="NAME">'component_scheduling'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('PROVIDER')"/>
+            <column name="NAME">provider_polaris</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">2</column>
-            <column name="NAME">'provider_polaris'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_audit</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">3</column>
-            <column name="NAME">'component_audit'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">channel_jira_cloud</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">1</column>
-            <column name="NAME">'channel_jira_cloud'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">msteamskey</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">1</column>
-            <column name="NAME">'msteamskey'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_authentication</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">3</column>
-            <column name="NAME">'component_authentication'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">channel_jira_server</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">1</column>
-            <column name="NAME">'channel_jira_server'</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID">3</column>
-            <column name="NAME">'component_users'</column>
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_users</column>
         </insert>
     </changeSet>
     <!-- Initialize defined fields -->
     <changeSet author="gavink" id="2019-12-11-12-28-09-422">
         <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="167">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
-                </not>
-            </or>
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">blackduck.url</column>
@@ -606,10 +665,10 @@
             <column name="SOURCE_KEY">mail.smtp.auth.plain.disable</column>
             <column name="SENSITIVE">false</column>
         </insert>
-        <sql stripComments="true">
-            insert into ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE)
-            select ('mail.smtp.auth.digest-md5.disable', false);
-        </sql>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">mail.smtp.auth.digest-md5.disable</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">mail.smtp.auth.ntlm.disable</column>
             <column name="SENSITIVE">false</column>
@@ -622,10 +681,10 @@
             <column name="SOURCE_KEY">mail.smtp.auth.ntlm.flags</column>
             <column name="SENSITIVE">false</column>
         </insert>
-        <sql stripComments="true">
-            insert into ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE)
-            select ('mail.smtp.auth.xoauth2.disable', false);
-        </sql>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">mail.smtp.auth.xoauth2.disable</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">mail.smtp.submitter</column>
             <column name="SENSITIVE">false</column>
@@ -638,10 +697,10 @@
             <column name="SOURCE_KEY">mail.smtp.dsn.ret</column>
             <column name="SENSITIVE">false</column>
         </insert>
-        <sql stripComments="true">
-            insert into ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE)
-            select ('mail.smtp.allow8bitmime', false);
-        </sql>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">mail.smtp.allow8bitmime</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">mail.smtp.sendpartial</column>
             <column name="SENSITIVE">false</column>
@@ -1022,1187 +1081,1177 @@
     <!-- Initialize descriptor fields -->
     <changeSet author="gavink" id="2019-12-11-14-14-32-932">
         <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="167">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
-                </not>
-            </or>
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_FIELDS</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">1</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">2</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.api.key')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">3</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.timeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.filter.by.project')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">5</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.project.name.pattern')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">6</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.configured.project')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">7</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.notification.types')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">8</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.format.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">165</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.policy.notification.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">1</column>
-            <column name="FIELD_ID">166</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.vulnerability.notification.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">9</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.subject.line')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">10</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('project.owner.only')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">11</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.addresses')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">12</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">13</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">14</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">15</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">16</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.user')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">17</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.host')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">18</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.port')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">19</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.connectiontimeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.timeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">21</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.writetimeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">22</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.from')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">23</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localhost')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">24</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localaddress')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">25</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localport')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">26</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ehlo')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">27</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">28</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.mechanisms')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">29</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.login.disable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">30</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.plain.disable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">31</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.digest-md5.disable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">32</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.disable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">33</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.domain')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">34</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.flags')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">35</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.xoauth2.disable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">36</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.submitter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">37</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.dsn.notify')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">38</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.dsn.ret')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">39</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.allow8bitmime')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">40</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sendpartial')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">41</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.enable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">42</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.mechanisms')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">43</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.authorizationid')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">44</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.realm')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">45</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.usecanonicalhostname')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">46</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.quitwait')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">47</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.reportsuccess')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">48</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.enable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">49</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.checkserveridentity')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">50</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.trust')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">51</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.protocols')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">52</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.ciphersuites')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">53</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.starttls.enable')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">54</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.starttls.required')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">55</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.proxy.host')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">56</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.proxy.port')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">57</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.socks.host')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">58</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.socks.port')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">59</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.mailextension')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">60</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.userset')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">61</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.noop.strict')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">62</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">134</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.additional.addresses')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">135</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.additional.addresses.only')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">160</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">2</column>
-            <column name="FIELD_ID">167</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.attachment.format')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">12</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">13</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">14</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">15</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">72</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.webhook')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">73</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">74</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.channel.username')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">4</column>
-            <column name="FIELD_ID">160</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">79</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.host')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">80</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.port')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">81</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.username')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">82</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">101</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.user.default.admin.email')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">102</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.user.default.admin.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">103</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.encryption.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">104</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.encryption.global.salt')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">5</column>
-            <column name="FIELD_ID">105</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.startup.environment.variable.override')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">96</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">97</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.daily.processor.hour')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">98</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.daily.processor.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">99</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">100</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">6</column>
-            <column name="FIELD_ID">119</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.polaris.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.filter.by.project')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">5</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.project.name.pattern')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">6</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.configured.project')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">7</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.notification.types')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">8</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.format.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">106</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">107</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.access.token')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">7</column>
-            <column name="FIELD_ID">108</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.timeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">12</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">13</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">14</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">15</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">120</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">121</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.admin.email.address')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">122</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.admin.api.token')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">123</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.configure.plugin')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">124</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.add.comments')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">125</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.issue.creator')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">126</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.project.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">127</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.issue.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">128</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.resolve.workflow')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">129</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.reopen.workflow')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">159</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.configure.plugin')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">9</column>
-            <column name="FIELD_ID">160</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">12</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">13</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">14</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">15</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">145</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.msteams.webhook')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">10</column>
-            <column name="FIELD_ID">160</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">83</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">84</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.server')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">85</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.dn')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">86</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">87</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.authentication.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">88</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.referral')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">89</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.base')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">90</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">91</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.dn.patterns')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">92</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.attributes')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">93</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.base')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">94</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">95</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.role.attribute')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">114</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">115</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.force.auth')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">116</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">117</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.id')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">118</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.base.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">136</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.file')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">137</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.admin')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">138</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.job.manager')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">139</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.user')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">11</column>
-            <column name="FIELD_ID">140</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.role.attribute.mapping.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">12</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">13</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">14</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">15</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">150</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.add.comments')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">151</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.issue.creator')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">152</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.project.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">153</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.issue.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">154</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.resolve.workflow')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">155</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.reopen.workflow')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">156</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">157</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.username')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">158</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID">12</column>
-            <column name="FIELD_ID">160</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
     </changeSet>
     <!-- Initialize field contexts -->
     <changeSet author="gavink" id="2019-12-11-14-38-14-264">
         <preConditions>
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="167">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
-                </not>
-            </or>
+            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">1</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">2</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.api.key')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">3</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.timeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">4</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.filter.by.project')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">5</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.project.name.pattern')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">6</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.configured.project')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">7</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.notification.types')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">8</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.format.type')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">9</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.subject.line')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">10</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('project.owner.only')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">11</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.addresses')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">12</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">13</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">14</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">15</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">16</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.user')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">17</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.host')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">18</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.port')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">19</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.connectiontimeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">20</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.timeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">21</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.writetimeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">22</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.from')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">23</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localhost')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">24</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localaddress')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">25</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.localport')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">26</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ehlo')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">27</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">28</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.mechanisms')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">29</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.login.disable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">30</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.plain.disable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">31</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.digest-md5.disable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">32</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.disable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">33</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.domain')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">34</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.ntlm.flags')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">35</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.auth.xoauth2.disable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">36</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.submitter')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">37</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.dsn.notify')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">38</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.dsn.ret')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">39</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.allow8bitmime')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">40</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sendpartial')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">41</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.enable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">42</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.mechanisms')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">43</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.authorizationid')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">44</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.realm')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">45</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.sasl.usecanonicalhostname')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">46</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.quitwait')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">47</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.reportsuccess')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">48</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.enable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">49</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.checkserveridentity')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">50</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.trust')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">51</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.protocols')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">52</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.ssl.ciphersuites')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">53</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.starttls.enable')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">54</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.starttls.required')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">55</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.proxy.host')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">56</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.proxy.port')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">57</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.socks.host')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">58</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.socks.port')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">59</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.mailextension')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">60</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.userset')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">61</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.noop.strict')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">62</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('mail.smtp.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">72</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.webhook')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">73</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.channel.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">74</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.slack.channel.username')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">79</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.host')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">80</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.port')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">81</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.username')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">82</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.proxy.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">83</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.enabled')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">84</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">85</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.dn')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">86</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">87</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.authentication.type')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">88</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.referral')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">89</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.base')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">90</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.filter')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">91</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.dn.patterns')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">92</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.attributes')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">93</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.base')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">94</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.filter')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">95</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.role.attribute')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">96</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">97</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.daily.processor.hour')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">98</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.daily.processor.next.run')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">99</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.frequency')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">100</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.next.run')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">101</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.user.default.admin.email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">102</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.user.default.admin.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">103</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.encryption.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">104</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.encryption.global.salt')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">105</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.startup.environment.variable.override')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">106</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">107</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.access.token')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">108</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.timeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">114</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.enabled')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">115</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.force.auth')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">116</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">117</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.id')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">118</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.base.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">119</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.polaris.next.run')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">120</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">121</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.admin.email.address')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">122</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.admin.api.token')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">123</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.configure.plugin')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">124</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.add.comments')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">125</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.issue.creator')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">126</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.project.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">127</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.issue.type')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">128</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.resolve.workflow')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">129</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.reopen.workflow')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">134</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.additional.addresses')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">135</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.additional.addresses.only')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">136</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.file')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">137</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.admin')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">138</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.job.manager')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">139</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.user')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">140</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.role.attribute.mapping.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">145</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.msteams.webhook')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">150</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.add.comments')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">151</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.issue.creator')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">152</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.project.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">153</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.issue.type')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">154</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.resolve.workflow')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">155</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.reopen.workflow')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">156</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">157</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.username')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">158</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.password')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">159</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('GLOBAL')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.server.configure.plugin')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">160</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">165</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.policy.notification.filter')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">166</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('blackduck.vulnerability.notification.filter')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID">167</column>
-            <column name="CONTEXT_ID" valueComputed="getContextId('DISTRIBUTION')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('email.attachment.format')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 </databaseChangeLog>
