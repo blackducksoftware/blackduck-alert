@@ -21,6 +21,7 @@ class UserTable extends Component {
         this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
+        this.clearModalFieldState = this.clearModalFieldState.bind(this);
 
         this.state = {
             user: {},
@@ -69,18 +70,12 @@ class UserTable extends Component {
     onSave() {
         const { user } = this.state;
         this.props.createUser(user);
-        this.setState({
-            user: {}
-        });
         this.retrieveData();
     }
 
     onUpdate() {
         const { user } = this.state;
         this.props.updateUser(user);
-        this.setState({
-            user: {}
-        });
         this.retrieveData();
     }
 
@@ -94,10 +89,15 @@ class UserTable extends Component {
     }
 
     onConfigClose() {
-        this.setState({
-            user: {}
-        });
         this.props.clearFieldErrors()
+    }
+
+    clearModalFieldState() {
+        if (this.state.user && Object.keys(this.state.user).length > 0) {
+            this.setState({
+                user: {}
+            });
+        }
     }
 
     retrieveRoles() {
@@ -156,6 +156,7 @@ class UserTable extends Component {
                     <TableDisplay
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
+                        clearModalFieldState={this.clearModalFieldState}
                         onConfigSave={this.onSave}
                         onConfigUpdate={this.onUpdate}
                         onConfigDelete={this.onDelete}
