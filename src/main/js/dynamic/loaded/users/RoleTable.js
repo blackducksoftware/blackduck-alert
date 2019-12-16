@@ -167,7 +167,7 @@ class RoleTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors } = this.props;
+        const { canCreate, canDelete, fieldErrors, roleDeleteError } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
@@ -184,7 +184,8 @@ class RoleTable extends Component {
                     columns={this.createColumns()}
                     newButton={canCreate}
                     deleteButton={canDelete}
-                    hasFieldErrors={hasErrors} />
+                    hasFieldErrors={hasErrors}
+                    errorDialogMessage={roleDeleteError} />
             </div>
         );
     }
@@ -193,6 +194,7 @@ class RoleTable extends Component {
 RoleTable.defaultProps = {
     canCreate: true,
     canDelete: true,
+    roleDeleteError: null,
     fieldErrors: {}
 };
 
@@ -200,12 +202,14 @@ RoleTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
+    roleDeleteError: PropTypes.string,
     fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
+    roleDeleteError: state.roles.roleDeleteError,
     fieldErrors: state.roles.fieldErrors
 });
 

@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -116,7 +117,7 @@ public class UserActions {
                    .orElse(userConfig);
     }
 
-    public void deleteUser(Long userId) throws AlertDatabaseConstraintException {
+    public void deleteUser(Long userId) throws AlertForbiddenOperationException {
         userAccessor.deleteUser(userId);
     }
 

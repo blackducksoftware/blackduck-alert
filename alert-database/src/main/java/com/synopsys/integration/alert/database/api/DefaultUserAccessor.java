@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -147,7 +148,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public void deleteUser(String userName) throws AlertDatabaseConstraintException {
+    public void deleteUser(String userName) throws AlertForbiddenOperationException {
         Optional<Long> optionalUserId = userRepository.findByUserName(userName).map(UserEntity::getId);
         if (optionalUserId.isPresent()) {
             deleteUserById(optionalUserId.get());
@@ -155,7 +156,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public void deleteUser(Long userId) throws AlertDatabaseConstraintException {
+    public void deleteUser(Long userId) throws AlertForbiddenOperationException {
         deleteUserById(userId);
     }
 
@@ -171,13 +172,13 @@ public class DefaultUserAccessor implements UserAccessor {
         return userRepository.save(updatedEntity) != null;
     }
 
-    private void deleteUserById(Long userId) throws AlertDatabaseConstraintException {
+    private void deleteUserById(Long userId) throws AlertForbiddenOperationException {
         if (!RESERVED_USER_IDS.contains(userId)) {
             authorizationUtility.updateUserRoles(userId, Set.of());
             userRepository.deleteById(userId);
         } else {
             String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-            throw new AlertDatabaseConstraintException(String.format("The '%s' cannot be deleted", userIdentifier));
+            throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", userIdentifier));
         }
     }
 

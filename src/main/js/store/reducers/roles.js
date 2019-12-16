@@ -17,8 +17,8 @@ const initialState = {
     deleteSuccess: false,
     data: [],
     roleFetchError: '',
-    roleSaveError: '',
-    roleDeleteError: '',
+    roleSaveError: null,
+    roleDeleteError: null,
     fieldErrors: {}
 };
 
@@ -80,6 +80,7 @@ const roles = (state = initialState, action) => {
             });
         case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
+                roleDeleteError: null,
                 fieldErrors: {}
             });
         }

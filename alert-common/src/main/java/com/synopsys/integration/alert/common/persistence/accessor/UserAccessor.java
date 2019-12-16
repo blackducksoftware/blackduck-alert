@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public interface UserAccessor {
@@ -52,8 +53,8 @@ public interface UserAccessor {
 
     boolean changeUserEmailAddress(String username, String emailAddress);
 
-    void deleteUser(String userName) throws AlertDatabaseConstraintException;
+    void deleteUser(String userName) throws AlertForbiddenOperationException;
 
-    void deleteUser(Long userId) throws AlertDatabaseConstraintException;
+    void deleteUser(Long userId) throws AlertForbiddenOperationException;
 
 }
