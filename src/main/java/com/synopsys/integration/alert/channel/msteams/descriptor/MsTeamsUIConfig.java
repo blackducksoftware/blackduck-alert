@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
@@ -45,7 +45,7 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField webhook = new TextInputConfigField(MsTeamsDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, MSTEAMS_WEBHOOK_DESCRIPTION).applyRequired(true);
+        ConfigField webhook = new URLInputConfigField(MsTeamsDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, MSTEAMS_WEBHOOK_DESCRIPTION).applyRequired(true);
         return List.of(webhook);
     }
 
