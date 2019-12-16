@@ -84,8 +84,8 @@ public class UserController extends BaseController {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.createUser(userModel);
-            return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Created.");
+            UserConfig newUser = userActions.createUser(userModel);
+            return responseFactory.createCreatedResponse(newUser.getId(), "User Created.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);

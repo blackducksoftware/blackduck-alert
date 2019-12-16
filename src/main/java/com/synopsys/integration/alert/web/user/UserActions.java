@@ -64,7 +64,7 @@ public class UserActions {
     }
 
     public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
-        validateRequiredFields(userConfig);
+        validateCreationRequiredFields(userConfig);
         String userName = userConfig.getUsername();
         String password = userConfig.getPassword();
         String emailAddress = userConfig.getEmailAddress();
@@ -91,7 +91,8 @@ public class UserActions {
             String emailAddress = userConfig.getEmailAddress();
 
             Map<String, String> fieldErrors = new HashMap<>();
-            validateUserName(fieldErrors, userId, userName);
+
+            validateUserExistsById(fieldErrors, userId, userName);
             validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
             if (!userConfig.isPasswordSet() || !passwordMissing) {
                 validatePasswordLength(fieldErrors, password);
@@ -134,13 +135,13 @@ public class UserActions {
             StringUtils.isNotBlank(userModel.getPassword()));
     }
 
-    private void validateRequiredFields(UserConfig userConfig) throws AlertFieldException {
+    private void validateCreationRequiredFields(UserConfig userConfig) throws AlertFieldException {
         String userName = userConfig.getUsername();
         String password = userConfig.getPassword();
         String emailAddress = userConfig.getEmailAddress();
 
         Map<String, String> fieldErrors = new HashMap<>();
-        validateUserName(fieldErrors, Long.valueOf(userConfig.getId()), userName);
+        validateUserExistsByName(fieldErrors, userName);
         validatePasswordLength(fieldErrors, password);
         validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
         if (!fieldErrors.isEmpty()) {
@@ -154,7 +155,13 @@ public class UserActions {
         }
     }
 
-    private void validateUserName(Map<String, String> fieldErrors, Long userId, String userName) {
+    private void validateUserExistsByName(Map<String, String> fieldErrors, String userName) {
+        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
+        Optional<UserModel> userModel = userAccessor.getUser(userName);
+        userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
+    }
+
+    private void validateUserExistsById(Map<String, String> fieldErrors, Long userId, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         userModel.filter(user -> !user.getId().equals(userId))
