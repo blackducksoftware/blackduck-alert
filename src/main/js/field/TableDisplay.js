@@ -90,6 +90,7 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
+                    this.props.clearModalFieldState();
                     this.setState({
                         modificationState: MODIFICATION_STATE.CREATE,
                         showConfiguration: true
@@ -114,8 +115,7 @@ class TableDisplay extends Component {
         this.props.onConfigClose();
         this.refs.table.cleanSelected();
         this.setState({
-            currentRowSelected: null,
-            modificationState: MODIFICATION_STATE.NONE
+            currentRowSelected: null
         });
     }
 
@@ -143,6 +143,9 @@ class TableDisplay extends Component {
             >
                 <Modal size="lg" show={showModal} onHide={() => {
                     this.handleClose();
+                    this.setState({
+                        modificationState: MODIFICATION_STATE.NONE
+                    });
                 }}>
                     <Modal.Header closeButton>
                         <Modal.Title>{this.props.modalTitle}</Modal.Title>
@@ -158,6 +161,9 @@ class TableDisplay extends Component {
                                 includeCancel
                                 onCancelClick={() => {
                                     this.handleClose();
+                                    this.setState({
+                                        modificationState: MODIFICATION_STATE.NONE
+                                    });
                                 }}
                                 isFixed={false}
                             />
@@ -182,7 +188,9 @@ class TableDisplay extends Component {
                 <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                     this.handleClose();
                     this.setState({
-                        showConfiguration: false
+                        showConfiguration: false,
+                        modificationState: MODIFICATION_STATE.NONE
+
                     });
                     onModalClose();
                 }}>
@@ -205,7 +213,8 @@ class TableDisplay extends Component {
                                 onCancelClick={() => {
                                     this.handleClose();
                                     this.setState({
-                                        showConfiguration: false
+                                        showConfiguration: false,
+                                        modificationState: MODIFICATION_STATE.NONE
                                     });
                                     onModalClose();
                                     this.updateData();
@@ -271,6 +280,7 @@ class TableDisplay extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
+        this.props.clearModalFieldState();
         this.setState({
             currentRowSelected,
             modificationState: MODIFICATION_STATE.EDIT
@@ -395,6 +405,7 @@ TableDisplay.propTypes = {
     onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
+    clearModalFieldState: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -427,6 +438,7 @@ TableDisplay.defaultProps = {
     onConfigUpdate: () => null,
     onConfigDelete: () => null,
     onConfigClose: () => null,
+    clearModalFieldState: () => null,
     modalTitle: 'New',
     tableNewButtonLabel: 'New',
     tableDeleteButtonLabel: 'Delete',

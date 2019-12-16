@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -30,7 +31,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     private DefaultUserAccessor userAccessor;
 
     @Test
-    public void testGetUsers() throws AlertDatabaseConstraintException {
+    public void testGetUsers() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         String userName_1 = "testUser_1";
         String password_1 = "testPassword_1";
         String email_1 = "testEmail_1";
@@ -64,7 +65,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAddUser() throws AlertDatabaseConstraintException {
+    public void testAddUser() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -79,7 +80,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testUpdateUser() throws AlertDatabaseConstraintException {
+    public void testUpdateUser() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -106,7 +107,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserPassword() throws AlertDatabaseConstraintException {
+    public void testChangeUserPassword() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -134,7 +135,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserEmailAddress() throws AlertDatabaseConstraintException {
+    public void testChangeUserEmailAddress() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
