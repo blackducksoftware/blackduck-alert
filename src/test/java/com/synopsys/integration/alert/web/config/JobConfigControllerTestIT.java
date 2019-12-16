@@ -79,19 +79,19 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        final String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + slackChannelKey.getUniversalKey();
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+        String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + slackChannelKey.getUniversalKey();
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-        final String response = mvcResult.getResponse().getContentAsString();
+        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
 
-        final TypeToken fieldModelListType = new TypeToken<List<JobFieldModel>>() {};
-        final List<JobFieldModel> fieldModels = gson.fromJson(response, fieldModelListType.getType());
+        TypeToken fieldModelListType = new TypeToken<List<JobFieldModel>>() {};
+        List<JobFieldModel> fieldModels = gson.fromJson(response, fieldModelListType.getType());
 
         assertNotNull(fieldModels);
         assertFalse(fieldModels.isEmpty());
@@ -102,18 +102,18 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        final String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "/" + configId;
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+        String urlPath = url + "/" + configId;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-        final String response = mvcResult.getResponse().getContentAsString();
+        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
 
-        final ConfigurationJobModel fieldModel = gson.fromJson(response, ConfigurationJobModel.class);
+        ConfigurationJobModel fieldModel = gson.fromJson(response, ConfigurationJobModel.class);
         assertNotNull(fieldModel);
         assertEquals(configId, fieldModel.getJobId().toString());
     }
@@ -121,19 +121,19 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "/" + jobId;
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
+        String urlPath = url + "/" + jobId;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
         descriptorConfigRepository.flush();
 
-        final UUID id = UUID.fromString(jobId);
-        final Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
+        UUID id = UUID.fromString(jobId);
+        Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
 
         assertTrue(configuration.isEmpty(), "Expected the job to have been deleted");
     }
@@ -141,15 +141,15 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testUpdateConfig() throws Exception {
-        final JobFieldModel fieldModel = createTestJobFieldModel("1", "2");
-        final Map<String, Collection<String>> fieldValueModels = new HashMap<>();
-        for (final FieldModel newFieldModel : fieldModel.getFieldModels()) {
+        JobFieldModel fieldModel = createTestJobFieldModel("1", "2");
+        Map<String, Collection<String>> fieldValueModels = new HashMap<>();
+        for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        final ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
-        final String configId = String.valueOf(emptyConfigurationModel.getJobId());
-        final String urlPath = url + "/" + configId;
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
+        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
+        String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        String urlPath = url + "/" + configId;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
@@ -158,25 +158,25 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
 
-        final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
-        final String response = mvcResult.getResponse().getContentAsString();
+        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
         checkResponse(response);
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final JobFieldModel fieldModel = createTestJobFieldModel(null, null);
+        JobFieldModel fieldModel = createTestJobFieldModel(null, null);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
 
-        final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
-        final String response = mvcResult.getResponse().getContentAsString();
+        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
 
         checkResponse(response);
     }
@@ -185,11 +185,11 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testValidateConfig() throws Exception {
         final String urlPath = url + "/validate";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        final JobFieldModel fieldModel = createTestJobFieldModel(null, null);
+        JobFieldModel fieldModel = createTestJobFieldModel(null, null);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
@@ -198,38 +198,38 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private JobFieldModel createTestJobFieldModel(String channelId, String providerId) {
-        final String descriptorName = slackChannelKey.getUniversalKey();
-        final String context = ConfigContextEnum.DISTRIBUTION.name();
+        String descriptorName = slackChannelKey.getUniversalKey();
+        String context = ConfigContextEnum.DISTRIBUTION.name();
 
-        final FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
-        final FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
-        final FieldValueModel name = new FieldValueModel(List.of("name"), true);
-        final FieldValueModel provider = new FieldValueModel(List.of(blackDuckProviderKey.getUniversalKey()), true);
-        final FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
-        final FieldValueModel webhook = new FieldValueModel(List.of("slack_webhook_url"), true);
+        FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
+        FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
+        FieldValueModel name = new FieldValueModel(List.of("name"), true);
+        FieldValueModel provider = new FieldValueModel(List.of(blackDuckProviderKey.getUniversalKey()), true);
+        FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
+        FieldValueModel webhook = new FieldValueModel(List.of("http://slack_webhook_url"), true);
 
-        final Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
+        Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDistributionUIConfig.KEY_NAME, name,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
             ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
-        final FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
+        FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
         if (StringUtils.isNotBlank(channelId)) {
             fieldModel.setId(channelId);
         }
 
-        final String bdDescriptorName = blackDuckProviderKey.getUniversalKey();
-        final String bdContext = ConfigContextEnum.DISTRIBUTION.name();
+        String bdDescriptorName = blackDuckProviderKey.getUniversalKey();
+        String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
-        final FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);
-        final FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
-        final FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
-        final FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
+        FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);
+        FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
+        FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
+        FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
-        final Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
+        Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
             formatType, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames);
-        final FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
+        FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
         if (StringUtils.isNotBlank(providerId)) {
             bdFieldModel.setId(providerId);
         }
@@ -237,23 +237,23 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
     }
 
-    private void checkResponse(final String response) throws AlertDatabaseConstraintException {
+    private void checkResponse(String response) throws AlertDatabaseConstraintException {
         assertNotNull(response);
 
-        final Map<String, Object> responseEntity = gson.fromJson(response, Map.class);
-        final String stringId = responseEntity.get("id").toString();
-        final UUID id = UUID.fromString(stringId);
+        Map<String, Object> responseEntity = gson.fromJson(response, Map.class);
+        String stringId = responseEntity.get("id").toString();
+        UUID id = UUID.fromString(stringId);
 
-        final Optional<ConfigurationJobModel> configurationModelOptional = getConfigurationAccessor().getJobById(id);
+        Optional<ConfigurationJobModel> configurationModelOptional = getConfigurationAccessor().getJobById(id);
         assertTrue(configurationModelOptional.isPresent());
 
         Optional<ConfigurationFieldModel> slackChannelNameField = Optional.empty();
         Optional<ConfigurationFieldModel> frequencyField = Optional.empty();
         Optional<ConfigurationFieldModel> filterByProjectField = Optional.empty();
 
-        final ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
+        ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
 
-        for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
+        for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             if (slackChannelNameField.isEmpty()) {
                 slackChannelNameField = configurationModel.getField(SlackDescriptor.KEY_CHANNEL_NAME);
             }
