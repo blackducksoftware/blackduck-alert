@@ -213,28 +213,47 @@ class PermissionTable extends Component {
     }
 
     onSavePermissions() {
+        const { data } = this.props;
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             console.log('ERROR: Did not select Descriptor name and context');
         } else {
-            const { permissionsData } = this.state;
-            this.props.saveRole(permissionsData);
-            this.setState({
-                permissionsData: {}
-            });
+            const exists = data.find(permission =>
+                permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+                permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+            );
+            if (exists) {
+                console.log('WARNING: This item already exists in the table');
+            } else {
+                this.props.saveRole(permissionsData);
+                this.setState({
+                    permissionsData: {}
+                });
+            }
         }
     }
 
     onUpdatePermissions() {
+        const { data } = this.props;
         const { permissionsData } = this.state;
-        this.props.updateRole(permissionsData);
-        this.setState({
-            permissionsData: {}
-        });
+        const exists = data.find(permission =>
+            permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+        );
+        if (exists) {
+            console.log('WARNING: This item already exists in the table');
+        } else {
+            this.props.updateRole(permissionsData);
+            this.setState({
+                permissionsData: {}
+            });
+        }
+
     }
 
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
+            //FIXME This is wrong. The role state no longer exists in this component.
             const { permissions } = this.state.role;
             permissions.filter(permission => !permissionsToDelete.includes(permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME])).forEach(permission => {
                 this.props.deleteRole(permission);
