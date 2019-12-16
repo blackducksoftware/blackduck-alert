@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -35,11 +37,13 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
+@Component
 public class GlobalConfigExistsValidator implements ConfigValidationFunction {
     public static final String GLOBAL_CONFIG_MISSING = "Configuration missing.";
     private static final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
     private ConfigurationAccessor configurationAccessor;
 
+    @Autowired
     public GlobalConfigExistsValidator(ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }

@@ -10,13 +10,13 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 
 public class ChannelDistributionUIConfigTest {
     @Test
     public void createCommonConfigFieldsTest() {
         SlackChannelKey slackChannelKey = new SlackChannelKey();
-        ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(slackChannelKey, Mockito.mock(ConfigurationAccessor.class));
+        ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(slackChannelKey, Mockito.mock(GlobalConfigExistsValidator.class));
 
         List<ConfigField> commonConfigFields = channelDistributionUIConfig.createFields();
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_NAME);

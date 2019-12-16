@@ -30,8 +30,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
@@ -44,8 +44,8 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
     private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
     @Autowired
-    public SlackUIConfig(SlackChannelKey slackChannelKey, ConfigurationAccessor configurationAccessor) {
-        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, configurationAccessor);
+    public SlackUIConfig(SlackChannelKey slackChannelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
+        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, globalConfigExistsValidator);
     }
 
     @Override

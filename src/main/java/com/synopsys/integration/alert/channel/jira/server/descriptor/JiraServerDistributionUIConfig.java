@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 
 @Component
@@ -53,8 +53,8 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                                                            + "Note: This must be in the 'To Do' status category.";
 
     @Autowired
-    public JiraServerDistributionUIConfig(JiraServerChannelKey channelKey, ConfigurationAccessor configurationAccessor) {
-        super(channelKey, JiraServerDescriptor.JIRA_LABEL, JiraServerDescriptor.JIRA_URL, configurationAccessor);
+    public JiraServerDistributionUIConfig(JiraServerChannelKey channelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
+        super(channelKey, JiraServerDescriptor.JIRA_LABEL, JiraServerDescriptor.JIRA_URL, globalConfigExistsValidator);
     }
 
     @Override

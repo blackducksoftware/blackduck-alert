@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
@@ -60,18 +59,18 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
     private final ChannelKey channelKey;
-    private final ConfigurationAccessor configurationAccessor;
-    private final boolean validateChannelGlobalConfig;
+    private final GlobalConfigExistsValidator providerConfigValidator;
+    private final GlobalConfigExistsValidator channelConfigValidator;
 
-    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, ConfigurationAccessor configurationAccessor) {
-        this(channelKey, label, urlName, configurationAccessor, false);
+    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, GlobalConfigExistsValidator providerConfigValidator) {
+        this(channelKey, label, urlName, providerConfigValidator, null);
     }
 
-    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, ConfigurationAccessor configurationAccessor, boolean validateChannelGlobalConfig) {
+    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, GlobalConfigExistsValidator providerConfigValidator, GlobalConfigExistsValidator channelConfigValidator) {
         super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
-        this.configurationAccessor = configurationAccessor;
-        this.validateChannelGlobalConfig = validateChannelGlobalConfig;
+        this.providerConfigValidator = providerConfigValidator;
+        this.channelConfigValidator = channelConfigValidator;
     }
 
     @Override
@@ -80,8 +79,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         ConfigField channelName = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
                                       .applyClearable(false)
                                       .applyRequired(true);
-        if (validateChannelGlobalConfig) {
-            channelName.applyValidationFunctions(new GlobalConfigExistsValidator(configurationAccessor));
+        if (null != channelConfigValidator) {
+            channelName.applyValidationFunctions(channelConfigValidator);
         }
         ConfigField name = new TextInputConfigField(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME).applyRequired(true);
 
@@ -93,7 +92,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME)
                                        .applyClearable(false)
                                        .applyRequired(true)
-                                       .applyValidationFunctions(new GlobalConfigExistsValidator(this.configurationAccessor));
+                                       .applyValidationFunctions(providerConfigValidator);
 
         List<ConfigField> configFields = List.of(enabled, channelName, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();
