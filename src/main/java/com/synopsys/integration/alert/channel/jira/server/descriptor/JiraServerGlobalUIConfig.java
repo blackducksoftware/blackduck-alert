@@ -44,7 +44,7 @@ public class JiraServerGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_SERVER_ADMIN_PASSWORD = "The admin user's password  used to authenticate to the Jira server.";
     public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira server.";
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
-    private static final String LABEL_SERVER_URL = "Server URL";
+    private static final String LABEL_SERVER_URL = "URL";
     private static final String DESCRIPTION_SERVER_URL = "The URL of the Jira server";
     private EncryptionValidator encryptionValidator;
 
