@@ -48,10 +48,10 @@ public abstract class MessageReceiver<T> implements MessageListener {
         try {
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
                 String receiverClassName = getClass().getName();
-                logger.info("Received {} event message: {}", receiverClassName, message);
+                logger.debug("Received {} event message: {}", receiverClassName, message);
                 TextMessage textMessage = (TextMessage) message;
                 T event = gson.fromJson(textMessage.getText(), eventClass);
-                logger.info("{} event {}", receiverClassName, event);
+                logger.debug("{} event {}", receiverClassName, event);
                 handleEvent(event);
             }
         } catch (Exception e) {
