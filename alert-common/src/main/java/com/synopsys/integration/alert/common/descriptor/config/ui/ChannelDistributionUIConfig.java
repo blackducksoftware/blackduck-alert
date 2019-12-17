@@ -48,7 +48,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String LABEL_ENABLED = "Enabled";
     private static final String LABEL_NAME = "Name";
     private static final String LABEL_FREQUENCY = "Frequency";
-    private static final String LABEL_CHANNEL_NAME = "Type";
+    private static final String LABEL_CHANNEL_NAME = "Channel Type";
     private static final String LABEL_PROVIDER_NAME = "Provider Type";
 
     private static final String DESCRIPTION_ENABLED = "If selected, this job will be used for processing provider notifications, otherwise, this job will not be used.";
