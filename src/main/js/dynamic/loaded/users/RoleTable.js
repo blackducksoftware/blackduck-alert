@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
+import PermissionTable from 'dynamic/loaded/users/PermissionTable';
 import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -123,20 +123,15 @@ class RoleTable extends Component {
         });
     }
 
-    deletePermission(permission) {
+    deletePermission(permissionId) {
         const { role } = this.state;
         const { permissions } = role;
-        const matchingPermissionIndex = permissions.findIndex(listPermission => {
-            return listPermission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-                listPermission[PERMISSIONS_TABLE.CONTEXT] === permission[PERMISSIONS_TABLE.CONTEXT];
+        const filteredPermissions = permissions.filter(listPermission => listPermission.id !== permissionId);
+        role.permissions = [];
+        role.permissions.push(...filteredPermissions);
+        this.setState({
+            role: role
         });
-        if (matchingPermissionIndex > -1) {
-            permissions.remove(matchingPermissionIndex);
-            role.permissions = permissions;
-            this.setState({
-                role: role
-            });
-        }
     }
 
     createModalFields(selectedRow) {

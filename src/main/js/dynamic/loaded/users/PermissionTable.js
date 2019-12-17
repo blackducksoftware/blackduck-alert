@@ -259,9 +259,7 @@ class PermissionTable extends Component {
 
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
-            //FIXME This is wrong. The role state no longer exists in this component.
-            const { permissions } = this.state.role;
-            permissions.filter(permission => !permissionsToDelete.includes(permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME])).forEach(permission => {
+            permissionsToDelete.forEach(permission => {
                 this.props.deleteRole(permission);
             });
         }
