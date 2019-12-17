@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -49,12 +50,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -76,17 +81,19 @@ public class JobConfigController extends BaseController {
     private final ContentConverter contentConverter;
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
+    private final DescriptorMap descriptorMap;
     private PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public JobConfigController(JobConfigActions jobConfigActions, ResponseFactory responseFactory, ContentConverter contentConverter, AuthorizationManager authorizationManager,
-        DescriptorAccessor descriptorAccessor, PKIXErrorResponseFactory pkixErrorResponseFactory) {
+        DescriptorAccessor descriptorAccessor, PKIXErrorResponseFactory pkixErrorResponseFactory, DescriptorMap descriptorMap) {
         this.jobConfigActions = jobConfigActions;
         this.responseFactory = responseFactory;
         this.contentConverter = contentConverter;
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
+        this.descriptorMap = descriptorMap;
     }
 
     @GetMapping
@@ -221,6 +228,30 @@ public class JobConfigController extends BaseController {
         } catch (AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<String> validateConfig() {
+        try {
+            List<PermissionKey> keys = new LinkedList<>();
+            for (Map.Entry<DescriptorKey, Descriptor> entry : descriptorMap.getDescriptorMap().entrySet()) {
+                DescriptorKey descriptorKey = entry.getKey();
+                Descriptor descriptor = entry.getValue();
+                for (ConfigContextEnum context : ConfigContextEnum.values()) {
+                    if (descriptor.hasUIConfigForType(context)) {
+                        keys.add(new PermissionKey(context.name(), descriptorKey.getUniversalKey()));
+                    }
+                }
+            }
+            if (!authorizationManager.anyReadPermission(keys)) {
+                return responseFactory.createForbiddenResponse();
+            }
+
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(jobConfigActions.validateJobs()));
+        } catch (AlertException ex) {
+            logger.error(ex.getMessage(), ex);
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, ex.getMessage());
         }
     }
 
