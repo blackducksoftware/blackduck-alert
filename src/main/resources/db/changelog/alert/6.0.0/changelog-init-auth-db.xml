@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Initialize roles -->
     <changeSet author="gavink" id="2019-12-12-08-44-02-287">
         <preConditions onFail="MARK_RAN">
             <or>
@@ -10,332 +11,20 @@
                 </not>
             </or>
         </preConditions>
-        <sql stripComments="true">
-            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
-            select (1, 'ALERT_ADMIN', false)
-            where not exists(
-                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_ADMIN' and CUSTOM = false
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
-            select (2, 'ALERT_JOB_MANAGER', false)
-            where not exists(
-                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_JOB_MANAGER' and CUSTOM = false
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.ROLES (ID, ROLENAME, CUSTOM)
-            select (3, 'ALERT_USER', false)
-            where not exists(
-                select * from ALERT.ROLES where ID = 1 and ROLENAME = 'ALERT_USER' and CUSTOM = false
-            );
-        </sql>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_ADMIN</column>
+            <column name="CUSTOM">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_JOB_MANAGER</column>
+            <column name="CUSTOM">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_USER</column>
+            <column name="CUSTOM">false</column>
+        </insert>
     </changeSet>
-    <changeSet author="gavink" id="2019-12-12-09-11-55-999">
-        <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="42">select count(*) from ALERT.PERMISSION_MATRIX where ROLENAME = 'ALERT_ADMIN' or ROLENAME = 'ALERT_JOB_MANAGER' or ROLENAME = 'ALERT_USER'</sqlCheck>
-                </not>
-            </or>
-        </preConditions>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 1, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 1, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 2, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 2, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 4, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 4, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 5, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 5 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 6, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 6 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 7, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 7, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 8, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 8 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 9, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 9, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 10, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 10, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 11, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 11 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 12, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 12, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (1, 255, 13, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 1 and OPERATIONS = 255 and DESCRIPTOR_ID = 13 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 4, 6, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 4 and DESCRIPTOR_ID = 6 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 1, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 2, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 4, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 7, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 8, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 8 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 9, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 10, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 20, 12, 1)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 20 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 1
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 1, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 2, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 4, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 7, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 9, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 10, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (2, 255, 12, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 2 and OPERATIONS = 255 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 1, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 1 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 2, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 2 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 4, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 4 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 7, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 7 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 9, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 9 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 10, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 10 and CONTEXT_ID = 2
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.PERMISSION_MATRIX (ROLE_ID, OPERATIONS, DESCRIPTOR_ID, CONTEXT_ID)
-            select (3, 4, 12, 2)
-            where not exists(
-                select * from ALERT.PERMISSION_MATRIX where ROLE_ID = 3 and OPERATIONS = 4 and DESCRIPTOR_ID = 12 and CONTEXT_ID = 2
-            );
-        </sql>
-    </changeSet>
+    <!-- Initialize users -->
     <changeSet author="gavink" id="2019-12-12-09-24-04-466">
         <preConditions onFail="MARK_RAN">
             <or>
@@ -345,27 +34,353 @@
                 </not>
             </or>
         </preConditions>
-        <sql stripComments="true">insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
-            select (1, 'sysadmin', '$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy', null, false, false, false, true)
-            where not exists (
-                select * from ALERT.USERS where USERNAME = 'sysadmin'
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
-            select (2, 'jobmanager', '$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui', null, false, false, false, true)
-            where not exists (
-                select * from ALERT.USERS where USERNAME = 'jobmanager'
-            );
-        </sql>
-        <sql stripComments="true">
-            insert into ALERT.USERS (ID, USERNAME, PASSWORD, EMAIL_ADDRESS, EXPIRED, LOCKED, PASSWORD_EXPIRED, ENABLED)
-            select (3, 'alertuser', '$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui', null, false, false, false, true)
-            where not exists (
-                select * from ALERT.USERS where USERNAME = 'alertuser'
-            );
-        </sql>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">sysadmin</column>
+            <column name="PASSWORD">$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="ENABLED">true</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">jobmanager</column>
+            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="ENABLED">true</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">alertuser</column>
+            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="ENABLED">true</column>
+        </insert>
     </changeSet>
+    <!-- Create stored procedures/functions for auth initialization -->
+    <changeSet author="gavink" id="2019-12-17-09-02-35-275">
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_ROLE_ID(varchar(64))
+            RETURNS BIGINT
+            AS $$
+                DECLARE result BIGINT;
+                BEGIN
+                    select ID
+                    into result
+                    from ALERT.ROLES where ROLENAME = $1;
+                RETURN result;
+                END;
+            $$
+            LANGUAGE sql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_ROLE_ID AS $$
+                java.lang.Integer getRoleId(final java.sql.Connection connection, final java.lang.String roleName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ROLES WHERE ROLES.ROLENAME = '" + roleName.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_USER_ID(varchar(64))
+            RETURNS BIGINT
+            AS $$
+                DECLARE result BIGINT;
+                BEGIN
+                    select ID
+                    into result
+                    from ALERT.USERS where USERNAME = $1;
+                RETURN result;
+                END;
+            $$
+            LANGUAGE sql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_USER_ID AS $$
+                java.lang.Integer getUserId(final java.sql.Connection connection, final java.lang.String username) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.USERS WHERE USERS.USERNAME = '" + username + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <!-- Initialize permissions matrix -->
+    <changeSet author="gavink" id="2019-12-12-09-11-55-999">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_users')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+    </changeSet>
+    <!-- Initialize user roles -->
     <changeSet author="gavink" id="2019-12-12-09-34-27-326">
         <preConditions onFail="MARK_RAN">
             <or>
@@ -375,22 +390,17 @@
                 </not>
             </or>
         </preConditions>
-        <sql stripComments="true">
-            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
-            select (1, 1)
-            where not exists(
-                select * from ALERT.USER_ROLES where USER_ID = 1 and ROLE_ID = 1
-            );
-            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
-            select (2, 2)
-            where not exists(
-                select * from ALERT.USER_ROLES where USER_ID = 2 and ROLE_ID = 2
-            );
-            insert into ALERT.USER_ROLES (USER_ID, ROLE_ID)
-            select (3, 3)
-            where not exists(
-                select * from ALERT.USER_ROLES where USER_ID = 3 and ROLE_ID = 3
-            );
-        </sql>
+        <insert schemaName="ALERT" tableName="USER_ROLES">
+            <column name="USER_ID" valueComputed="GET_USER_ID('sysadmin')"/>
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="USER_ROLES">
+            <column name="USER_ID" valueComputed="GET_USER_ID('jobmanager')"/>
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="USER_ROLES">
+            <column name="USER_ID" valueComputed="GET_USER_ID('alertuser')"/>
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
