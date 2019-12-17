@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL = "Default System Administrator Email";
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD = "Default System Administrator Password";
+    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL = "Default System Admin Email";
+    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD = "Default System Admin Password";
     private static final String LABEL_ENCRYPTION_PASSWORD = "Encryption Password";
     private static final String LABEL_ENCRYPTION_GLOBAL_SALT = "Encryption Global Salt";
     private static final String LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "Startup Environment Variable Override";
@@ -66,7 +66,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
 
-    private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
+    private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Admin Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
     private final EncryptionValidator encryptionConfigValidator;
