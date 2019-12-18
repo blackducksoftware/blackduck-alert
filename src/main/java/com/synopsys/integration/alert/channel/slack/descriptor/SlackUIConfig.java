@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
@@ -50,7 +51,7 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField webhook = new TextInputConfigField(SlackDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, SLACK_WEBHOOK_DESCRIPTION).applyRequired(true);
+        ConfigField webhook = new URLInputConfigField(SlackDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, SLACK_WEBHOOK_DESCRIPTION).applyRequired(true);
         ConfigField channelName = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, SLACK_CHANNEL_NAME_DESCRIPTION).applyRequired(true);
         ConfigField channelUsername = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_USERNAME, LABEL_CHANNEL_USERNAME, SLACK_CHANNEL_USERNAME_DESCRIPTION);
         return List.of(webhook, channelName, channelUsername);

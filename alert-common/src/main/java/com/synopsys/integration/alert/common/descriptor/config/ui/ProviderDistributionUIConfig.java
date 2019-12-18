@@ -53,8 +53,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_PROJECT_NAME_PATTERN = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
     public static final String KEY_CONFIGURED_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
 
-    protected static final String LABEL_FILTER_BY_PROJECT = "Filter by project";
-    protected static final String LABEL_PROJECT_NAME_PATTERN = "Project name pattern";
+    protected static final String LABEL_FILTER_BY_PROJECT = "Filter By Project";
+    protected static final String LABEL_PROJECT_NAME_PATTERN = "Project Name Pattern";
     protected static final String LABEL_PROJECTS = "Projects";
     protected static final String DESCRIPTION_FILTER_BY_PROJECT = "If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed.";
     protected static final String DESCRIPTION_PROJECT_NAME_PATTERN = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";

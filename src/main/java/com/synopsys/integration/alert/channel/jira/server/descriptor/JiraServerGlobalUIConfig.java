@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
@@ -43,7 +44,7 @@ public class JiraServerGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_SERVER_ADMIN_PASSWORD = "The admin user's password  used to authenticate to the Jira server.";
     public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira server.";
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
-    private static final String LABEL_SERVER_URL = "Server URL";
+    private static final String LABEL_SERVER_URL = "Url";
     private static final String DESCRIPTION_SERVER_URL = "The URL of the Jira server";
     private EncryptionValidator encryptionValidator;
 
@@ -55,7 +56,7 @@ public class JiraServerGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField serverUrlField = new TextInputConfigField(JiraServerDescriptor.KEY_SERVER_URL, LABEL_SERVER_URL, DESCRIPTION_SERVER_URL).applyRequired(true);
+        ConfigField serverUrlField = new URLInputConfigField(JiraServerDescriptor.KEY_SERVER_URL, LABEL_SERVER_URL, DESCRIPTION_SERVER_URL).applyRequired(true);
         ConfigField jiraUserName = new TextInputConfigField(JiraServerDescriptor.KEY_SERVER_USERNAME, LABEL_SERVER_ADMIN_USER_NAME, DESCRIPTION_SERVER_ADMIN_USER_NAME).applyRequired(true);
         ConfigField jiraPassword = new PasswordConfigField(JiraServerDescriptor.KEY_SERVER_PASSWORD, LABEL_SERVER_ADMIN_PASSWORD, DESCRIPTION_SERVER_ADMIN_PASSWORD, encryptionValidator).applyRequired(true);
 

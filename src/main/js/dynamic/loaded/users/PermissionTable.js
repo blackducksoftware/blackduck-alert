@@ -33,7 +33,8 @@ class PermissionTable extends Component {
         this.onUpdatePermissions = this.onUpdatePermissions.bind(this);
 
         this.state = {
-            permissionsData: {}
+            permissionsData: {},
+            errorMessage: null
         };
     }
 
@@ -51,9 +52,14 @@ class PermissionTable extends Component {
     createPermissionsColumns() {
         return [
             {
+                header: 'id',
+                headerLabel: 'ID',
+                isKey: true,
+                hidden: true
+            }, {
                 header: PERMISSIONS_TABLE.DESCRIPTOR_NAME,
                 headerLabel: 'Descriptor',
-                isKey: true
+                isKey: false
             }, {
                 header: PERMISSIONS_TABLE.CONTEXT,
                 headerLabel: 'Context',
@@ -90,6 +96,7 @@ class PermissionTable extends Component {
             const prettyName = (prettyNameObject) ? prettyNameObject.label : descriptorName;
 
             return {
+                id: permission.id,
                 [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: prettyName,
                 [PERMISSIONS_TABLE.CONTEXT]: permission[PERMISSIONS_TABLE.CONTEXT],
                 permissionsColumn: permissionShorthand.join('-')
@@ -98,13 +105,14 @@ class PermissionTable extends Component {
     }
 
     convertPermissionsColumn(permissions) {
-        const { permissionsColumn, descriptorName, context } = permissions;
+        const { permissionsColumn, descriptorName, context, id } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
         const prettyNameObject = this.createDescriptorOptions().find(option => descriptorName === option.label);
         const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
 
         return {
+            id,
             descriptorName: prettyName,
             context,
             [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
@@ -122,7 +130,6 @@ class PermissionTable extends Component {
         const { descriptors } = this.props;
         const descriptorOptions = [];
         const nameCache = [];
-
 
         descriptors.forEach(descriptor => {
             const { label, name } = descriptor;
@@ -182,6 +189,7 @@ class PermissionTable extends Component {
 
         return (
             <div>
+
                 <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false} onChange={this.handlePermissionsChange}
                                     value={newPermissions[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
                 <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} clearable={false} onChange={this.handlePermissionsChange}
@@ -205,28 +213,53 @@ class PermissionTable extends Component {
     }
 
     onSavePermissions() {
+        const { data } = this.props;
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
-            console.log('ERROR: Did not select Descriptor name and context');
-        } else {
-            const { permissionsData } = this.state;
-            this.props.saveRole(permissionsData);
             this.setState({
-                permissionsData: {}
-            });
+                errorMessage: 'Please select Descriptor name and context'
+            })
+        } else {
+            const exists = data.find(permission =>
+                permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+                permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+            );
+            if (exists) {
+                this.setState({
+                    errorMessage: 'This item already exists in the table'
+                });
+            } else {
+                this.props.saveRole(permissionsData);
+                this.setState({
+                    permissionsData: {}
+                });
+            }
         }
     }
 
     onUpdatePermissions() {
+        const { data } = this.props;
         const { permissionsData } = this.state;
-        this.props.updateRole(permissionsData);
-        this.setState({
-            permissionsData: {}
-        });
+        const exists = data.find(permission =>
+            permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
+            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+        );
+        if (exists) {
+            this.setState({
+                errorMessage: 'This item already exists in the table'
+            });
+        } else {
+            this.props.updateRole(permissionsData);
+            this.setState({
+                permissionsData: {}
+            });
+        }
+
     }
 
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
+            //FIXME This is wrong. The role state no longer exists in this component.
             const { permissions } = this.state.role;
             permissions.filter(permission => !permissionsToDelete.includes(permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME])).forEach(permission => {
                 this.props.deleteRole(permission);
@@ -256,7 +289,9 @@ class PermissionTable extends Component {
                     refreshData={() => null}
                     deleteButton={canDelete}
                     newButton={canCreate}
-                    sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME} />
+                    sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
+                    errorDialogMessage={this.state.errorMessage}
+                    clearModalFieldState={() => this.setState({ errorMessage: null })} />
             </div>
         );
     }
