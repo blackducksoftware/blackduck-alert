@@ -161,10 +161,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isPresent()) {
             UserEntity user = optionalUser.get();
-            if (user.isExternal()) {
-                throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", user.getUserName()));
-            }
-            deleteUserById(user.getId());
+            deleteUserEntity(user);
         }
     }
 
@@ -173,10 +170,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             UserEntity user = optionalUser.get();
-            if (user.isExternal()) {
-                throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", user.getUserName()));
-            }
-            deleteUserById(userId);
+            deleteUserEntity(user);
         }
     }
 
@@ -192,13 +186,17 @@ public class DefaultUserAccessor implements UserAccessor {
         return userRepository.save(updatedEntity) != null;
     }
 
-    private void deleteUserById(Long userId) throws AlertForbiddenOperationException {
+    private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
+        if (userEntity.isExternal()) {
+            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userEntity.getUserName()));
+        }
+        Long userId = userEntity.getId();
         if (!RESERVED_USER_IDS.contains(userId)) {
             authorizationUtility.updateUserRoles(userId, Set.of());
             userRepository.deleteById(userId);
         } else {
             String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-            throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", userIdentifier));
+            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userIdentifier));
         }
     }
 
