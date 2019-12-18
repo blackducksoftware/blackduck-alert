@@ -89,13 +89,6 @@ public class SettingsUIConfig extends UIConfig {
     }
 
     private List<ConfigField> createDefaultSettingsPanel() {
-
-        ConfigField sysAdminEmail = new TextInputConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
-                                        .applyRequired(true)
-                                        .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        ConfigField defaultUserPassword = new PasswordConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionConfigValidator)
-                                              .applyRequired(true)
-                                              .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
         ConfigField encryptionPassword = new PasswordConfigField(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator)
                                              .applyRequired(true)
                                              .applyValidationFunctions(this::minimumEncryptionFieldLength)
@@ -105,7 +98,7 @@ public class SettingsUIConfig extends UIConfig {
                                          .applyValidationFunctions(this::minimumEncryptionFieldLength)
                                          .applyHeader(SETTINGS_HEADER_ENCRYPTION);
         ConfigField environmentVariableOverride = new CheckboxConfigField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
-        return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride);
+        return List.of(encryptionPassword, encryptionSalt, environmentVariableOverride);
     }
 
     private List<ConfigField> createProxyPanel() {
