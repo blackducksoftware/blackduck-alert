@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -235,9 +234,8 @@ public class JobConfigController extends BaseController {
     public ResponseEntity<String> validateConfig() {
         try {
             List<PermissionKey> keys = new LinkedList<>();
-            for (Map.Entry<DescriptorKey, Descriptor> entry : descriptorMap.getDescriptorMap().entrySet()) {
-                DescriptorKey descriptorKey = entry.getKey();
-                Descriptor descriptor = entry.getValue();
+            for (Descriptor descriptor : descriptorMap.getDescriptorMap().values()) {
+                DescriptorKey descriptorKey = descriptor.getDescriptorKey();
                 for (ConfigContextEnum context : ConfigContextEnum.values()) {
                     if (descriptor.hasUIConfigForType(context)) {
                         keys.add(new PermissionKey(context.name(), descriptorKey.getUniversalKey()));

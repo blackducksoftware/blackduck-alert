@@ -76,11 +76,11 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         ConfigField enabled = new CheckboxConfigField(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
-        ConfigField channelName = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
-                                      .applyClearable(false)
-                                      .applyRequired(true);
+        ConfigField channelNameField = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
+                                           .applyClearable(false)
+                                           .applyRequired(true);
         if (null != channelConfigValidator) {
-            channelName.applyValidationFunctions(channelConfigValidator);
+            channelNameField.applyValidationFunctions(channelConfigValidator);
         }
         ConfigField name = new TextInputConfigField(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME).applyRequired(true);
 
@@ -94,7 +94,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
                                        .applyRequired(true)
                                        .applyValidationFunctions(providerConfigValidator);
 
-        List<ConfigField> configFields = List.of(enabled, channelName, name, frequency, providerName);
+        List<ConfigField> configFields = List.of(enabled, channelNameField, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();
         return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }
