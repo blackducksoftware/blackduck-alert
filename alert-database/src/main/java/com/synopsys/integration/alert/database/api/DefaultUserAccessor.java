@@ -83,6 +83,15 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
+        return addUser(user, passwordEncoded, false);
+    }
+
+    @Override
+    public UserModel addExternalUser(UserModel user) throws AlertDatabaseConstraintException {
+        return addUser(user, true, true);
+    }
+
+    private UserModel addUser(UserModel user, boolean passwordEncoded, boolean external) throws AlertDatabaseConstraintException {
         String username = user.getName();
         Optional<UserEntity> userWithSameUsername = userRepository.findByUserName(username);
         if (userWithSameUsername.isPresent()) {
@@ -90,7 +99,7 @@ public class DefaultUserAccessor implements UserAccessor {
         }
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress());
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), external);
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
@@ -111,7 +120,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled());
+        UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
         newEntity.setId(existingUserId);
 
         authorizationUtility.updateUserRoles(existingUserId, user.getRoles());
@@ -149,25 +158,36 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public void deleteUser(String userName) throws AlertForbiddenOperationException {
-        Optional<Long> optionalUserId = userRepository.findByUserName(userName).map(UserEntity::getId);
-        if (optionalUserId.isPresent()) {
-            deleteUserById(optionalUserId.get());
+        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
+        if (optionalUser.isPresent()) {
+            UserEntity user = optionalUser.get();
+            if (user.isExternal()) {
+                throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", user.getUserName()));
+            }
+            deleteUserById(user.getId());
         }
     }
 
     @Override
     public void deleteUser(Long userId) throws AlertForbiddenOperationException {
-        deleteUserById(userId);
+        Optional<UserEntity> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            UserEntity user = optionalUser.get();
+            if (user.isExternal()) {
+                throw new AlertForbiddenOperationException(String.format("The '%s' cannot be deleted", user.getUserName()));
+            }
+            deleteUserById(userId);
+        }
     }
 
     private boolean changeUserPassword(UserEntity oldEntity, String newPassword) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.isExternal());
         updatedEntity.setId(oldEntity.getId());
         return userRepository.save(updatedEntity) != null;
     }
 
     private boolean changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.isExternal());
         updatedEntity.setId(oldEntity.getId());
         return userRepository.save(updatedEntity) != null;
     }
