@@ -61,7 +61,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public EmailDistributionUIConfig(EmailChannelKey emailChannelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
-        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, globalConfigExistsValidator);
+        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, globalConfigExistsValidator, globalConfigExistsValidator);
     }
 
     @Override

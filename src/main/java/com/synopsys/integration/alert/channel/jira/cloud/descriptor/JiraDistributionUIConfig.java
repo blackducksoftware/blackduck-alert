@@ -55,7 +55,7 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
     public JiraDistributionUIConfig(JiraChannelKey jiraChannelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
-        super(jiraChannelKey, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, globalConfigExistsValidator);
+        super(jiraChannelKey, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL, globalConfigExistsValidator, globalConfigExistsValidator);
     }
 
     @Override

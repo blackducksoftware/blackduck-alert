@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
-import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
+import { fetchDistributionJobs, fetchJobsValidationResults, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Selects className based on field value
@@ -70,7 +70,8 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
         this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
-        this.descriptorDataFormat = this.descriptorDataFormat.bind(this)
+        this.descriptorDataFormat = this.descriptorDataFormat.bind(this);
+        this.nameDataFormat = this.nameDataFormat.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -140,6 +141,7 @@ class Index extends Component {
 
     reloadJobs() {
         this.props.fetchDistributionJobs();
+        this.props.fetchJobsValidationResults();
     }
 
     cancelRowSelect() {
@@ -223,6 +225,25 @@ class Index extends Component {
                 {refreshButton}
             </div>
         );
+    }
+
+    nameDataFormat(cell, row) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        const { jobsValidationResults } = this.props;
+        if (jobsValidationResults && jobsValidationResults.length > 0) {
+            const jobErrors = jobsValidationResults.filter(item => item.id === row.id);
+            if (jobErrors) {
+                return (
+                    <span className="missingData">
+                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                        {defaultValue}
+                    </span>
+                );
+            } else {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     }
 
     descriptorDataFormat(cell) {
@@ -328,7 +349,7 @@ class Index extends Component {
                     ref="table"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                    <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+                    <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell" dataFormat={this.nameDataFormat}>Distribution Job</TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Provider</TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
@@ -379,13 +400,15 @@ Index.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object),
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    jobConfigTableMessage: PropTypes.string
+    jobConfigTableMessage: PropTypes.string,
+    jobsValidationResults: PropTypes.arrayOf(PropTypes.object)
 };
 
 Index.defaultProps = {
     autoRefresh: true,
     descriptors: [],
-    jobConfigTableMessage: ''
+    jobConfigTableMessage: '',
+    jobsValidationResults: []
 };
 
 const mapStateToProps = state => ({
@@ -393,12 +416,14 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
-    jobConfigTableMessage: state.distributions.jobConfigTableMessage
+    jobConfigTableMessage: state.distributions.jobConfigTableMessage,
+    jobsValidationResults: state.distributions.jobsValidationResult
 });
 
 const mapDispatchToProps = dispatch => ({
     openJobDeleteModal: () => dispatch(openJobDeleteModal()),
-    fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
+    fetchDistributionJobs: () => dispatch(fetchDistributionJobs()),
+    fetchJobsValidationResults: () => dispatch(fetchJobsValidationResults())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
