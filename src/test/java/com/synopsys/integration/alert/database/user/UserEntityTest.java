@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.database.user;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,11 +13,12 @@ public class UserEntityTest {
         final String expectedPassword = "expected_password";
         final String expectedEmail = "expected_email";
         final Long expectedId = 25L;
-        final UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail);
+        UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, false);
         entity.setId(expectedId);
         assertEquals(expectedUserName, entity.getUserName());
         assertEquals(expectedPassword, entity.getPassword());
         assertEquals(expectedEmail, entity.getEmailAddress());
         assertEquals(expectedId, entity.getId());
+        assertFalse(entity.isExternal());
     }
 }

@@ -52,7 +52,7 @@ public class AuthenticationEventListener extends MessageReceiver<AlertAuthentica
         UserModel user = event.getUser();
         if (null != user) {
             try {
-                userAccessor.addUser(user, true);
+                userAccessor.addExternalUser(user);
             } catch (AlertDatabaseConstraintException ignored) {
                 // User already exists. Nothing to do.
             }

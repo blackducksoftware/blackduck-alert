@@ -10,4 +10,11 @@
             CALL REMOVE_ALL_PERMISSIONS('ALERT_USER','component_authentication', 'GLOBAL');
         </sql>
     </changeSet>
+    <changeSet author="psantos" id="2019-12-18-07-31-16-844">
+        <addColumn schemaName="ALERT" tableName="USERS">
+            <column name="EXTERNAL" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
