@@ -8,6 +8,9 @@ import {
     DISTRIBUTION_JOB_FETCHED_ALL,
     DISTRIBUTION_JOB_FETCHING_ALL,
     DISTRIBUTION_JOB_UPDATE_AUDIT_INFO,
+    DISTRIBUTION_JOB_VALIDATE_ALL_ERROR,
+    DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED,
+    DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING,
     SERIALIZE
 } from 'store/actions/types';
 
@@ -16,7 +19,9 @@ const initialState = {
     deleteSuccess: false,
     jobs: [],
     jobConfigTableMessage: '',
-    jobDeleteMessage: ''
+    jobDeleteMessage: '',
+    jobsValidationResult: [],
+    jobsValidationMessage: ''
 };
 
 const config = (state = initialState, action) => {
@@ -75,7 +80,19 @@ const config = (state = initialState, action) => {
                 jobConfigTableMessage: 'Loading...',
                 jobs: []
             });
-
+        case DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING:
+            return Object.assign({}, state, {
+                jobsValidationResult: [],
+                jobsValidationMessage: ''
+            });
+        case DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED:
+            return Object.assign({}, state, {
+                jobsValidationResult: action.jobsValidationResult
+            });
+        case DISTRIBUTION_JOB_VALIDATE_ALL_ERROR:
+            return Object.assign({}, state, {
+                jobsValidationMessage: action.jobsValidationMessage
+            });
         case SERIALIZE:
             return initialState;
 

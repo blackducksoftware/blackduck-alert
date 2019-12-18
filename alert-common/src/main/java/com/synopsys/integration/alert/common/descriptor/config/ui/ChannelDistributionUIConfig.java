@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
@@ -58,18 +59,29 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
     private final ChannelKey channelKey;
+    private final GlobalConfigExistsValidator providerConfigValidator;
+    private final GlobalConfigExistsValidator channelConfigValidator;
 
-    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName) {
+    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, GlobalConfigExistsValidator providerConfigValidator) {
+        this(channelKey, label, urlName, providerConfigValidator, null);
+    }
+
+    public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName, GlobalConfigExistsValidator providerConfigValidator, GlobalConfigExistsValidator channelConfigValidator) {
         super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
+        this.providerConfigValidator = providerConfigValidator;
+        this.channelConfigValidator = channelConfigValidator;
     }
 
     @Override
     public List<ConfigField> createFields() {
         ConfigField enabled = new CheckboxConfigField(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
-        ConfigField channelName = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
-                                      .applyClearable(false)
-                                      .applyRequired(true);
+        ConfigField channelNameField = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
+                                           .applyClearable(false)
+                                           .applyRequired(true);
+        if (null != channelConfigValidator) {
+            channelNameField.applyValidationFunctions(channelConfigValidator);
+        }
         ConfigField name = new TextInputConfigField(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME).applyRequired(true);
 
         List<LabelValueSelectOption> frequencyOptions = Arrays.stream(FrequencyType.values())
@@ -79,9 +91,10 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, frequencyOptions).applyRequired(true);
         ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME)
                                        .applyClearable(false)
-                                       .applyRequired(true);
+                                       .applyRequired(true)
+                                       .applyValidationFunctions(providerConfigValidator);
 
-        List<ConfigField> configFields = List.of(enabled, channelName, name, frequency, providerName);
+        List<ConfigField> configFields = List.of(enabled, channelNameField, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();
         return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }

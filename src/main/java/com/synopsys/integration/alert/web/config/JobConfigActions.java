@@ -56,6 +56,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldErrors;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -180,10 +181,10 @@ public class JobConfigActions {
             if (StringUtils.isNotBlank(jobName)) {
                 List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
                 boolean foundDuplicateName = jobs.stream()
-                                                       .flatMap(job -> job.getCopyOfConfigurations().stream())
-                                                       .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                       .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                       .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+                                                 .flatMap(job -> job.getCopyOfConfigurations().stream())
+                                                 .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
+                                                 .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
+                                                 .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
                 if (foundDuplicateName) {
                     error = "A distribution configuration with this name already exists.";
                 }
@@ -206,6 +207,22 @@ public class JobConfigActions {
             throw new AlertFieldException(fieldErrors);
         }
         return "Valid";
+    }
+
+    public List<JobFieldErrors> validateJobs() throws AlertException {
+        List<JobFieldErrors> errorsList = new LinkedList<>();
+        List<JobFieldModel> jobFieldModels = getAllJobs();
+        for (JobFieldModel jobFieldModel : jobFieldModels) {
+            Map<String, String> fieldErrors = new HashMap<>();
+            for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+                fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            }
+            if (!fieldErrors.isEmpty()) {
+                errorsList.add(new JobFieldErrors(jobFieldModel.getJobId(), fieldErrors));
+            }
+        }
+
+        return errorsList;
     }
 
     // TODO abstract duplicate functionality
@@ -270,7 +287,7 @@ public class JobConfigActions {
 
     private void testProviderConfig(FieldAccessor fieldAccessor, String jobId, String destination) throws IntegrationException {
         Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                            .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
             providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
         }
