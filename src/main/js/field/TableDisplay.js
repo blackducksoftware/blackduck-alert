@@ -56,10 +56,14 @@ class TableDisplay extends Component {
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
+
+        if (prevProps.inProgress && !this.props.inProgress) {
+            this.handleClose();
+        }
     }
 
     createTableColumns() {
-        const assignDataFormat = (cell, row) => {
+        const assignDataFormat = (cell) => {
             if (cell) {
                 return <div title={cell.toString()}> {cell} </div>;
             }
@@ -122,14 +126,12 @@ class TableDisplay extends Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.handleClose();
         const { modificationState } = this.state;
         if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
             this.props.onConfigSave();
         } else if (MODIFICATION_STATE.EDIT === modificationState) {
             this.props.onConfigUpdate();
         }
-        this.props.refreshData();
     }
 
     createEditModal() {
@@ -425,7 +427,7 @@ TableDisplay.propTypes = {
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
-    errorDialogMessage: PropTypes.string
+    errorDialogMessage: PropTypes.string,
 };
 
 TableDisplay.defaultProps = {

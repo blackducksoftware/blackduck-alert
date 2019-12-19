@@ -182,7 +182,7 @@ class RoleTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, roleDeleteError } = this.props;
+        const { canCreate, canDelete, fieldErrors, roleDeleteError, inProgress } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
@@ -201,7 +201,9 @@ class RoleTable extends Component {
                     newButton={canCreate}
                     deleteButton={canDelete}
                     hasFieldErrors={hasErrors}
-                    errorDialogMessage={roleDeleteError} />
+                    errorDialogMessage={roleDeleteError}
+                    inProgress={inProgress}
+                />
             </div>
         );
     }
@@ -226,7 +228,8 @@ const mapStateToProps = state => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
     roleDeleteError: state.roles.roleDeleteError,
-    fieldErrors: state.roles.fieldErrors
+    fieldErrors: state.roles.fieldErrors,
+    inProgress: state.roles.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({

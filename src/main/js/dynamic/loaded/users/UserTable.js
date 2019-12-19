@@ -71,13 +71,11 @@ class UserTable extends Component {
     onSave() {
         const { user } = this.state;
         this.props.createUser(user);
-        this.retrieveData();
     }
 
     onUpdate() {
         const { user } = this.state;
         this.props.updateUser(user);
-        this.retrieveData();
     }
 
     onDelete(usersToDelete) {
@@ -144,7 +142,7 @@ class UserTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, userDeleteError } = this.props;
+        const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
@@ -166,6 +164,7 @@ class UserTable extends Component {
                         deleteButton={canDelete}
                         hasFieldErrors={hasErrors}
                         errorDialogMessage={userDeleteError}
+                        inProgress={inProgress}
                     />
                 </div>
             </div>
@@ -191,7 +190,8 @@ const mapStateToProps = state => ({
     users: state.users.data,
     roles: state.roles.data,
     userDeleteError: state.users.userDeleteError,
-    fieldErrors: state.users.fieldErrors
+    fieldErrors: state.users.fieldErrors,
+    inProgress: state.users.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({
