@@ -63,7 +63,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
     private static final String LABEL_FORMAT = "Format";
     private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
-    private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created.";
+    private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created: ";
 
     private final ProviderContent providerContent;
 
@@ -85,11 +85,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
         List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedContentFormats()
                                                                   .stream()
-                                                                  .map(FormatType::name)
                                                                   .map(this::convertToLabelValueOption)
                                                                   .sorted()
                                                                   .collect(Collectors.toList());
-        ConfigField formatField = new SelectConfigField(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT, supportedFormatOptions)
+        ConfigField formatField = new SelectConfigField(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT + createFormatDescription(), supportedFormatOptions)
                                       .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
@@ -117,9 +116,23 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         return new LabelValueSelectOption(notificationTypeLabel, notificationType);
     }
 
-    private LabelValueSelectOption convertToLabelValueOption(String formatName) {
-        String formatNameLabel = WordUtils.capitalizeFully(formatName.replace("_", " "));
-        return new LabelValueSelectOption(formatNameLabel, formatName);
+    private LabelValueSelectOption convertToLabelValueOption(FormatType formatType) {
+        return new LabelValueSelectOption(formatType.getLabel(), formatType.name());
+    }
+
+    private String createFormatDescription() {
+        StringBuilder formatDescription = new StringBuilder();
+        for (FormatType format : providerContent.getSupportedContentFormats()) {
+            String label = format.getLabel();
+            String description = format.getDescription();
+
+            formatDescription.append(label);
+            formatDescription.append(": ");
+            formatDescription.append(description);
+            formatDescription.append(" ");
+        }
+
+        return formatDescription.toString();
     }
 
     private Collection<String> validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {
