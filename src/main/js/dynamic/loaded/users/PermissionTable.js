@@ -227,7 +227,8 @@ class PermissionTable extends Component {
         const { permissionsData } = this.state;
         const exists = data.find(permission =>
             permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT] &&
+            permission.id !== permissionsData.id
         );
         if (exists) {
             this.setState({
