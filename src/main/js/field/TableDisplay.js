@@ -278,7 +278,6 @@ class TableDisplay extends Component {
         event.stopPropagation();
         this.props.onConfigDelete(this.state.rowsToDelete);
         this.closeDeleteModal();
-        this.props.refreshData();
     }
 
     editButtonClicked(currentRowSelected) {

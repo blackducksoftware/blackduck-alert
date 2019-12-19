@@ -123,14 +123,14 @@ class RoleTable extends Component {
         });
     }
 
-    deletePermission(permissionId) {
+    deletePermission(permissionIds) {
         const { role } = this.state;
         const { permissions } = role;
-        const filteredPermissions = permissions.filter(listPermission => listPermission.id !== permissionId);
-        role.permissions = [];
-        role.permissions.push(...filteredPermissions);
+        const filteredPermissions = permissions.filter(listPermission => !permissionIds.includes(listPermission.id));
+        let newRole = { ...role }
+        newRole.permissions = filteredPermissions;
         this.setState({
-            role: role
+            role: newRole
         });
     }
 

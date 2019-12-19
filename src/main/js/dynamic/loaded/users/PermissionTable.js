@@ -259,9 +259,7 @@ class PermissionTable extends Component {
 
     onDeletePermissions(permissionsToDelete) {
         if (permissionsToDelete) {
-            permissionsToDelete.forEach(permission => {
-                this.props.deleteRole(permission);
-            });
+            this.props.deleteRole(permissionsToDelete);
         }
     }
 
