@@ -21,6 +21,7 @@ class RoleTable extends Component {
         this.updatePermissions = this.updatePermissions.bind(this);
         this.savePermissions = this.savePermissions.bind(this);
         this.deletePermission = this.deletePermission.bind(this);
+        this.onEdit = this.onEdit.bind(this);
 
         this.state = {
             role: {
@@ -58,6 +59,12 @@ class RoleTable extends Component {
 
     retrieveData() {
         this.props.getRoles();
+    }
+
+    onEdit(selectedRow) {
+        this.setState({
+            role: selectedRow
+        });
     }
 
     onSave() {
@@ -134,21 +141,10 @@ class RoleTable extends Component {
         });
     }
 
-    createModalFields(selectedRow) {
+    createModalFields() {
         const { role } = this.state;
-        let newRole = role;
-        if (selectedRow) {
-            newRole.id = role.id || selectedRow.id;
-            newRole.roleName = role.roleName || selectedRow.roleName;
-            newRole.permissions = selectedRow.permissions || role.permissions;
-            if (role.roleName !== newRole.roleName) {
-                this.setState({
-                    role: newRole
-                });
-            }
-        }
 
-        const { permissions } = newRole;
+        const { permissions } = role;
         let incrementedId = this.state.incrementalId;
         permissions.forEach(permission => {
             if (!permission.id) {
@@ -158,15 +154,15 @@ class RoleTable extends Component {
         });
 
         if (incrementedId !== this.state.incrementalId) {
-            newRole.permissions = permissions;
+            role.permissions = permissions;
             this.setState({
-                role: newRole,
+                role: role,
                 incrementedId: incrementedId
             });
         }
 
         const roleNameKey = 'roleName';
-        const roleNameValue = newRole[roleNameKey];
+        const roleNameValue = role[roleNameKey];
 
         const { canCreate, canDelete, fieldErrors } = this.props;
 
@@ -194,6 +190,7 @@ class RoleTable extends Component {
                 <TableDisplay
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
+                    editState={this.onEdit}
                     onConfigSave={this.onSave}
                     onConfigUpdate={this.onUpdate}
                     onConfigDelete={this.onDelete}

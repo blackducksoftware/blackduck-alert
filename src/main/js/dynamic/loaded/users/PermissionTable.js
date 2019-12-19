@@ -31,6 +31,7 @@ class PermissionTable extends Component {
         this.onDeletePermissions = this.onDeletePermissions.bind(this);
         this.onPermissionsClose = this.onPermissionsClose.bind(this);
         this.onUpdatePermissions = this.onUpdatePermissions.bind(this);
+        this.onEdit = this.onEdit.bind(this);
 
         this.state = {
             permissionsData: {},
@@ -161,53 +162,37 @@ class PermissionTable extends Component {
         });
     }
 
-    isMatchingPermissions(first, second) {
-        return first[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === second[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-            first[PERMISSIONS_TABLE.CONTEXT] === second[PERMISSIONS_TABLE.CONTEXT] &&
-            first[PERMISSIONS_TABLE.CREATE] === second[PERMISSIONS_TABLE.CREATE] &&
-            first[PERMISSIONS_TABLE.DELETE_OPERATION] === second[PERMISSIONS_TABLE.DELETE_OPERATION] &&
-            first[PERMISSIONS_TABLE.READ] === second[PERMISSIONS_TABLE.READ] &&
-            first[PERMISSIONS_TABLE.WRITE] === second[PERMISSIONS_TABLE.WRITE] &&
-            first[PERMISSIONS_TABLE.EXECUTE] === second[PERMISSIONS_TABLE.EXECUTE] &&
-            first[PERMISSIONS_TABLE.UPLOAD_READ] === second[PERMISSIONS_TABLE.UPLOAD_READ] &&
-            first[PERMISSIONS_TABLE.UPLOAD_DELETE] === second[PERMISSIONS_TABLE.UPLOAD_DELETE] &&
-            first[PERMISSIONS_TABLE.UPLOAD_WRITE] === second[PERMISSIONS_TABLE.UPLOAD_WRITE];
+    onEdit(selectedRow) {
+        const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+        this.setState({
+            permissionsData: parsedPermissions
+        });
     }
 
-    createPermissionsModal(selectedRow) {
+    createPermissionsModal() {
         const { permissionsData } = this.state;
-        let newPermissions = permissionsData;
-        if (selectedRow) {
-            const parsedPermissions = this.convertPermissionsColumn(selectedRow);
-            newPermissions = Object.assign({}, parsedPermissions, permissionsData);
-            if (!this.isMatchingPermissions(permissionsData, newPermissions)) {
-                this.setState({
-                    permissionsData: newPermissions
-                });
-            }
-        }
 
         return (
             <div>
 
                 <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false} onChange={this.handlePermissionsChange}
-                                    value={newPermissions[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
+                                    value={permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
                 <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} clearable={false} onChange={this.handlePermissionsChange}
-                                    value={newPermissions[PERMISSIONS_TABLE.CONTEXT]} />
+                                    value={permissionsData[PERMISSIONS_TABLE.CONTEXT]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.CREATE]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.CREATE]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.DELETE_OPERATION]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={newPermissions[PERMISSIONS_TABLE.READ]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={newPermissions[PERMISSIONS_TABLE.WRITE]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.DELETE_OPERATION]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={permissionsData[PERMISSIONS_TABLE.READ]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.EXECUTE]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_READ} label="Upload Read" description="This permission shows or hides upload related content for the user." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_READ]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_WRITE} label="Upload Write" description="Allow users to modify uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
                 <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_DELETE} label="Upload Delete" description="Allow users to delete uploaded content with this permission." onChange={this.handlePermissionsChange}
-                               isChecked={newPermissions[PERMISSIONS_TABLE.UPLOAD_DELETE]} />
+                               isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]} />
             </div>
         );
     }
@@ -280,6 +265,7 @@ class PermissionTable extends Component {
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
                     newConfigFields={this.createPermissionsModal}
+                    editState={this.onEdit}
                     columns={this.createPermissionsColumns()}
                     data={this.retrievePermissionsData()}
                     refreshData={() => null}
