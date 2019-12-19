@@ -55,7 +55,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordNoUserEmailTest() {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", null, Set.of());
+        UserModel userModel = UserModel.newUser(username, "", null, false, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
@@ -72,7 +72,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordNoEmailConfigurationTest() throws AlertDatabaseConstraintException {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
@@ -108,7 +108,7 @@ public class PasswordResetServiceTest {
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
@@ -128,7 +128,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordInvalidEmailConfigTest() throws AlertException {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);

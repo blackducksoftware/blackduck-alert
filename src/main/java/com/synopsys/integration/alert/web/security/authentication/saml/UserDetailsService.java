@@ -56,7 +56,7 @@ public class UserDetailsService implements SAMLUserDetailsService {
                         .collect(Collectors.toSet());
         }
 
-        UserModel userModel = UserModel.newUser(userName, "", emailAddress, roles);
+        UserModel userModel = UserModel.newUser(userName, "", emailAddress, true, roles);
         return new UserPrincipal(userModel);
     }
 }

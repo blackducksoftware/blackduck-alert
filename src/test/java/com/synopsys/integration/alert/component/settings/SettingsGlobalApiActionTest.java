@@ -64,7 +64,7 @@ public class SettingsGlobalApiActionTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
 
-        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, Set.of());
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, false, Set.of());
         Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -86,7 +86,7 @@ public class SettingsGlobalApiActionTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
 
-        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, Set.of());
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, false, Set.of());
         Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());

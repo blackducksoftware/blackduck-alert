@@ -95,7 +95,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
+        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), false, roles), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
@@ -103,6 +103,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
         assertFalse(updatedModel.hasRole(another_role));
         assertTrue(updatedModel.hasRole(admin_role));
+        assertFalse(updatedModel.isExternal());
         userAccessor.deleteUser(userName);
     }
 
