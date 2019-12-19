@@ -118,14 +118,18 @@ public class DefaultUserAccessor implements UserAccessor {
         UserEntity existingUser = userRepository.findById(userId)
                                       .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No user found with id '%s'", userId)));
         Long existingUserId = existingUser.getId();
-
-        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
-        newEntity.setId(existingUserId);
+        UserEntity savedEntity = existingUser;
+        // if it isn't an external user then update username, password, and email.
+        if (!existingUser.isExternal()) {
+            String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
+            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
+            newEntity.setId(existingUserId);
+            savedEntity = userRepository.save(newEntity);
+        }
 
         authorizationUtility.updateUserRoles(existingUserId, user.getRoles());
 
-        return createModel(userRepository.save(newEntity));
+        return createModel(savedEntity);
     }
 
     @Override
@@ -187,9 +191,6 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
-        if (userEntity.isExternal()) {
-            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userEntity.getUserName()));
-        }
         Long userId = userEntity.getId();
         if (!RESERVED_USER_IDS.contains(userId)) {
             authorizationUtility.updateUserRoles(userId, Set.of());
