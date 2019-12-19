@@ -23,8 +23,23 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum FormatType {
-    DEFAULT,
-    DIGEST,
-    SUMMARY
+    DEFAULT("Default", "The message will contain all the relevant data found in your selected provider."),
+    DIGEST("Digest", "The message will contain a delta of the content found in your selected provider since it was last queried."),
+    SUMMARY("Summary", "The message contains only a small and summarized overview of what was found in your selected provider.");
 
+    private String label;
+    private String description;
+
+    FormatType(String label, String description) {
+        this.label = label;
+        this.description = description;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
