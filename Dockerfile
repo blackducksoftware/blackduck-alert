@@ -32,6 +32,7 @@ RUN set -e \
     		openssl \
     		bash \
     		zip \
+    		postgresql-client \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D -H alert
 

@@ -65,18 +65,17 @@
     <!-- Create stored procedures/functions for auth initialization -->
     <changeSet author="gavink" id="2019-12-17-09-02-35-275">
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_ROLE_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_ROLE_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
                     from ALERT.ROLES where ROLENAME = $1;
-                RETURN result;
+                    RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_ROLE_ID AS $$
@@ -94,18 +93,17 @@
         </createProcedure>
 
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_USER_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_USER_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
                     from ALERT.USERS where USERNAME = $1;
-                RETURN result;
+                    RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_USER_ID AS $$

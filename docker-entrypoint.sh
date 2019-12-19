@@ -3,10 +3,10 @@
 certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/security
 alertHome=/opt/blackduck/alert
-alertConfigHome=$alertHome/alert-config
-alertDatabaseDir=$alertConfigHome/data/alertdb
-changelogsDir=$alertHome/alert-tar/changelogs
-pgResourcesDir=$alertHome/alert-tar/pg_resources
+alertConfigHome=${alertHome}/alert-config
+alertDataDir=${alertConfigHome}/data
+alertDatabaseDir=${alertDataDir}/alertdb
+upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -373,57 +373,64 @@ liquibaseChangelockReset() {
   --username="sa" \
   --password="" \
   --driver="org.h2.Driver" \
-  --changeLogFile="$changelogsDir/release-locks-changelog.xml" \
+  --changeLogFile="$upgradeResourcesDir/release-locks-changelog.xml" \
   releaseLocks
   echo "End releasing liquibase changeloglock."
 }
 
 validatePostgresDatabase() {
-    if psql alertdb -c '\l' |grep -q 'List of databases';
+    # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking for postgres databases: "
+    psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'
+    if psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l' |grep -q 'alertdb';
     then
         echo "Alert database exists"
-        if psql alertdb -c '\dt ALERT.*' |grep -q 'field_values';
+        if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c '\dt ALERT.*' |grep -q 'field_values';
         then
-            echo "Alert database is initialized"
+            echo "Alert database tables have been successfully created"
         else
-            echo "Alert database is not initialized"
+            echo "Alert database tables have not been created"
+            sleep 10
             exit 1
         fi
     else
         echo "Alert database does not exist"
+        sleep 10
         exit 1
     fi
 }
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary."
-    if psql alertdb -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
+    if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
-        echo "The database is initialized"
+        echo "The Alert database is initialized"
     else
-        echo "Initializing the database to 5.3.0 state to be upgraded to 6.0.0"
-        if [ -f $alertDatabaseDir/alertdb.mv.db ];
+        echo "Preparing the old Alert database to 5.3.0 state to be upgraded to 6.0.0"
+        if [ -f ${alertDataDir}/alertdb.mv.db ];
         then
             echo "A previous database existed"
+            echo "Exporting data from old database"
+            # 2. Call changelog-master.xml to upgrade old DB to 5.3.0
+            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            liquibase.integration.commandline.Main \
+            --url="jdbc:h2:file:${alertDatabaseDir}" \
+            --username="sa" \
+            --password="" \
+            --driver="org.h2.Driver" \
+            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
+            update
+
+            # 3. Migrate the old data into the new database (order matters)
+            echo "Importing data from old database into new database"
+            mkdir ${alertConfigHome}/data/temp
+            chmod 766 ${alertConfigHome}/data/temp
+            $JAVA_HOME/bin/java -cp ${alertHome}/alert-tar/lib/h2/h2*.jar org.h2.tools.RunScript \
+            -url jdbc:h2:${alertDatabaseDir} \
+            -script ${upgradeResourcesDir}/export_h2_tables.sql
         else
             echo "No previous database existed"
-            touch $alertDatabaseDir/alertdb.mv.db
         fi
-
-        echo "Migrating data from old database"
-        # 2. Call changelog-master.xml to upgrade old DB to 5.3.0
-        $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
-        liquibase.integration.commandline.Main \
-        --url="jdbc:h2:file:$alertDatabaseDir" \
-        --username="sa" \
-        --password="" \
-        --driver="org.h2.Driver" \
-        --changeLogFile="$changelogsDir/changelog-master.xml" \
-        update
-
-        # 3. Migrate the old data into the new database (order matters)
-        chmod +x $pgResourcesDir/migrate_h2_data_to_postgres.sh
-        $pgResourcesDir/migrate_h2_data_to_postgres.sh
     fi
 }
 

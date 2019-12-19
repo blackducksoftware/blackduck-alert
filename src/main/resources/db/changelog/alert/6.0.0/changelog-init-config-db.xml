@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <!-- Create schemas if they do not exist -->
+    <!-- Create schema if it does not exist -->
     <changeSet author="gavink" id="2019-12-11-10-36-41-001">
         <sql stripComments="true">
             create schema if not exists ALERT;
@@ -78,7 +78,7 @@
                 PROVIDER               VARCHAR(255),
                 PROVIDER_CREATION_TIME TIMESTAMP,
                 NOTIFICATION_TYPE      VARCHAR(255),
-                CONTENT                JSON,
+                CONTENT                TEXT,
                 constraint RAW_NOTIFICATION_CONTENT_KEY
                     primary key (ID)
             );
@@ -314,18 +314,17 @@
     <!-- Create stored procedures/functions for initialization operations -->
     <changeSet author="gavink" id="2019-12-13-13-57-17-245">
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_CONTEXT_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_CONTEXT_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
                     from ALERT.CONFIG_CONTEXTS where CONTEXT = $1;
-                RETURN result;
+                    RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_CONTEXT_ID AS $$
@@ -343,18 +342,17 @@
         </createProcedure>
 
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_FIELD_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_FIELD_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result from ALERT.DEFINED_FIELDS
                     where SOURCE_KEY = $1;
-                RETURN result;
+                    RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_FIELD_ID AS $$
@@ -372,18 +370,17 @@
         </createProcedure>
 
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_TYPE_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_TYPE_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
                     into result
-                    from ALERT.DESCRIPTOR_TYPES where TYPEs = $1;
-                RETURN result;
+                    from ALERT.DESCRIPTOR_TYPES where TYPE = $1;
+                    RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_DESCRIPTOR_TYPE_ID AS $$
@@ -401,9 +398,8 @@
         </createProcedure>
 
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_ID(varchar(64))
-            RETURNS BIGINT
-            AS $$
+            CREATE OR REPLACE FUNCTION GET_DESCRIPTOR_ID(text)
+            RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN
                     select ID
@@ -411,8 +407,8 @@
                     from ALERT.REGISTERED_DESCRIPTORS where NAME = $1;
                 RETURN result;
                 END;
-            $$
-            LANGUAGE sql;
+            $result$
+            LANGUAGE plpgsql;
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="h2">
             CREATE ALIAS GET_DESCRIPTOR_ID AS $$

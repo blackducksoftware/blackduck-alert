@@ -64,7 +64,7 @@ create table if not exists ALERT.RAW_NOTIFICATION_CONTENT
     PROVIDER               VARCHAR(255),
     PROVIDER_CREATION_TIME TIMESTAMP,
     NOTIFICATION_TYPE      VARCHAR(255),
-    CONTENT                JSON,
+    CONTENT                VARCHAR,
     constraint RAW_NOTIFICATION_CONTENT_KEY
         primary key (ID)
 );
