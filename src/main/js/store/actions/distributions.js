@@ -195,12 +195,12 @@ export function fetchDistributionJobs() {
             } else {
                 switch (response.status) {
                     case 401:
-                    case 403:
                         dispatch(verifyLoginByStatus(response.status));
                         break;
                     case 404:
                         dispatch(fetchingAllJobsNoneFound());
                         break;
+                    case 403:
                     default:
                         response.json().then((json) => {
                             let message = '';
