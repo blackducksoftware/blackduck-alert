@@ -22,6 +22,7 @@ class UserTable extends Component {
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
         this.clearModalFieldState = this.clearModalFieldState.bind(this);
+        this.onEdit = this.onEdit.bind(this);
 
         this.state = {
             user: {},
@@ -107,19 +108,15 @@ class UserTable extends Component {
         });
     }
 
-    createModalFields(selectedRow) {
+    onEdit(selectedRow) {
+        this.setState({
+            user: selectedRow
+        });
+    }
+
+    createModalFields() {
         const { user } = this.state;
         const { fieldErrors } = this.props;
-
-        let newUser = user;
-        if (selectedRow) {
-            newUser = Object.assign({}, selectedRow, user);
-            if (user.id !== newUser.id) {
-                this.setState({
-                    user: newUser
-                });
-            }
-        }
 
         const usernameKey = 'username';
         const passwordKey = 'password';
@@ -128,10 +125,10 @@ class UserTable extends Component {
         const passwordSetKey = 'passwordSet';
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} isSet={newUser[passwordSetKey]} errorName={passwordKey}
+                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={user[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={user[passwordKey]} isSet={user[passwordSetKey]} errorName={passwordKey}
                                errorValue={fieldErrors[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}
@@ -140,7 +137,7 @@ class UserTable extends Component {
                     onChange={this.handleChange}
                     multiSelect={true}
                     options={this.retrieveRoles()}
-                    value={newUser[roleNames]}
+                    value={user[roleNames]}
                     onFocus={this.props.getRoles} />
             </div>
         );
@@ -162,6 +159,7 @@ class UserTable extends Component {
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
+                        editState={this.onEdit}
                         data={this.props.users}
                         columns={this.createColumns()}
                         newButton={canCreate}

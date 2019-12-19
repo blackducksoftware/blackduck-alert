@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
+import PermissionTable from 'dynamic/loaded/users/PermissionTable';
 import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -21,6 +21,7 @@ class RoleTable extends Component {
         this.updatePermissions = this.updatePermissions.bind(this);
         this.savePermissions = this.savePermissions.bind(this);
         this.deletePermission = this.deletePermission.bind(this);
+        this.onEdit = this.onEdit.bind(this);
 
         this.state = {
             role: {
@@ -58,6 +59,12 @@ class RoleTable extends Component {
 
     retrieveData() {
         this.props.getRoles();
+    }
+
+    onEdit(selectedRow) {
+        this.setState({
+            role: selectedRow
+        });
     }
 
     onSave() {
@@ -123,37 +130,21 @@ class RoleTable extends Component {
         });
     }
 
-    deletePermission(permission) {
+    deletePermission(permissionIds) {
         const { role } = this.state;
         const { permissions } = role;
-        const matchingPermissionIndex = permissions.findIndex(listPermission => {
-            return listPermission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-                listPermission[PERMISSIONS_TABLE.CONTEXT] === permission[PERMISSIONS_TABLE.CONTEXT];
+        const filteredPermissions = permissions.filter(listPermission => !permissionIds.includes(listPermission.id));
+        let newRole = { ...role }
+        newRole.permissions = filteredPermissions;
+        this.setState({
+            role: newRole
         });
-        if (matchingPermissionIndex > -1) {
-            permissions.remove(matchingPermissionIndex);
-            role.permissions = permissions;
-            this.setState({
-                role: role
-            });
-        }
     }
 
-    createModalFields(selectedRow) {
+    createModalFields() {
         const { role } = this.state;
-        let newRole = role;
-        if (selectedRow) {
-            newRole.id = role.id || selectedRow.id;
-            newRole.roleName = role.roleName || selectedRow.roleName;
-            newRole.permissions = selectedRow.permissions || role.permissions;
-            if (role.roleName !== newRole.roleName) {
-                this.setState({
-                    role: newRole
-                });
-            }
-        }
 
-        const { permissions } = newRole;
+        const { permissions } = role;
         let incrementedId = this.state.incrementalId;
         permissions.forEach(permission => {
             if (!permission.id) {
@@ -163,15 +154,15 @@ class RoleTable extends Component {
         });
 
         if (incrementedId !== this.state.incrementalId) {
-            newRole.permissions = permissions;
+            role.permissions = permissions;
             this.setState({
-                role: newRole,
+                role: role,
                 incrementedId: incrementedId
             });
         }
 
         const roleNameKey = 'roleName';
-        const roleNameValue = newRole[roleNameKey];
+        const roleNameValue = role[roleNameKey];
 
         const { canCreate, canDelete, fieldErrors } = this.props;
 
@@ -199,6 +190,7 @@ class RoleTable extends Component {
                 <TableDisplay
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
+                    editState={this.onEdit}
                     onConfigSave={this.onSave}
                     onConfigUpdate={this.onUpdate}
                     onConfigDelete={this.onDelete}

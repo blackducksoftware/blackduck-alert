@@ -275,12 +275,14 @@ class TableDisplay extends Component {
 
     deleteItems(event) {
         event.preventDefault();
+        event.stopPropagation();
         this.props.onConfigDelete(this.state.rowsToDelete);
         this.closeDeleteModal();
     }
 
     editButtonClicked(currentRowSelected) {
         this.props.clearModalFieldState();
+        this.props.editState(currentRowSelected);
         this.setState({
             currentRowSelected,
             modificationState: MODIFICATION_STATE.EDIT
@@ -401,6 +403,7 @@ TableDisplay.propTypes = {
         hidden: PropTypes.bool.isRequired
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
+    editState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
     onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
