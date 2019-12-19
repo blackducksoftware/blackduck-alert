@@ -34,6 +34,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_DESCRIPTION = "This page allows you to configure the admin settings.";
 
     // Values not stored in the database, but keys must be registered
+    //TODO deprecate these fields in 5.3.0 and remove them in 6.0.0.
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_PWD = "settings.user.default.admin.password";
     public static final String KEY_ENCRYPTION_PWD = "settings.encryption.password";

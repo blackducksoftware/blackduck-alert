@@ -45,12 +45,14 @@ public class UserEntity extends DatabaseEntity {
     private boolean passwordExpired;
     @Column(name = "enabled")
     private boolean enabled;
+    @Column(name = "external")
+    private boolean external;
 
     public UserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(String userName, String password, String emailAddress) {
+    public UserEntity(String userName, String password, String emailAddress, boolean external) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -58,9 +60,10 @@ public class UserEntity extends DatabaseEntity {
         this.locked = false;
         this.passwordExpired = false;
         this.enabled = true;
+        this.external = external;
     }
 
-    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
+    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean external) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -68,6 +71,7 @@ public class UserEntity extends DatabaseEntity {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
+        this.external = external;
     }
 
     public String getUserName() {
@@ -98,4 +102,7 @@ public class UserEntity extends DatabaseEntity {
         return this.enabled;
     }
 
+    public boolean isExternal() {
+        return external;
+    }
 }

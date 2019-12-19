@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
@@ -39,8 +40,8 @@ public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
     private static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
 
     @Autowired
-    public MsTeamsUIConfig(MsTeamsKey msTeamsKey) {
-        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL);
+    public MsTeamsUIConfig(MsTeamsKey msTeamsKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
+        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL, globalConfigExistsValidator);
     }
 
     @Override
