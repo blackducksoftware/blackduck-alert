@@ -294,6 +294,7 @@ class TableDisplay extends Component {
     }
 
     copyButtonClicked(currentRowSelected) {
+        this.props.editState(currentRowSelected);
         this.setState({
             currentRowSelected,
             modificationState: MODIFICATION_STATE.COPY
