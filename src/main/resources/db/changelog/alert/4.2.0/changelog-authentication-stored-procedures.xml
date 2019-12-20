@@ -6,7 +6,7 @@
                 relativeToChangelogFile="true"
                 schemaName="ALERT"
                 procedureName="GET_ID_FOR_ACCESS_OPERATION">
-            CREATE ALIAS GET_ID_FOR_ACCESS_OPERATION AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_ACCESS_OPERATION AS $$
                 java.lang.Integer getIdForAccessOperationName(final java.sql.Connection connection, final java.lang.String operationName) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = '" + operationName + "' LIMIT 1;");
@@ -26,7 +26,7 @@
                 relativeToChangelogFile="true"
                 schemaName="ALERT"
                 procedureName="GET_ID_FOR_PERMISSION_KEY">
-            CREATE ALIAS GET_ID_FOR_PERMISSION_KEY AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_PERMISSION_KEY AS $$
                 java.lang.Integer getIdForPermissionKey(final java.sql.Connection connection, final java.lang.String permissionKey) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = '" + permissionKey.toLowerCase() + "' LIMIT 1;");
@@ -46,7 +46,7 @@
                 relativeToChangelogFile="true"
                 schemaName="ALERT"
                 procedureName="GET_ID_FOR_USER_ROLE">
-            CREATE ALIAS GET_ID_FOR_USER_ROLE AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_USER_ROLE AS $$
                 java.lang.Integer getIdForUserRoleName(final java.sql.Connection connection, final java.lang.String roleName) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ROLES WHERE ROLES.ROLENAME = '" + roleName + "' LIMIT 1;");
@@ -66,7 +66,7 @@
                 relativeToChangelogFile="true"
                 schemaName="ALERT"
                 procedureName="ASSIGN_ROLE_PERMISSION_ACCESS">
-            CREATE ALIAS ASSIGN_ROLE_PERMISSION_ACCESS AS $$
+            CREATE ALIAS IF NOT EXISTS ASSIGN_ROLE_PERMISSION_ACCESS AS $$
                 java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String permissionKey, java.lang.String accessOperation) throws java.sql.SQLException {
                     try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
                         insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, PERMISSION_KEY_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_PERMISSION_KEY('" + permissionKey + "'), GET_ID_FOR_ACCESS_OPERATION('" + accessOperation + "'));");
@@ -87,7 +87,7 @@
                 relativeToChangelogFile="true"
                 schemaName="ALERT"
                 procedureName="ASSIGN_ROLE_PERMISSION_ALL_ACCESS">
-            CREATE ALIAS ASSIGN_ROLE_PERMISSION_ALL_ACCESS AS $$
+            CREATE ALIAS IF NOT EXISTS ASSIGN_ROLE_PERMISSION_ALL_ACCESS AS $$
                 java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String permissionKey) throws java.sql.SQLException {
                     try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
                         try (final java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {

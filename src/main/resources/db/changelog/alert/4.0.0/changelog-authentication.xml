@@ -2,6 +2,11 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1543502711058-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="ROLES"/>
+            </not>
+        </preConditions>
         <createTable tableName="ROLES" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="ROLE_KEY"/>
@@ -10,6 +15,11 @@
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="USERS"/>
+            </not>
+        </preConditions>
         <createTable tableName="USERS" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="USER_KEY"/>
@@ -26,6 +36,11 @@
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="USER_ROLES"/>
+            </not>
+        </preConditions>
         <createTable tableName="USER_ROLES" schemaName="ALERT">
             <column name="USER_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
@@ -56,12 +71,18 @@
         />
     </changeSet>
     <changeSet author="psantos" id="1543502711058-4">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="ROLES"/>
+        </preConditions>
         <insert tableName="ROLES" schemaName="ALERT">
             <column name="id" value="1"/>
             <column name="ROLENAME" value="ALERT_ADMIN"/>
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-5">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="USERS"/>
+        </preConditions>
         <insert tableName="USERS" schemaName="ALERT">
             <column name="id" value="1"/>
             <column name="USERNAME" value="sysadmin"/>
@@ -69,6 +90,9 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-6">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="USER_ROLES"/>
+        </preConditions>
         <insert tableName="USER_ROLES" schemaName="ALERT">
             <column name="USER_ID" value="1"/>
             <column name="ROLE_ID" value="1"/>

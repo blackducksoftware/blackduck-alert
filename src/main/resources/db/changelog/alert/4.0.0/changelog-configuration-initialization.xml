@@ -3,6 +3,9 @@
 
     <!-- DESCRIPTOR_TYPES: required to register descriptors -->
     <changeSet author="gkillough" id="1548167676836-1">
+        <preConditions onFail="MARK_RAN">
+            <tableIsEmpty schemaName="ALERT" tableName="DESCRIPTOR_TYPES"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_TYPES">
@@ -22,6 +25,9 @@
 
     <!-- CONFIG_CONTEXTS: required to register fields -->
     <changeSet author="gkillough" id="1548167676836-2">
+        <preConditions onFail="MARK_RAN">
+            <tableIsEmpty schemaName="ALERT" tableName="CONFIG_CONTEXTS"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="CONFIG_CONTEXTS">
@@ -36,6 +42,9 @@
 
     <!-- REGISTERED_DESCRIPTORS: required to register fields -->
     <changeSet author="gkillough" id="1548167676836-3">
+        <preConditions onFail="MARK_RAN">
+            <tableIsEmpty schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
@@ -76,6 +85,14 @@
 
     <!-- Register Global Black Duck Fields. Changelog Extension: 4. -->
     <changeSet author="gkillough" id="1548167676836-4">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'blackduck.url'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'blackduck.api.key'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'blackduck.timeout'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('blackduck.url', FALSE, 'provider_blackduck', 'GLOBAL');
         </sql>
@@ -90,6 +107,16 @@
     <!-- Register Distribution Black Duck Fields. Changelog Extension: 5. -->
 
     <changeSet author="gkillough" id="1548167676836-5">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.filter.by.project'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.project.name.pattern'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.configured.project'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'provider.distribution.notification.types'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'provider.distribution.format.type'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.common.filter.by.project', FALSE, 'provider_blackduck', 'DISTRIBUTION');
         </sql>
@@ -110,6 +137,14 @@
     <!-- Register Distribution Email Fields. Changelog Extension: 6. -->
 
     <changeSet author="gkillough" id="1548167676836-6">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'email.subject.line'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'project.owner.only'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'email.addresses'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('email.subject.line', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
@@ -136,6 +171,58 @@
     <!-- Register Global Email Fields. Changelog Extension: 7. -->
 
     <changeSet author="gkillough" id="1548167676836-7">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.user'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.host'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.port'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.connectiontimeout'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.timeout'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.writetimeout'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.from'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.localhost'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.localaddress'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.localport'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ehlo'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.mechanisms'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.login.disable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.plain.disable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.digest-md5.disable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.ntlm.disable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.ntlm.domain'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.ntlm.flags'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.auth.xoauth2.disable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.submitter'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.dsn.notify'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.dsn.ret'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.allow8bitmime'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sendpartial'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sasl.enable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sasl.mechanisms'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sasl.authorizationid'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sasl.realm'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.sasl.usecanonicalhostname'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.quitwait'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.reportsuccess'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ssl.enable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ssl.checkserveridentity'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ssl.trust'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ssl.protocols'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.ssl.ciphersuites'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.starttls.enable'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.starttls.required'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.proxy.host'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.proxy.port'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.socks.host'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.socks.port'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.mailextension'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.userset'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.noop.strict'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'mail.smtp.password'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('mail.smtp.user', FALSE, 'channel_email', 'GLOBAL');
         </sql>
@@ -282,6 +369,13 @@
     <!-- Register Global HipChat Fields. Changelog Extension: 8. -->
 
     <changeSet author="gkillough" id="1548167676836-8">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.hipchat.api.key'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.hipchat.host.server'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.hipchat.api.key', TRUE, 'channel_hipchat', 'GLOBAL');
         </sql>
@@ -293,6 +387,14 @@
     <!-- Register Distribution HipChat Fields. Changelog Extension: 9. -->
 
     <changeSet author="gkillough" id="1548167676836-9">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.hipchat.room.id'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.hipchat.notify'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.hipchat.color'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.hipchat.room.id', FALSE, 'channel_hipchat', 'DISTRIBUTION');
         </sql>
@@ -319,6 +421,14 @@
     <!-- Register Distribution Slack Fields. Changelog Extension: 10. -->
 
     <changeSet author="gkillough" id="1548167676836-10">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'channel_slack'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.slack.webhook'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.slack.channel.name'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.slack.channel.username'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.slack.webhook', FALSE, 'channel_slack', 'DISTRIBUTION');
         </sql>
@@ -345,6 +455,28 @@
     <!-- Register Global Settings Fields. Changelog Extension: 11. -->
 
     <changeSet author="gkillough" id="1548167676836-11">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'component_settings'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.proxy.host'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.proxy.port'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.proxy.username'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.proxy.password'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.enabled'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.server'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.manager.dn'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.manager.password'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.authentication.type'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.referral'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.search.base'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.search.filter'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.dn.patterns'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.user.attributes'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.search.base'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.search.filter'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.ldap.group.role.attribute'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.proxy.host', FALSE, 'component_settings', 'GLOBAL');
         </sql>
@@ -402,6 +534,16 @@
     <!-- Register Global Scheduling Fields. Changelog Extension: 12. -->
 
     <changeSet author="gkillough" id="1548167676836-12">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'component_scheduling'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.accumulator.next.run'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.daily.processor.hour'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.daily.processor.next.run'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.purge.data.frequency'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.purge.data.next.run'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('scheduling.accumulator.next.run', FALSE, 'component_scheduling', 'GLOBAL');
         </sql>
@@ -422,6 +564,16 @@
     <!-- Register Global Settings UI Fields. Changelog Extension: 13. -->
 
     <changeSet author="gkillough" id="1548167676836-13">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'component_settings'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.user.default.admin.email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.user.default.admin.password'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.encryption.password'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.encryption.global.salt'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.startup.environment.variable.override'</sqlCheck>
+            </and>
+        </preConditions>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.user.default.admin.email', FALSE, 'component_settings', 'GLOBAL');
         </sql>

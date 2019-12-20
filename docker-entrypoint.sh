@@ -384,34 +384,44 @@ validatePostgresDatabase() {
     psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'
     if psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l' |grep -q 'alertdb';
     then
-        echo "Alert database exists"
+        echo "Alert database exists."
         if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c '\dt ALERT.*' |grep -q 'field_values';
         then
-            echo "Alert database tables have been successfully created"
+            echo "Alert database tables have been successfully created."
         else
-            echo "Alert database tables have not been created"
+            echo "Alert database tables have not been created."
             sleep 10
             exit 1
         fi
     else
-        echo "Alert database does not exist"
+        echo "Alert database does not exist."
         sleep 10
         exit 1
     fi
 }
 
 postgresPrepare600Upgrade() {
-    echo "Determining if preparation for 6.0.0 upgrade is necessary."
+    echo "Determining if preparation for 6.0.0 upgrade is necessary..."
     if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
-        echo "The Alert database is initialized"
+        echo "Alert database is initialized."
     else
-        echo "Preparing the old Alert database to 5.3.0 state to be upgraded to 6.0.0"
+        echo "Preparing the old Alert database to be upgraded to 6.0.0..."
         if [ -f ${alertDataDir}/alertdb.mv.db ];
         then
-            echo "A previous database existed"
-            echo "Exporting data from old database"
-            # 2. Call changelog-master.xml to upgrade old DB to 5.3.0
+            echo "A previous database existed."
+
+            echo "Clearing old checksums for offline upgrade..."
+            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            liquibase.integration.commandline.Main \
+            --url="jdbc:h2:file:${alertDatabaseDir}" \
+            --username="sa" \
+            --password="" \
+            --driver="org.h2.Driver" \
+            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
+            clearCheckSums
+
+            echo "Upgrading old database to 5.3.0 so that it can be properly exported..."
             ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
@@ -421,15 +431,25 @@ postgresPrepare600Upgrade() {
             --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
             update
 
-            # 3. Migrate the old data into the new database (order matters)
-            echo "Importing data from old database into new database"
+            echo "Creating temp directory for data migration..."
             mkdir ${alertConfigHome}/data/temp
             chmod 766 ${alertConfigHome}/data/temp
-            $JAVA_HOME/bin/java -cp ${alertHome}/alert-tar/lib/h2/h2*.jar org.h2.tools.RunScript \
-            -url jdbc:h2:${alertDatabaseDir} \
+
+            echo "Exporting data from old database..."
+            $JAVA_HOME/bin/java -cp "${alertHome}/alert-tar/lib/liquibase/*" \
+            org.h2.tools.RunScript \
+            -url "jdbc:h2:${alertDatabaseDir}" \
+            -user "sa" \
+            -password "" \
+            -driver "org.h2.Driver" \
             -script ${upgradeResourcesDir}/export_h2_tables.sql
+
+            chmod 766 ${alertConfigHome}/data/temp/*
+
+            echo "Importing data from old database into new database..."
+            psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -f ${upgradeResourcesDir}/import_postgres_tables.sql
         else
-            echo "No previous database existed"
+            echo "No previous database existed."
         fi
     fi
 }
@@ -463,6 +483,7 @@ else
   liquibaseChangelockReset
   validatePostgresDatabase
   postgresPrepare600Upgrade
+  liquibaseChangelockReset
 
   if [ -f "$truststoreFile" ];
   then

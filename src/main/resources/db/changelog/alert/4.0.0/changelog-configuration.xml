@@ -1,6 +1,11 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gkillough" id="1543499878547-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS"/>
+            </not>
+        </preConditions>
         <createTable tableName="REGISTERED_DESCRIPTORS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
@@ -10,6 +15,11 @@
         </createTable>
     </changeSet>
     <changeSet author="bmandel" id="1544636378584-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="DESCRIPTOR_tYPES"/>
+            </not>
+        </preConditions>
         <createTable tableName="DESCRIPTOR_TYPES" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_TYPES_KEY"/>
@@ -18,6 +28,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="DEFINED_FIELDS"/>
+            </not>
+        </preConditions>
         <createTable tableName="DEFINED_FIELDS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="DEFINED_FIELDS_KEY"/>
@@ -31,6 +46,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="DESCRIPTOR_FIELDS"/>
+            </not>
+        </preConditions>
         <createTable tableName="DESCRIPTOR_FIELDS" schemaName="ALERT">
             <column name="DESCRIPTOR_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
@@ -67,6 +87,11 @@
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="CONFIG_CONTEXTS"/>
+            </not>
+        </preConditions>
         <createTable tableName="CONFIG_CONTEXTS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_CONTEXTS_KEY"/>
@@ -77,6 +102,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="FIELD_CONTEXTS"/>
+            </not>
+        </preConditions>
         <createTable tableName="FIELD_CONTEXTS" schemaName="ALERT">
             <column name="FIELD_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
@@ -113,6 +143,11 @@
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="DESCRIPTOR_CONFIGS"/>
+            </not>
+        </preConditions>
         <createTable tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_CONFIGS_KEY"/>
@@ -142,6 +177,11 @@
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="CONFIG_GROUPS"/>
+            </not>
+        </preConditions>
         <createTable tableName="CONFIG_GROUPS" schemaName="ALERT">
             <column name="CONFIG_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
@@ -168,6 +208,11 @@
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-8">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="FIELD_VALUES"/>
+            </not>
+        </preConditions>
         <createTable tableName="FIELD_VALUES" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>

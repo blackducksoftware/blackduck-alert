@@ -123,7 +123,7 @@
     <!-- Initialize permissions matrix -->
     <changeSet author="gavink" id="2019-12-12-09-11-55-999">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX</sqlCheck>
+            <tableIsEmpty schemaName="ALERT" tableName="PERMISSION_MATRIX"/>
         </preConditions>
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
@@ -382,7 +382,7 @@
     <changeSet author="gavink" id="2019-12-12-09-34-27-326">
         <preConditions onFail="MARK_RAN">
             <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.USER_ROLES</sqlCheck>
+                <tableIsEmpty schemaName="ALERT" tableName="USER_ROLES"/>
                 <not>
                     <sqlCheck expectedResult="3">select count(*) from ALERT.USER_ROLES where USER_ID = 1 or USER_ID = 2 or USER_ID = 3</sqlCheck>
                 </not>
