@@ -34,4 +34,9 @@ public class UserManagementDescriptorKey extends DescriptorKey {
     public String getUniversalKey() {
         return USER_MANAGEMENT_COMPONENT;
     }
+
+    @Override
+    public String getDisplayName() {
+        return UserManagementDescriptor.USER_MANAGEMENT_LABEL;
+    }
 }

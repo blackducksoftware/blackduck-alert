@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -33,10 +34,13 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
@@ -47,9 +51,11 @@ public class UserActions {
     private static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private UserAccessor userAccessor;
+    private AuthorizationUtility authorizationUtility;
 
-    public UserActions(UserAccessor userAccessor) {
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility) {
         this.userAccessor = userAccessor;
+        this.authorizationUtility = authorizationUtility;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -58,68 +64,90 @@ public class UserActions {
                    .collect(Collectors.toList());
     }
 
-    public Optional<UserConfig> getUser(String userName) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.getUser(userName).map(this::convertToCustomUserRoleModel);
-    }
-
-    public UserConfig createUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException, AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateCreationUserName(fieldErrors, userName);
-        validatePasswordLength(fieldErrors, password);
-        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
+    public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
+        validateCreationRequiredFields(userConfig);
+        String userName = userConfig.getUsername();
+        String password = userConfig.getPassword();
+        String emailAddress = userConfig.getEmailAddress();
         UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
+        Long userId = userModel.getId();
+        Set<String> configuredRoleNames = userConfig.getRoleNames();
+        if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
+            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                      .collect(Collectors.toList());
+            authorizationUtility.updateUserRoles(userId, roleNames);
+        }
+        userModel = userAccessor.getUser(userId).orElse(userModel);
         return convertToCustomUserRoleModel(userModel);
     }
 
-    public void deleteUser(String userName) throws AlertDatabaseConstraintException, AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
+    public UserConfig updateUser(Long userId, UserConfig userConfig) throws AlertFieldException, AlertDatabaseConstraintException {
+        Optional<UserModel> userModel = userAccessor.getUser(userId);
+        if (userModel.isPresent()) {
+            UserModel existingUser = userModel.get();
+            boolean passwordMissing = StringUtils.isBlank(userConfig.getPassword());
+            String userName = userConfig.getUsername();
+            String password = passwordMissing ? existingUser.getPassword() : userConfig.getPassword();
+            String emailAddress = userConfig.getEmailAddress();
+
+            Map<String, String> fieldErrors = new HashMap<>();
+
+            validateUserExistsById(fieldErrors, userId, userName);
+            validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+            if (!userConfig.isPasswordSet() || !passwordMissing) {
+                validatePasswordLength(fieldErrors, password);
+            }
+            if (!fieldErrors.isEmpty()) {
+                throw new AlertFieldException(fieldErrors);
+            }
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getRoles());
+            userAccessor.updateUser(newUserModel, passwordMissing);
+
+            Set<String> configuredRoleNames = userConfig.getRoleNames();
+            if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
+                Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                          .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                          .collect(Collectors.toList());
+                authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+            }
         }
-        //TODO check to make sure this isn't an external user.
-        userAccessor.deleteUser(userName);
+        return userAccessor.getUser(userId)
+                   .map(this::convertToCustomUserRoleModel)
+                   .orElse(userConfig);
     }
 
-    public boolean updatePassword(String userName, String newPassword) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
-        validatePasswordLength(fieldErrors, newPassword);
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.changeUserPassword(userName, newPassword);
-    }
-
-    public boolean updateEmail(String userName, String emailAddress) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
-        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return userAccessor.changeUserEmailAddress(userName, emailAddress);
+    public void deleteUser(Long userId) throws AlertForbiddenOperationException {
+        userAccessor.deleteUser(userId);
     }
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
+        // converting to an object to return to the client; remove the password field.
         return new UserConfig(
+            userModel.getId().toString(),
             userModel.getName(),
-            userModel.getPassword(),
+            null,
             userModel.getEmailAddress(),
             userModel.getRoleNames(),
             userModel.isExpired(),
             userModel.isLocked(),
             userModel.isPasswordExpired(),
-            userModel.isEnabled());
+            userModel.isEnabled(),
+            StringUtils.isNotBlank(userModel.getPassword()));
+    }
+
+    private void validateCreationRequiredFields(UserConfig userConfig) throws AlertFieldException {
+        String userName = userConfig.getUsername();
+        String password = userConfig.getPassword();
+        String emailAddress = userConfig.getEmailAddress();
+
+        Map<String, String> fieldErrors = new HashMap<>();
+        validateUserExistsByName(fieldErrors, userName);
+        validatePasswordLength(fieldErrors, password);
+        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
     }
 
     private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
@@ -128,10 +156,17 @@ public class UserActions {
         }
     }
 
-    private void validateCreationUserName(Map<String, String> fieldErrors, String userName) {
+    private void validateUserExistsByName(Map<String, String> fieldErrors, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
+    }
+
+    private void validateUserExistsById(Map<String, String> fieldErrors, Long userId, String userName) {
+        validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
+        Optional<UserModel> userModel = userAccessor.getUser(userName);
+        userModel.filter(user -> !user.getId().equals(userId))
+            .ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
     }
 
     private void validatePasswordLength(Map<String, String> fieldErrors, String passwordValue) {

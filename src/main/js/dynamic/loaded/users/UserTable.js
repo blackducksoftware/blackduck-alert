@@ -3,9 +3,8 @@ import PropTypes from 'prop-types'
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
-import CheckboxInput from 'field/input/CheckboxInput';
 import { connect } from 'react-redux';
-import { createNewUser, deleteUser, fetchUsers } from 'store/actions/users';
+import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers, updateUser } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 
@@ -18,9 +17,12 @@ class UserTable extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
+        this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.retrieveRoles = this.retrieveRoles.bind(this);
-        this.onDelete = this.onDelete.bind(this);
+        this.clearModalFieldState = this.clearModalFieldState.bind(this);
+        this.onEdit = this.onEdit.bind(this);
 
         this.state = {
             user: {},
@@ -31,14 +33,22 @@ class UserTable extends Component {
     createColumns() {
         return [
             {
+                header: 'id',
+                headerLabel: 'Id',
+                isKey: true,
+                hidden: true
+            },
+            {
                 header: 'username',
                 headerLabel: 'Username',
-                isKey: true
+                isKey: false,
+                hidden: false
             },
             {
                 header: 'emailAddress',
                 headerLabel: 'Email',
-                isKey: false
+                isKey: false,
+                hidden: false
             }
         ];
     }
@@ -50,6 +60,7 @@ class UserTable extends Component {
     handleChange(e) {
         const { name, value, type, checked } = e.target;
         const { user } = this.state;
+
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
@@ -58,20 +69,36 @@ class UserTable extends Component {
     }
 
     onSave() {
-        this.props.createUser(this.state.user);
-        this.setState({
-            user: {}
-        });
+        const { user } = this.state;
+        this.props.createUser(user);
+        this.retrieveData();
+    }
+
+    onUpdate() {
+        const { user } = this.state;
+        this.props.updateUser(user);
         this.retrieveData();
     }
 
     onDelete(usersToDelete) {
         if (usersToDelete) {
-            usersToDelete.forEach(userName => {
-                this.props.deleteUser(userName);
+            usersToDelete.forEach(userId => {
+                this.props.deleteUser(userId);
             });
         }
         this.retrieveData();
+    }
+
+    onConfigClose() {
+        this.props.clearFieldErrors()
+    }
+
+    clearModalFieldState() {
+        if (this.state.user && Object.keys(this.state.user).length > 0) {
+            this.setState({
+                user: {}
+            });
+        }
     }
 
     retrieveRoles() {
@@ -81,25 +108,27 @@ class UserTable extends Component {
         });
     }
 
-    createModalFields(selectedRow) {
+    onEdit(selectedRow) {
+        this.setState({
+            user: selectedRow
+        });
+    }
+
+    createModalFields() {
         const { user } = this.state;
-        let newUser = user;
-        if (selectedRow) {
-            newUser = Object.assign({}, user, selectedRow);
-        }
+        const { fieldErrors } = this.props;
 
         const usernameKey = 'username';
         const passwordKey = 'password';
         const emailKey = 'emailAddress';
-        const enabledKey = 'enabled';
         const roleNames = 'roleNames';
-
+        const passwordSetKey = 'passwordSet';
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={newUser[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={newUser[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={newUser[emailKey]} />
-                <CheckboxInput name={enabledKey} label="Enabled" description="Enable this user for Alert." onChange={this.handleChange} isChecked={newUser[enabledKey]} />
+                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={user[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={user[passwordKey]} isSet={user[passwordSetKey]} errorName={passwordKey}
+                               errorValue={fieldErrors[passwordKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}
@@ -108,28 +137,36 @@ class UserTable extends Component {
                     onChange={this.handleChange}
                     multiSelect={true}
                     options={this.retrieveRoles()}
-                    value={newUser[roleNames]}
+                    value={user[roleNames]}
                     onFocus={this.props.getRoles} />
             </div>
         );
     }
 
     render() {
-        const { canCreate, canDelete } = this.props;
-
+        const { canCreate, canDelete, fieldErrors, userDeleteError } = this.props;
+        const fieldErrorKeys = Object.keys(fieldErrors);
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
             <div>
                 <div>
                     <TableDisplay
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
+                        clearModalFieldState={this.clearModalFieldState}
                         onConfigSave={this.onSave}
+                        onConfigUpdate={this.onUpdate}
                         onConfigDelete={this.onDelete}
+                        onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
+                        editState={this.onEdit}
                         data={this.props.users}
                         columns={this.createColumns()}
                         newButton={canCreate}
-                        deleteButton={canDelete} />
+                        deleteButton={canDelete}
+                        hasFieldErrors={hasErrors}
+                        errorDialogMessage={userDeleteError}
+                    />
                 </div>
             </div>
         );
@@ -138,24 +175,32 @@ class UserTable extends Component {
 
 UserTable.defaultProps = {
     canCreate: true,
-    canDelete: true
+    canDelete: true,
+    userDeleteError: null,
+    fieldErrors: {}
 };
 
 UserTable.propTypes = {
     canCreate: PropTypes.bool,
-    canDelete: PropTypes.bool
+    canDelete: PropTypes.bool,
+    userDeleteError: PropTypes.string,
+    fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     users: state.users.data,
-    roles: state.roles.data
+    roles: state.roles.data,
+    userDeleteError: state.users.userDeleteError,
+    fieldErrors: state.users.fieldErrors
 });
 
 const mapDispatchToProps = dispatch => ({
     createUser: user => dispatch(createNewUser(user)),
-    deleteUser: username => dispatch(deleteUser(username)),
+    updateUser: user => dispatch(updateUser(user)),
+    deleteUser: userId => dispatch(deleteUser(userId)),
     getUsers: () => dispatch(fetchUsers()),
-    getRoles: () => dispatch(fetchRoles())
+    getRoles: () => dispatch(fetchRoles()),
+    clearFieldErrors: () => dispatch(clearUserFieldErrors())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserTable);

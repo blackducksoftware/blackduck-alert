@@ -24,9 +24,9 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
-public class UserConfig extends AlertSerializableModel {
+public class UserConfig extends Config {
     private String username;
     private String password;
     private String emailAddress;
@@ -35,11 +35,13 @@ public class UserConfig extends AlertSerializableModel {
     private boolean locked;
     private boolean passwordExpired;
     private boolean enabled;
+    private boolean passwordSet;
 
     public UserConfig() {
     }
 
-    public UserConfig(String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
+    public UserConfig(String id, String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean passwordSet) {
+        super(id);
         this.username = username;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -48,6 +50,7 @@ public class UserConfig extends AlertSerializableModel {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
+        this.passwordSet = passwordSet;
     }
 
     public String getUsername() {
@@ -80,5 +83,9 @@ public class UserConfig extends AlertSerializableModel {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean isPasswordSet() {
+        return passwordSet;
     }
 }

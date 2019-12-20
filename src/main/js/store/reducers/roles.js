@@ -1,5 +1,6 @@
 import {
     SERIALIZE,
+    USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
@@ -16,8 +17,9 @@ const initialState = {
     deleteSuccess: false,
     data: [],
     roleFetchError: '',
-    roleSaveError: '',
-    roleDeleteError: ''
+    roleSaveError: null,
+    roleDeleteError: null,
+    fieldErrors: {}
 };
 
 const roles = (state = initialState, action) => {
@@ -26,12 +28,14 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleDeleteError: action.roleDeleteError
+                roleDeleteError: action.roleDeleteError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_ROLE_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: true
+                deleteSuccess: true,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_ROLE_DELETING:
             return Object.assign({}, state, {
@@ -60,18 +64,26 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleSaveError: action.roleSaveError
+                roleSaveError: action.roleSaveError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_ROLE_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: false
+                deleteSuccess: false,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_ROLE_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false
             });
+        case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
+            return Object.assign({}, state, {
+                roleDeleteError: null,
+                fieldErrors: {}
+            });
+        }
         case SERIALIZE:
             return initialState;
 

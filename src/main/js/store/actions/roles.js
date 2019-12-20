@@ -1,4 +1,5 @@
 import {
+    USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
@@ -44,10 +45,11 @@ function savedRole() {
     };
 }
 
-function saveRoleError(message) {
+function saveRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleSaveError: message
+        roleSaveError: message,
+        errors
     };
 }
 
@@ -63,11 +65,18 @@ function deletedRole() {
     };
 }
 
-function deletingRoleError(message) {
+function deletingRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleDeleteError: message
+        roleDeleteError: message,
+        errors
     };
+}
+
+function clearFieldErrors() {
+    return {
+        type: USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS
+    }
 }
 
 export function fetchRoles() {
@@ -123,15 +132,42 @@ export function createNewRole(roleName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(saveRoleError(data.message));
                             case 401:
-                                dispatch(saveRoleError(data.message));
+                                dispatch(saveRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(saveRoleError(data.message));
+                            case 400:
                             default: {
-                                return dispatch(saveRoleError(data.message, null));
+                                return dispatch(saveRoleError(data));
+                            }
+                        }
+                    });
+            }
+        }).then(() => dispatch(fetchRoles()))
+            .catch(console.error);
+    };
+}
+
+export function updateRole(role) {
+    return (dispatch, getState) => {
+        dispatch(savingRole());
+        const { csrfToken } = getState().session;
+        const { id } = role;
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, role);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then(() => {
+                    dispatch(savedRole());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 401:
+                                dispatch(saveRoleError(data));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            case 400:
+                            default: {
+                                return dispatch(saveRoleError(data));
                             }
                         }
                     });
@@ -140,11 +176,11 @@ export function createNewRole(roleName) {
     };
 }
 
-export function deleteRole(roleName) {
+export function deleteRole(roleId) {
     return (dispatch, getState) => {
         dispatch(deletingRole());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleName);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
             if (response.ok) {
                 dispatch(deletedRole());
@@ -152,19 +188,23 @@ export function deleteRole(roleName) {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
-                            case 400:
-                                return dispatch(deletingRoleError(data.message));
                             case 401:
-                                dispatch(deletingRoleError(data.message));
+                                dispatch(deletingRoleError(data));
                                 return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(deletingRoleError(data.message));
+                            case 400:
                             default: {
-                                return dispatch(deletingRoleError(data.message, null));
+                                return dispatch(deletingRoleError(data));
                             }
                         }
                     });
             }
-        }).catch(console.error);
+        }).then(() => dispatch(fetchRoles()))
+            .catch(console.error);
     };
 }
+
+export function clearRoleFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
+    }
+};

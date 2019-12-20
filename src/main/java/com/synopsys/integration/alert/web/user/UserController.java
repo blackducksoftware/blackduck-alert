@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
@@ -83,8 +85,8 @@ public class UserController extends BaseController {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.createUser(userModel.getUsername(), userModel.getPassword(), userModel.getEmailAddress());
-            return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Created.");
+            UserConfig newUser = userActions.createUser(userModel);
+            return responseFactory.createCreatedResponse(newUser.getId(), "User Created.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
@@ -95,14 +97,14 @@ public class UserController extends BaseController {
 
     }
 
-    @DeleteMapping(value = "/{userName}")
-    public ResponseEntity<String> deleteUser(@PathVariable String userName) {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+    @PutMapping(value = "/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserConfig userModel) {
+        if (!hasPermission(authorizationManager::hasWritePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
-            userActions.deleteUser(userName);
-            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
+            userActions.updateUser(userId, userModel);
+            return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
@@ -111,6 +113,19 @@ public class UserController extends BaseController {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
 
+    }
+
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
+        try {
+            userActions.deleteUser(userId);
+            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
+        } catch (AlertForbiddenOperationException ex) {
+            return responseFactory.createForbiddenResponse("The user is reserved and cannot be deleted.");
+        }
     }
 
     private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {

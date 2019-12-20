@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL = "Default System Administrator Email";
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD = "Default System Administrator Password";
+    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL = "Default System Admin Email";
+    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD = "Default System Admin Password";
     private static final String LABEL_ENCRYPTION_PASSWORD = "Encryption Password";
     private static final String LABEL_ENCRYPTION_GLOBAL_SALT = "Encryption Global Salt";
     private static final String LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "Startup Environment Variable Override";
@@ -66,7 +66,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
 
-    private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Administrator Configuration";
+    private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Admin Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
     private final EncryptionValidator encryptionConfigValidator;
@@ -89,13 +89,6 @@ public class SettingsUIConfig extends UIConfig {
     }
 
     private List<ConfigField> createDefaultSettingsPanel() {
-
-        ConfigField sysAdminEmail = new TextInputConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL, SETTINGS_ADMIN_EMAIL_DESCRIPTION)
-                                        .applyRequired(true)
-                                        .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
-        ConfigField defaultUserPassword = new PasswordConfigField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD, SETTINGS_USER_PASSWORD_DESCRIPTION, encryptionConfigValidator)
-                                              .applyRequired(true)
-                                              .applyHeader(SETTINGS_HEADER_ADMINISTRATOR);
         ConfigField encryptionPassword = new PasswordConfigField(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator)
                                              .applyRequired(true)
                                              .applyValidationFunctions(this::minimumEncryptionFieldLength)
@@ -105,7 +98,7 @@ public class SettingsUIConfig extends UIConfig {
                                          .applyValidationFunctions(this::minimumEncryptionFieldLength)
                                          .applyHeader(SETTINGS_HEADER_ENCRYPTION);
         ConfigField environmentVariableOverride = new CheckboxConfigField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
-        return List.of(sysAdminEmail, defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride);
+        return List.of(encryptionPassword, encryptionSalt, environmentVariableOverride);
     }
 
     private List<ConfigField> createProxyPanel() {

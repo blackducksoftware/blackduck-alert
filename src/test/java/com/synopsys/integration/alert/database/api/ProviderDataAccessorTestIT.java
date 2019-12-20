@@ -48,6 +48,11 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
             public String getUniversalKey() {
                 return key;
             }
+
+            @Override
+            public String getDisplayName() {
+                return key;
+            }
         };
     }
 

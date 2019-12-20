@@ -90,7 +90,7 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
     private static final String AUTHENTICATION_SAML_METADATA_FILE_DESCRIPTION = "The file to upload to the server containing the Metadata from the external Identity Provider.";
 
-    private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION = "The role name to map to the Administrator role of Alert.";
+    private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION = "The role name to map to the Admin role of Alert.";
     private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION = "The role name to map to the Job Manager role of Alert.";
     private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION = "The role name to map to a User role of Alert.";
     private static final String AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION = "The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above.";

@@ -1,5 +1,6 @@
 import {
     SERIALIZE,
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -16,8 +17,9 @@ const initialState = {
     deleteSuccess: false,
     data: [],
     userFetchError: '',
-    userSaveError: '',
-    userDeleteError: ''
+    userSaveError: null,
+    userDeleteError: null,
+    fieldErrors: {}
 };
 
 const users = (state = initialState, action) => {
@@ -26,12 +28,14 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userDeleteError: action.userDeleteError
+                userDeleteError: action.userDeleteError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_USER_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: true
+                deleteSuccess: true,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_USER_DELETING:
             return Object.assign({}, state, {
@@ -60,18 +64,26 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userSaveError: action.userSaveError
+                userSaveError: action.userSaveError,
+                fieldErrors: action.errors || {}
             });
         case USER_MANAGEMENT_USER_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: false
+                deleteSuccess: false,
+                fieldErrors: {}
             });
         case USER_MANAGEMENT_USER_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false
             });
+        case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
+            return Object.assign({}, state, {
+                userDeleteError: null,
+                fieldErrors: {}
+            });
+        }
         case SERIALIZE:
             return initialState;
 

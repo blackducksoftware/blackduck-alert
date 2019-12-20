@@ -6,10 +6,13 @@ import AutoRefresh from 'component/common/AutoRefresh';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
+import { connect } from 'react-redux';
 
-const jobModificationState = {
+const MODIFICATION_STATE = {
     EDIT: 'EDIT',
-    COPY: 'COPY'
+    COPY: 'COPY',
+    CREATE: 'CREATE',
+    NONE: 'NONE'
 };
 
 class TableDisplay extends Component {
@@ -21,7 +24,6 @@ class TableDisplay extends Component {
         this.createInsertModal = this.createInsertModal.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.flipShowSwitch = this.flipShowSwitch.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -31,18 +33,29 @@ class TableDisplay extends Component {
         this.editButtonClick = this.editButtonClick.bind(this);
         this.copyButtonClicked = this.copyButtonClicked.bind(this);
         this.copyButtonClick = this.copyButtonClick.bind(this);
+        this.isShowModal = this.isShowModal.bind(this);
+        this.createErrorModal = this.createErrorModal.bind(this);
 
         this.state = {
             currentRowSelected: null,
-            modificationState: jobModificationState.EDIT,
+            modificationState: MODIFICATION_STATE.NONE,
             showConfiguration: false,
             showDelete: false,
-            rowsToDelete: []
+            rowsToDelete: [],
+            showErrorDialog: Boolean(this.props.errorDialogMessage)
         };
     }
 
     componentDidMount() {
         this.updateData();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.errorDialogMessage !== this.props.errorDialogMessage) {
+            this.setState({
+                showErrorDialog: Boolean(this.props.errorDialogMessage)
+            });
+        }
     }
 
     createTableColumns() {
@@ -54,7 +67,7 @@ class TableDisplay extends Component {
         }
 
         return this.props.columns.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
+            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} hidden={column.hidden} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
                                dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
         ));
     }
@@ -67,16 +80,21 @@ class TableDisplay extends Component {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
-        const refreshButton = !this.props.autoRefresh &&
-            (<button type="button" tabUserTable={0} className={classes} onClick={this.updateData()}>
+        const refreshButton = !this.props.autoRefresh && (
+            <button type="button" className={classes} onClick={this.updateData}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
-            </button>);
+            </button>
+        );
         return (
             <div>
                 {buttons.insertBtn
                 && <InsertButton className="addJobButton btn-md" onClick={() => {
                     insertOnClick();
-                    this.flipShowSwitch()
+                    this.props.clearModalFieldState();
+                    this.setState({
+                        modificationState: MODIFICATION_STATE.CREATE,
+                        showConfiguration: true
+                    });
                 }}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     {this.props.tableNewButtonLabel}
@@ -105,78 +123,135 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         this.handleClose();
-        this.flipShowSwitch();
-        this.props.onConfigSave();
+        const { modificationState } = this.state;
+        if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
+            this.props.onConfigSave();
+        } else if (MODIFICATION_STATE.EDIT === modificationState) {
+            this.props.onConfigUpdate();
+        }
         this.props.refreshData();
-    }
-
-    flipShowSwitch() {
-        this.setState({
-            showConfiguration: !this.state.showConfiguration
-        });
     }
 
     createEditModal() {
         const { currentRowSelected } = this.state;
+        const showModal = currentRowSelected || this.isShowModal();
         return (
-            <Modal size="lg" show={currentRowSelected} onHide={() => {
-                this.handleClose();
-            }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal" onSubmit={(event) => {
-                        this.handleSubmit(event);
-                    }} noValidate>
-                        {this.props.newConfigFields(currentRowSelected)}
-                        <ConfigButtons
-                            cancelId="usermanagement-cancel"
-                            submitId="usermanagement-submit"
-                            includeCancel
-                            onCancelClick={() => {
-                                this.handleClose();
-                            }}
-                            isFixed={false}
-                        />
-                    </form>
-                </Modal.Body>
-            </Modal>
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={showModal} onHide={() => {
+                    this.handleClose();
+                    this.setState({
+                        modificationState: MODIFICATION_STATE.NONE
+                    });
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form className="form-horizontal" onSubmit={(event) => {
+                            this.handleSubmit(event);
+                        }} noValidate>
+                            {this.props.newConfigFields(currentRowSelected)}
+                            <ConfigButtons
+                                cancelId="usermanagement-cancel"
+                                submitId="usermanagement-submit"
+                                includeCancel
+                                onCancelClick={() => {
+                                    this.handleClose();
+                                    this.setState({
+                                        modificationState: MODIFICATION_STATE.NONE
+                                    });
+                                }}
+                                isFixed={false}
+                            />
+                        </form>
+                    </Modal.Body>
+                </Modal>
+            </div>
         );
+    }
+
+    isShowModal() {
+        return this.state.showConfiguration || this.props.hasFieldErrors;
     }
 
     createInsertModal(onModalClose) {
         return (
-            <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
-                this.handleClose();
-                this.flipShowSwitch();
-                onModalClose();
-            }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal" onSubmit={(event) => {
-                        this.handleSubmit(event);
-                        onModalClose();
-                    }} noValidate>
-                        {this.props.newConfigFields()}
-                        <ConfigButtons
-                            cancelId="usermanagement-cancel"
-                            submitId="usermanagement-submit"
-                            includeCancel
-                            onCancelClick={() => {
-                                this.handleClose();
-                                this.flipShowSwitch();
-                                onModalClose();
-                            }}
-                            isFixed={false}
-                        />
-                    </form>
-                </Modal.Body>
-            </Modal>
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
+                    this.handleClose();
+                    this.setState({
+                        showConfiguration: false,
+                        modificationState: MODIFICATION_STATE.NONE
+
+                    });
+                    onModalClose();
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form className="form-horizontal" onSubmit={(event) => {
+                            this.handleSubmit(event);
+                            this.setState({
+                                showConfiguration: false
+                            });
+                            onModalClose();
+                        }} noValidate>
+                            {this.props.newConfigFields()}
+                            <ConfigButtons
+                                cancelId="usermanagement-cancel"
+                                submitId="usermanagement-submit"
+                                includeCancel
+                                onCancelClick={() => {
+                                    this.handleClose();
+                                    this.setState({
+                                        showConfiguration: false,
+                                        modificationState: MODIFICATION_STATE.NONE
+                                    });
+                                    onModalClose();
+                                    this.updateData();
+                                }}
+                                isFixed={false}
+                            />
+                        </form>
+                    </Modal.Body>
+                </Modal>
+            </div>
         );
     }
+
+    createErrorModal() {
+        return (
+            <div onKeyDown={e => e.stopPropagation()}
+                 onClick={e => e.stopPropagation()}
+                 onFocus={e => e.stopPropagation()}
+                 onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={this.state.showErrorDialog} onHide={() => {
+                    this.handleClose();
+                    this.setState({
+                        showErrorDialog: false
+                    });
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Error</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div>{this.props.errorDialogMessage}</div>
+                    </Modal.Body>
+                </Modal>
+            </div>
+        );
+    }
+
 
     collectItemsToDelete(next, dropRowKeys) {
         this.setState({
@@ -200,14 +275,17 @@ class TableDisplay extends Component {
 
     deleteItems(event) {
         event.preventDefault();
+        event.stopPropagation();
         this.props.onConfigDelete(this.state.rowsToDelete);
         this.closeDeleteModal();
     }
 
     editButtonClicked(currentRowSelected) {
+        this.props.clearModalFieldState();
+        this.props.editState(currentRowSelected);
         this.setState({
             currentRowSelected,
-            modificationState: jobModificationState.EDIT
+            modificationState: MODIFICATION_STATE.EDIT
         });
     }
 
@@ -216,9 +294,10 @@ class TableDisplay extends Component {
     }
 
     copyButtonClicked(currentRowSelected) {
+        this.props.editState(currentRowSelected);
         this.setState({
             currentRowSelected,
-            modificationState: jobModificationState.COPY
+            modificationState: MODIFICATION_STATE.COPY
         });
     }
 
@@ -240,7 +319,8 @@ class TableDisplay extends Component {
             insertModal: this.createInsertModal,
             handleConfirmDeleteRow: this.collectItemsToDelete,
             defaultSortName: sortName,
-            defaultSortOrder: sortOrder
+            defaultSortOrder: sortOrder,
+            onRowDoubleClick: this.editButtonClicked
         };
 
         const selectRow = selectRowBox && {
@@ -304,6 +384,7 @@ class TableDisplay extends Component {
 
         return (
             <div>
+                {this.state.showErrorDialog && this.createErrorModal()}
                 {this.createEditModal()}
                 {refresh}
                 {deleteModal}
@@ -319,12 +400,16 @@ TableDisplay.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
-        isKey: PropTypes.bool.isRequired
+        isKey: PropTypes.bool.isRequired,
+        hidden: PropTypes.bool.isRequired
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
+    editState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
+    onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
+    clearModalFieldState: PropTypes.func,
     name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -338,7 +423,9 @@ TableDisplay.propTypes = {
     tableNewButtonLabel: PropTypes.string,
     tableDeleteButtonLabel: PropTypes.string,
     tableSearchable: PropTypes.bool,
-    tableRefresh: PropTypes.bool
+    tableRefresh: PropTypes.bool,
+    hasFieldErrors: PropTypes.bool,
+    errorDialogMessage: PropTypes.string
 };
 
 TableDisplay.defaultProps = {
@@ -352,13 +439,21 @@ TableDisplay.defaultProps = {
     deleteButton: true,
     inProgress: false,
     onConfigSave: () => null,
+    onConfigUpdate: () => null,
     onConfigDelete: () => null,
     onConfigClose: () => null,
+    clearModalFieldState: () => null,
     modalTitle: 'New',
     tableNewButtonLabel: 'New',
     tableDeleteButtonLabel: 'Delete',
     tableSearchable: true,
-    tableRefresh: true
+    tableRefresh: true,
+    hasFieldErrors: false,
+    errorDialogMessage: null
 };
 
-export default TableDisplay;
+const mapStateToProps = state => ({
+    autoRefresh: state.refresh.autoRefresh
+});
+
+export default connect(mapStateToProps, null)(TableDisplay);

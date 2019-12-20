@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -78,7 +79,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         List<RoleEntity> roleList = roleRepository.findAll();
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (RoleEntity entity : roleList) {
-            userRoles.add(new UserRoleModel(entity.getRoleName(), entity.getCustom(), readPermissionsForRole(entity.getId())));
+            userRoles.add(new UserRoleModel(entity.getId(), entity.getRoleName(), entity.getCustom(), readPermissionsForRole(entity.getId())));
         }
         return userRoles;
     }
@@ -88,7 +89,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (Long roleId : roleIds) {
             roleRepository.findById(roleId)
-                .ifPresent(role -> userRoles.add(new UserRoleModel(role.getRoleName(), role.getCustom(), readPermissionsForRole(roleId))));
+                .ifPresent(role -> userRoles.add(new UserRoleModel(roleId, role.getRoleName(), role.getCustom(), readPermissionsForRole(roleId))));
         }
         return userRoles;
     }
@@ -108,7 +109,21 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
         RoleEntity roleEntity = createRole(roleName, true);
         List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
-        return new UserRoleModel(roleEntity.getRoleName(), roleEntity.getCustom(), createModelFromPermission(permissions));
+        return new UserRoleModel(roleEntity.getId(), roleEntity.getRoleName(), roleEntity.getCustom(), createModelFromPermission(permissions));
+    }
+
+    @Override
+    public void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException {
+        Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
+        if (foundRole.isPresent()) {
+            RoleEntity roleEntity = foundRole.get();
+            if (Boolean.FALSE.equals(roleEntity.getCustom())) {
+                throw new AlertDatabaseConstraintException("Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
+            }
+            RoleEntity updatedEntity = new RoleEntity(roleName, true);
+            updatedEntity.setId(roleEntity.getId());
+            roleRepository.save(updatedEntity);
+        }
     }
 
     @Override
@@ -120,12 +135,12 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     }
 
     @Override
-    public void deleteRole(String roleName) throws AlertDatabaseConstraintException {
-        Optional<RoleEntity> foundRole = roleRepository.findByRoleName(roleName);
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
             if (Boolean.FALSE.equals(roleEntity.getCustom())) {
-                throw new AlertDatabaseConstraintException("Cannot delete the role '" + roleName + "' because it is not a custom role");
+                throw new AlertForbiddenOperationException("Cannot delete the role '" + roleId + "' because it is not a custom role.");
             }
             // Deletion cascades to permissions
             roleRepository.deleteById(roleEntity.getId());

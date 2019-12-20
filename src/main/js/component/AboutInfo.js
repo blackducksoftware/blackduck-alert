@@ -8,6 +8,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
 import LabeledField from 'field/LabeledField';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -58,6 +59,8 @@ class AboutInfo extends React.Component {
         const providerTable = this.createDescriptorTable(providerList, '/alert/providers/');
         const channelTable = this.createDescriptorTable(channelList, '/alert/channels/');
         const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All Distributions</NavLink></div>);
+        const providersMissing = !providerList || providerList.length <= 0;
+        const channelsMissing = !channelList || channelList.length <= 0;
         return (
             <div>
                 <ConfigurationLabel configurationName="About" />
@@ -66,6 +69,17 @@ class AboutInfo extends React.Component {
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
                     <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl} url={projectUrl} />
                     <LabeledField label="View Distributions" name="distribution" readOnly="true" value="" field={distributionLink} />
+                    {providersMissing && channelsMissing &&
+                    <div className="form-group">
+                        <div className="form-group">
+                            <label className="col-sm-3 col-form-label text-right" />
+                            <div className="d-inline-flex p-2 col-sm-8 missingData">
+                                <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                                The current user cannot view Distribution Channel or Provider data!
+                            </div>
+                        </div>
+                    </div>
+                    }
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Providers</label>

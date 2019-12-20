@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,24 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.audit;
+package com.synopsys.integration.alert.common.rest.model;
 
-import org.springframework.stereotype.Component;
+import java.util.Map;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+public class JobFieldErrors extends Config {
+    private final Map<String, String> fieldErrors;
 
-@Component
-public final class AuditDescriptorKey extends DescriptorKey {
-    private static final String AUDIT_COMPONENT = "component_audit";
-
-    @Override
-    public String getUniversalKey() {
-        return AUDIT_COMPONENT;
+    public JobFieldErrors(Map<String, String> fieldErrors) {
+        this.fieldErrors = fieldErrors;
     }
 
-    @Override
-    public String getDisplayName() {
-        return AuditDescriptor.AUDIT_LABEL;
+    public JobFieldErrors(String id, Map<String, String> fieldErrors) {
+        super(id);
+        this.fieldErrors = fieldErrors;
     }
 
+    public Map<String, String> getFieldErrors() {
+        return fieldErrors;
+    }
 }

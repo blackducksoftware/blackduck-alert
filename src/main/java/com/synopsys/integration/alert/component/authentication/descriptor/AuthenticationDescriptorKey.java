@@ -34,4 +34,9 @@ public class AuthenticationDescriptorKey extends DescriptorKey {
     public String getUniversalKey() {
         return AUTHENTICATION_COMPONENT;
     }
+
+    @Override
+    public String getDisplayName() {
+        return AuthenticationDescriptor.AUTHENTICATION_LABEL;
+    }
 }

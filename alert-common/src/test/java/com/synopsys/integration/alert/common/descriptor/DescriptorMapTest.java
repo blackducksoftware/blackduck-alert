@@ -17,17 +17,17 @@ public class DescriptorMapTest {
 
     @Test
     public void testInit() throws AlertException {
-        final ChannelDescriptor channelDescriptor1 = Mockito.mock(ChannelDescriptor.class);
-        final ChannelDescriptor channelDescriptor2 = Mockito.mock(ChannelDescriptor.class);
-        final ProviderDescriptor providerDescriptor = Mockito.mock(ProviderDescriptor.class);
+        ChannelDescriptor channelDescriptor1 = Mockito.mock(ChannelDescriptor.class);
+        ChannelDescriptor channelDescriptor2 = Mockito.mock(ChannelDescriptor.class);
+        ProviderDescriptor providerDescriptor = Mockito.mock(ProviderDescriptor.class);
 
         final String channelDescriptor1Name = "channelDescriptor1";
         final String channelDescriptor2Name = "channelDescriptor2";
         final String providerDescriptorName = "providerDescriptor";
 
-        final DescriptorKey channelDescriptor1Key = new MockDescriptorKey(channelDescriptor1Name);
-        final DescriptorKey channelDescriptor2Key = new MockDescriptorKey(channelDescriptor2Name);
-        final DescriptorKey providerDescriptorKey = new MockDescriptorKey(providerDescriptorName);
+        DescriptorKey channelDescriptor1Key = new MockDescriptorKey(channelDescriptor1Name);
+        DescriptorKey channelDescriptor2Key = new MockDescriptorKey(channelDescriptor2Name);
+        DescriptorKey providerDescriptorKey = new MockDescriptorKey(providerDescriptorName);
 
         Mockito.when(channelDescriptor1.getDescriptorKey()).thenReturn(channelDescriptor1Key);
         Mockito.when(channelDescriptor2.getDescriptorKey()).thenReturn(channelDescriptor2Key);
@@ -37,7 +37,7 @@ public class DescriptorMapTest {
         Mockito.when(channelDescriptor2.getType()).thenReturn(DescriptorType.CHANNEL);
         Mockito.when(providerDescriptor.getType()).thenReturn(DescriptorType.PROVIDER);
 
-        final DescriptorMap descriptorMap = new DescriptorMap(List.of(channelDescriptor1Key, channelDescriptor2Key, providerDescriptorKey), List.of(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor),
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(channelDescriptor1Key, channelDescriptor2Key, providerDescriptorKey), List.of(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor),
             Arrays.asList());
 
         assertEquals(3, descriptorMap.getDescriptorMap().size());
@@ -49,7 +49,7 @@ public class DescriptorMapTest {
 
         assertTrue(descriptorMap.getChannelDescriptor(providerDescriptorKey).isEmpty());
 
-        final DescriptorKey randomKey = new MockDescriptorKey("Random name");
+        DescriptorKey randomKey = new MockDescriptorKey("Random name");
         assertTrue(descriptorMap.getDescriptor(randomKey).isEmpty());
 
         assertTrue(descriptorMap.getDescriptorKey("Random name").isEmpty());
@@ -58,12 +58,17 @@ public class DescriptorMapTest {
     private class MockDescriptorKey extends DescriptorKey {
         private final String key;
 
-        public MockDescriptorKey(final String key) {
+        public MockDescriptorKey(String key) {
             this.key = key;
         }
 
         @Override
         public String getUniversalKey() {
+            return key;
+        }
+
+        @Override
+        public String getDisplayName() {
             return key;
         }
     }

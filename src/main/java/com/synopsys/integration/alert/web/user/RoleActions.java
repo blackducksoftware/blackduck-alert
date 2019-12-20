@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUt
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -67,13 +67,6 @@ public class RoleActions {
                    .collect(Collectors.toList());
     }
 
-    public Optional<RolePermissionModel> getRole(String roleName) {
-        return authorizationUtility.getRoles().stream()
-                   .filter(role -> role.getName().equals(roleName))
-                   .map(this::convertUserRoleModel)
-                   .findFirst();
-    }
-
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException {
         String roleName = rolePermissionModel.getRoleName();
         Map<String, String> fieldErrors = new HashMap<>();
@@ -87,29 +80,24 @@ public class RoleActions {
         return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
     }
 
-    public void deleteRole(String roleName) throws AlertDatabaseConstraintException, AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException {
+        String roleName = rolePermissionModel.getRoleName();
+        authorizationUtility.updateRoleName(roleId, roleName);
+        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
+        return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
+    }
 
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-
-        Optional<String> userRole = authorizationUtility.getRoles().stream()
-                                        .filter(role -> role.getName().equals(roleName))
-                                        .filter(UserRoleModel::isCustom)
-                                        .map(UserRoleModel::getName)
-                                        .findFirst();
-        if (userRole.isPresent()) {
-            authorizationUtility.deleteRole(userRole.get());
-        }
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        authorizationUtility.deleteRole(roleId);
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
         String roleName = userRoleModel.getName();
         PermissionMatrixModel permissionModel = userRoleModel.getPermissions();
         Set<PermissionModel> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
-        return new RolePermissionModel(roleName, permissionKeyToAccess);
+        return new RolePermissionModel(String.valueOf(userRoleModel.getId()), roleName, permissionKeyToAccess);
     }
 
     private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {

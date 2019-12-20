@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2019 Synopsys, Inc.
  *
@@ -20,24 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.audit;
+package com.synopsys.integration.alert.common.exception;
 
-import org.springframework.stereotype.Component;
+public class AlertForbiddenOperationException extends AlertException {
+    private static final long serialVersionUID = -3915058637337880806L;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
-@Component
-public final class AuditDescriptorKey extends DescriptorKey {
-    private static final String AUDIT_COMPONENT = "component_audit";
-
-    @Override
-    public String getUniversalKey() {
-        return AUDIT_COMPONENT;
+    public AlertForbiddenOperationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    @Override
-    public String getDisplayName() {
-        return AuditDescriptor.AUDIT_LABEL;
+    public AlertForbiddenOperationException(String message, Throwable cause) {
+        super(message, cause);
     }
 
+    public AlertForbiddenOperationException(String message) {
+        super(message);
+    }
+
+    public AlertForbiddenOperationException(Throwable cause) {
+        super(cause);
+    }
+
+    public AlertForbiddenOperationException() {
+    }
 }

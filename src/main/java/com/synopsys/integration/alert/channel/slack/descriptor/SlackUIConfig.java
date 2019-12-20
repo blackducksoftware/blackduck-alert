@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
@@ -43,13 +45,13 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
     private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
     @Autowired
-    public SlackUIConfig(SlackChannelKey slackChannelKey) {
-        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
+    public SlackUIConfig(SlackChannelKey slackChannelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
+        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, globalConfigExistsValidator);
     }
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField webhook = new TextInputConfigField(SlackDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, SLACK_WEBHOOK_DESCRIPTION).applyRequired(true);
+        ConfigField webhook = new URLInputConfigField(SlackDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, SLACK_WEBHOOK_DESCRIPTION).applyRequired(true);
         ConfigField channelName = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, SLACK_CHANNEL_NAME_DESCRIPTION).applyRequired(true);
         ConfigField channelUsername = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_USERNAME, LABEL_CHANNEL_USERNAME, SLACK_CHANNEL_USERNAME_DESCRIPTION);
         return List.of(webhook, channelName, channelUsername);

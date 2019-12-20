@@ -7,7 +7,10 @@ import {
     DISTRIBUTION_JOB_FETCH_ERROR_ALL,
     DISTRIBUTION_JOB_FETCHED_ALL,
     DISTRIBUTION_JOB_FETCHING_ALL,
-    DISTRIBUTION_JOB_UPDATE_AUDIT_INFO
+    DISTRIBUTION_JOB_UPDATE_AUDIT_INFO,
+    DISTRIBUTION_JOB_VALIDATE_ALL_ERROR,
+    DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED,
+    DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING
 } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
@@ -73,6 +76,26 @@ function jobDeleteError(message) {
     return {
         type: DISTRIBUTION_JOB_DELETE_ERROR,
         jobDeleteMessage: message
+    };
+}
+
+function jobsValidationFetching() {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING
+    }
+}
+
+function jobsValidationFetched(result) {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED,
+        jobsValidationResult: result
+    };
+}
+
+function jobsValidationError(message) {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATE_ALL_ERROR,
+        jobsValidationMessage: message
     };
 }
 
@@ -172,12 +195,12 @@ export function fetchDistributionJobs() {
             } else {
                 switch (response.status) {
                     case 401:
-                    case 403:
                         dispatch(verifyLoginByStatus(response.status));
                         break;
                     case 404:
                         dispatch(fetchingAllJobsNoneFound());
                         break;
+                    case 403:
                     default:
                         response.json().then((json) => {
                             let message = '';
@@ -192,6 +215,45 @@ export function fetchDistributionJobs() {
         }).catch((error) => {
             console.log(error);
             dispatch(fetchingAllJobsError(error));
+        });
+    };
+}
+
+export function fetchJobsValidationResults() {
+    return (dispatch, getState) => {
+        dispatch(jobsValidationFetching());
+        const { csrfToken } = getState().session;
+        fetch(ConfigRequestBuilder.JOB_API_URL + '/validate', {
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((jsonArray) => {
+                    dispatch(jobsValidationFetched(jsonArray));
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                    case 403:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    default:
+                        response.json().then((json) => {
+                            let message = '';
+                            if (json && json.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = json.message.toString();
+                            }
+                            dispatch(jobsValidationError(message));
+                        });
+                }
+            }
+        }).catch((error) => {
+            console.log(error);
+            dispatch(jobsValidationError(error));
         });
     };
 }
