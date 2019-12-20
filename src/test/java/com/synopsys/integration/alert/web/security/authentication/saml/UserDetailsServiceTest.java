@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.opensaml.saml2.core.NameID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 
@@ -46,6 +47,9 @@ public class UserDetailsServiceTest {
     public void testValidCredential() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
 
+        NameID nameId = Mockito.mock(NameID.class);
+        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
+        Mockito.when(credential.getNameID()).thenReturn(nameId);
         Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
         Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
         Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(VALID_ROLES);
@@ -67,6 +71,9 @@ public class UserDetailsServiceTest {
     public void testNullRoleArray() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
 
+        NameID nameId = Mockito.mock(NameID.class);
+        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
+        Mockito.when(credential.getNameID()).thenReturn(nameId);
         Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
         Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
         Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(null);
@@ -86,6 +93,9 @@ public class UserDetailsServiceTest {
     public void testEmptyRoleArray() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
         String[] roles = new String[0];
+        NameID nameId = Mockito.mock(NameID.class);
+        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
+        Mockito.when(credential.getNameID()).thenReturn(nameId);
         Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
         Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
         Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(roles);
