@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -51,32 +53,38 @@ public class UserManagementAuthoritiesPopulator {
     private static final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
     private AuthenticationDescriptorKey AuthenticationDescriptorKey;
     private ConfigurationAccessor configurationAccessor;
+    private UserAccessor userAccessor;
 
     @Autowired
-    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor) {
+    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserAccessor userAccessor) {
         this.AuthenticationDescriptorKey = AuthenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
+        this.userAccessor = userAccessor;
     }
 
-    public Set<GrantedAuthority> addAdditionalRoles(Set<GrantedAuthority> existingRoles) {
+    public Set<GrantedAuthority> addAdditionalRoles(String userName, Set<GrantedAuthority> existingRoles) {
         Set<String> existingRoleNames = existingRoles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-        Set<String> alertRoles = addAdditionalRoleNames(existingRoleNames, true);
+        Set<String> alertRoles = addAdditionalRoleNames(userName, existingRoleNames, true);
         return alertRoles.stream()
                    .map(SimpleGrantedAuthority::new)
                    .collect(Collectors.toSet());
 
     }
 
-    public Set<String> addAdditionalRoleNames(Set<String> existingRoles, boolean appendRolePrefix) {
+    public Set<String> addAdditionalRoleNames(String userName, Set<String> existingRoles, boolean appendRolePrefix) {
         Map<String, String> roleMap = createRolesMapping(appendRolePrefix);
-        if (roleMap.isEmpty()) {
-            return existingRoles;
+        Set<String> rolesFromDB = getRolesFromDatabase(userName, appendRolePrefix);
+        Set<String> roles = new LinkedHashSet<>();
+        roles.addAll(rolesFromDB);
+        roles.addAll(existingRoles.stream().filter(role -> StringUtils.isNotBlank(role)).collect(Collectors.toSet()));
+        //TODO remove in 6.0.0 with the deprecated method
+        if (!roleMap.isEmpty()) {
+            roles.addAll(existingRoles.stream()
+                             .filter(roleMap::containsKey)
+                             .map(roleMap::get)
+                             .collect(Collectors.toSet()));
         }
-        Set<String> roles = new LinkedHashSet<>(existingRoles);
-        roles.addAll(existingRoles.stream()
-                         .filter(roleMap::containsKey)
-                         .map(roleMap::get)
-                         .collect(Collectors.toSet()));
+
         return roles;
     }
 
@@ -90,6 +98,7 @@ public class UserManagementAuthoritiesPopulator {
         return defaultName;
     }
 
+    @Deprecated
     private Map<String, String> createRolesMapping(boolean appendRolePrefix) {
         Map<String, String> roleMapping = new HashMap<>(DefaultUserRole.values().length);
         try {
@@ -107,10 +116,23 @@ public class UserManagementAuthoritiesPopulator {
         return roleMapping;
     }
 
+    private Set<String> getRolesFromDatabase(String userName, boolean appendRolePrefix) {
+        Function<String, String> function = appendRolePrefix ? (roleName) -> UserModel.ROLE_PREFIX + roleName : Function.identity();
+        Optional<UserModel> userModel = userAccessor.getUser(userName);
+        Set<String> roleNames = userModel.map(UserModel::getRoleNames).orElse(Set.of());
+        Set<String> newRoleNames = new LinkedHashSet<>(roleNames.size());
+        for (String roleName : roleNames) {
+            newRoleNames.add(function.apply(roleName));
+        }
+        return newRoleNames;
+    }
+
+    @Deprecated
     private String createRoleWithPrefix(DefaultUserRole alertRole) {
         return UserModel.ROLE_PREFIX + alertRole.name();
     }
 
+    @Deprecated
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKey(AuthenticationDescriptorKey)
                    .stream()
@@ -118,6 +140,7 @@ public class UserManagementAuthoritiesPopulator {
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));
     }
 
+    @Deprecated
     private Optional<String> getFieldValue(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue);
     }
