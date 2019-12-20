@@ -58,7 +58,12 @@ class TableDisplay extends Component {
         }
 
         if (prevProps.inProgress && !this.props.inProgress) {
-            this.handleClose();
+            if (prevProps.fetching && this.props.fetching) {
+                this.handleClose();
+                this.setState({
+                    showConfiguration: false
+                });
+            }
         }
     }
 
@@ -168,6 +173,7 @@ class TableDisplay extends Component {
                                     });
                                 }}
                                 isFixed={false}
+                                performingAction={this.props.inProgress}
                             />
                         </form>
                     </Modal.Body>
@@ -190,9 +196,8 @@ class TableDisplay extends Component {
                 <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                     this.handleClose();
                     this.setState({
-                        showConfiguration: false,
-                        modificationState: MODIFICATION_STATE.NONE
-
+                        modificationState: MODIFICATION_STATE.NONE,
+                        showConfiguration: false
                     });
                     onModalClose();
                 }}>
@@ -202,9 +207,6 @@ class TableDisplay extends Component {
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={(event) => {
                             this.handleSubmit(event);
-                            this.setState({
-                                showConfiguration: false
-                            });
                             onModalClose();
                         }} noValidate>
                             {this.props.newConfigFields()}
@@ -222,6 +224,7 @@ class TableDisplay extends Component {
                                     this.updateData();
                                 }}
                                 isFixed={false}
+                                performingAction={this.props.inProgress}
                             />
                         </form>
                     </Modal.Body>
@@ -421,6 +424,7 @@ TableDisplay.propTypes = {
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
     inProgress: PropTypes.bool,
+    fetching: PropTypes.bool,
     modalTitle: PropTypes.string,
     tableNewButtonLabel: PropTypes.string,
     tableDeleteButtonLabel: PropTypes.string,
@@ -440,6 +444,7 @@ TableDisplay.defaultProps = {
     newButton: true,
     deleteButton: true,
     inProgress: false,
+    fetching: false,
     onConfigSave: () => null,
     onConfigUpdate: () => null,
     onConfigDelete: () => null,

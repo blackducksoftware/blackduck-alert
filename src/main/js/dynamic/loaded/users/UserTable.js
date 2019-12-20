@@ -142,7 +142,7 @@ class UserTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress } = this.props;
+        const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
         return (
@@ -165,6 +165,7 @@ class UserTable extends Component {
                         hasFieldErrors={hasErrors}
                         errorDialogMessage={userDeleteError}
                         inProgress={inProgress}
+                        fetching={fetching}
                     />
                 </div>
             </div>
@@ -191,7 +192,8 @@ const mapStateToProps = state => ({
     roles: state.roles.data,
     userDeleteError: state.users.userDeleteError,
     fieldErrors: state.users.fieldErrors,
-    inProgress: state.users.inProgress
+    inProgress: state.users.inProgress,
+    fetching: state.users.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
