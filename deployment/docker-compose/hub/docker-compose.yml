@@ -1,5 +1,14 @@
 version: '2.3'
 services:
+  alertdb:
+    image: blackducksoftware/alert-database:VERSION_TOKEN
+    ports: ['5432']
+    hostname: alertdb
+    restart: always
+    shm_size: 512M
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    environment:
+      PGDATA: /opt/blackduck/alert/alert-config/data/postgres/alertdb
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
