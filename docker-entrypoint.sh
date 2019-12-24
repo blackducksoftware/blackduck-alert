@@ -384,17 +384,17 @@ validatePostgresDatabase() {
     psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'
     if psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l' |grep -q 'alertdb';
     then
-        echo "Alert database exists."
+        echo "Alert postgres database exists."
         if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c '\dt ALERT.*' |grep -q 'field_values';
         then
-            echo "Alert database tables have been successfully created."
+            echo "Alert postgres database tables have been successfully created."
         else
-            echo "Alert database tables have not been created."
+            echo "Alert postgres database tables have not been created."
             sleep 10
             exit 1
         fi
     else
-        echo "Alert database does not exist."
+        echo "Alert postgres database does not exist."
         sleep 10
         exit 1
     fi
@@ -404,7 +404,7 @@ postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary..."
     if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
-        echo "Alert database is initialized."
+        echo "Alert postgres database is initialized."
     else
         echo "Preparing the old Alert database to be upgraded to 6.0.0..."
         if [ -f ${alertDataDir}/alertdb.mv.db ];
