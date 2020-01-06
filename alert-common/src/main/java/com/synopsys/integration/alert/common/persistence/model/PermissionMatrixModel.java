@@ -61,7 +61,6 @@ public class PermissionMatrixModel extends AlertSerializableModel {
 
     public boolean isReadOnly(PermissionKey permissionKey) {
         if (!permissions.containsKey(permissionKey)) {
-            // if the permission key isn't listed here be the most restrictive and assume read only.
             return true;
         }
 
