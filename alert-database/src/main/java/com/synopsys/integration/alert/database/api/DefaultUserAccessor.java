@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -78,7 +79,7 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
-        return addUser(UserModel.newUser(userName, password, emailAddress, Collections.emptySet()), false);
+        return addUser(UserModel.newUser(userName, password, emailAddress, false, Collections.emptySet()), false);
     }
 
     @Override
@@ -118,14 +119,25 @@ public class DefaultUserAccessor implements UserAccessor {
         UserEntity existingUser = userRepository.findById(userId)
                                       .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No user found with id '%s'", userId)));
         Long existingUserId = existingUser.getId();
-
-        String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
-        newEntity.setId(existingUserId);
+        UserEntity savedEntity = existingUser;
+        // if it isn't an external user then update username, password, and email.
+        if (existingUser.isExternal()) {
+            boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
+            boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
+            boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
+            if (isUserNameInvalid || isEmailInvalid || isPasswordSet) {
+                throw new AlertDatabaseConstraintException("An external user cannot change its credentials.");
+            }
+        } else {
+            String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
+            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
+            newEntity.setId(existingUserId);
+            savedEntity = userRepository.save(newEntity);
+        }
 
         authorizationUtility.updateUserRoles(existingUserId, user.getRoles());
 
-        return createModel(userRepository.save(newEntity));
+        return createModel(savedEntity);
     }
 
     @Override
@@ -187,9 +199,6 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
-        if (userEntity.isExternal()) {
-            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userEntity.getUserName()));
-        }
         Long userId = userEntity.getId();
         if (!RESERVED_USER_IDS.contains(userId)) {
             authorizationUtility.updateUserRoles(userId, Set.of());
@@ -204,7 +213,7 @@ public class DefaultUserAccessor implements UserAccessor {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
+        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), user.isExternal(), roles);
     }
 
 }

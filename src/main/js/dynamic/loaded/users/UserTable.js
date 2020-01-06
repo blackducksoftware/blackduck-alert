@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers, updateUser } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class UserTable extends Component {
     constructor(props) {
@@ -36,6 +37,12 @@ class UserTable extends Component {
                 header: 'id',
                 headerLabel: 'Id',
                 isKey: true,
+                hidden: true
+            },
+            {
+                header: 'external',
+                headerLabel: 'External',
+                isKey: false,
                 hidden: true
             },
             {
@@ -123,12 +130,30 @@ class UserTable extends Component {
         const emailKey = 'emailAddress';
         const roleNames = 'roleNames';
         const passwordSetKey = 'passwordSet';
+        const externalKey = 'external'
+        const external = user[externalKey];
+        const externalNote = (
+            <div className="form-group">
+                <label className="col-sm-3 col-form-label text-right warningStatus" />
+                <div className="d-inline-flex">
+                    <span className="warningStatus">
+                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                    </span>
+                </div>
+                <div className="d-inline-flex p-2 col-sm-8 warningStatus">
+                    This user is managed by a system external to Alert. Only roles can be assigned.
+                </div>
+            </div>
+        );
         return (
             <div>
-                <TextInput name={usernameKey} label="Username" description="The users username." required={true} onChange={this.handleChange} value={user[usernameKey]} errorName={usernameKey} errorValue={fieldErrors[usernameKey]} />
-                <PasswordInput name={passwordKey} label="Password" description="The users password." required={true} onChange={this.handleChange} value={user[passwordKey]} isSet={user[passwordSetKey]} errorName={passwordKey}
+                {external && externalNote}
+                <TextInput name={usernameKey} label="Username" description="The users username." readOnly={external} required={!external} onChange={this.handleChange} value={user[usernameKey]} errorName={usernameKey}
+                           errorValue={fieldErrors[usernameKey]} />
+                <PasswordInput name={passwordKey} label="Password" description="The users password." readOnly={external} required={!external} onChange={this.handleChange} value={user[passwordKey]} isSet={user[passwordSetKey]}
+                               errorName={passwordKey}
                                errorValue={fieldErrors[passwordKey]} />
-                <TextInput name={emailKey} label="Email" description="The users email." required={true} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
+                <TextInput name={emailKey} label="Email" description="The users email." readOnly={external} required={!external} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey} errorValue={fieldErrors[emailKey]} />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}

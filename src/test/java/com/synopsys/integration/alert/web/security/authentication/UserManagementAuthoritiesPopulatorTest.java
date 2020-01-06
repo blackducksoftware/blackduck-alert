@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -22,11 +23,13 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 public class UserManagementAuthoritiesPopulatorTest {
+    private static final String TEST_USERNAME = "testUserName";
     private AuthenticationDescriptorKey descriptorKey = new AuthenticationDescriptorKey();
     private ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
     private ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
     private ConfigurationFieldModel roleMappingField = Mockito.mock(ConfigurationFieldModel.class);
     private ConfigurationFieldModel samlAttributeMappingField = Mockito.mock(ConfigurationFieldModel.class);
+    private UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
 
     @Test
     public void testAddGrantedAuthorities() throws Exception {
@@ -34,13 +37,14 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
 
         GrantedAuthority testAdminRole = new SimpleGrantedAuthority(roleNameMapping);
         String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
         GrantedAuthority expectedAdminRole = new SimpleGrantedAuthority(expectedRoleName);
         Set<GrantedAuthority> inputRoles = Set.of(testAdminRole);
-        Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(inputRoles);
+        Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(TEST_USERNAME, inputRoles);
 
         assertEquals(inputRoles.size() + 1, actualRoles.size());
         assertTrue(actualRoles.contains(expectedAdminRole));
@@ -52,11 +56,12 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
 
         GrantedAuthority testAdminRole = new SimpleGrantedAuthority(roleNameMapping);
         Set<GrantedAuthority> inputRoles = Set.of(testAdminRole);
-        Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(inputRoles);
+        Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(TEST_USERNAME, inputRoles);
 
         assertEquals(inputRoles, actualRoles);
     }
@@ -65,9 +70,10 @@ public class UserManagementAuthoritiesPopulatorTest {
     public void testAddRoleNamesConfigurationException() throws Exception {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenThrow(AlertDatabaseConstraintException.class);
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         Set<String> inputRoles = Set.of(roleNameMapping);
-        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, false);
+        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
         assertEquals(inputRoles, actualRoles);
     }
@@ -78,10 +84,11 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         String expectedRoleName = DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
-        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, false);
+        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
         assertEquals(inputRoles.size() + 1, actualRoles.size());
         assertTrue(actualRoles.contains(expectedRoleName));
@@ -93,9 +100,10 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         Set<String> inputRoles = Set.of(roleNameMapping);
-        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, false);
+        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
         assertEquals(inputRoles, actualRoles);
     }
@@ -106,10 +114,11 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
-        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(inputRoles, true);
+        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, true);
 
         assertEquals(inputRoles.size() + 1, actualRoles.size());
         assertTrue(actualRoles.contains(expectedRoleName));
@@ -121,7 +130,8 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(samlAttributeMappingField.getFieldValue()).thenReturn(Optional.of(attributeName));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING))).thenReturn(Optional.of(samlAttributeMappingField));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         assertEquals(attributeName, authoritiesPopulator.getSAMLRoleAttributeName("DEFAULT_ATTRIBUTE"));
     }
 
@@ -131,7 +141,8 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(samlAttributeMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING))).thenReturn(Optional.of(samlAttributeMappingField));
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         assertEquals(attributeName, authoritiesPopulator.getSAMLRoleAttributeName(attributeName));
     }
 
@@ -139,7 +150,8 @@ public class UserManagementAuthoritiesPopulatorTest {
     public void testSAMLAttributeConfigurationNotFound() throws AlertDatabaseConstraintException {
         String attributeName = "DEFAULT_ATTRIBUTE";
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of());
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor);
+        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
+        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         assertEquals(attributeName, authoritiesPopulator.getSAMLRoleAttributeName(attributeName));
     }
 }
