@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -161,5 +163,67 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         userAccessor.deleteUser(userName);
 
         assertFalse(userAccessor.changeUserEmailAddress("bad_user_name", "new_test_email"));
+    }
+
+    @Test
+    public void testExternalUserUpdateRoles() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = UserModel.newUser(userName, password, email, true, Collections.emptySet());
+        userModel = userAccessor.addExternalUser(userModel);
+        UserRoleModel userRole = UserRoleModel.of(DefaultUserRole.ALERT_ADMIN.name());
+        Set<UserRoleModel> roles = Set.of(userRole);
+        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, true, roles);
+        UserModel updatedUser = userAccessor.updateUser(existingUser, true);
+
+        assertEquals(roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()), updatedUser.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet()));
+        userAccessor.deleteUser(userName);
+    }
+
+    @Test
+    public void testExternalUserUpdateNameException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = UserModel.newUser(userName, password, email, true, Collections.emptySet());
+        userModel = userAccessor.addExternalUser(userModel);
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, true, Collections.emptySet());
+        testUserUpdateException(updatedUser);
+        userAccessor.deleteUser(userName);
+    }
+
+    @Test
+    public void testExternalUserUpdateEmailException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = UserModel.newUser(userName, password, email, true, Collections.emptySet());
+        userModel = userAccessor.addExternalUser(userModel);
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, null, email + "_updated", true, Collections.emptySet());
+        testUserUpdateException(updatedUser);
+        userAccessor.deleteUser(userName);
+    }
+
+    @Test
+    public void testExternalUserUpdatePasswordException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+        String userName = "testUser";
+        String password = "testPassword";
+        String email = "testEmail";
+        UserModel userModel = UserModel.newUser(userName, password, email, true, Collections.emptySet());
+        userModel = userAccessor.addExternalUser(userModel);
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, password, email, true, Collections.emptySet());
+        testUserUpdateException(updatedUser);
+        userAccessor.deleteUser(userName);
+    }
+
+    private void testUserUpdateException(UserModel updatedUser) {
+        String exceptionMessage = "An external user cannot change its credentials.";
+        try {
+            userAccessor.updateUser(updatedUser, true);
+            fail();
+        } catch (AlertDatabaseConstraintException ex) {
+            assertTrue(ex.getMessage().contains(exceptionMessage));
+        }
     }
 }

@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -120,7 +121,14 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
-        if (!existingUser.isExternal()) {
+        if (existingUser.isExternal()) {
+            boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
+            boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
+            boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
+            if (isUserNameInvalid || isEmailInvalid || isPasswordSet) {
+                throw new AlertDatabaseConstraintException("An external user cannot change its credentials.");
+            }
+        } else {
             String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
             UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
             newEntity.setId(existingUserId);

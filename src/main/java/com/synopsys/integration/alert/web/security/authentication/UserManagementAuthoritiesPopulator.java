@@ -72,6 +72,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     public Set<String> addAdditionalRoleNames(String userName, Set<String> existingRoles, boolean appendRolePrefix) {
+        // TODO remove in 6.0.0 the createRolesMapping method.
         Map<String, String> roleMap = createRolesMapping(appendRolePrefix);
         Set<String> rolesFromDB = getRolesFromDatabase(userName, appendRolePrefix);
         Set<String> roles = new LinkedHashSet<>();
@@ -98,7 +99,7 @@ public class UserManagementAuthoritiesPopulator {
         return defaultName;
     }
 
-    @Deprecated
+    // TODO remove in 6.0.0
     private Map<String, String> createRolesMapping(boolean appendRolePrefix) {
         Map<String, String> roleMapping = new HashMap<>(DefaultUserRole.values().length);
         try {
@@ -127,12 +128,12 @@ public class UserManagementAuthoritiesPopulator {
         return newRoleNames;
     }
 
-    @Deprecated
+    // TODO remove in 6.0.0
     private String createRoleWithPrefix(DefaultUserRole alertRole) {
         return UserModel.ROLE_PREFIX + alertRole.name();
     }
 
-    @Deprecated
+    // TODO remove in 6.0.0
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKey(AuthenticationDescriptorKey)
                    .stream()
@@ -140,7 +141,7 @@ public class UserManagementAuthoritiesPopulator {
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));
     }
 
-    @Deprecated
+    // TODO remove in 6.0.0
     private Optional<String> getFieldValue(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue);
     }
