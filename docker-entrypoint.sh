@@ -466,7 +466,7 @@ else
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
-    	# FIXME manageRootCertificate
+    	manageRootCertificate
     else
         manageSelfSignedServerCertificate
     fi
