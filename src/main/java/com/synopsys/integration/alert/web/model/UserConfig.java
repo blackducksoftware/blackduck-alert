@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.rest.model.Config;
 
 public class UserConfig extends Config {
@@ -36,12 +37,13 @@ public class UserConfig extends Config {
     private boolean passwordExpired;
     private boolean enabled;
     private boolean passwordSet;
-    private boolean external;
+    private AuthenticationType authenticationType;
 
     public UserConfig() {
     }
 
-    public UserConfig(String id, String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean passwordSet, boolean external) {
+    public UserConfig(String id, String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean passwordSet,
+        AuthenticationType authenticationType) {
         super(id);
         this.username = username;
         this.password = password;
@@ -52,7 +54,7 @@ public class UserConfig extends Config {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.passwordSet = passwordSet;
-        this.external = external;
+        this.authenticationType = authenticationType;
     }
 
     public String getUsername() {
@@ -91,7 +93,7 @@ public class UserConfig extends Config {
         return passwordSet;
     }
 
-    public boolean isExternal() {
-        return external;
+    public AuthenticationType getAuthenticationType() {
+        return authenticationType;
     }
 }

@@ -30,6 +30,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.web.security.authentication.AuthenticationPerformer;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
@@ -44,6 +45,11 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
     public LdapAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility, LdapManager ldapManager) {
         super(authenticationEventManager, authorizationUtility);
         this.ldapManager = ldapManager;
+    }
+
+    @Override
+    public AuthenticationType getAuthenticationType() {
+        return AuthenticationType.LDAP;
     }
 
     @Override

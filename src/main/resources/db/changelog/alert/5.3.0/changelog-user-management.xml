@@ -12,7 +12,7 @@
     </changeSet>
     <changeSet author="psantos" id="2019-12-18-07-31-16-844">
         <addColumn schemaName="ALERT" tableName="USERS">
-            <column name="EXTERNAL" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="AUTHENTICATION_TYPE" type="VARCHAR(32)" defaultValue="DATABASE">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

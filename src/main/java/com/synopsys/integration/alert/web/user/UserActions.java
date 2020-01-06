@@ -101,7 +101,7 @@ public class UserActions {
             if (!fieldErrors.isEmpty()) {
                 throw new AlertFieldException(fieldErrors);
             }
-            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.isExternal(), existingUser.getRoles());
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles());
             userAccessor.updateUser(newUserModel, passwordMissing);
 
             Set<String> configuredRoleNames = userConfig.getRoleNames();
@@ -137,7 +137,7 @@ public class UserActions {
             userModel.isPasswordExpired(),
             userModel.isEnabled(),
             passwordSet,
-            external);
+            userModel.getAuthenticationType());
     }
 
     private void validateCreationRequiredFields(UserConfig userConfig) throws AlertFieldException {

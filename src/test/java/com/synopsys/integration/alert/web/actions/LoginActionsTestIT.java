@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
@@ -130,7 +131,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         AuthenticationEventManager authenticationEventManager = Mockito.mock(AuthenticationEventManager.class);
-        Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any());
+        Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any(), Mockito.eq(AuthenticationType.LDAP));
         AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
 
         AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, authorizationUtility, databaseProvider);
