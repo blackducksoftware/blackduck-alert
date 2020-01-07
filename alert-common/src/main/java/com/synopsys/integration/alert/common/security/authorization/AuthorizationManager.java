@@ -77,7 +77,9 @@ public class AuthorizationManager {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(this::isAlertRole)
-                   .allMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).isReadOnly(permissionKey));
+                   .filter(permissionCache::containsKey)
+                   .map(permissionCache::get)
+                   .allMatch(permissions -> permissions.isReadOnly(permissionKey));
     }
 
     public final boolean anyReadPermission(Collection<String> contexts, Collection<String> descriptorNames) {
