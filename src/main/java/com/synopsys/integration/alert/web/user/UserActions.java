@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
@@ -52,10 +53,12 @@ public class UserActions {
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private UserAccessor userAccessor;
     private AuthorizationUtility authorizationUtility;
+    private AuthorizationManager authorizationManager;
 
-    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility) {
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager) {
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
+        this.authorizationManager = authorizationManager;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -101,7 +104,7 @@ public class UserActions {
             if (!fieldErrors.isEmpty()) {
                 throw new AlertFieldException(fieldErrors);
             }
-            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getRoles());
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.isExternal(), existingUser.getRoles());
             userAccessor.updateUser(newUserModel, passwordMissing);
 
             Set<String> configuredRoleNames = userConfig.getRoleNames();
@@ -110,6 +113,7 @@ public class UserActions {
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
                 authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+                authorizationManager.loadPermissionsIntoCache();
             }
         }
         return userAccessor.getUser(userId)
@@ -123,6 +127,9 @@ public class UserActions {
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
         // converting to an object to return to the client; remove the password field.
+        // also if the user is external the password is set
+        boolean external = userModel.isExternal();
+        boolean passwordSet = StringUtils.isNotBlank(userModel.getPassword()) || external;
         return new UserConfig(
             userModel.getId().toString(),
             userModel.getName(),
@@ -133,7 +140,8 @@ public class UserActions {
             userModel.isLocked(),
             userModel.isPasswordExpired(),
             userModel.isEnabled(),
-            StringUtils.isNotBlank(userModel.getPassword()));
+            passwordSet,
+            external);
     }
 
     private void validateCreationRequiredFields(UserConfig userConfig) throws AlertFieldException {

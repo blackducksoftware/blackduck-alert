@@ -43,8 +43,9 @@ public class UserModel extends AlertSerializableModel {
     private final boolean locked;
     private final boolean passwordExpired;
     private final boolean enabled;
+    private final boolean external;
 
-    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
+    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean external) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -54,6 +55,7 @@ public class UserModel extends AlertSerializableModel {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
+        this.external = external;
         if (null == roles || roles.isEmpty()) {
             this.roleNames = Set.of();
         } else {
@@ -61,12 +63,12 @@ public class UserModel extends AlertSerializableModel {
         }
     }
 
-    public static UserModel newUser(String userName, String password, String emailAddress, Set<UserRoleModel> roles) {
-        return existingUser(null, userName, password, emailAddress, roles);
+    public static UserModel newUser(String userName, String password, String emailAddress, boolean external, Set<UserRoleModel> roles) {
+        return existingUser(null, userName, password, emailAddress, external, roles);
     }
 
-    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, Set<UserRoleModel> roles) {
-        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, true);
+    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, boolean external, Set<UserRoleModel> roles) {
+        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, true, external);
     }
 
     public Long getId() {
@@ -122,4 +124,7 @@ public class UserModel extends AlertSerializableModel {
         return roleNames;
     }
 
+    public boolean isExternal() {
+        return external;
+    }
 }

@@ -25,7 +25,7 @@ public class UserModelTest {
         String expectedEmail = "expectedEmail";
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(DefaultUserRole.values()).stream().map(DefaultUserRole::name).collect(Collectors.toList()));
         Set<UserRoleModel> expectedRoles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, false, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -37,6 +37,7 @@ public class UserModelTest {
         assertFalse(userModel.isLocked());
         assertFalse(userModel.isPasswordExpired());
         assertTrue(userModel.isEnabled());
+        assertFalse(userModel.isExternal());
     }
 
     @Test
@@ -46,7 +47,7 @@ public class UserModelTest {
         String expectedEmail = "expectedEmail";
         Set<String> roleNames = null;
         Set<UserRoleModel> expectedRoles = null;
-        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, false, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -58,6 +59,7 @@ public class UserModelTest {
         assertFalse(userModel.isLocked());
         assertFalse(userModel.isPasswordExpired());
         assertTrue(userModel.isEnabled());
+        assertFalse(userModel.isExternal());
     }
 
     @Test
@@ -66,7 +68,7 @@ public class UserModelTest {
         String expectedPassword = "expectedPassword";
         String expectedEmail = "expectedEmail";
         Set<UserRoleModel> expectedRoles = new LinkedHashSet<>();
-        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, false, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -78,5 +80,6 @@ public class UserModelTest {
         assertFalse(userModel.isLocked());
         assertFalse(userModel.isPasswordExpired());
         assertTrue(userModel.isEnabled());
+        assertFalse(userModel.isExternal());
     }
 }

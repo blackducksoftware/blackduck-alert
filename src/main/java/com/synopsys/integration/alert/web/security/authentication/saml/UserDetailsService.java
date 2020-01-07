@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
@@ -44,19 +45,19 @@ public class UserDetailsService implements SAMLUserDetailsService {
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
-        String userName = credential.getAttributeAsString("Name");
-        String emailAddress = credential.getAttributeAsString("Email");
+        String userName = credential.getNameID().getValue();
+        String emailAddress = StringUtils.contains(userName, "@") ? userName : null;
         String[] alertRoles = credential.getAttributeAsStringArray(authoritiesPopulator.getSAMLRoleAttributeName("AlertRoles"));
         Set<UserRoleModel> roles = Set.of();
 
         if (alertRoles != null) {
-            Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(Arrays.stream(alertRoles).collect(Collectors.toSet()), false);
+            Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(userName, Arrays.stream(alertRoles).collect(Collectors.toSet()), false);
             roles = roleNames.stream()
                         .map(UserRoleModel::of)
                         .collect(Collectors.toSet());
         }
 
-        UserModel userModel = UserModel.newUser(userName, "", emailAddress, roles);
+        UserModel userModel = UserModel.newUser(userName, "", emailAddress, true, roles);
         return new UserPrincipal(userModel);
     }
 }
