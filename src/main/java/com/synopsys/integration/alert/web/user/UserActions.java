@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
@@ -52,10 +53,12 @@ public class UserActions {
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private UserAccessor userAccessor;
     private AuthorizationUtility authorizationUtility;
+    private AuthorizationManager authorizationManager;
 
-    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility) {
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager) {
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
+        this.authorizationManager = authorizationManager;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -110,6 +113,7 @@ public class UserActions {
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
                 authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+                authorizationManager.loadPermissionsIntoCache();
             }
         }
         return userAccessor.getUser(userId)
