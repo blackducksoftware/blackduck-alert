@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationType;
 
 public class UserEntityTest {
 
@@ -13,14 +13,14 @@ public class UserEntityTest {
         final String expectedUserName = "expected_user_name";
         final String expectedPassword = "expected_password";
         final String expectedEmail = "expected_email";
-        final AuthenticationType expectedAuthType = AuthenticationType.DATABASE;
+        Long expectedAuthType = AuthenticationType.AUTH_TYPE_DATABASE;
         final Long expectedId = 25L;
-        UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, expectedAuthType.name());
+        UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, expectedAuthType);
         entity.setId(expectedId);
         assertEquals(expectedUserName, entity.getUserName());
         assertEquals(expectedPassword, entity.getPassword());
         assertEquals(expectedEmail, entity.getEmailAddress());
         assertEquals(expectedId, entity.getId());
-        assertEquals(expectedAuthType, AuthenticationType.valueOf(entity.getAuthenticationType()));
+        assertEquals(expectedAuthType, entity.getAuthenticationType());
     }
 }

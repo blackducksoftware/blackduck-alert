@@ -38,7 +38,6 @@ import org.springframework.security.saml.SAMLAuthenticationToken;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -54,7 +53,7 @@ public class AuthenticationEventManager {
         this.eventManager = eventManager;
     }
 
-    public void sendAuthenticationEvent(Authentication authentication, AuthenticationType authenticationType) {
+    public void sendAuthenticationEvent(Authentication authentication, Long authenticationType) {
         String username;
         String emailAddress = null;
         try {
@@ -83,7 +82,7 @@ public class AuthenticationEventManager {
         return Optional.empty();
     }
 
-    private void sendAuthenticationEvent(String username, String emailAddress, AuthenticationType authenticationType, Collection<? extends GrantedAuthority> authorities) throws AlertException {
+    private void sendAuthenticationEvent(String username, String emailAddress, Long authenticationType, Collection<? extends GrantedAuthority> authorities) throws AlertException {
         if (username == null) {
             throw new AlertException("Unable to send authentication event with null username");
         }
@@ -93,7 +92,6 @@ public class AuthenticationEventManager {
                                             .flatMap(Optional::stream)
                                             .map(UserRoleModel::of)
                                             .collect(Collectors.toSet());
-
         UserModel userModel = UserModel.newUser(username, null, emailAddress, authenticationType, alertRoles);
         AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
         eventManager.sendEvent(authEvent);

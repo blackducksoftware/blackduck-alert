@@ -45,14 +45,14 @@ public class UserEntity extends DatabaseEntity {
     private boolean passwordExpired;
     @Column(name = "enabled")
     private boolean enabled;
-    @Column(name = "authentication_type")
-    private String authenticationType;
+    @Column(name = "auth_type")
+    private Long authenticationType;
 
     public UserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(String userName, String password, String emailAddress, String authenticationType) {
+    public UserEntity(String userName, String password, String emailAddress, Long authenticationType) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -63,7 +63,7 @@ public class UserEntity extends DatabaseEntity {
         this.authenticationType = authenticationType;
     }
 
-    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, String authenticationType) {
+    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, Long authenticationType) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -102,7 +102,7 @@ public class UserEntity extends DatabaseEntity {
         return this.enabled;
     }
 
-    public String getAuthenticationType() {
+    public Long getAuthenticationType() {
         return authenticationType;
     }
 }
