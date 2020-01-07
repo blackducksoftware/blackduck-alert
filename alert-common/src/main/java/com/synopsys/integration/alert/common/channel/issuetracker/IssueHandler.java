@@ -173,13 +173,8 @@ public abstract class IssueHandler<T> {
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
         String providerUrl = messageContent.getProvider().getUrl()
-                                 .map(url -> {
-                                     String correctedURL = url.trim();
-                                     if (!correctedURL.endsWith("/")) {
-                                         correctedURL += "/";
-                                     }
-                                     return correctedURL;
-                                 }).orElse("");
+                                 .map(url -> formatUrl(url))
+                                 .orElse("");
 
         Set<String> issueKeys;
         if (messageContent.isTopLevelActionOnly()) {
@@ -188,6 +183,17 @@ public abstract class IssueHandler<T> {
             issueKeys = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
         }
         return issueKeys;
+    }
+
+    private String formatUrl(String originalUrl) {
+        String correctedUrl = "";
+        if (StringUtils.isNotBlank(originalUrl)) {
+            correctedUrl = originalUrl.trim();
+            if (!correctedUrl.endsWith("/")) {
+                correctedUrl += "/";
+            }
+        }
+        return correctedUrl;
     }
 
     private String createStatusMessage(Collection<String> issueKeys) {
