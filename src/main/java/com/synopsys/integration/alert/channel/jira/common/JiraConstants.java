@@ -32,6 +32,7 @@ public final class JiraConstants {
 
     // These Strings must always match the Strings found in the atlassian-connect.json file under modules.jiraEntityProperties.keyConfigurations.propertyKey["com-synopsys-integration-alert"].extractions.objectName.
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER = "provider";
+    public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL = "providerUrl";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME = "topicName";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE = "topicValue";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME = "subTopicName";

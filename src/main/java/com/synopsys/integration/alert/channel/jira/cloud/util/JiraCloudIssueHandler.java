@@ -57,9 +57,10 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
+        throws IntegrationException {
         return jiraIssuePropertyHandler
-                   .findIssues(projectKey, provider, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
+                   .findIssues(projectKey, provider, providerUrl, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
                    .map(IssueSearchResponseModel::getIssues)
                    .orElse(List.of());
     }
