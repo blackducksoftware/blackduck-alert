@@ -1,7 +1,7 @@
 version: '2.3'
 services:
   alertdb:
-    image: blackducksoftware/alert-database:VERSION_TOKEN
+    image: blackducksoftware/alert-database:1.0.0
     ports: ['5432']
     hostname: alertdb
     restart: always
@@ -12,7 +12,10 @@ services:
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
-    links: [cfssl]
+    links: [cfssl, alertdb]
+    depends_on: [alertdb]
+    environment:
+      WAIT_HOSTS: alertdb:5432
     env_file: [blackduck-alert.env]
     user: alert:root
     healthcheck:

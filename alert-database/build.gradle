@@ -12,6 +12,7 @@ buildscript {
 }
 
 project.ext.moduleName = 'com.synopsys.integration.alert.database'
+def alertDatabaseDockerImageVersion = '1.0.0'
 
 apply plugin: 'com.bmuschko.docker-remote-api'
 
@@ -42,12 +43,12 @@ task stageDocker(type: Copy) {
 
 task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
     inputDir = file("${project.buildDir}/docker")
-    tag = "blackducksoftware/${project.name}:${project.version}"
-    buildArgs = ['VERSION': "${project.version}"]
+    tag = "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
+    buildArgs = ['VERSION': "${alertDatabaseDockerImageVersion}"]
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
-    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+    commandLine "docker", "push", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
 }
 
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {

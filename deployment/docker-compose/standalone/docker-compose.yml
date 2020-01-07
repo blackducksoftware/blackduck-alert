@@ -12,7 +12,7 @@ services:
     restart: always
     mem_limit: 512M
   alertdb:
-    image: blackducksoftware/alert-database:VERSION_TOKEN
+    image: blackducksoftware/alert-database:1.0.0
     ports: ['5432']
     hostname: alertdb
     restart: always
