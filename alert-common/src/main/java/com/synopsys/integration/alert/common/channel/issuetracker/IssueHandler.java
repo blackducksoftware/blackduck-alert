@@ -173,7 +173,7 @@ public abstract class IssueHandler<T> {
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
         String providerUrl = messageContent.getProvider().getUrl()
-                                 .map(url -> formatUrl(url))
+                                 .map(this::formatUrl)
                                  .orElse("");
 
         Set<String> issueKeys;
