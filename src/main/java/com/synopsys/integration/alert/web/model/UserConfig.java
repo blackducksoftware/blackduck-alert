@@ -37,6 +37,7 @@ public class UserConfig extends Config {
     private boolean passwordExpired;
     private boolean enabled;
     private boolean passwordSet;
+    private boolean external;
     private AuthenticationType authenticationType;
 
     public UserConfig() {
@@ -55,6 +56,7 @@ public class UserConfig extends Config {
         this.enabled = enabled;
         this.passwordSet = passwordSet;
         this.authenticationType = authenticationType;
+        this.external = authenticationType != AuthenticationType.DATABASE;
     }
 
     public String getUsername() {
@@ -91,6 +93,10 @@ public class UserConfig extends Config {
 
     public boolean isPasswordSet() {
         return passwordSet;
+    }
+
+    public boolean isExternal() {
+        return external;
     }
 
     public AuthenticationType getAuthenticationType() {

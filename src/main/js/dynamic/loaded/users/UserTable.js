@@ -40,6 +40,12 @@ class UserTable extends Component {
                 hidden: true
             },
             {
+                header: 'external',
+                headerLabel: 'External',
+                isKey: false,
+                hidden: true
+            },
+            {
                 header: 'username',
                 headerLabel: 'Username',
                 isKey: false,
@@ -130,8 +136,8 @@ class UserTable extends Component {
         const emailKey = 'emailAddress';
         const roleNames = 'roleNames';
         const passwordSetKey = 'passwordSet';
-        const authenticationTypeKey = 'authenticationType'
-        const external = user[authenticationTypeKey] && user[authenticationTypeKey] !== 'DATABASE';
+        const externalKey = 'external'
+        const external = user[externalKey];
         const externalNote = (
             <div className="form-group">
                 <label className="col-sm-3 col-form-label text-right warningStatus" />
