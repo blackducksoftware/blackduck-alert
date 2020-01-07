@@ -121,8 +121,14 @@ class RoleTable extends Component {
     }
 
     savePermissions(permission) {
-        const { role } = this.state;
+        const { role, incrementalId } = this.state;
         const { permissions } = role;
+        if (!permission.id) {
+            permission.id = incrementalId;
+            this.setState({
+                incrementalId: incrementalId + 1
+            });
+        }
         permissions.push(permission);
         role.permissions = permissions;
         this.setState({

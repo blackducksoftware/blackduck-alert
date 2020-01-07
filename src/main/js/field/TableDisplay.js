@@ -64,6 +64,11 @@ class TableDisplay extends Component {
                     showConfiguration: false
                 });
             }
+        } else if ((this.state.showConfiguration || this.state.currentRowSelected) && this.state.modificationState === MODIFICATION_STATE.NONE) {
+            this.handleClose();
+            this.setState({
+                showConfiguration: false
+            });
         }
     }
 
@@ -137,6 +142,9 @@ class TableDisplay extends Component {
         } else if (MODIFICATION_STATE.EDIT === modificationState) {
             this.props.onConfigUpdate();
         }
+        this.setState({
+            modificationState: MODIFICATION_STATE.NONE
+        });
     }
 
     createEditModal() {
