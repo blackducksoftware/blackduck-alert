@@ -45,4 +45,16 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="psantos" id="2020-01-07-15-09-48-240">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USERS"
+                baseColumnNames="AUTH_TYPE"
+                constraintName="FK_AUTH_TYPE_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="AUTHENTICATION_TYPE"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
 </databaseChangeLog>
