@@ -67,9 +67,9 @@ public abstract class IssueHandler<T> {
         return new IssueTrackerMessageResult(statusMessage, issueKeys);
     }
 
-    protected Set<String> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
+    protected Set<String> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
         if (ItemOperation.DELETE == action) {
-            List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, topic, nullableSubTopic, null, null);
+            List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, providerUrl, topic, nullableSubTopic, null, null);
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, providerName, topic.getName(), action, Set.of());
             return updatedIssues
@@ -82,7 +82,7 @@ public abstract class IssueHandler<T> {
         return Set.of();
     }
 
-    protected Set<String> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
+    protected Set<String> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
         Set<String> issueKeys = new HashSet<>();
         String projectName = issueConfig.getProjectName();
@@ -97,8 +97,8 @@ public abstract class IssueHandler<T> {
                 ItemOperation operation = arbitraryItem.getOperation();
                 String trackingKey = createAdditionalTrackingKey(arbitraryItem);
 
-                List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
-                logIssueAction(operation, projectName, providerName, topic, nullableSubTopic, arbitraryItem);
+                List<T> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey);
+                logIssueAction(operation, projectName, providerUrl, providerName, topic, nullableSubTopic, arbitraryItem);
                 if (!existingIssues.isEmpty()) {
                     Set<T> updatedIssues = updateExistingIssues(existingIssues, issueConfig, providerName, arbitraryItem.getCategory(), arbitraryItem.getOperation(), componentItems);
                     updatedIssues
@@ -107,7 +107,7 @@ public abstract class IssueHandler<T> {
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
                     IssueContentModel contentModel = issueTrackerMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
-                    T issueModel = createIssue(issueConfig, providerName, topic, nullableSubTopic, arbitraryItem, trackingKey, contentModel);
+                    T issueModel = createIssue(issueConfig, providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey, contentModel);
                     String issueKey = getIssueKey(issueModel);
                     issueKeys.add(issueKey);
                 } else {
@@ -130,10 +130,10 @@ public abstract class IssueHandler<T> {
         return issueKeys;
     }
 
-    protected abstract T createIssue(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
+    protected abstract T createIssue(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
         String trackingKey, IssueContentModel contentModel) throws IntegrationException;
 
-    protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
+    protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, String provider, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
         throws IntegrationException;
 
     protected abstract boolean transitionIssue(T issueModel, IssueConfig issueConfig, ItemOperation operation) throws IntegrationException;
@@ -172,13 +172,28 @@ public abstract class IssueHandler<T> {
         LinkableItem topic = messageContent.getTopic();
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
+        String providerUrl = messageContent.getProvider().getUrl()
+                                 .map(this::formatUrl)
+                                 .orElse("");
+
         Set<String> issueKeys;
         if (messageContent.isTopLevelActionOnly()) {
-            issueKeys = updateIssueByTopLevelAction(issueConfig, providerName, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
+            issueKeys = updateIssueByTopLevelAction(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
         } else {
-            issueKeys = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
+            issueKeys = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
         }
         return issueKeys;
+    }
+
+    private String formatUrl(String originalUrl) {
+        String correctedUrl = "";
+        if (StringUtils.isNotBlank(originalUrl)) {
+            correctedUrl = originalUrl.trim();
+            if (!correctedUrl.endsWith("/")) {
+                correctedUrl += "/";
+            }
+        }
+        return correctedUrl;
     }
 
     private String createStatusMessage(Collection<String> issueKeys) {
@@ -190,11 +205,11 @@ public abstract class IssueHandler<T> {
         return String.format("Successfully created issue at %s. Issue Keys: (%s)", getIssueTrackerUrl(), concatenatedKeys);
     }
 
-    private void logIssueAction(ItemOperation operation, String issueTrackerProjectName, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem) {
+    private void logIssueAction(ItemOperation operation, String issueTrackerProjectName, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem) {
         String issueTrackerProjectVersion = nullableSubTopic != null ? nullableSubTopic.getValue() : "unknown";
         String arbitraryItemSubComponent = arbitraryItem.getSubComponent().map(LinkableItem::getValue).orElse("unknown");
-        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            operation.name(), issueTrackerProjectName, providerName, topic.getValue(), issueTrackerProjectVersion, arbitraryItem.getCategory(), arbitraryItem.getComponent().getName(), arbitraryItemSubComponent);
+        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url:{},  Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
+            operation.name(), issueTrackerProjectName, providerName, providerUrl, topic.getValue(), issueTrackerProjectVersion, arbitraryItem.getCategory(), arbitraryItem.getComponent().getName(), arbitraryItemSubComponent);
     }
 
 }

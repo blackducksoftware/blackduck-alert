@@ -42,7 +42,7 @@ public abstract class JiraIssuePropertyHandler<T> {
 
     public abstract void addPropertiesToIssue(String issueKey, AlertJiraIssueProperties properties) throws IntegrationException;
 
-    public Optional<T> findIssues(String jiraProjectKey, String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalKey) throws IntegrationException {
+    public Optional<T> findIssues(String jiraProjectKey, String provider, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalKey) throws IntegrationException {
         String subTopicName = null;
         String subTopicValue = null;
         if (null != subTopic) {
@@ -57,15 +57,17 @@ public abstract class JiraIssuePropertyHandler<T> {
             String subComponentValue = optionalSubComponent.map(LinkableItem::getValue).orElse(null);
 
             return findIssues(
-                jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue, additionalKey);
+                jiraProjectKey, provider, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue, componentItem.getCategory(), component.getName(), component.getValue(), subComponentName, subComponentValue,
+                additionalKey);
         } else {
-            return findIssues(jiraProjectKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue, null, null, null, null, null, additionalKey);
+            return findIssues(jiraProjectKey, provider, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue, null, null, null, null, null, additionalKey);
         }
     }
 
     public Optional<T> findIssues(
         String jiraProjectKey,
         String provider,
+        String providerUrl,
         String topicName,
         String topicValue,
         String subTopicName,
@@ -84,6 +86,7 @@ public abstract class JiraIssuePropertyHandler<T> {
         jqlBuilder.append("' ");
 
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, providerUrl);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, topicName);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, topicValue);
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME, subTopicName);
@@ -107,6 +110,7 @@ public abstract class JiraIssuePropertyHandler<T> {
     public void addPropertiesToIssue(
         String issueKey,
         String provider,
+        String providerUrl,
         String topicName,
         String topicValue,
         String subTopicName,
@@ -118,7 +122,8 @@ public abstract class JiraIssuePropertyHandler<T> {
         String subComponentValue,
         String additionalKey
     ) throws IntegrationException {
-        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, topicName, topicValue, subTopicName, subTopicValue, category, componentName, componentValue, subComponentName, subComponentValue, additionalKey);
+        AlertJiraIssueProperties properties = new AlertJiraIssueProperties(provider, providerUrl, topicName, topicValue, subTopicName, subTopicValue, category, componentName, componentValue, subComponentName, subComponentValue,
+            additionalKey);
         addPropertiesToIssue(issueKey, properties);
     }
 

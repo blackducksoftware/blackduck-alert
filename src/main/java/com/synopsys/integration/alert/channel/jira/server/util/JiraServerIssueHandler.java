@@ -65,10 +65,10 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
+    protected List<IssueResponseModel> retrieveExistingIssues(String projectKey, String provider, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)
         throws IntegrationException {
         List<IssueSearchIssueComponent> searchIssueModels = jiraIssuePropertyHelper
-                                                                .findIssues(projectKey, provider, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
+                                                                .findIssues(projectKey, provider, providerUrl, topic, nullableSubTopic, componentItem, alertIssueUniqueId)
                                                                 .map(IssueSearchResponseModel::getIssues)
                                                                 .orElse(List.of());
         List<IssueResponseModel> issues = new LinkedList<>();

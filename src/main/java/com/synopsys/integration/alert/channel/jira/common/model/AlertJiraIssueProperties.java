@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class AlertJiraIssueProperties extends AlertSerializableModel {
     private String provider;
+    private String providerUrl;
     private String topicName;
     private String topicValue;
     private String subTopicName;
@@ -43,6 +44,7 @@ public class AlertJiraIssueProperties extends AlertSerializableModel {
 
     public AlertJiraIssueProperties(
         String provider,
+        String providerUrl,
         String topicName,
         String topicValue,
         String subTopicName,
@@ -55,6 +57,7 @@ public class AlertJiraIssueProperties extends AlertSerializableModel {
         String additionalKey
     ) {
         this.provider = provider;
+        this.providerUrl = providerUrl;
         this.topicName = topicName;
         this.topicValue = topicValue;
         this.subTopicName = subTopicName;
@@ -69,6 +72,10 @@ public class AlertJiraIssueProperties extends AlertSerializableModel {
 
     public String getProvider() {
         return provider;
+    }
+
+    public String getProviderUrl() {
+        return providerUrl;
     }
 
     public String getTopicName() {
