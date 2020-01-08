@@ -113,7 +113,7 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
-        if (existingUser.getAuthenticationType() != AuthenticationType.AUTH_TYPE_DATABASE) {
+        if (!AuthenticationType.AUTH_TYPE_DATABASE.equals(existingUser.getAuthenticationType())) {
             boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
             boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
             boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());

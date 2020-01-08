@@ -25,9 +25,9 @@ package com.synopsys.integration.alert.common.persistence.model;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class AuthenticationType extends AlertSerializableModel {
-    public final static Long AUTH_TYPE_DATABASE = 1L;
-    public final static Long AUTH_TYPE_LDAP = 2L;
-    public final static Long AUTH_TYPE_SAML = 3L;
+    public static final Long AUTH_TYPE_DATABASE = 1L;
+    public static final Long AUTH_TYPE_LDAP = 2L;
+    public static final Long AUTH_TYPE_SAML = 3L;
     private final Long id;
     private final String name;
 
