@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -50,7 +50,7 @@ public class SAMLContext {
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
                    .findFirst()
-                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+                   .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {

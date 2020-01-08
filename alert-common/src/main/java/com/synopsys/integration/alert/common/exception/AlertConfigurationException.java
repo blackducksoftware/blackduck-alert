@@ -22,22 +22,22 @@
  */
 package com.synopsys.integration.alert.common.exception;
 
-public class AlertLDAPConfigurationException extends AlertException {
+public class AlertConfigurationException extends AlertException {
     private static final long serialVersionUID = -1829641778306376398L;
 
-    public AlertLDAPConfigurationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public AlertConfigurationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public AlertLDAPConfigurationException(final String message, final Throwable cause) {
+    public AlertConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public AlertLDAPConfigurationException(final String message) {
+    public AlertConfigurationException(String message) {
         super(message);
     }
 
-    public AlertLDAPConfigurationException(final Throwable cause) {
+    public AlertConfigurationException(Throwable cause) {
         super(cause);
     }
 }
