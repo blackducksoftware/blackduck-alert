@@ -15,6 +15,19 @@ services:
       resources:
         limits: {memory: 640M}
         reservations: {memory: 640M}
+  alertdb:
+    image: blackducksoftware/alert-database:1.0.0
+    ports: ['5432']
+    hostname: alertdb
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    environment:
+      PGDATA: /opt/blackduck/alert/alert-config/data/postgres/alertdb
+    deploy:
+      mode: replicated
+      restart_policy: {condition: on-failure, delay: 5s, window: 60s}
+      resources:
+        limits: {memory: 640M}
+        reservations: {memory: 640M}
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
