@@ -67,11 +67,11 @@ public class JiraMessageContentConverter {
         return issues;
     }
 
-    protected List<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
+    protected List<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
         if (ItemOperation.DELETE == action) {
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             String trackingKey = createAdditionalTrackingKey(null);
-            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, null, trackingKey);
+            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topic, nullableSubTopic, null, trackingKey);
             IssueContentModel issueContentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topic, nullableSubTopic, Set.of(), null);
             IssueTrackerRequest issueRequest = IssueResolutionRequest.of(issueSearchProperties, issueContentModel);
             return List.of(issueRequest);
@@ -81,7 +81,8 @@ public class JiraMessageContentConverter {
         return List.of();
     }
 
-    protected List<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, SetMap<String, ComponentItem> groupedComponentItems)
+    protected List<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic,
+        SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
         List<IssueTrackerRequest> issues = new LinkedList<>();
 
@@ -92,7 +93,7 @@ public class JiraMessageContentConverter {
                                               .orElseThrow(() -> new AlertException(String.format("No actionable component items were found. Provider: %s, Topic: %s, SubTopic: %s", providerName, topic, nullableSubTopic)));
             ItemOperation operation = arbitraryItem.getOperation();
             String trackingKey = createAdditionalTrackingKey(arbitraryItem);
-            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
+            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey);
 
             IssueTrackerRequest issueRequest = null;
             if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
@@ -125,11 +126,14 @@ public class JiraMessageContentConverter {
         LinkableItem topic = messageContent.getTopic();
         LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
+        String providerUrl = messageContent.getProvider().getUrl()
+                                 .map(JiraIssuePropertiesUtil::formatProviderUrl)
+                                 .orElse("");
         List<IssueTrackerRequest> requests;
         if (messageContent.isTopLevelActionOnly()) {
-            requests = updateIssueByTopLevelAction(issueConfig, providerName, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
+            requests = updateIssueByTopLevelAction(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
         } else {
-            requests = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
+            requests = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
         }
         return requests;
     }
