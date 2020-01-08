@@ -14,6 +14,7 @@ import {
 
 const initialState = {
     inProgress: false,
+    fetching: false,
     deleteSuccess: false,
     data: [],
     userFetchError: '',
@@ -46,19 +47,22 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userFetchError: action.userFetchError
+                userFetchError: action.userFetchError,
+                fetching: false
             });
         case USER_MANAGEMENT_USER_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                data: action.data
+                data: action.data,
+                fetching: false
             });
         case USER_MANAGEMENT_USER_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false,
-                data: []
+                data: [],
+                fetching: true
             });
         case USER_MANAGEMENT_USER_SAVE_ERROR:
             return Object.assign({}, state, {

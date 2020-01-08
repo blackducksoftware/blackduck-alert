@@ -14,6 +14,7 @@ import {
 
 const initialState = {
     inProgress: false,
+    fetching: false,
     deleteSuccess: false,
     data: [],
     roleFetchError: '',
@@ -46,19 +47,22 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleFetchError: action.roleFetchError
+                roleFetchError: action.roleFetchError,
+                fetching: false
             });
         case USER_MANAGEMENT_ROLE_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                data: action.data
+                data: action.data,
+                fetching: false
             });
         case USER_MANAGEMENT_ROLE_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false,
-                data: []
+                data: [],
+                fetching: true
             });
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
             return Object.assign({}, state, {
