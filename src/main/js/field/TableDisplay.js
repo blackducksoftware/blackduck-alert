@@ -56,10 +56,24 @@ class TableDisplay extends Component {
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
+
+        if (prevProps.inProgress && !this.props.inProgress) {
+            if (prevProps.fetching && this.props.fetching) {
+                this.handleClose();
+                this.setState({
+                    showConfiguration: false
+                });
+            }
+        } else if ((this.state.showConfiguration || this.state.currentRowSelected) && this.state.modificationState === MODIFICATION_STATE.NONE) {
+            this.handleClose();
+            this.setState({
+                showConfiguration: false
+            });
+        }
     }
 
     createTableColumns() {
-        const assignDataFormat = (cell, row) => {
+        const assignDataFormat = (cell) => {
             if (cell) {
                 return <div title={cell.toString()}> {cell} </div>;
             }
@@ -122,14 +136,15 @@ class TableDisplay extends Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.handleClose();
         const { modificationState } = this.state;
         if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
             this.props.onConfigSave();
         } else if (MODIFICATION_STATE.EDIT === modificationState) {
             this.props.onConfigUpdate();
         }
-        this.props.refreshData();
+        this.setState({
+            modificationState: MODIFICATION_STATE.NONE
+        });
     }
 
     createEditModal() {
@@ -166,6 +181,7 @@ class TableDisplay extends Component {
                                     });
                                 }}
                                 isFixed={false}
+                                performingAction={this.props.inProgress}
                             />
                         </form>
                     </Modal.Body>
@@ -188,9 +204,8 @@ class TableDisplay extends Component {
                 <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
                     this.handleClose();
                     this.setState({
-                        showConfiguration: false,
-                        modificationState: MODIFICATION_STATE.NONE
-
+                        modificationState: MODIFICATION_STATE.NONE,
+                        showConfiguration: false
                     });
                     onModalClose();
                 }}>
@@ -200,9 +215,6 @@ class TableDisplay extends Component {
                     <Modal.Body>
                         <form className="form-horizontal" onSubmit={(event) => {
                             this.handleSubmit(event);
-                            this.setState({
-                                showConfiguration: false
-                            });
                             onModalClose();
                         }} noValidate>
                             {this.props.newConfigFields()}
@@ -220,6 +232,7 @@ class TableDisplay extends Component {
                                     this.updateData();
                                 }}
                                 isFixed={false}
+                                performingAction={this.props.inProgress}
                             />
                         </form>
                     </Modal.Body>
@@ -419,13 +432,14 @@ TableDisplay.propTypes = {
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
     inProgress: PropTypes.bool,
+    fetching: PropTypes.bool,
     modalTitle: PropTypes.string,
     tableNewButtonLabel: PropTypes.string,
     tableDeleteButtonLabel: PropTypes.string,
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
-    errorDialogMessage: PropTypes.string
+    errorDialogMessage: PropTypes.string,
 };
 
 TableDisplay.defaultProps = {
@@ -438,6 +452,7 @@ TableDisplay.defaultProps = {
     newButton: true,
     deleteButton: true,
     inProgress: false,
+    fetching: false,
     onConfigSave: () => null,
     onConfigUpdate: () => null,
     onConfigDelete: () => null,
