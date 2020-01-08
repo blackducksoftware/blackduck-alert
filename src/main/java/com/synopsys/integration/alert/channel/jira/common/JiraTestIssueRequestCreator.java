@@ -64,11 +64,15 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
                                               .orElseThrow(() -> new AlertException("No actionable component items were found. Cannot create test message content."));
 
             String providerName = providerMessageContent.getProvider().getValue();
+            String providerUrl = providerMessageContent.getProvider().getUrl()
+                                     .map(JiraIssuePropertiesUtil::formatProviderUrl)
+                                     .orElse("");
+
             LinkableItem topicItem = providerMessageContent.getTopic();
             LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
 
-            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
+            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
 
             switch (operation) {
                 case RESOLVE: {
