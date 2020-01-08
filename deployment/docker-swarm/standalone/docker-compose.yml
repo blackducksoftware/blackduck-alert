@@ -20,6 +20,11 @@ services:
     ports: ['5432']
     hostname: alertdb
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    healthcheck:
+      test: [CMD, /usr/local/bin/alertdb-healthcheck.sh]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     environment:
       PGDATA: /opt/blackduck/alert/alert-config/data/postgres/alertdb
     deploy:
