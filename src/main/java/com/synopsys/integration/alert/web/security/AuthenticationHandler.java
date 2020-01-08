@@ -163,6 +163,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         configureH2Console(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
+            .and().authorizeRequests().anyRequest().authenticated()
             .and().exceptionHandling().authenticationEntryPoint(samlEntryPoint())
             .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .and().addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
