@@ -30,5 +30,5 @@ import com.synopsys.integration.alert.common.persistence.model.AuthenticationTyp
 public interface AuthenticationTypeAccessor {
     Optional<AuthenticationTypeDetails> getAuthenticationTypeDetails(AuthenticationType authenticationType);
 
-    AuthenticationType getAuthenticationType(Long id);
+    Optional<AuthenticationType> getAuthenticationType(Long id);
 }

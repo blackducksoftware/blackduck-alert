@@ -23,8 +23,10 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 import java.util.Map;
+import java.util.Optional;
 
 public enum AuthenticationType {
+    UNKNOWN(-1L),
     DATABASE(1L),
     LDAP(2L),
     SAML(3L);
@@ -40,8 +42,8 @@ public enum AuthenticationType {
         this.id = databaseId;
     }
 
-    public static AuthenticationType getById(Long id) {
-        return ID_TYPE_MAPPING.get(id);
+    public static Optional<AuthenticationType> getById(Long id) {
+        return Optional.ofNullable(ID_TYPE_MAPPING.get(id));
     }
 
     public Long getId() {

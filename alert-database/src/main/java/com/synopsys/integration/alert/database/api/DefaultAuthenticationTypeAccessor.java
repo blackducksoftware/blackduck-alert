@@ -51,7 +51,7 @@ public class DefaultAuthenticationTypeAccessor implements AuthenticationTypeAcce
     }
 
     @Override
-    public AuthenticationType getAuthenticationType(Long id) {
+    public Optional<AuthenticationType> getAuthenticationType(Long id) {
         return AuthenticationType.getById(id);
     }
 }

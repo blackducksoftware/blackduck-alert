@@ -120,8 +120,10 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
-        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(existingUser.getAuthenticationType());
-        if (AuthenticationType.DATABASE != authenticationType) {
+        Optional<AuthenticationType> authenticationType = authenticationTypeAccessor.getAuthenticationType(existingUser.getAuthenticationType());
+        if (!authenticationType.isPresent()) {
+            throw new AlertDatabaseConstraintException("Unknown Authentication Type, user not updated.");
+        } else if (AuthenticationType.DATABASE != authenticationType.get()) {
             boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
             boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
             boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
@@ -213,7 +215,7 @@ public class DefaultUserAccessor implements UserAccessor {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType());
+        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
         return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles);
     }
 }
