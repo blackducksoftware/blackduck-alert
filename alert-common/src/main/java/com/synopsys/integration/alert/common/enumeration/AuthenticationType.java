@@ -22,14 +22,29 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
-/**
- * Enumeration of the supported authentication types.
- * <br/>
- * NOTE: if you add a value here update the implementation of AuthenticationTypeAccessor.
- * @see com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor
- */
+import java.util.Map;
+
 public enum AuthenticationType {
-    DATABASE,
-    LDAP,
-    SAML
+    DATABASE(1L),
+    LDAP(2L),
+    SAML(3L);
+
+    private static final Map<Long, AuthenticationType> ID_TYPE_MAPPING = Map.of(
+        DATABASE.getId(), DATABASE,
+        LDAP.getId(), LDAP,
+        SAML.getId(), SAML);
+
+    private Long id;
+
+    AuthenticationType(Long databaseId) {
+        this.id = databaseId;
+    }
+
+    public static AuthenticationType getById(Long id) {
+        return ID_TYPE_MAPPING.get(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
 }
