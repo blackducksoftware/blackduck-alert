@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -64,7 +65,7 @@ public class SettingsGlobalApiActionTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
 
-        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, false, Set.of());
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, AuthenticationType.DATABASE, Set.of());
         Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -86,7 +87,7 @@ public class SettingsGlobalApiActionTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         SettingsGlobalApiAction actionaApi = new SettingsGlobalApiAction(encryptionUtility, userAccessor, settingsValidator);
 
-        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, false, Set.of());
+        UserModel userModel = UserModel.existingUser(UserAccessor.DEFAULT_ADMIN_USER_ID, "example", null, null, AuthenticationType.DATABASE, Set.of());
         Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());

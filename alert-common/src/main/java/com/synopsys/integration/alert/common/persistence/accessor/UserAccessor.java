@@ -45,8 +45,6 @@ public interface UserAccessor {
 
     UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
 
-    UserModel addExternalUser(UserModel user) throws AlertDatabaseConstraintException;
-
     UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
 
     boolean assignRoles(String username, Set<Long> roleIds);
