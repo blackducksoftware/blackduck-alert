@@ -37,14 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -55,7 +53,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 
 @Component
@@ -63,7 +60,7 @@ import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 public class AlertStartupInitializer extends StartupComponent {
     private static final String LINE_DIVIDER = "---------------------------------";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-    private final Environment environment;
+    private final EnvironmentVariableUtility environmentUtility;
     private final DescriptorMap descriptorMap;
     private final DescriptorAccessor descriptorAccessor;
     private final ConfigurationAccessor fieldConfigurationAccessor;
@@ -72,10 +69,10 @@ public class AlertStartupInitializer extends StartupComponent {
     private final SettingsUtility settingsUtility;
 
     @Autowired
-    public AlertStartupInitializer(DescriptorMap descriptorMap, Environment environment, DescriptorAccessor descriptorAccessor, ConfigurationAccessor fieldConfigurationAccessor,
+    public AlertStartupInitializer(DescriptorMap descriptorMap, EnvironmentVariableUtility environmentUtility, DescriptorAccessor descriptorAccessor, ConfigurationAccessor fieldConfigurationAccessor,
         ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
         this.descriptorMap = descriptorMap;
-        this.environment = environment;
+        this.environmentUtility = environmentUtility;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
         this.modelConverter = modelConverter;
@@ -110,8 +107,8 @@ public class AlertStartupInitializer extends StartupComponent {
             Optional<ConfigurationModel> settingsConfiguration = settingsUtility.getConfiguration();
             String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
 
-            String environmentFieldKey = convertKeyToProperty(settingsUtility.getKey(), fieldKey);
-            Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
+            String environmentFieldKey = environmentUtility.convertKeyToProperty(settingsUtility.getKey(), fieldKey);
+            Optional<String> environmentValue = environmentUtility.getEnvironmentValue(environmentFieldKey);
 
             if (environmentValue.isPresent() && settingsConfiguration.isPresent()) {
                 ConfigurationModel foundModel = settingsConfiguration.get();
@@ -164,8 +161,8 @@ public class AlertStartupInitializer extends StartupComponent {
         logger.info("  ### Environment Variables ### ");
         for (DefinedFieldModel fieldModel : fieldsForDescriptor) {
             String key = fieldModel.getKey();
-            String convertedKey = convertKeyToProperty(descriptorKey, key);
-            boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
+            String convertedKey = environmentUtility.convertKeyToProperty(descriptorKey, key);
+            boolean hasEnvironmentValue = environmentUtility.hasEnvironmentValue(convertedKey);
             logger.info("    {}", convertedKey);
             logger.debug("         Environment Variable Found - {}", hasEnvironmentValue);
             String defaultValue = null;
@@ -176,7 +173,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 }
             }
 
-            getEnvironmentValue(convertedKey, defaultValue)
+            environmentUtility.getEnvironmentValue(convertedKey, defaultValue)
                 .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                 .ifPresent(configurationModels::add);
         }
@@ -215,32 +212,6 @@ public class AlertStartupInitializer extends StartupComponent {
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
-    }
-
-    private String convertKeyToProperty(DescriptorKey descriptorKey, String key) {
-        String keyUnderscores = key.replace(".", "_");
-        return String.join("_", "alert", descriptorKey.getUniversalKey(), keyUnderscores).toUpperCase();
-    }
-
-    private boolean hasEnvironmentValue(String propertyKey) {
-        String value = System.getProperty(propertyKey);
-        return StringUtils.isNotBlank(value) || environment.containsProperty(propertyKey);
-    }
-
-    private Optional<String> getEnvironmentValue(String propertyKey) {
-        return getEnvironmentValue(propertyKey, null);
-    }
-
-    private Optional<String> getEnvironmentValue(String propertyKey, String defaultValue) {
-        String value = System.getProperty(propertyKey);
-        if (StringUtils.isBlank(value)) {
-            value = environment.getProperty(propertyKey);
-        }
-        boolean propertyIsSet = System.getProperties().contains(propertyKey) || environment.containsProperty(propertyKey);
-        if (!propertyIsSet && null != defaultValue && StringUtils.isBlank(value)) {
-            value = defaultValue;
-        }
-        return Optional.ofNullable(value);
     }
 
     private void logConfiguration(Collection<ConfigurationFieldModel> fieldModels) {
