@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -136,8 +136,8 @@ public class UserActions {
         // also if the user is external the password is set
         boolean external = userModel.isExternal();
         boolean passwordSet = StringUtils.isNotBlank(userModel.getPassword()) || external;
-        Optional<AuthenticationType> authenticationType = authenticationTypeAccessor.getAuthenticationType(userModel.getAuthenticationType());
-        String authTypeName = authenticationType.map(AuthenticationType::getName).orElse("UNKNOWN");
+        Optional<AuthenticationTypeDetails> authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(userModel.getAuthenticationType());
+        String authTypeName = authenticationType.map(AuthenticationTypeDetails::getName).orElse("UNKNOWN");
         return new UserConfig(
             userModel.getId().toString(),
             userModel.getName(),

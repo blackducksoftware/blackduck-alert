@@ -22,14 +22,16 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeEntity;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 
@@ -37,6 +39,14 @@ import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository
 @Transactional
 public class DefaultAuthenticationTypeAccessor implements AuthenticationTypeAccessor {
     private final AuthenticationTypeRepository authenticationTypeRepository;
+    private final Map<Long, AuthenticationType> idToTypeMapping = Map.of(
+        1L, AuthenticationType.DATABASE,
+        2L, AuthenticationType.LDAP,
+        3L, AuthenticationType.SAML);
+    private final Map<AuthenticationType, Long> typeToIdMapping = Map.of(
+        AuthenticationType.DATABASE, 1L,
+        AuthenticationType.LDAP, 2L,
+        AuthenticationType.SAML, 3L);
 
     @Autowired
     public DefaultAuthenticationTypeAccessor(AuthenticationTypeRepository authenticationTypeRepository) {
@@ -44,8 +54,13 @@ public class DefaultAuthenticationTypeAccessor implements AuthenticationTypeAcce
     }
 
     @Override
-    public Optional<AuthenticationType> getAuthenticationType(Long id) {
-        Optional<AuthenticationTypeEntity> authenticationTypeEntity = authenticationTypeRepository.findById(id);
-        return authenticationTypeEntity.map(entity -> new AuthenticationType(entity.getId(), entity.getName()));
+    public Optional<AuthenticationTypeDetails> getAuthenticationTypeDetails(AuthenticationType authenticationType) {
+        Optional<AuthenticationTypeEntity> authenticationTypeEntity = authenticationTypeRepository.findById(typeToIdMapping.get(authenticationType));
+        return authenticationTypeEntity.map(entity -> new AuthenticationTypeDetails(entity.getId(), entity.getName()));
+    }
+
+    @Override
+    public AuthenticationType getAuthenticationType(Long id) {
+        return idToTypeMapping.getOrDefault(id, AuthenticationType.DATABASE);
     }
 }

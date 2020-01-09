@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class UserModel extends AlertSerializableModel {
@@ -43,9 +44,9 @@ public class UserModel extends AlertSerializableModel {
     private final boolean locked;
     private final boolean passwordExpired;
     private final boolean enabled;
-    private final Long authenticationType;
+    private final AuthenticationType authenticationType;
 
-    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, Long authenticationType) {
+    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, AuthenticationType authenticationType) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -63,11 +64,11 @@ public class UserModel extends AlertSerializableModel {
         }
     }
 
-    public static UserModel newUser(String userName, String password, String emailAddress, Long authenticationType, Set<UserRoleModel> roles) {
+    public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles) {
         return existingUser(null, userName, password, emailAddress, authenticationType, roles);
     }
 
-    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, Long authenticationType, Set<UserRoleModel> roles) {
+    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles) {
         return new UserModel(id, userName, password, emailAddress, roles, false, false, false, true, authenticationType);
     }
 
@@ -124,11 +125,11 @@ public class UserModel extends AlertSerializableModel {
         return roleNames;
     }
 
-    public Long getAuthenticationType() {
+    public AuthenticationType getAuthenticationType() {
         return authenticationType;
     }
 
     public boolean isExternal() {
-        return !AuthenticationType.AUTH_TYPE_DATABASE.equals(authenticationType);
+        return AuthenticationType.DATABASE != authenticationType;
     }
 }

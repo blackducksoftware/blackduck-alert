@@ -20,15 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.Optional;
-
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
-
-public interface AuthenticationTypeAccessor {
-    Optional<AuthenticationTypeDetails> getAuthenticationTypeDetails(AuthenticationType authenticationType);
-
-    AuthenticationType getAuthenticationType(Long id);
+/**
+ * Enumeration of the supported authentication types.
+ * <br/>
+ * NOTE: if you add a value here update the implementation of AuthenticationTypeAccessor.
+ * @see com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor
+ */
+public enum AuthenticationType {
+    DATABASE,
+    LDAP,
+    SAML
 }

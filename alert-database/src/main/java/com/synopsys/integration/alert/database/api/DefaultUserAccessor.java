@@ -34,10 +34,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
@@ -53,13 +55,16 @@ public class DefaultUserAccessor implements UserAccessor {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
     private final DefaultAuthorizationUtility authorizationUtility;
+    private final AuthenticationTypeAccessor authenticationTypeAccessor;
 
     @Autowired
-    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility) {
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility,
+        AuthenticationTypeAccessor authenticationTypeAccessor) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
         this.authorizationUtility = authorizationUtility;
+        this.authenticationTypeAccessor = authenticationTypeAccessor;
     }
 
     @Override
@@ -80,7 +85,7 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
-        return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.AUTH_TYPE_DATABASE, Collections.emptySet()), false);
+        return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet()), false);
     }
 
     @Override
@@ -92,7 +97,9 @@ public class DefaultUserAccessor implements UserAccessor {
         }
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), user.getAuthenticationType());
+        AuthenticationTypeDetails authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(user.getAuthenticationType())
+                                                           .orElseThrow(() -> new AlertDatabaseConstraintException("Cannot find Authentication Type."));
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId());
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
@@ -113,7 +120,8 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
-        if (!AuthenticationType.AUTH_TYPE_DATABASE.equals(existingUser.getAuthenticationType())) {
+        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(existingUser.getAuthenticationType());
+        if (AuthenticationType.DATABASE != authenticationType) {
             boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
             boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
             boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
@@ -205,6 +213,7 @@ public class DefaultUserAccessor implements UserAccessor {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), user.getAuthenticationType(), roles);
+        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType());
+        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles);
     }
 }

@@ -29,7 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationType;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
@@ -45,7 +45,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
         Authentication currentAuth = super.authenticate(authentication);
         logger.debug("User authenticated: {}", currentAuth.isAuthenticated());
         if (currentAuth.isAuthenticated()) {
-            authenticationEventManager.sendAuthenticationEvent(authentication, AuthenticationType.AUTH_TYPE_SAML);
+            authenticationEventManager.sendAuthenticationEvent(authentication, AuthenticationType.SAML);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;
