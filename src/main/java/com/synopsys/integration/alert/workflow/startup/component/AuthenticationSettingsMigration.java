@@ -58,6 +58,7 @@ import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 @Component
 @Order(2)
 // TODO Remove this class in 6.0.0
+// TODO Revisit the order of the startup components
 public class AuthenticationSettingsMigration extends StartupComponent {
     private Logger logger = LoggerFactory.getLogger(AuthenticationSettingsMigration.class);
     private EnvironmentVariableUtility environmentUtility;
@@ -115,7 +116,7 @@ public class AuthenticationSettingsMigration extends StartupComponent {
             logger.debug("         Environment Variable Found - {}", hasEnvironmentValue);
             if (existingConfiguredFields.containsKey(key)) {
                 configurationModels.add(existingConfiguredFields.get(key));
-            } else {
+            } else if (hasEnvironmentValue) {
                 environmentUtility.getEnvironmentValue(convertedKey, null)
                     .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                     .ifPresent(configurationModels::add);
