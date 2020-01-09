@@ -28,6 +28,10 @@
                 "type": "string"
               },
               {
+                "objectName": "providerUrl",
+                "type": "string"
+              },
+              {
                 "objectName": "topicName",
                 "type": "string"
               },

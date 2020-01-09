@@ -69,7 +69,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
 
     @Override
-    protected IssueResponseModel createIssue(IssueConfig jiraIssueConfig, String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem, String trackingKey, IssueContentModel contentModel)
+    protected IssueResponseModel createIssue(IssueConfig jiraIssueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem, String trackingKey,
+        IssueContentModel contentModel)
         throws IntegrationException {
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(contentModel);
         fieldsBuilder.setProject(jiraIssueConfig.getProjectId());
@@ -80,7 +81,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             IssueResponseModel issue = createIssue(issueCreator, jiraIssueConfig.getIssueType(), jiraIssueConfig.getProjectName(), fieldsBuilder);
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
-            addIssueProperties(issueKey, providerName, topic, nullableSubTopic, arbitraryItem, trackingKey);
+            addIssueProperties(issueKey, providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey);
             addComment(issueKey, "This issue was automatically created by Alert.");
             for (String additionalComment : contentModel.getAdditionalComments()) {
                 String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
@@ -133,18 +134,16 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return new AlertException(message, restException);
     }
 
-    private void addIssueProperties(String issueKey, String provider, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
+    private void addIssueProperties(String issueKey, String provider, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId) throws IntegrationException {
         LinkableItem component = componentItem.getComponent();
         Optional<LinkableItem> subComponent = componentItem.getSubComponent();
 
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
         String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
 
-        jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, provider, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
-            componentItem.getCategory(),
-            component.getName(), component.getValue(), subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null),
-            alertIssueUniqueId
-        );
+        jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, provider, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
+            componentItem.getCategory(), component.getName(), component.getValue(), subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null),
+            alertIssueUniqueId);
     }
 
     private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
