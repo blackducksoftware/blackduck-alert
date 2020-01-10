@@ -43,7 +43,7 @@ public class UserModel extends AlertSerializableModel {
     private final boolean passwordExpired;
     private final boolean enabled;
 
-    private UserModel(final String name, final String password, final String emailAddress, final Set<UserRoleModel> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    private UserModel(String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled) {
         this.name = name;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -59,8 +59,8 @@ public class UserModel extends AlertSerializableModel {
         }
     }
 
-    public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<UserRoleModel> roles) {
-        return new UserModel(userName, password, emailAddress, roles, false, false, false, true);
+    public static final UserModel of(String userName, String password, String emailAddress, Set<UserRoleModel> roles, boolean enabled) {
+        return new UserModel(userName, password, emailAddress, roles, false, false, false, enabled);
     }
 
     public String getName() {
@@ -88,7 +88,7 @@ public class UserModel extends AlertSerializableModel {
                    .collect(Collectors.toList());
     }
 
-    public boolean hasRole(final String role) {
+    public boolean hasRole(String role) {
         return roleNames.contains(role);
     }
 

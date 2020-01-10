@@ -92,7 +92,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles), true);
+        UserModel updatedModel = userAccessor.addOrUpdateUser(UserModel.of(userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), roles, true), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
