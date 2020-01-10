@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -40,8 +40,8 @@ import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -82,19 +82,19 @@ public class LdapManager {
         return false;
     }
 
-    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertConfigurationException {
         return configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                    .stream()
                    .findFirst()
-                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
+                   .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
-    public LdapAuthenticationProvider getAuthenticationProvider() throws AlertLDAPConfigurationException {
+    public LdapAuthenticationProvider getAuthenticationProvider() throws AlertConfigurationException {
         updateContext();
         return authenticationProvider;
     }
 
-    public void updateContext() throws AlertLDAPConfigurationException {
+    public void updateContext() throws AlertConfigurationException {
         try {
             if (!isLdapEnabled()) {
                 return;
@@ -117,7 +117,7 @@ public class LdapManager {
             contextSource.afterPropertiesSet();
             updateAuthenticationProvider(configuration);
         } catch (IllegalArgumentException | AlertDatabaseConstraintException ex) {
-            throw new AlertLDAPConfigurationException("Error creating LDAP Context Source", ex);
+            throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
         }
     }
 
@@ -139,13 +139,13 @@ public class LdapManager {
         return strategy;
     }
 
-    private void updateAuthenticationProvider(ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
+    private void updateAuthenticationProvider(ConfigurationModel configurationModel) throws AlertConfigurationException {
         LdapAuthenticator authenticator = createAuthenticator(configurationModel);
         LdapAuthoritiesPopulator ldapAuthoritiesPopulator = createAuthoritiesPopulator(configurationModel);
         authenticationProvider = new LdapAuthenticationProvider(authenticator, ldapAuthoritiesPopulator);
     }
 
-    private LdapAuthenticator createAuthenticator(ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
+    private LdapAuthenticator createAuthenticator(ConfigurationModel configurationModel) throws AlertConfigurationException {
         BindAuthenticator authenticator = new BindAuthenticator(contextSource);
         try {
             String[] userDnArray = createArrayFromCSV(getFieldValueOrEmpty(configurationModel, AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS));
@@ -155,7 +155,7 @@ public class LdapManager {
             authenticator.setUserAttributes(userAttributeArray);
             authenticator.afterPropertiesSet();
         } catch (Exception ex) {
-            throw new AlertLDAPConfigurationException("Error creating LDAP authenticator", ex);
+            throw new AlertConfigurationException("Error creating LDAP authenticator", ex);
         }
         return authenticator;
     }

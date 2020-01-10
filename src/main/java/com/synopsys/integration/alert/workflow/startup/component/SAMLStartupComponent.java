@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -51,15 +52,17 @@ public class SAMLStartupComponent extends StartupComponent {
     @Override
     protected void initialize() {
         try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            final boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
-            final String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-            final String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-            final String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
+            String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
+            String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+            String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
             if (samlEnabled) {
                 samlManager.setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
-        } catch (final AlertException | MetadataProviderException e) {
+        } catch (AlertConfigurationException e) {
+            logger.warn(String.format("Cannot start the SAML identity provider. %s", e.getMessage()));
+        } catch (AlertException | MetadataProviderException e) {
             logger.error("Error adding the SAML identity provider.", e);
         }
     }

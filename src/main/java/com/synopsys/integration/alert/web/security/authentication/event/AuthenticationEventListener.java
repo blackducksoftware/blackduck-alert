@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -52,7 +52,7 @@ public class AuthenticationEventListener extends MessageReceiver<AlertAuthentica
         UserModel user = event.getUser();
         if (null != user) {
             try {
-                userAccessor.addExternalUser(user);
+                userAccessor.addUser(user, true);
             } catch (AlertDatabaseConstraintException ignored) {
                 // User already exists. Nothing to do.
             }

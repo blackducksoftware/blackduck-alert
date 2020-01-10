@@ -1,7 +1,7 @@
 /**
  * alert-database
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -45,14 +45,14 @@ public class UserEntity extends DatabaseEntity {
     private boolean passwordExpired;
     @Column(name = "enabled")
     private boolean enabled;
-    @Column(name = "external")
-    private boolean external;
+    @Column(name = "auth_type")
+    private Long authenticationType;
 
     public UserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(String userName, String password, String emailAddress, boolean external) {
+    public UserEntity(String userName, String password, String emailAddress, Long authenticationType) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -60,10 +60,10 @@ public class UserEntity extends DatabaseEntity {
         this.locked = false;
         this.passwordExpired = false;
         this.enabled = true;
-        this.external = external;
+        this.authenticationType = authenticationType;
     }
 
-    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean external) {
+    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, Long authenticationType) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -71,7 +71,7 @@ public class UserEntity extends DatabaseEntity {
         this.locked = locked;
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
-        this.external = external;
+        this.authenticationType = authenticationType;
     }
 
     public String getUserName() {
@@ -102,7 +102,7 @@ public class UserEntity extends DatabaseEntity {
         return this.enabled;
     }
 
-    public boolean isExternal() {
-        return external;
+    public Long getAuthenticationType() {
+        return authenticationType;
     }
 }

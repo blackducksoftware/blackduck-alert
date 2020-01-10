@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -24,13 +24,15 @@ package com.synopsys.integration.alert.channel.jira.common;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {
-    public static final IssueSearchProperties create(String providerName, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
+    public static final IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
         Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
         String category = componentItem != null ? componentItem.getCategory() : null;
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
@@ -38,7 +40,18 @@ public class JiraIssuePropertiesUtil {
         String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
         String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
 
-        return new JiraIssueSearchProperties(providerName, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
+        return new JiraIssueSearchProperties(providerName, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
             category, componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
+    }
+
+    public static final String formatProviderUrl(String originalUrl) {
+        String correctedUrl = "";
+        if (StringUtils.isNotBlank(originalUrl)) {
+            correctedUrl = originalUrl.trim();
+            if (!correctedUrl.endsWith("/")) {
+                correctedUrl += "/";
+            }
+        }
+        return correctedUrl;
     }
 }

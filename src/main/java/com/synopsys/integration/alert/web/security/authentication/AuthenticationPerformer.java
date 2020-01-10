@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -34,6 +34,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
@@ -53,13 +54,15 @@ public abstract class AuthenticationPerformer {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authenticationResult.getPrincipal(), authenticationResult.getCredentials(), authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            authenticationEventManager.sendAuthenticationEvent(authenticationToken);
+            authenticationEventManager.sendAuthenticationEvent(authenticationToken, getAuthenticationType());
             return Optional.of(authenticationToken);
         }
         return Optional.empty();
     }
 
     public abstract Authentication authenticateWithProvider(Authentication pendingAuthentication);
+
+    public abstract AuthenticationType getAuthenticationType();
 
     private boolean isAuthorized(Authentication authentication) {
         Set<String> allowedRoles = authorizationUtility.getRoles()

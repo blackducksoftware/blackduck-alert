@@ -1,7 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -44,8 +44,6 @@ public interface UserAccessor {
     UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException;
 
     UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
-
-    UserModel addExternalUser(UserModel user) throws AlertDatabaseConstraintException;
 
     UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
 

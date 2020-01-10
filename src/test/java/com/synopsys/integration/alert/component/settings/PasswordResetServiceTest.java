@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -55,7 +56,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordNoUserEmailTest() {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", null, false, Set.of());
+        UserModel userModel = UserModel.newUser(username, "", null, AuthenticationType.DATABASE, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
@@ -72,7 +73,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordNoEmailConfigurationTest() throws AlertDatabaseConstraintException {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", AuthenticationType.DATABASE, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
@@ -108,7 +109,7 @@ public class PasswordResetServiceTest {
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", AuthenticationType.DATABASE, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
@@ -128,7 +129,7 @@ public class PasswordResetServiceTest {
     @Test
     public void resetPasswordInvalidEmailConfigTest() throws AlertException {
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", false, Set.of());
+        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", AuthenticationType.DATABASE, Set.of());
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);

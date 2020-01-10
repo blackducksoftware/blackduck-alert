@@ -28,71 +28,71 @@ public class AlertExceptionTest {
         exceptionSet = new LinkedHashSet<>();
         exceptionSet.add(AlertException.class);
         exceptionSet.add(AlertDatabaseConstraintException.class);
-        exceptionSet.add(AlertLDAPConfigurationException.class);
+        exceptionSet.add(AlertConfigurationException.class);
         exceptionSet.add(AlertRuntimeException.class);
     }
 
     @Test
     public void testFullConstructor() throws Exception {
-        for (final Class<? extends Exception> exceptionClass : exceptionSet) {
+        for (Class<? extends Exception> exceptionClass : exceptionSet) {
             final String message = "Exception Message";
-            final Throwable cause = new Throwable();
+            Throwable cause = new Throwable();
             final boolean enableSuppression = true;
             final boolean writableStackTrace = true;
 
-            final Exception alertException = createFullConstructor(exceptionClass, message, cause, enableSuppression, writableStackTrace);
+            Exception alertException = createFullConstructor(exceptionClass, message, cause, enableSuppression, writableStackTrace);
             assertNotNull(alertException);
         }
     }
 
     @Test
     public void testMessageAndCauseConstructor() throws Exception {
-        for (final Class<? extends Exception> exceptionClass : exceptionSet) {
+        for (Class<? extends Exception> exceptionClass : exceptionSet) {
             final String message = "Exception Message";
-            final Throwable cause = new Throwable();
+            Throwable cause = new Throwable();
 
-            final Exception alertException = createMessageAndCauseConstructor(exceptionClass, message, cause);
+            Exception alertException = createMessageAndCauseConstructor(exceptionClass, message, cause);
             assertNotNull(alertException);
         }
     }
 
     @Test
     public void testMessageOnlyConstructor() throws Exception {
-        for (final Class<? extends Exception> exceptionClass : exceptionSet) {
+        for (Class<? extends Exception> exceptionClass : exceptionSet) {
             final String message = "Exception Message";
 
-            final Exception alertException = createMessageConstructor(exceptionClass, message);
+            Exception alertException = createMessageConstructor(exceptionClass, message);
             assertNotNull(alertException);
         }
     }
 
     @Test
     public void testCauseOnlyConstructor() throws Exception {
-        for (final Class<? extends Exception> exceptionClass : exceptionSet) {
-            final Throwable cause = new Throwable();
+        for (Class<? extends Exception> exceptionClass : exceptionSet) {
+            Throwable cause = new Throwable();
 
-            final Exception alertException = createCauseConstructor(exceptionClass, cause);
+            Exception alertException = createCauseConstructor(exceptionClass, cause);
             assertNotNull(alertException);
         }
     }
 
-    private <E> E createFullConstructor(final Class<E> exceptionClass, final String message, final Throwable throwable, final boolean enableSuppression, final boolean writableStackTrace) throws Exception {
-        final Constructor<E> constructor = exceptionClass.getConstructor(String.class, Throwable.class, Boolean.TYPE, Boolean.TYPE);
+    private <E> E createFullConstructor(Class<E> exceptionClass, String message, Throwable throwable, boolean enableSuppression, boolean writableStackTrace) throws Exception {
+        Constructor<E> constructor = exceptionClass.getConstructor(String.class, Throwable.class, Boolean.TYPE, Boolean.TYPE);
         return constructor.newInstance(message, throwable, enableSuppression, writableStackTrace);
     }
 
-    private <E> E createMessageAndCauseConstructor(final Class<E> exceptionClass, final String message, final Throwable throwable) throws Exception {
-        final Constructor<E> constructor = exceptionClass.getConstructor(String.class, Throwable.class);
+    private <E> E createMessageAndCauseConstructor(Class<E> exceptionClass, String message, Throwable throwable) throws Exception {
+        Constructor<E> constructor = exceptionClass.getConstructor(String.class, Throwable.class);
         return constructor.newInstance(message, throwable);
     }
 
-    private <E> E createMessageConstructor(final Class<E> exceptionClass, final String message) throws Exception {
-        final Constructor<E> constructor = exceptionClass.getConstructor(String.class);
+    private <E> E createMessageConstructor(Class<E> exceptionClass, String message) throws Exception {
+        Constructor<E> constructor = exceptionClass.getConstructor(String.class);
         return constructor.newInstance(message);
     }
 
-    private <E> E createCauseConstructor(final Class<E> exceptionClass, final Throwable throwable) throws Exception {
-        final Constructor<E> constructor = exceptionClass.getConstructor(Throwable.class);
+    private <E> E createCauseConstructor(Class<E> exceptionClass, Throwable throwable) throws Exception {
+        Constructor<E> constructor = exceptionClass.getConstructor(Throwable.class);
         return constructor.newInstance(throwable);
     }
 }

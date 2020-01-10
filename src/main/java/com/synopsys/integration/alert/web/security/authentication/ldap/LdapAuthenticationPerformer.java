@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -30,7 +30,8 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
-import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.web.security.authentication.AuthenticationPerformer;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
@@ -47,6 +48,11 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
     }
 
     @Override
+    public AuthenticationType getAuthenticationType() {
+        return AuthenticationType.LDAP;
+    }
+
+    @Override
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Checking ldap based authentication...");
         Authentication result = pendingAuthentication;
@@ -55,7 +61,7 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
             try {
                 LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
                 result = authenticationProvider.authenticate(pendingAuthentication);
-            } catch (AlertLDAPConfigurationException ex) {
+            } catch (AlertConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
             } catch (Exception ex) {
                 logger.error("LDAP Authentication error", ex);

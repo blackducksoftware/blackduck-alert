@@ -1,7 +1,7 @@
 /**
  * alert-database
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -34,9 +34,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
@@ -52,13 +55,16 @@ public class DefaultUserAccessor implements UserAccessor {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
     private final DefaultAuthorizationUtility authorizationUtility;
+    private final AuthenticationTypeAccessor authenticationTypeAccessor;
 
     @Autowired
-    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility) {
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationUtility authorizationUtility,
+        AuthenticationTypeAccessor authenticationTypeAccessor) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
         this.authorizationUtility = authorizationUtility;
+        this.authenticationTypeAccessor = authenticationTypeAccessor;
     }
 
     @Override
@@ -79,20 +85,11 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
-        return addUser(UserModel.newUser(userName, password, emailAddress, false, Collections.emptySet()), false);
+        return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet()), false);
     }
 
     @Override
     public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
-        return addUser(user, passwordEncoded, false);
-    }
-
-    @Override
-    public UserModel addExternalUser(UserModel user) throws AlertDatabaseConstraintException {
-        return addUser(user, true, true);
-    }
-
-    private UserModel addUser(UserModel user, boolean passwordEncoded, boolean external) throws AlertDatabaseConstraintException {
         String username = user.getName();
         Optional<UserEntity> userWithSameUsername = userRepository.findByUserName(username);
         if (userWithSameUsername.isPresent()) {
@@ -100,7 +97,9 @@ public class DefaultUserAccessor implements UserAccessor {
         }
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), external);
+        AuthenticationTypeDetails authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(user.getAuthenticationType())
+                                                           .orElseThrow(() -> new AlertDatabaseConstraintException("Cannot find Authentication Type."));
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId());
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
@@ -121,7 +120,10 @@ public class DefaultUserAccessor implements UserAccessor {
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
-        if (existingUser.isExternal()) {
+        Optional<AuthenticationType> authenticationType = authenticationTypeAccessor.getAuthenticationType(existingUser.getAuthenticationType());
+        if (!authenticationType.isPresent()) {
+            throw new AlertDatabaseConstraintException("Unknown Authentication Type, user not updated.");
+        } else if (AuthenticationType.DATABASE != authenticationType.get()) {
             boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
             boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
             boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
@@ -130,7 +132,7 @@ public class DefaultUserAccessor implements UserAccessor {
             }
         } else {
             String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.isExternal());
+            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.getAuthenticationType());
             newEntity.setId(existingUserId);
             savedEntity = userRepository.save(newEntity);
         }
@@ -187,13 +189,13 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     private boolean changeUserPassword(UserEntity oldEntity, String newPassword) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.isExternal());
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.getAuthenticationType());
         updatedEntity.setId(oldEntity.getId());
         return userRepository.save(updatedEntity) != null;
     }
 
     private boolean changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.isExternal());
+        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.getAuthenticationType());
         updatedEntity.setId(oldEntity.getId());
         return userRepository.save(updatedEntity) != null;
     }
@@ -213,7 +215,7 @@ public class DefaultUserAccessor implements UserAccessor {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), user.isExternal(), roles);
+        AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
+        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles);
     }
-
 }

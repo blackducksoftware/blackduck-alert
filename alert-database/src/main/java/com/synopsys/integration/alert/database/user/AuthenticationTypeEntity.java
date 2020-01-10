@@ -1,7 +1,7 @@
 /**
- * alert-common
+ * alert-database
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -20,24 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.database.user;
 
-public class AlertLDAPConfigurationException extends AlertException {
-    private static final long serialVersionUID = -1829641778306376398L;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-    public AlertLDAPConfigurationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+import com.synopsys.integration.alert.database.DatabaseEntity;
+
+@Entity
+@Table(schema = "alert", name = "authentication_type")
+public class AuthenticationTypeEntity extends DatabaseEntity {
+    @Column(name = "name")
+    public String name;
+
+    public AuthenticationTypeEntity() {
+        // JPA requires default constructor definitions
     }
 
-    public AlertLDAPConfigurationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public AlertLDAPConfigurationException(final String message) {
-        super(message);
-    }
-
-    public AlertLDAPConfigurationException(final Throwable cause) {
-        super(cause);
+    public String getName() {
+        return name;
     }
 }

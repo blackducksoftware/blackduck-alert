@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -29,6 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
@@ -44,7 +45,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
         Authentication currentAuth = super.authenticate(authentication);
         logger.debug("User authenticated: {}", currentAuth.isAuthenticated());
         if (currentAuth.isAuthenticated()) {
-            authenticationEventManager.sendAuthenticationEvent(authentication);
+            authenticationEventManager.sendAuthenticationEvent(authentication, AuthenticationType.SAML);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;
