@@ -7,11 +7,13 @@
             <column name="id" value="2"/>
             <column name="USERNAME" value="jobmanager"/>
             <column name="PASSWORD" value="$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui"/>
+            <column name="ENABLED" value="false"/>
         </insert>
         <insert tableName="USERS" schemaName="ALERT">
             <column name="id" value="3"/>
             <column name="USERNAME" value="alertuser"/>
             <column name="PASSWORD" value="$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui"/>
+            <column name="ENABLED" value="false"/>
         </insert>
     </changeSet>
     <changeSet author="gavink" id="2019-10-18-12-34-29-499-2">
