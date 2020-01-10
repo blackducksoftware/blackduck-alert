@@ -227,6 +227,14 @@ create table if not exists ALERT.FIELD_VALUES
             on delete cascade
 );
 
+create table if not exists ALERT.AUTHENTICATION_TYPE
+(
+    ID   SERIAL,
+    NAME VARCHAR(255),
+    constraint AUTH_TYPE_KEY
+        primary key (ID)
+);
+
 create table if not exists ALERT.USERS
 (
     ID               SERIAL,
@@ -238,9 +246,12 @@ create table if not exists ALERT.USERS
     LOCKED           BOOLEAN default FALSE,
     PASSWORD_EXPIRED BOOLEAN default FALSE,
     ENABLED          BOOLEAN default TRUE,
-    EXTERNAL         BOOLEAN default FALSE,
+    AUTH_TYPE        BIGINT  default 1 not null,
     constraint USER_KEY
-        primary key (ID)
+        primary key (ID),
+    constraint FK_AUTH_TYPE_ID
+        foreign key (AUTH_TYPE) references ALERT.AUTHENTICATION_TYPE (ID)
+            on delete cascade
 );
 
 create table if not exists ALERT.USER_ROLES

@@ -1,67 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <!-- Initialize roles -->
-    <changeSet author="gavink" id="2019-12-12-08-44-02-287">
-        <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.ROLES</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="3">select count(*) from ALERT.ROLES where CUSTOM = false</sqlCheck>
-                </not>
-            </or>
-        </preConditions>
-        <insert schemaName="ALERT" tableName="ROLES">
-            <column name="ROLENAME">ALERT_ADMIN</column>
-            <column name="CUSTOM">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="ROLES">
-            <column name="ROLENAME">ALERT_JOB_MANAGER</column>
-            <column name="CUSTOM">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="ROLES">
-            <column name="ROLENAME">ALERT_USER</column>
-            <column name="CUSTOM">false</column>
-        </insert>
-    </changeSet>
-    <!-- Initialize users -->
-    <changeSet author="gavink" id="2019-12-12-09-24-04-466">
-        <preConditions onFail="MARK_RAN">
-            <or>
-                <sqlCheck expectedResult="0">select count(*) from ALERT.USERS</sqlCheck>
-                <not>
-                    <sqlCheck expectedResult="3">select count(*) from ALERT.USERS where USERNAME = 'sysadmin' or USERNAME = 'jobmanager' or USERNAME = 'alertuser'</sqlCheck>
-                </not>
-            </or>
-        </preConditions>
-        <insert schemaName="ALERT" tableName="USERS">
-            <column name="USERNAME">sysadmin</column>
-            <column name="PASSWORD">$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy</column>
-            <column name="EMAIL_ADDRESS">null</column>
-            <column name="EXPIRED">false</column>
-            <column name="LOCKED">false</column>
-            <column name="PASSWORD_EXPIRED">false</column>
-            <column name="ENABLED">true</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="USERS">
-            <column name="USERNAME">jobmanager</column>
-            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
-            <column name="EMAIL_ADDRESS">null</column>
-            <column name="EXPIRED">false</column>
-            <column name="LOCKED">false</column>
-            <column name="PASSWORD_EXPIRED">false</column>
-            <column name="ENABLED">true</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="USERS">
-            <column name="USERNAME">alertuser</column>
-            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
-            <column name="EMAIL_ADDRESS">null</column>
-            <column name="EXPIRED">false</column>
-            <column name="LOCKED">false</column>
-            <column name="PASSWORD_EXPIRED">false</column>
-            <column name="ENABLED">true</column>
-        </insert>
-    </changeSet>
     <!-- Create stored procedures/functions for auth initialization -->
     <changeSet author="gavink" id="2019-12-17-09-02-35-275">
         <createProcedure schemaName="ALERT" dbms="postgresql">
@@ -82,6 +21,34 @@
                 java.lang.Integer getRoleId(final java.sql.Connection connection, final java.lang.String roleName) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ROLES WHERE ROLES.ROLENAME = '" + roleName.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_AUTH_TYPE_ID(text)
+            RETURNS BIGINT AS $result$
+                DECLARE result BIGINT;
+                BEGIN
+                    select ID
+                    into result
+                    from ALERT.AUTHENTICATION_TYPE where NAME = $1;
+                    RETURN result;
+                END;
+            $result$
+            LANGUAGE plpgsql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="h2">
+            CREATE ALIAS GET_AUTH_TYPE_ID AS $$
+                java.lang.Integer getAuthTypeId(final java.sql.Connection connection, final java.lang.String name) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.AUTHENTICATION_TYPE WHERE AUTHENTICATION_TYPE.NAME = '" + name.toUpperCase() + "' LIMIT 1;");
                         if (resultSet.next()) {
                             return resultSet.getInt("ID");
                         } else {
@@ -119,6 +86,87 @@
                 }
             $$;
         </createProcedure>
+    </changeSet>
+    <!-- Initialize roles -->
+    <changeSet author="gavink" id="2019-12-12-08-44-02-287">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.ROLES</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.ROLES where CUSTOM = false</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_ADMIN</column>
+            <column name="CUSTOM">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_JOB_MANAGER</column>
+            <column name="CUSTOM">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="ROLES">
+            <column name="ROLENAME">ALERT_USER</column>
+            <column name="CUSTOM">false</column>
+        </insert>
+    </changeSet>
+    <!-- Initialize authentication type -->
+    <changeSet author="gavink" id="2020-01-10-14-21-18-101">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.AUTHENTICATION_TYPE</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.AUTHENTICATION_TYPE where NAME = 'DATABASE' or 'LDAP' or 'SAML'</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="AUTHENTICATION_TYPE">
+            <column name="NAME">DATABASE</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="AUTHENTICATION_TYPE">
+            <column name="NAME">LDAP</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="AUTHENTICATION_TYPE">
+            <column name="NAME">SAML</column>
+        </insert>
+    </changeSet>
+    <!-- Initialize users -->
+    <changeSet author="gavink" id="2019-12-12-09-24-04-466">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="0">select count(*) from ALERT.USERS</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.USERS where USERNAME = 'sysadmin' or USERNAME = 'jobmanager' or USERNAME = 'alertuser'</sqlCheck>
+                </not>
+            </or>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">sysadmin</column>
+            <column name="PASSWORD">$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="AUTH_TYPE" valueComputed="GET_AUTH_TYPE_ID('DATABASE')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">jobmanager</column>
+            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="AUTH_TYPE" valueComputed="GET_AUTH_TYPE_ID('DATABASE')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="USERS">
+            <column name="USERNAME">alertuser</column>
+            <column name="PASSWORD">$2a$16$Ek6E2PbHCTLrlsqSPuNsxexjcViC3n1Gl6AW2sl/yR3Vf52xTazui</column>
+            <column name="EMAIL_ADDRESS">null</column>
+            <column name="EXPIRED">false</column>
+            <column name="LOCKED">false</column>
+            <column name="PASSWORD_EXPIRED">false</column>
+            <column name="AUTH_TYPE" valueComputed="GET_AUTH_TYPE_ID('DATABASE')"/>
+        </insert>
     </changeSet>
     <!-- Initialize permissions matrix -->
     <changeSet author="gavink" id="2019-12-12-09-11-55-999">

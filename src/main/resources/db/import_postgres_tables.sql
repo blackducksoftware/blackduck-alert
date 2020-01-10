@@ -39,6 +39,9 @@ FROM ALERT.DESCRIPTOR_CONFIGS;
 SELECT setval(pg_get_serial_sequence('ALERT.FIELD_VALUES', 'id'), COALESCE(max(ID) + 1, 1), false)
 FROM ALERT.FIELD_VALUES;
 
+\COPY ALERT.AUTHENTICATION_TYPE FROM '/opt/blackduck/alert/alert-config/data/temp/AUTHENTICATION_TYPE.csv' DELIMITER ',' CSV HEADER;
+SELECT setval(pg_get_serial_sequence('ALERT.AUTHENTICATION_TYPE', 'id'), COALESCE(max(ID) + 1, 1), false)
+FROM ALERT.USERS;
 \COPY ALERT.USERS FROM '/opt/blackduck/alert/alert-config/data/temp/USERS.csv' DELIMITER ',' CSV HEADER;
 SELECT setval(pg_get_serial_sequence('ALERT.USERS', 'id'), COALESCE(max(ID) + 1, 1), false)
 FROM ALERT.USERS;
