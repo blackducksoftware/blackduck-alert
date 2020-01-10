@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLConte
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
 @Component
-@Order(8)
+@Order(80)
 public class SAMLStartupComponent extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(SAMLStartupComponent.class);
     private final SAMLContext samlContext;

@@ -56,7 +56,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 
 @Component
-@Order(2)
+@Order(20)
 // TODO Remove this class in 6.0.0
 // TODO Revisit the order of the startup components
 public class AuthenticationSettingsMigration extends StartupComponent {

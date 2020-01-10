@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.provider.Provider;
 
 @Component
-@Order(7)
+@Order(70)
 public class ProviderInitializer extends StartupComponent {
     private final List<Provider> providers;
 

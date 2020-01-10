@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
 @Component
-@Order(3)
+@Order(30)
 public class SystemStatusValidator extends StartupComponent {
     private final SystemStatusUtility systemStatusUtility;
     private final EncryptionUtility encryptionUtility;

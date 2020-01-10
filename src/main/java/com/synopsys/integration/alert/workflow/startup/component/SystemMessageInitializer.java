@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 
 @Component
-@Order(4)
+@Order(40)
 public class SystemMessageInitializer extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<ProviderValidator> providerValidators;
