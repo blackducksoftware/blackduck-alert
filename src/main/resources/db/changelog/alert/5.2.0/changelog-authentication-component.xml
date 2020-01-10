@@ -42,14 +42,4 @@
             CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.role.attribute.mapping.name');
         </sql>
     </changeSet>
-    <changeSet author="psantos" id="2020-01-10-07-06-54-942">
-        <update schemaName="ALERT" tableName="USERS">
-            <column name="ENABLED" type="BOOLEAN" value="false"/>
-            <where>USERNAME = 'jobmanager'</where>
-        </update>
-        <update schemaName="ALERT" tableName="USERS">
-            <column name="ENABLED" type="BOOLEAN" value="false"/>
-            <where>USERNAME = 'alertuser'</where>
-        </update>
-    </changeSet>
 </databaseChangeLog>
