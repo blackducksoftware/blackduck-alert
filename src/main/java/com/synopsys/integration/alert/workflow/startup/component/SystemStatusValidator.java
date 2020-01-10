@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
-@Order(2)
+@Order(3)
 public class SystemStatusValidator extends StartupComponent {
     private final SystemStatusUtility systemStatusUtility;
     private final EncryptionUtility encryptionUtility;
