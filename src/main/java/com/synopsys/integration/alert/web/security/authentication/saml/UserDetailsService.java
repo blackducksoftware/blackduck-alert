@@ -43,10 +43,10 @@ public class UserDetailsService implements SAMLUserDetailsService {
     }
 
     @Override
-    public Object loadUserBySAML(final SAMLCredential credential) throws UsernameNotFoundException {
-        final String userName = credential.getAttributeAsString("Name");
-        final String emailAddress = credential.getAttributeAsString("Email");
-        final String[] alertRoles = credential.getAttributeAsStringArray(authoritiesPopulator.getSAMLRoleAttributeName("AlertRoles"));
+    public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
+        String userName = credential.getAttributeAsString("Name");
+        String emailAddress = credential.getAttributeAsString("Email");
+        String[] alertRoles = credential.getAttributeAsStringArray(authoritiesPopulator.getSAMLRoleAttributeName("AlertRoles"));
         Set<UserRoleModel> roles = Set.of();
 
         if (alertRoles != null) {
@@ -56,7 +56,7 @@ public class UserDetailsService implements SAMLUserDetailsService {
                         .collect(Collectors.toSet());
         }
 
-        final UserModel userModel = UserModel.of(userName, "", emailAddress, roles);
+        UserModel userModel = UserModel.of(userName, "", emailAddress, roles, true);
         return new UserPrincipal(userModel);
     }
 }

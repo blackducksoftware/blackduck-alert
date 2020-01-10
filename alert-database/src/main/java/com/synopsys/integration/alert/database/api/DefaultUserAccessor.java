@@ -74,7 +74,7 @@ public class DefaultUserAccessor implements UserAccessor {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
-        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles);
+        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), roles, user.isEnabled());
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(String userName, String password, String emailAddress) {
-        return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
+        return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet(), true));
     }
 
     @Override
@@ -109,7 +109,8 @@ public class DefaultUserAccessor implements UserAccessor {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), authorizationUtility.getRoles(roleIds)));
+            UserEntity existingUser = entity.get();
+            UserModel model = addOrUpdateUser(UserModel.of(existingUser.getUserName(), existingUser.getPassword(), existingUser.getEmailAddress(), authorizationUtility.getRoles(roleIds), existingUser.isEnabled()));
             assigned = model.getName().equals(username) && model.getRoles().size() == roleIds.size();
         }
         return assigned;
