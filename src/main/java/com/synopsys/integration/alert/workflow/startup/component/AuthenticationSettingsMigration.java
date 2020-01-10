@@ -97,7 +97,7 @@ public class AuthenticationSettingsMigration extends StartupComponent {
             boolean overwriteConfig = settingsUtility.getConfiguration()
                                           .flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE))
                                           .flatMap(ConfigurationFieldModel::getFieldValue)
-                                          .map(value -> Boolean.valueOf(value))
+                                          .map(Boolean::valueOf)
                                           .orElse(Boolean.FALSE);
             updateConfigurationFields(overwriteConfig, foundConfigurationModels, configurationModels);
         } catch (AlertException ex) {
