@@ -25,7 +25,7 @@ public class UserModelTest {
         String expectedEmail = "expectedEmail";
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(DefaultUserRole.values()).stream().map(DefaultUserRole::name).collect(Collectors.toList()));
         Set<UserRoleModel> expectedRoles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles, true);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -46,7 +46,7 @@ public class UserModelTest {
         String expectedEmail = "expectedEmail";
         Set<String> roleNames = null;
         Set<UserRoleModel> expectedRoles = null;
-        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles, true);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -66,7 +66,7 @@ public class UserModelTest {
         String expectedPassword = "expectedPassword";
         String expectedEmail = "expectedEmail";
         Set<UserRoleModel> expectedRoles = new LinkedHashSet<>();
-        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
+        UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles, true);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
