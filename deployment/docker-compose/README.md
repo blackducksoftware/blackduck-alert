@@ -33,7 +33,7 @@ This installation method is deprecated and will not be supported after December 
 
 ## Installing Alert
 Deployment files for Docker Compose are located in the *docker-compose* directory of the zip file.
-```
+```bash
 blackduck-alert-<VERSION>-deployment.zip file.
 ```
 
@@ -58,30 +58,30 @@ This section will walk through each step of the installation procedure.
 ##### 1. Create a directory for secrets.
 
 - Create a directory to store secrets.
-    ```
+    ```bash
     mkdir -p <PATH_TO_SECRETS>
     ```
 
     Example:
-    ```
+    ```bash
     mkdir -p /alert/mysecrets
     ```
 
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
       volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
 
 - Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
 
     Example:
-    ```
+    ```yaml
         volumes:['/alert/mysecrets:/run/secrets']
     ```
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
 
 - Create a file containing the encryption password for Alert in the secrets directory.
-    ```
+    ```bash
     echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
     - Replace <PASSWORD_TEXT> with the password to use.
@@ -92,7 +92,7 @@ This section will walk through each step of the installation procedure.
     
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 - Create a file containing the encryption salt for Alert in the secrets directory.
-    ```
+    ```bash
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
     - Replace <SALT_TEXT> with the salt to use.
@@ -114,12 +114,12 @@ Please see [Environment Variables](#environment-variables)
 
 ##### 6. Bring the containers up.
 - Start the containers
-    ```
+    ```bash
     docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
 - Replace <PATH> with the path to the Alert installation files.
 - Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
-    ```
+    ```bash
     docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose.local-overrides.yml -p blackduck up -d
     ```
 
@@ -148,30 +148,30 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 ##### 1. Create a directory for secrets.
 
 - Create a directory to store secrets.
-    ```
+    ```bash
     mkdir -p <PATH_TO_SECRETS>
     ```
 
     Example:
-    ```
+    ```bash
     mkdir -p /alert/mysecrets
     ```
 
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
       volumes: ['<PATH_TO_SECRETS>:/run/secrets']
     ```
 
 - Replace <PATH_TO_SECRETS> of the docker-compose.local-overrides.yml file with the directory just created.
 
     Example:
-    ```
+    ```yaml
         volumes:['/alert/mysecrets:/run/secrets']
     ```
 ##### 2. Create ALERT_ENCRYPTION_PASSWORD file.
 
 - Create a file containing the encryption password for Alert in the secrets directory.
-    ```
+    ```bash
     echo "<PASSWORD_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_PASSWORD
     ```
     - Replace <PASSWORD_TEXT> with the password to use.
@@ -180,7 +180,7 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 ##### 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 
 - Create a file containing the encryption salt for Alert in the secrets directory.
-    ```
+    ```bash
     echo "<SALT_TEXT>" >> <PATH_TO_SECRETS>/ALERT_ENCRYPTION_GLOBAL_SALT
     ```
     - Replace <SALT_TEXT> with the salt to use.
@@ -202,7 +202,9 @@ Please see [Environment Variables](#environment-variables)
 
 ##### 6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
 In the Black Duck deployment files set the following variable for the webserver container: 
-```USE_ALERT=1```
+```bash
+USE_ALERT=1
+```
 
 ##### 7. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. Do not start the containers. Skip the step to start the containers.
@@ -210,13 +212,13 @@ In the Black Duck deployment files set the following variable for the webserver 
 ##### 8. Bring the containers up.
 - Copy the blackduck-alert.env file to the same location where the Black Duck docker-compose files are located.
 - Start the containers.
-    ```
+    ```bash
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.local-overrides.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> up -d
     ```
     - Replace <PATH_TO_BLACK_DUCK> with the directory path to the Black Duck installation files.
     - Replace <PATH_TO_ALERT> with the directory path to the Alert installation files.
     - Replace <PROFILE_NAME> with the profile name used for the deployment i.e. blackduck.
-    ```
+    ```bash
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.local-overrides.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p blackduck up -d
     ```
 
@@ -228,7 +230,7 @@ The steps in the upgrade procedure are the same as the installation procedure af
 
 ### Standalone Upgrade
 1. Execute the command:  
-    ```
+    ```bash
     docker-compose -f <PATH>/docker-compose/standalone/docker-compose.yml -f <PATH>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
     - Replace <PROFILE_NAME> with the name of the profile that was used during installation.
@@ -237,7 +239,7 @@ The steps in the upgrade procedure are the same as the installation procedure af
 
 ### Upgrade with Black Duck
 1. Execute the command:
-    ```
+    ```bash
     docker-compose -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.yml -f <PATH_TO_BLACK_DUCK>/docker-compose/docker-compose.local-overrides.yml -f <PATH_TO_ALERT>/docker-compose/hub/docker-compose.yml -f <PATH_TO_ALERT>/docker-compose/docker-compose.local-overrides.yml -p <PROFILE_NAME> down
     ```
    - Replace <PATH_TO_BLACK_DUCK> with the directory path to the Black Duck installation files.
@@ -255,14 +257,16 @@ This section describes how to configure the optional certificates.  Please verif
     - Before custom certificates can be used for Alert the signed certificate and key must be available.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
-
-            ```cp <PATH_TO_CERT_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_CERT_FILE```
+            ```bash
+            cp <PATH_TO_CERT_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_CERT_FILE
+            ```
             - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.
             - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed. 
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
-
-            ```cp <PATH_TO_KEY_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_KEY_FILE```
+            ```bash
+            cp <PATH_TO_KEY_FILE> <PATH_TO_SECRETS>/WEBSERVER_CUSTOM_KEY_FILE
+            ```
             - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.
             - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed.
 
@@ -276,20 +280,21 @@ This section describes how to configure the optional certificates.  Please verif
 
     - Create the secret.  Only create one of the following secrets.
         - jssecacerts - The java TrustStore file with any custom certificates imported.
-
-            ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/jssecacerts```
-
+            ```bash
+            cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/jssecacerts
+            ```
         or
 
         - cacerts - The java TrustStore file with any custom certificates imported.
-
-            ```cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts```
+            ```bash
+            cp <PATH_TO_TRUST_STORE_FILE> <PATH_TO_SECRETS>/cacerts
+            ```
     - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
     - Replace <PATH_TO_SECRETS> with the directory path where the secrets files are stored.  See step 1 of the installation being performed.
     - Find and uncomment the ALERT_TRUST_STORE_PASSWORD environment variable from the docker-compose.local-overrides.yml file.
     
     Example:
-    ```
+    ```yaml
     alert:
       environment:
         - ALERT_TRUST_STORE_PASSWORD=<PASSWORD>
@@ -303,7 +308,7 @@ Certificates SHOULD be correctly generated for the Alert server and a valid Trus
 This option allows the bypass of all certificate verification in the event that external certificates can not be imported into the Alert TrustStore, or certificate errors continue after importing the external certificates into the Alert TrustStore.
 
 To allow Alert to trust all certificates add the environment variable:
-```
+```bash
 ALERT_TRUST_CERT=true
 ```
 Please see the section [Environment Variables](#environment-variables) to learn how to set the environment variables.
@@ -321,7 +326,7 @@ Edit the ```docker-compose.local-overrides.yml``` file to include the environmen
 - Uncomment the environment variables to be used from the ```environment: ``` section of the alert service.
 
 Example:
-```
+```yaml
 alert:
     environment:
         - ALERT_HOSTNAME=localhost
@@ -329,8 +334,9 @@ alert:
 
 ### Environment Variable Overrides
 The environment variables will always take precedence and overwrite the values stored in the database if the following variable value is set to 'true'.
-
-```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
+```bash
+ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true
+```
 
 Please note the following with the override environment variable set. 
 If any other environment variable is set with no value or an empty string, then the corresponding value (if any) in the database will be removed.
@@ -339,7 +345,7 @@ If any other environment variable is set with no value or an empty string, then 
 The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
 - Add the ALERT_HOSTNAME environment variable. (The value must be the hostname only.)
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - ALERT_HOSTNAME=<NEW_HOST_NAME>
@@ -353,7 +359,7 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
 To change the logging level of Alert add the following environment variable to the deployment.
 
 - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - ALERT_LOGGING_LEVEL=DEBUG
@@ -374,7 +380,7 @@ Alert will attempt to import the Black Duck server's certificate into the Trust 
 - Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
 
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - PUBLIC_HUB_WEBSERVER_HOST=<BLACK_DUCK_HOST_NAME>
@@ -390,7 +396,7 @@ The PUBLIC_HUB_WEBSERVER_PORT environment variable should be specified if Black 
 - Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
 
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - PUBLIC_HUB_WEBSERVER_PORT=<BLACK_DUCK_PORT>
@@ -436,19 +442,19 @@ For this advanced setting, since there are more than just environment variables 
 
 - Overrides File Changes.
     - Define the new ports for the alert service.  Add 'ports' to the service description.
-    ```
+    ```yaml
         alert:
             ports: ['<NEW_PORT>:<NEW_PORT>']
     ```
     - Define the ```ALERT_SERVER_PORT``` environment variable.
-    ```
+    ```yaml
         alert:
             environment:
                 - ALERT_HOSTNAME=localhost
                 - ALERT_SERVER_PORT=<NEW_PORT>
     ```
     - Define the healthcheck for the alert service. Add 'healthcheck' to the service description.
-    ```
+    ```yaml
         alert:
             healthcheck:
                   test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:<NEW_PORT>/alert/api/about',
@@ -462,7 +468,7 @@ For this advanced setting, since there are more than just environment variables 
     
 Example:
 - Change the port to 9090 via the ```docker-compose.local-overrides.yml``` file.
-```
+```yaml
     alert:
         ports: ['9090:9090']
         environment:
@@ -486,14 +492,14 @@ For this advanced setting, since there are more than just environment variables 
 
 - Overrides File Changes.
     - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
-    ```
+    ```yaml
         alert:
             environment:
                 - ALERT_HOSTNAME=localhost
                 - ALERT_MAX_HEAP_SIZE=<NEW_HEAP_SIZE>
     ```
     - Define the container memory limit. Add 'mem_limit' to the service description.
-    ```
+    ```yaml
         alert:
             mem_limit: <NEW_HEAP_SIZE + 256M>
     ```
@@ -511,7 +517,7 @@ For this advanced setting, since there are more than just environment variables 
 
 Example:
 - Change the memory limit from 2G to 4G.
-```
+```yaml
     alert:
         environment:
             - ALERT_HOSTNAME=localhost
