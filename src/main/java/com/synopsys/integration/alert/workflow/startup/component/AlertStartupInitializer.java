@@ -56,7 +56,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 
 @Component
-@Order(1)
+@Order(10)
 public class AlertStartupInitializer extends StartupComponent {
     private static final String LINE_DIVIDER = "---------------------------------";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
