@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="changelog-migrate-field-stored-procedure.xml" relativeToChangelogFile="true"/>
     <include file="changelog-authentication-component.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication-permissions.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-timestamp.xml" relativeToChangelogFile="true"/>
     <include file="changelog-jira-server.xml" relativeToChangelogFile="true"/>
     <include file="changelog-default-users.xml" relativeToChangelogFile="true"/>
