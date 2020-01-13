@@ -98,7 +98,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), AuthenticationType.DATABASE, roles), true);
+        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), AuthenticationType.DATABASE, roles, true), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
@@ -171,11 +171,11 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
-        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
         UserRoleModel userRole = UserRoleModel.of(DefaultUserRole.ALERT_ADMIN.name());
         Set<UserRoleModel> roles = Set.of(userRole);
-        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles);
+        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles, true);
         UserModel updatedUser = userAccessor.updateUser(existingUser, true);
 
         assertEquals(roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()), updatedUser.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet()));
@@ -187,9 +187,9 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
-        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
@@ -199,9 +199,9 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
-        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, null, email + "_updated", AuthenticationType.LDAP, Collections.emptySet());
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, null, email + "_updated", AuthenticationType.LDAP, Collections.emptySet(), true);
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
@@ -211,9 +211,9 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
-        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, password, email, AuthenticationType.LDAP, Collections.emptySet());
+        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }

@@ -64,12 +64,12 @@ public class UserModel extends AlertSerializableModel {
         }
     }
 
-    public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles) {
-        return existingUser(null, userName, password, emailAddress, authenticationType, roles);
+    public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
+        return existingUser(null, userName, password, emailAddress, authenticationType, roles, enabled);
     }
 
-    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles) {
-        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, true, authenticationType);
+    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
+        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, enabled, authenticationType);
     }
 
     public Long getId() {

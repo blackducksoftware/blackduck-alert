@@ -85,7 +85,7 @@ public class DefaultUserAccessor implements UserAccessor {
 
     @Override
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
-        return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet()), false);
+        return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet(), true), false);
     }
 
     @Override
@@ -216,6 +216,6 @@ public class DefaultUserAccessor implements UserAccessor {
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles);
+        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles, user.isEnabled());
     }
 }

@@ -93,7 +93,8 @@ public class AuthenticationEventManager {
                                             .flatMap(Optional::stream)
                                             .map(UserRoleModel::of)
                                             .collect(Collectors.toSet());
-        UserModel userModel = UserModel.newUser(username, null, emailAddress, authenticationType, alertRoles);
+        // The database users will not be enabled because they already exist in the database when this is called. So a new entry will not be added to the database.
+        UserModel userModel = UserModel.newUser(username, null, emailAddress, authenticationType, alertRoles, true);
         AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
         eventManager.sendEvent(authEvent);
     }

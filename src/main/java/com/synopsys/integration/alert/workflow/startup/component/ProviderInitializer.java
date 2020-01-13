@@ -31,12 +31,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.provider.Provider;
 
 @Component
-@Order(6)
+@Order(7)
 public class ProviderInitializer extends StartupComponent {
     private final List<Provider> providers;
 
     @Autowired
-    public ProviderInitializer(final List<Provider> providers) {
+    public ProviderInitializer(List<Provider> providers) {
         this.providers = providers;
     }
 
