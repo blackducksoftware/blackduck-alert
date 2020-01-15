@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
-import PopUp from 'field/PopUp';
+import FieldsPopUp from 'field/FieldsPopUp';
 import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
@@ -59,19 +59,20 @@ class EndpointButtonField extends Component {
                 onChange({ target });
                 this.setState({
                     success: true
-                })
-            } else {
-                response.json().then((data) => {
-                    const target = {
-                        name: [fieldKey],
-                        checked: false,
-                        type: 'checkbox'
-                    };
-                    onChange({ target });
-                    this.setState({
-                        fieldError: data.message
-                    });
                 });
+            } else {
+                response.json()
+                    .then((data) => {
+                        const target = {
+                            name: [fieldKey],
+                            checked: false,
+                            type: 'checkbox'
+                        };
+                        onChange({ target });
+                        this.setState({
+                            fieldError: data.message
+                        });
+                    });
             }
         });
     }
@@ -128,7 +129,7 @@ class EndpointButtonField extends Component {
                     errorName={fieldKey}
                     errorValue={this.state.fieldError}
                 />
-                <PopUp
+                <FieldsPopUp
                     onCancel={this.flipShowModal}
                     fields={fields}
                     onOk={this.onSendClick}
@@ -156,7 +157,7 @@ EndpointButtonField.propTypes = {
     successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
-    statusMessage: PropTypes.string,
+    statusMessage: PropTypes.string
 };
 
 EndpointButtonField.defaultProps = {

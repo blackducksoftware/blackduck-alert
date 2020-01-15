@@ -6,17 +6,17 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 
 export const PERMISSIONS_TABLE = {
-    DESCRIPTOR_NAME: "descriptorName",
-    CONTEXT: "context",
-    CREATE: "create",
-    DELETE_OPERATION: "delete",
-    READ: "read",
-    WRITE: "write",
-    EXECUTE: "execute",
-    UPLOAD_READ: "uploadRead",
-    UPLOAD_WRITE: "uploadWrite",
-    UPLOAD_DELETE: "uploadDelete"
-}
+    DESCRIPTOR_NAME: 'descriptorName',
+    CONTEXT: 'context',
+    CREATE: 'create',
+    DELETE_OPERATION: 'delete',
+    READ: 'read',
+    WRITE: 'write',
+    EXECUTE: 'execute',
+    UPLOAD_READ: 'uploadRead',
+    UPLOAD_WRITE: 'uploadWrite',
+    UPLOAD_DELETE: 'uploadDelete'
+};
 
 
 class PermissionTable extends Component {
@@ -42,7 +42,8 @@ class PermissionTable extends Component {
     handlePermissionsChange(e) {
         const { name, value, type, checked } = e.target;
         const { permissionsData } = this.state;
-        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        const updatedValue = type === 'checkbox' ? checked.toString()
+            .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
         const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
         this.setState({
@@ -109,7 +110,8 @@ class PermissionTable extends Component {
         const { permissionsColumn, descriptorName, context, id } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
-        const prettyNameObject = this.createDescriptorOptions().find(option => descriptorName === option.label);
+        const prettyNameObject = this.createDescriptorOptions()
+            .find(option => descriptorName === option.label);
         const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
 
         return {
@@ -153,7 +155,7 @@ class PermissionTable extends Component {
         }, {
             label: CONTEXT_TYPE.GLOBAL,
             value: CONTEXT_TYPE.GLOBAL
-        }]
+        }];
     }
 
     onPermissionsClose() {
@@ -175,23 +177,45 @@ class PermissionTable extends Component {
         return (
             <div>
 
-                <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME} label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false} onChange={this.handlePermissionsChange}
+                <DynamicSelectInput name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
+                                    label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false}
+                                    onChange={this.handlePermissionsChange}
                                     value={permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
-                <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context" options={this.createContextOptions()} clearable={false} onChange={this.handlePermissionsChange}
+                <DynamicSelectInput name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context"
+                                    options={this.createContextOptions()} clearable={false}
+                                    onChange={this.handlePermissionsChange}
                                     value={permissionsData[PERMISSIONS_TABLE.CONTEXT]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.CREATE} label="Create" description="Allow users to create new items with this permission." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.CREATE} label="Create"
+                               description="Allow users to create new items with this permission."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.CREATE]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.DELETE_OPERATION} label="Delete" description="Allow users to delete items with this permission." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.DELETE_OPERATION} label="Delete"
+                               description="Allow users to delete items with this permission."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.DELETE_OPERATION]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.READ} label="Read" description="This permission shows or hides content for the user." onChange={this.handlePermissionsChange} isChecked={permissionsData[PERMISSIONS_TABLE.READ]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.WRITE} label="Write" description="Allow users to edit items with this permission." onChange={this.handlePermissionsChange} isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.EXECUTE} label="Execute" description="Allow users to perform functionality with this permission." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.READ} label="Read"
+                               description="This permission shows or hides content for the user."
+                               onChange={this.handlePermissionsChange}
+                               isChecked={permissionsData[PERMISSIONS_TABLE.READ]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.WRITE} label="Write"
+                               description="Allow users to edit items with this permission."
+                               onChange={this.handlePermissionsChange}
+                               isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]} />
+                <CheckboxInput name={PERMISSIONS_TABLE.EXECUTE} label="Execute"
+                               description="Allow users to perform functionality with this permission."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_READ} label="Upload Read" description="This permission shows or hides upload related content for the user." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_READ} label="Upload Read"
+                               description="This permission shows or hides upload related content for the user."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_WRITE} label="Upload Write" description="Allow users to modify uploaded content with this permission." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_WRITE} label="Upload Write"
+                               description="Allow users to modify uploaded content with this permission."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
-                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_DELETE} label="Upload Delete" description="Allow users to delete uploaded content with this permission." onChange={this.handlePermissionsChange}
+                <CheckboxInput name={PERMISSIONS_TABLE.UPLOAD_DELETE} label="Upload Delete"
+                               description="Allow users to delete uploaded content with this permission."
+                               onChange={this.handlePermissionsChange}
                                isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]} />
             </div>
         );
@@ -203,7 +227,7 @@ class PermissionTable extends Component {
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             this.setState({
                 errorMessage: 'Please select Descriptor name and context'
-            })
+            });
         } else {
             const exists = data.find(permission =>
                 permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&

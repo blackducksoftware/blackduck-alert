@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import FieldsPanel from './FieldsPanel';
+import ConfigButtons from 'component/common/ConfigButtons';
 
 class PopUp extends Component {
     constructor(props) {
@@ -11,59 +9,52 @@ class PopUp extends Component {
 
         this.internalCancel = this.internalCancel.bind(this);
         this.internalOk = this.internalOk.bind(this);
-
-        this.state = {
-            modalConfig: {},
-            fieldErrors: {}
-        };
     }
 
     internalCancel() {
         this.props.onCancel();
-        this.setState({
-            modalConfig: {}
-        });
     }
 
-    internalOk(modalConfig) {
-        this.props.onOk(modalConfig);
-        this.internalCancel();
+    internalOk() {
+        this.props.onOk();
     }
 
     render() {
         const {
-            fields, show, title, cancelLabel, okLabel
+            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction
         } = this.props;
-        const { modalConfig, fieldErrors } = this.state;
-
         return (
             <div>
-                <Modal show={show} onHide={this.internalCancel}>
+                <Modal size="lg" show={show} onHide={this.internalCancel}>
                     <Modal.Header closeButton>
                         <Modal.Title>{title}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <FieldsPanel
-                            descriptorFields={fields}
-                            currentConfig={modalConfig}
-                            fieldErrors={fieldErrors}
-                            self={this}
-                            stateName="modalConfig"
-                        />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <button id="popUpCancel" type="button" className="btn btn-link" onClick={this.internalCancel}>
-                            {cancelLabel}
-                        </button>
-                        <button
-                            id="popUpOk"
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={() => this.internalOk(modalConfig)}
+                        <form
+                            className="form-horizontal"
+                            noValidate
+                            onSubmit={(event) => {
+                                handleSubmit(event);
+                            }}
                         >
-                            {okLabel}
-                        </button>
-                    </Modal.Footer>
+                            {children}
+                            <ConfigButtons
+                                cancelId="popup-cancel"
+                                submitId="popup-submit"
+                                includeCancel
+                                onCancelClick={() => {
+                                    this.internalCancel();
+                                }}
+                                cancelLabel={cancelLabel}
+                                submitLabel={okLabel}
+                                onSubmitClick={() => {
+                                    this.internalOk();
+                                }}
+                                isFixed={false}
+                                performingAction={performingAction}
+                            />
+                        </form>
+                    </Modal.Body>
                 </Modal>
             </div>
         );
@@ -72,19 +63,24 @@ class PopUp extends Component {
 
 PopUp.propTypes = {
     onCancel: PropTypes.func.isRequired,
-    onOk: PropTypes.func.isRequired,
-    fields: PropTypes.array.isRequired,
+    children: PropTypes.any.isRequired,
+    onOk: PropTypes.func,
+    handleSubmit: PropTypes.func,
     show: PropTypes.bool,
     title: PropTypes.string,
     cancelLabel: PropTypes.string,
-    okLabel: PropTypes.string
+    okLabel: PropTypes.string,
+    performingAction: PropTypes.bool
 };
 
 PopUp.defaultProps = {
     show: true,
     title: 'Pop up',
     cancelLabel: 'Cancel',
-    okLabel: 'Ok'
+    okLabel: 'Ok',
+    onOk: () => true,
+    handleSubmit: (event) => true,
+    performingAction: false
 };
 
 export default PopUp;

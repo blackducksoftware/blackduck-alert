@@ -34,7 +34,8 @@ class RoleTable extends Component {
     handleChange(e) {
         const { name, value, type, checked } = e.target;
         const { role } = this.state;
-        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        const updatedValue = type === 'checkbox' ? checked.toString()
+            .toLowerCase() === 'true' : value;
         const newRole = Object.assign(role, { [name]: updatedValue });
         this.setState({
             role: newRole
@@ -52,7 +53,8 @@ class RoleTable extends Component {
             {
                 header: 'roleName',
                 headerLabel: 'Name',
-                isKey: false
+                isKey: false,
+                hidden: false
             }
         ];
     }
@@ -140,7 +142,7 @@ class RoleTable extends Component {
         const { role } = this.state;
         const { permissions } = role;
         const filteredPermissions = permissions.filter(listPermission => !permissionIds.includes(listPermission.id));
-        let newRole = { ...role }
+        let newRole = { ...role };
         newRole.permissions = filteredPermissions;
         this.setState({
             role: newRole
@@ -174,7 +176,9 @@ class RoleTable extends Component {
 
         return (
             <div>
-                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true} onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey} errorValue={fieldErrors[roleNameKey]} />
+                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true}
+                           onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey}
+                           errorValue={fieldErrors[roleNameKey]} />
                 <PermissionTable
                     data={permissions}
                     updateRole={this.updatePermissions}
@@ -190,7 +194,7 @@ class RoleTable extends Component {
     render() {
         const { canCreate, canDelete, fieldErrors, roleDeleteError, inProgress } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
         return (
             <div>
                 <TableDisplay

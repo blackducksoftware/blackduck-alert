@@ -6,12 +6,14 @@ import GeneralButton from 'field/input/GeneralButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ConfigButtons extends Component {
-
     createTestButton() {
         const { includeTest, onTestClick, testLabel } = this.props;
         if (includeTest) {
             return (<div style={{
-                display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
+                display: 'inline-block',
+                paddingRight: '12px',
+                marginRight: '12px',
+                borderRight: '1px solid #aaa'
             }}
             >
                 <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
@@ -21,20 +23,18 @@ class ConfigButtons extends Component {
     }
 
     createSaveButton() {
-        const { includeSave, submitLabel } = this.props;
-
+        const { includeSave, submitLabel, onSubmitClick } = this.props;
         if (includeSave) {
-            return <SubmitButton id="submitButton">{submitLabel}</SubmitButton>
+            return (<SubmitButton id="submitButton" onClick={onSubmitClick}>{submitLabel}</SubmitButton>);
         }
         return null;
-
     }
 
     createCancelButton() {
         const { includeCancel, onCancelClick, cancelLabel } = this.props;
 
         if (includeCancel) {
-            return <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>
+            return <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>;
         }
         return null;
     }
@@ -93,6 +93,7 @@ ConfigButtons.propTypes = {
     includeTest: PropTypes.bool,
     onCancelClick: PropTypes.func,
     onTestClick: PropTypes.func,
+    onSubmitClick: PropTypes.func,
     performingAction: PropTypes.bool,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
@@ -105,10 +106,9 @@ ConfigButtons.defaultProps = {
     includeSave: true,
     includeTest: false,
     performingAction: false,
-    onCancelClick: () => {
-    },
-    onTestClick: (evt) => {
-    },
+    onCancelClick: () => true,
+    onTestClick: (evt) => true,
+    onSubmitClick: () => true,
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
     cancelLabel: 'Cancel',
