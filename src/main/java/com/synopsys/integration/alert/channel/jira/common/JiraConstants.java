@@ -44,7 +44,7 @@ public final class JiraConstants {
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE = "subComponentValue";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY = "additionalKey";
 
-    public static final String JIRA_ISSUE_VALIDATION_ERROR_MESSAGE = "There are issues with the Jira configuration.  Please test your Distribution Job configuration.";
+    public static final String JIRA_ISSUE_VALIDATION_ERROR_MESSAGE = "There are issues with the configuration.";
 
     private JiraConstants() {
     }
