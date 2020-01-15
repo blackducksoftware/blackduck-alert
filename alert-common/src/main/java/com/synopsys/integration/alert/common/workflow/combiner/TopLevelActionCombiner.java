@@ -47,9 +47,11 @@ public class TopLevelActionCombiner implements MessageCombiner {
             String cacheKey = flattenProviderAndTopic(message);
             if (isTopLevelDelete(message)) {
                 List<ProviderMessageContent> cachedMessages = providerMessagesCache.get(cacheKey);
-                boolean didUpdate = updateCache(message, cachedMessages);
-                if (didUpdate) {
-                    continue;
+                if (null != cachedMessages) {
+                    boolean didUpdate = updateCache(message, cachedMessages);
+                    if (didUpdate) {
+                        continue;
+                    }
                 }
             }
             providerMessagesCache.computeIfAbsent(cacheKey, ignored -> new LinkedList<>()).add(message);
