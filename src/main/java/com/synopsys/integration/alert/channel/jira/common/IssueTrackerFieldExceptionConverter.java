@@ -56,7 +56,7 @@ public class IssueTrackerFieldExceptionConverter {
             errorsMap.put(key, errorEntry.getValue());
         }
 
-        return new AlertFieldException(errorsMap);
+        return new AlertFieldException(ex.getMessage(), errorsMap);
     }
 
 }
