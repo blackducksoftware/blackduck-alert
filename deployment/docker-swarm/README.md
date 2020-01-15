@@ -58,21 +58,22 @@ This section will walk through each step of the installation procedure.
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
   
 - Create a docker secret containing the encryption password for Alert.
-
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
     
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
     ```
     
 - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
+    ```yaml
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
               external: true
@@ -84,8 +85,9 @@ This section will walk through each step of the installation procedure.
 ##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
 
 - Create a docker secret containing the encryption salt for Alert.
-    
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
@@ -93,14 +95,14 @@ This section will walk through each step of the installation procedure.
     
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
                 - ALERT_ENCRYPTION_GLOBAL_SALT
     ```
 - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
+    ```yaml
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
               external: true
@@ -124,7 +126,7 @@ Please see [Environment Variables](#environment-variables)
 
 ##### 5. Deploy the stack.
 - Execute the command:
-    ```
+    ```bash
     docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
@@ -153,20 +155,21 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
   
 - Create a docker secret containing the encryption password for Alert.
-    
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>```
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
 
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
     ```
 - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
+    ```yaml
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
               external: true
@@ -178,8 +181,9 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 ##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
 
 - Create a docker secret containing the encryption salt for Alert.
-        
-    ```docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>```
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
     
@@ -187,14 +191,14 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
     
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
 - Uncomment the following from the docker-compose.local-overrides.yml file to the alert service section.
-    ```
+    ```yaml
         alert:
             secrets:
                 - ALERT_ENCRYPTION_PASSWORD
                 - ALERT_ENCRYPTION_GLOBAL_SALT
     ```
 - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
+    ```yaml
         secrets:
             ALERT_ENCRYPTION_PASSWORD:
               external: true
@@ -219,7 +223,9 @@ Please see [Environment Variables](#environment-variables)
 
 ##### 5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
 In the Black Duck deployment files set the following variable for the webserver container: 
-```USE_ALERT=1``` 
+```bash
+USE_ALERT=1
+``` 
 
 ##### 6. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. 
@@ -245,8 +251,9 @@ The steps in the upgrade procedure are the same as the installation procedure af
 
 ### Verify Secrets 
 1. Review the docker secrets.
-
-    ```docker secret ls```
+    ```bash
+    docker secret ls
+    ```
 
 ### Standalone Upgrade
 1. Run ```docker stack rm <STACK_NAME>``` replacing <STACK_NAME> with the name of the stack to be used in the deployment. 
@@ -265,26 +272,29 @@ This section describes how to configure the optional certificates.  Please verif
     - Before custom certificates can be used for Alert the signed certificate and key must be available.
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
-    
-        ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>```
+        ```bash
+        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
         - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
 
-        ```docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>```
+        ```bash
+        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
         - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.
         
     - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
-    ```
+    ```yaml
         alert:
             secrets:
                 - WEBSERVER_CUSTOM_CERT_FILE
                 - WEBSERVER_CUSTOM_KEY_FILE
     ```
     - Uncomment the following secrets from the secrets section of the docker-compose.local-overrides.yml file.
-    ```
+    ```yaml
         secrets:
             WEBSERVER_CUSTOM_CERT_FILE:
                 external: true
@@ -305,28 +315,30 @@ This section describes how to configure the optional certificates.  Please verif
 
     - Create the secret.  Only create one of the following secrets.
         - jssecacerts - The java TrustStore file with any custom certificates imported.
-            
-            ```docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>```
+            ```bash
+            docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>
+            ```
             - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
             - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
     
         or 
     
         - cacerts - The java TrustStore file with any custom certificates imported. 
-            
-            ```docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>```
+            ```bash
+            docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>
+            ```
             - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
             - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
             
     - Uncomment the following from the docker-compose.local-overrides.yml file from the secrets section near the bottom of the file.
-    ```
+    ```yaml
         secrets:
             jssecacerts:
                 external: true
                 name: "<STACK_NAME>_jssecacerts"
     ```
     or 
-    ```
+    ```yaml
         secrets:
             cacerts:
                 external: true
@@ -334,14 +346,14 @@ This section describes how to configure the optional certificates.  Please verif
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Uncomment the following from the docker-compose.local-overrides.yml file from the services alert section
-    ```
+    ```yaml
         secrets:
             - source: jssecacerts
               target: jssecacerts
               mode: 0664
     ```
     or
-    ```
+    ```yaml
         secrets:
             - source: cacerts
               target: cacerts
@@ -350,20 +362,21 @@ This section describes how to configure the optional certificates.  Please verif
     Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.
     
     - Create a docker secret containing the password for the trust store.
-        
-        ```docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>```
+        ```bash
+        docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
         - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
     
     - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
     - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-        ```
+        ```yaml
             alert:
                 secrets:
                     - ALERT_TRUST_STORE_PASSWORD
         ```
     - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-        ```
+        ```yaml
             secrets:
                 ALERT_TRUST_STORE_PASSWORD:
                   external: true
@@ -380,7 +393,7 @@ Certificates SHOULD be correctly generated for the Alert server and a valid Trus
 This option allows the bypass of all certificate verification in the event that external certificates can not be imported into the Alert TrustStore, or certificate errors continue after importing the external certificates into the Alert TrustStore.
 
 To allow Alert to trust all certificates add the environment variable: 
-```
+```bash
 ALERT_TRUST_CERT=true
 ```
 Please see the section [Environment Variables](#environment-variables) to learn how to set the environment variables.
@@ -397,7 +410,7 @@ Edit the ```docker-compose.local-overrides.yml``` file to include the environmen
 - Uncomment the environment variables to be used from the ```environment: ``` section of the alert service.
 
 Example:
-```
+```yaml
 alert:
     environment:
         - ALERT_HOSTNAME=localhost
@@ -405,8 +418,9 @@ alert:
 
 ### Environment Variable Overrides
 The environment variables will always take precedence and overwrite the values stored in the database if the following variable value is set to 'true'.
-
-```ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true```
+```bash
+ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true
+```
 
 Please note the following with the override environment variable set. 
 If any other environment variable is set with no value or an empty string, then the corresponding value (if any) in the database will be removed.
@@ -416,7 +430,7 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
 - Add the ALERT_HOSTNAME environment variable. (The value must be the hostname only.)
 
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - ALERT_HOSTNAME=<NEW_HOST_NAME>
@@ -430,7 +444,7 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
 To change the logging level of Alert add the following environment variable to the deployment. 
 
 - Editing overrides file: 
-    ```
+    ```yaml
     alert:
         environment: 
            - ALERT_LOGGING_LEVEL=DEBUG
@@ -451,7 +465,7 @@ Alert will attempt to import the Black Duck server's certificate into the Trust 
 - Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
 
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - PUBLIC_HUB_WEBSERVER_HOST=<BLACK_DUCK_HOST_NAME>
@@ -467,7 +481,7 @@ The PUBLIC_HUB_WEBSERVER_PORT environment variable should be specified if Black 
 - Add PUBLIC_HUB_WEBSERVER_HOST environment variable. (The value must be the hostname only.)
 
     - Editing overrides file:
-    ```
+    ```yaml
     alert:
         environment:
             - PUBLIC_HUB_WEBSERVER_PORT=<BLACK_DUCK_PORT>
@@ -513,19 +527,19 @@ For this advanced setting, since there are more than just environment variables 
 
 - Overrides File Changes
     - Define the new ports for the alert service.  Add 'ports' to the service description. 
-    ```
+    ```yaml
         alert: 
             ports: ['<NEW_PORT>:<NEW_PORT>']
     ```
     - Define the ```ALERT_SERVER_PORT``` environment variable.
-    ```
+    ```yaml
         alert: 
             environment:
                 - ALERT_HOSTNAME=localhost
                 - ALERT_SERVER_PORT=<NEW_PORT>
     ```
     - Define the healthcheck for the alert service. Add 'healthcheck' to the service description.
-    ```
+    ```yaml
         alert:
             healthcheck:
                   test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:<NEW_PORT>/alert/api/about',
@@ -538,7 +552,7 @@ For this advanced setting, since there are more than just environment variables 
     - Replace <NEW_PORT> with the port to be used.
 Example:
 - Change the port to 9090 via the ```docker-compose.local-overrides.yml``` file for the blackduck stack.
-```
+```yaml
     alert:
         ports: ['9090:9090']
         environment:
@@ -572,14 +586,14 @@ For this advanced setting, since there are more than just environment variables 
 
 - Overrides File Changes.
     - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
-    ```
+    ```yaml
         alert:
             environment:
                 - ALERT_HOSTNAME=localhost
                 - ALERT_MAX_HEAP_SIZE=<NEW_HEAP_SIZE>
     ```
     - Define the container memory limit. Add the deploy section to the alert service description.
-    ```
+    ```yaml
         alert:
             deploy:
                 resources:
@@ -601,7 +615,7 @@ For this advanced setting, since there are more than just environment variables 
                 
 Example: 
 - Change the memory limit from 2G to 4G.
-```
+```yaml
     alert:
         environment:
             - ALERT_HOSTNAME=localhost
