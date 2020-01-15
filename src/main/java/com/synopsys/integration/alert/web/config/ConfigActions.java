@@ -162,7 +162,6 @@ public class ConfigActions {
             return "Successfully sent test message.";
         }
         String descriptorName = restModel.getDescriptorName();
-        logger.error("Test action did not exist: {}", descriptorName);
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
 

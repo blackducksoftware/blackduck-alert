@@ -107,8 +107,9 @@ public class AuditEntryActions {
             if (commonDistributionConfig.isEnabled()) {
                 distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
             } else {
-                logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", commonConfigId);
-                throw new AlertJobMissingException("The Distribution Job is currently disabled.", commonConfigId);
+                UUID jobConfigId = commonDistributionConfig.getJobId();
+                logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
+                throw new AlertJobMissingException("The Distribution Job is currently disabled.", jobConfigId);
             }
         } else {
             distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
