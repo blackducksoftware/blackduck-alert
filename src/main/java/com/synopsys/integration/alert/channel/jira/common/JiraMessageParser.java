@@ -40,7 +40,8 @@ public class JiraMessageParser extends IssueTrackerMessageParser {
 
     @Override
     protected String createLink(String txt, String url) {
-        return String.format("[%s|%s]", txt, url);
+        // Jira uses [] for link content the trailing ] is removed on Jira Server; add whitespace before and after the brackets to fix and be consistent for Jira Server and Jira Cloud.
+        return String.format(" [%s|%s] ", txt, url);
     }
 
     @Override
