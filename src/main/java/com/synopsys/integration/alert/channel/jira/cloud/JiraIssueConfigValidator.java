@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDistributionUIConfig;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -87,7 +88,7 @@ public class JiraIssueConfigValidator {
         if (fieldErrors.isEmpty()) {
             return jiraIssueConfig;
         } else {
-            throw new AlertFieldException(fieldErrors);
+            throw new AlertFieldException(JiraConstants.JIRA_ISSUE_VALIDATION_ERROR_MESSAGE, fieldErrors);
         }
     }
 
