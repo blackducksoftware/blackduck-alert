@@ -31,6 +31,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
@@ -57,7 +58,7 @@ public class UserDetailsService implements SAMLUserDetailsService {
                         .collect(Collectors.toSet());
         }
 
-        UserModel userModel = UserModel.newUser(userName, "", emailAddress, true, roles);
+        UserModel userModel = UserModel.newUser(userName, "", emailAddress, AuthenticationType.SAML, roles, true);
         return new UserPrincipal(userModel);
     }
 }

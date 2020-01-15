@@ -37,11 +37,13 @@ public class UserConfig extends Config {
     private boolean enabled;
     private boolean passwordSet;
     private boolean external;
+    private String authenticationType;
 
     public UserConfig() {
     }
 
-    public UserConfig(String id, String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean passwordSet, boolean external) {
+    public UserConfig(String id, String username, String password, String emailAddress, Set<String> roleNames, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, boolean passwordSet,
+        String authenticationType, boolean external) {
         super(id);
         this.username = username;
         this.password = password;
@@ -52,6 +54,7 @@ public class UserConfig extends Config {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.passwordSet = passwordSet;
+        this.authenticationType = authenticationType;
         this.external = external;
     }
 
@@ -93,5 +96,9 @@ public class UserConfig extends Config {
 
     public boolean isExternal() {
         return external;
+    }
+
+    public String getAuthenticationType() {
+        return authenticationType;
     }
 }

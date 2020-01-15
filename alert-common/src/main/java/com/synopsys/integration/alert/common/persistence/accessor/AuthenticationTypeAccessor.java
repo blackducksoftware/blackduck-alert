@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,9 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris.model;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-public enum AlertPolarisNotificationTypeEnum {
-    ISSUE_COUNT_INCREASED,
-    ISSUE_COUNT_DECREASED
+import java.util.Optional;
+
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
+
+public interface AuthenticationTypeAccessor {
+    Optional<AuthenticationTypeDetails> getAuthenticationTypeDetails(AuthenticationType authenticationType);
+
+    Optional<AuthenticationType> getAuthenticationType(Long id);
 }

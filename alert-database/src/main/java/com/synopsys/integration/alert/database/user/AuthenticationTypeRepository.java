@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,26 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris.descriptor;
+package com.synopsys.integration.alert.database.user;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-
-//@Component
-public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
-
-    @Autowired
-    public PolarisDistributionUIConfig(final PolarisContent providerContent) {
-        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, providerContent);
-    }
-
-    @Override
-    public List<ConfigField> createProviderDistributionFields() {
-        // FIXME implement
-        return List.of();
-    }
+public interface AuthenticationTypeRepository extends JpaRepository<AuthenticationTypeEntity, Long> {
 }

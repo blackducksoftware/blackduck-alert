@@ -56,6 +56,12 @@ class UserTable extends Component {
                 headerLabel: 'Email',
                 isKey: false,
                 hidden: false
+            },
+            {
+                header: 'authenticationType',
+                headerLabel: 'Authentication Type',
+                isKey: false,
+                hidden: false
             }
         ];
     }

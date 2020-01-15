@@ -32,13 +32,16 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
+import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -54,11 +57,14 @@ public class UserActions {
     private UserAccessor userAccessor;
     private AuthorizationUtility authorizationUtility;
     private AuthorizationManager authorizationManager;
+    private AuthenticationTypeAccessor authenticationTypeAccessor;
 
-    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager) {
+    @Autowired
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor) {
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
+        this.authenticationTypeAccessor = authenticationTypeAccessor;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -104,7 +110,7 @@ public class UserActions {
             if (!fieldErrors.isEmpty()) {
                 throw new AlertFieldException(fieldErrors);
             }
-            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.isExternal(), existingUser.getRoles());
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
             userAccessor.updateUser(newUserModel, passwordMissing);
 
             Set<String> configuredRoleNames = userConfig.getRoleNames();
@@ -130,6 +136,8 @@ public class UserActions {
         // also if the user is external the password is set
         boolean external = userModel.isExternal();
         boolean passwordSet = StringUtils.isNotBlank(userModel.getPassword()) || external;
+        Optional<AuthenticationTypeDetails> authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(userModel.getAuthenticationType());
+        String authTypeName = authenticationType.map(AuthenticationTypeDetails::getName).orElse("UNKNOWN");
         return new UserConfig(
             userModel.getId().toString(),
             userModel.getName(),
@@ -141,6 +149,7 @@ public class UserActions {
             userModel.isPasswordExpired(),
             userModel.isEnabled(),
             passwordSet,
+            authTypeName,
             external);
     }
 

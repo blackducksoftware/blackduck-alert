@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 
 @Component
-@Order(4)
+@Order(40)
 public class ConfigurationLogger extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(ConfigurationLogger.class);
 
@@ -43,19 +43,19 @@ public class ConfigurationLogger extends StartupComponent {
     private final AlertProperties alertProperties;
 
     @Autowired
-    public ConfigurationLogger(final ProxyManager proxyManager, final AlertProperties alertProperties) {
+    public ConfigurationLogger(ProxyManager proxyManager, AlertProperties alertProperties) {
         this.proxyManager = proxyManager;
         this.alertProperties = alertProperties;
     }
 
     @Override
     protected void initialize() {
-        final Optional<String> proxyHost = proxyManager.getProxyHost();
-        final Optional<String> proxyPort = proxyManager.getProxyPort();
-        final Optional<String> proxyUsername = proxyManager.getProxyUsername();
-        final Optional<String> proxyPassword = proxyManager.getProxyPassword();
+        Optional<String> proxyHost = proxyManager.getProxyHost();
+        Optional<String> proxyPort = proxyManager.getProxyPort();
+        Optional<String> proxyUsername = proxyManager.getProxyUsername();
+        Optional<String> proxyPassword = proxyManager.getProxyPassword();
 
-        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyPassword.orElse(""));
+        boolean authenticatedProxy = StringUtils.isNotBlank(proxyPassword.orElse(""));
 
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");

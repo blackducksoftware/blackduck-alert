@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,15 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.polaris.issue;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import java.util.List;
-import java.util.Optional;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class AuthenticationTypeDetails extends AlertSerializableModel {
+    private final Long id;
+    private final String name;
 
-public interface PolarisIssueRepository extends JpaRepository<PolarisIssueEntity, Long> {
-    Optional<PolarisIssueEntity> findFirstByIssueTypeAndProjectId(final String issueType, final Long projectId);
+    public AuthenticationTypeDetails(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-    List<PolarisIssueEntity> findByProjectId(final Long projectId);
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

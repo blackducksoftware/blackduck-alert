@@ -72,8 +72,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
                                                    .applySearchable(true)
                                                    .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
-                                                       .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly);
-        ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY);
+                                                       .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
+                                                       .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
+        ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY)
+                                           .applyDisallowedRelatedField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
         List<LabelValueSelectOption> attachmentFormats = Stream
                                                              .of(EmailAttachmentFormat.values())

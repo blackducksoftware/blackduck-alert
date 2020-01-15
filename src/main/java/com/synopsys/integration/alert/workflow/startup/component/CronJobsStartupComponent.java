@@ -31,12 +31,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 
 @Component
-@Order(5)
+@Order(50)
 public class CronJobsStartupComponent extends StartupComponent {
     private final List<StartupScheduledTask> startupScheduledTasks;
 
     @Autowired
-    public CronJobsStartupComponent(final List<StartupScheduledTask> startupScheduledTasks) {
+    public CronJobsStartupComponent(List<StartupScheduledTask> startupScheduledTasks) {
         this.startupScheduledTasks = startupScheduledTasks;
     }
 

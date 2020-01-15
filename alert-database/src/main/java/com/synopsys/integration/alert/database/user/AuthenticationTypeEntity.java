@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,18 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.database.user;
 
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.PolarisIssueModel;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 
-public interface PolarisIssueAccessor {
-    List<PolarisIssueModel> getProjectIssues(final String projectHref) throws AlertDatabaseConstraintException;
+@Entity
+@Table(schema = "alert", name = "authentication_type")
+public class AuthenticationTypeEntity extends DatabaseEntity {
+    @Column(name = "name")
+    public String name;
 
-    Optional<PolarisIssueModel> getProjectIssueByIssueType(final String projectHref, final String issueType) throws AlertDatabaseConstraintException;
+    public AuthenticationTypeEntity() {
+        // JPA requires default constructor definitions
+    }
 
-    PolarisIssueModel updateIssueType(final String projectHref, final String issueType, final Integer newCount) throws AlertDatabaseConstraintException;
+    public String getName() {
+        return name;
+    }
 }

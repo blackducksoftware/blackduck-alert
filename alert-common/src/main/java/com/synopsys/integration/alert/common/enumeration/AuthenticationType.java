@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,25 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.polaris;
+package com.synopsys.integration.alert.common.enumeration;
 
-import org.springframework.stereotype.Component;
+import java.util.Map;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
+public enum AuthenticationType {
+    UNKNOWN(-1L),
+    DATABASE(1L),
+    LDAP(2L),
+    SAML(3L);
 
-@Component
-public final class PolarisProviderKey extends ProviderKey {
-    private static final String COMPONENT_NAME = "provider_polaris";
+    private static final Map<Long, AuthenticationType> ID_TYPE_MAPPING = Map.of(
+        DATABASE.getId(), DATABASE,
+        LDAP.getId(), LDAP,
+        SAML.getId(), SAML);
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
+    private Long id;
+
+    AuthenticationType(Long databaseId) {
+        this.id = databaseId;
     }
 
-    @Override
-    public String getDisplayName() {
-        return PolarisDescriptor.POLARIS_LABEL;
+    public static Optional<AuthenticationType> getById(Long id) {
+        return Optional.ofNullable(ID_TYPE_MAPPING.get(id));
     }
 
+    public Long getId() {
+        return id;
+    }
 }
