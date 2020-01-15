@@ -98,7 +98,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public String toString() {
-        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE.JSON_STYLE);
+        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE);
         builder.setExcludeFieldNames(EXCLUDED_FIELDS);
         return builder.toString();
     }
