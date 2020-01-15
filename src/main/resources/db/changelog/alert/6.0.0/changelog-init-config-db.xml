@@ -202,10 +202,6 @@
             <column name="NAME">component_scheduling</column>
         </insert>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
-            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('PROVIDER')"/>
-            <column name="NAME">provider_polaris</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
             <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
             <column name="NAME">component_audit</column>
         </insert>
@@ -604,18 +600,6 @@
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">polaris.url</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">polaris.access.token</column>
-            <column name="SENSITIVE">true</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">polaris.timeout</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">settings.saml.enabled</column>
             <column name="SENSITIVE">false</column>
         </insert>
@@ -633,10 +617,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">settings.saml.entity.base.url</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">scheduling.polaris.next.run</column>
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
@@ -1134,10 +1114,6 @@
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.polaris.next.run')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.filter.by.project')"/>
         </insert>
@@ -1156,18 +1132,6 @@
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('provider.distribution.format.type')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.url')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.access.token')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.timeout')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
@@ -1780,18 +1744,6 @@
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.url')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.access.token')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('polaris.timeout')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.enabled')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
@@ -1809,10 +1761,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.base.url')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.polaris.next.run')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">

@@ -43,20 +43,6 @@ create table if not exists ALERT.SYSTEM_MESSAGES
         primary key (ID)
 );
 
-create table if not exists ALERT.POLARIS_ISSUES
-(
-    ID             SERIAL,
-    ISSUE_TYPE     VARCHAR(255),
-    PREVIOUS_COUNT BIGINT,
-    CURRENT_COUNT  BIGINT,
-    PROJECT_ID     BIGINT,
-    constraint POLARIS_ISSUES_KEY
-        primary key (ID),
-    constraint FK_ISSUE_PROJECT
-        foreign key (PROJECT_ID) references ALERT.PROVIDER_PROJECTS (ID)
-            on delete cascade
-);
-
 create table if not exists ALERT.RAW_NOTIFICATION_CONTENT
 (
     ID                     SERIAL,
