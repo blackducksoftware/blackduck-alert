@@ -116,7 +116,7 @@
             <or>
                 <sqlCheck expectedResult="0">select count(*) from ALERT.AUTHENTICATION_TYPE</sqlCheck>
                 <not>
-                    <sqlCheck expectedResult="3">select count(*) from ALERT.AUTHENTICATION_TYPE where NAME = 'DATABASE' or 'LDAP' or 'SAML'</sqlCheck>
+                    <sqlCheck expectedResult="3">select count(*) from ALERT.AUTHENTICATION_TYPE where NAME = 'DATABASE' or NAME = 'LDAP' or NAME = 'SAML'</sqlCheck>
                 </not>
             </or>
         </preConditions>
