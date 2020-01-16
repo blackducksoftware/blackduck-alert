@@ -10,6 +10,12 @@
             CALL REMOVE_ALL_PERMISSIONS('ALERT_USER','component_authentication', 'GLOBAL');
         </sql>
     </changeSet>
+    <changeSet author="psantos" id="2020-01-15-14-35-23-972">
+        <update schemaName="ALERT" tableName="USERS">
+            <column name="ENABLED" type="BOOLEAN" value="true"/>
+            <where>id = 2 OR id = 3</where>
+        </update>
+    </changeSet>
     <changeSet author="psantos" id="2020-01-07-11-23-07-677">
         <createTable tableName="AUTHENTICATION_TYPE" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
