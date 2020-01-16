@@ -140,7 +140,8 @@ class FieldsPanel extends React.Component {
         fields.forEach((field) => {
             const fieldKey = field.key;
             if (!this.state.hiddenFieldKeys.includes(fieldKey)) {
-                const newField = FieldMapping.createField(field, currentConfigCopy, fieldErrors[fieldKey], this.handleChange);
+                const fieldError = fieldErrors ? fieldErrors[fieldKey] : null;
+                const newField = FieldMapping.createField(field, currentConfigCopy, fieldError, this.handleChange);
                 createdFields.push(newField);
             }
         });

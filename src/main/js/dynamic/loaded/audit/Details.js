@@ -47,11 +47,11 @@ class Details extends Component {
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="textArea" label="Stack Trace" readOnly name="errorStackTrace"
-                                        value={row.errorStackTrace} />;
+            errorStackTrace = <TextArea inputClass="auditJobDetails" sizeClass="col-sm-12" label="Stack Trace" readOnly name="errorStackTrace"
+                                        value={row.errorStackTrace} cols={"auto"} />;
         }
 
-        return (<div className="inline">{errorMessage}{errorStackTrace}</div>);
+        return (<div className="auditJobDetails">{errorMessage}{errorStackTrace}</div>);
     }
 
     resendButton(cell, row) {
