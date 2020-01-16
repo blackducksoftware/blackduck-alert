@@ -383,7 +383,7 @@ validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres databases: "
     LIST_DB_OUTPUT=`psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'`;
-    echo ${LIST_DB_OUTPUT}
+    echo "${LIST_DB_OUTPUT}"
     if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
     then
         echo "Alert postgres database exists."
