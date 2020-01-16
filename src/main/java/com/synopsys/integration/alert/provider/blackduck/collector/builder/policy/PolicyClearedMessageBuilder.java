@@ -50,13 +50,13 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.model
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -125,7 +125,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
             if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
                 Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
-                List<PolicyRuleExpressionView> expressions = optionalPolicyRule.map(rule -> rule.getExpression().getExpressions()).orElse(List.of());
+                List<PolicyRuleExpressionExpressionsView> expressions = optionalPolicyRule.map(rule -> rule.getExpression().getExpressions()).orElse(List.of());
                 if (policyCommonBuilder.hasVulnerabilityRule(expressions)) {
                     createEmptyVulnerabilityItem(blackDuckResponseCache, policyNameItem, componentData, notificationId, operation)
                         .ifPresent(componentItems::add);
