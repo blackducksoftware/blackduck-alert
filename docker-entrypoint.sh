@@ -6,6 +6,7 @@ alertHome=/opt/blackduck/alert
 alertConfigHome=${alertHome}/alert-config
 alertDataDir=${alertConfigHome}/data
 alertDatabaseDir=${alertDataDir}/alertdb
+alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=sa password=blackduck"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -381,11 +382,12 @@ liquibaseChangelockReset() {
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres databases: "
-    psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'
-    if psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l' |grep -q 'alertdb';
+    LIST_DB_OUTPUT=`psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'`;
+    echo ${LIST_DB_OUTPUT}
+    if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
     then
         echo "Alert postgres database exists."
-        if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c '\dt ALERT.*' |grep -q 'field_values';
+        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
         then
             echo "Alert postgres database tables have been successfully created."
         else
@@ -402,7 +404,7 @@ validatePostgresDatabase() {
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary..."
-    if psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
+    if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
     then
         echo "Alert postgres database is initialized."
     else
@@ -447,7 +449,7 @@ postgresPrepare600Upgrade() {
             chmod 766 ${alertConfigHome}/data/temp/*
 
             echo "Importing data from old database into new database..."
-            psql "host=alertdb port=5432 dbname=alertdb user=sa password=blackduck" -f ${upgradeResourcesDir}/import_postgres_tables.sql
+            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
         else
             echo "No previous database existed."
         fi
