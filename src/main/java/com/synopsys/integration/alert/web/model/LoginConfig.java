@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.synopsys.integration.alert.common.rest.model.Config;
 
@@ -36,7 +36,7 @@ public class LoginConfig extends Config {
     public LoginConfig() {
     }
 
-    public LoginConfig(final String blackDuckUsername, final String blackDuckPassword) {
+    public LoginConfig(String blackDuckUsername, String blackDuckPassword) {
         super("1L");
         this.blackDuckUsername = blackDuckUsername;
         this.blackDuckPassword = blackDuckPassword;
@@ -52,7 +52,7 @@ public class LoginConfig extends Config {
 
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE)
+        return new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE)
                    .setExcludeFieldNames("blackDuckPassword")
                    .toString();
     }
