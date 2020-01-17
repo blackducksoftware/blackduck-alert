@@ -4,7 +4,7 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable from 'dynamic/loaded/users/PermissionTable';
-import { clearRoleFieldErrors, createNewRole, deleteRole, fetchRoles, updateRole } from 'store/actions/roles';
+import { clearRoleFieldErrors, deleteRole, fetchRoles, saveRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
     constructor(props) {
@@ -17,8 +17,6 @@ class RoleTable extends Component {
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.onRoleClose = this.onRoleClose.bind(this);
-        this.onUpdate = this.onUpdate.bind(this);
-        this.updatePermissions = this.updatePermissions.bind(this);
         this.savePermissions = this.savePermissions.bind(this);
         this.deletePermission = this.deletePermission.bind(this);
         this.onEdit = this.onEdit.bind(this);
@@ -71,24 +69,15 @@ class RoleTable extends Component {
 
     onSave() {
         const { role } = this.state;
-        this.props.createRole(role);
+        console.log('Saving the role : ' + role);
+        this.props.saveRole(role);
         this.setState({
             role: {
                 permissions: []
             }
         });
         this.retrieveData();
-    }
-
-    onUpdate() {
-        const { role } = this.state;
-        this.props.updateRole(role);
-        this.setState({
-            role: {
-                permissions: []
-            }
-        });
-        this.retrieveData();
+        return true;
     }
 
     onDelete(rolesToDelete) {
@@ -109,29 +98,26 @@ class RoleTable extends Component {
         this.props.clearFieldErrors();
     }
 
-    updatePermissions(permission) {
-        const { role } = this.state;
-        const { permissions } = role;
-        const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.id === permission.id);
-        if (matchingPermissionIndex > -1) {
-            permissions[matchingPermissionIndex] = permission;
-            role.permissions = permissions;
-            this.setState({
-                role: role
-            });
-        }
-    }
-
     savePermissions(permission) {
         const { role, incrementalId } = this.state;
         const { permissions } = role;
+        console.log('Saving the permission : ' + permission);
+        // FIXME
         if (!permission.id) {
+            console.log(`The permission has no id: ${permission.id}`);
             permission.id = incrementalId;
             this.setState({
                 incrementalId: incrementalId + 1
             });
+            permissions.push(permission);
+        } else {
+            console.log(`The permission has an id: ${permission.id}`);
+            const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.id === permission.id);
+            console.log(`Matching permission index: ${matchingPermissionIndex}`);
+            if (matchingPermissionIndex > -1) {
+                permissions[matchingPermissionIndex] = permission;
+            }
         }
-        permissions.push(permission);
         role.permissions = permissions;
         this.setState({
             role: role
@@ -181,7 +167,6 @@ class RoleTable extends Component {
                            errorValue={fieldErrors[roleNameKey]} />
                 <PermissionTable
                     data={permissions}
-                    updateRole={this.updatePermissions}
                     saveRole={this.savePermissions}
                     deleteRole={this.deletePermission}
                     descriptors={this.props.descriptors}
@@ -192,7 +177,7 @@ class RoleTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, roleDeleteError, inProgress } = this.props;
+        const { canCreate, canDelete, fieldErrors, roleError, inProgress } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
         return (
@@ -202,7 +187,6 @@ class RoleTable extends Component {
                     modalTitle="Role"
                     editState={this.onEdit}
                     onConfigSave={this.onSave}
-                    onConfigUpdate={this.onUpdate}
                     onConfigDelete={this.onDelete}
                     onConfigClose={this.onRoleClose}
                     refreshData={this.retrieveData}
@@ -211,7 +195,7 @@ class RoleTable extends Component {
                     newButton={canCreate}
                     deleteButton={canDelete}
                     hasFieldErrors={hasErrors}
-                    errorDialogMessage={roleDeleteError}
+                    errorDialogMessage={roleError}
                     inProgress={inProgress}
                 />
             </div>
@@ -222,29 +206,31 @@ class RoleTable extends Component {
 RoleTable.defaultProps = {
     canCreate: true,
     canDelete: true,
-    roleDeleteError: null,
+    roleError: null,
     fieldErrors: {}
 };
 
 RoleTable.propTypes = {
+    saveRole: PropTypes.func.isRequired,
+    deleteRole: PropTypes.func.isRequired,
+    getRoles: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
-    roleDeleteError: PropTypes.string,
+    roleError: PropTypes.string,
     fieldErrors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
-    roleDeleteError: state.roles.roleDeleteError,
+    roleError: state.roles.roleError,
     fieldErrors: state.roles.fieldErrors,
     inProgress: state.roles.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({
-    createRole: role => dispatch(createNewRole(role)),
-    updateRole: role => dispatch(updateRole(role)),
+    saveRole: role => dispatch(saveRole(role)),
     deleteRole: roleId => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),
     clearFieldErrors: () => dispatch(clearRoleFieldErrors())

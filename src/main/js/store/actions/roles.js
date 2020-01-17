@@ -9,9 +9,9 @@ import {
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING
-} from 'store/actions/types'
-import * as ConfigRequestBuilder from "util/configurationRequestBuilder";
-import { verifyLoginByStatus } from "store/actions/session";
+} from 'store/actions/types';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 function fetchingAllRoles() {
     return {
@@ -48,7 +48,7 @@ function savedRole() {
 function saveRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleSaveError: message,
+        roleError: message,
         errors
     };
 }
@@ -68,7 +68,7 @@ function deletedRole() {
 function deletingRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleDeleteError: message,
+        roleError: message,
         errors
     };
 }
@@ -76,7 +76,7 @@ function deletingRoleError({ message, errors }) {
 function clearFieldErrors() {
     return {
         type: USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS
-    }
+    };
 }
 
 export function fetchRoles() {
@@ -89,75 +89,56 @@ export function fetchRoles() {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonArray) => {
-                    dispatch(fetchedAllRoles(jsonArray));
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllRolesError(message));
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.json()
+                        .then((jsonArray) => {
+                            dispatch(fetchedAllRoles(jsonArray));
                         });
+                } else {
+                    switch (response.status) {
+                        case 401:
+                        case 403:
+                            dispatch(verifyLoginByStatus(response.status));
+                            break;
+                        default:
+                            response.json()
+                                .then((json) => {
+                                    let message = '';
+                                    if (json && json.message) {
+                                        // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                        message = json.message.toString();
+                                    }
+                                    dispatch(fetchingAllRolesError(message));
+                                });
+                    }
                 }
-            }
-        }).catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllRolesError(error));
-        });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllRolesError(error));
+            });
     };
 }
 
-export function createNewRole(roleName) {
-    return (dispatch, getState) => {
-        dispatch(savingRole());
-        const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleName);
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then(() => {
-                    dispatch(savedRole());
-                });
-            } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(saveRoleError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(saveRoleError(data));
-                            }
-                        }
-                    });
-            }
-        }).then(() => dispatch(fetchRoles()))
-            .catch(console.error);
-    };
-}
-
-export function updateRole(role) {
+export function saveRole(role) {
     return (dispatch, getState) => {
         dispatch(savingRole());
         const { csrfToken } = getState().session;
         const { id } = role;
-        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, role);
+        let request;
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, role);
+        } else {
+            request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
+        }
         request.then((response) => {
             if (response.ok) {
-                response.json().then(() => {
-                    dispatch(savedRole());
-                });
+                response.json()
+                    .then(() => {
+                        dispatch(savedRole());
+                    });
             } else {
                 response.json()
                     .then((data) => {
@@ -172,7 +153,9 @@ export function updateRole(role) {
                         }
                     });
             }
-        }).catch(console.error);
+        })
+            .then(() => dispatch(fetchRoles()))
+            .catch(console.error);
     };
 }
 
@@ -198,7 +181,8 @@ export function deleteRole(roleId) {
                         }
                     });
             }
-        }).then(() => dispatch(fetchRoles()))
+        })
+            .then(() => dispatch(fetchRoles()))
             .catch(console.error);
     };
 }
@@ -206,5 +190,5 @@ export function deleteRole(roleId) {
 export function clearRoleFieldErrors() {
     return (dispatch) => {
         dispatch(clearFieldErrors());
-    }
-};
+    };
+}

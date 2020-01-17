@@ -4,7 +4,7 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { connect } from 'react-redux';
-import { clearUserFieldErrors, createNewUser, deleteUser, fetchUsers, updateUser } from 'store/actions/users';
+import { clearUserFieldErrors, deleteUser, fetchUsers, saveUser } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,7 +18,6 @@ class UserTable extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
-        this.onUpdate = this.onUpdate.bind(this);
         this.checkIfPasswordsMatch = this.checkIfPasswordsMatch.bind(this);
         this.onConfigClose = this.onConfigClose.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
@@ -84,21 +83,10 @@ class UserTable extends Component {
 
     onSave() {
         const { user } = this.state;
-        if (!this.checkIfPasswordsMatch(user)) {
-            this.props.createUser(user);
+        if (this.checkIfPasswordsMatch(user)) {
+            this.props.saveUser(user);
             return true;
         }
-        return false;
-    }
-
-    onUpdate() {
-        const { user } = this.state;
-        if (!this.checkIfPasswordsMatch(user)) {
-            debugger;
-            this.props.updateUser(user);
-            return true;
-        }
-        debugger;
         return false;
     }
 
@@ -108,17 +96,16 @@ class UserTable extends Component {
         const confirmPasswordError = 'confirmPasswordError';
 
         let passwordError = '';
-        let error = false;
+        let matching = true;
         if ((user[passwordKey] || user[confirmPasswordKey]) && (user[passwordKey] !== user[confirmPasswordKey])) {
             passwordError = 'Passwords do not match.';
-            error = true;
+            matching = false;
         }
-        debugger;
         const newUser = Object.assign(user, { [confirmPasswordError]: passwordError });
         this.setState({
             user: newUser
         });
-        return error;
+        return matching;
     }
 
     onDelete(usersToDelete) {
@@ -218,7 +205,7 @@ class UserTable extends Component {
                     label="Roles"
                     description="Select the roles you want associated with the user."
                     onChange={this.handleChange}
-                    multiSelect={true}
+                    multiSelect
                     options={this.retrieveRoles()}
                     value={user[roleNames]}
                     onFocus={this.props.getRoles} />
@@ -238,7 +225,6 @@ class UserTable extends Component {
                         modalTitle="User"
                         clearModalFieldState={this.clearModalFieldState}
                         onConfigSave={this.onSave}
-                        onConfigUpdate={this.onUpdate}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
@@ -268,8 +254,7 @@ UserTable.defaultProps = {
 };
 
 UserTable.propTypes = {
-    createUser: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
+    saveUser: PropTypes.func.isRequired,
     deleteUser: PropTypes.func.isRequired,
     getUsers: PropTypes.func.isRequired,
     getRoles: PropTypes.func.isRequired,
@@ -292,8 +277,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    createUser: user => dispatch(createNewUser(user)),
-    updateUser: user => dispatch(updateUser(user)),
+    saveUser: user => dispatch(saveUser(user)),
     deleteUser: userId => dispatch(deleteUser(userId)),
     getUsers: () => dispatch(fetchUsers()),
     getRoles: () => dispatch(fetchRoles()),

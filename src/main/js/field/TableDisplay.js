@@ -9,11 +9,10 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PopUp from 'field/PopUp';
 
-const MODIFICATION_STATE = {
-    EDIT: 'EDIT',
-    COPY: 'COPY',
-    CREATE: 'CREATE',
-    NONE: 'NONE'
+const VALIDATION_STATE = {
+    NONE: 'NONE',
+    SUCCESS: 'SUCCESS',
+    FAILED: 'FAILED'
 };
 
 class TableDisplay extends Component {
@@ -39,7 +38,7 @@ class TableDisplay extends Component {
 
         this.state = {
             currentRowSelected: null,
-            modificationState: MODIFICATION_STATE.NONE,
+            uiValidation: VALIDATION_STATE.NONE,
             showConfiguration: false,
             showDelete: false,
             rowsToDelete: [],
@@ -51,13 +50,13 @@ class TableDisplay extends Component {
         this.updateData();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.errorDialogMessage !== this.props.errorDialogMessage) {
             this.setState({
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
-        if ((this.state.showConfiguration || this.state.currentRowSelected) && this.state.modificationState === MODIFICATION_STATE.NONE && !this.props.hasFieldErrors) {
+        if ((this.state.showConfiguration || this.state.currentRowSelected) && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
             this.setState({
                 showConfiguration: false
@@ -110,7 +109,6 @@ class TableDisplay extends Component {
                         insertOnClick();
                         this.props.clearModalFieldState();
                         this.setState({
-                            modificationState: MODIFICATION_STATE.CREATE,
                             showConfiguration: true
                         });
                     }}
@@ -132,8 +130,7 @@ class TableDisplay extends Component {
 
     handleClose() {
         this.setState({
-            showConfiguration: false,
-            modificationState: MODIFICATION_STATE.NONE
+            showConfiguration: false
         });
         this.props.onConfigClose();
         this.refs.table.cleanSelected();
@@ -146,25 +143,24 @@ class TableDisplay extends Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { modificationState } = this.state;
-        let result = false;
-        if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
-            result = this.props.onConfigSave();
-        } else if (MODIFICATION_STATE.EDIT === modificationState) {
-            result = this.props.onConfigUpdate();
-        }
+        const result = this.props.onConfigSave();
+        console.log(`Table save result ${result}`);
+        let validationState;
         if (result) {
-            this.setState({
-                modificationState: MODIFICATION_STATE.NONE
-            });
+            validationState = VALIDATION_STATE.SUCCESS;
+        } else {
+            validationState = VALIDATION_STATE.FAILED;
         }
+        console.log(`Table submit state ${validationState}`);
+        this.setState({
+            uiValidation: validationState
+        });
     }
 
     createEditModal() {
         const { currentRowSelected } = this.state;
         const { modalTitle, newConfigFields, inProgress } = this.props;
-
-        const showModal = currentRowSelected || this.isShowModal();
+        const showModal = Boolean(currentRowSelected) || this.isShowModal();
         return (
             <div
                 onKeyDown={e => e.stopPropagation()}
@@ -193,7 +189,6 @@ class TableDisplay extends Component {
     createInsertModal(onModalClose) {
         const { showConfiguration } = this.state;
         const { modalTitle, newConfigFields, inProgress } = this.props;
-
         return (
             <div
                 onKeyDown={e => e.stopPropagation()}
@@ -285,8 +280,7 @@ class TableDisplay extends Component {
         this.props.clearModalFieldState();
         this.props.editState(currentRowSelected);
         this.setState({
-            currentRowSelected,
-            modificationState: MODIFICATION_STATE.EDIT
+            currentRowSelected
         });
     }
 
@@ -302,8 +296,7 @@ class TableDisplay extends Component {
     copyButtonClicked(currentRowSelected) {
         this.props.editState(currentRowSelected);
         this.setState({
-            currentRowSelected,
-            modificationState: MODIFICATION_STATE.COPY
+            currentRowSelected
         });
     }
 
@@ -414,7 +407,8 @@ class TableDisplay extends Component {
 
         const refresh = this.props.tableRefresh && (
             <div className="pull-right">
-                <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
+                {/* <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} /> */}
+                <AutoRefresh startAutoReload={() => true} autoRefresh={autoRefresh} />
             </div>
         );
 
@@ -442,7 +436,6 @@ TableDisplay.propTypes = {
     newConfigFields: PropTypes.func.isRequired,
     editState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
-    onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
     clearModalFieldState: PropTypes.func,
@@ -475,7 +468,6 @@ TableDisplay.defaultProps = {
     inProgress: false,
     fetching: false,
     onConfigSave: () => true,
-    onConfigUpdate: () => true,
     onConfigDelete: () => null,
     onConfigClose: () => null,
     clearModalFieldState: () => null,

@@ -10,7 +10,7 @@ import {
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING
-} from 'store/actions/types'
+} from 'store/actions/types';
 
 const initialState = {
     inProgress: false,
@@ -59,7 +59,7 @@ const users = (state = initialState, action) => {
             });
         case USER_MANAGEMENT_USER_FETCHING_ALL:
             return Object.assign({}, state, {
-                inProgress: true,
+                inProgress: false,
                 deleteSuccess: false,
                 data: [],
                 fetching: true

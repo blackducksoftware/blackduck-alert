@@ -42,7 +42,6 @@ class FieldsPopUp extends Component {
             self={this}
             stateName="modalConfig"
         />);
-
         return (
             <div>
                 <PopUp
