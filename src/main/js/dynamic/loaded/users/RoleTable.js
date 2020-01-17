@@ -122,6 +122,8 @@ class RoleTable extends Component {
         this.setState({
             role: role
         });
+        this.props.saveRole(role);
+        return true;
     }
 
     deletePermission(permissionIds) {
@@ -158,7 +160,7 @@ class RoleTable extends Component {
         const roleNameKey = 'roleName';
         const roleNameValue = role[roleNameKey];
 
-        const { canCreate, canDelete, fieldErrors } = this.props;
+        const { canCreate, canDelete, fieldErrors, inProgress } = this.props;
 
         return (
             <div>
@@ -166,6 +168,7 @@ class RoleTable extends Component {
                            onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey}
                            errorValue={fieldErrors[roleNameKey]} />
                 <PermissionTable
+                    inProgress={inProgress}
                     data={permissions}
                     saveRole={this.savePermissions}
                     deleteRole={this.deletePermission}
@@ -207,7 +210,8 @@ RoleTable.defaultProps = {
     canCreate: true,
     canDelete: true,
     roleError: null,
-    fieldErrors: {}
+    fieldErrors: {},
+    inProgress: false
 };
 
 RoleTable.propTypes = {
@@ -218,7 +222,8 @@ RoleTable.propTypes = {
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
     roleError: PropTypes.string,
-    fieldErrors: PropTypes.object
+    fieldErrors: PropTypes.object,
+    inProgress: PropTypes.bool
 };
 
 const mapStateToProps = state => ({

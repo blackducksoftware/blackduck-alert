@@ -8,15 +8,10 @@ class PopUp extends Component {
         super(props);
 
         this.internalCancel = this.internalCancel.bind(this);
-        this.internalOk = this.internalOk.bind(this);
     }
 
     internalCancel() {
         this.props.onCancel();
-    }
-
-    internalOk() {
-        this.props.onOk();
     }
 
     render() {
@@ -47,9 +42,6 @@ class PopUp extends Component {
                                 }}
                                 cancelLabel={cancelLabel}
                                 submitLabel={okLabel}
-                                onSubmitClick={() => {
-                                    this.internalOk();
-                                }}
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
@@ -64,7 +56,6 @@ class PopUp extends Component {
 PopUp.propTypes = {
     onCancel: PropTypes.func.isRequired,
     children: PropTypes.any.isRequired,
-    onOk: PropTypes.func,
     handleSubmit: PropTypes.func,
     show: PropTypes.bool,
     title: PropTypes.string,
@@ -78,7 +69,6 @@ PopUp.defaultProps = {
     title: 'Pop up',
     cancelLabel: 'Cancel',
     okLabel: 'Ok',
-    onOk: () => true,
     handleSubmit: (event) => true,
     performingAction: false
 };

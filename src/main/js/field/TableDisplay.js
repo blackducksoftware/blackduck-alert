@@ -56,6 +56,7 @@ class TableDisplay extends Component {
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
+        console.log(`modalTitle: ${this.props.modalTitle} showConfig: ${this.state.showConfiguration} currentRow: ${this.state.currentRowSelected} previous inProgress: ${prevProps.inProgress} current inProgress; ${this.props.inProgress} fieldErrors: ${this.props.hasFieldErrors} uiValidation: ${this.state.uiValidation}`);
         if ((this.state.showConfiguration || this.state.currentRowSelected) && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
             this.setState({
@@ -201,9 +202,6 @@ class TableDisplay extends Component {
                         onModalClose();
                         this.handleClose();
                     }}
-                    onOk={() => {
-                        onModalClose();
-                    }}
                     handleSubmit={this.handleSubmit}
                     show={showConfiguration}
                     title={modalTitle}
@@ -294,6 +292,7 @@ class TableDisplay extends Component {
     }
 
     copyButtonClicked(currentRowSelected) {
+        currentRowSelected.id = null;
         this.props.editState(currentRowSelected);
         this.setState({
             currentRowSelected

@@ -23,9 +23,9 @@ class ConfigButtons extends Component {
     }
 
     createSaveButton() {
-        const { includeSave, submitLabel, onSubmitClick } = this.props;
+        const { includeSave, submitLabel } = this.props;
         if (includeSave) {
-            return (<SubmitButton id="submitButton" onClick={onSubmitClick}>{submitLabel}</SubmitButton>);
+            return (<SubmitButton id="submitButton">{submitLabel}</SubmitButton>);
         }
         return null;
     }
@@ -93,7 +93,6 @@ ConfigButtons.propTypes = {
     includeTest: PropTypes.bool,
     onCancelClick: PropTypes.func,
     onTestClick: PropTypes.func,
-    onSubmitClick: PropTypes.func,
     performingAction: PropTypes.bool,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
@@ -108,7 +107,6 @@ ConfigButtons.defaultProps = {
     performingAction: false,
     onCancelClick: () => true,
     onTestClick: (evt) => true,
-    onSubmitClick: () => true,
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
     cancelLabel: 'Cancel',

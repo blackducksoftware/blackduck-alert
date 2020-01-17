@@ -234,33 +234,15 @@ class PermissionTable extends Component {
     }
 
     onSavePermissions() {
-        const { data } = this.props;
         const { permissionsData } = this.state;
         console.log('Saving the permission : ' + permissionsData);
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             this.setState({
                 errorMessage: 'Please select Descriptor name and context'
             });
-        } else {
-            const exists = data.find(permission =>
-                permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-                permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT] &&
-                permission.id === permissionsData.id
-            );
-            console.log(`Permission descriptor: ${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]}  context: ${permissionsData[PERMISSIONS_TABLE.CONTEXT]}  id: ${permissionsData.id}`);
-            console.log('Permission exists : ' + exists);
-
-            if (exists) {
-                this.setState({
-                    errorMessage: 'This item already exists in the table'
-                });
-            } else {
-                this.props.saveRole(permissionsData);
-                // this.setState({
-                //     permissionsData: {}
-                // });
-            }
+            return false;
         }
+        return this.props.saveRole(permissionsData);
     }
 
     onDeletePermissions(permissionsToDelete) {
@@ -270,12 +252,13 @@ class PermissionTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete } = this.props;
+        const { canCreate, canDelete, inProgress } = this.props;
 
         return (
             <div>
                 <TableDisplay
                     modalTitle="Role Permissions"
+                    inProgress={inProgress}
                     tableNewButtonLabel="Add"
                     tableDeleteButtonLabel="Remove"
                     tableSearchable={false}
@@ -305,13 +288,15 @@ PermissionTable.propTypes = {
     deleteRole: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    descriptors: PropTypes.array
+    descriptors: PropTypes.array,
+    inProgress: PropTypes.bool
 };
 
 PermissionTable.defaultProps = {
     canCreate: true,
     canDelete: true,
-    descriptors: []
+    descriptors: [],
+    inProgress: false
 };
 
 export default PermissionTable;

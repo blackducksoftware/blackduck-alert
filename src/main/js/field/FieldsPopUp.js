@@ -8,7 +8,7 @@ class FieldsPopUp extends Component {
         super(props);
 
         this.internalCancel = this.internalCancel.bind(this);
-        this.internalOk = this.internalOk.bind(this);
+        this.internalHandleSubmit = this.internalHandleSubmit.bind(this);
 
         this.state = {
             modalConfig: {},
@@ -23,9 +23,10 @@ class FieldsPopUp extends Component {
         });
     }
 
-    internalOk() {
+    internalHandleSubmit(event) {
+        event.preventDefault();
         const { modalConfig } = this.state;
-        this.props.onOk(modalConfig);
+        this.props.handleSubmit(event, modalConfig);
         this.internalCancel();
     }
 
@@ -50,7 +51,7 @@ class FieldsPopUp extends Component {
                     cancelLabel={cancelLabel}
                     okLabel={okLabel}
                     onCancel={this.internalCancel}
-                    onOk={this.internalOk()}
+                    handleSubmit={this.internalHandleSubmit}
                 >{fieldsPanel}</PopUp>
             </div>
         );
@@ -59,7 +60,7 @@ class FieldsPopUp extends Component {
 
 FieldsPopUp.propTypes = {
     onCancel: PropTypes.func.isRequired,
-    onOk: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
     fields: PropTypes.array.isRequired,
     show: PropTypes.bool,
     title: PropTypes.string,

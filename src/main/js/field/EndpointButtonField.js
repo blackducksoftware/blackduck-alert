@@ -34,7 +34,7 @@ class EndpointButtonField extends Component {
         }
     }
 
-    onSendClick(popupData) {
+    onSendClick(event, popupData) {
         this.setState({
             fieldError: this.props.errorValue,
             progress: true,
@@ -132,7 +132,7 @@ class EndpointButtonField extends Component {
                 <FieldsPopUp
                     onCancel={this.flipShowModal}
                     fields={fields}
-                    onOk={this.onSendClick}
+                    handleSubmit={this.onSendClick}
                     title={buttonLabel}
                     show={this.state.showModal}
                     okLabel="Send"
