@@ -6,12 +6,14 @@ import GeneralButton from 'field/input/GeneralButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ConfigButtons extends Component {
-
     createTestButton() {
         const { includeTest, onTestClick, testLabel } = this.props;
         if (includeTest) {
             return (<div style={{
-                display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
+                display: 'inline-block',
+                paddingRight: '12px',
+                marginRight: '12px',
+                borderRight: '1px solid #aaa'
             }}
             >
                 <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
@@ -22,19 +24,17 @@ class ConfigButtons extends Component {
 
     createSaveButton() {
         const { includeSave, submitLabel } = this.props;
-
         if (includeSave) {
-            return <SubmitButton id="submitButton">{submitLabel}</SubmitButton>
+            return (<SubmitButton id="submitButton">{submitLabel}</SubmitButton>);
         }
         return null;
-
     }
 
     createCancelButton() {
         const { includeCancel, onCancelClick, cancelLabel } = this.props;
 
         if (includeCancel) {
-            return <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>
+            return (<CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>);
         }
         return null;
     }
@@ -105,10 +105,8 @@ ConfigButtons.defaultProps = {
     includeSave: true,
     includeTest: false,
     performingAction: false,
-    onCancelClick: () => {
-    },
-    onTestClick: (evt) => {
-    },
+    onCancelClick: () => true,
+    onTestClick: (evt) => true,
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
     cancelLabel: 'Cancel',

@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PopUp from 'field/PopUp';
 
-const MODIFICATION_STATE = {
-    EDIT: 'EDIT',
-    COPY: 'COPY',
-    CREATE: 'CREATE',
-    NONE: 'NONE'
+const VALIDATION_STATE = {
+    NONE: 'NONE',
+    SUCCESS: 'SUCCESS',
+    FAILED: 'FAILED'
 };
 
 class TableDisplay extends Component {
@@ -38,7 +38,7 @@ class TableDisplay extends Component {
 
         this.state = {
             currentRowSelected: null,
-            modificationState: MODIFICATION_STATE.NONE,
+            uiValidation: VALIDATION_STATE.NONE,
             showConfiguration: false,
             showDelete: false,
             rowsToDelete: [],
@@ -50,25 +50,14 @@ class TableDisplay extends Component {
         this.updateData();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.errorDialogMessage !== this.props.errorDialogMessage) {
             this.setState({
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
-
-        if (prevProps.inProgress && !this.props.inProgress) {
-            if (prevProps.fetching && this.props.fetching) {
-                this.handleClose();
-                this.setState({
-                    showConfiguration: false
-                });
-            }
-        } else if ((this.state.showConfiguration || this.state.currentRowSelected) && this.state.modificationState === MODIFICATION_STATE.NONE) {
+        if (!this.state.showConfiguration && this.state.currentRowSelected && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
-            this.setState({
-                showConfiguration: false
-            });
         }
     }
 
@@ -78,11 +67,20 @@ class TableDisplay extends Component {
                 return <div title={cell.toString()}> {cell} </div>;
             }
             return <div> {cell} </div>;
-        }
+        };
 
         return this.props.columns.map(column => (
-            <TableHeaderColumn key={column.header} dataField={column.header} isKey={column.isKey} hidden={column.hidden} dataSort columnClassName="tableCell" tdStyle={{ whiteSpace: 'normal' }}
-                               dataFormat={assignDataFormat}>{column.headerLabel}</TableHeaderColumn>
+            <TableHeaderColumn
+                key={column.header}
+                dataField={column.header}
+                isKey={column.isKey}
+                hidden={column.hidden}
+                dataSort
+                columnClassName="tableCell"
+                tdStyle={{ whiteSpace: 'normal' }}
+                dataFormat={assignDataFormat}
+            >{column.headerLabel}
+            </TableHeaderColumn>
         ));
     }
 
@@ -102,14 +100,16 @@ class TableDisplay extends Component {
         return (
             <div>
                 {buttons.insertBtn
-                && <InsertButton className="addJobButton btn-md" onClick={() => {
-                    insertOnClick();
-                    this.props.clearModalFieldState();
-                    this.setState({
-                        modificationState: MODIFICATION_STATE.CREATE,
-                        showConfiguration: true
-                    });
-                }}>
+                && <InsertButton
+                    className="addJobButton btn-md"
+                    onClick={() => {
+                        insertOnClick();
+                        this.props.clearModalFieldState();
+                        this.setState({
+                            showConfiguration: true
+                        });
+                    }}
+                >
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     {this.props.tableNewButtonLabel}
                 </InsertButton>
@@ -126,66 +126,48 @@ class TableDisplay extends Component {
     }
 
     handleClose() {
-        this.props.onConfigClose();
-        this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null
         });
+        this.props.onConfigClose();
+        this.refs.table.cleanSelected();
+        this.updateData();
     }
 
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { modificationState } = this.state;
-        if (MODIFICATION_STATE.CREATE === modificationState || MODIFICATION_STATE.COPY === modificationState) {
-            this.props.onConfigSave();
-        } else if (MODIFICATION_STATE.EDIT === modificationState) {
-            this.props.onConfigUpdate();
-        }
+        const result = this.props.onConfigSave();
+        const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
         this.setState({
-            modificationState: MODIFICATION_STATE.NONE
+            uiValidation: validationState
+        });
+        this.setState({
+            showConfiguration: false
         });
     }
 
     createEditModal() {
         const { currentRowSelected } = this.state;
-        const showModal = currentRowSelected || this.isShowModal();
+        const { modalTitle, newConfigFields, inProgress } = this.props;
+        const showModal = Boolean(currentRowSelected) || this.isShowModal();
         return (
-            <div onKeyDown={e => e.stopPropagation()}
-                 onClick={e => e.stopPropagation()}
-                 onFocus={e => e.stopPropagation()}
-                 onMouseOver={e => e.stopPropagation()}
+            <div
+                onKeyDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+                onFocus={e => e.stopPropagation()}
+                onMouseOver={e => e.stopPropagation()}
             >
-                <Modal size="lg" show={showModal} onHide={() => {
-                    this.handleClose();
-                    this.setState({
-                        modificationState: MODIFICATION_STATE.NONE
-                    });
-                }}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <form className="form-horizontal" onSubmit={(event) => {
-                            this.handleSubmit(event);
-                        }} noValidate>
-                            {this.props.newConfigFields(currentRowSelected)}
-                            <ConfigButtons
-                                cancelId="usermanagement-cancel"
-                                submitId="usermanagement-submit"
-                                includeCancel
-                                onCancelClick={() => {
-                                    this.handleClose();
-                                    this.setState({
-                                        modificationState: MODIFICATION_STATE.NONE
-                                    });
-                                }}
-                                isFixed={false}
-                                performingAction={this.props.inProgress}
-                            />
-                        </form>
-                    </Modal.Body>
-                </Modal>
+                <PopUp
+                    onCancel={this.handleClose}
+                    handleSubmit={this.handleSubmit}
+                    show={showModal}
+                    title={modalTitle}
+                    okLabel={'Save'}
+                    performingAction={inProgress}
+                >
+                    {newConfigFields(currentRowSelected)}
+                </PopUp>
             </div>
         );
     }
@@ -195,70 +177,58 @@ class TableDisplay extends Component {
     }
 
     createInsertModal(onModalClose) {
+        const { showConfiguration } = this.state;
+        const { modalTitle, newConfigFields, inProgress } = this.props;
         return (
-            <div onKeyDown={e => e.stopPropagation()}
-                 onClick={e => e.stopPropagation()}
-                 onFocus={e => e.stopPropagation()}
-                 onMouseOver={e => e.stopPropagation()}
+            <div
+                onKeyDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+                onFocus={e => e.stopPropagation()}
+                onMouseOver={e => e.stopPropagation()}
             >
-                <Modal size="lg" show={this.state.showConfiguration} onHide={() => {
-                    this.handleClose();
-                    this.setState({
-                        modificationState: MODIFICATION_STATE.NONE,
-                        showConfiguration: false
-                    });
-                    onModalClose();
-                }}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>{this.props.modalTitle}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <form className="form-horizontal" onSubmit={(event) => {
-                            this.handleSubmit(event);
-                            onModalClose();
-                        }} noValidate>
-                            {this.props.newConfigFields()}
-                            <ConfigButtons
-                                cancelId="usermanagement-cancel"
-                                submitId="usermanagement-submit"
-                                includeCancel
-                                onCancelClick={() => {
-                                    this.handleClose();
-                                    this.setState({
-                                        showConfiguration: false,
-                                        modificationState: MODIFICATION_STATE.NONE
-                                    });
-                                    onModalClose();
-                                    this.updateData();
-                                }}
-                                isFixed={false}
-                                performingAction={this.props.inProgress}
-                            />
-                        </form>
-                    </Modal.Body>
-                </Modal>
+                <PopUp
+                    onCancel={() => {
+                        onModalClose();
+                        this.handleClose();
+                    }}
+                    handleSubmit={this.handleSubmit}
+                    show={showConfiguration}
+                    title={modalTitle}
+                    okLabel="Save"
+                    performingAction={inProgress}
+                >
+                    {newConfigFields()}
+                </PopUp>
             </div>
         );
     }
 
     createErrorModal() {
+        const { showErrorDialog } = this.state;
+        const { errorDialogMessage } = this.props;
+
         return (
-            <div onKeyDown={e => e.stopPropagation()}
-                 onClick={e => e.stopPropagation()}
-                 onFocus={e => e.stopPropagation()}
-                 onMouseOver={e => e.stopPropagation()}
+            <div
+                onKeyDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+                onFocus={e => e.stopPropagation()}
+                onMouseOver={e => e.stopPropagation()}
             >
-                <Modal size="lg" show={this.state.showErrorDialog} onHide={() => {
-                    this.handleClose();
-                    this.setState({
-                        showErrorDialog: false
-                    });
-                }}>
+                <Modal
+                    size="lg"
+                    show={showErrorDialog}
+                    onHide={() => {
+                        this.handleClose();
+                        this.setState({
+                            showErrorDialog: false
+                        });
+                    }}
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>Error</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <div>{this.props.errorDialogMessage}</div>
+                        <div>{errorDialogMessage}</div>
                     </Modal.Body>
                 </Modal>
             </div>
@@ -297,33 +267,56 @@ class TableDisplay extends Component {
         this.props.clearModalFieldState();
         this.props.editState(currentRowSelected);
         this.setState({
-            currentRowSelected,
-            modificationState: MODIFICATION_STATE.EDIT
+            currentRowSelected
         });
     }
 
     editButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+        return (<IconTableCellFormatter
+            handleButtonClicked={this.editButtonClicked}
+            currentRowSelected={row}
+            buttonIconName="pencil-alt"
+            buttonText="Edit"
+        />);
     }
 
     copyButtonClicked(currentRowSelected) {
+        currentRowSelected.id = null;
         this.props.editState(currentRowSelected);
         this.setState({
-            currentRowSelected,
-            modificationState: MODIFICATION_STATE.COPY
+            currentRowSelected
         });
     }
 
     copyButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+        return (<IconTableCellFormatter
+            handleButtonClicked={this.copyButtonClicked}
+            currentRowSelected={row}
+            buttonIconName="copy"
+            buttonText="Copy"
+        />);
     }
 
     render() {
         const tableColumns = this.createTableColumns();
-        tableColumns.push(<TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ "text-align": "center" }}>Edit</TableHeaderColumn>);
-        tableColumns.push(<TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ "text-align": "center" }}>Copy</TableHeaderColumn>);
+        tableColumns.push(<TableHeaderColumn
+            dataField=""
+            width="48"
+            columnClassName="tableCell"
+            dataFormat={this.editButtonClick}
+            thStyle={{ textAlign: 'center' }}
+        >Edit</TableHeaderColumn>);
+        tableColumns.push(<TableHeaderColumn
+            dataField=""
+            width="48"
+            columnClassName="tableCell"
+            dataFormat={this.copyButtonClick}
+            thStyle={{ textAlign: 'center' }}
+        >Copy</TableHeaderColumn>);
 
-        const { selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable } = this.props;
+        const {
+            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable
+        } = this.props;
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
@@ -352,7 +345,16 @@ class TableDisplay extends Component {
                 <Modal.Body>
                     <form className="form-horizontal" onSubmit={this.deleteItems}>
                         <p name="tableDeleteMessage">Are you sure you want to delete these items?</p>
-                        <ConfigButtons performingAction={this.props.inProgress} cancelId="delete-cancel" submitId="delete-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.closeDeleteModal} isFixed={false} />
+                        <ConfigButtons
+                            performingAction={this.props.inProgress}
+                            cancelId="delete-cancel"
+                            submitId="delete-submit"
+                            submitLabel="Confirm"
+                            includeSave
+                            includeCancel
+                            onCancelClick={this.closeDeleteModal}
+                            isFixed={false}
+                        />
                     </form>
                 </Modal.Body>
             </Modal>
@@ -419,11 +421,9 @@ TableDisplay.propTypes = {
     newConfigFields: PropTypes.func.isRequired,
     editState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
-    onConfigUpdate: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
     clearModalFieldState: PropTypes.func,
-    name: PropTypes.string,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
     selectRowBox: PropTypes.bool,
@@ -439,11 +439,10 @@ TableDisplay.propTypes = {
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
-    errorDialogMessage: PropTypes.string,
+    errorDialogMessage: PropTypes.string
 };
 
 TableDisplay.defaultProps = {
-    name: '',
     sortName: '',
     sortOrder: 'asc',
     selectRowBox: true,
@@ -453,8 +452,7 @@ TableDisplay.defaultProps = {
     deleteButton: true,
     inProgress: false,
     fetching: false,
-    onConfigSave: () => null,
-    onConfigUpdate: () => null,
+    onConfigSave: () => true,
     onConfigDelete: () => null,
     onConfigClose: () => null,
     clearModalFieldState: () => null,

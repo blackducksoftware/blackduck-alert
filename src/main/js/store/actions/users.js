@@ -9,7 +9,7 @@ import {
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING
-} from 'store/actions/types'
+} from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -77,7 +77,7 @@ function deletingUserError({ message, errors }) {
 function clearFieldErrors() {
     return {
         type: USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS
-    }
+    };
 }
 
 export function fetchUsers() {
@@ -90,45 +90,56 @@ export function fetchUsers() {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonArray) => {
-                    dispatch(fetchedAllUsers(jsonArray));
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllUsersError(message));
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.json()
+                        .then((jsonArray) => {
+                            dispatch(fetchedAllUsers(jsonArray));
                         });
+                } else {
+                    switch (response.status) {
+                        case 401:
+                        case 403:
+                            dispatch(verifyLoginByStatus(response.status));
+                            break;
+                        default:
+                            response.json()
+                                .then((json) => {
+                                    let message = '';
+                                    if (json && json.message) {
+                                        // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                        message = json.message.toString();
+                                    }
+                                    dispatch(fetchingAllUsersError(message));
+                                });
+                    }
                 }
-            }
-        }).catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllUsersError(error));
-        });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllUsersError(error));
+            });
     };
 }
 
-export function createNewUser(user) {
+export function saveUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
+        const { id } = user;
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        let request;
+        if (id) {
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
+        } else {
+            request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        }
         request.then((response) => {
             if (response.ok) {
-                response.json().then(() => {
-                    dispatch(savedUser());
-                });
+                response.json()
+                    .then(() => {
+                        dispatch(savedUser());
+                    });
             } else {
                 response.json()
                     .then((data) => {
@@ -143,37 +154,9 @@ export function createNewUser(user) {
                         }
                     });
             }
-        }).then(() => dispatch(fetchUsers()))
+        })
+            .then(() => dispatch(fetchUsers()))
             .catch(console.error);
-    };
-}
-
-export function updateUser(user) {
-    return (dispatch, getState) => {
-        dispatch(savingUser());
-        const { id } = user;
-        const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then(() => {
-                    dispatch(savedUser());
-                });
-            } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(saveUserError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(saveUserError(data, null));
-                            }
-                        }
-                    });
-            }
-        }).catch(console.error);
     };
 }
 
@@ -199,7 +182,8 @@ export function deleteUser(userId) {
                         }
                     });
             }
-        }).then(() => dispatch(fetchUsers()))
+        })
+            .then(() => dispatch(fetchUsers()))
             .catch(console.error);
     };
 }
