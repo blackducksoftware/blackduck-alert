@@ -34,7 +34,7 @@ class ConfigButtons extends Component {
         const { includeCancel, onCancelClick, cancelLabel } = this.props;
 
         if (includeCancel) {
-            return <CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>;
+            return (<CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>);
         }
         return null;
     }
