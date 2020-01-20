@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 public class JobFieldErrorsTest {
     @Test
     public void getFieldErrorsTest() {
-        final String fieldErrorKey = "key";
-        final String fieldErrorValue = "value";
+        String fieldErrorKey = "key";
+        String fieldErrorValue = "value";
 
         Map<String, String> fieldError = new HashMap<>();
         fieldError.put(fieldErrorKey, fieldErrorValue);
@@ -22,10 +22,10 @@ public class JobFieldErrorsTest {
 
     @Test
     public void getFieldErrorsWithIdTest() {
-        final String fieldErrorKey = "key";
-        final String fieldErrorValue = "value";
-        final String configId = "testID";
-        final String newConfigId = "newTestID";
+        String fieldErrorKey = "key";
+        String fieldErrorValue = "value";
+        String configId = "testID";
+        String newConfigId = "newTestID";
 
         Map<String, String> fieldError = new HashMap<>();
         fieldError.put(fieldErrorKey, fieldErrorValue);
