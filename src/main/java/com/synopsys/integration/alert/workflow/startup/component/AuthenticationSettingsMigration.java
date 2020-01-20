@@ -99,6 +99,7 @@ public class AuthenticationSettingsMigration extends StartupComponent {
                                           .flatMap(ConfigurationFieldModel::getFieldValue)
                                           .map(Boolean::valueOf)
                                           .orElse(Boolean.FALSE);
+            logConfiguration(configurationModels);
             updateConfigurationFields(overwriteConfig, foundConfigurationModels, configurationModels);
         } catch (AlertException ex) {
             logger.error("Error migrating old authentication settings to new configuration.", ex);
@@ -110,17 +111,26 @@ public class AuthenticationSettingsMigration extends StartupComponent {
         Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         logger.info("  ### Environment Variables ### ");
         for (DefinedFieldModel fieldModel : fieldsForDescriptor) {
-            String key = fieldModel.getKey();
-            String convertedKey = environmentUtility.convertKeyToProperty(settingsUtility.getKey(), key);
-            boolean hasEnvironmentValue = environmentUtility.hasEnvironmentValue(convertedKey);
-            logger.info("    {}", convertedKey);
-            logger.debug("         Environment Variable Found - {}", hasEnvironmentValue);
-            if (existingConfiguredFields.containsKey(key)) {
-                configurationModels.add(existingConfiguredFields.get(key));
-            } else if (hasEnvironmentValue) {
-                environmentUtility.getEnvironmentValue(convertedKey, null)
+            String fieldKey = fieldModel.getKey();
+            String newConvertedKey = environmentUtility.convertKeyToProperty(authenticationDescriptorKey, fieldKey);
+            String oldConvertedKey = environmentUtility.convertKeyToProperty(settingsUtility.getKey(), fieldKey);
+            boolean hasNewEnvironmentValue = environmentUtility.hasEnvironmentValue(newConvertedKey);
+            boolean hasOldEnvironmentValue = environmentUtility.hasEnvironmentValue(oldConvertedKey);
+            logger.info("    {}", oldConvertedKey);
+            logger.debug("         Environment Variable Found - {}", hasOldEnvironmentValue);
+            String defaultValue = null;
+            if (existingConfiguredFields.containsKey(fieldKey)) {
+                Optional<String> fieldValue = existingConfiguredFields.get(fieldKey).getFieldValue();
+                if (fieldValue.isPresent()) {
+                    defaultValue = fieldValue.get();
+                }
+            }
+            if (hasOldEnvironmentValue && !hasNewEnvironmentValue) {
+                environmentUtility.getEnvironmentValue(oldConvertedKey, defaultValue)
                     .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value, StringUtils.isNotBlank(value)))
                     .ifPresent(configurationModels::add);
+            } else if (existingConfiguredFields.containsKey(fieldKey)) {
+                configurationModels.add(existingConfiguredFields.get(fieldKey));
             }
         }
         return configurationModels;
@@ -158,5 +168,19 @@ public class AuthenticationSettingsMigration extends StartupComponent {
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fieldValueModelMap);
         FieldModel savedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         return modelConverter.convertToConfigurationFieldModelMap(savedFieldModel).values();
+    }
+
+    private void logConfiguration(Collection<ConfigurationFieldModel> fieldModels) {
+        if (!fieldModels.isEmpty()) {
+            logger.info("  ");
+            logger.info("  ### Configuration ### ");
+            fieldModels.forEach(this::logField);
+            logger.info("  ");
+        }
+    }
+
+    private void logField(ConfigurationFieldModel fieldModel) {
+        String value = fieldModel.isSensitive() ? "**********" : String.valueOf(fieldModel.getFieldValues());
+        logger.info("    {} = {}", fieldModel.getFieldKey(), value);
     }
 }

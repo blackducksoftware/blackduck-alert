@@ -9,10 +9,16 @@ import org.gradle.api.tasks.options.Option;
 
 public class RunServerTask extends Exec {
     private boolean suspend = false;
+    private boolean envOverride = false;
 
     @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
     public void setSuspend(boolean suspend) {
         this.suspend = suspend;
+    }
+
+    @Option(option = "envOverride", description = "True if Alert environment variables should override configuration values; False otherwise.")
+    public void setEnvOverride(boolean envOverride) {
+        this.envOverride = envOverride;
     }
 
     @Override
@@ -20,7 +26,7 @@ public class RunServerTask extends Exec {
         String userHome = System.getProperties().getProperty("user.home");
         String user = new File(userHome).getName();
         Map<String, String> envVars = new HashMap<>();
-        envVars.put("ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE", "true");
+        envVars.put("ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE", Boolean.toString(envOverride));
         envVars.put("ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL", String.format("%s@synopsys.com", user));
         envVars.put("ALERT_ENCRYPTION_PASSWORD", "changeme");
         envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", "changeme");
