@@ -69,7 +69,6 @@ class RoleTable extends Component {
 
     onSave() {
         const { role } = this.state;
-        console.log('Saving the role : ' + role);
         this.props.saveRole(role);
         this.setState({
             role: {
@@ -101,19 +100,14 @@ class RoleTable extends Component {
     savePermissions(permission) {
         const { role, incrementalId } = this.state;
         const { permissions } = role;
-        console.log('Saving the permission : ' + permission);
-        // FIXME
         if (!permission.id) {
-            console.log(`The permission has no id: ${permission.id}`);
             permission.id = incrementalId;
             this.setState({
                 incrementalId: incrementalId + 1
             });
             permissions.push(permission);
         } else {
-            console.log(`The permission has an id: ${permission.id}`);
             const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.id === permission.id);
-            console.log(`Matching permission index: ${matchingPermissionIndex}`);
             if (matchingPermissionIndex > -1) {
                 permissions[matchingPermissionIndex] = permission;
             }

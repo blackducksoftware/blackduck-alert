@@ -138,14 +138,12 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         const result = this.props.onConfigSave();
-        console.log(`Table save result ${result}`);
         let validationState;
         if (result) {
             validationState = VALIDATION_STATE.SUCCESS;
         } else {
             validationState = VALIDATION_STATE.FAILED;
         }
-        console.log(`Table submit state ${validationState}`);
         this.setState({
             uiValidation: validationState
         });

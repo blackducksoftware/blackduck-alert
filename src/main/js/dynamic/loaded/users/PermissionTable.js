@@ -235,7 +235,6 @@ class PermissionTable extends Component {
 
     onSavePermissions() {
         const { permissionsData } = this.state;
-        console.log('Saving the permission : ' + permissionsData);
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             this.setState({
                 errorMessage: 'Please select Descriptor name and context'
