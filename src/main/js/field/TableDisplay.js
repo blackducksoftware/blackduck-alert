@@ -56,12 +56,8 @@ class TableDisplay extends Component {
                 showErrorDialog: Boolean(this.props.errorDialogMessage)
             });
         }
-        console.log(`modalTitle: ${this.props.modalTitle} showConfig: ${this.state.showConfiguration} currentRow: ${this.state.currentRowSelected} previous inProgress: ${prevProps.inProgress} current inProgress; ${this.props.inProgress} fieldErrors: ${this.props.hasFieldErrors} uiValidation: ${this.state.uiValidation}`);
-        if ((this.state.showConfiguration || this.state.currentRowSelected) && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
+        if (!this.state.showConfiguration && this.state.currentRowSelected && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
-            this.setState({
-                showConfiguration: false
-            });
         }
     }
 
@@ -131,13 +127,10 @@ class TableDisplay extends Component {
 
     handleClose() {
         this.setState({
-            showConfiguration: false
+            currentRowSelected: null
         });
         this.props.onConfigClose();
         this.refs.table.cleanSelected();
-        this.setState({
-            currentRowSelected: null
-        });
         this.updateData();
     }
 
@@ -155,6 +148,9 @@ class TableDisplay extends Component {
         console.log(`Table submit state ${validationState}`);
         this.setState({
             uiValidation: validationState
+        });
+        this.setState({
+            showConfiguration: false
         });
     }
 
