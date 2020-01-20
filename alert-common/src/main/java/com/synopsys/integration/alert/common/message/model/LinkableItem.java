@@ -26,8 +26,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -41,11 +41,11 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private boolean collapsible;
     private boolean isNumericValue;
 
-    public LinkableItem(final String name, final String value) {
+    public LinkableItem(String name, String value) {
         this(name, value, null);
     }
 
-    public LinkableItem(final String name, final String value, final String url) {
+    public LinkableItem(String name, String value, String url) {
         this.name = name;
         this.value = value;
         this.url = url;
@@ -80,12 +80,12 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
         return isNumericValue;
     }
 
-    public void setNumericValueFlag(final boolean isNumericValue) {
+    public void setNumericValueFlag(boolean isNumericValue) {
         this.isNumericValue = isNumericValue;
     }
 
     @Override
-    public int compareTo(final LinkableItem otherItem) {
+    public int compareTo(LinkableItem otherItem) {
         if (!this.getName().equals(otherItem.getName())) {
             if (!this.isCollapsible() && otherItem.isCollapsible()) {
                 return -1;
@@ -98,7 +98,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public String toString() {
-        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE);
         builder.setExcludeFieldNames(EXCLUDED_FIELDS);
         return builder.toString();
     }

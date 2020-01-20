@@ -31,13 +31,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
@@ -60,10 +60,10 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
         }
 
         FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-        Boolean filterByProject = fieldAccessor.getBooleanOrFalse(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         if (filterByProject) {
-            Collection<String> configuredProjects = fieldAccessor.getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            String nullablePattern = fieldAccessor.getStringOrNull(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            String nullablePattern = fieldAccessor.getStringOrNull(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             return doProjectsFromNotificationMatchConfiguredProjects(notification, configuredProjects, nullablePattern);
         }
         return true;
