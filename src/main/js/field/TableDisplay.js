@@ -138,12 +138,7 @@ class TableDisplay extends Component {
         event.preventDefault();
         event.stopPropagation();
         const result = this.props.onConfigSave();
-        let validationState;
-        if (result) {
-            validationState = VALIDATION_STATE.SUCCESS;
-        } else {
-            validationState = VALIDATION_STATE.FAILED;
-        }
+        const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
         this.setState({
             uiValidation: validationState
         });
@@ -310,16 +305,14 @@ class TableDisplay extends Component {
             columnClassName="tableCell"
             dataFormat={this.editButtonClick}
             thStyle={{ textAlign: 'center' }}
-        >Edit
-        </TableHeaderColumn>);
+        >Edit</TableHeaderColumn>);
         tableColumns.push(<TableHeaderColumn
             dataField=""
             width="48"
             columnClassName="tableCell"
             dataFormat={this.copyButtonClick}
             thStyle={{ textAlign: 'center' }}
-        >Copy
-        </TableHeaderColumn>);
+        >Copy</TableHeaderColumn>);
 
         const {
             selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable
@@ -400,8 +393,7 @@ class TableDisplay extends Component {
 
         const refresh = this.props.tableRefresh && (
             <div className="pull-right">
-                {/* <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} /> */}
-                <AutoRefresh startAutoReload={() => true} autoRefresh={autoRefresh} />
+                <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
             </div>
         );
 
