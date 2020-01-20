@@ -154,7 +154,7 @@ class RoleTable extends Component {
         const roleNameKey = 'roleName';
         const roleNameValue = role[roleNameKey];
 
-        const { canCreate, canDelete, fieldErrors, inProgress } = this.props;
+        const { canCreate, canDelete, fieldErrors, inProgress, fetching } = this.props;
 
         return (
             <div>
@@ -163,6 +163,7 @@ class RoleTable extends Component {
                            errorValue={fieldErrors[roleNameKey]} />
                 <PermissionTable
                     inProgress={inProgress}
+                    fetching={fetching}
                     data={permissions}
                     saveRole={this.savePermissions}
                     deleteRole={this.deletePermission}
@@ -174,7 +175,7 @@ class RoleTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, roleError, inProgress } = this.props;
+        const { canCreate, canDelete, fieldErrors, roleError, inProgress, fetching } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
         return (
@@ -194,6 +195,7 @@ class RoleTable extends Component {
                     hasFieldErrors={hasErrors}
                     errorDialogMessage={roleError}
                     inProgress={inProgress}
+                    fetching={fetching}
                 />
             </div>
         );
@@ -205,7 +207,8 @@ RoleTable.defaultProps = {
     canDelete: true,
     roleError: null,
     fieldErrors: {},
-    inProgress: false
+    inProgress: false,
+    fetching: false
 };
 
 RoleTable.propTypes = {
@@ -217,7 +220,8 @@ RoleTable.propTypes = {
     descriptors: PropTypes.array,
     roleError: PropTypes.string,
     fieldErrors: PropTypes.object,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    fetching: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
@@ -225,7 +229,8 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors.items,
     roleError: state.roles.roleError,
     fieldErrors: state.roles.fieldErrors,
-    inProgress: state.roles.inProgress
+    inProgress: state.roles.inProgress,
+    fetching: state.roles.fetching
 });
 
 const mapDispatchToProps = dispatch => ({

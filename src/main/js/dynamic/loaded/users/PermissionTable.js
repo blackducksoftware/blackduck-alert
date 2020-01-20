@@ -251,13 +251,14 @@ class PermissionTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, inProgress } = this.props;
+        const { canCreate, canDelete, inProgress, fetching } = this.props;
 
         return (
             <div>
                 <TableDisplay
                     modalTitle="Role Permissions"
                     inProgress={inProgress}
+                    fetching={fetching}
                     tableNewButtonLabel="Add"
                     tableDeleteButtonLabel="Remove"
                     tableSearchable={false}
@@ -288,14 +289,16 @@ PermissionTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    fetching: PropTypes.bool
 };
 
 PermissionTable.defaultProps = {
     canCreate: true,
     canDelete: true,
     descriptors: [],
-    inProgress: false
+    inProgress: false,
+    fetching: false
 };
 
 export default PermissionTable;
