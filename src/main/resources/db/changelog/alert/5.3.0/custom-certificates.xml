@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-01-20-14-56-56-767">
+        <createTable schemaName="alert" tableName="CUSTOM_CERTIFICATES">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ALIAS" type="VARCHAR(128)"/>
+            <column name="CERTIFICATE_CONTENT" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
