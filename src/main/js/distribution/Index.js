@@ -11,7 +11,13 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
+import DistributionConfiguration, {
+    KEY_CHANNEL_NAME,
+    KEY_ENABLED,
+    KEY_FREQUENCY,
+    KEY_NAME,
+    KEY_PROVIDER_NAME
+} from 'dynamic/DistributionConfiguration';
 
 /**
  * Selects className based on field value
@@ -356,8 +362,8 @@ class Index extends Component {
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
                     <TableHeaderColumn dataField="enabled" width="96" dataSort columnTitle columnClassName="tableCell" dataFormat={this.enabledState}>Enabled</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ "text-align": "center" }}>Edit</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ "text-align": "center" }}>Copy</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ textAlign: 'center' }}>Edit</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ textAlign: 'center' }}>Copy</TableHeaderColumn>
                 </BootstrapTable>
 
                 {this.props.inProgress &&
