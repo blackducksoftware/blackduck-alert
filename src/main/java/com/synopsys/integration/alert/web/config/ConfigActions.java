@@ -31,8 +31,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +50,6 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class ConfigActions {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
@@ -162,7 +159,6 @@ public class ConfigActions {
             return "Successfully sent test message.";
         }
         String descriptorName = restModel.getDescriptorName();
-        logger.error("Test action did not exist: {}", descriptorName);
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
 
