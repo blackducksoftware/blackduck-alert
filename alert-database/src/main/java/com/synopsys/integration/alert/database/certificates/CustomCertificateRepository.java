@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,15 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.database.certificates;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+import java.util.Optional;
 
-public interface CustomCertificateAccessor {
-    CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    void deleteCert(String certificateAlias) throws AlertDatabaseConstraintException;
-
-    void deleteCert(Long certificateId) throws AlertDatabaseConstraintException;
+public interface CustomCertificateRepository extends JpaRepository<CustomCertificateEntity, Long> {
+    Optional<CustomCertificateEntity> findByAlias(String alias);
 }
