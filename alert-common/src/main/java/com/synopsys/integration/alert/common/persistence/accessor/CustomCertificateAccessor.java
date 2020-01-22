@@ -22,10 +22,14 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.util.List;
+
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 public interface CustomCertificateAccessor {
+    List<CustomCertificateModel> getAll();
+
     CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
 
     void deleteCert(String certificateAlias) throws AlertDatabaseConstraintException;
