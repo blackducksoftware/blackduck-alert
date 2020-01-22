@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.common.security;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,8 +11,10 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,13 +33,12 @@ public class CertificateUtility {
     }
 
     public void importCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        validateCustomCertificate(customCertificate);
         File trustStoreFile = getAndValidateTrustStoreFile();
         KeyStore trustStore = getAsKeyStore(trustStoreFile, getTrustStorePassword(), getTrustStoreType());
 
-        // FIXME construct the certificate
-        Certificate cert = null;
-
         try {
+            Certificate cert = getAsJavaCertificate(customCertificate);
             trustStore.setCertificateEntry(customCertificate.getAlias(), cert);
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(trustStoreFile))) {
                 trustStore.store(stream, getTrustStorePassword());
@@ -46,10 +48,35 @@ public class CertificateUtility {
         }
     }
 
-    public KeyStore getAsKeyStore(File keyStore, char[] keyStorePass, String keyStoreType) throws AlertException {
-        KeyStore.PasswordProtection protection = new KeyStore.PasswordProtection(getTrustStorePassword());
+    public void removeCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        if (null == customCertificate) {
+            throw new AlertException("The alias could not be determined from the custom certificate because it was null");
+        }
+        removeCertificate(customCertificate.getAlias());
+    }
+
+    public void removeCertificate(String certificateAlias) throws AlertException {
+        if (StringUtils.isBlank(certificateAlias)) {
+            throw new AlertException("The alias cannot be blank");
+        }
+        File trustStore = getAndValidateTrustStoreFile();
+        KeyStore keyStore = getAsKeyStore(trustStore, getTrustStorePassword(), getTrustStoreType());
         try {
-            return KeyStore.Builder.newInstance(getTrustStoreType(), null, keyStore, protection).getKeyStore();
+            if (keyStore.containsAlias(certificateAlias)) {
+                keyStore.deleteEntry(certificateAlias);
+                try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(trustStore))) {
+                    keyStore.store(stream, getTrustStorePassword());
+                }
+            }
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new AlertException("There was a problem removing the certificate", e);
+        }
+    }
+
+    public KeyStore getAsKeyStore(File keyStore, char[] keyStorePass, String keyStoreType) throws AlertException {
+        KeyStore.PasswordProtection protection = new KeyStore.PasswordProtection(keyStorePass);
+        try {
+            return KeyStore.Builder.newInstance(keyStoreType, null, keyStore, protection).getKeyStore();
         } catch (KeyStoreException e) {
             throw new AlertException("There was a problem accessing the trust store", e);
         }
@@ -70,6 +97,33 @@ public class CertificateUtility {
             return trustStoreFile;
         } else {
             throw new AlertConfigurationException("No trust store file has been provided");
+        }
+    }
+
+    private void validateCustomCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        if (null == customCertificate) {
+            throw new AlertException("The custom certificate cannot be null");
+        }
+
+        if (StringUtils.isBlank(customCertificate.getAlias())) {
+            throw new AlertException("The alias cannot be blank");
+        }
+
+        if (StringUtils.isBlank(customCertificate.getCertificateContent())) {
+            throw new AlertException("The certificate content cannot be blank");
+        }
+    }
+
+    private Certificate getAsJavaCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        try {
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+
+            String certificateContent = customCertificate.getCertificateContent();
+            try (ByteArrayInputStream certInputStream = new ByteArrayInputStream(certificateContent.getBytes())) {
+                return certFactory.generateCertificate(certInputStream);
+            }
+        } catch (CertificateException | IOException e) {
+            throw new AlertException("The custom certificate could not be read", e);
         }
     }
 
