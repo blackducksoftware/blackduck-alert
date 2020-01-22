@@ -20,11 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.validators;
+package com.synopsys.integration.alert.common.descriptor.config;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class GlobalConfigExistsValidator {
     }
 
     public Optional<String> validate(String descriptorName) {
+        if (StringUtils.isBlank(descriptorName)) {
+            return Optional.empty();
+        }
         String descriptorDisplayName = descriptorKeys.stream()
                                            .filter(descriptorKey -> descriptorKey.getUniversalKey().equals(descriptorName))
                                            .map(descriptorKey -> descriptorKey.getDisplayName())

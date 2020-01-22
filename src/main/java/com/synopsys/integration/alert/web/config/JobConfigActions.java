@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -67,13 +68,16 @@ public class JobConfigActions {
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
+    private final GlobalConfigExistsValidator globalConfigExistsValidator;
 
     @Autowired
-    public JobConfigActions(ConfigurationAccessor configurationAccessor, FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter) {
+    public JobConfigActions(ConfigurationAccessor configurationAccessor, FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
+        GlobalConfigExistsValidator globalConfigExistsValidator) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
+        this.globalConfigExistsValidator = globalConfigExistsValidator;
     }
 
     public boolean doesJobExist(UUID id) throws AlertDatabaseConstraintException {
@@ -255,6 +259,10 @@ public class JobConfigActions {
             }
         }
         return "No field model of type channel was was sent to test.";
+    }
+
+    public Optional<String> checkGlobalConfigExists(String descriptorName) {
+        return globalConfigExistsValidator.validate(descriptorName);
     }
 
     private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
