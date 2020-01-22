@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
+import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 
 public final class PolicyPriorityUtil {
     private static Map<String, ComponentItemPriority> policyPriorityMap = Map.of(
@@ -37,6 +38,9 @@ public final class PolicyPriorityUtil {
         "trivial", ComponentItemPriority.LOWEST,
         "unspecified", ComponentItemPriority.NONE);
 
+    private PolicyPriorityUtil() {
+    }
+
     public static ComponentItemPriority getPriorityFromSeverity(String severity) {
         if (StringUtils.isNotBlank(severity)) {
             String severityKey = severity.trim().toLowerCase();
@@ -45,6 +49,11 @@ public final class PolicyPriorityUtil {
         return ComponentItemPriority.NONE;
     }
 
-    private PolicyPriorityUtil() {
+    public static ComponentItemPriority getPriorityFromSeverity(PolicyRuleSeverityType severity) {
+        if (null != severity) {
+            String severityKey = severity.name().toLowerCase();
+            return policyPriorityMap.getOrDefault(severityKey, ComponentItemPriority.NONE);
+        }
+        return ComponentItemPriority.NONE;
     }
 }
