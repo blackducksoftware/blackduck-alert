@@ -39,10 +39,10 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
@@ -141,7 +141,7 @@ public class BlackDuckProjectNameExtractor {
                 ProjectView projectView = blackDuckService.getResponse(projectUri, ProjectView.class);
                 return Optional.of(projectView.getName());
             }
-        } catch (final IntegrationException ie) {
+        } catch (IntegrationException ie) {
             logger.error("Error getting project version for Bom Component. ", ie);
         }
 

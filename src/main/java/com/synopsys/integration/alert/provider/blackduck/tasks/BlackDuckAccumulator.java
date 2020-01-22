@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -155,10 +155,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected Date accumulate(DateRange dateRange) {
-        final Date currentStartTime = dateRange.getStart();
+        Date currentStartTime = dateRange.getStart();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
 
-        final List<NotificationView> notifications = read(dateRange);
+        List<NotificationView> notifications = read(dateRange);
         if (!notifications.isEmpty()) {
             List<NotificationView> sortedNotifications = sort(notifications);
             List<AlertNotificationWrapper> contentList = process(sortedNotifications);
@@ -169,7 +169,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected List<NotificationView> read(DateRange dateRange) {
-        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             try {
                 BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
@@ -226,8 +226,8 @@ public class BlackDuckAccumulator extends ScheduledTask {
     // Expects that the notifications are sorted oldest to newest
     private Optional<Date> getLatestNotificationCreatedAtDate(List<NotificationView> sortedNotificationList) {
         if (!sortedNotificationList.isEmpty()) {
-            final int lastIndex = sortedNotificationList.size() - 1;
-            final NotificationView notificationView = sortedNotificationList.get(lastIndex);
+            int lastIndex = sortedNotificationList.size() - 1;
+            NotificationView notificationView = sortedNotificationList.get(lastIndex);
             return Optional.of(notificationView.getCreatedAt());
         }
         return Optional.empty();
@@ -236,7 +236,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private Date calculateNextStartTime(Optional<Date> latestNotificationCreatedAt, Date currentStartDate) {
         Date newStartDate = currentStartDate;
         if (latestNotificationCreatedAt.isPresent()) {
-            final Date latestNotification = latestNotificationCreatedAt.get();
+            Date latestNotification = latestNotificationCreatedAt.get();
             ZonedDateTime newSearchStart = ZonedDateTime.ofInstant(latestNotification.toInstant(), ZoneOffset.UTC);
             // increment 1 millisecond
             newSearchStart = newSearchStart.plusNanos(1000000);
