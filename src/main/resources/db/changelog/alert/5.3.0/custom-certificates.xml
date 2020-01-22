@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gavink" id="2020-01-20-14-56-56-767">
         <createTable schemaName="alert" tableName="CUSTOM_CERTIFICATES">
-            <column name="ID" type="BIGINT">
+            <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="ALIAS" type="VARCHAR(128)"/>
