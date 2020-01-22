@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.web.certificates;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.CertificateModel;
@@ -44,6 +47,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 @RequestMapping(CertificatesController.API_BASE_URL)
 public class CertificatesController extends BaseController {
     public static final String API_BASE_URL = "/certificates";
+    private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
     private final ResponseFactory responseFactory;
     private final ContentConverter contentConverter;
@@ -72,25 +76,41 @@ public class CertificatesController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> importCertificate(@RequestBody CertificateModel certificateModel) {
-        CertificateModel certificate = actions.importCertificate(certificateModel);
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
+        try {
+            CertificateModel certificate = actions.createCertificate(certificateModel);
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
+        } catch (AlertException ex) {
+            logger.error("There was an issue updating the certificate: {}", ex.getMessage());
+            logger.debug("Cause", ex);
+            return responseFactory.createInternalServerErrorResponse("", "There was an issue importing the certificate.");
+        }
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<String> updateCertificate(@PathVariable Long id) {
-        Optional<CertificateModel> certificate = actions.updateCertificate(id);
-        if (certificate.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
+    public ResponseEntity<String> updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
+        try {
+
+            Optional<CertificateModel> certificate = actions.updateCertificate(id, certificateModel);
+            if (certificate.isPresent()) {
+                return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
+            }
+            return responseFactory.createNotFoundResponse("Certificate resource not found");
+        } catch (AlertException ex) {
+            logger.error("There was an issue updating the certificate: {}", ex.getMessage());
+            logger.debug("Cause", ex);
+            return responseFactory.createInternalServerErrorResponse(Long.toString(id), "There was an issue updating the certificate.");
         }
-        return responseFactory.createNotFoundResponse("Certificate resource not found");
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteCertificate(@PathVariable Long id) {
-        Optional<CertificateModel> certificate = actions.deleteCertificate(id);
-        if (certificate.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
+        try {
+            actions.deleteCertificate(id);
+            return responseFactory.createOkResponse(Long.toString(id), "Certificate deleted");
+        } catch (AlertException ex) {
+            logger.error("There was an issue deleting the certificate: {}", ex.getMessage());
+            logger.debug("Cause", ex);
+            return responseFactory.createInternalServerErrorResponse(Long.toString(id), "There was an issue deleting the certificate.");
         }
-        return responseFactory.createNotFoundResponse("Certificate resource not found");
     }
 }

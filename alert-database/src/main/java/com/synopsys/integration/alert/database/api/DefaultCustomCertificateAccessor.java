@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,12 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
                    .stream()
                    .map(this::createModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<CustomCertificateModel> getCertificate(Long id) {
+        return customCertificateRepository.findById(id)
+                   .map(this::createModel);
     }
 
     @Override

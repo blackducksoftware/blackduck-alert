@@ -23,12 +23,15 @@
 package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 public interface CustomCertificateAccessor {
     List<CustomCertificateModel> getAll();
+
+    Optional<CustomCertificateModel> getCertificate(Long id);
 
     CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
 

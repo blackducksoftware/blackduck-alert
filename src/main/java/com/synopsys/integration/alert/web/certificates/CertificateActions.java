@@ -24,10 +24,14 @@ package com.synopsys.integration.alert.web.certificates;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
@@ -45,27 +49,53 @@ public class CertificateActions {
     }
 
     public List<CertificateModel> readCertificates() {
-        return List.of();
+        return certificateAccessor.getAll().stream()
+                   .map(this::convertFromDatabaseModel)
+                   .collect(Collectors.toList());
     }
 
     public Optional<CertificateModel> readCertificate(Long id) {
+        return certificateAccessor.getCertificate(id)
+                   .map(this::convertFromDatabaseModel);
+    }
+
+    public CertificateModel createCertificate(CertificateModel certificateModel) throws AlertException {
+        if (null != certificateModel.getId()) {
+            throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
+        }
+        return importCertificate(certificateModel);
+    }
+
+    public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
+        Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
+        if (existingCertificate.isPresent()) {
+            return Optional.ofNullable(importCertificate(certificateModel));
+        }
         return Optional.empty();
     }
 
-    public CertificateModel importCertificate(CertificateModel certificateModel) {
-        return null;
+    private CertificateModel importCertificate(CertificateModel certificateModel) throws AlertException {
+        CustomCertificateModel certificateToStore = convertToDatabaseModel(certificateModel);
+        CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
+        certificateUtility.importCertificate(storedCertificate);
+        return convertFromDatabaseModel(storedCertificate);
     }
 
-    public Optional<CertificateModel> updateCertificate(Long id) {
-        return Optional.empty();
+    public void deleteCertificate(Long id) throws AlertException {
+        Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
+        if (certificate.isPresent()) {
+            certificateUtility.removeCertificate(certificate.get());
+            certificateAccessor.deleteCert(id);
+        }
     }
 
-    public Optional<CertificateModel> deleteCertificate(Long id) {
-        return Optional.empty();
-    }
-
-    private CertificateModel convertDatabaseModel(CustomCertificateModel databaseCertifcateModel) {
+    private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertifcateModel) {
         String id = databaseCertifcateModel.getNullableId() != null ? Long.toString(databaseCertifcateModel.getNullableId()) : null;
         return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent());
+    }
+
+    private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
+        Long id = StringUtils.isNotBlank(certificateModel.getId()) ? Long.valueOf(certificateModel.getId()) : null;
+        return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent());
     }
 }
