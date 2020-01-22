@@ -182,16 +182,16 @@ public class AlertProperties {
         return getOptionalString(keyStoreType);
     }
 
-    public String getTrustStoreFile() {
-        return trustStoreFile;
+    public Optional<String> getTrustStoreFile() {
+        return getOptionalString(trustStoreFile);
     }
 
-    public String getTrustStorePass() {
-        return trustStorePass;
+    public Optional<String> getTrustStorePass() {
+        return getOptionalString(trustStorePass);
     }
 
-    public String getTrustStoreType() {
-        return trustStoreType;
+    public Optional<String> getTrustStoreType() {
+        return getOptionalString(trustStoreType);
     }
 
     @Deprecated
