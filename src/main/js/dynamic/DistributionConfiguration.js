@@ -54,25 +54,25 @@ class DistributionConfiguration extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.saving && nextProps.success) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.saving && this.props.success) {
             this.setState({ show: false });
-            this.props.onSave(this.state);
-            this.props.onModalClose();
+            prevProps.onSave(this.state);
+            prevProps.onModalClose();
         }
 
-        if (!nextProps.fetching && !nextProps.inProgress) {
+        if (!this.props.fetching && !this.props.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const { job } = nextProps;
+                const { job } = this.props;
                 if (job && job.fieldModels) {
-                    const channelModel = nextProps.job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
+                    const channelModel = this.props.job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
-                    const providerModel = nextProps.job.fieldModels.find(model => providerName === model.descriptorName);
-                    const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-                    const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-                    this.props.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, newChannel.name);
-                    this.props.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
+                    const providerModel = this.props.job.fieldModels.find(model => providerName === model.descriptorName);
+                    const newChannel = prevProps.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    const newProvider = prevProps.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    prevProps.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, newChannel.name);
+                    prevProps.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
                     this.setState({
                         fieldErrors: {},
                         channelConfig: channelModel,
@@ -83,9 +83,7 @@ class DistributionConfiguration extends Component {
                 }
             }
         }
-    }
 
-    componentDidUpdate() {
         const { channelConfig, currentChannel, currentProvider } = this.state;
 
         const selectedChannelOption = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_CHANNEL_NAME);
