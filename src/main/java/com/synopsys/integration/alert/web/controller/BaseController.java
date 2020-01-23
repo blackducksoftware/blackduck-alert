@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
-
-import io.micrometer.core.instrument.util.StringUtils;
 
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
