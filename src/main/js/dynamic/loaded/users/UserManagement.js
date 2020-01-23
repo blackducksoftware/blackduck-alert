@@ -13,10 +13,7 @@ class UserManagement extends Component {
         super(props);
 
         const descriptor = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)[0];
-
-        this.state = {
-            descriptor: descriptor
-        };
+        this.state = { descriptor };
     }
 
     render() {
@@ -25,7 +22,9 @@ class UserManagement extends Component {
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
         return (
             <div>
-                <ConfigurationLabel configurationName="User Management" description="Create, edit, or delete Users and Roles to customize what the user can do in Alert." />
+                <ConfigurationLabel
+                    configurationName="User Management"
+                    description="Create, edit, or delete Users and Roles to customize what the user can do in Alert." />
                 <Tabs defaultActiveKey={1} id="user-management-tabs">
                     <Tab eventKey={1} title="Users">
                         <UserTable canCreate={canCreate} canDelete={canDelete} />
@@ -40,7 +39,7 @@ class UserManagement extends Component {
 }
 
 UserManagement.propTypes = {
-    descriptors: PropTypes.array
+    descriptors: PropTypes.array.isRequired
 };
 
 const mapStateToProps = state => ({

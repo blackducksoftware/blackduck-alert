@@ -84,7 +84,7 @@ public class RoleController extends BaseController {
         try {
             roleActions.updateRole(roleId, rolePermissionModel);
         } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to update role");
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, String.format("Failed to update role: %s", ex.getMessage()));
         }
 
         return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role updated.");
@@ -98,7 +98,7 @@ public class RoleController extends BaseController {
         try {
             roleActions.createRole(rolePermissionModel);
         } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, "Failed to create role");
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, String.format("Failed to create the role: %s", ex.getMessage()));
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
         }
@@ -114,7 +114,7 @@ public class RoleController extends BaseController {
         try {
             roleActions.deleteRole(roleId);
         } catch (AlertForbiddenOperationException ex) {
-            return responseFactory.createForbiddenResponse("The role is reserved and cannot be deleted.");
+            return responseFactory.createForbiddenResponse(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }

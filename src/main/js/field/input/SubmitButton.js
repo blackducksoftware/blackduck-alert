@@ -1,20 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SubmitButton = ({ onClick, children, id }) => (
-    <button id={id} className="btn btn-md btn-primary" type="submit" onClick={onClick}>{children}</button>
+const SubmitButton = ({ children, id }) => (
+    <button id={id} className="btn btn-md btn-primary" type="submit">{children}</button>
 );
 
 SubmitButton.defaultProps = {
     children: 'Submit',
-    id: 'id',
-    onClick: () => true
+    id: 'id'
 };
 
 SubmitButton.propTypes = {
     children: PropTypes.string,
-    id: PropTypes.string,
-    onClick: PropTypes.func
+    id: PropTypes.string
 };
 
 export default SubmitButton;

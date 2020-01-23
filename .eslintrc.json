@@ -68,6 +68,9 @@
     "react/jsx-closing-tag-location": [
       "warn"
     ],
+    "react/jsx-first-prop-new-line": [
+      "warn"
+    ],
     "comma-dangle": [
       "error",
       "never"
