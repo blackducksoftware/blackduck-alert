@@ -29,13 +29,13 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 public interface CustomCertificateAccessor {
-    List<CustomCertificateModel> getAll();
+    List<CustomCertificateModel> getCertificates();
 
     Optional<CustomCertificateModel> getCertificate(Long id);
 
     CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
 
-    void deleteCert(String certificateAlias) throws AlertDatabaseConstraintException;
+    void deleteCertificate(String certificateAlias) throws AlertDatabaseConstraintException;
 
-    void deleteCert(Long certificateId) throws AlertDatabaseConstraintException;
+    void deleteCertificate(Long certificateId) throws AlertDatabaseConstraintException;
 }

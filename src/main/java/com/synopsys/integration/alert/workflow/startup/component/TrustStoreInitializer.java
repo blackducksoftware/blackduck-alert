@@ -49,7 +49,7 @@ public class TrustStoreInitializer extends StartupComponent {
 
     @Override
     protected void initialize() {
-        List<CustomCertificateModel> allCustomCertificates = customCertificateAccessor.getAll();
+        List<CustomCertificateModel> allCustomCertificates = customCertificateAccessor.getCertificates();
         if (allCustomCertificates.isEmpty()) {
             logger.info("No user-provided certificates have been supplied at this time. Skipping trust store initialization");
             return;

@@ -49,7 +49,7 @@ public class CertificateActions {
     }
 
     public List<CertificateModel> readCertificates() {
-        return certificateAccessor.getAll().stream()
+        return certificateAccessor.getCertificates().stream()
                    .map(this::convertFromDatabaseModel)
                    .collect(Collectors.toList());
     }
@@ -85,7 +85,7 @@ public class CertificateActions {
         Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
         if (certificate.isPresent()) {
             certificateUtility.removeCertificate(certificate.get());
-            certificateAccessor.deleteCert(id);
+            certificateAccessor.deleteCertificate(id);
         }
     }
 

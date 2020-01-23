@@ -46,7 +46,7 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
     }
 
     @Override
-    public List<CustomCertificateModel> getAll() {
+    public List<CustomCertificateModel> getCertificates() {
         return customCertificateRepository.findAll()
                    .stream()
                    .map(this::createModel)
@@ -87,17 +87,17 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
     }
 
     @Override
-    public void deleteCert(String certificateAlias) throws AlertDatabaseConstraintException {
+    public void deleteCertificate(String certificateAlias) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(certificateAlias)) {
             throw new AlertDatabaseConstraintException("The field 'certificateAlias' cannot be blank");
         }
         CustomCertificateEntity customCertificateEntity = customCertificateRepository.findByAlias(certificateAlias)
                                                               .orElseThrow(() -> new AlertDatabaseConstraintException("A custom certificate with the alias " + certificateAlias + " did not exist"));
-        deleteCert(customCertificateEntity.getId());
+        deleteCertificate(customCertificateEntity.getId());
     }
 
     @Override
-    public void deleteCert(Long certificateId) throws AlertDatabaseConstraintException {
+    public void deleteCertificate(Long certificateId) throws AlertDatabaseConstraintException {
         if (null == certificateId) {
             throw new AlertDatabaseConstraintException("The field 'certificateId' cannot be null");
         } else if (0 > certificateId) {
