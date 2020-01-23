@@ -4,7 +4,7 @@ CREATE SCHEMA IF NOT EXISTS PUBLIC;
 create table if not exists ALERT.PROVIDER_PROJECTS
 (
     ID                  BIGSERIAL,
-    NAME                VARCHAR(255),
+    NAME                VARCHAR(512),
     DESCRIPTION         VARCHAR(255),
     HREF                VARCHAR(255),
     PROJECT_OWNER_EMAIL VARCHAR(255),
