@@ -277,6 +277,15 @@ create table if not exists ALERT.AUDIT_NOTIFICATION_RELATION
             on delete cascade
 );
 
+create table ALERT.CUSTOM_CERTIFICATES
+(
+    ID                  BIGSERIAL,
+    ALIAS               VARCHAR(128),
+    CERTIFICATE_CONTENT VARCHAR,
+    constraint PK_CUSTOM_CERTIFICATES
+        primary key (ID)
+);
+
 create table if not exists PUBLIC.DATABASECHANGELOGLOCK
 (
     ID          INTEGER not null,

@@ -3,6 +3,7 @@ call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/AUDIT_NOTIFICATION_RE
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/AUTHENTICATION_TYPE.csv', 'SELECT * FROM ALERT.AUTHENTICATION_TYPE');
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/CONFIG_CONTEXTS.csv', 'SELECT * FROM ALERT.CONFIG_CONTEXTS');
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/CONFIG_GROUPS.csv', 'SELECT * FROM ALERT.CONFIG_GROUPS');
+call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/CUSTOM_CERTIFICATES.csv', 'SELECT * FROM ALERT.CUSTOM_CERTIFICATES');
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/DEFINED_FIELDS.csv', 'SELECT * FROM ALERT.DEFINED_FIELDS');
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/DESCRIPTOR_CONFIGS.csv', 'SELECT * FROM ALERT.DESCRIPTOR_CONFIGS');
 call CSVWRITE('/opt/blackduck/alert/alert-config/data/temp/DESCRIPTOR_FIELDS.csv', 'SELECT * FROM ALERT.DESCRIPTOR_FIELDS');
