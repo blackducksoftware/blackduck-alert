@@ -22,14 +22,33 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     protected static final String LOGGER_PATTERN_BREAKING_EXPRESSION = "[\n|\r|\t]";
 
     public static String createSaferLoggableString(String taintedString) {
         return taintedString.replaceAll(LOGGER_PATTERN_BREAKING_EXPRESSION, "_");
+    }
+
+    public ResponseEntity<String> createResponseFromIntegrationRestException(ResponseFactory responseFactory, IntegrationRestException integrationRestException, String id) {
+        String exceptionMessage = integrationRestException.getMessage();
+        logger.error(exceptionMessage, integrationRestException);
+        String message = exceptionMessage;
+        if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
+            message += " : " + integrationRestException.getHttpStatusMessage();
+        }
+        return responseFactory.createMessageResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), id, message);
     }
 }
