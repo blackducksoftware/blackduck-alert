@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.web.model;
 
-import java.util.List;
-import java.util.Optional;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+public class CertificateModel extends Config {
+    private static final long serialVersionUID = 5148208006398190462L;
+    private String alias;
+    private String certificateContent;
 
-public interface CustomCertificateAccessor {
-    List<CustomCertificateModel> getCertificates();
+    public CertificateModel(String alias, String certificateContent) {
+        this.alias = alias;
+        this.certificateContent = certificateContent;
+    }
 
-    Optional<CustomCertificateModel> getCertificate(Long id);
+    public CertificateModel(String id, String alias, String certificateContent) {
+        super(id);
+        this.alias = alias;
+        this.certificateContent = certificateContent;
+    }
 
-    CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
+    public String getAlias() {
+        return alias;
+    }
 
-    void deleteCertificate(String certificateAlias) throws AlertDatabaseConstraintException;
-
-    void deleteCertificate(Long certificateId) throws AlertDatabaseConstraintException;
+    public String getCertificateContent() {
+        return certificateContent;
+    }
 }

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,11 +46,17 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
     }
 
     @Override
-    public List<CustomCertificateModel> getAll() {
+    public List<CustomCertificateModel> getCertificates() {
         return customCertificateRepository.findAll()
                    .stream()
                    .map(this::createModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<CustomCertificateModel> getCertificate(Long id) {
+        return customCertificateRepository.findById(id)
+                   .map(this::createModel);
     }
 
     @Override
@@ -80,17 +87,17 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
     }
 
     @Override
-    public void deleteCert(String certificateAlias) throws AlertDatabaseConstraintException {
+    public void deleteCertificate(String certificateAlias) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(certificateAlias)) {
             throw new AlertDatabaseConstraintException("The field 'certificateAlias' cannot be blank");
         }
         CustomCertificateEntity customCertificateEntity = customCertificateRepository.findByAlias(certificateAlias)
                                                               .orElseThrow(() -> new AlertDatabaseConstraintException("A custom certificate with the alias " + certificateAlias + " did not exist"));
-        deleteCert(customCertificateEntity.getId());
+        deleteCertificate(customCertificateEntity.getId());
     }
 
     @Override
-    public void deleteCert(Long certificateId) throws AlertDatabaseConstraintException {
+    public void deleteCertificate(Long certificateId) throws AlertDatabaseConstraintException {
         if (null == certificateId) {
             throw new AlertDatabaseConstraintException("The field 'certificateId' cannot be null");
         } else if (0 > certificateId) {
