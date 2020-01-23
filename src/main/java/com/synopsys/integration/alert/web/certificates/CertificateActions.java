@@ -76,9 +76,15 @@ public class CertificateActions {
 
     private CertificateModel importCertificate(CertificateModel certificateModel) throws AlertException {
         CustomCertificateModel certificateToStore = convertToDatabaseModel(certificateModel);
-        CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
-        certificateUtility.importCertificate(storedCertificate);
-        return convertFromDatabaseModel(storedCertificate);
+        try {
+            CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
+            certificateUtility.importCertificate(storedCertificate);
+            return convertFromDatabaseModel(storedCertificate);
+        } catch (AlertException ex) {
+            certificateAccessor.deleteCertificate(certificateToStore.getAlias());
+            certificateUtility.removeCertificate(certificateToStore.getAlias());
+            throw ex;
+        }
     }
 
     public void deleteCertificate(Long id) throws AlertException {
