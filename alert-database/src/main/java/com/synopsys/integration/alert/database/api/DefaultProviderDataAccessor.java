@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -62,6 +61,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     public static final Integer DEFAULT_LIMIT = 100;
 
     private static final int MAX_DESCRIPTION_LENGTH = 250;
+    private static final int MAX_PROJECT_NAME_LENGTH = 507;
 
     private final Logger logger = LoggerFactory.getLogger(DefaultProviderDataAccessor.class);
     private final ProviderProjectRepository providerProjectRepository;
@@ -225,8 +225,9 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private ProviderProjectEntity convertToProjectEntity(DescriptorKey descriptorKey, ProviderProject providerProject) {
+        String trimmedProjectName = StringUtils.abbreviate(providerProject.getName(), MAX_PROJECT_NAME_LENGTH);
         String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), descriptorKey.getUniversalKey());
+        return new ProviderProjectEntity(trimmedProjectName, trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), descriptorKey.getUniversalKey());
     }
 
     private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
