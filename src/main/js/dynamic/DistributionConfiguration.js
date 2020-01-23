@@ -57,8 +57,8 @@ class DistributionConfiguration extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.saving && this.props.success) {
             this.setState({ show: false });
-            prevProps.onSave(this.state);
-            prevProps.onModalClose();
+            this.props.onSave(this.state);
+            this.props.onModalClose();
         }
 
         if (!this.props.fetching && !this.props.inProgress) {
@@ -69,10 +69,10 @@ class DistributionConfiguration extends Component {
                     const channelModel = this.props.job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
                     const providerModel = this.props.job.fieldModels.find(model => providerName === model.descriptorName);
-                    const newChannel = prevProps.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-                    const newProvider = prevProps.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-                    prevProps.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, newChannel.name);
-                    prevProps.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
+                    const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    this.props.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, newChannel.name);
+                    this.props.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
                     this.setState({
                         fieldErrors: {},
                         channelConfig: channelModel,
