@@ -34,9 +34,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -49,7 +49,7 @@ public class BlackDuckResponseCache {
     private BlackDuckBucket bucket;
     private long timeout;
 
-    public BlackDuckResponseCache(final BlackDuckBucketService blackDuckBucketService, final BlackDuckBucket bucket, final long timeout) {
+    public BlackDuckResponseCache(BlackDuckBucketService blackDuckBucketService, BlackDuckBucket bucket, long timeout) {
         this.blackDuckBucketService = blackDuckBucketService;
         this.bucket = bucket;
         this.timeout = timeout;
@@ -85,9 +85,9 @@ public class BlackDuckResponseCache {
                    .flatMap(view -> view.getFirstLink(link));
     }
 
-    public Optional<VersionBomComponentView> getBomComponentView(String bomComponentUrl) {
+    public Optional<ProjectVersionComponentView> getBomComponentView(String bomComponentUrl) {
         if (StringUtils.isNotBlank(bomComponentUrl)) {
-            return getItem(VersionBomComponentView.class, bomComponentUrl);
+            return getItem(ProjectVersionComponentView.class, bomComponentUrl);
         }
         return Optional.empty();
     }
@@ -111,7 +111,7 @@ public class BlackDuckResponseCache {
             Optional<VulnerabilityView> vulnerabilityView = getItem(VulnerabilityView.class, vulnerabilityUrl);
             if (vulnerabilityView.isPresent()) {
                 VulnerabilityView vulnerability = vulnerabilityView.get();
-                severity = vulnerability.getSeverity();
+                severity = vulnerability.getSeverity().name();
                 Optional<String> cvss3Severity = getCvss3Severity(vulnerability);
                 if (cvss3Severity.isPresent()) {
                     severity = cvss3Severity.get();
@@ -124,9 +124,9 @@ public class BlackDuckResponseCache {
         return severity;
     }
 
-    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(VersionBomComponentView versionBomComponent) {
+    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(ProjectVersionComponentView versionBomComponent) {
         // TODO Stop using this when Black Duck supports going back to the project-version
-        final Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+        Optional<String> versionBomComponentHref = versionBomComponent.getHref();
         if (versionBomComponentHref.isPresent()) {
             String versionHref = versionBomComponentHref.get();
             int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);

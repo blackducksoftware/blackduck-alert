@@ -610,8 +610,8 @@ For this advanced setting, since there are more than just environment variables 
         Synopsys recommends setting the deploy.resources using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
         
             ALERT_MAX_HEAP_SIZE = 4096M
-            limits = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
-            reservations = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
+            limits = ALERT_MAX_HEAP_SIZE + 256M = 4352M
+            reservations = ALERT_MAX_HEAP_SIZE + 256M = 4352M
                 
 Example: 
 - Change the memory limit from 2G to 4G.
