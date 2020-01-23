@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionViewV5;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
@@ -110,7 +110,7 @@ public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<Rule
         List<ComponentItem> componentItems = new LinkedList<>();
         String componentName = componentVersionStatus.getComponentName();
         String componentVersionName = componentVersionStatus.getComponentVersionName();
-        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
+        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionViewV5.COMPONENTS_LINK);
         componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation,
             componentVersionStatus.getBomComponent(), List.of(), policyFilter));
         return componentItems;

@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectViewV4;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -135,7 +136,7 @@ public class BlackDuckProjectNameExtractor {
             Optional<String> versionBomComponentHref = versionBomComponent.getHref();
             if (versionBomComponentHref.isPresent()) {
                 String versionHref = versionBomComponentHref.get();
-                int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
+                int projectVersionIndex = versionHref.indexOf(ProjectViewV4.VERSIONS_LINK);
                 String projectUri = versionHref.substring(0, projectVersionIndex - 1);
 
                 ProjectView projectView = blackDuckService.getResponse(projectUri, ProjectView.class);

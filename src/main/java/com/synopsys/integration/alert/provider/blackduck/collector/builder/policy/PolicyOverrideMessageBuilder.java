@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionViewV5;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -104,7 +104,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
 
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
-        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
+        ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionViewV5.COMPONENTS_LINK);
         return policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, null, List.of(policyOverride), policyFilter);
     }
 
