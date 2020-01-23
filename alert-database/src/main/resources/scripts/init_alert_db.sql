@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS PUBLIC;
 
 create table if not exists ALERT.PROVIDER_PROJECTS
 (
-    ID                  SERIAL,
+    ID                  BIGSERIAL,
     NAME                VARCHAR(255),
     DESCRIPTION         VARCHAR(255),
     HREF                VARCHAR(255),
@@ -15,7 +15,7 @@ create table if not exists ALERT.PROVIDER_PROJECTS
 
 create table if not exists ALERT.PROVIDER_USERS
 (
-    ID            SERIAL,
+    ID            BIGSERIAL,
     EMAIL_ADDRESS VARCHAR(255),
     OPT_OUT       BOOLEAN,
     PROVIDER      VARCHAR(255),
@@ -34,7 +34,7 @@ create table if not exists ALERT.SYSTEM_STATUS
 
 create table if not exists ALERT.SYSTEM_MESSAGES
 (
-    ID         SERIAL,
+    ID         BIGSERIAL,
     CREATED_AT TIMESTAMP,
     SEVERITY   VARCHAR(50),
     CONTENT    VARCHAR(255),
@@ -45,7 +45,7 @@ create table if not exists ALERT.SYSTEM_MESSAGES
 
 create table if not exists ALERT.RAW_NOTIFICATION_CONTENT
 (
-    ID                     SERIAL,
+    ID                     BIGSERIAL,
     CREATED_AT             TIMESTAMP,
     PROVIDER               VARCHAR(255),
     PROVIDER_CREATION_TIME TIMESTAMP,
@@ -69,7 +69,7 @@ create table if not exists ALERT.PROVIDER_USER_PROJECT_RELATION
 
 create table if not exists ALERT.ROLES
 (
-    ID       SERIAL,
+    ID       BIGSERIAL,
     ROLENAME VARCHAR(255),
     CUSTOM   BOOLEAN default FALSE not null,
     constraint ROLE_KEY
@@ -78,7 +78,7 @@ create table if not exists ALERT.ROLES
 
 create table if not exists ALERT.SETTINGS_KEY
 (
-    ID    SERIAL,
+    ID    BIGSERIAL,
     KEY   VARCHAR(255),
     VALUE VARCHAR(255),
     constraint SETTINGS_KEY_KEY
@@ -88,7 +88,7 @@ create table if not exists ALERT.SETTINGS_KEY
 
 create table if not exists ALERT.REGISTERED_DESCRIPTORS
 (
-    ID      SERIAL,
+    ID      BIGSERIAL,
     TYPE_ID BIGINT,
     NAME    VARCHAR(255),
     constraint REGISTERED_DESCRIPTORS_KEY
@@ -97,7 +97,7 @@ create table if not exists ALERT.REGISTERED_DESCRIPTORS
 
 create table if not exists ALERT.DESCRIPTOR_TYPES
 (
-    ID   SERIAL,
+    ID   BIGSERIAL,
     TYPE VARCHAR(255),
     constraint DESCRIPTOR_TYPES_KEY
         primary key (ID)
@@ -105,7 +105,7 @@ create table if not exists ALERT.DESCRIPTOR_TYPES
 
 create table if not exists ALERT.DEFINED_FIELDS
 (
-    ID         SERIAL,
+    ID         BIGSERIAL,
     SOURCE_KEY VARCHAR(255)          not null
         unique,
     SENSITIVE  BOOLEAN default FALSE not null,
@@ -129,7 +129,7 @@ create table if not exists ALERT.DESCRIPTOR_FIELDS
 
 create table if not exists ALERT.CONFIG_CONTEXTS
 (
-    ID      SERIAL,
+    ID      BIGSERIAL,
     CONTEXT VARCHAR(31)
         unique,
     constraint CONFIG_CONTEXTS_KEY
@@ -157,7 +157,7 @@ create table if not exists ALERT.PERMISSION_MATRIX
 
 create table if not exists ALERT.DESCRIPTOR_CONFIGS
 (
-    ID            SERIAL,
+    ID            BIGSERIAL,
     DESCRIPTOR_ID BIGINT,
     CONTEXT_ID    BIGINT,
     CREATED_AT    TIMESTAMP,
@@ -199,7 +199,7 @@ create table if not exists ALERT.CONFIG_GROUPS
 
 create table if not exists ALERT.FIELD_VALUES
 (
-    ID          SERIAL,
+    ID          BIGSERIAL,
     CONFIG_ID   BIGINT,
     FIELD_ID    BIGINT,
     FIELD_VALUE VARCHAR(512),
@@ -215,7 +215,7 @@ create table if not exists ALERT.FIELD_VALUES
 
 create table if not exists ALERT.AUTHENTICATION_TYPE
 (
-    ID   SERIAL,
+    ID   BIGSERIAL,
     NAME VARCHAR(255),
     constraint AUTH_TYPE_KEY
         primary key (ID)
@@ -223,7 +223,7 @@ create table if not exists ALERT.AUTHENTICATION_TYPE
 
 create table if not exists ALERT.USERS
 (
-    ID               SERIAL,
+    ID               BIGSERIAL,
     USERNAME         VARCHAR(2048)
         unique,
     PASSWORD         VARCHAR(2048),
@@ -254,7 +254,7 @@ create table if not exists ALERT.USER_ROLES
 
 create table if not exists ALERT.AUDIT_ENTRIES
 (
-    ID                SERIAL
+    ID                BIGSERIAL
         primary key,
     ERROR_MESSAGE     VARCHAR(255),
     ERROR_STACK_TRACE VARCHAR,
