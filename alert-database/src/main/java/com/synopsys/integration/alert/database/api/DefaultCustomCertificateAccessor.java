@@ -77,11 +77,15 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
 
         CustomCertificateEntity entityToSave = new CustomCertificateEntity(alias, certificateContent);
         Long id = certificateModel.getNullableId();
-        if (null != id) {
+        if (null == id) {
+            // Mimic keystore functionality
+            id = customCertificateRepository.findByAlias(alias).map(CustomCertificateEntity::getId).orElse(null);
+        } else {
             customCertificateRepository.findById(id)
                 .orElseThrow(() -> new AlertDatabaseConstraintException("A custom certificate with that id did not exist"));
-            entityToSave.setId(id);
         }
+
+        entityToSave.setId(id);
         CustomCertificateEntity updatedEntity = customCertificateRepository.save(entityToSave);
         return createModel(updatedEntity);
     }
