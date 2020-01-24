@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.web.certificates;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.CertificateModel;
 
@@ -49,12 +54,16 @@ public class CertificatesController extends BaseController {
     public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
     private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
+    private DescriptorKey descriptorKey;
+    private AuthorizationManager authorizationManager;
     private final ResponseFactory responseFactory;
     private final ContentConverter contentConverter;
     private final CertificateActions actions;
 
     @Autowired
-    public CertificatesController(ResponseFactory responseFactory, ContentConverter contentConverter, CertificateActions actions) {
+    public CertificatesController(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, ResponseFactory responseFactory, ContentConverter contentConverter, CertificateActions actions) {
+        this.descriptorKey = descriptorKey;
+        this.authorizationManager = authorizationManager;
         this.responseFactory = responseFactory;
         this.contentConverter = contentConverter;
         this.actions = actions;
@@ -62,11 +71,17 @@ public class CertificatesController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> readCertificates() {
+        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(actions.readCertificates()));
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> readCertificate(@PathVariable Long id) {
+        if (!hasPermission(authorizationManager::hasReadPermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
         Optional<CertificateModel> certificate = actions.readCertificate(id);
         if (certificate.isPresent()) {
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
@@ -76,6 +91,9 @@ public class CertificatesController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> importCertificate(@RequestBody CertificateModel certificateModel) {
+        if (!hasPermission(authorizationManager::hasCreatePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
         try {
             CertificateModel certificate = actions.createCertificate(certificateModel);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
@@ -89,8 +107,10 @@ public class CertificatesController extends BaseController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<String> updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
+        if (!hasPermission(authorizationManager::hasWritePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
         try {
-
             Optional<CertificateModel> certificate = actions.updateCertificate(id, certificateModel);
             if (certificate.isPresent()) {
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
@@ -106,6 +126,9 @@ public class CertificatesController extends BaseController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteCertificate(@PathVariable Long id) {
+        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+            return responseFactory.createForbiddenResponse();
+        }
         try {
             actions.deleteCertificate(id);
             return responseFactory.createOkResponse(Long.toString(id), "Certificate deleted");
@@ -115,5 +138,9 @@ public class CertificatesController extends BaseController {
             logger.debug("Cause", ex);
             return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue deleting the certificate. %s", message));
         }
+    }
+
+    private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
+        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
 }
