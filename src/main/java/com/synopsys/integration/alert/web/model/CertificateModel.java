@@ -29,6 +29,10 @@ public class CertificateModel extends Config {
     private String alias;
     private String certificateContent;
 
+    public CertificateModel() {
+        super();
+    }
+
     public CertificateModel(String alias, String certificateContent) {
         this.alias = alias;
         this.certificateContent = certificateContent;

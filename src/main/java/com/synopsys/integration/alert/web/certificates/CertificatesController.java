@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 @RestController
 @RequestMapping(CertificatesController.API_BASE_URL)
 public class CertificatesController extends BaseController {
-    public static final String API_BASE_URL = "/certificates";
+    public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
     private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
     private final ResponseFactory responseFactory;
@@ -80,9 +80,10 @@ public class CertificatesController extends BaseController {
             CertificateModel certificate = actions.createCertificate(certificateModel);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
         } catch (AlertException ex) {
-            logger.error("There was an issue updating the certificate: {}", ex.getMessage());
+            String message = ex.getMessage();
+            logger.error("There was an issue updating the certificate: {}", message);
             logger.debug("Cause", ex);
-            return responseFactory.createInternalServerErrorResponse("", "There was an issue importing the certificate.");
+            return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
         }
     }
 
@@ -96,9 +97,10 @@ public class CertificatesController extends BaseController {
             }
             return responseFactory.createNotFoundResponse("Certificate resource not found");
         } catch (AlertException ex) {
-            logger.error("There was an issue updating the certificate: {}", ex.getMessage());
+            String message = ex.getMessage();
+            logger.error("There was an issue updating the certificate: {}", message);
             logger.debug("Cause", ex);
-            return responseFactory.createInternalServerErrorResponse(Long.toString(id), "There was an issue updating the certificate.");
+            return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue updating the certificate. %s", message));
         }
     }
 
@@ -108,9 +110,10 @@ public class CertificatesController extends BaseController {
             actions.deleteCertificate(id);
             return responseFactory.createOkResponse(Long.toString(id), "Certificate deleted");
         } catch (AlertException ex) {
-            logger.error("There was an issue deleting the certificate: {}", ex.getMessage());
+            String message = ex.getMessage();
+            logger.error("There was an issue deleting the certificate: {}", message);
             logger.debug("Cause", ex);
-            return responseFactory.createInternalServerErrorResponse(Long.toString(id), "There was an issue deleting the certificate.");
+            return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue deleting the certificate. %s", message));
         }
     }
 }
