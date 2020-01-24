@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +41,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 
 @Component
 public class CertificateActions {
+    private static final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private CertificateUtility certificateUtility;
     private CustomCertificateAccessor certificateAccessor;
 
@@ -63,14 +66,17 @@ public class CertificateActions {
         if (null != certificateModel.getId()) {
             throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
         }
+        logger.info("Importing certificate with alias {}", certificateModel.getAlias());
         return importCertificate(certificateModel);
     }
 
     public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
         Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
+        logger.info("Updating certificate with id: {} and alias: {}", certificateModel.getId(), certificateModel.getAlias());
         if (existingCertificate.isPresent()) {
             return Optional.ofNullable(importCertificate(certificateModel));
         }
+        logger.error("Certificate with id: {} missing.", certificateModel.getId());
         return Optional.empty();
     }
 
@@ -81,8 +87,7 @@ public class CertificateActions {
             certificateUtility.importCertificate(storedCertificate);
             return convertFromDatabaseModel(storedCertificate);
         } catch (AlertException ex) {
-            certificateAccessor.deleteCertificate(certificateToStore.getAlias());
-            certificateUtility.removeCertificate(certificateToStore.getAlias());
+            deleteByAlias(certificateToStore);
             throw ex;
         }
     }
@@ -90,8 +95,20 @@ public class CertificateActions {
     public void deleteCertificate(Long id) throws AlertException {
         Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
         if (certificate.isPresent()) {
-            certificateUtility.removeCertificate(certificate.get());
+            CustomCertificateModel certificateModel = certificate.get();
+            logger.info("Delete certificate with id: {} and alias: {}", certificateModel.getNullableId(), certificateModel.getAlias());
+            certificateUtility.removeCertificate(certificateModel);
             certificateAccessor.deleteCertificate(id);
+        }
+    }
+
+    private void deleteByAlias(CustomCertificateModel certificateModel) {
+        try {
+            certificateAccessor.deleteCertificate(certificateModel.getAlias());
+            certificateUtility.removeCertificate(certificateModel.getAlias());
+        } catch (AlertException deleteEx) {
+            logger.error("Error deleting certificate with alias {}", certificateModel.getAlias());
+            logger.error("Caused by: ", deleteEx);
         }
     }
 
