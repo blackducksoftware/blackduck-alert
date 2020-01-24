@@ -71,7 +71,7 @@ public class CertificatesController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> readCertificates() {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+        if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(actions.readCertificates()));

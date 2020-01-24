@@ -28,10 +28,11 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
 @Component
 public class CertificatesDescriptorKey extends DescriptorKey {
+    private static final String CERTIFICATES_COMPONENT = "component_certificates";
 
     @Override
     public String getUniversalKey() {
-        return "component_certificates";
+        return CERTIFICATES_COMPONENT;
     }
 
     @Override
