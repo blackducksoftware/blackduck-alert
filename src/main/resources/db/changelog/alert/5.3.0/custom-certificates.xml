@@ -10,4 +10,13 @@
             <column name="CERTIFICATE_CONTENT" type="VARCHAR"/>
         </createTable>
     </changeSet>
+    <changeSet author="psantos" id="2020-01-24-13-56-31-244">
+        <sql dbms="h2" stripComments="true">
+            CALL REGISTER_COMPONENT('component_certificates');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','component_certificates', 'GLOBAL', 0);
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','component_certificates', 'GLOBAL', 0);
+        </sql>
+    </changeSet>
 </databaseChangeLog>

@@ -4,66 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.security.KeyStore;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.model.CertificateModel;
 
 @Transactional
-@TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
-public class CertificateActionsTestIT extends AlertIntegrationTest {
-    private static final String CERTIFICATE_FILE_PATH = "certificates/selfsigned.cert.pem";
-    private static final String TEST_ALIAS = "test-alias";
-    private static final String TRUSTSTORE_FILE_PATH = "./build/certificates/blackduck-alert-test.truststore";
-    private static final String TRUSTSTORE_PASSWORD = "changeit";
-
-    @Autowired
-    private CustomCertificateRepository customCertificateRepository;
-
-    @Autowired
-    private CertificateActions certificateActions;
-
-    @Autowired
-    private AlertProperties alertProperties;
-
-    private File trustStoreFile;
-
-    @BeforeEach
-    public void init() throws Exception {
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(null, null);
-        trustStoreFile = new File(TRUSTSTORE_FILE_PATH);
-        trustStoreFile.getParentFile().mkdirs();
-        trustStoreFile.createNewFile();
-        System.out.println(String.format("Trust store file path: %s", trustStoreFile.getAbsolutePath()));
-        FileOutputStream outputStream = new FileOutputStream(trustStoreFile);
-        trustStore.store(outputStream, TRUSTSTORE_PASSWORD.toCharArray());
-        outputStream.close();
-        alertProperties.getTrustStoreFile().ifPresent(file -> System.out.println(String.format("Alert Properties trust store file %s", file)));
-    }
-
-    @AfterEach
-    public void cleanup() {
-        customCertificateRepository.deleteAll();
-        FileUtils.deleteQuietly(trustStoreFile);
-    }
+public class CertificateActionsTestIT extends BaseCertificateTestIT {
 
     @Test
     public void readAllEmptyListTest() {
@@ -115,19 +64,5 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
         CertificateModel savedCertificate = createCertificate();
         certificateActions.deleteCertificate(Long.valueOf(savedCertificate.getId()));
         assertTrue(customCertificateRepository.findAll().isEmpty());
-    }
-
-    private CertificateModel createCertificate() throws AlertException, IOException {
-        String certificateContent = readCertificateContents();
-        CertificateModel certificateModel = new CertificateModel(TEST_ALIAS, certificateContent);
-        CertificateModel savedCertificate = certificateActions.createCertificate(certificateModel);
-
-        return savedCertificate;
-    }
-
-    private String readCertificateContents() throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource(CERTIFICATE_FILE_PATH);
-        File jsonFile = classPathResource.getFile();
-        return FileUtils.readFileToString(jsonFile, Charset.defaultCharset());
     }
 }
