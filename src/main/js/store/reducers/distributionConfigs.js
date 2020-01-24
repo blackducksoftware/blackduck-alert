@@ -1,4 +1,7 @@
 import {
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR,
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE,
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS,
     DISTRIBUTION_JOB_FETCH_ERROR,
     DISTRIBUTION_JOB_FETCHED,
     DISTRIBUTION_JOB_FETCHING,
@@ -141,6 +144,22 @@ const config = (state = initialState, action) => {
                 error: {
                     ...action.errors,
                     message: action.configurationMessage
+                }
+            });
+        case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
+            return Object.assign({}, state, {
+                inProgress: true
+            });
+        case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
+            return Object.assign({}, state, {
+                inProgress: false
+            });
+        case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE:
+            return Object.assign({}, state, {
+                inProgress: false,
+                error: {
+                    ...state.error,
+                    ...action.errors
                 }
             });
         case SERIALIZE:
