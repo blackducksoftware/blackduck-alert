@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -60,8 +59,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
 
     @Autowired
-    public EmailDistributionUIConfig(EmailChannelKey emailChannelKey, GlobalConfigExistsValidator globalConfigExistsValidator) {
-        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, globalConfigExistsValidator, globalConfigExistsValidator);
+    public EmailDistributionUIConfig(EmailChannelKey emailChannelKey) {
+        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
     }
 
     @Override

@@ -278,6 +278,17 @@ public class JobConfigController extends BaseController {
         }
     }
 
+    // This will check if the specified descriptor has a global config associated with it
+    @PostMapping("/descriptorCheck")
+    public ResponseEntity<String> descriptorCheck(@RequestBody String descriptorName) {
+        Optional<String> configMissingMessage = jobConfigActions.checkGlobalConfigExists(descriptorName);
+        if (configMissingMessage.isPresent()) {
+            String message = configMissingMessage.get();
+            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, message);
+        }
+        return responseFactory.createNoContentResponse();
+    }
+
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody JobFieldModel restModel, @RequestParam(required = false) String destination) {
         return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel, destination));
@@ -296,13 +307,7 @@ public class JobConfigController extends BaseController {
             String responseMessage = messageFunction.apply(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (IntegrationRestException e) {
-            String exceptionMessage = e.getMessage();
-            logger.error(exceptionMessage, e);
-            String message = exceptionMessage;
-            if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
-                message += " : " + e.getHttpStatusMessage();
-            }
-            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
+            return createResponseFromIntegrationRestException(responseFactory, e, id);
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (AlertMethodNotAllowedException e) {
