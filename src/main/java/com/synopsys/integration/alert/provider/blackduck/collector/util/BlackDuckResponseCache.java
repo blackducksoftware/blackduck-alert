@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -105,14 +106,14 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    public String getSeverity(String vulnerabilityUrl) {
-        String severity = "UNKNOWN";
+    public ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType getSeverity(String vulnerabilityUrl) {
+        ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity = null;
         try {
             Optional<VulnerabilityView> vulnerabilityView = getItem(VulnerabilityView.class, vulnerabilityUrl);
             if (vulnerabilityView.isPresent()) {
                 VulnerabilityView vulnerability = vulnerabilityView.get();
-                severity = vulnerability.getSeverity().name();
-                Optional<String> cvss3Severity = getCvss3Severity(vulnerability);
+                severity = vulnerability.getSeverity();
+                Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> cvss3Severity = getCvss3Severity(vulnerability);
                 if (cvss3Severity.isPresent()) {
                     severity = cvss3Severity.get();
                 }
@@ -145,19 +146,9 @@ public class BlackDuckResponseCache {
     }
 
     // TODO update this code with an Object from blackduck-common-api when available
-    private Optional<String> getCvss3Severity(VulnerabilityView vulnerabilityView) {
-        Boolean useCvss3 = vulnerabilityView.getUseCvss3();
-        if (null != useCvss3 && useCvss3) {
-            JsonObject vulnJsonObject = vulnerabilityView.getJsonElement().getAsJsonObject();
-            JsonElement cvss3 = vulnJsonObject.get("cvss3");
-            if (null != cvss3) {
-                JsonElement cvss3Severity = cvss3.getAsJsonObject().get("severity");
-                if (null != cvss3Severity) {
-                    return Optional.of(cvss3Severity.getAsString());
-                }
-            }
-        }
-        return Optional.empty();
+    private Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> getCvss3Severity(VulnerabilityView vulnerabilityView) {
+        ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity = vulnerabilityView.getCvss3().getSeverity();
+        return Optional.of(severity);
     }
 
 }
