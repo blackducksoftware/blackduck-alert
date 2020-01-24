@@ -6,7 +6,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilityCvss3SeverityType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -85,20 +85,20 @@ public class BlackDuckMessageBuilderTestHelper {
             Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(componentVersionUri), Mockito.any(ComponentVersionView.class.getClass()))).thenReturn(componentVersionView);
             Mockito.when(mockBlackDuckService.getResponse(componentVersionUri, ComponentVersionView.class)).thenReturn(componentVersionView);
 
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_1, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_2, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_3, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_4, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_5, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_6, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_7, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_8, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_9, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_10, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_11, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_12, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_13, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_BDSA_4, mockBlackDuckService, VulnerabilityCvss3SeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_1, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_2, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_3, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_4, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_5, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_6, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_7, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_8, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_9, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_10, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_11, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_12, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_13, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_BDSA_4, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
         } catch (IntegrationException ignored) {
         }
 
@@ -113,7 +113,7 @@ public class BlackDuckMessageBuilderTestHelper {
         return new PrintStreamIntLogger(System.out, LogLevel.ERROR);
     }
 
-    private static void mockVulnSingleResponse(String uri, BlackDuckService blackDuckService, VulnerabilityCvss3SeverityType severity) {
+    private static void mockVulnSingleResponse(String uri, BlackDuckService blackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity) {
         VulnerabilityView vulnerabilityView = new VulnerabilityView();
         vulnerabilityView.setSeverity(severity);
         vulnerabilityView.setMeta(new ResourceMetadata());
