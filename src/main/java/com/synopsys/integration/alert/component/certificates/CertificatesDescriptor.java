@@ -26,15 +26,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 @Component
 public class CertificatesDescriptor extends ComponentDescriptor {
     public static final String CERTIFICATES_LABEL = "Certificates";
     public static final String CERTIFICATES_URL = "certificates";
-    public static final String CERTIFICATES_DESCRIPTION = "This page allows you to configure user authentication for Alert.";
+    public static final String CERTIFICATES_DESCRIPTION = "This page allows you to configure user certificates for Alert.";
 
     @Autowired
     public CertificatesDescriptor(CertificatesDescriptorKey descriptorKey, CertificatesUIConfig componentUIConfig) {
         super(descriptorKey, componentUIConfig);
+    }
+
+    //TODO: In 6.0.0 remove the overridden hasUIConfigs and hasUIConfigForType methods.
+    @Override
+    public boolean hasUIConfigs() {
+        return false;
+    }
+
+    @Override
+    public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
+        return false;
     }
 }
