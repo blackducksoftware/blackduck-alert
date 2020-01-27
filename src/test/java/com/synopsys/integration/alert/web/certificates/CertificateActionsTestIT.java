@@ -3,12 +3,14 @@ package com.synopsys.integration.alert.web.certificates;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.web.model.CertificateModel;
 
 @Transactional
@@ -27,6 +29,19 @@ public class CertificateActionsTestIT extends BaseCertificateTestIT {
         assertNotNull(savedCertificate.getId());
         assertEquals(TEST_ALIAS, savedCertificate.getAlias());
         assertEquals(certificateContent, savedCertificate.getCertificateContent());
+    }
+
+    @Test
+    public void createCertificateIdTest() throws Exception {
+        String certificateContent = readCertificateContents();
+        try {
+            CertificateModel certificate = new CertificateModel("alias", certificateContent);
+            certificate.setId("badId");
+            certificateActions.createCertificate(certificate);
+            fail();
+        } catch (AlertDatabaseConstraintException ex) {
+            assertTrue(ex.getMessage().contains("id cannot be present"));
+        }
     }
 
     @Test
@@ -57,6 +72,14 @@ public class CertificateActionsTestIT extends BaseCertificateTestIT {
         assertEquals(savedCertificate.getId(), updatedModel.getId());
         assertEquals(updatedAlias, updatedModel.getAlias());
         assertEquals(certificateContent, updatedModel.getCertificateContent());
+    }
+
+    @Test
+    public void updateCertificateMissingIdTest() throws Exception {
+        String certificateContent = readCertificateContents();
+        CertificateModel certificate = new CertificateModel("-1", certificateContent);
+        Optional<CertificateModel> result = certificateActions.updateCertificate(-1L, certificate);
+        assertTrue(result.isEmpty());
     }
 
     @Test
