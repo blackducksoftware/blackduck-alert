@@ -1,4 +1,7 @@
 import {
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR,
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE,
+    DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS,
     DISTRIBUTION_JOB_FETCH_ERROR,
     DISTRIBUTION_JOB_FETCHED,
     DISTRIBUTION_JOB_FETCHING,
@@ -12,7 +15,6 @@ import {
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING
 } from 'store/actions/types';
-
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 
@@ -74,16 +76,24 @@ function testJobSuccess(message) {
     };
 }
 
-function sendingJobMessage() {
+function checkingDescriptorGlobalConfig() {
     return {
-        type: DISTRIBUTION_JOB_CUSTOM_MESSAGE_SENDING
+        type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR
     };
 }
 
-function sendJobMessageSuccess(message) {
+function checkingDescriptorGlobalConfigSuccess() {
     return {
-        type: DISTRIBUTION_JOB_CUSTOM_MESSAGE_SEND_SUCCESS,
-        configurationMessage: message
+        type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS
+    };
+}
+
+function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
+    const errors = {};
+    errors[errorFieldName] = response;
+    return {
+        type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE,
+        errors
     };
 }
 
@@ -190,6 +200,32 @@ export function testDistributionJob(config) {
                 });
             } else {
                 handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, response);
+            }
+        }).catch(console.error);
+    };
+}
+
+export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
+    return (dispatch, getState) => {
+        dispatch(checkingDescriptorGlobalConfig());
+        const { csrfToken } = getState().session;
+        const url = `${ConfigRequestBuilder.JOB_API_URL}/descriptorCheck`;
+        const request = fetch(url, {
+            credentials: 'same-origin',
+            method: 'POST',
+            body: descriptorName,
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+        request.then((response) => {
+            if (response.ok) {
+                dispatch(checkingDescriptorGlobalConfigSuccess());
+            } else {
+                response.json().then((data) => {
+                    dispatch(checkingDescriptorGlobalConfigFailure(errorFieldName, data.message));
+                });
             }
         }).catch(console.error);
     };

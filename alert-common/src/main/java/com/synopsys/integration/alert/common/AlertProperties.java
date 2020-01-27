@@ -182,6 +182,18 @@ public class AlertProperties {
         return getOptionalString(keyStoreType);
     }
 
+    public Optional<String> getTrustStoreFile() {
+        return getOptionalString(trustStoreFile);
+    }
+
+    public Optional<String> getTrustStorePass() {
+        return getOptionalString(trustStorePass);
+    }
+
+    public Optional<String> getTrustStoreType() {
+        return getOptionalString(trustStoreType);
+    }
+
     @Deprecated
     public Optional<String> getPublicWebserverHost() {
         return getOptionalString(publicWebserverHost);
@@ -220,8 +232,7 @@ public class AlertProperties {
             }
             return Optional.of(url.toString());
         } catch (NumberFormatException | MalformedURLException ex) {
-
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }

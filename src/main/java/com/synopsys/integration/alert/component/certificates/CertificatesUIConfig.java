@@ -20,33 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams.descriptor;
+package com.synopsys.integration.alert.component.certificates;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
-public class MsTeamsUIConfig extends ChannelDistributionUIConfig {
-    private static final String LABEL_WEBHOOK = "Webhook";
-
-    private static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
-
+public class CertificatesUIConfig extends UIConfig {
     @Autowired
-    public MsTeamsUIConfig(MsTeamsKey msTeamsKey) {
-        super(msTeamsKey, MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_URL);
+    public CertificatesUIConfig() {
+        super(CertificatesDescriptor.CERTIFICATES_LABEL, CertificatesDescriptor.CERTIFICATES_DESCRIPTION, CertificatesDescriptor.CERTIFICATES_URL);
     }
 
     @Override
-    public List<ConfigField> createChannelDistributionFields() {
-        ConfigField webhook = new URLInputConfigField(MsTeamsDescriptor.KEY_WEBHOOK, LABEL_WEBHOOK, MSTEAMS_WEBHOOK_DESCRIPTION).applyRequired(true);
-        return List.of(webhook);
+    public List<ConfigField> createFields() {
+        return List.of();
     }
-
 }
