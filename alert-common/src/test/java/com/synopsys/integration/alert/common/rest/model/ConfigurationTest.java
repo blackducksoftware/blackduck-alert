@@ -23,10 +23,10 @@ public class ConfigurationTest {
         keyToFieldMapTest.put(fieldKey, testConfigurationFieldModel);
 
         Configuration testConfig = new Configuration(keyToFieldMapTest);
-        FieldAccessor testFieldAccessor = testConfig.getFieldAccessor(); //Could also assert not null here
+        FieldAccessor testFieldAccessor = testConfig.getFieldAccessor();
         Optional<ConfigurationFieldModel> newConfigurationFieldModel = testFieldAccessor.getField(fieldKey);
 
-        assertTrue(newConfigurationFieldModel.isPresent());   //Checking if the Optional has a value
+        assertTrue(newConfigurationFieldModel.isPresent());
         assertEquals(testConfigurationFieldModel, newConfigurationFieldModel.get());
 
     }
