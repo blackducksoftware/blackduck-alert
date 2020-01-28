@@ -107,14 +107,15 @@ public class CertificateUtility {
     public File getAndValidateTrustStoreFile() throws AlertConfigurationException {
         Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
         if (optionalTrustStoreFileName.isPresent()) {
-            File trustStoreFile = new File(optionalTrustStoreFileName.get());
+            String trustStoreFileName = optionalTrustStoreFileName.get();
+            File trustStoreFile = new File(trustStoreFileName);
 
             if (!trustStoreFile.isFile()) {
-                throw new AlertConfigurationException("The trust store provided is not a file");
+                throw new AlertConfigurationException("The trust store provided is not a file: " + trustStoreFileName);
             }
 
             if (!trustStoreFile.canWrite()) {
-                throw new AlertConfigurationException("The trust store provided cannot be written by Alert");
+                throw new AlertConfigurationException("The trust store provided cannot be written by Alert: " + trustStoreFileName);
             }
 
             return trustStoreFile;

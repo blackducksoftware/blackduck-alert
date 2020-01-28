@@ -86,9 +86,12 @@ public class CertificateActions {
             CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
             certificateUtility.importCertificate(storedCertificate);
             return convertFromDatabaseModel(storedCertificate);
-        } catch (AlertException ex) {
-            deleteByAlias(certificateToStore);
-            throw ex;
+        } catch (AlertException importException) {
+            try {
+                deleteByAlias(certificateToStore);
+            } catch (Exception ignored) {
+            }
+            throw importException
         }
     }
 
