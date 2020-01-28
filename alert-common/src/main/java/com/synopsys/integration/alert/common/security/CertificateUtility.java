@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -108,7 +110,13 @@ public class CertificateUtility {
         Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
         if (optionalTrustStoreFileName.isPresent()) {
             String trustStoreFileName = optionalTrustStoreFileName.get();
-            File trustStoreFile = new File(trustStoreFileName);
+            File trustStoreFile;
+            try {
+                URI trustStoreUri = new URI(trustStoreFileName);
+                trustStoreFile = new File(trustStoreUri);
+            } catch (IllegalArgumentException | URISyntaxException ex) {
+                trustStoreFile = new File(trustStoreFileName);
+            }
 
             if (!trustStoreFile.isFile()) {
                 throw new AlertConfigurationException("The trust store provided is not a file: " + trustStoreFileName);
@@ -119,6 +127,7 @@ public class CertificateUtility {
             }
 
             return trustStoreFile;
+
         } else {
             throw new AlertConfigurationException("No trust store file has been provided");
         }
