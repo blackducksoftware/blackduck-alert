@@ -29,7 +29,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '5.2.0-SNAPSHOT'
+version = '5.2.1-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -298,7 +298,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-compose/**", "docker-swarm/**", "kubernetes/**"
+        include "docker-compose/**", "docker-swarm/**", "kubernetes/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-compose/hub"
