@@ -147,7 +147,6 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    // TODO update this code with an Object from blackduck-common-api when available
     private Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> getCvss3Severity(VulnerabilityView vulnerabilityView) {
         VulnerabilityCvss3View vulnerabilityCvss3View = vulnerabilityView.getCvss3();
         if (vulnerabilityCvss3View != null) {
