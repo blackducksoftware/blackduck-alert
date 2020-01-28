@@ -1,0 +1,90 @@
+{{ if .Values.enableStandalone -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert-cfssl
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert
+      name: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alert
+        name: {{ .Release.Name }}
+      annotations:
+        checksum/alert-environ-resources: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
+      name: {{ .Release.Name }}-alert-cfssl
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-alert-environs
+          image: {{ .Values.cfssl.image }}
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/docker-healthcheck.sh
+                - http://localhost:8888/api/v1/cfssl/scaninfo
+            failureThreshold: 10
+            initialDelaySeconds: 240
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: blackduck-cfssl
+          ports:
+            - containerPort: 8888
+              protocol: TCP
+          resources:
+            limits:
+              memory: {{ .Values.cfssl.limitMemory }}
+            requests:
+              memory: {{ .Values.cfssl.requestMemory }}
+          volumeMounts:
+            - mountPath: /etc/cfssl
+              name: dir-cfssl
+      dnsPolicy: ClusterFirst
+      {{- with .Values.cfssl.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.cfssl.affinity }}
+      affinity:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.cfssl.tolerations }}
+      tolerations:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      volumes:
+        - emptyDir: {}
+          name: dir-cfssl
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert-cfssl
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-8888
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: alert
+    name: {{ .Release.Name }}
+  type: ClusterIP
+---
+{{- end }}
