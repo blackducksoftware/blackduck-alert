@@ -91,7 +91,7 @@ public class CertificateActions {
                 deleteByAlias(certificateToStore);
             } catch (Exception ignored) {
             }
-            throw importException
+            throw importException;
         }
     }
 
