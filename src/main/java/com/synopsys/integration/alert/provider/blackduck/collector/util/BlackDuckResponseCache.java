@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
+import com.synopsys.integration.blackduck.api.generated.component.VulnerabilityCvss3TemporalMetricsView;
+import com.synopsys.integration.blackduck.api.generated.component.VulnerabilityCvss3View;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
@@ -106,7 +108,7 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    public ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType getSeverity(String vulnerabilityUrl) {
+    public String getSeverity(String vulnerabilityUrl) {
         ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity = null;
         try {
             Optional<VulnerabilityView> vulnerabilityView = getItem(VulnerabilityView.class, vulnerabilityUrl);
@@ -122,7 +124,7 @@ public class BlackDuckResponseCache {
             logger.debug("Error fetching vulnerability view", e);
         }
 
-        return severity;
+        return severity.name();
     }
 
     public Optional<ProjectVersionWrapper> getProjectVersionWrapper(ProjectVersionComponentView versionBomComponent) {
@@ -147,8 +149,11 @@ public class BlackDuckResponseCache {
 
     // TODO update this code with an Object from blackduck-common-api when available
     private Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> getCvss3Severity(VulnerabilityView vulnerabilityView) {
-        ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity = vulnerabilityView.getCvss3().getSeverity();
-        return Optional.of(severity);
+        VulnerabilityCvss3View vulnerabilityCvss3View = vulnerabilityView.getCvss3();
+        if (vulnerabilityCvss3View != null) {
+            return Optional.ofNullable(vulnerabilityCvss3View.getSeverity());
+        }
+        return Optional.empty();
     }
 
 }
