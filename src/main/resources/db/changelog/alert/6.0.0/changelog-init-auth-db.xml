@@ -224,18 +224,6 @@
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
             <column name="OPERATIONS">255</column>
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
-            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
-            <column name="OPERATIONS">255</column>
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
-            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
-            <column name="OPERATIONS">255</column>
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
@@ -314,12 +302,6 @@
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
             <column name="OPERATIONS">20</column>
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
-            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
-            <column name="OPERATIONS">20</column>
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_audit')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
@@ -362,12 +344,6 @@
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
             <column name="OPERATIONS">255</column>
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
-            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
-            <column name="OPERATIONS">255</column>
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
@@ -399,12 +375,6 @@
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
             <column name="OPERATIONS">4</column>
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
-            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
-            <column name="OPERATIONS">4</column>
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_polaris')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
