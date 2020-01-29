@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +39,8 @@ import java.security.cert.CertificateFactory;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +51,7 @@ import com.synopsys.integration.alert.common.persistence.model.CustomCertificate
 
 @Component
 public class CertificateUtility {
+    private static final Logger logger = LoggerFactory.getLogger(CertificateUtility.class);
     private AlertProperties alertProperties;
 
     @Autowired
@@ -55,6 +60,7 @@ public class CertificateUtility {
     }
 
     public void importCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        logger.debug("Importing certificate into trust store.");
         validateCustomCertificate(customCertificate);
         File trustStoreFile = getAndValidateTrustStoreFile();
         KeyStore trustStore = getAsKeyStore(trustStoreFile, getTrustStorePassword(), getTrustStoreType());
@@ -66,11 +72,13 @@ public class CertificateUtility {
                 trustStore.store(stream, getTrustStorePassword());
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            logger.debug("Error importing certificate.", e);
             throw new AlertException("There was a problem storing the certificate", e);
         }
     }
 
     public void removeCertificate(CustomCertificateModel customCertificate) throws AlertException {
+        logger.debug("Removing certificate from trust store.");
         if (null == customCertificate) {
             throw new AlertException("The alias could not be determined from the custom certificate because it was null");
         }
@@ -78,6 +86,7 @@ public class CertificateUtility {
     }
 
     public void removeCertificate(String certificateAlias) throws AlertException {
+        logger.debug("Removing certificate by alias from trust store.");
         if (StringUtils.isBlank(certificateAlias)) {
             throw new AlertException("The alias cannot be blank");
         }
@@ -91,24 +100,35 @@ public class CertificateUtility {
                 }
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            logger.debug("Error removing certificate.", e);
             throw new AlertException("There was a problem removing the certificate", e);
         }
     }
 
     public KeyStore getAsKeyStore(File keyStore, char[] keyStorePass, String keyStoreType) throws AlertException {
+        logger.debug("Get key store.");
         KeyStore.PasswordProtection protection = new KeyStore.PasswordProtection(keyStorePass);
         try {
             return KeyStore.Builder.newInstance(keyStoreType, null, keyStore, protection).getKeyStore();
         } catch (KeyStoreException e) {
+            logger.debug("Error getting keystore.", e);
             throw new AlertException("There was a problem accessing the trust store", e);
         }
     }
 
     public File getAndValidateTrustStoreFile() throws AlertConfigurationException {
+        logger.debug("Get and validate trust store.");
         Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
         if (optionalTrustStoreFileName.isPresent()) {
             String trustStoreFileName = optionalTrustStoreFileName.get();
-            File trustStoreFile = new File(trustStoreFileName);
+            File trustStoreFile;
+            try {
+                URI trustStoreUri = new URI(trustStoreFileName);
+                trustStoreFile = new File(trustStoreUri);
+            } catch (IllegalArgumentException | URISyntaxException ex) {
+                logger.debug("Error getting Java trust store from file URI", ex);
+                trustStoreFile = new File(trustStoreFileName);
+            }
 
             if (!trustStoreFile.isFile()) {
                 throw new AlertConfigurationException("The trust store provided is not a file: " + trustStoreFileName);
@@ -119,6 +139,7 @@ public class CertificateUtility {
             }
 
             return trustStoreFile;
+
         } else {
             throw new AlertConfigurationException("No trust store file has been provided");
         }
@@ -147,6 +168,7 @@ public class CertificateUtility {
                 return certFactory.generateCertificate(certInputStream);
             }
         } catch (CertificateException | IOException e) {
+            logger.debug("Error getting Java certificate.", e);
             throw new AlertException("The custom certificate could not be read", e);
         }
     }
