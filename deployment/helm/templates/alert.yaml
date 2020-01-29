@@ -1,0 +1,167 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }} 
+  name: {{ .Release.Name }}-alert
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert
+      name: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alert
+        name: {{ .Release.Name }}
+      annotations:
+        checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
+        checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
+      name: {{ .Release.Name }}-alert
+    spec:
+      containers:
+      {{- if .Values.enableCertificateSecret }}
+      - env:
+        - name: RUN_SECRETS_DIR
+          valueFrom:
+            fieldRef:
+                fieldPath: metadata.name
+        envFrom:
+      {{- else }}
+      - envFrom:
+      {{- end }}
+        - configMapRef:
+            name: {{ .Release.Name }}-alert-environs
+        - secretRef:
+            name: {{ .Release.Name }}-alert-environs-secret
+        image: {{ .Values.alert.image }}
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+              - /usr/local/bin/docker-healthcheck.sh
+              - https://localhost:8443/alert/api/about
+          failureThreshold: 5
+          initialDelaySeconds: 240
+          periodSeconds: 30
+          timeoutSeconds: 10
+        name: blackduck-alert
+        ports:
+          - containerPort: 8443
+            protocol: TCP
+        resources:
+          limits:
+            memory: {{ .Values.alert.limitMemory }}
+          requests:
+            memory: {{ .Values.alert.requestMemory }}
+        volumeMounts:
+        - mountPath: /opt/blackduck/alert/alert-config
+          name: dir-alert
+        {{- if .Values.enableCertificateSecret }}
+        - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_CERT_FILE
+          name: certificate
+          subPath: WEBSERVER_CUSTOM_CERT_FILE
+        - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_KEY_FILE
+          name: certificate
+          subPath: WEBSERVER_CUSTOM_KEY_FILE
+        - mountPath: /tmp/secrets/cacerts
+          name: certificate
+          subPath: cacerts
+        {{- end }}
+      dnsPolicy: ClusterFirst
+      {{- with .Values.alert.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.alert.affinity }}
+      affinity:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.alert.tolerations }}
+      tolerations:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.enablePersistentStorage }}
+      - name: dir-alert
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-alert-pvc
+      {{- else }}
+      - emptyDir: {}
+        name: dir-alert
+      {{- end }}
+      {{- if .Values.enableCertificateSecret }}
+      - name: certificate
+        secret:
+          defaultMode: 292
+          secretName: {{ (required "must provide --set certificateSecretName=\"\"" .Values.certificateSecretName) }}
+      {{- end }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-8443
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: alert
+    name: {{ .Release.Name }}
+  type: ClusterIP
+---
+
+{{- if .Values.enablePersistentStorage -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvcSize }}
+{{ if .Values.storageClassName -}}
+  storageClassName: {{ .Values.storageClassName }}
+{{ end -}}
+---
+{{- end }}
+
+{{ if .Values.exposeui -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert-exposed
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-8443
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: alert
+    name: {{ .Release.Name }}
+  type: {{ .Values.exposedServiceType }}
+---
+{{- end }}
