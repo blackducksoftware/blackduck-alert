@@ -99,7 +99,7 @@ public class CertificatesController extends BaseController {
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
         } catch (AlertException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue updating the certificate: {}", message);
+            logger.error("There was an issue importing the certificate: {}", message);
             logger.debug("Cause", ex);
             return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
         }
