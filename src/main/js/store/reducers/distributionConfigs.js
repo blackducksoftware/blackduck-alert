@@ -152,12 +152,17 @@ const config = (state = initialState, action) => {
             });
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
             return Object.assign({}, state, {
-                inProgress: false
+                inProgress: false,
+                error: {
+                    ...state.error,
+                    ...action.errors
+                }
             });
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE:
             return Object.assign({}, state, {
                 inProgress: false,
                 error: {
+                    ...state.error,
                     ...action.errors
                 }
             });

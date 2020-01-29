@@ -82,9 +82,12 @@ function checkingDescriptorGlobalConfig() {
     };
 }
 
-function checkingDescriptorGlobalConfigSuccess() {
+function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
+    const errors = {};
+    errors[errorFieldName] = '';
     return {
-        type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS
+        type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS,
+        errors
     };
 }
 
@@ -221,7 +224,7 @@ export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
         });
         request.then((response) => {
             if (response.ok) {
-                dispatch(checkingDescriptorGlobalConfigSuccess());
+                dispatch(checkingDescriptorGlobalConfigSuccess(errorFieldName));
             } else {
                 response.json().then((data) => {
                     dispatch(checkingDescriptorGlobalConfigFailure(errorFieldName, data.message));
