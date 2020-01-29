@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
+        classpath 'com.synopsys.integration:common-gradle-plugin:1.1.0'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
     }
@@ -33,7 +33,7 @@ version = '5.2.1-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'com.blackducksoftware.integration.solution'
+apply plugin: 'com.synopsys.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 allprojects {
@@ -50,7 +50,7 @@ allprojects {
 
 subprojects {
     version = rootProject.version
-    apply plugin: 'com.blackducksoftware.integration.simple'
+    apply plugin: 'com.synopsys.integration.simple'
 
     license {
         header rootProject.file('LICENSE')
