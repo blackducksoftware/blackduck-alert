@@ -1,7 +1,24 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
+    }
+}
+
 project.ext.moduleName = 'com.synopsys.integration.alert.database'
+def alertDatabaseDockerImageVersion = '1.0.0'
+
+apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
     runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql:42.2.8'
     runtimeOnly 'org.liquibase:liquibase-core'
 
     // Connection Pool
@@ -10,4 +27,32 @@ dependencies {
     runtimeClasspath 'org.hibernate:hibernate-c3p0:5.4.2.Final'
 
     implementation project(':alert-common')
+}
+
+task dockerLogin(type: Exec) {
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
+}
+
+task stageDocker(type: Copy) {
+    into "${project.buildDir}/docker"
+    from("${project.projectDir}") {
+        include 'Dockerfile'
+        include 'src/main/resources/scripts/*'
+    }
+}
+
+task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
+    inputDir = file("${project.buildDir}/docker")
+    tag = "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
+    buildArgs = ['VERSION': "${alertDatabaseDockerImageVersion}"]
+}
+
+task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
+    commandLine "docker", "push", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
+}
+
+task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
+    dockerLogin.mustRunAfter build
+    buildDockerImage.mustRunAfter dockerLogin
+    pushImage.mustRunAfter buildDockerImage
 }

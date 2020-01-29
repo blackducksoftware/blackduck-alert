@@ -2,6 +2,11 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="bmandel" id="1546991895970-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="SETTINGS_KEY"/>
+            </not>
+        </preConditions>
         <createTable schemaName="ALERT" tableName="SETTINGS_KEY">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="SETTINGS_KEY_KEY"/>

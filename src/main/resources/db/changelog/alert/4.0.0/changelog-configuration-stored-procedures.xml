@@ -5,7 +5,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME AS $$
                 java.lang.Integer getIdForRegisteredDescriptorName(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + descriptorName.toLowerCase() + "' LIMIT 1;");
@@ -22,7 +22,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS GET_ID_FOR_DESCRIPTOR_TYPE AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_DESCRIPTOR_TYPE AS $$
                 java.lang.Integer getIdForDescriptorType(final java.sql.Connection connection, final java.lang.String type) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + type.toUpperCase() + "' LIMIT 1;");
@@ -39,7 +39,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS GET_FIELD_ID_FOR_SOURCE_KEY AS $$
+            CREATE ALIAS IF NOT EXISTS GET_FIELD_ID_FOR_SOURCE_KEY AS $$
                 java.lang.Integer getFieldIdForSourceKey(final java.sql.Connection connection, final java.lang.String sourceKey) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + sourceKey + "' LIMIT 1;");
@@ -56,7 +56,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT AS $$
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_CONFIG_CONTEXT AS $$
                 java.lang.Integer getIdForConfigContext(final java.sql.Connection connection, final java.lang.String context) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + context.toUpperCase() + "' LIMIT 1;");
@@ -75,7 +75,7 @@
                 schemaName="ALERT"
                 procedureName="GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG"
         >
-            CREATE ALIAS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
+            CREATE ALIAS IF NOT EXISTS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
                 java.lang.Integer getLatestIdForDescriptorConfig(final java.sql.Connection connection) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
                         final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS ORDER BY DESCRIPTOR_CONFIGS.ID DESC LIMIT 1;");
@@ -92,7 +92,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS DEFINE_FIELD AS $$
+            CREATE ALIAS IF NOT EXISTS DEFINE_FIELD AS $$
                 Void defineField(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.Boolean sensitive, final java.lang.String descriptorName, final java.lang.String context) throws java.sql.SQLException {
                     try (final java.sql.Statement insertIntoDefinedFields = connection.createStatement()) {
                         insertIntoDefinedFields.executeUpdate("INSERT INTO ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE) VALUES ('" + fieldKey + "', " + sensitive + ");");
@@ -126,7 +126,7 @@
                 schemaName="ALERT"
                 procedureName="MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG"
         >
-            CREATE ALIAS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG AS $$
+            CREATE ALIAS IF NOT EXISTS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateIntValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
                     throws java.sql.SQLException {
                     final java.lang.Integer value;
@@ -159,7 +159,7 @@
                 schemaName="ALERT"
                 procedureName="MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG"
         >
-            CREATE ALIAS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG AS $$
+            CREATE ALIAS IF NOT EXISTS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateBooleanValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
                     throws java.sql.SQLException {
                     final java.lang.Boolean value;
@@ -192,7 +192,7 @@
                 schemaName="ALERT"
                 procedureName="MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG"
         >
-            CREATE ALIAS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG AS $$
+            CREATE ALIAS IF NOT EXISTS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateStringValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey) throws java.sql.SQLException {
                     final java.lang.String value;
                     try (final java.sql.Statement statement = connection.createStatement()) {
@@ -222,7 +222,7 @@
                 schemaName="ALERT"
                 procedureName="MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0"
         >
-            CREATE ALIAS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0 AS $$
+            CREATE ALIAS IF NOT EXISTS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0 AS $$
                 java.lang.Void migrateDistributionJobs(final java.sql.Connection connection) throws java.sql.SQLException {
                     try (final java.sql.ResultSet commonDistributionConfig = connection.createStatement().executeQuery("SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG;")) {
                         while (commonDistributionConfig.next()) {
@@ -382,7 +382,7 @@
                 schemaName="ALERT"
                 procedureName="INSERT_FIELD_VALUE"
         >
-            CREATE ALIAS SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE AS $$
+            CREATE ALIAS IF NOT EXISTS SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE AS $$
                 java.lang.Void setLatestConfigGlobalFieldValue(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.String fieldValue) throws java.sql.SQLException {
                     if (fieldValue != null &amp;&amp; !fieldValue.isBlank()) {
                         try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {

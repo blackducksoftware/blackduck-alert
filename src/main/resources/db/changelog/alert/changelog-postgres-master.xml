@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <!--
+        Changelogs starting with 6.0.0 should be added here.
+        No initial changelogs are required here because of the
+        initialization scripts for postgres that are managed by
+        Docker. Patches for versions prior to 6.0.0 should be
+        added to that script as well as here to maintain
+        consistency.
+    -->
+    <include file="6.0.0/changelog.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
