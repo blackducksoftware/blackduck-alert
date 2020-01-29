@@ -158,7 +158,6 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 error: {
-                    ...state.error,
                     ...action.errors
                 }
             });
