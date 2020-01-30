@@ -3,8 +3,11 @@
 certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/security
 alertHome=/opt/blackduck/alert
-alertConfigHome=$alertHome/alert-config
-alertDatabaseDir=$alertConfigHome/data/alertdb
+alertConfigHome=${alertHome}/alert-config
+alertDataDir=${alertConfigHome}/data
+alertDatabaseDir=${alertDataDir}/alertdb
+alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=sa password=blackduck"
+upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -365,15 +368,92 @@ checkVolumeDirectories() {
 
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
-  $JAVA_HOME/bin/java -cp "/opt/blackduck/alert/alert-tar/lib/liquibase/*" \
+  $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
   liquibase.integration.commandline.Main \
   --url="jdbc:h2:file:$alertDatabaseDir" \
   --username="sa" \
   --password="" \
   --driver="org.h2.Driver" \
-  --changeLogFile="$alertHome/alert-tar/changelogs/release-locks-changelog.xml" \
+  --changeLogFile="$upgradeResourcesDir/release-locks-changelog.xml" \
   releaseLocks
   echo "End releasing liquibase changeloglock."
+}
+
+validatePostgresDatabase() {
+    # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking for postgres databases: "
+    LIST_DB_OUTPUT=`psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'`;
+    echo "${LIST_DB_OUTPUT}"
+    if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
+    then
+        echo "Alert postgres database exists."
+        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
+        then
+            echo "Alert postgres database tables have been successfully created."
+        else
+            echo "Alert postgres database tables have not been created."
+            sleep 10
+            exit 1
+        fi
+    else
+        echo "Alert postgres database does not exist."
+        sleep 10
+        exit 1
+    fi
+}
+
+postgresPrepare600Upgrade() {
+    echo "Determining if preparation for 6.0.0 upgrade is necessary..."
+    if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
+    then
+        echo "Alert postgres database is initialized."
+    else
+        echo "Preparing the old Alert database to be upgraded to 6.0.0..."
+        if [ -f ${alertDataDir}/alertdb.mv.db ];
+        then
+            echo "A previous database existed."
+
+            echo "Clearing old checksums for offline upgrade..."
+            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            liquibase.integration.commandline.Main \
+            --url="jdbc:h2:file:${alertDatabaseDir}" \
+            --username="sa" \
+            --password="" \
+            --driver="org.h2.Driver" \
+            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
+            clearCheckSums
+
+            echo "Upgrading old database to 5.3.0 so that it can be properly exported..."
+            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            liquibase.integration.commandline.Main \
+            --url="jdbc:h2:file:${alertDatabaseDir}" \
+            --username="sa" \
+            --password="" \
+            --driver="org.h2.Driver" \
+            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
+            update
+
+            echo "Creating temp directory for data migration..."
+            mkdir ${alertConfigHome}/data/temp
+            chmod 766 ${alertConfigHome}/data/temp
+
+            echo "Exporting data from old database..."
+            $JAVA_HOME/bin/java -cp "${alertHome}/alert-tar/lib/liquibase/*" \
+            org.h2.tools.RunScript \
+            -url "jdbc:h2:${alertDatabaseDir}" \
+            -user "sa" \
+            -password "" \
+            -driver "org.h2.Driver" \
+            -script ${upgradeResourcesDir}/export_h2_tables.sql
+
+            chmod 766 ${alertConfigHome}/data/temp/*
+
+            echo "Importing data from old database into new database..."
+            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
+        else
+            echo "No previous database existed."
+        fi
+    fi
 }
 
 checkVolumeDirectories
@@ -402,6 +482,9 @@ else
   importBlackDuckWebServerCertificate
   importDockerHubServerCertificate
   createDataBackUp
+  liquibaseChangelockReset
+  validatePostgresDatabase
+  postgresPrepare600Upgrade
   liquibaseChangelockReset
 
   if [ -f "$truststoreFile" ];

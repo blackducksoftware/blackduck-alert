@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -246,13 +245,7 @@ public class ConfigController extends BaseController {
             String responseMessage = configActions.testConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (IntegrationRestException e) {
-            String exceptionMessage = e.getMessage();
-            logger.error(exceptionMessage, e);
-            String message = exceptionMessage;
-            if (StringUtils.isNotBlank(e.getHttpStatusMessage())) {
-                message += " : " + e.getHttpStatusMessage();
-            }
-            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, message);
+            return createResponseFromIntegrationRestException(responseFactory, e, id);
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (AlertMethodNotAllowedException e) {

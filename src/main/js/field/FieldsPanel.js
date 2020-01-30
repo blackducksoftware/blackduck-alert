@@ -131,7 +131,7 @@ class FieldsPanel extends React.Component {
         const createdFields = [];
         const { additionalFields } = metadata;
         const currentConfigCopy = JSON.parse(JSON.stringify(currentConfig));
-        if (additionalFields && Object.keys(additionalFields).length != 0) {
+        if (additionalFields && Object.keys(additionalFields).length !== 0) {
             Object.keys(additionalFields).forEach(key => {
                 currentConfigCopy.keyToValues[key] = additionalFields[key];
             });

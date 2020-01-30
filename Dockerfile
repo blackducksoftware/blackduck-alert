@@ -16,7 +16,7 @@ ENV SECURITY_DIR $ALERT_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
-ENV ALERT_DB_DIR $ALERT_DATA_DIR/alertdb
+ENV ALERT_DB_DIR $ALERT_DATA_DIR/postgres/alertdb
 ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
@@ -32,6 +32,7 @@ RUN set -e \
     		openssl \
     		bash \
     		zip \
+    		postgresql-client \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D -H alert
 

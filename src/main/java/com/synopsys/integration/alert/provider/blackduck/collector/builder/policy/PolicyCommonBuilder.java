@@ -47,13 +47,13 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityWithRemediationView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
+import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.datastructure.SetMap;
 
@@ -69,7 +69,7 @@ public class PolicyCommonBuilder {
             if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
                 ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
-                Optional<VersionBomComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+                Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
 
                 List<LinkableItem> policyAttributes = new ArrayList<>();
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
@@ -117,8 +117,8 @@ public class PolicyCommonBuilder {
                    .collect(Collectors.toSet());
     }
 
-    public boolean hasVulnerabilityRule(List<PolicyRuleExpressionView> expressions) {
-        for (PolicyRuleExpressionView expressionView : expressions) {
+    public boolean hasVulnerabilityRule(List<PolicyRuleExpressionExpressionsView> expressions) {
+        for (PolicyRuleExpressionExpressionsView expressionView : expressions) {
             if (expressionView.getName().toLowerCase().contains(MessageBuilderConstants.VULNERABILITY_CHECK_TEXT)) {
                 return true;
             }

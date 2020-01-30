@@ -11,10 +11,27 @@ services:
     user: cfssl:root
     restart: always
     mem_limit: 512M
+  alertdb:
+    image: blackducksoftware/alert-database:1.0.0
+    ports: ['5432']
+    hostname: alertdb
+    restart: always
+    shm_size: 512M
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
+    healthcheck:
+      test: [CMD, /usr/local/bin/alertdb-healthcheck.sh]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    environment:
+      PGDATA: /opt/blackduck/alert/alert-config/data/postgres/alertdb
   alert:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
-    links: [cfssl]
+    links: [cfssl, alertdb]
+    depends_on: [alertdb]
+    environment:
+      WAIT_HOSTS: alertdb:5432
     env_file: [blackduck-alert.env]
     user: alert:root
     healthcheck:

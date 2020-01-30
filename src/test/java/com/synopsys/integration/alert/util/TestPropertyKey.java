@@ -11,10 +11,6 @@ public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_ACTIVE_USER("blackduck.provider.active.user"),
     TEST_BLACKDUCK_PROVIDER_INACTIVE_USER("blackduck.provider.inactive.user"),
 
-    TEST_POLARIS_PROVIDER_URL("polaris.provider.url"),
-    TEST_POLARIS_PROVIDER_ACCESS_TOKEN("polaris.provider.access.token"),
-    TEST_POLARIS_PROVIDER_TIMEOUT("polaris.provider.timeout"),
-
     TEST_CRON("alert.tasks.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
@@ -39,7 +35,7 @@ public enum TestPropertyKey {
 
     private final String propertyKey;
 
-    TestPropertyKey(final String propertyKey) {
+    TestPropertyKey(String propertyKey) {
         this.propertyKey = propertyKey;
     }
 

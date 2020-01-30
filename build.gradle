@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
+        classpath 'com.synopsys.integration:common-gradle-plugin:1.1.0'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
     }
@@ -30,10 +30,10 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '5.3.0-SNAPSHOT'
+version = '6.0.0-SNAPSHOT'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'com.blackducksoftware.integration.solution'
+apply plugin: 'com.synopsys.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 allprojects {
@@ -50,7 +50,7 @@ allprojects {
 
 subprojects {
     version = rootProject.version
-    apply plugin: 'com.blackducksoftware.integration.simple'
+    apply plugin: 'com.synopsys.integration.simple'
 
     license {
         header rootProject.file('LICENSE')
@@ -79,7 +79,6 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
 
-    implementation 'com.synopsys.integration:polaris-common:0.12.0'
     implementation 'com.synopsys.integration:int-jira-common:0.6.1'
 
     // Spring
@@ -119,7 +118,11 @@ distributions {
                 include 'snakeyaml*.jar'
                 into 'lib/liquibase'
             }
-            from('src/main/resources/db/release-locks-changelog.xml') { into 'changelogs' }
+            from('src/main/resources/db/changelog-master.xml') { into 'upgradeResources' }
+            from('src/main/resources/db/changelog/') { into 'upgradeResources/changelog/' }
+            from('src/main/resources/db/release-locks-changelog.xml') { into 'upgradeResources' }
+            from('src/main/resources/db/export_h2_tables.sql') { into 'upgradeResources' }
+            from('src/main/resources/db/import_postgres_tables.sql') { into 'upgradeResources' }
             from('src/main/resources/images/') { into 'images/' }
             from('src/main/resources/templates/email') { into 'templates/email' }
             from('src/main/resources/templates/msteams') { into 'templates/msteams' }
@@ -192,7 +195,7 @@ task createTruststore(type: Copy) {
 
 task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
     File jarFile = new File("${project.buildDir}/libs/blackduck-alert-${version}.jar")
-    
+
     def jmxVariables = ['-Dcom.sun.management.jmxremote',
                         '-Dcom.sun.management.jmxremote.port=9045',
                         '-Dcom.sun.management.jmxremote.local.only=false',
@@ -202,7 +205,17 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
     def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
+
+                                '--hibernate.default_schema=ALERT',
                                 '--spring.h2.console.enabled=true',
+                                '--spring.jpa.hibernate.ddl-auto=none',
+                                '--spring.datasource.driver-class-name=org.h2.Driver',
+                                '--spring.jpa.database-platform=org.hibernate.dialect.H2Dialect',
+                                '--spring.datasource.username=sa',
+                                '--spring.datasource.password=blackduck',
+                                '--spring.datasource.url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
+
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
                                 "--alert.templates.dir=${project.buildDir}/resources/main/templates",
                                 "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]
@@ -303,7 +316,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-compose/**", "docker-swarm/**", "kubernetes/**"
+        include "docker-compose/**", "docker-swarm/**", "kubernetes/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-compose/hub"

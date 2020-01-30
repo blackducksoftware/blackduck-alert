@@ -78,21 +78,14 @@ public class DefaultSettingsUtility implements SettingsUtility {
 
     @Override
     public Optional<ConfigurationModel> getConfiguration() throws AlertException {
-        Optional<FieldModel> fieldModel = getFieldModel();
-
-        if (fieldModel.isPresent()) {
-            ConfigurationModel configurationModel = configurationFieldModelConverter.convertToConfigurationModel(fieldModel.get());
-            return Optional.ofNullable(configurationModel);
-        }
-
-        return Optional.empty();
+        return configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
+                   .stream()
+                   .findFirst();
     }
 
     @Override
     public Optional<FieldModel> getFieldModel() throws AlertException {
-        final Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
-                                                                            .stream()
-                                                                            .findFirst();
+        Optional<ConfigurationModel> configurationModelOptional = getConfiguration();
 
         if (configurationModelOptional.isPresent()) {
             ConfigurationModel configurationModel = configurationModelOptional.get();
@@ -104,7 +97,7 @@ public class DefaultSettingsUtility implements SettingsUtility {
     }
 
     @Override
-    public FieldModel saveSettings(final FieldModel fieldModel) throws AlertException {
+    public FieldModel saveSettings(FieldModel fieldModel) throws AlertException {
         FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
         ConfigurationModel configuration = configurationAccessor.createConfiguration(getKey(), ConfigContextEnum.GLOBAL, values);
@@ -113,7 +106,7 @@ public class DefaultSettingsUtility implements SettingsUtility {
     }
 
     @Override
-    public FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException {
         FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction).values();
         ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, values);

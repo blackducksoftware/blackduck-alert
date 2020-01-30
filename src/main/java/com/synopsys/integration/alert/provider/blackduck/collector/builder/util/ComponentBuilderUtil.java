@@ -33,22 +33,25 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.LicenseFamilyLicenseFamilyRiskRulesUsageType;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public final class ComponentBuilderUtil {
-    public static List<LinkableItem> getLicenseLinkableItems(VersionBomComponentView bomComponentView) {
+    private ComponentBuilderUtil() {
+    }
+
+    public static List<LinkableItem> getLicenseLinkableItems(ProjectVersionComponentView bomComponentView) {
         return bomComponentView.getLicenses()
                    .stream()
                    .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
                    .collect(Collectors.toList());
     }
 
-    public static List<LinkableItem> getUsageLinkableItems(VersionBomComponentView bomComponentView) {
+    public static List<LinkableItem> getUsageLinkableItems(ProjectVersionComponentView bomComponentView) {
         return bomComponentView.getUsages()
                    .stream()
-                   .map(MatchedFileUsagesType::prettyPrint)
+                   .map(LicenseFamilyLicenseFamilyRiskRulesUsageType::prettyPrint)
                    .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
                    .collect(Collectors.toList());
     }
@@ -76,8 +79,5 @@ public final class ComponentBuilderUtil {
                     componentBuilder.applySubComponent(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersion, projectQueryLink));
                 },
                 () -> componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink)));
-    }
-
-    private ComponentBuilderUtil() {
     }
 }

@@ -3,6 +3,9 @@
 
     <!-- Global Black Duck Config -->
     <changeSet author="gkillough" id="1548361428926-1">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_BLACKDUCK_CONFIG"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_CONFIGS">
@@ -22,6 +25,9 @@
 
     <!-- Global Email Config -->
     <changeSet author="gkillough" id="1548361428926-2">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_EMAIL_CONFIG"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_CONFIGS">
@@ -220,6 +226,9 @@
 
     <!-- Global HipChat Config -->
     <changeSet author="gkillough" id="1548361428926-3">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_HIPCHAT_CONFIG"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_CONFIGS">
@@ -238,6 +247,9 @@
 
     <!-- Global Scheduling Config -->
     <changeSet author="gkillough" id="1548361428926-4">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_SCHEDULING_CONFIG"/>
+        </preConditions>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_CONFIGS">

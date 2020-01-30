@@ -41,7 +41,7 @@
                                                                                                                              + "WHERE REGISTERED_DESCRIPTORS.TYPE_ID = GET_ID_FOR_DESCRIPTOR_TYPE('channel');")) {
                                 while (channelDescriptorConfigs.next()) {
                                     java.lang.Integer configId = channelDescriptorConfigs.getInt("ID");
-                                    connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId + ", " + enableFieldId + ", TRUE);");
+                                    connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId + ", " + enableFieldId + ", 'true');");
                                 }
                             }
                         }

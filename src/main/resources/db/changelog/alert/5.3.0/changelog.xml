@@ -8,4 +8,5 @@
     <include file="permissions-matrix.xml" relativeToChangelogFile="true"/>
     <include file="changelog-authentication-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="polaris.xml" relativeToChangelogFile="true"/>
+    <include file="custom-certificates.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

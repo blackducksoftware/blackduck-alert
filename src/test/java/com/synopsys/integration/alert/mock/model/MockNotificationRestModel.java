@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt = new Date(400).toString();
@@ -34,13 +34,13 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
         return content;
     }
 
-    public void setId(final String id) {
-        this.id = id;
-    }
-
     @Override
     public Long getId() {
         return Long.valueOf(id);
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @Override
     public String getRestModelJson() {
-        final JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);
         json.addProperty("provider", provider);
         json.addProperty("providerCreationTime", providerCreationTime);

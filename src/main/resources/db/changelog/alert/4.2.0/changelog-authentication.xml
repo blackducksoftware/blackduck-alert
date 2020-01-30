@@ -2,6 +2,12 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1556732237461-1">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ROLES WHERE ROLES.ROLENAME = 'ALERT_JOB_MANAGER'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ROLES WHERE ROLES.ROLENAME = 'ALERT_USER'</sqlCheck>
+            </and>
+        </preConditions>
         <insert tableName="ROLES" schemaName="ALERT">
             <column name="ID" value="2"/>
             <column name="ROLENAME" value="ALERT_JOB_MANAGER"/>
@@ -12,6 +18,11 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1556732237461-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="ACCESS_OPERATIONS"/>
+            </not>
+        </preConditions>
         <createTable tableName="ACCESS_OPERATIONS" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="ACCESS_OPERATION_KEY"/>
@@ -20,6 +31,11 @@
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="1556732237461-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="PERMISSION_KEYS"/>
+            </not>
+        </preConditions>
         <createTable tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="PERMISSION_KEYS_KEY"/>
@@ -28,6 +44,11 @@
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="1556732237461-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="PERMISSION_MATRIX"/>
+            </not>
+        </preConditions>
         <createTable tableName="PERMISSION_MATRIX" schemaName="ALERT">
             <column name="ROLE_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
@@ -77,6 +98,15 @@
         />
     </changeSet>
     <changeSet author="psantos" id="1556732237461-5">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'CREATE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'DELETE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'READ'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'WRITE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'EXECUTE'</sqlCheck>
+            </and>
+        </preConditions>
         <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
             <column name="ID" value="1"/>
             <column name="OPERATION_NAME" value="CREATE"/>
@@ -99,6 +129,22 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1556732237461-6">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.provider_polaris'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.provider_polaris'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_slack'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_scheduling'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_settings'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_audit'</sqlCheck>
+            </and>
+        </preConditions>
         <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
             <column name="ID" value="1"/>
             <column name="KEY_NAME" value="global.provider_blackduck"/>

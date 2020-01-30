@@ -430,7 +430,7 @@ These are some examples of what can be set. the blackduck-alert.env file has a m
     - ALERT_CHANNEL_JIRA_CLOUD_JIRA_CLOUD_URL= The URL for the Jira Cloud server.
     - ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST= The SMTP host used to send email messages.
 - Component:
-    - ALERT_COMPONENT_SETTINGS_SETTINGS_LDAP_ENABLED= Boolean to determine if LDAP authentication is used.
+    - ALERT_COMPONENT_AUTHENTICATION_SETTINGS_LDAP_ENABLED= Boolean to determine if LDAP authentication is used.
 
 ## Advanced Configuration
 This section describes some advanced configuration settings for the Alert server.
@@ -513,7 +513,7 @@ For this advanced setting, since there are more than just environment variables 
         Synopsys recommends setting the mem_limit using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
 
             ALERT_MAX_HEAP_SIZE = 4096M
-            mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4096M + 256M = 4352M
+            mem_limit = ALERT_MAX_HEAP_SIZE + 256M = 4352M
 
 Example:
 - Change the memory limit from 2G to 4G.

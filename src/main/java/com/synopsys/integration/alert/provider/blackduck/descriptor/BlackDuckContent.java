@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class BlackDuckContent extends ProviderContent {
@@ -50,17 +50,17 @@ public class BlackDuckContent extends ProviderContent {
 
     private static final EnumSet<FormatType> SUPPORTED_CONTENT_FORMATS = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
 
+    @Autowired
+    public BlackDuckContent() {
+        super(SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
+    }
+
     private static Set<ProviderNotificationType> fromNotificationTypes(NotificationType... notificationTypes) {
         return Arrays
                    .stream(notificationTypes)
                    .map(NotificationType::name)
                    .map(ProviderNotificationType::new)
                    .collect(Collectors.toSet());
-    }
-
-    @Autowired
-    public BlackDuckContent() {
-        super(SUPPORTED_CONTENT_TYPES, SUPPORTED_CONTENT_FORMATS);
     }
 
 }
