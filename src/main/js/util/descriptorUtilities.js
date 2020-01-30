@@ -17,7 +17,6 @@ export const DESCRIPTOR_NAME = {
     COMPONENT_SCHEDULING: 'component_scheduling',
     COMPONENT_SETTINGS: 'component_settings',
     PROVIDER_BLACKDUCK: 'provider_blackduck',
-    PROVIDER_POLARIS: 'provider_polaris',
     COMPONENT_USERS: 'component_users'
 };
 
