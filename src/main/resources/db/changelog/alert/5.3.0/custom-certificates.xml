@@ -14,9 +14,13 @@
         <sql dbms="h2" stripComments="true">
             CALL REGISTER_COMPONENT('component_certificates');
         </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2020-01-30-12-41-54-750">
         <sql dbms="h2" stripComments="true">
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','component_certificates', 'GLOBAL', 0);
-            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','component_certificates', 'GLOBAL', 0);
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','component_certificates', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','component_certificates', 'GLOBAL');
         </sql>
     </changeSet>
 </databaseChangeLog>
