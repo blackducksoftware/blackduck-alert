@@ -40,6 +40,5 @@ public class JobFieldModelTest {
 
         assertEquals(newFieldModels, testJobFieldModel.getFieldModels());
         assertEquals(2, testJobFieldModel.getFieldModels().size());
-
     }
 }

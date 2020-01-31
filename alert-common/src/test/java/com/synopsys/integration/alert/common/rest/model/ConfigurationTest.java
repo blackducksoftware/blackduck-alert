@@ -28,6 +28,5 @@ public class ConfigurationTest {
 
         assertTrue(newConfigurationFieldModel.isPresent());
         assertEquals(testConfigurationFieldModel, newConfigurationFieldModel.get());
-
     }
 }

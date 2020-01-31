@@ -57,7 +57,6 @@ public class FieldModelTest {
         assertEquals(configId, testFieldModel.getId());
         assertNull(testFieldModel.getCreatedAt());
         assertNull(testFieldModel.getLastUpdated());
-
     }
 
     @Test
@@ -81,7 +80,6 @@ public class FieldModelTest {
         assertNull(testFieldModel.getId());
         assertEquals(createdAt, testFieldModel.getCreatedAt());
         assertEquals(lastUpdated, testFieldModel.getLastUpdated());
-
     }
 
     @Test
@@ -106,7 +104,6 @@ public class FieldModelTest {
         assertEquals(configId, testFieldModel.getId());
         assertEquals(createdAt, testFieldModel.getCreatedAt());
         assertEquals(lastUpdated, testFieldModel.getLastUpdated());
-
     }
 
     @Test
@@ -130,7 +127,6 @@ public class FieldModelTest {
 
         assertTrue(testFieldModel.getKeyToValues().containsKey(key1));
         assertTrue(testFieldModel.getKeyToValues().containsKey(key2));
-
     }
 
     @Test
@@ -153,7 +149,6 @@ public class FieldModelTest {
         verifyFieldValueModel = testFieldModel.getFieldValueModel(keyBad);
 
         assertFalse(verifyFieldValueModel.isPresent());
-
     }
 
     @Test
@@ -188,7 +183,6 @@ public class FieldModelTest {
         value = testFieldModel.getFieldValue(badKey);
 
         assertFalse(value.isPresent());
-
     }
 
     @Test
@@ -211,7 +205,6 @@ public class FieldModelTest {
 
         assertTrue(testFieldModel.getKeyToValues().containsKey(key));
         assertTrue(testFieldModel.getKeyToValues().containsKey(newKey));
-
     }
 
     @Test
@@ -238,7 +231,6 @@ public class FieldModelTest {
 
         assertTrue(testKeyToValues.containsKey(keyValid));
         assertFalse(testKeyToValues.containsKey(keyToDelete));
-
     }
 
     @Test
@@ -265,7 +257,6 @@ public class FieldModelTest {
         assertEquals(configId, newTestFieldModel.getId());
         assertEquals(createdAt, newTestFieldModel.getCreatedAt());
         assertEquals(lastUpdated, newTestFieldModel.getLastUpdated());
-
     }
 
     @Test

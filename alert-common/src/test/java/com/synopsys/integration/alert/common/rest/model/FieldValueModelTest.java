@@ -109,5 +109,4 @@ public class FieldValueModelTest {
         assertFalse(testFieldValueModelIsNotSet.containsNoData());
         assertFalse(testFieldValueModel.containsNoData());
     }
-
 }
