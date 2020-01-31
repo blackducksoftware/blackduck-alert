@@ -21,6 +21,7 @@ public class JobFieldModelTest {
         String testJobId = "test-job-id";
         String newJobId = "new-job-id";
         FieldModel testFieldModel = Mockito.mock(FieldModel.class);
+
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
         JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels);
         testJobFieldModel.setJobId(newJobId);
@@ -33,6 +34,7 @@ public class JobFieldModelTest {
         String testJobId = "test-job-id";
         FieldModel testFieldModel = Mockito.mock(FieldModel.class);
         FieldModel newTestFieldModel = Mockito.mock(FieldModel.class);
+
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
         Set<FieldModel> newFieldModels = Set.of(testFieldModel, newTestFieldModel);
         JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels);

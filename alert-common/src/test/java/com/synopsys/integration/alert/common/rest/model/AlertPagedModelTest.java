@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class AlertPagedModelTest {
-    int testTotalPages = 1;
-    int testCurrentPage = 2;
-    int testPageSize = 3;
-    List<AlertSerializableModel> testContent;
-    AlertPagedModel<AlertSerializableModel> testAlertPagedModel;
+    private final int testTotalPages = 1;
+    private final int testCurrentPage = 2;
+    private final int testPageSize = 3;
+    private List<AlertSerializableModel> testContent;
+    private AlertPagedModel<AlertSerializableModel> testAlertPagedModel;
 
     @BeforeEach
     public void init() {

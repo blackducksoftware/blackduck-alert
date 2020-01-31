@@ -9,14 +9,14 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 
 public class JobAuditModelTest {
-    String testId = "test-id";
-    String testConfigId = "test-config-id";
-    String testName = "test-name";
-    String testEventType = "test-event-name";
-    AuditJobStatusModel testAuditJobStatusModel = Mockito.mock(AuditJobStatusModel.class);
-    String testErrorMessage = "test-error-message";
-    String testErrorStackTrace = "test-error-stack-trace";
-    JobAuditModel testJobAuditModel = new JobAuditModel();
+    private final String testId = "test-id";
+    private final String testConfigId = "test-config-id";
+    private final String testName = "test-name";
+    private final String testEventType = "test-event-name";
+    private final AuditJobStatusModel testAuditJobStatusModel = Mockito.mock(AuditJobStatusModel.class);
+    private final String testErrorMessage = "test-error-message";
+    private final String testErrorStackTrace = "test-error-stack-trace";
+    private JobAuditModel testJobAuditModel = new JobAuditModel();
 
     @BeforeEach
     public void init() {

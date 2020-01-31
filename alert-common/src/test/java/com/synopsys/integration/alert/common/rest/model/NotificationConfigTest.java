@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 public class NotificationConfigTest {
+    private final String id = "test-ID";
+    private final String createdAt = "test-createdAt";
+    private final String provider = "test-provider";
+    private final String providerCreationTime = "test-providerCreationTime";
+    private final String notificationType = "test-notificationType";
+    private final String content = "test-content";
 
-    String id = "test-ID";
-    String createdAt = "test-createdAt";
-    String provider = "test-provider";
-    String providerCreationTime = "test-providerCreationTime";
-    String notificationType = "test-notificationType";
-    String content = "test-content";
-
+    //TODO change this into an @beforeeach
     public NotificationConfig setupNotificationConfig() {
         NotificationConfig testNotificationConfig = new NotificationConfig(id, createdAt, provider, providerCreationTime, notificationType, content);
         return testNotificationConfig;
