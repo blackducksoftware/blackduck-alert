@@ -22,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.model.CertificateModel;
@@ -39,9 +38,6 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
 
     @Autowired
     private AlertProperties alertProperties;
-
-    @Autowired
-    private CustomCertificateAccessor certificateAccessor;
 
     private CertificateTestUtil certTestUtil = new CertificateTestUtil();
 
