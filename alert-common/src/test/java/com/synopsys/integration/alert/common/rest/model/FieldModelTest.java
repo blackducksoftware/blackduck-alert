@@ -22,10 +22,8 @@ public class FieldModelTest {
         String key = "Key1";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
 
         assertEquals(descriptor, testFieldModel.getDescriptorName());
@@ -45,10 +43,8 @@ public class FieldModelTest {
         String configId = "Id1";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(configId, descriptor, context, keyToValues);
 
         assertEquals(descriptor, testFieldModel.getDescriptorName());
@@ -68,10 +64,8 @@ public class FieldModelTest {
         String lastUpdated = "2020-01-1";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, createdAt, lastUpdated, keyToValues);
 
         assertEquals(descriptor, testFieldModel.getDescriptorName());
@@ -92,10 +86,8 @@ public class FieldModelTest {
         String lastUpdated = "2020-01-1";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, keyToValues);
 
         assertEquals(descriptor, testFieldModel.getDescriptorName());
@@ -114,7 +106,6 @@ public class FieldModelTest {
         String key2 = "key to be added into keyToValues";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key1, testFieldValueModel);
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
@@ -139,7 +130,6 @@ public class FieldModelTest {
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(keyValid, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
         Optional<FieldValueModel> verifyFieldValueModel = testFieldModel.getFieldValueModel(keyValid);
 
@@ -165,7 +155,6 @@ public class FieldModelTest {
         FieldValueModel newFieldValueModel = new FieldValueModel(values, Boolean.TRUE);
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, newFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
         Optional<String> value = testFieldModel.getFieldValue(key);
 
@@ -195,7 +184,6 @@ public class FieldModelTest {
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
 
         assertTrue(testFieldModel.getKeyToValues().containsKey(key));
@@ -215,11 +203,9 @@ public class FieldModelTest {
         String keyToDelete = "Key2";
 
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(keyValid, testFieldValueModel);
         keyToValues.put(keyToDelete, testFieldValueModel);
-
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
         Map<String, FieldValueModel> testKeyToValues = testFieldModel.getKeyToValues();
 
@@ -250,7 +236,6 @@ public class FieldModelTest {
 
         assertEquals(testFieldModel, newTestFieldModel);
         assertFalse(testFieldModel == newTestFieldModel);
-
         assertEquals(descriptor, newTestFieldModel.getDescriptorName());
         assertEquals(context, newTestFieldModel.getContext());
         assertTrue(newTestFieldModel.getKeyToValues().containsKey(key));
@@ -276,7 +261,6 @@ public class FieldModelTest {
         Map<String, FieldValueModel> newKeyToValues = new HashMap<>();
         newKeyToValues.put(key2, testFieldValueModel);
         FieldModel testFieldModelMissingValues = new FieldModel(null, null, null, null, null, newKeyToValues);
-
         FieldModel testCombinedFieldModel = testFieldModelMissingValues.fill(testFieldModelWithValues);
 
         assertEquals(descriptor, testCombinedFieldModel.getDescriptorName());
@@ -303,14 +287,12 @@ public class FieldModelTest {
         FieldValueModel testFieldValueModel = Mockito.mock(FieldValueModel.class);
         FieldValueModel emptyFieldValueModel = Mockito.mock(FieldValueModel.class);
         Mockito.when(emptyFieldValueModel.getValue()).thenReturn(Optional.empty());
-
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
         FieldModel testFieldModelWithValues = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, keyToValues);
         Map<String, FieldValueModel> newKeyToValues = new HashMap<>();
         newKeyToValues.put(key, emptyFieldValueModel);
         FieldModel testFieldModelMissingValues = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, newKeyToValues);
-
         FieldModel testCombinedFieldModel = testFieldModelMissingValues.fill(testFieldModelWithValues);
 
         assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key));

@@ -21,7 +21,6 @@ public class ConfigurationTest {
         ConfigurationFieldModel testConfigurationFieldModel = Mockito.mock(ConfigurationFieldModel.class);
         Map<String, ConfigurationFieldModel> keyToFieldMapTest = new HashMap<>();
         keyToFieldMapTest.put(fieldKey, testConfigurationFieldModel);
-
         Configuration testConfig = new Configuration(keyToFieldMapTest);
         FieldAccessor testFieldAccessor = testConfig.getFieldAccessor();
         Optional<ConfigurationFieldModel> newConfigurationFieldModel = testFieldAccessor.getField(fieldKey);

@@ -29,7 +29,6 @@ public class JobFieldErrorsTest {
 
         Map<String, String> fieldError = new HashMap<>();
         fieldError.put(fieldErrorKey, fieldErrorValue);
-
         JobFieldErrors jobFieldError = new JobFieldErrors(configId, fieldError);
         Map<String, String> testResult = jobFieldError.getFieldErrors();
 
