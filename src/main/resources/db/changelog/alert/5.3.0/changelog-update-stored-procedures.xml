@@ -11,7 +11,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS REGISTER_CHANNEL AS $$
+            CREATE ALIAS IF NOT EXISTS REGISTER_CHANNEL AS $$
                 java.lang.Void registerChannel(java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
                     try (java.sql.Statement statement = connection.createStatement()) {
                         statement.execute("CALL REGISTER_DESCRIPTOR('" + descriptorName + "', 'CHANNEL');");
@@ -31,7 +31,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS ENABLE_EXISTING_CONFIGS AS $$
+            CREATE ALIAS IF NOT EXISTS ENABLE_EXISTING_CONFIGS AS $$
                 java.lang.Void enableCurrentConfigs(java.sql.Connection connection) throws java.sql.SQLException {
                     try (java.sql.ResultSet fieldIdRow = connection.createStatement().executeQuery("CALL GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.enabled');")) {
                         if (fieldIdRow.next()) {
