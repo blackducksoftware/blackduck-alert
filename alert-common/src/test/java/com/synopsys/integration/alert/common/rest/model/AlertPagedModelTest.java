@@ -14,35 +14,33 @@ public class AlertPagedModelTest {
     int testCurrentPage = 2;
     int testPageSize = 3;
     List<AlertSerializableModel> testContent;
+    AlertPagedModel<AlertSerializableModel> testAlertPagedModel;
 
     @BeforeEach
     public void init() {
         testContent = new ArrayList<>();
         AlertSerializableModel testAlertSerializableModel = Mockito.mock(AlertSerializableModel.class);
         testContent.add(testAlertSerializableModel);
+        testAlertPagedModel = new AlertPagedModel(testTotalPages, testCurrentPage, testPageSize, testContent);
     }
 
     @Test
     public void getTotalPagesTest() {
-        AlertPagedModel<AlertSerializableModel> testAlertPagedModel = new AlertPagedModel<>(testTotalPages, testCurrentPage, testPageSize, testContent);
         assertEquals(testTotalPages, testAlertPagedModel.getTotalPages());
     }
 
     @Test
     public void getCurrentPageTest() {
-        AlertPagedModel<AlertSerializableModel> testAlertPagedModel = new AlertPagedModel<>(testTotalPages, testCurrentPage, testPageSize, testContent);
         assertEquals(testCurrentPage, testAlertPagedModel.getCurrentPage());
     }
 
     @Test
     public void getPageSizeTest() {
-        AlertPagedModel<AlertSerializableModel> testAlertPagedModel = new AlertPagedModel<>(testTotalPages, testCurrentPage, testPageSize, testContent);
         assertEquals(testPageSize, testAlertPagedModel.getPageSize());
     }
 
     @Test
     public void getContentTest() {
-        AlertPagedModel<AlertSerializableModel> testAlertPagedModel = new AlertPagedModel<>(testTotalPages, testCurrentPage, testPageSize, testContent);
         assertEquals(testContent, testAlertPagedModel.getContent());
     }
 }
