@@ -17,6 +17,11 @@
         </update>
     </changeSet>
     <changeSet author="psantos" id="2020-01-07-11-23-07-677">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="AUTHENTICATION_TYPE"/>
+            </not>
+        </preConditions>
         <createTable tableName="AUTHENTICATION_TYPE" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="AUTH_TYPE_KEY"/>
@@ -45,6 +50,11 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="2019-12-18-07-31-16-844">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="ALERT" tableName="USERS" columnName="AUTH_TYPE"/>
+            </not>
+        </preConditions>
         <addColumn schemaName="ALERT" tableName="USERS">
             <column name="AUTH_TYPE" type="BIGINT(19)" defaultValue="1">
                 <constraints nullable="false"/>
@@ -52,6 +62,11 @@
         </addColumn>
     </changeSet>
     <changeSet author="psantos" id="2020-01-07-15-09-48-240">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="ALERT" foreignKeyName="FK_AUTH_TYPE_ID"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
                 baseTableName="USERS"
