@@ -256,47 +256,8 @@ importBlackDuckSystemCertificateIntoKeystore() {
     fi
 }
 # Bootstrap will optionally configure the config volume if it hasnt been configured yet.
-# After that we verify, import certs, and then launch the webserver.
+# After that we verify, and then launch the webserver.
 
-importBlackDuckWebServerCertificate(){
-    if [ "$ALERT_IMPORT_CERT" == "false" ];
-    then
-        echo "Skipping import of BlackDuck Certificate"
-    else
-      if [ -z "$PUBLIC_HUB_WEBSERVER_HOST" ];
-      then
-        echo "PUBLIC_HUB_WEBSERVER_HOST and/or PUBLIC_HUB_WEBSERVER_PORT not set.  Skipping import of BlackDuck Certificate"
-      else
-        echo "Attempting to import BlackDuck Certificate"
-        echo $PUBLIC_HUB_WEBSERVER_HOST
-        echo $PUBLIC_HUB_WEBSERVER_PORT
-
-        # In case of alert container restart
-        if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST"
-        then
-            keytool -delete -alias "$PUBLIC_HUB_WEBSERVER_HOST" -keystore "$truststoreFile" -storepass $truststorePassword
-          echo "Removing the existing BlackDuck certificate after container restart"
-        fi
-
-        if [ -z "$PUBLIC_HUB_WEBSERVER_PORT"];
-        then
-          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
-          then
-            echo "Completed importing BlackDuck Certificate"
-          else
-            echo "Unable to add the BlackDuck certificate. Please try to import the certificate manually."
-          fi
-        else
-          if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "$PUBLIC_HUB_WEBSERVER_HOST" -noprompt
-          then
-            echo "Completed importing BlackDuck certificate"
-          else
-            echo "Unable to add the BlackDuck certificate. Please try to import the certificate manually."
-          fi
-        fi
-    	fi
-    fi
-}
 
 importDockerHubServerCertificate(){
     if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
@@ -479,7 +440,6 @@ else
   trustProxyCertificate
   createKeystore
   importBlackDuckSystemCertificateIntoKeystore
-  importBlackDuckWebServerCertificate
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
