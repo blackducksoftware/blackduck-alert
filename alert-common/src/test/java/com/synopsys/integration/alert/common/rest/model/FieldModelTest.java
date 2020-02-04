@@ -32,7 +32,6 @@ public class FieldModelTest {
         assertNull(testFieldModel.getId());
         assertNull(testFieldModel.getCreatedAt());
         assertNull(testFieldModel.getLastUpdated());
-
     }
 
     @Test
@@ -133,8 +132,8 @@ public class FieldModelTest {
         FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
         Optional<FieldValueModel> verifyFieldValueModel = testFieldModel.getFieldValueModel(keyValid);
 
-        assertEquals(testFieldValueModel, verifyFieldValueModel.get());
         assertTrue(verifyFieldValueModel.isPresent());
+        assertEquals(testFieldValueModel, verifyFieldValueModel.get());
 
         verifyFieldValueModel = testFieldModel.getFieldValueModel(keyBad);
 
@@ -146,7 +145,6 @@ public class FieldModelTest {
         String descriptor = "description1";
         String context = "context1";
         String key = "Key1";
-        String keyWithoutValue = "Key without fieldValue";
         String badKey = "This key doesn't exist";
         String testFieldValue = "FieldValue1";
 
@@ -164,12 +162,23 @@ public class FieldModelTest {
         value = testFieldModel.getFieldValue(badKey);
 
         assertFalse(value.isPresent());
+    }
+
+    @Test
+    public void getEmptyFieldValueTest() {
+        String descriptor = "description1";
+        String context = "context1";
+        String key = "Key1";
+        String keyWithoutValue = "Key without fieldValue";
 
         List<String> emptyValues = new ArrayList();
         FieldValueModel emptyFieldValueModel = new FieldValueModel(emptyValues, Boolean.TRUE);
+
+        Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(keyWithoutValue, emptyFieldValueModel);
+        FieldModel testFieldModel = new FieldModel(descriptor, context, keyToValues);
         testFieldModel.setKeyToValues(keyToValues);
-        value = testFieldModel.getFieldValue(badKey);
+        Optional<String> value = testFieldModel.getFieldValue(key);
 
         assertFalse(value.isPresent());
     }
@@ -192,7 +201,7 @@ public class FieldModelTest {
         testFieldModel.putField(newKey, testFieldValueModel);
 
         assertTrue(testFieldModel.getKeyToValues().containsKey(key));
-        assertTrue(testFieldModel.getKeyToValues().containsKey(newKey));
+        assertTrue(testFieldModel.getKeyToValues().containsKey(newKey), "The newKey was not successfully added into the testFieldModel.");
     }
 
     @Test
@@ -216,7 +225,7 @@ public class FieldModelTest {
         testKeyToValues = testFieldModel.getKeyToValues();
 
         assertTrue(testKeyToValues.containsKey(keyValid));
-        assertFalse(testKeyToValues.containsKey(keyToDelete));
+        assertFalse(testKeyToValues.containsKey(keyToDelete), "The keyToDelete was not successfully removed.");
     }
 
     @Test
@@ -258,9 +267,11 @@ public class FieldModelTest {
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
         FieldModel testFieldModelWithValues = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, keyToValues);
+
         Map<String, FieldValueModel> newKeyToValues = new HashMap<>();
         newKeyToValues.put(key2, testFieldValueModel);
         FieldModel testFieldModelMissingValues = new FieldModel(null, null, null, null, null, newKeyToValues);
+
         FieldModel testCombinedFieldModel = testFieldModelMissingValues.fill(testFieldModelWithValues);
 
         assertEquals(descriptor, testCombinedFieldModel.getDescriptorName());
@@ -271,8 +282,8 @@ public class FieldModelTest {
 
         assertFalse(testFieldModelWithValues.getKeyToValues().containsKey(key2));
         assertFalse(testFieldModelMissingValues.getKeyToValues().containsKey(key));
-        assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key));
-        assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key2));
+        assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key), "The testCombinedFieldModel is missing the key: " + key);
+        assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key2), "The testCombinedFieldModel is missing the key: " + key2);
     }
 
     @Test
@@ -290,9 +301,11 @@ public class FieldModelTest {
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(key, testFieldValueModel);
         FieldModel testFieldModelWithValues = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, keyToValues);
+
         Map<String, FieldValueModel> newKeyToValues = new HashMap<>();
         newKeyToValues.put(key, emptyFieldValueModel);
         FieldModel testFieldModelMissingValues = new FieldModel(configId, descriptor, context, createdAt, lastUpdated, newKeyToValues);
+
         FieldModel testCombinedFieldModel = testFieldModelMissingValues.fill(testFieldModelWithValues);
 
         assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key));
