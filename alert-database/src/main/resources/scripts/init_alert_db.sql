@@ -277,7 +277,7 @@ create table if not exists ALERT.AUDIT_NOTIFICATION_RELATION
             on delete cascade
 );
 
-create table ALERT.CUSTOM_CERTIFICATES
+create table if not exists ALERT.CUSTOM_CERTIFICATES
 (
     ID                  BIGSERIAL,
     ALIAS               VARCHAR(128),
