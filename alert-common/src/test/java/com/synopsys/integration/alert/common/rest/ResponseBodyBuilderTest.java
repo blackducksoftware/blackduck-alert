@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.rest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,20 +18,18 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.rest.ResponseBodyBuilder;
-
 public class ResponseBodyBuilderTest {
 
     @Test
     public void testResponseBodyBuilderEmpty() {
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(null, null);
+        ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(null, null);
         assertEquals("{\"id\":null,\"message\":null}", responseBodyBuilder.build());
         assertEquals("{\"id\":null,\"message\":null}", responseBodyBuilder.toString());
     }
 
     @Test
     public void testResponseBodyBuilder() {
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("55L", "Message");
+        ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("55L", "Message");
 
         responseBodyBuilder.put("Key1", "Value");
         responseBodyBuilder.put("Key2", 22);
@@ -42,9 +40,9 @@ public class ResponseBodyBuilderTest {
 
     @Test
     public void testResponseBodyBuilderErrors() {
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
+        ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
 
-        final Map<String, String> errors = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
         errors.put("Field", "Terrible error");
 
         responseBodyBuilder.putErrors(errors);
