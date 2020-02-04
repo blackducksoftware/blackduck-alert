@@ -94,14 +94,6 @@ public class AlertProperties {
     @Value("${server.ssl.enabled:false}")
     private Boolean sslEnabled;
 
-    // the blackduck product hasn't renamed their environment variables from hub to blackduck
-    // need to keep hub in the name until
-    @Value("${public.hub.webserver.host:}")
-    private String publicWebserverHost;
-
-    @Value("${public.hub.webserver.port:}")
-    private String publicWebserverPort;
-
     @Value("${alert.hostname:}")
     private String alertHostName;
 
@@ -194,16 +186,6 @@ public class AlertProperties {
         return getOptionalString(trustStoreType);
     }
 
-    @Deprecated
-    public Optional<String> getPublicWebserverHost() {
-        return getOptionalString(publicWebserverHost);
-    }
-
-    @Deprecated
-    public Optional<String> getPublicWebserverPort() {
-        return getOptionalString(publicWebserverPort);
-    }
-
     public Optional<String> getAlertHostName() {
         return getOptionalString(alertHostName);
     }
@@ -217,8 +199,8 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
-            String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
-            String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
+            String hostName = getAlertHostName().orElse(getAlertHostName().orElse("localhost"));
+            String port = getServerPort().orElse(getServerPort().orElse(getServerPort().orElse("")));
             String path = getContextPath().orElse("");
             String protocol = "http";
             if (getSslEnabled()) {
