@@ -1,0 +1,43 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+
+    <!-- Add swap column(s) -->
+    <changeSet author="gkillough" id="1548704562941-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="CONFIG_GROUP_ID"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="ALERT" tableName="AUDIT_ENTRIES">
+            <column name="CONFIG_GROUP_ID" type="UUID"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Migrate jobs -->
+    <changeSet author="gkillough" id="1548704562941-2">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="COMMON_DISTRIBUTION_CONFIG"/>
+        </preConditions>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0();
+        </sql>
+    </changeSet>
+
+    <!-- Remove old column(s) -->
+    <changeSet author="gkillough" id="1548704562941-3">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="COMMON_CONFIG_ID"/>
+        </preConditions>
+        <dropColumn schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="COMMON_CONFIG_ID"/>
+    </changeSet>
+
+    <!-- Rename swap column(s) -->
+    <changeSet author="gkillough" id="1548704562941-4">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="CONFIG_GROUP_ID"/>
+        </preConditions>
+        <renameColumn schemaName="ALERT" tableName="AUDIT_ENTRIES" oldColumnName="CONFIG_GROUP_ID" newColumnName="COMMON_CONFIG_ID"/>
+    </changeSet>
+
+</databaseChangeLog>

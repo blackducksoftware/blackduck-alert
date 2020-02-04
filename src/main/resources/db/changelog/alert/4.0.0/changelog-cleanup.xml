@@ -1,0 +1,117 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Drop old global configurations -->
+    <changeSet author="gkillough" id="1548776599865-1">
+        <preConditions onFail="MARK_RAN">
+                <tableExists schemaName="ALERT" tableName="GLOBAL_BLACKDUCK_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="GLOBAL_EMAIL_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="GLOBAL_HIPCHAT_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="GLOBAL_SLACK_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="GLOBAL_SCHEDULING_CONFIG"/>
+        </preConditions>
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_BLACKDUCK_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_EMAIL_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_HIPCHAT_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_SLACK_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_SCHEDULING_CONFIG"
+        />
+    </changeSet>
+
+    <!-- Drop old distribution configs -->
+    <changeSet author="gkillough" id="1548776599865-2">
+        <preConditions onFail="MARK_RAN">
+                <tableExists schemaName="ALERT" tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="HIP_CHAT_DISTRIBUTION_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="SLACK_DISTRIBUTION_CONFIG"/>
+                <tableExists schemaName="ALERT" tableName="COMMON_DISTRIBUTION_CONFIG"/>
+        </preConditions>
+        <dropTable
+                schemaName="ALERT"
+                tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="HIP_CHAT_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="SLACK_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="COMMON_DISTRIBUTION_CONFIG"
+        />
+    </changeSet>
+
+    <!-- Drop old common config relations -->
+    <changeSet author="gkillough" id="1548776599865-3">
+        <preConditions onFail="MARK_RAN">
+                <tableExists schemaName="ALERT" tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION"/>
+                <tableExists schemaName="ALERT" tableName="DISTRIBUTION_NOTIFICATION_TYPES"/>
+                <tableExists schemaName="ALERT" tableName="DISTRIBUTION_PROJECT_RELATION"/>
+        </preConditions>
+        <dropTable
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_NOTIFICATION_TYPES"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_PROJECT_RELATION"
+        />
+    </changeSet>
+
+    <!-- Drop abandoned tables -->
+    <changeSet author="gkillough" id="1548776599865-4">
+        <preConditions onFail="MARK_RAN">
+                <tableExists schemaName="ALERT" tableName="VULNERABILITIES"/>
+                <tableExists schemaName="ALERT" tableName="NOTIFICATION_TYPES"/>
+                <tableExists schemaName="ALERT" tableName="CONFIGURED_PROJECTS"/>
+        </preConditions>
+        <dropTable
+                schemaName="ALERT"
+                tableName="VULNERABILITIES"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="NOTIFICATION_TYPES"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="CONFIGURED_PROJECTS"
+        />
+    </changeSet>
+
+    <!-- Remove migration procedures -->
+    <changeSet author="gkillough" id="1548776599865-5">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

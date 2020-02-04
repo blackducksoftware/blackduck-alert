@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <include file="changelog-configuration.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-stored-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-global-migration.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-distribution-job-migration.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-audit.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-settingskey.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-cleanup.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

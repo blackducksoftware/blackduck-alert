@@ -1,0 +1,130 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1565268970974-1">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS PUBLIC.ASSIGN_ROLE_PERMISSION_ALL_ACCESS;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS PUBLIC.ASSIGN_ROLE_PERMISSION_ACCESS;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS PUBLIC.GET_ID_FOR_PERMISSION_KEY;
+        </sql>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_ROLE_PERMISSION_ACCESS">
+            CREATE ALIAS ASSIGN_ROLE_PERMISSION_ACCESS AS $$
+                java.lang.Void assignPermissionToRole(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                        insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('"+descriptorName+"'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), GET_ID_FOR_ACCESS_OPERATION('" + accessOperation + "'));");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-3">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_ROLE_PERMISSION_ALL_ACCESS">
+            CREATE ALIAS ASSIGN_ROLE_PERMISSION_ALL_ACCESS AS $$
+                java.lang.Void assignPermissionToRole(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                        try (java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                            while (accessEntries.next()) {
+                                java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, DESCRIPTOR_ID, CONTEXT_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "'), GET_ID_FOR_CONFIG_CONTEXT('" + context + "'), '" + accessOperationId +"');");
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-4">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_DEFAULT_ROLE_PERMISSIONS">
+            CREATE ALIAS ASSIGN_DEFAULT_ROLE_PERMISSIONS AS $$
+                java.lang.Void assignDefaultRolePermissions(java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'global');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', '" + descriptorName + "', 'distribution');");
+
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'READ');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'global', 'EXECUTE');");
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_NO_UPLOAD_ACCESS('ALERT_JOB_MANAGER', '" + descriptorName + "', 'distribution');");
+
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER', '" + descriptorName + "', 'distribution', 'READ');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-5">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="REMOVE_PERMISSION">
+            CREATE ALIAS REMOVE_PERMISSION AS $$
+                java.lang.Void removePermission(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = GET_ID_FOR_ACCESS_OPERATION('" + accessOperation +"');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-6">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="REMOVE_ALL_PERMISSIONS">
+            CREATE ALIAS REMOVE_ALL_PERMISSIONS AS $$
+                java.lang.Void removeAllPermissions(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        try (java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                            while (accessEntries.next()) {
+                                java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                statement.executeUpdate("DELETE FROM ALERT.PERMISSION_MATRIX WHERE ROLE_ID = GET_ID_FOR_USER_ROLE('" + roleName + "') AND DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName + "') AND CONTEXT_ID = GET_ID_FOR_CONFIG_CONTEXT('" + context + "') AND ACCESS_OPERATION_ID = '" + accessOperationId + "';");
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565268970974-7">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_ROLE_PERMISSION_ALL_NO_UPLOAD_ACCESS">
+            CREATE ALIAS ASSIGN_ROLE_PERMISSION_ALL_NO_UPLOAD_ACCESS AS $$
+                java.lang.Void assignAllNoUploadPermissionToRole(java.sql.Connection connection, java.lang.String roleName, java.lang.String descriptorName, java.lang.String context) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('"+roleName+"', '" + descriptorName + "', '" + context+"');");
+                        statement.execute("CALL REMOVE_PERMISSION('" + roleName + "', '" + descriptorName + "', '" + context + "', 'UPLOAD_FILE_READ');");
+                        statement.execute("CALL REMOVE_PERMISSION('" + roleName + "', '" + descriptorName + "', '" + context + "', 'UPLOAD_FILE_WRITE');");
+                        statement.execute("CALL REMOVE_PERMISSION('" + roleName + "', '" + descriptorName + "', '" + context + "', 'UPLOAD_FILE_DELETE');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

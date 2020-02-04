@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="1544542018669-1">
+        <modifyDataType schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="STATUS" newDataType="VARCHAR(255)"/>
+    </changeSet>
+    <changeSet author="jrichard" id="1544542018669-2">
+        <update schemaName="ALERT" tableName="AUDIT_ENTRIES">
+            <column name="STATUS" type="VARCHAR(255)" value="SUCCESS"/>
+            <where>STATUS = '1'</where>
+        </update>
+    </changeSet>
+    <changeSet author="jrichard" id="1544542018669-3">
+        <update schemaName="ALERT" tableName="AUDIT_ENTRIES">
+            <column name="STATUS" type="VARCHAR(255)" value="FAILURE"/>
+            <where>STATUS = '2'</where>
+        </update>
+    </changeSet>
+    <changeSet author="jrichard" id="1544542018669-4">
+        <update schemaName="ALERT" tableName="AUDIT_ENTRIES">
+            <column name="STATUS" type="VARCHAR(255)" value="PENDING"/>
+            <where>STATUS = '0'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

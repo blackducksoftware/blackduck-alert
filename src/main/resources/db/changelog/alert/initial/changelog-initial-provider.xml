@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-4" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="CONFIGURED_PROJECTS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A"/>
+            </column>
+            <column name="PROJECT_NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-15" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="NOTIFICATION_TYPES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_4"/>
+            </column>
+            <column name="TYPE" type="INT(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-17" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="VULNERABILITIES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_B"/>
+            </column>
+            <column name="NOTIFICATION_ID" type="BIGINT(19)"/>
+            <column name="OPERATION" type="INT(10)"/>
+            <column name="VULNERABILITY_ID" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-10" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+            <column name="BLACKDUCK_API_KEY" type="VARCHAR(255)"/>
+            <column name="BLACKDUCK_TIMEOUT" type="INT(10)"/>
+            <column name="BLACKDUCK_URL" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+     <changeSet author="jrichard" id="2019-10-25-15-04-02-049-5">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1533054185-1" author="psantos" changeLogFile="classpath:db/changelog/alert/changelog-3.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="RAW_NOTIFICATION_CONTENT" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="RAW_NOTIFICATION_CONTENT_KEY"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP"/>
+            <column name="PROVIDER" type="VARCHAR(255)"/>
+            <column name="PROVIDER_CREATION_TIME" type="TIMESTAMP"/>
+            <column name="NOTIFICATION_TYPE" type="VARCHAR(255)"/>
+            <column name="CONTENT" type="CLOB"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1533054185-9" author="jrichard" changeLogFile="classpath:db/changelog/alert/changelog-3.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="BLACKDUCK_USER" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_USER_KEY"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)"/>
+            <column name="OPT_OUT" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1533054185-10" author="jrichard" changeLogFile="classpath:db/changelog/alert/changelog-3.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="BLACKDUCK_PROJECT" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_PROJECT_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="HREF" type="VARCHAR(255)"/>
+            <column name="PROJECT_OWNER_EMAIL" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-04-02-049-8">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1533054185-11" author="jrichard" changeLogFile="classpath:db/changelog/alert/changelog-3.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="BLACKDUCK_USER_PROJECT_RELATION" schemaName="ALERT">
+            <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLACKDUCK_PROJECT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

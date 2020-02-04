@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-1">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-3" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_C"/>
+            </column>
+            <column name="DISTRIBUTION_CONFIG_ID" type="BIGINT(19)"/>
+            <column name="DISTRIBUTION_TYPE" type="VARCHAR(255)"/>
+            <column name="FILTER_BY_PROJECT" type="BOOLEAN(1)"/>
+            <column name="FREQUENCY" type="INT(10)"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="PROVIDER_NAME" type="varchar(255)" value="provider_blackduck"/>
+            <column name="FORMAT_TYPE" type="INT(10)" value="0"/>
+            <column name="PROJECT_NAME_PATTERN" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-2">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-5" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_TYPE_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-3">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-6" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="DISTRIBUTION_PROJECT_RELATION" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-4">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-19" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, PROJECT_ID" constraintName="CONSTRAINT_7" tableName="DISTRIBUTION_PROJECT_RELATION" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-20" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE_ID" constraintName="CONSTRAINT_C0" tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-05-29-499-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1533054185-8" author="psantos" changeLogFile="classpath:db/changelog/alert/changelog-3.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE" constraintName="CONSTRAINT_NOTIFICATION_TYPE" tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT"/>
+    </changeSet>
+</databaseChangeLog>

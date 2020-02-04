@@ -1,0 +1,280 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Global Black Duck Config -->
+    <changeSet author="gkillough" id="1548361428926-1">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_BLACKDUCK_CONFIG"/>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_BLACKDUCK_CONFIG', 'BLACKDUCK_API_KEY', 'blackduck.api.key');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_BLACKDUCK_CONFIG', 'BLACKDUCK_TIMEOUT', 'blackduck.timeout');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_BLACKDUCK_CONFIG', 'BLACKDUCK_URL', 'blackduck.url');
+        </sql>
+    </changeSet>
+
+    <!-- Global Email Config -->
+    <changeSet author="gkillough" id="1548361428926-2">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_EMAIL_CONFIG"/>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <!-- MAIL_SMTP_USER -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_USER', 'mail.smtp.user');
+        </sql>
+        <!-- MAIL_SMTP_PASSWORD -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_PASSWORD', 'mail.smtp.password');
+        </sql>
+        <!-- MAIL_SMTP_HOST -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_HOST', 'mail.smtp.host');
+        </sql>
+        <!-- MAIL_SMTP_PORT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_PORT', 'mail.smtp.port');
+        </sql>
+        <!-- MAIL_SMTP_CONNECTION_TIMEOUT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_CONNECTION_TIMEOUT', 'mail.smtp.connectiontimeout');
+        </sql>
+        <!-- MAIL_SMTP_TIMEOUT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_TIMEOUT', 'mail.smtp.timeout');
+        </sql>
+        <!-- MAIL_SMTP_WRITETIMEOUT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_WRITETIMEOUT', 'mail.smtp.writetimeout');
+        </sql>
+        <!-- MAIL_SMTP_FROM -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_FROM', 'mail.smtp.from');
+        </sql>
+        <!-- MAIL_SMTP_LOCALHOST -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_LOCALHOST', 'mail.smtp.localhost');
+        </sql>
+        <!-- MAIL_SMTP_LOCALADDRESS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_LOCALADDRESS', 'mail.smtp.localaddress');
+        </sql>
+        <!-- MAIL_SMTP_LOCALPORT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_LOCALPORT', 'mail.smtp.localport');
+        </sql>
+        <!-- MAIL_SMTP_EHLO -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_EHLO', 'mail.smtp.ehlo');
+        </sql>
+        <!-- MAIL_SMTP_AUTH -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH', 'mail.smtp.auth');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_MECHANISMS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_MECHANISMS', 'mail.smtp.auth.mechanisms');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_LOGIN_DISABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_LOGIN_DISABLE', 'mail.smtp.auth.login.disable');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_PLAIN_DISABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_PLAIN_DISABLE', 'mail.smtp.auth.plain.disable');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE', 'mail.smtp.auth.digest-md5.disable');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_NTLM_DISABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_NTLM_DISABLE', 'mail.smtp.auth.ntlm.disable');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_NTLM_DOMAIN -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_NTLM_DOMAIN', 'mail.smtp.auth.ntlm.domain');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_NTLM_FLAGS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_NTLM_FLAGS', 'mail.smtp.auth.ntlm.flags');
+        </sql>
+        <!-- MAIL_SMTP_AUTH_XOAUTH2_DISABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_XOAUTH2_DISABLE', 'mail.smtp.auth.xoauth2.disable');
+        </sql>
+        <!-- MAIL_SMTP_SUBMITTER -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SUBMITTER', 'mail.smtp.submitter');
+        </sql>
+        <!-- MAIL_SMTP_DSN_NOTIFY -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_DSN_NOTIFY', 'mail.smtp.dsn.notify');
+        </sql>
+        <!-- MAIL_SMTP_DNS_RET -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_DNS_RET', 'mail.smtp.dns.ret');
+        </sql>
+        <!-- MAIL_SMTP_ALLOW_8_BITMIME -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_ALLOW_8_BITMIME', 'mail.smtp.allow8bitmime');
+        </sql>
+        <!-- MAIL_SMTP_SEND_PARTIAL -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SEND_PARTIAL', 'mail.smtp.sendpartial');
+        </sql>
+        <!-- MAIL_SMTP_SASL_ENABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SASL_ENABLE', 'mail.smtp.sasl.enable');
+        </sql>
+        <!-- MAIL_SMTP_SASL_MECHANISMS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SASL_MECHANISMS', 'mail.smtp.sasl.mechanisms');
+        </sql>
+        <!-- MAIL_SMTP_SASL_AUTHORIZATIONID -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SASL_AUTHORIZATIONID', 'mail.smtp.sasl.authorizationid');
+        </sql>
+        <!-- MAIL_SMTP_SASL_REALM -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SASL_REALM', 'mail.smtp.sasl.realm');
+        </sql>
+        <!-- MAIL_SMTP_SASL_USECANONICALHOSTNAME -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SASL_USECANONICALHOSTNAME', 'mail.smtp.sasl.usecanonicalhostname');
+        </sql>
+        <!-- MAIL_SMTP_QUITWAIT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_QUITWAIT', 'mail.smtp.quitwait');
+        </sql>
+        <!-- MAIL_SMTP_REPORTSUCCESS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_REPORTSUCCESS', 'mail.smtp.reportsuccess');
+        </sql>
+        <!-- MAIL_SMTP_SSL_ENABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SSL_ENABLE', 'mail.smtp.ssl.enable');
+        </sql>
+        <!-- MAIL_SMTP_SSL_CHECKSERVERIDENTITY -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SSL_CHECKSERVERIDENTITY', 'mail.smtp.ssl.checkserveridentity');
+        </sql>
+        <!-- MAIL_SMTP_SSL_TRUST -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SSL_TRUST', 'mail.smtp.ssl.trust');
+        </sql>
+        <!-- MAIL_SMTP_SSL_PROTOCOLS -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SSL_PROTOCOLS', 'mail.smtp.ssl.protocols');
+        </sql>
+        <!-- MAIL_SMTP_SSL_CIPHERSUITES -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SSL_CIPHERSUITES', 'mail.smtp.ssl.ciphersuites');
+        </sql>
+        <!-- MAIL_SMTP_STARTTLS_ENABLE -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_STARTTLS_ENABLE', 'mail.smtp.starttls.enable');
+        </sql>
+        <!-- MAIL_SMTP_STARTTLS_REQUIRED -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_STARTTLS_REQUIRED', 'mail.smtp.starttls.required');
+        </sql>
+        <!-- MAIL_SMTP_PROXY_HOST -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_PROXY_HOST', 'mail.smtp.proxy.host');
+        </sql>
+        <!-- MAIL_SMTP_PROXY_PORT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_PROXY_PORT', 'mail.smtp.proxy.port');
+        </sql>
+        <!-- MAIL_SMTP_SOCKS_HOST -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SOCKS_HOST', 'mail.smtp.socks.host');
+        </sql>
+        <!-- MAIL_SMTP_SOCKS_PORT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SOCKS_PORT', 'mail.smtp.socks.port');
+        </sql>
+        <!-- MAIL_SMTP_MAILEXTENSION -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_MAILEXTENSION', 'mail.smtp.mailextension');
+        </sql>
+        <!-- MAIL_SMTP_USERSET -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_USERSET', 'mail.smtp.userset');
+        </sql>
+        <!-- MAIL_SMTP_NOOP_STRICT -->
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_NOOP_STRICT', 'mail.smtp.noop.strict');
+        </sql>
+    </changeSet>
+
+    <!-- Global HipChat Config -->
+    <changeSet author="gkillough" id="1548361428926-3">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_HIPCHAT_CONFIG"/>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_HIPCHAT_CONFIG', 'API_KEY', 'channel.hipchat.api.key');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_HIPCHAT_CONFIG', 'HOST_SERVER', 'channel.hipchat.api.key');
+        </sql>
+    </changeSet>
+
+    <!-- Global Slack Config: None -->
+
+    <!-- Global Scheduling Config -->
+    <changeSet author="gkillough" id="1548361428926-4">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="ALERT" tableName="GLOBAL_SCHEDULING_CONFIG"/>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_SCHEDULING_CONFIG', 'ALERT_DIGEST_DAILY_HOUR_OF_DAY', 'scheduling.daily.processor.hour');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_SCHEDULING_CONFIG', 'ALERT_PURGE_DATA_FREQUENCY_DAYS', 'scheduling.purge.data.frequency');
+        </sql>
+    </changeSet>
+
+    <!-- Global Scheduling Config -->
+    <changeSet author="psantos" id="1548361428926-5">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE('settings.startup.environment.variable.override', 'true');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="2019-11-12-17-48-39-321">
+        <sql dbms="h2" stripComments="true">
+            CALL REGISTER_COMPONENT('component_users')
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_JOB_MANAGER','component_authentication', 'GLOBAL');
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_USER','component_authentication', 'GLOBAL');
+        </sql>
+    </changeSet>
+    <changeSet author="psantos" id="2020-01-15-14-35-23-972">
+        <update schemaName="ALERT" tableName="USERS">
+            <column name="ENABLED" type="BOOLEAN" value="true"/>
+            <where>id = 2 OR id = 3</where>
+        </update>
+    </changeSet>
+    <changeSet author="psantos" id="2020-01-07-11-23-07-677">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="AUTHENTICATION_TYPE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AUTHENTICATION_TYPE" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="AUTH_TYPE_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="AUTHENTICATION_TYPE">
+            <column name="ID" type="BIGINT(19)" value="1"/>
+            <column name="NAME" type="VARCHAR(100)" value="DATABASE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="AUTHENTICATION_TYPE">
+            <column name="ID" type="BIGINT(19)" value="2"/>
+            <column name="NAME" type="VARCHAR(100)" value="LDAP"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="AUTHENTICATION_TYPE">
+            <column name="ID" type="BIGINT(19)" value="3"/>
+            <column name="NAME" type="VARCHAR(100)" value="SAML"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="2019-12-18-07-31-16-844">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="ALERT" tableName="USERS" columnName="AUTH_TYPE"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="ALERT" tableName="USERS">
+            <column name="AUTH_TYPE" type="BIGINT(19)" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="psantos" id="2020-01-07-15-09-48-240">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="ALERT" foreignKeyName="FK_AUTH_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USERS"
+                baseColumnNames="AUTH_TYPE"
+                constraintName="FK_AUTH_TYPE_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="AUTHENTICATION_TYPE"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <include file="changelog-distribution-job.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-email-channel.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-update-stored-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-user-management.xml" relativeToChangelogFile="true"/>
+    <include file="permissions-matrix.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication-stored-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="custom-certificates.xml" relativeToChangelogFile="true"/>
+    <include file="polaris.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

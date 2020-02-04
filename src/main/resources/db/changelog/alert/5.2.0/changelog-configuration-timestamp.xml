@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="jrichard" id="2019-10-07-15-15-58-375-1">
+         <addColumn tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
+             <column name="CREATED_AT" type="TIMESTAMP" valueComputed="SYSDATE"/>
+        </addColumn>
+        <addColumn tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
+            <column name="LAST_UPDATED" type="TIMESTAMP" valueComputed="SYSDATE"/>
+        </addColumn>
+    </changeSet>
+    <!-- Clean up Empty configs -->
+    <changeSet author="jrichard" id="2019-10-07-15-15-58-375-2">
+        <sql dbms="h2" stripComments="true">
+            DELETE FROM Alert.Descriptor_Configs
+            WHERE Descriptor_Configs.id
+            IN (
+                SELECT ID FROM Alert.Descriptor_Configs
+                WHERE Descriptor_Configs.id
+                NOT IN (
+                    SELECT DISTINCT config_id FROM Alert.Field_Values
+                )
+            )
+            AND Descriptor_Configs.id
+            NOT IN (
+                SELECT config_id FROM Alert.Config_Groups
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

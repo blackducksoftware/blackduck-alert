@@ -1,0 +1,399 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gkillough" id="1545000000000-1">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME AS $$
+                java.lang.Integer getIdForRegisteredDescriptorName(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + descriptorName.toLowerCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_DESCRIPTOR_TYPE AS $$
+                java.lang.Integer getIdForDescriptorType(final java.sql.Connection connection, final java.lang.String type) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + type.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS GET_FIELD_ID_FOR_SOURCE_KEY AS $$
+                java.lang.Integer getFieldIdForSourceKey(final java.sql.Connection connection, final java.lang.String sourceKey) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + sourceKey + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_CONFIG_CONTEXT AS $$
+                java.lang.Integer getIdForConfigContext(final java.sql.Connection connection, final java.lang.String context) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + context.toUpperCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG"
+        >
+            CREATE ALIAS IF NOT EXISTS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
+                java.lang.Integer getLatestIdForDescriptorConfig(final java.sql.Connection connection) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS ORDER BY DESCRIPTOR_CONFIGS.ID DESC LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS DEFINE_FIELD AS $$
+                Void defineField(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.Boolean sensitive, final java.lang.String descriptorName, final java.lang.String context) throws java.sql.SQLException {
+                    try (final java.sql.Statement insertIntoDefinedFields = connection.createStatement()) {
+                        insertIntoDefinedFields.executeUpdate("INSERT INTO ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE) VALUES ('" + fieldKey + "', " + sensitive + ");");
+                    } catch (final java.sql.SQLException e) {
+                        final java.lang.String exceptionMessage = e.getMessage();
+                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+                            throw e;
+                        }
+                    }
+                    try (final java.sql.Statement insertIntoFieldContexts = connection.createStatement()) {
+                        insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID) VALUES (GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'), GET_ID_FOR_CONFIG_CONTEXT('" + context.toUpperCase() + "'));");
+                    } catch (final java.sql.SQLException e) {
+                        final java.lang.String exceptionMessage = e.getMessage();
+                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+                            throw e;
+                        }
+                    }
+                    try (final java.sql.Statement insertIntoDescriptorFields = connection.createStatement()) {
+                        insertIntoDescriptorFields
+                            .executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName.toLowerCase() + "'), GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'));");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="gkillough" id="1545000000000-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG"
+        >
+            CREATE ALIAS IF NOT EXISTS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG AS $$
+                java.lang.Void migrateIntValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
+                    throws java.sql.SQLException {
+                    final java.lang.Integer value;
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery(String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName));
+                        if (resultSet.next()) {
+                            final java.lang.String string = resultSet.getString(columnName);
+                            if (null != string &amp;&amp; string.length() > 0) {
+                                value = java.lang.Integer.parseInt(string);
+                            } else {
+                                value = null;
+                            }
+                        } else {
+                            value = null;
+                        }
+                    }
+                    if (value != null) {
+                        try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {
+                            insertIntoFieldValues
+                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'), " + value.toString() + ")");
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG"
+        >
+            CREATE ALIAS IF NOT EXISTS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG AS $$
+                java.lang.Void migrateBooleanValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
+                    throws java.sql.SQLException {
+                    final java.lang.Boolean value;
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery(java.lang.String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName));
+                        if (resultSet.next()) {
+                            final java.lang.String string = resultSet.getString(columnName);
+                            if (null != string &amp;&amp; string.length() > 0) {
+                                value = java.lang.Boolean.valueOf(string);
+                            } else {
+                                value = null;
+                            }
+                        } else {
+                            value = null;
+                        }
+                    }
+                    if (value != null) {
+                        try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {
+                            insertIntoFieldValues
+                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'), " + value.toString() + ")");
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG"
+        >
+            CREATE ALIAS IF NOT EXISTS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG AS $$
+                java.lang.Void migrateStringValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey) throws java.sql.SQLException {
+                    final java.lang.String value;
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery(java.lang.String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName));
+                        if (resultSet.next()) {
+                            value = resultSet.getString(columnName);
+                        } else {
+                            return null;
+                        }
+                    }
+                    if (value != null &amp;&amp; !value.isBlank()) {
+                        try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {
+                            insertIntoFieldValues.executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'), '" + value + "')");
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+
+    <!-- Create job migration procedure -->
+    <changeSet author="gkillough" id="1545000000000-3">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0"
+        >
+            CREATE ALIAS IF NOT EXISTS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0 AS $$
+                java.lang.Void migrateDistributionJobs(final java.sql.Connection connection) throws java.sql.SQLException {
+                    try (final java.sql.ResultSet commonDistributionConfig = connection.createStatement().executeQuery("SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG;")) {
+                        while (commonDistributionConfig.next()) {
+                            final java.lang.Integer commonConfigId = commonDistributionConfig.getInt("ID");
+                            final java.lang.Integer distributionConfigId = commonDistributionConfig.getInt("DISTRIBUTION_CONFIG_ID");
+                            final java.lang.String distributionType = commonDistributionConfig.getString("DISTRIBUTION_TYPE");
+                            final java.lang.Boolean filterByProject = commonDistributionConfig.getBoolean("FILTER_BY_PROJECT");
+                            final java.lang.String name = commonDistributionConfig.getString("NAME");
+                            final java.lang.String providerName = commonDistributionConfig.getString("PROVIDER_NAME");
+
+                            java.lang.String projectNamePattern = commonDistributionConfig.getString("PROJECT_NAME_PATTERN");
+                            if (null == projectNamePattern) {
+                                projectNamePattern = "";
+                            }
+
+                            final java.lang.Integer formatType = commonDistributionConfig.getInt("FORMAT_TYPE");
+                            final String formatTypeString;
+                            if (1 == formatType) {
+                                formatTypeString = "DIGEST";
+                            } else {
+                                formatTypeString = "DEFAULT";
+                            }
+
+                            final java.lang.Integer frequency = commonDistributionConfig.getInt("FREQUENCY");
+                            final String frequencyString;
+                            if (1 == frequency) {
+                                frequencyString = "REAL_TIME";
+                            } else {
+                                frequencyString = "DAILY";
+                            }
+
+                            // Create provider config
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
+
+                            // Create new job with provider config
+                            final java.util.UUID jobUUID = java.util.UUID.randomUUID();
+                            connection.createStatement().executeUpdate("INSERT INTO ALERT.CONFIG_GROUPS (CONFIG_ID, JOB_ID) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG() , '" + jobUUID.toString() + "');");
+
+                            // Add provider fields
+                            connection.createStatement()
+                                .executeUpdate(
+                                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.filter.by.project'), " + filterByProject + ");");
+                            connection.createStatement()
+                                .executeUpdate(
+                                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.project.name.pattern'), '" + projectNamePattern + "');");
+                            connection.createStatement()
+                                .executeUpdate(
+                                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.format.type'), '" + formatTypeString + "');");
+
+                            // Add provider notification types
+                            try (final java.sql.ResultSet distributionNotificationTypes = connection.createStatement().executeQuery(
+                                "SELECT * FROM ALERT.DISTRIBUTION_NOTIFICATION_TYPES WHERE DISTRIBUTION_NOTIFICATION_TYPES.COMMON_DISTRIBUTION_CONFIG_ID = " + commonConfigId.toString() + ";")) {
+                                while (distributionNotificationTypes.next()) {
+                                    final java.lang.String notificationTypeName = distributionNotificationTypes.getString("NOTIFICATION_TYPE");
+                                    connection.createStatement().executeUpdate(
+                                        "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), "
+                                            + "GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.notification.types'), '" + notificationTypeName + "');");
+                                }
+                            }
+
+                            // Add project names
+                            try (final java.sql.ResultSet projectNamesJoined = connection.createStatement().executeQuery(
+                                "SELECT PROJECT_NAME FROM ALERT.DISTRIBUTION_PROJECT_RELATION JOIN ALERT.CONFIGURED_PROJECTS WHERE DISTRIBUTION_PROJECT_RELATION.COMMON_DISTRIBUTION_CONFIG_ID = " + commonConfigId.toString() + ";")) {
+                                while (projectNamesJoined.next()) {
+                                    final java.lang.String projectNameForConfig = projectNamesJoined.getString("PROJECT_NAME");
+                                    connection.createStatement().executeUpdate(
+                                        "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) "
+                                            + "VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.configured.project'), '" + projectNameForConfig + "');");
+                                }
+                            }
+
+                            // Create channel config
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + distributionType + "') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
+
+                            // Add channel config to job
+                            connection.createStatement().executeUpdate("INSERT INTO ALERT.CONFIG_GROUPS (CONFIG_ID, JOB_ID) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG() , '" + jobUUID.toString() + "');");
+
+                            // Add common channel fields
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.name'), '" + name + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.channel.name'), '" + distributionType + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.provider.name'), '" + providerName + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.frequency'), '" + frequencyString + "');");
+
+                            // Add specific channel fields
+                            if ("channel_email".equals(distributionType)) {
+                                try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement().executeQuery(
+                                    "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    if (emailDistributionConfigs.next()) {
+                                        final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
+                                        final java.lang.Boolean projectOwnerOnly = emailDistributionConfigs.getBoolean("PROJECT_OWNER_ONLY");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('email.subject.line'), '" + subjectLine + "');");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('project.owner.only'), '" + projectOwnerOnly.toString() + "');");
+                                    }
+                                }
+                            } else if ("channel_hipchat".equals(distributionType)) {
+                                try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement().executeQuery(
+                                    "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    if (hipChatDistribtionConfigs.next()) {
+                                        final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
+                                        final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
+                                        final java.lang.Integer roomId = hipChatDistribtionConfigs.getInt("ROOM_ID");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.color'), '" + color + "');");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.notify'), '" + notify.toString() + "');");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.room.id'), '" + roomId.toString() + "');");
+                                    }
+                                }
+                            } else if ("channel_slack".equals(distributionType)) {
+                                try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement().executeQuery(
+                                    "SELECT * FROM ALERT.SLACK_DISTRIBUTION_CONFIG WHERE SLACK_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                                    if (slackDistributionConfigs.next()) {
+                                        final java.lang.String webhook = slackDistributionConfigs.getString("WEBHOOK");
+                                        final java.lang.String channelName = slackDistributionConfigs.getString("CHANNEL_NAME");
+                                        final java.lang.String channelUsername = slackDistributionConfigs.getString("CHANNEL_USERNAME");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.webhook'), '" + webhook + "');");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.channel.name'), '" + channelName + "');");
+                                        connection.createStatement().executeUpdate(
+                                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.channel.username'), '" + channelUsername + "');");
+                                    }
+                                }
+                            } else {
+                                // Unable to migrate unknown table
+                                throw new java.sql.SQLException("Unable to migrate old distribution configuration");
+                            }
+
+                            // Update audit table
+                            try (final java.sql.ResultSet auditEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.AUDIT_ENTRIES WHERE AUDIT_ENTRIES.COMMON_CONFIG_ID = " + commonConfigId.toString() + ";")) {
+                                while (auditEntries.next()) {
+                                    final java.lang.Integer auditId = auditEntries.getInt("ID");
+                                    connection.createStatement().executeUpdate("UPDATE ALERT.AUDIT_ENTRIES SET AUDIT_ENTRIES.CONFIG_GROUP_ID = '" + jobUUID.toString() + "' WHERE AUDIT_ENTRIES.ID = " + auditId.toString() + ";");
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <!-- Create job migration procedure -->
+    <changeSet author="psantos" id="1545000000000-4">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="INSERT_FIELD_VALUE"
+        >
+            CREATE ALIAS IF NOT EXISTS SET_LATEST_CONFIG_GLOBAL_FIELD_VALUE AS $$
+                java.lang.Void setLatestConfigGlobalFieldValue(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.String fieldValue) throws java.sql.SQLException {
+                    if (fieldValue != null &amp;&amp; !fieldValue.isBlank()) {
+                        try (final java.sql.Statement insertIntoFieldValues = connection.createStatement()) {
+                            final java.lang.String insertStatement = java.lang.String.format("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('%s'), '%s')",
+                                fieldKey, fieldValue);
+                            insertIntoFieldValues.executeUpdate(insertStatement);
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

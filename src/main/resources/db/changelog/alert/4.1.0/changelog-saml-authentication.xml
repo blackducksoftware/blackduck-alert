@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+     <changeSet author="jrichard" id="1553788005986-1">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.enabled'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.force.auth'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.metadata.url'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.entity.id'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'settings.saml.entity.base.url'</sqlCheck>
+            </and>
+        </preConditions>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.enabled', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.force.auth', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.metadata.url', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.entity.id', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.entity.base.url', FALSE, 'component_settings', 'GLOBAL');
+         </sql>
+    </changeSet>
+</databaseChangeLog>

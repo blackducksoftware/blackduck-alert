@@ -1,0 +1,110 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1557753186181-1">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="GET_ID_FOR_ACCESS_OPERATION">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_ACCESS_OPERATION AS $$
+                java.lang.Integer getIdForAccessOperationName(final java.sql.Connection connection, final java.lang.String operationName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = '" + operationName + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1557753186181-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="GET_ID_FOR_PERMISSION_KEY">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_PERMISSION_KEY AS $$
+                java.lang.Integer getIdForPermissionKey(final java.sql.Connection connection, final java.lang.String permissionKey) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = '" + permissionKey.toLowerCase() + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1557753186181-3">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="GET_ID_FOR_USER_ROLE">
+            CREATE ALIAS IF NOT EXISTS GET_ID_FOR_USER_ROLE AS $$
+                java.lang.Integer getIdForUserRoleName(final java.sql.Connection connection, final java.lang.String roleName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.ROLES WHERE ROLES.ROLENAME = '" + roleName + "' LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1557753186181-4">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_ROLE_PERMISSION_ACCESS">
+            CREATE ALIAS IF NOT EXISTS ASSIGN_ROLE_PERMISSION_ACCESS AS $$
+                java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String permissionKey, java.lang.String accessOperation) throws java.sql.SQLException {
+                    try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                        insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, PERMISSION_KEY_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_PERMISSION_KEY('" + permissionKey + "'), GET_ID_FOR_ACCESS_OPERATION('" + accessOperation + "'));");
+                    } catch (final java.sql.SQLException e) {
+                        final java.lang.String exceptionMessage = e.getMessage();
+                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+                            throw e;
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1557753186181-5">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="ASSIGN_ROLE_PERMISSION_ALL_ACCESS">
+            CREATE ALIAS IF NOT EXISTS ASSIGN_ROLE_PERMISSION_ALL_ACCESS AS $$
+                java.lang.Void assignPermissionToRole(final java.sql.Connection connection, final java.lang.String roleName, java.lang.String permissionKey) throws java.sql.SQLException {
+                    try (final java.sql.Statement insertIntoPermissionMatrix = connection.createStatement()) {
+                        try (final java.sql.ResultSet accessEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.ACCESS_OPERATIONS;")) {
+                            while (accessEntries.next()) {
+                                final java.lang.Integer accessOperationId = accessEntries.getInt("ID");
+                                insertIntoPermissionMatrix.executeUpdate("INSERT INTO ALERT.PERMISSION_MATRIX (ROLE_ID, PERMISSION_KEY_ID, ACCESS_OPERATION_ID) VALUES (GET_ID_FOR_USER_ROLE('" + roleName + "'), GET_ID_FOR_PERMISSION_KEY('" + permissionKey + "'), '" + accessOperationId +"');");
+                            }
+                        }
+                    } catch (final java.sql.SQLException e) {
+                        final java.lang.String exceptionMessage = e.getMessage();
+                        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+                            throw e;
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

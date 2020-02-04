@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2019-10-31-15-28-36-042">
+        <sql dbms="h2">
+            DROP ALIAS IF EXISTS REGISTER_CHANNEL;
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-10-31-15-28-44-540">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS REGISTER_CHANNEL AS $$
+                java.lang.Void registerChannel(java.sql.Connection connection, java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL REGISTER_DESCRIPTOR('" + descriptorName + "', 'CHANNEL');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.channel.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.provider.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.frequency', '" + descriptorName + "');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="gavink" id="2019-11-04-12-31-43-964">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS IF NOT EXISTS ENABLE_EXISTING_CONFIGS AS $$
+                java.lang.Void enableCurrentConfigs(java.sql.Connection connection) throws java.sql.SQLException {
+                    try (java.sql.ResultSet fieldIdRow = connection.createStatement().executeQuery("CALL GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.enabled');")) {
+                        if (fieldIdRow.next()) {
+                            java.lang.Integer enableFieldId = fieldIdRow.getInt(1);
+                            try (java.sql.ResultSet channelDescriptorConfigs = connection.createStatement().executeQuery("SELECT DESCRIPTOR_CONFIGS.ID FROM ALERT.DESCRIPTOR_CONFIGS "
+                                                                                                                             + "JOIN ALERT.REGISTERED_DESCRIPTORS ON REGISTERED_DESCRIPTORS.ID = DESCRIPTOR_CONFIGS.DESCRIPTOR_ID "
+                                                                                                                             + "WHERE REGISTERED_DESCRIPTORS.TYPE_ID = GET_ID_FOR_DESCRIPTOR_TYPE('channel');")) {
+                                while (channelDescriptorConfigs.next()) {
+                                    java.lang.Integer configId = channelDescriptorConfigs.getInt("ID");
+                                    connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId + ", " + enableFieldId + ", 'true');");
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="gavink" id="2019-11-04-12-33-59-158">
+        <sql dbms="h2" stripComments="true">
+            CALL ENABLE_EXISTING_CONFIGS();
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2019-11-04-14-45-51-333">
+        <sql dbms="h2">
+            DROP ALIAS IF EXISTS ENABLE_EXISTING_CONFIGS;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

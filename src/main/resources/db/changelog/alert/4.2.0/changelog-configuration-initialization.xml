@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1558445850410-1">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'component_audit'</sqlCheck>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" type="VARCHAR(255)" value="component_audit"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('COMPONENT')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

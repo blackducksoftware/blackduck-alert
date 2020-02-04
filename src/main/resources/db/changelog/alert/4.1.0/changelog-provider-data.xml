@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gkillough" id="1551202634344-1">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists schemaName="ALERT" tableName="BLACKDUCK_USER"/>
+                <not>
+                    <tableExists schemaName="ALERT" tableName="PROVIDER_USERS"/>
+                </not>
+
+                <tableExists schemaName="ALERT" tableName="BLACKDUCK_PROJECT"/>
+                <not>
+                    <tableExists schemaName="ALERT" tableName="PROVIDER_PROJECTS"/>
+                </not>
+
+                <tableExists schemaName="ALERT" tableName="BLACKDUCK_USER_PROJECT_RELATION"/>
+                <not>
+                    <tableExists schemaName="ALERT" tableName="PROVIDER_USER_PROJECT_RELATION"/>
+                </not>
+            </and>
+        </preConditions>
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_USER"
+                newTableName="PROVIDER_USERS"
+        />
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_PROJECT"
+                newTableName="PROVIDER_PROJECTS"
+        />
+        <renameTable
+                schemaName="ALERT"
+                oldTableName="BLACKDUCK_USER_PROJECT_RELATION"
+                newTableName="PROVIDER_USER_PROJECT_RELATION"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1551202634344-2">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists schemaName="ALERT" tableName="PROVIDER_USER_PROJECT_RELATION" columnName="BLACKDUCK_USER_ID"/>
+                <not>
+                    <columnExists schemaName="ALERT" tableName="PROVIDER_USER_PROJECT_RELATION" columnName="PROVIDER_USER_ID"/>
+                </not>
+
+                <columnExists schemaName="ALERT" tableName="PROVIDER_USER_PROJECT_RELATION" columnName="BLACKDUCK_PROJECT_ID"/>
+                <not>
+                    <columnExists schemaName="ALERT" tableName="PROVIDER_USER_PROJECT_RELATION" columnName="PROVIDER_PROJECT_ID"/>
+                </not>
+            </and>
+        </preConditions>
+        <renameColumn
+                schemaName="ALERT"
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+                oldColumnName="BLACKDUCK_USER_ID"
+                newColumnName="PROVIDER_USER_ID"
+        />
+        <renameColumn
+                schemaName="ALERT"
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+                oldColumnName="BLACKDUCK_PROJECT_ID"
+                newColumnName="PROVIDER_PROJECT_ID"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1551202634344-3">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <not>
+                    <columnExists schemaName="ALERT" tableName="PROVIDER_PROJECTS" columnName="PROVIDER"/>
+                </not>
+                <not>
+                    <columnExists schemaName="ALERT" tableName="PROVIDER_USERS" columnName="PROVIDER"/>
+                </not>
+            </and>
+        </preConditions>
+        <addColumn schemaName="ALERT" tableName="PROVIDER_PROJECTS">
+            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
+        </addColumn>
+        <addColumn schemaName="ALERT" tableName="PROVIDER_USERS">
+            <column name="PROVIDER" value="provider_blackduck" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

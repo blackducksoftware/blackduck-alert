@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Add Global Slack permissions -->
+    <changeSet author="bmandel" id="1565635286572-1">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN', 'channel_slack', 'global');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', 'channel_slack', 'global', 'READ');
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER', 'channel_slack', 'global', 'EXECUTE');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

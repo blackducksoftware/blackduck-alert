@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gkillough" id="1551366126977-1">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(NAME) FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = 'provider_polaris'</sqlCheck>
+        </preConditions>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" type="VARCHAR(255)" value="provider_polaris"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('PROVIDER')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gkillough" id="1551366126977-2">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'polaris.url'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'polaris.access.token'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'polaris.timeout'</sqlCheck>
+            </and>
+        </preConditions>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.url', FALSE, 'provider_polaris', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.access.token', TRUE, 'provider_polaris', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('polaris.timeout', FALSE, 'provider_polaris', 'GLOBAL');
+        </sql>
+    </changeSet>
+    <changeSet author="bmandel" id="1553637843412">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.filter.by.project'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.project.name.pattern'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'channel.common.configured.project'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'provider.distribution.notification.types'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(SOURCE_KEY) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'provider.distribution.format.type'</sqlCheck>
+            </and>
+        </preConditions>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.filter.by.project', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.project.name.pattern', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.configured.project', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.notification.types', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.format.type', FALSE, 'provider_polaris', 'DISTRIBUTION');
+        </sql>
+    </changeSet>
+    <changeSet author="gkillough" id="1551366126977-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="POLARIS_ISSUES"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="ALERT" tableName="POLARIS_ISSUES">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="POLARIS_ISSUES_KEY"/>
+            </column>
+            <column name="ISSUE_TYPE" type="VARCHAR(255)"/>
+            <column name="PREVIOUS_COUNT" type="BIGINT(19)"/>
+            <column name="CURRENT_COUNT" type="BIGINT(19)"/>
+            <column name="PROJECT_ID" type="BIGINT(19)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="POLARIS_ISSUES"
+                baseColumnNames="PROJECT_ID"
+                constraintName="FK_ISSUE_PROJECT"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_PROJECTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

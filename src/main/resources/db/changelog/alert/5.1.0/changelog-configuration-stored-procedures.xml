@@ -1,0 +1,87 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="ekerwin" id="2019-08-30-12-44-00-118">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS DEFINE_CHANNEL_FIELD AS $$
+                Void defineChannelField(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL DEFINE_FIELD('" + fieldKey + "', FALSE, '" + descriptorName + "', 'DISTRIBUTION');");
+                    }
+                    return null;
+                }
+            $$;
+            CREATE ALIAS DEFINE_SENSITIVE_CHANNEL_FIELD AS $$
+                Void defineSensitiveChannelField(final java.sql.Connection connection, final java.lang.String fieldKey, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL DEFINE_FIELD('" + fieldKey + "', TRUE, '" + descriptorName + "', 'DISTRIBUTION');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="psantos" id="1565285011567-1">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS REGISTER_DESCRIPTOR AS $$
+                java.lang.Void registerDescriptor(final java.sql.Connection connection, final java.lang.String descriptorName, java.lang.String type) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeUpdate("INSERT INTO ALERT.REGISTERED_DESCRIPTORS (NAME, TYPE_ID) VALUES('"+descriptorName+"', GET_ID_FOR_DESCRIPTOR_TYPE('"+type+"'));");
+                        statement.execute("CALL ASSIGN_DEFAULT_ROLE_PERMISSIONS('" + descriptorName + "');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="ekerwin" id="2019-08-26-16-51-50-414">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS REGISTER_CHANNEL AS $$
+                java.lang.Void registerChannel(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL REGISTER_DESCRIPTOR('" + descriptorName + "', 'CHANNEL');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.channel.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.provider.name', '" + descriptorName + "');");
+                        statement.execute("CALL DEFINE_CHANNEL_FIELD('channel.common.frequency', '" + descriptorName + "');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS REGISTER_PROVIDER AS $$
+                java.lang.Void registerProvider(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL REGISTER_DESCRIPTOR('" + descriptorName + "', 'PROVIDER');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS REGISTER_COMPONENT AS $$
+                java.lang.Void registerComponent(final java.sql.Connection connection, final java.lang.String descriptorName) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        statement.execute("CALL REGISTER_DESCRIPTOR('" + descriptorName + "', 'COMPONENT');");
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

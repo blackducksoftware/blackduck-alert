@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-01-14-14-17-05-709">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="polaris_issues"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="polaris_issues"/>
+    </changeSet>
+    <changeSet author="gavink" id="2020-01-15-10-05-26-105">
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>SOURCE_KEY = 'polaris.url'</where>
+        </delete>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>SOURCE_KEY = 'polaris.access.token'</where>
+        </delete>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>SOURCE_KEY = 'polaris.timeout'</where>
+        </delete>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>SOURCE_KEY = 'scheduling.polaris.next.run'</where>
+        </delete>
+    </changeSet>
+    <changeSet author="gavink" id="2020-01-15-10-09-43-100">
+        <delete schemaName="alert" tableName="registered_descriptors">
+            <where>NAME = 'provider_polaris'</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

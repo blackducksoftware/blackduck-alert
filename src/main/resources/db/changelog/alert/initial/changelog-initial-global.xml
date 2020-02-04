@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="jrichard" id="2019-10-25-15-02-36-289-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1516889156406-11" author="psantos (generated)" changeLogFile="classpath:db/changelog/alert/changelog-1.0.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_AF"/>
+            </column>
+            <column name="ALERT_DIGEST_DAILY_HOUR_OF_DAY" type="VARCHAR(255)"/>
+            <column name="ALERT_PURGE_DATA_FREQUENCY_DAYS" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jrichard" id="2019-10-25-15-02-36-289-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1541000360346-1" author="psantos" changeLogFile="classpath:db/changelog/alert/changelog-3.1.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="SYSTEM_STATUS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="SYSTEM_STATUS_KEY"/>
+            </column>
+            <column name="INITIALIZED_CONFIGURATION" type="BOOLEAN"/>
+            <column name="STARTUP_TIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="2019-10-25-15-02-36-289-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted id="1541000360346-2" author="psantos" changeLogFile="classpath:db/changelog/alert/changelog-3.1.0.xml"/>
+            </not>
+        </preConditions>
+        <createTable tableName="SYSTEM_MESSAGES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="SYSTEM_MESSAGES_KEY"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP"/>
+            <column name="SEVERITY" type="VARCHAR(50)"/>
+            <column name="CONTENT" type="VARCHAR(255)"/>
+            <column name="TYPE" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

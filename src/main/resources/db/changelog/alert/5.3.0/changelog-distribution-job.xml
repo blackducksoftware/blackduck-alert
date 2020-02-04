@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2019-10-31-15-24-17-013">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', 'channel_email');
+            CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', 'channel_slack');
+            CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', 'msteamskey');
+            CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', 'channel_jira_cloud');
+            CALL DEFINE_CHANNEL_FIELD('channel.common.enabled', 'channel_jira_server');
+        </sql>
+    </changeSet>
+    <changeSet author="bmandel" id="1573514262314">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_CHANNEL_FIELD('blackduck.policy.notification.filter', 'provider_blackduck');
+            CALL DEFINE_CHANNEL_FIELD('blackduck.vulnerability.notification.filter', 'provider_blackduck');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

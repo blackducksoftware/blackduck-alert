@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Clean up old configs -->
+    <changeSet author="gavink" id="1562853503403-1">
+        <sql dbms="h2" stripComments="true">
+            DELETE FROM Alert.Descriptor_Configs
+            WHERE Descriptor_Configs.id
+            IN (
+                SELECT ID FROM Alert.Descriptor_Configs
+                WHERE Descriptor_Configs.id
+                NOT IN (
+                    SELECT DISTINCT config_id FROM Alert.Field_Values
+                )
+            )
+            AND Descriptor_Configs.id
+            NOT IN (
+                SELECT config_id FROM Alert.Config_Groups
+            );
+        </sql>
+    </changeSet>
+    <!-- REGISTERED_DESCRIPTORS: required to register fields -->
+    <changeSet author="psantos" id="1558524516692-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <column name="NAME" type="VARCHAR(255)" value="channel_jira_cloud"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
+        </insert>
+    </changeSet>
+    <!-- Register Global Jira Cloud Fields. -->
+    <changeSet author="psantos" id="1558524516692-3">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.cloud.url', FALSE, 'channel_jira_cloud', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.cloud.admin.email.address', FALSE, 'channel_jira_cloud', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.cloud.admin.api.token', TRUE, 'channel_jira_cloud', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('jira.cloud.configure.plugin', FALSE, 'channel_jira_cloud', 'GLOBAL');
+        </sql>
+    </changeSet>
+    <!-- Register Distribution Jira Cloud Fields. -->
+    <changeSet author="psantos" id="1558524516692-4">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.add.comments', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.issue.creator', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.project.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.issue.type', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.resolve.workflow', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.jira.cloud.reopen.workflow', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_jira_cloud', 'DISTRIBUTION');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1543502711058-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="ROLES"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ROLES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="ROLE_KEY"/>
+            </column>
+            <column name="ROLENAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1543502711058-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="USERS"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USERS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="USER_KEY"/>
+            </column>
+            <column name="USERNAME" type="VARCHAR(2048)">
+                <constraints unique="true" uniqueConstraintName="CONSTRAINT_USER_NAME_UNIQUE"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR(2048)"/>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(2048)"/>
+            <column name="EXPIRED" type="BOOLEAN" defaultValue="false"/>
+            <column name="LOCKED" type="BOOLEAN" defaultValue="false"/>
+            <column name="PASSWORD_EXPIRED" type="BOOLEAN" defaultValue="false"/>
+            <column name="ENABLED" type="BOOLEAN" defaultValue="true"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1543502711058-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="USER_ROLES"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER_ROLES" schemaName="ALERT">
+            <column name="USER_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLE_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USER_ROLES"
+                baseColumnNames="USER_ID"
+                constraintName="FK_USER_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="USERS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USER_ROLES"
+                baseColumnNames="ROLE_ID"
+                constraintName="FK_ROLE_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ROLES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="psantos" id="1543502711058-4">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="ROLES"/>
+        </preConditions>
+        <insert tableName="ROLES" schemaName="ALERT">
+            <column name="id" value="1"/>
+            <column name="ROLENAME" value="ALERT_ADMIN"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1543502711058-5">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="USERS"/>
+        </preConditions>
+        <insert tableName="USERS" schemaName="ALERT">
+            <column name="id" value="1"/>
+            <column name="USERNAME" value="sysadmin"/>
+            <column name="PASSWORD" value="$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1543502711058-6">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty schemaName="ALERT" tableName="USER_ROLES"/>
+        </preConditions>
+        <insert tableName="USER_ROLES" schemaName="ALERT">
+            <column name="USER_ID" value="1"/>
+            <column name="ROLE_ID" value="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

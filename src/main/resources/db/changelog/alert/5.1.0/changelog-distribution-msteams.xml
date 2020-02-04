@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="ekerwin" id="1565734102193-1">
+        <sql dbms="h2" stripComments="true">
+            CALL REGISTER_CHANNEL('msteamskey');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_CHANNEL_FIELD('channel.msteams.webhook', 'msteamskey');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

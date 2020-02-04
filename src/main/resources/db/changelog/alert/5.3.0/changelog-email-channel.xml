@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2019-11-04-08-48-35-306">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_CHANNEL_FIELD('email.attachment.format', 'channel_email');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

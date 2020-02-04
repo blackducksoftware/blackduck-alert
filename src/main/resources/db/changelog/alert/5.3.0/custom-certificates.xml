@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-01-20-14-56-56-767">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="CUSTOM_CERTIFICATES"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="CUSTOM_CERTIFICATES">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ALIAS" type="VARCHAR(128)"/>
+            <column name="CERTIFICATE_CONTENT" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="2020-01-24-13-56-31-244">
+        <sql dbms="h2" stripComments="true">
+            CALL REGISTER_COMPONENT('component_certificates');
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="2020-01-30-12-41-54-750">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','component_certificates', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','component_certificates', 'GLOBAL');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

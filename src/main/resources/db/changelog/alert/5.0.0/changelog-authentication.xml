@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1558524156152-1">
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="KEY_NAME" value="global.channel_jira_cloud"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="KEY_NAME" value="distribution.channel_jira_cloud"/>
+        </insert>
+    </changeSet>
+    <!-- ALERT_ADMIN PERMISSIONS -->
+    <changeSet author="psantos" id="1558524156152-2">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.channel_jira_cloud');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_jira_cloud');
+        </sql>
+    </changeSet>
+    <!-- ALERT_JOB_MANAGER PERMISSIONS -->
+    <changeSet author="psantos" id="1558524156152-3">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_jira_cloud');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_jira_cloud','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_jira_cloud','EXECUTE');
+        </sql>
+    </changeSet>
+    <!-- ALERT_USER PERMISSIONS -->
+    <changeSet author="psantos" id="1558524156152-4">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_jira_cloud', 'READ');
+        </sql>
+    </changeSet>
+    <changeSet author="jrichard" id="1558524156152-5">
+        <delete tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <where>KEY_NAME = 'distribution.channel_hipchat'</where>
+        </delete>
+        <delete tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <where>KEY_NAME = 'global.channel_hipchat'</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

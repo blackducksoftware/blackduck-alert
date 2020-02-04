@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Register new email distribution fields. -->
+    <changeSet author="gavink" id="1564069231467-1">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('email.additional.addresses', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('email.additional.addresses.only', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+    </changeSet>
+    <!-- Register new SAML global field. -->
+    <changeSet author="psantos" id="1567694372073-2">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.saml.metadata.file', FALSE, 'component_settings','GLOBAL');
+        </sql>
+    </changeSet>
+    <!-- Register new user management fields. -->
+    <changeSet author="psantos" id="1567694372073-3">
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.role.mapping.name.admin', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.role.mapping.name.job.manager', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.role.mapping.name.user', FALSE, 'component_settings','GLOBAL');
+            CALL DEFINE_FIELD('settings.saml.role.attribute.mapping.name', FALSE, 'component_settings','GLOBAL');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

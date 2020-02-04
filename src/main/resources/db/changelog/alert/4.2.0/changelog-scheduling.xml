@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="1555523530598-1">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = 'scheduling.polaris.next.run'</sqlCheck>
+        </preConditions>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('scheduling.polaris.next.run', FALSE, 'component_scheduling', 'GLOBAL');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

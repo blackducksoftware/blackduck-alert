@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="1570213484400-1" author="bmandel">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT"
+                procedureName="MIGRATE_FIELD_AND_VALUE"
+        >
+            CREATE ALIAS MIGRATE_FIELD_AND_VALUE AS $$
+            java.lang.Void moveFieldAndValueToConfig(java.sql.Connection connection, java.lang.Long configId, java.lang.String newDescriptorName, java.lang.String oldDescriptorName, java.lang.String sourceKey) throws java.sql.SQLException {
+                try (java.sql.Statement insertStatement = connection.createStatement()) {
+                    insertStatement.execute((
+                        "INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + newDescriptorName + "'), GET_FIELD_ID_FOR_SOURCE_KEY('" + sourceKey + "'));")
+                    );
+                }
+                try (java.sql.Statement updateStatement = connection.createStatement()) {
+                    updateStatement.execute(
+                        "UPDATE ALERT.FIELD_VALUES SET CONFIG_ID = '" + configId + "' WHERE FIELD_ID = GET_FIELD_ID_FOR_SOURCE_KEY('" + sourceKey + "');"
+                    );
+                }
+                try (java.sql.Statement deleteStatement = connection.createStatement()) {
+                    deleteStatement.execute(
+                        "DELETE FROM ALERT.DESCRIPTOR_FIELDS WHERE DESCRIPTOR_ID = GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + oldDescriptorName + "') AND FIELD_ID = GET_FIELD_ID_FOR_SOURCE_KEY('" + sourceKey + "');"
+                    );
+                }
+                return null;
+            }
+            $$;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>

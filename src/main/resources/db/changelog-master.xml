@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <!-- To generate unique ids in changesets go here: https://currentmillis.com/
+        Use the timestamp as the prefix and a step number separated by hyphen
+        i.e. 1543953433190-1, 1543953433190-2, etc...
+    -->
+    <changeSet id="create_alert_schema-1" author="psantos">
+        <sql dbms="h2"
+             endDelimiter="\nGO"
+             splitStatements="true"
+             stripComments="true">
+            CREATE SCHEMA IF NOT EXISTS ALERT
+        </sql>
+    </changeSet>
+
+    <include file="changelog/alert/initial/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/4.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/4.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/4.2.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/5.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/5.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/5.2.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/5.3.0/changelog.xml" relativeToChangelogFile="true"/>
+    <!--
+        DEV NOTE:
+        No changelogs for 6.0.0 or newer should be added here.
+        Patches for versions before 6.0.0 should be added here
+        as well as src/main/resources/db/changelog/alert/changelog-postgres-master.xml.
+    -->
+</databaseChangeLog>

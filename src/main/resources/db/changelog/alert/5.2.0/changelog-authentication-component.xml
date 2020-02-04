@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="1570044784173-1" author="bmandel">
+        <sql dbms="h2" stripComments="true">
+            CALL REGISTER_COMPONENT('component_authentication');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_JOB_MANAGER','component_authentication', 'GLOBAL');
+            CALL REMOVE_ALL_PERMISSIONS('ALERT_USER','component_authentication', 'GLOBAL');
+        </sql>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_CONFIGS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_authentication')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
+        </insert>
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.enabled');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.server');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.manager.dn');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.manager.password');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.authentication.type');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.search.base');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.search.filter');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.referral');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.dn.patterns');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.user.attributes');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.search.base');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.search.filter');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.ldap.group.role.attribute');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.enabled');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.force.auth');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.metadata.url');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.entity.id');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.entity.base.url');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.metadata.file');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.admin');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.job.manager');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.role.mapping.name.user');
+            CALL MIGRATE_FIELD_AND_VALUE(GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'component_authentication', 'component_settings', 'settings.saml.role.attribute.mapping.name');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <include file="changelog-migrate-field-stored-procedure.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-migrate-provider-projects.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication-component.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-authentication-permissions.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-timestamp.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-jira-server.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-default-users.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-custom-roles.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

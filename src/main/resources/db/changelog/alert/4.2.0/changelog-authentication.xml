@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="1556732237461-1">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ROLES WHERE ROLES.ROLENAME = 'ALERT_JOB_MANAGER'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ROLES WHERE ROLES.ROLENAME = 'ALERT_USER'</sqlCheck>
+            </and>
+        </preConditions>
+        <insert tableName="ROLES" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="ROLENAME" value="ALERT_JOB_MANAGER"/>
+        </insert>
+        <insert tableName="ROLES" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="ROLENAME" value="ALERT_USER"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="ACCESS_OPERATIONS"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="ACCESS_OPERATION_KEY"/>
+            </column>
+            <column name="OPERATION_NAME" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="PERMISSION_KEYS"/>
+            </not>
+        </preConditions>
+        <createTable tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="PERMISSION_KEYS_KEY"/>
+            </column>
+            <column name="KEY_NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="ALERT" tableName="PERMISSION_MATRIX"/>
+            </not>
+        </preConditions>
+        <createTable tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERMISSION_KEY_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCESS_OPERATION_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="PERMISSION_MATRIX"
+                columnNames="ROLE_ID, PERMISSION_KEY_ID, ACCESS_OPERATION_ID"
+                constraintName="PERMISSION_MATRIX_KEY"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="ROLE_ID"
+                constraintName="FK_PERMISSION_ROLE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ROLES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="PERMISSION_KEY_ID"
+                constraintName="FK_PERMISSION_KEY"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PERMISSION_KEYS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PERMISSION_MATRIX"
+                baseColumnNames="ACCESS_OPERATION_ID"
+                constraintName="FK_PERMISSION_OPERATION"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ACCESS_OPERATIONS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-5">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'CREATE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'DELETE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'READ'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'WRITE'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.ACCESS_OPERATIONS WHERE ACCESS_OPERATIONS.OPERATION_NAME = 'EXECUTE'</sqlCheck>
+            </and>
+        </preConditions>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="1"/>
+            <column name="OPERATION_NAME" value="CREATE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="OPERATION_NAME" value="DELETE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="OPERATION_NAME" value="READ"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="4"/>
+            <column name="OPERATION_NAME" value="WRITE"/>
+        </insert>
+        <insert tableName="ACCESS_OPERATIONS" schemaName="ALERT">
+            <column name="ID" value="5"/>
+            <column name="OPERATION_NAME" value="EXECUTE"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="1556732237461-6">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.provider_blackduck'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.provider_polaris'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.provider_polaris'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_email'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_hipchat'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'distribution.channel_slack'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_scheduling'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_settings'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ALERT.PERMISSION_KEYS WHERE PERMISSION_KEYS.KEY_NAME = 'global.component_audit'</sqlCheck>
+            </and>
+        </preConditions>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="1"/>
+            <column name="KEY_NAME" value="global.provider_blackduck"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="2"/>
+            <column name="KEY_NAME" value="distribution.provider_blackduck"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="3"/>
+            <column name="KEY_NAME" value="global.provider_polaris"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="4"/>
+            <column name="KEY_NAME" value="distribution.provider_polaris"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="5"/>
+            <column name="KEY_NAME" value="global.channel_email"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="6"/>
+            <column name="KEY_NAME" value="distribution.channel_email"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="7"/>
+            <column name="KEY_NAME" value="global.channel_hipchat"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="8"/>
+            <column name="KEY_NAME" value="distribution.channel_hipchat"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="9"/>
+            <column name="KEY_NAME" value="distribution.channel_slack"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="10"/>
+            <column name="KEY_NAME" value="global.component_scheduling"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="11"/>
+            <column name="KEY_NAME" value="global.component_settings"/>
+        </insert>
+        <insert tableName="PERMISSION_KEYS" schemaName="ALERT">
+            <column name="ID" value="12"/>
+            <column name="KEY_NAME" value="global.component_audit"/>
+        </insert>
+    </changeSet>
+    <!-- ALERT_ADMIN PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-7">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','distribution.channel_slack');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_scheduling','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_scheduling','WRITE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_settings','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_ADMIN','global.component_settings','WRITE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_ADMIN','global.component_audit');
+        </sql>
+    </changeSet>
+    <!-- ALERT_JOB_MANAGER PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-8">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.provider_blackduck');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.provider_polaris');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_email');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_hipchat');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ALL_ACCESS('ALERT_JOB_MANAGER','distribution.channel_slack');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_blackduck','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_blackduck','EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_polaris', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.provider_polaris', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_email', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_hipchat', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.channel_hipchat', 'EXECUTE');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_scheduling', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_audit','READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_JOB_MANAGER','global.component_audit','EXECUTE');
+        </sql>
+    </changeSet>
+
+    <!-- ALERT_USER PERMISSIONS -->
+    <changeSet author="psantos" id="1556732237461-9">
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_blackduck', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.provider_polaris', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_email', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_hipchat', 'READ');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL ASSIGN_ROLE_PERMISSION_ACCESS('ALERT_USER','distribution.channel_slack', 'READ');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

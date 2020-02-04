@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Add foreign keys to audit tables -->
+    <changeSet author="gavink" id="1563194312055-1">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="AUDIT_NOTIFICATION_RELATION"
+                baseColumnNames="AUDIT_ENTRY_ID"
+                constraintName="FK_AUDIT_ENTRY_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="AUDIT_ENTRIES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="AUDIT_NOTIFICATION_RELATION"
+                baseColumnNames="NOTIFICATION_ID"
+                constraintName="FK_AUDIT_NOTIFICATION_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="RAW_NOTIFICATION_CONTENT"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Delete table contents before adding new constraints -->
+    <changeSet author="gavink" id="1563194312055-2">
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_USER_PROJECT_RELATION"
+        />
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_PROJECTS"
+        />
+        <delete
+                schemaName="ALERT"
+                tableName="PROVIDER_USERS"
+        />
+    </changeSet>
+
+    <!-- Add foreign keys to provider tables -->
+    <changeSet author="gavink" id="1563194312055-3">
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PROVIDER_USER_PROJECT_RELATION"
+                baseColumnNames="PROVIDER_USER_ID"
+                constraintName="FK_PROVIDER_USER_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_USERS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="PROVIDER_USER_PROJECT_RELATION"
+                baseColumnNames="PROVIDER_PROJECT_ID"
+                constraintName="FK_PROVIDER_PROJECT_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="PROVIDER_PROJECTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <changeSet author="bmandel" id="1568408188123-1">
+        <update
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS"
+        >
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+            <where>SOURCE_KEY = 'settings.encryption.password' OR SOURCE_KEY = 'settings.encryption.global.salt'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
