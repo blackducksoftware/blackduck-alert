@@ -30,10 +30,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 public class FieldValueModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -4163785381973494922L;
     private Collection<String> values;
     private boolean isSet;
 
-    public FieldValueModel(final Collection<String> values, final boolean isSet) {
+    private FieldValueModel() {
+        this(null, false);
+    }
+
+    public FieldValueModel(Collection<String> values, boolean isSet) {
         setValues(values);
         this.isSet = isSet;
     }
@@ -45,7 +50,7 @@ public class FieldValueModel extends AlertSerializableModel {
         return Set.of();
     }
 
-    public void setValues(final Collection<String> values) {
+    public void setValues(Collection<String> values) {
         this.values = values;
         cleanValues();
     }
@@ -54,7 +59,7 @@ public class FieldValueModel extends AlertSerializableModel {
         return getValues().stream().findFirst();
     }
 
-    public void setValue(final String value) {
+    public void setValue(String value) {
         setValues(Set.of(value));
     }
 
@@ -62,7 +67,7 @@ public class FieldValueModel extends AlertSerializableModel {
         return isSet;
     }
 
-    public void setIsSet(final boolean set) {
+    public void setIsSet(boolean set) {
         isSet = set;
     }
 
