@@ -72,7 +72,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(final UUID commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
+    public AuditEntryEntity(UUID commonConfigId, Date timeCreated, Date timeLastSent, String status, String errorMessage, String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -93,7 +93,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return timeLastSent;
     }
 
-    public void setTimeLastSent(final Date timeLastSent) {
+    public void setTimeLastSent(Date timeLastSent) {
         this.timeLastSent = timeLastSent;
     }
 
@@ -101,7 +101,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return status;
     }
 
-    public void setStatus(final String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -109,7 +109,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return errorMessage;
     }
 
-    public void setErrorMessage(final String errorMessage) {
+    public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -117,7 +117,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return errorStackTrace;
     }
 
-    public void setErrorStackTrace(final String errorStackTrace) {
+    public void setErrorStackTrace(String errorStackTrace) {
         this.errorStackTrace = errorStackTrace;
     }
 

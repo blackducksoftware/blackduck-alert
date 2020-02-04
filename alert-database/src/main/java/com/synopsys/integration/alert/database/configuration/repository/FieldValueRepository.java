@@ -31,5 +31,5 @@ import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 
 @Component
 public interface FieldValueRepository extends JpaRepository<FieldValueEntity, Long> {
-    List<FieldValueEntity> findByConfigId(final Long configId);
+    List<FieldValueEntity> findByConfigId(Long configId);
 }

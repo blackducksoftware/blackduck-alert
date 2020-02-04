@@ -37,7 +37,7 @@ public class AuditNotificationRelationPK implements Serializable {
         return auditEntryId;
     }
 
-    public void setAuditEntryId(final Long auditEntryId) {
+    public void setAuditEntryId(Long auditEntryId) {
         this.auditEntryId = auditEntryId;
     }
 
@@ -45,7 +45,7 @@ public class AuditNotificationRelationPK implements Serializable {
         return notificationId;
     }
 
-    public void setNotificationId(final Long notificationId) {
+    public void setNotificationId(Long notificationId) {
         this.notificationId = notificationId;
     }
 }

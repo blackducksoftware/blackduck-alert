@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;
 public class DefaultSettingsKeyAccessor implements SettingsKeyAccessor {
     private final SettingsKeyRepository settingsKeyRepository;
 
-    public DefaultSettingsKeyAccessor(final SettingsKeyRepository settingsKeyRepository) {
+    public DefaultSettingsKeyAccessor(SettingsKeyRepository settingsKeyRepository) {
         this.settingsKeyRepository = settingsKeyRepository;
     }
 
@@ -52,38 +52,38 @@ public class DefaultSettingsKeyAccessor implements SettingsKeyAccessor {
     }
 
     @Override
-    public Optional<SettingsKeyModel> getSettingsKeyByKey(final String key) {
+    public Optional<SettingsKeyModel> getSettingsKeyByKey(String key) {
         return settingsKeyRepository.findByKey(key).map(this::convertToSettingsKeyModel);
     }
 
     @Override
-    public SettingsKeyModel saveSettingsKey(final String key, final String value) {
-        final Optional<SettingsKeyEntity> settingsKeyOptional = settingsKeyRepository.findByKey(key);
+    public SettingsKeyModel saveSettingsKey(String key, String value) {
+        Optional<SettingsKeyEntity> settingsKeyOptional = settingsKeyRepository.findByKey(key);
         if (settingsKeyOptional.isPresent()) {
-            final Long id = settingsKeyOptional.get().getId();
-            final SettingsKeyEntity settingsKeyEntity = new SettingsKeyEntity(key, value);
+            Long id = settingsKeyOptional.get().getId();
+            SettingsKeyEntity settingsKeyEntity = new SettingsKeyEntity(key, value);
             settingsKeyEntity.setId(id);
-            final SettingsKeyEntity updatedSettingsKeyEntity = settingsKeyRepository.save(settingsKeyEntity);
+            SettingsKeyEntity updatedSettingsKeyEntity = settingsKeyRepository.save(settingsKeyEntity);
             return convertToSettingsKeyModel(updatedSettingsKeyEntity);
         }
 
-        final SettingsKeyEntity newSettingsKeyEntity = settingsKeyRepository.save(new SettingsKeyEntity(key, value));
+        SettingsKeyEntity newSettingsKeyEntity = settingsKeyRepository.save(new SettingsKeyEntity(key, value));
         return convertToSettingsKeyModel(newSettingsKeyEntity);
     }
 
     @Override
-    public void deleteSettingsKeyByKey(final String key) {
+    public void deleteSettingsKeyByKey(String key) {
         getSettingsKeyByKey(key).ifPresent(settingsKeyModel -> deleteSettingsKeyById(settingsKeyModel.getId()));
     }
 
     @Override
-    public void deleteSettingsKeyById(final Long id) {
+    public void deleteSettingsKeyById(Long id) {
         if (null != id) {
             settingsKeyRepository.deleteById(id);
         }
     }
 
-    private SettingsKeyModel convertToSettingsKeyModel(final SettingsKeyEntity settingsKeyEntity) {
+    private SettingsKeyModel convertToSettingsKeyModel(SettingsKeyEntity settingsKeyEntity) {
         return new SettingsKeyModel(settingsKeyEntity.getId(), settingsKeyEntity.getKey(), settingsKeyEntity.getValue());
     }
 }

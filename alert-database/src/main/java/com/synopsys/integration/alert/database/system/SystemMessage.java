@@ -48,7 +48,7 @@ public class SystemMessage extends DatabaseEntity {
     public SystemMessage() {
     }
 
-    public SystemMessage(final Date created, final String severity, final String content, final String type) {
+    public SystemMessage(Date created, String severity, String content, String type) {
         this.created = created;
         this.severity = severity;
         this.content = content;

@@ -37,7 +37,7 @@ public class DescriptorTypeEntity extends DatabaseEntity {
     public DescriptorTypeEntity() {
     }
 
-    public DescriptorTypeEntity(final String type) {
+    public DescriptorTypeEntity(String type) {
         this.type = type;
     }
 

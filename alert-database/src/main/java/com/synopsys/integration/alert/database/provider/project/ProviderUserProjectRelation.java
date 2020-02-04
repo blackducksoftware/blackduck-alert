@@ -46,7 +46,7 @@ public class ProviderUserProjectRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public ProviderUserProjectRelation(final Long providerUserId, final Long providerProjectId) {
+    public ProviderUserProjectRelation(Long providerUserId, Long providerProjectId) {
         super();
         this.providerUserId = providerUserId;
         this.providerProjectId = providerProjectId;

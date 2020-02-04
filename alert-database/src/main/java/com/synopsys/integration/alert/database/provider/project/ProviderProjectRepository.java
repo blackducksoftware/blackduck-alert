@@ -28,13 +28,13 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProviderProjectRepository extends JpaRepository<ProviderProjectEntity, Long> {
-    Optional<ProviderProjectEntity> findFirstByName(final String name);
+    Optional<ProviderProjectEntity> findFirstByName(String name);
 
-    Optional<ProviderProjectEntity> findFirstByHref(final String href);
+    Optional<ProviderProjectEntity> findFirstByHref(String href);
 
-    List<ProviderProjectEntity> findByProvider(final String provider);
+    List<ProviderProjectEntity> findByProvider(String provider);
 
-    void deleteAllByProvider(final String provider);
+    void deleteAllByProvider(String provider);
 
-    void deleteByHref(final String href);
+    void deleteByHref(String href);
 }

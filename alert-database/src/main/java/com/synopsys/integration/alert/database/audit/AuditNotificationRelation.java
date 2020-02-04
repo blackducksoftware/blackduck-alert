@@ -55,7 +55,7 @@ public class AuditNotificationRelation extends DatabaseRelation {
     public AuditNotificationRelation() {
     }
 
-    public AuditNotificationRelation(final Long auditEntryId, final Long notificationId) {
+    public AuditNotificationRelation(Long auditEntryId, Long notificationId) {
         super();
         this.auditEntryId = auditEntryId;
         this.notificationId = notificationId;

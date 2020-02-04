@@ -39,7 +39,7 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
     private final SystemStatusRepository systemStatusRepository;
 
     @Autowired
-    public DefaultSystemStatusUtility(final SystemStatusRepository systemStatusRepository) {
+    public DefaultSystemStatusUtility(SystemStatusRepository systemStatusRepository) {
         this.systemStatusRepository = systemStatusRepository;
     }
 
@@ -51,17 +51,17 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
 
     @Override
     @Transactional
-    public void setSystemInitialized(final boolean systemInitialized) {
-        final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime());
+    public void setSystemInitialized(boolean systemInitialized) {
+        SystemStatus systemStatus = getSystemStatus();
+        SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime());
         updateSystemStatus(newSystemStatus);
     }
 
     @Override
     @Transactional
     public void startupOccurred() {
-        final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
+        SystemStatus systemStatus = getSystemStatus();
+        SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
         updateSystemStatus(newSystemStatus);
     }
 
@@ -79,7 +79,7 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
         return systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
     }
 
-    private void updateSystemStatus(final SystemStatus systemStatus) {
+    private void updateSystemStatus(SystemStatus systemStatus) {
         systemStatus.setId(SYSTEM_STATUS_ID);
         systemStatusRepository.save(systemStatus);
     }

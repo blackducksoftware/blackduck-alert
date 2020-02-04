@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.database.configuration.key.FieldContextRel
 
 @Component
 public interface FieldContextRepository extends JpaRepository<FieldContextRelation, FieldContextRelationPK> {
-    List<FieldContextRelation> findByFieldId(final Long fieldId);
+    List<FieldContextRelation> findByFieldId(Long fieldId);
 
-    List<FieldContextRelation> findByContextId(final Long contextId);
+    List<FieldContextRelation> findByContextId(Long contextId);
 }

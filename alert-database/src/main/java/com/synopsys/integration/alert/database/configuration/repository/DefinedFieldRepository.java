@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
 
 @Component
 public interface DefinedFieldRepository extends JpaRepository<DefinedFieldEntity, Long> {
-    Optional<DefinedFieldEntity> findFirstByKey(final String fieldKey);
+    Optional<DefinedFieldEntity> findFirstByKey(String fieldKey);
 
     @Query(value = "SELECT entity FROM DefinedFieldEntity entity "
                        + "INNER JOIN entity.descriptorFieldRelations relation ON entity.id = relation.fieldId "

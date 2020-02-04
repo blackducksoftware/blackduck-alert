@@ -61,7 +61,7 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
     }
 
     // Reserved for queries
-    public NotificationContent(final Long id, final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content) {
+    public NotificationContent(Long id, Date createdAt, String provider, Date providerCreationTime, String notificationType, String content) {
         this.setId(id);
         this.createdAt = createdAt;
         this.provider = provider;
@@ -70,7 +70,7 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
         this.content = content;
     }
 
-    public NotificationContent(final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content) {
+    public NotificationContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, String content) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerCreationTime = providerCreationTime;

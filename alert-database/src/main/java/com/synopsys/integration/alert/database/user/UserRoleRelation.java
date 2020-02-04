@@ -45,7 +45,7 @@ public class UserRoleRelation extends DatabaseRelation {
     public UserRoleRelation() {
     }
 
-    public UserRoleRelation(final Long userId, final Long roleId) {
+    public UserRoleRelation(Long userId, Long roleId) {
         this.userId = userId;
         this.roleId = roleId;
     }

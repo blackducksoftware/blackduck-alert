@@ -43,7 +43,7 @@ public abstract class DatabaseEntity extends BaseEntity {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

@@ -46,7 +46,7 @@ public class ConfigContextEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public ConfigContextEntity(final String context) {
+    public ConfigContextEntity(String context) {
         this.context = context;
     }
 

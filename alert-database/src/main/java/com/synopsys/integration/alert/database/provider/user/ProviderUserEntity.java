@@ -44,7 +44,7 @@ public class ProviderUserEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public ProviderUserEntity(final String emailAddress, final Boolean optOut, final String provider) {
+    public ProviderUserEntity(String emailAddress, Boolean optOut, String provider) {
         this.emailAddress = emailAddress;
         this.optOut = optOut;
         this.provider = provider;

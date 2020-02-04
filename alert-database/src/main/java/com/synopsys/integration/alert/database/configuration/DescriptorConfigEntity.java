@@ -58,7 +58,7 @@ public class DescriptorConfigEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId, final Long contextId, final Date createdAt, final Date lastUpdated) {
+    public DescriptorConfigEntity(Long descriptorId, Long contextId, Date createdAt, Date lastUpdated) {
         this.descriptorId = descriptorId;
         this.contextId = contextId;
         this.createdAt = createdAt;
@@ -81,7 +81,7 @@ public class DescriptorConfigEntity extends DatabaseEntity {
         return lastUpdated;
     }
 
-    public void setLastUpdated(final Date lastUpdated) {
+    public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
