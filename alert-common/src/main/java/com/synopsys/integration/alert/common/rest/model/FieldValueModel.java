@@ -32,11 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 public class FieldValueModel extends AlertSerializableModel {
     private Collection<String> values;
     private boolean isSet;
-
-    private FieldValueModel() {
-        this(null, false);
-    }
-
+    
     public FieldValueModel(final Collection<String> values, final boolean isSet) {
         setValues(values);
         this.isSet = isSet;
