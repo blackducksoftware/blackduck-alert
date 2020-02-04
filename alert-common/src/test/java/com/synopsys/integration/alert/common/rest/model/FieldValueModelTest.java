@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class FieldValueModelTest {
-    String testValue = "valueToTest";
+    private final String testValue = "valueToTest";
 
     private FieldValueModel createEmptyFieldValueModel() {
         List<String> values = new ArrayList();
@@ -26,8 +26,7 @@ public class FieldValueModelTest {
         FieldValueModel testFieldValueModel = new FieldValueModel(values, Boolean.TRUE);
 
         assertTrue(testFieldValueModel.getValues().containsAll(values));
-        // getValues() will create a Set, this assert verifies duplicate values removed
-        assertTrue(testFieldValueModel.getValues().size() == 1);
+        assertEquals(1, testFieldValueModel.getValues().size(), "getValues is expected to return a Set of 1.");
     }
 
     @Test
@@ -40,26 +39,11 @@ public class FieldValueModelTest {
     @Test
     public void getValueTest() {
         List<String> values = new ArrayList();
-        FieldValueModel emptyFieldValueModel = createEmptyFieldValueModel();
         values.add(testValue);
         FieldValueModel testFieldValueModel = new FieldValueModel(values, Boolean.TRUE);
 
-        assertFalse(emptyFieldValueModel.getValue().isPresent());
         assertTrue(testFieldValueModel.getValue().isPresent());
         assertEquals(testValue, testFieldValueModel.getValue().get());
-    }
-
-    @Test
-    public void getValueFindFirstTest() {
-        String extraTestValue = "new-valueToTest";
-        List<String> values = new ArrayList();
-        values.add(testValue);
-        values.add(extraTestValue);
-        FieldValueModel testFieldValueModel = new FieldValueModel(values, Boolean.TRUE);
-
-        // getValue will return the last value that was added into the collection
-        assertEquals(extraTestValue, testFieldValueModel.getValue().get());
-        assertTrue(testFieldValueModel.getValues().size() == 2);
     }
 
     @Test
@@ -70,7 +54,7 @@ public class FieldValueModelTest {
         testFieldValueModel.setValue(overwrittenTestValue);
 
         assertTrue(testFieldValueModel.getValues().contains(overwrittenTestValue));
-        assertTrue(testFieldValueModel.getValues().size() == 1);
+        assertEquals(1, testFieldValueModel.getValues().size(), "getValues is expected to return a Set of 1.");
     }
 
     @Test
@@ -97,10 +81,13 @@ public class FieldValueModelTest {
     public void containsNoDataTest() {
         FieldValueModel testFieldValueModelNoValueIsNotSet = createEmptyFieldValueModel();
         testFieldValueModelNoValueIsNotSet.setIsSet((Boolean.FALSE));
+
         FieldValueModel testFieldValueModelNoValue = createEmptyFieldValueModel();
+
         FieldValueModel testFieldValueModelIsNotSet = createEmptyFieldValueModel();
         testFieldValueModelIsNotSet.setValue(testValue);
         testFieldValueModelIsNotSet.setIsSet(Boolean.FALSE);
+
         FieldValueModel testFieldValueModel = createEmptyFieldValueModel();
         testFieldValueModel.setValue(testValue);
 
