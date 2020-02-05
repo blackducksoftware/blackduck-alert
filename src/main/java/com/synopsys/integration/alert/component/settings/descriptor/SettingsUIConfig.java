@@ -43,8 +43,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_EMAIL = "Default System Admin Email";
-    private static final String LABEL_DEFAULT_SYSTEM_ADMINISTRATOR_PASSWORD = "Default System Admin Password";
     private static final String LABEL_ENCRYPTION_PASSWORD = "Encryption Password";
     private static final String LABEL_ENCRYPTION_GLOBAL_SALT = "Encryption Global Salt";
     private static final String LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "Startup Environment Variable Override";
@@ -53,8 +51,6 @@ public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_PROXY_USERNAME = "Proxy Username";
     private static final String LABEL_PROXY_PASSWORD = "Proxy Password";
 
-    private static final String SETTINGS_ADMIN_EMAIL_DESCRIPTION = "The email address of the Alert system administrator. Used in case a password reset is needed.";
-    private static final String SETTINGS_USER_PASSWORD_DESCRIPTION = "The password of the Alert system administrator. Used when logging in as the \"sysadmin\" user.";
     private static final String SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION = "The password used when encrypting sensitive fields. Must be at least 8 characters long.";
     private static final String SETTINGS_ENCRYPTION_SALT_DESCRIPTION = "The salt used when encrypting sensitive fields. Must be at least 8 characters long.";
     private static final String SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION = "If true, the Alert environment variables will override the stored configurations.";
@@ -66,7 +62,6 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_PANEL_PROXY = "Proxy Configuration";
 
-    private static final String SETTINGS_HEADER_ADMINISTRATOR = "Default System Admin Configuration";
     private static final String SETTINGS_HEADER_ENCRYPTION = "Encryption Configuration";
 
     private final EncryptionValidator encryptionConfigValidator;
