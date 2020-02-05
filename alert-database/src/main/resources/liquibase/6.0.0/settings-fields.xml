@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-02-05-09-16-18-370">
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>
+                SOURCE_KEY = 'settings.user.default.admin.email'
+            </where>
+        </delete>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>
+                SOURCE_KEY = 'settings.user.default.admin.password'
+            </where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>
