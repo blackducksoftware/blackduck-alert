@@ -37,7 +37,7 @@ public class ProviderUserProjectRelationPK implements Serializable {
         return providerUserId;
     }
 
-    public void setProviderUserId(final Long providerUserId) {
+    public void setProviderUserId(Long providerUserId) {
         this.providerUserId = providerUserId;
     }
 
@@ -45,7 +45,7 @@ public class ProviderUserProjectRelationPK implements Serializable {
         return providerProjectId;
     }
 
-    public void setProviderProjectId(final Long providerProjectId) {
+    public void setProviderProjectId(Long providerProjectId) {
         this.providerProjectId = providerProjectId;
     }
 }

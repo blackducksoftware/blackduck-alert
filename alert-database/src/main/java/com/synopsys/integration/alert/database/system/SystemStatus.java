@@ -48,7 +48,7 @@ public class SystemStatus extends BaseEntity {
         //JPA requires a default constructor
     }
 
-    public SystemStatus(final boolean initialConfigurationPerformed, final Date startupTime) {
+    public SystemStatus(boolean initialConfigurationPerformed, Date startupTime) {
         this.initialConfigurationPerformed = initialConfigurationPerformed;
         this.startupTime = startupTime;
     }
@@ -65,7 +65,7 @@ public class SystemStatus extends BaseEntity {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

@@ -27,7 +27,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
-    List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+    List<AuditNotificationRelation> findByAuditEntryId(Long auditEntryId);
 
-    List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
+    List<AuditNotificationRelation> findByNotificationId(Long notificationId);
 }

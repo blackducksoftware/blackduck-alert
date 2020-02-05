@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 
 public interface NotificationContentRepository extends JpaRepository<NotificationContent, Long> {
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
-    List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate);
+    List<NotificationContent> findByCreatedAtBetween(Date startDate, Date endDate);
 
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
-    List<NotificationContent> findByCreatedAtBefore(final Date date);
+    List<NotificationContent> findByCreatedAtBefore(Date date);
 
     @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
-    Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
+    Page<NotificationContent> findAllSentNotifications(Pageable pageable);
 
     @Query(value = "SELECT DISTINCT "
                        + "new NotificationContent(notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
@@ -60,7 +60,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
-    Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
+    Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query(value = "SELECT DISTINCT "
                        + "new NotificationContent(notificationRow.id, notificationRow.createdAt , notificationRow.provider, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
@@ -82,6 +82,6 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
                        + ")")
-    Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
+    Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }

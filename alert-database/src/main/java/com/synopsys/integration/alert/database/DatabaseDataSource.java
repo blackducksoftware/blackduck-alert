@@ -49,14 +49,14 @@ public class DatabaseDataSource {
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource(final DataSourceProperties dataSourceProperties) {
+    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
     @Bean
     @Primary
-    public JpaTransactionManager jpaTransactionManager(final DataSource dataSource) {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
+    public JpaTransactionManager jpaTransactionManager(DataSource dataSource) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setDataSource(dataSource);
         return transactionManager;
     }

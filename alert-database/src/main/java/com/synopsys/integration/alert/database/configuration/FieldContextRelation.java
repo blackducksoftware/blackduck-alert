@@ -46,7 +46,7 @@ public class FieldContextRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public FieldContextRelation(final Long fieldId, final Long contextId) {
+    public FieldContextRelation(Long fieldId, Long contextId) {
         this.fieldId = fieldId;
         this.contextId = contextId;
     }

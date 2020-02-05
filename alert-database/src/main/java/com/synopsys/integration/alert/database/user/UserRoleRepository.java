@@ -29,11 +29,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRoleRepository extends JpaRepository<UserRoleRelation, UserRoleRelationPK> {
 
     // find all role ids for a user
-    List<UserRoleRelation> findAllByUserId(final Long userId);
+    List<UserRoleRelation> findAllByUserId(Long userId);
 
     // find all user ids for a role
-    List<UserRoleRelation> findAllByRoleId(final Long roleId);
+    List<UserRoleRelation> findAllByRoleId(Long roleId);
 
     // delete the relations by user id
-    void deleteAllByUserId(final Long userId);
+    void deleteAllByUserId(Long userId);
 }

@@ -32,7 +32,7 @@ public class DescriptorFieldRelationPK implements Serializable {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorFieldRelationPK(final Long descriptorId, final Long fieldId) {
+    public DescriptorFieldRelationPK(Long descriptorId, Long fieldId) {
         this.descriptorId = descriptorId;
         this.fieldId = fieldId;
     }
@@ -41,7 +41,7 @@ public class DescriptorFieldRelationPK implements Serializable {
         return descriptorId;
     }
 
-    public void setDescriptorId(final Long descriptorId) {
+    public void setDescriptorId(Long descriptorId) {
         this.descriptorId = descriptorId;
     }
 
@@ -49,7 +49,7 @@ public class DescriptorFieldRelationPK implements Serializable {
         return fieldId;
     }
 
-    public void setFieldId(final Long fieldId) {
+    public void setFieldId(Long fieldId) {
         this.fieldId = fieldId;
     }
 }

@@ -48,22 +48,22 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     private final SystemMessageRepository systemMessageRepository;
 
     @Autowired
-    public DefaultSystemMessageUtility(final SystemMessageRepository systemMessageRepository) {
+    public DefaultSystemMessageUtility(SystemMessageRepository systemMessageRepository) {
         this.systemMessageRepository = systemMessageRepository;
     }
 
     @Override
     @Transactional
-    public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
-        final Date currentTime = DateUtils.createCurrentDateTimestamp();
-        final SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
+    public void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType) {
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
     }
 
     @Override
     @Transactional
-    public void removeSystemMessagesByType(final SystemMessageType messageType) {
-        final List<SystemMessage> messages = systemMessageRepository.findByType(messageType.name());
+    public void removeSystemMessagesByType(SystemMessageType messageType) {
+        List<SystemMessage> messages = systemMessageRepository.findByType(messageType.name());
         systemMessageRepository.deleteAll(messages);
     }
 
@@ -75,33 +75,33 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
 
     @Override
     @Transactional
-    public List<SystemMessageModel> getSystemMessagesAfter(final Date date) {
-        final Date currentTime = DateUtils.createCurrentDateTimestamp();
+    public List<SystemMessageModel> getSystemMessagesAfter(Date date) {
+        Date currentTime = DateUtils.createCurrentDateTimestamp();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 
     @Override
     @Transactional
-    public List<SystemMessageModel> getSystemMessagesBefore(final Date date) {
-        final long recordCount = systemMessageRepository.count();
+    public List<SystemMessageModel> getSystemMessagesBefore(Date date) {
+        long recordCount = systemMessageRepository.count();
         if (recordCount == 0) {
             return Collections.emptyList();
         } else {
-            final SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
+            SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
             return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date));
         }
     }
 
     @Override
     @Transactional
-    public List<SystemMessageModel> findBetween(final DateRange dateRange) {
+    public List<SystemMessageModel> findBetween(DateRange dateRange) {
         return systemMessageRepository.findByCreatedBetween(dateRange.getStart(), dateRange.getEnd()).stream().map(this::convertToSystemMessageModel).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public void deleteSystemMessages(final List<SystemMessageModel> messagesToDelete) {
-        final List<SystemMessage> convertedMessages = messagesToDelete.stream()
+    public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
+        List<SystemMessage> convertedMessages = messagesToDelete.stream()
                                                           .map(this::convertToSystemMessage)
                                                           .filter(message -> message != null).collect(Collectors.toList());
         systemMessageRepository.deleteAll(convertedMessages);
@@ -111,8 +111,8 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
         return systemMessages.stream().map(this::convertToSystemMessageModel).collect(Collectors.toList());
     }
 
-    private SystemMessageModel convertToSystemMessageModel(final SystemMessage systemMessage) {
-        final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
+    private SystemMessageModel convertToSystemMessageModel(SystemMessage systemMessage) {
+        String createdAt = RestConstants.formatDate(systemMessage.getCreated());
         return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 

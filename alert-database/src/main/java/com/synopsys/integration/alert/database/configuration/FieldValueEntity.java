@@ -52,7 +52,7 @@ public class FieldValueEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public FieldValueEntity(final Long configId, final Long fieldId, final String value) {
+    public FieldValueEntity(Long configId, Long fieldId, String value) {
         this.configId = configId;
         this.fieldId = fieldId;
         this.value = value;

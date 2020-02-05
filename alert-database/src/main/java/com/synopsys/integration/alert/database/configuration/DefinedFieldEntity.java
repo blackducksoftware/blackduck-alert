@@ -52,7 +52,7 @@ public class DefinedFieldEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public DefinedFieldEntity(final String key, final Boolean sensitive) {
+    public DefinedFieldEntity(String key, Boolean sensitive) {
         this.key = key;
         this.sensitive = sensitive;
     }

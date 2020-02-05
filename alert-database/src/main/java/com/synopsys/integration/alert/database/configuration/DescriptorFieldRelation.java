@@ -46,7 +46,7 @@ public class DescriptorFieldRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorFieldRelation(final Long descriptorId, final Long fieldId) {
+    public DescriptorFieldRelation(Long descriptorId, Long fieldId) {
         this.descriptorId = descriptorId;
         this.fieldId = fieldId;
     }

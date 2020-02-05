@@ -31,7 +31,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
-    List<ProviderUserEntity> findByProvider(final String provider);
+    List<ProviderUserEntity> findByProvider(String provider);
 
     @Query(value = "SELECT DISTINCT new ProviderUserEntity(providerUser.emailAddress, providerUser.optOut, providerUser.provider) "
                        + "FROM ProviderUserEntity providerUser "
@@ -39,7 +39,7 @@ public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity
                        + "AND providerUser.emailAddress LIKE %:emailSearchTerm%")
     Page<ProviderUserEntity> findPageOfUsersByProviderAndEmailSearchTerm(@Param("provider") String provider, @Param("emailSearchTerm") String emailSearchTerm, Pageable pageable);
 
-    List<ProviderUserEntity> findByEmailAddressAndProvider(final String emailAddress, final String provider);
+    List<ProviderUserEntity> findByEmailAddressAndProvider(String emailAddress, String provider);
 
-    void deleteByProviderAndEmailAddress(final String provider, final String emailAddress);
+    void deleteByProviderAndEmailAddress(String provider, String emailAddress);
 }

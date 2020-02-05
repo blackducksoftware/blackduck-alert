@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.database.configuration.key.DescriptorField
 
 @Component
 public interface DescriptorFieldRepository extends JpaRepository<DescriptorFieldRelation, DescriptorFieldRelationPK> {
-    List<DescriptorFieldRelation> findByDescriptorId(final Long descriptorId);
+    List<DescriptorFieldRelation> findByDescriptorId(Long descriptorId);
 
-    List<DescriptorFieldRelation> findByFieldId(final Long fieldId);
+    List<DescriptorFieldRelation> findByFieldId(Long fieldId);
 }

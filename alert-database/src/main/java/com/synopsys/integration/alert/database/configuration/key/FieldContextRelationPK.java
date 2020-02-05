@@ -31,7 +31,7 @@ public class FieldContextRelationPK implements Serializable {
     public FieldContextRelationPK() {
     }
 
-    public FieldContextRelationPK(final Long fieldId, final Long contextId) {
+    public FieldContextRelationPK(Long fieldId, Long contextId) {
         this.fieldId = fieldId;
         this.contextId = contextId;
     }
@@ -40,7 +40,7 @@ public class FieldContextRelationPK implements Serializable {
         return fieldId;
     }
 
-    public void setFieldId(final Long fieldId) {
+    public void setFieldId(Long fieldId) {
         this.fieldId = fieldId;
     }
 
@@ -48,7 +48,7 @@ public class FieldContextRelationPK implements Serializable {
         return contextId;
     }
 
-    public void setContextId(final Long contextId) {
+    public void setContextId(Long contextId) {
         this.contextId = contextId;
     }
 }

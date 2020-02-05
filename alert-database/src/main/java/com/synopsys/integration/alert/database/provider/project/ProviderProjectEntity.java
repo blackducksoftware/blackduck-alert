@@ -50,7 +50,7 @@ public class ProviderProjectEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public ProviderProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail, final String provider) {
+    public ProviderProjectEntity(String name, String description, String href, String projectOwnerEmail, String provider) {
         this.name = name;
         this.description = description;
         this.href = href;

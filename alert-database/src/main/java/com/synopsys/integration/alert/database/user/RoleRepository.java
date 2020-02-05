@@ -34,9 +34,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     boolean existsRoleEntityByRoleName(String roleName);
 
-    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
-    List<String> getRoleNames(List<Long> roleIds);
-
     @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
     List<RoleEntity> findRoleEntitiesByRoleNames(Collection<String> roleIds);
 }

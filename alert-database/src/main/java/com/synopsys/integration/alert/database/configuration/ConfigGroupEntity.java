@@ -52,7 +52,7 @@ public class ConfigGroupEntity extends BaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public ConfigGroupEntity(final Long configId, final UUID jobId) {
+    public ConfigGroupEntity(Long configId, UUID jobId) {
         this.jobId = jobId;
         this.configId = configId;
     }

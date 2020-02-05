@@ -49,7 +49,7 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public RegisteredDescriptorEntity(final String name, final Long typeId) {
+    public RegisteredDescriptorEntity(String name, Long typeId) {
         this.name = name;
         this.typeId = typeId;
     }

@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "settings_key")
 public class SettingsKeyEntity extends DatabaseEntity {
-
     @Column
     private String key;
 
@@ -42,7 +41,7 @@ public class SettingsKeyEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public SettingsKeyEntity(final String key, final String value) {
+    public SettingsKeyEntity(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -54,4 +53,5 @@ public class SettingsKeyEntity extends DatabaseEntity {
     public String getValue() {
         return value;
     }
+
 }
