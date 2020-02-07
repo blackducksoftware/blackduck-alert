@@ -158,19 +158,17 @@ public abstract class ChannelMessageParser {
         String value = encodeString(linkableItem.getValue());
         Optional<String> optionalUrl = linkableItem.getUrl();
 
-        String formattedString;
-        if (optionalUrl.isPresent()) {
-            String linkableItemValueString = createLinkableItemValueString(linkableItem);
-            formattedString = String.format("%s: %s", name, linkableItemValueString);
-        } else {
-            formattedString = String.format("%s: %s", name, value);
-        }
-
         if (bold) {
-            formattedString = emphasize(formattedString);
+            name = emphasize(name);
+            value = emphasize(value);
         }
 
-        return formattedString;
+        if (optionalUrl.isPresent()) {
+            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing the it.
+            value = createLinkableItemValueString(linkableItem);
+        }
+
+        return String.format("%s: %s", name, value);
     }
 
     protected List<String> createComponentAttributeMessagePieces(Collection<ComponentItem> componentItems) {
