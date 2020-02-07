@@ -164,7 +164,7 @@ public abstract class ChannelMessageParser {
         }
 
         if (optionalUrl.isPresent()) {
-            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing the it.
+            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing them.
             value = createLinkableItemValueString(linkableItem);
         }
 
