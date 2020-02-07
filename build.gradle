@@ -30,7 +30,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '5.0.2-SNAPSHOT'
+version = '5.0.2-SIGQA1'
 
 
 apply plugin: 'idea'
