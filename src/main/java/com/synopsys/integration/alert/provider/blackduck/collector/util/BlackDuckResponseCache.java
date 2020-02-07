@@ -30,10 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
-import com.synopsys.integration.blackduck.api.generated.component.VulnerabilityCvss3TemporalMetricsView;
 import com.synopsys.integration.blackduck.api.generated.component.VulnerabilityCvss3View;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -117,7 +114,7 @@ public class BlackDuckResponseCache {
                 VulnerabilityView vulnerability = vulnerabilityView.get();
                 severityType = vulnerability.getSeverity();
                 Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> cvss3Severity = getCvss3Severity(vulnerability);
-                if (cvss3Severity.isPresent()) {
+                if (vulnerability.getUseCvss3() && cvss3Severity.isPresent()) {
                     severityType = cvss3Severity.get();
                 }
             }
