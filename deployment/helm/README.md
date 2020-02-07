@@ -82,7 +82,7 @@ The following table lists the configurable parameters of the Alert chart and the
 #### Common Configuration
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `alert.image` | image for the Alert container | `docker.io/blackducksoftware/blackduck-alert:5.1.0` |
+| `alert.image` | image for the Alert container | `docker.io/blackducksoftware/blackduck-alert:5.2.0` |
 | `alert.limitMemory` | Alert container Memory Limit | `2560M` |
 | `alert.requestMemory` | Alert container Memory Request | `2560M` |
 | `alert.nodeSelector` | Alert node labels for pod assignment | `{}` | 

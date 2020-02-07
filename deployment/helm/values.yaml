@@ -4,7 +4,7 @@
 
 # alert - configurations for the Alert Pod
 alert:
-  image: "docker.io/blackducksoftware/blackduck-alert:5.1.0"
+  image: "docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN"
   limitMemory: "2560M"
   requestMemory: "2560M"
   nodeSelector: {}
