@@ -130,7 +130,7 @@ public class JiraMessageParser extends ChannelMessageParser {
         }
 
         MessageSplitter splitter = new MessageSplitter(getMessageSizeLimit(), getLineSeparator());
-        additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, true));
+        additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, false));
 
         return additionalDescriptionInfo.toString();
     }
