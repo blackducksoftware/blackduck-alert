@@ -117,14 +117,15 @@ public class AuditEntryActions {
         if (distributionEvents.isEmpty()) {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
         }
-        distributionEvents.forEach(event -> {
+
+        for (DistributionEvent event : distributionEvents) {
             UUID commonDistributionId = UUID.fromString(event.getConfigId());
             Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
             Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             notificationIdToAuditId.put(notificationContent.getId(), auditId);
             event.setNotificationIdToAuditId(notificationIdToAuditId);
             eventManager.sendEvent(event);
-        });
+        }
         return get();
     }
 }
