@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.workflow.startup.component;
 
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
@@ -62,7 +60,7 @@ public class SAMLStartupComponent extends StartupComponent {
             }
         } catch (AlertConfigurationException e) {
             logger.warn(String.format("Cannot start the SAML identity provider. %s", e.getMessage()));
-        } catch (AlertException | MetadataProviderException e) {
+        } catch (Exception e) {
             logger.error("Error adding the SAML identity provider.", e);
         }
     }

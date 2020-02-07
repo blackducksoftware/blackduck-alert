@@ -77,7 +77,7 @@ public class SAMLManager {
             if (samlEnabled) {
                 setupMetadataManager(metadataURL, entityId, entityBaseUrl);
             }
-        } catch (MetadataProviderException e) {
+        } catch (Exception e) {
             logger.error("Error updating the SAML identity provider.", e);
         }
     }
