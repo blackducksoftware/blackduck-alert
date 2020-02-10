@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -42,23 +44,33 @@ public class GlobalConfigExistsValidator {
     public static final String GLOBAL_CONFIG_MISSING = "%s global configuration missing.";
     private static final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
     private ConfigurationAccessor configurationAccessor;
-    private List<DescriptorKey> descriptorKeys;
+    private List<Descriptor> descriptors;
 
     @Autowired
-    public GlobalConfigExistsValidator(ConfigurationAccessor configurationAccessor, List<DescriptorKey> descriptorKeys) {
+    public GlobalConfigExistsValidator(ConfigurationAccessor configurationAccessor, List<Descriptor> descriptors) {
         this.configurationAccessor = configurationAccessor;
-        this.descriptorKeys = descriptorKeys;
+        this.descriptors = descriptors;
     }
 
+    /**
+     * @return An Optional<String> containing the error message.
+     */
     public Optional<String> validate(String descriptorName) {
         if (StringUtils.isBlank(descriptorName)) {
             return Optional.empty();
         }
-        String descriptorDisplayName = descriptorKeys.stream()
-                                           .filter(descriptorKey -> descriptorKey.getUniversalKey().equals(descriptorName))
-                                           .map(descriptorKey -> descriptorKey.getDisplayName())
-                                           .findFirst()
-                                           .orElse(descriptorName);
+
+        Optional<DescriptorKey> optionalDescriptorKey = descriptors
+                                                            .stream()
+                                                            .filter(desc -> desc.getDescriptorKey().getUniversalKey().equals(descriptorName))
+                                                            .filter(this::hasGlobalConfig)
+                                                            .map(Descriptor::getDescriptorKey)
+                                                            .findFirst();
+        if (optionalDescriptorKey.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String descriptorDisplayName = optionalDescriptorKey.map(DescriptorKey::getDisplayName).orElse(descriptorName);
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             if (configurations.isEmpty()) {
@@ -70,4 +82,17 @@ public class GlobalConfigExistsValidator {
         }
         return Optional.empty();
     }
+
+    /**
+     * Determines if the descriptor's Global UI Config has fields.
+     */
+    private boolean hasGlobalConfig(Descriptor descriptor) {
+        return descriptor
+                   .getUIConfig(ConfigContextEnum.GLOBAL)
+                   .map(UIConfig::createFields)
+                   .map(List::size)
+                   .filter(size -> size > 0)
+                   .isPresent();
+    }
+
 }
