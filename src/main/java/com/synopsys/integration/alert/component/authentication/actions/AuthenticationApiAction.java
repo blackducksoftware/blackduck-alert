@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.component.authentication.actions;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,43 +38,48 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManag
 
 @Component
 public class AuthenticationApiAction extends ApiAction {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
     private SAMLManager samlManager;
 
     @Autowired
-    public AuthenticationApiAction(final SAMLManager samlManager) {
+    public AuthenticationApiAction(SAMLManager samlManager) {
         this.samlManager = samlManager;
     }
 
     @Override
-    public FieldModel beforeSaveAction(final FieldModel fieldModel) {
+    public FieldModel afterSaveAction(FieldModel fieldModel) {
         return handleNewAndUpdatedConfig(fieldModel);
     }
 
     @Override
-    public FieldModel beforeUpdateAction(final FieldModel fieldModel) {
+    public FieldModel afterUpdateAction(FieldModel fieldModel) {
         return handleNewAndUpdatedConfig(fieldModel);
     }
 
-    private FieldModel handleNewAndUpdatedConfig(final FieldModel fieldModel) {
+    private FieldModel handleNewAndUpdatedConfig(FieldModel fieldModel) {
         addSAMLMetadata(fieldModel);
         return fieldModel;
     }
 
-    private void addSAMLMetadata(final FieldModel fieldModel) {
-        final boolean samlEnabled = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED)
-                                        .flatMap(FieldValueModel::getValue)
-                                        .map(BooleanUtils::toBoolean)
-                                        .orElse(false);
-        final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-        final Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-        final Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
-        if (metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
-            final FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
-            final FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
-            final String metadataURL = metadataURLFieldValueOptional.flatMap(FieldValueModel::getValue).orElse("");
-            final String entityId = metadataEntityFieldValue.getValue().orElse("");
-            final String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
-            samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
+    private void addSAMLMetadata(FieldModel fieldModel) {
+        try {
+            boolean samlEnabled = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED)
+                                      .flatMap(FieldValueModel::getValue)
+                                      .map(BooleanUtils::toBoolean)
+                                      .orElse(false);
+            Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
+            Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+            Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            if (metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
+                FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
+                FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
+                String metadataURL = metadataURLFieldValueOptional.flatMap(FieldValueModel::getValue).orElse("");
+                String entityId = metadataEntityFieldValue.getValue().orElse("");
+                String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
+                samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
+            }
+        } catch (Exception ex) {
+            logger.error("Error adding SAML settings", ex);
         }
     }
 }
