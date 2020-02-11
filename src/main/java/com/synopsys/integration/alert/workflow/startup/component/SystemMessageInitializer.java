@@ -64,6 +64,7 @@ public class SystemMessageInitializer extends StartupComponent {
         return valid;
     }
 
+    // FIXME this will have to change after provider lifecycle management is implemented
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");

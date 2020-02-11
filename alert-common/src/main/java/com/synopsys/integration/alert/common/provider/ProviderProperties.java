@@ -46,6 +46,7 @@ public abstract class ProviderProperties {
         this.configurationAccessor = configurationAccessor;
     }
 
+    // FIXME make this method take an id
     // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
     public Optional<ConfigurationModel> retrieveGlobalConfig() {
         try {
@@ -58,6 +59,8 @@ public abstract class ProviderProperties {
         }
         return Optional.empty();
     }
+
+    public abstract void disconnect();
 
     protected FieldAccessor createFieldAccessor() {
         return retrieveGlobalConfig()

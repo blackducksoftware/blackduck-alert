@@ -259,7 +259,6 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return createdConfig;
     }
 
-    // TODO change query to get Id originally
     @Override
     public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(descriptorName)) {

@@ -43,8 +43,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -57,20 +57,18 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
-public class BlackDuckAccumulator extends ScheduledTask {
+public class BlackDuckAccumulator extends ProviderTask {
     public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
-    private final BlackDuckProperties blackDuckProperties;
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
     private BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckAccumulator(TaskScheduler taskScheduler, BlackDuckProperties blackDuckProperties, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, BlackDuckProviderKey providerKey) {
+    public BlackDuckAccumulator(TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, BlackDuckProviderKey providerKey) {
         super(taskScheduler, TASK_NAME);
-        this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
         this.providerKey = providerKey;
@@ -86,8 +84,13 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     @Override
-    public void runTask() {
+    public void runProviderTask() {
         accumulate();
+    }
+
+    @Override
+    protected BlackDuckProperties getProviderProperties() {
+        return (BlackDuckProperties) super.getProviderProperties();
     }
 
     public void accumulate() {
@@ -169,10 +172,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected List<NotificationView> read(DateRange dateRange) {
-        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = getProviderProperties().createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             try {
-                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+                BlackDuckServicesFactory blackDuckServicesFactory = getProviderProperties().createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
                 Date startDate = dateRange.getStart();
                 Date endDate = dateRange.getEnd();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));

@@ -51,6 +51,7 @@ import com.synopsys.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.util.NoThreadExecutorService;
 
 @Component
+// FIXME create a factory for this
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Gson gson;
@@ -63,6 +64,11 @@ public class BlackDuckProperties extends ProviderProperties {
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
+    }
+
+    @Override
+    public void disconnect() {
+        // TODO implement
     }
 
     public Optional<String> getBlackDuckUrl() {
@@ -81,49 +87,49 @@ public class BlackDuckProperties extends ProviderProperties {
         return retrieveGlobalConfig();
     }
 
-    public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckHttpClient blackDuckHttpClient, final IntLogger logger) {
+    public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
         return new BlackDuckServicesFactory(new IntEnvironmentVariables(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger);
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(final Logger logger) {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {
         try {
             return createBlackDuckHttpClient(logger);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return Optional.empty();
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final Logger logger) throws AlertException {
-        final IntLogger intLogger = new Slf4jIntLogger(logger);
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(Logger logger) throws AlertException {
+        IntLogger intLogger = new Slf4jIntLogger(logger);
         return createBlackDuckHttpClient(intLogger);
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger) throws AlertException {
-        final Optional<BlackDuckServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
+        Optional<BlackDuckServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
         if (blackDuckServerConfig.isPresent()) {
             return createBlackDuckHttpClient(intLogger, blackDuckServerConfig.get());
         }
         return Optional.empty();
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger, final BlackDuckServerConfig blackDuckServerConfig) {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger, BlackDuckServerConfig blackDuckServerConfig) {
         try {
             return Optional.of(blackDuckServerConfig.createBlackDuckHttpClient(intLogger));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             intLogger.error(e.getMessage(), e);
         }
         return Optional.empty();
     }
 
-    public Optional<BlackDuckServerConfig> createBlackDuckServerConfig(final IntLogger logger) throws AlertException {
-        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfig = getBlackDuckConfig();
+    public Optional<BlackDuckServerConfig> createBlackDuckServerConfig(IntLogger logger) throws AlertException {
+        Optional<ConfigurationModel> optionalGlobalBlackDuckConfig = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfig.isPresent()) {
-            final ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
-            final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
+            ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
+            FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
 
-            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
-            final String apiKey = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+            Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
+            String apiKey = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
             if (apiKey == null) {
                 throw new AlertException("Invalid global config settings. API Token is null.");
             }
@@ -132,39 +138,39 @@ public class BlackDuckProperties extends ProviderProperties {
         return Optional.empty();
     }
 
-    public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(final IntLogger logger) {
+    public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(IntLogger logger) {
         try {
             return createBlackDuckServerConfig(logger);
-        } catch (final IllegalArgumentException | AlertException e) {
+        } catch (IllegalArgumentException | AlertException e) {
             return Optional.empty();
         }
     }
 
-    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckApiToken) throws AlertException {
-        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+    public BlackDuckServerConfig createBlackDuckServerConfig(IntLogger logger, int blackDuckTimeout, String blackDuckApiToken) throws AlertException {
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setApiToken(blackDuckApiToken);
 
         try {
             return blackDuckServerConfigBuilder.build();
-        } catch (final IllegalStateException e) {
+        } catch (IllegalStateException e) {
             throw new AlertException(e.getMessage(), e);
         }
     }
 
-    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
-        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+    public BlackDuckServerConfig createBlackDuckServerConfig(IntLogger logger, int blackDuckTimeout, String blackDuckUsername, String blackDuckPassword) throws AlertException {
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setUsername(blackDuckUsername);
         blackDuckServerConfigBuilder.setPassword(blackDuckPassword);
 
         try {
             return blackDuckServerConfigBuilder.build();
-        } catch (final IllegalStateException e) {
+        } catch (IllegalStateException e) {
             throw new AlertException(e.getMessage(), e);
         }
     }
 
-    public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
-        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+    public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(IntLogger logger, int blackDuckTimeout) {
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
         blackDuckServerConfigBuilder.setProperties(getBlackDuckProperties().entrySet());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeoutInSeconds(blackDuckTimeout);
@@ -174,10 +180,10 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     private Map<String, String> getBlackDuckProperties() {
-        final Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(BlackDuckServerConfigBuilder.TRUST_CERT_KEY.getKey(), String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
 
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         properties.put(BlackDuckServerConfigBuilder.PROXY_HOST_KEY.getKey(), proxyInfo.getHost().orElse(""));
         properties.put(BlackDuckServerConfigBuilder.PROXY_PORT_KEY.getKey(), String.valueOf(proxyInfo.getPort()));
         properties.put(BlackDuckServerConfigBuilder.PROXY_USERNAME_KEY.getKey(), proxyInfo.getUsername().orElse(""));

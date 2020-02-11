@@ -22,6 +22,9 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
+import java.util.List;
+
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
@@ -39,9 +42,7 @@ public abstract class Provider {
         return key;
     }
 
-    public abstract void initialize();
-
-    public abstract void destroy();
+    public abstract List<ProviderTask> getProviderTasks();
 
     public abstract ProviderDistributionFilter createDistributionFilter();
 
