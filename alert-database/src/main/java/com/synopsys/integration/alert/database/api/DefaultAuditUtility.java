@@ -59,7 +59,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
@@ -103,8 +103,8 @@ public class DefaultAuditUtility implements AuditUtility {
     @Override
     @Transactional
     public AlertPagedModel<AuditEntryModel> getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
-        Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter) {
-        Page<AlertNotificationWrapper> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
+        Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter) {
+        Page<AlertNotificationModel> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
         List<AuditEntryModel> auditEntries = convertToAuditEntryModelFromNotificationsSorted(auditPage.getContent(), notificationToAuditEntryConverter, sortField, sortOrder);
         return new AlertPagedModel<>(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
     }
@@ -204,7 +204,7 @@ public class DefaultAuditUtility implements AuditUtility {
 
     @Override
     @Transactional
-    public AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationWrapper notificationContentEntry) {
+    public AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationModel notificationContentEntry) {
         List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
         List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
         List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
@@ -272,7 +272,7 @@ public class DefaultAuditUtility implements AuditUtility {
         return newOverallStatus;
     }
 
-    private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(List<AlertNotificationWrapper> notificationContentEntries, Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter,
+    private List<AuditEntryModel> convertToAuditEntryModelFromNotificationsSorted(List<AlertNotificationModel> notificationContentEntries, Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter,
         String sortField, String sortOrder) {
         List<AuditEntryModel> auditEntryModels = notificationContentEntries
                                                      .stream()
@@ -321,9 +321,9 @@ public class DefaultAuditUtility implements AuditUtility {
         return new AuditJobStatusModel(timeCreated, timeLastSent, status);
     }
 
-    private Page<AlertNotificationWrapper> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {
+    private Page<AlertNotificationModel> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {
         PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
-        Page<AlertNotificationWrapper> auditPage;
+        Page<AlertNotificationModel> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
             auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
@@ -332,7 +332,7 @@ public class DefaultAuditUtility implements AuditUtility {
         return auditPage;
     }
 
-    private NotificationConfig populateConfigFromEntity(AlertNotificationWrapper notificationEntity) {
+    private NotificationConfig populateConfigFromEntity(AlertNotificationModel notificationEntity) {
         String id = contentConverter.getStringValue(notificationEntity.getId());
         String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
         String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());

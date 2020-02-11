@@ -3,9 +3,9 @@ package com.synopsys.integration.alert.mock.entity;
 import java.util.Date;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
-public class MockNotificationContent extends MockEntityUtil<NotificationContent> {
+public class MockNotificationContent extends MockEntityUtil<NotificationEntity> {
 
     private final Date createdAt;
     private final String provider;
@@ -18,7 +18,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationContent>
         this(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L);
     }
 
-    public MockNotificationContent(final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content, final Long id) {
+    public MockNotificationContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, String content, Long id) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerCreationTime = providerCreationTime;
@@ -28,21 +28,20 @@ public class MockNotificationContent extends MockEntityUtil<NotificationContent>
     }
 
     @Override
-    public NotificationContent createEntity() {
-        final NotificationContent notificationContent = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, content);
+    public NotificationEntity createEntity() {
+        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerCreationTime, notificationType, content);
         notificationContent.setId(id);
         return notificationContent;
     }
 
     @Override
-    public NotificationContent createEmptyEntity() {
-        return new NotificationContent();
+    public NotificationEntity createEmptyEntity() {
+        return new NotificationEntity();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getEntityJson() {
-        final JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         // Gson uses locale by default thus I need to use it here
         json.addProperty("createdAt", createdAt.toLocaleString());
         json.addProperty("provider", provider);

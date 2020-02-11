@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -53,7 +53,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
     }
 
     @Override
-    public boolean doesNotificationApplyToConfiguration(AlertNotificationWrapper notification, ConfigurationJobModel configurationJobModel) {
+    public boolean doesNotificationApplyToConfiguration(AlertNotificationModel notification, ConfigurationJobModel configurationJobModel) {
         if (NotificationType.LICENSE_LIMIT.name().equals(notification.getNotificationType())) {
             // License Limit notifications are always allowed because they do not have projects.
             return true;
@@ -74,7 +74,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
         return cache;
     }
 
-    private boolean doProjectsFromNotificationMatchConfiguredProjects(AlertNotificationWrapper notification, Collection<String> configuredProjects, @Nullable String nullablePattern) {
+    private boolean doProjectsFromNotificationMatchConfiguredProjects(AlertNotificationModel notification, Collection<String> configuredProjects, @Nullable String nullablePattern) {
         Collection<String> notificationProjectNames = blackDuckProjectNameExtractor.getProjectNames(getCache(), notification);
         for (String notificationProjectName : notificationProjectNames) {
             if (configuredProjects.contains(notificationProjectName)) {

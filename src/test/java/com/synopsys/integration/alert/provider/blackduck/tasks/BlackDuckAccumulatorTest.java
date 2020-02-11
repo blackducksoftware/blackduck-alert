@@ -27,9 +27,9 @@ import org.springframework.scheduling.TaskScheduler;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -305,7 +305,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
         notificationView.setJson("{ content: \"content is here...\"}");
-        List<AlertNotificationWrapper> notificationContentList = notificationAccumulator.process(List.of(notificationView));
+        List<AlertNotificationModel> notificationContentList = notificationAccumulator.process(List.of(notificationView));
         assertFalse(notificationContentList.isEmpty());
     }
 
@@ -313,7 +313,7 @@ public class BlackDuckAccumulatorTest {
     public void testProcessEmptyList() {
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
-        List<AlertNotificationWrapper> contentList = notificationAccumulator.process(List.of());
+        List<AlertNotificationModel> contentList = notificationAccumulator.process(List.of());
         assertTrue(contentList.isEmpty());
     }
 
@@ -321,8 +321,8 @@ public class BlackDuckAccumulatorTest {
     public void testWrite() {
         BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
         Date creationDate = new Date();
-        NotificationContent content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
-        List<AlertNotificationWrapper> notificationContentList = Collections.singletonList(content);
+        NotificationEntity content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 
         Mockito.verify(notificationManager, Mockito.times(notificationContentList.size())).saveAllNotifications(Mockito.any());

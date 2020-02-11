@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
@@ -66,11 +66,11 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     }
 
     @Override
-    protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
+    protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) throws AlertException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory();
 
         List<ProviderMessageContent> providerMessageContents = new LinkedList<>();
-        for (AlertNotificationWrapper notification : notifications) {
+        for (AlertNotificationModel notification : notifications) {
             String notificationType = notification.getNotificationType();
             BlackDuckMessageBuilder blackDuckMessageBuilder = messageBuilderMap.get(notificationType);
             if (null == blackDuckMessageBuilder) {

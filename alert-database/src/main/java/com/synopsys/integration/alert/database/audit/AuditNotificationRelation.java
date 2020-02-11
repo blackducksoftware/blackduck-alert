@@ -31,7 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.DatabaseRelation;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Entity
 @IdClass(AuditNotificationRelationPK.class)
@@ -47,7 +47,7 @@ public class AuditNotificationRelation extends DatabaseRelation {
 
     @ManyToOne
     @JoinColumn(name = "notification_id", referencedColumnName = "id", insertable = false, updatable = false)
-    public NotificationContent notificationContent;
+    public NotificationEntity notificationContent;
     @ManyToOne
     @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
     private AuditEntryEntity auditEntryEntity;
@@ -69,7 +69,7 @@ public class AuditNotificationRelation extends DatabaseRelation {
         return notificationId;
     }
 
-    public NotificationContent getNotificationContent() {
+    public NotificationEntity getNotificationContent() {
         return notificationContent;
     }
 
