@@ -22,57 +22,17 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-
 public abstract class ProviderProperties {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ProviderKey providerKey;
-    protected final ConfigurationAccessor configurationAccessor;
+    private Long configId;
 
-    public ProviderProperties(ProviderKey providerKey, ConfigurationAccessor configurationAccessor) {
-        this.providerKey = providerKey;
-        this.configurationAccessor = configurationAccessor;
+    public ProviderProperties(Long configId) {
+        this.configId = configId;
     }
 
-    // FIXME make this method take an id
-    // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
-    public Optional<ConfigurationModel> retrieveGlobalConfig() {
-        try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL);
-            if (null != configurations && !configurations.isEmpty()) {
-                return Optional.of(configurations.get(0));
-            }
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Problem connecting to DB.", e);
-        }
-        return Optional.empty();
+    public Long getConfigId() {
+        return configId;
     }
 
     public abstract void disconnect();
-
-    protected FieldAccessor createFieldAccessor() {
-        return retrieveGlobalConfig()
-                   .map(config -> new FieldAccessor(config.getCopyOfKeyToFieldMap()))
-                   .orElse(new FieldAccessor(Map.of()));
-    }
-
-    protected Optional<String> createOptionalString(String value) {
-        if (StringUtils.isNotBlank(value)) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
-    }
 
 }

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,40 +31,47 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckValidatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final BlackDuckValidator blackDuckValidator;
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
+    private final BlackDuckPropertiesFactory propertiesFactory;
+    private final BlackDuckValidatorFactory blackDuckValidatorFactory;
 
     @Autowired
-    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckValidator blackDuckValidator, TaskManager taskManager, ProviderDataAccessor providerDataAccessor) {
+    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidatorFactory blackDuckValidatorFactory, TaskManager taskManager,
+        ProviderDataAccessor providerDataAccessor) {
         this.blackDuckProviderKey = blackDuckProviderKey;
-        this.blackDuckValidator = blackDuckValidator;
+        this.blackDuckValidatorFactory = blackDuckValidatorFactory;
+        this.propertiesFactory = propertiesFactory;
         this.taskManager = taskManager;
         this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
     public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig();
+        handleNewOrUpdatedConfig(fieldModel);
         return super.afterSaveAction(fieldModel);
     }
 
     @Override
     public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig();
+        handleNewOrUpdatedConfig(fieldModel);
         return super.afterUpdateAction(fieldModel);
     }
 
@@ -76,8 +84,11 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig() {
-        boolean valid = blackDuckValidator.validate();
+    private void handleNewOrUpdatedConfig(FieldModel fieldModel) {
+        //TODO convert the fieldModel values to a field accessor or configurationModel.
+        BlackDuckProperties properties = propertiesFactory.createProperties(Long.valueOf(fieldModel.getId()), new FieldAccessor(Map.of()));
+        BlackDuckValidator validator = blackDuckValidatorFactory.createValidator(properties);
+        boolean valid = validator.validate();
         if (valid) {
             Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {

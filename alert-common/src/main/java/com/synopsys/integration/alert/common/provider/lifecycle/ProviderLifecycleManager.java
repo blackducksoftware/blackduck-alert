@@ -29,6 +29,10 @@ public class ProviderLifecycleManager {
             RegisteredDescriptorModel providerDescriptor = descriptorAccessor.getRegisteredDescriptorById(providerConfig.getDescriptorId())
                                                                .orElseThrow(() -> new AlertException("The provider did not exist"));
             providerDescriptor.getName();
+
+            //ProviderProperties providerProperties = provider.createProperties(providerConfig);
+            //List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
+            //runTasks(providerTasks, providerConfig);
             //        logger.info("Scheduling tasks for <PROVIDER_NAME> provider...");
         } catch (AlertException e) {
             // TODO handle

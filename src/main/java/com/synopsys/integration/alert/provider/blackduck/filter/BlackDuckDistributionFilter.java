@@ -24,11 +24,7 @@ package com.synopsys.integration.alert.provider.blackduck.filter;
 
 import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -40,13 +36,10 @@ import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserial
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
     private BlackDuckProjectNameExtractor blackDuckProjectNameExtractor;
     private NotificationDeserializationCache cache;
 
-    @Autowired
     public BlackDuckDistributionFilter(Gson gson, BlackDuckProvider blackDuckProvider, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
         this.cache = new NotificationDeserializationCache(gson, blackDuckProvider.getNotificationClassMap());
         this.blackDuckProjectNameExtractor = blackDuckProjectNameExtractor;
