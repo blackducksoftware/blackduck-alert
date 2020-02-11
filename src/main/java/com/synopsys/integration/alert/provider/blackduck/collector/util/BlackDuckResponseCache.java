@@ -105,32 +105,7 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    public String getSeverity(String vulnerabilityUrl) throws NullPointerException {
-        String severity = "UNKNOWN";
-        ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severityType = null;
-        try {
-            Optional<VulnerabilityView> vulnerabilityView = getItem(VulnerabilityView.class, vulnerabilityUrl);
-            if (vulnerabilityView.isPresent()) {
-                VulnerabilityView vulnerability = vulnerabilityView.get();
-                severityType = vulnerability.getSeverity();
-                Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> cvss3Severity = getCvss3Severity(vulnerability);
-                if (vulnerability.getUseCvss3() && cvss3Severity.isPresent()) {
-                    severityType = cvss3Severity.get();
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Error fetching vulnerability view", e);
-        }
-
-        if (severityType != null) {
-            severity = severityType.name();
-        }
-
-        return severity;
-    }
-
     public Optional<ProjectVersionWrapper> getProjectVersionWrapper(ProjectVersionComponentView versionBomComponent) {
-        // TODO Stop using this when Black Duck supports going back to the project-version
         Optional<String> versionBomComponentHref = versionBomComponent.getHref();
         if (versionBomComponentHref.isPresent()) {
             String versionHref = versionBomComponentHref.get();

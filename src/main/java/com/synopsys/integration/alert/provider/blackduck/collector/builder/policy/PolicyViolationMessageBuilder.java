@@ -156,6 +156,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         LinkableItem policyNameItem, LinkableItem policySeverity,
         String componentName, String componentVersionName, Long notificationId) {
         List<ComponentItem> vulnerabilityPolicyItems = new ArrayList<>();
+
         Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = blackDuckResponseCache.getProjectVersionWrapper(bomComponent);
         if (optionalProjectVersionWrapper.isPresent()) {
             try {
