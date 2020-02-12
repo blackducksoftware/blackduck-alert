@@ -31,17 +31,17 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
     private BlackDuckProjectNameExtractor blackDuckProjectNameExtractor;
     private NotificationDeserializationCache cache;
 
-    public BlackDuckDistributionFilter(Gson gson, BlackDuckProvider blackDuckProvider, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
-        this.cache = new NotificationDeserializationCache(gson, blackDuckProvider.getNotificationClassMap());
+    public BlackDuckDistributionFilter(Gson gson, ProviderNotificationClassMap providerNotificationClassMap, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
+        this.cache = new NotificationDeserializationCache(gson, providerNotificationClassMap);
         this.blackDuckProjectNameExtractor = blackDuckProjectNameExtractor;
     }
 

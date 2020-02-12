@@ -52,7 +52,7 @@ public class PhoneHomeTest {
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
 
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, blackDuckProperties);
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility);
 
         try {
             phoneHomeTask.run();

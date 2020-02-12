@@ -89,7 +89,7 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
 
     @Override
     public ProviderDistributionFilter createDistributionFilter(BlackDuckProperties blackDuckProperties) {
-        return distributionFilterFactory.createFilter(blackDuckProperties);
+        return distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
     }
 
     @Override

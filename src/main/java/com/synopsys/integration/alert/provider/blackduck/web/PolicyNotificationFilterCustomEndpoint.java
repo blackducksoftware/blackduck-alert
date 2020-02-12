@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -53,13 +54,11 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
-    private BlackDuckProperties blackDuckProperties;
 
     @Autowired
     protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory,
-        Gson gson, BlackDuckProperties blackDuckProperties) throws AlertException {
+        Gson gson) throws AlertException {
         super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager, responseFactory, gson);
-        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
@@ -97,6 +96,8 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
     }
 
     private List<NotificationFilterModel> retrieveBlackDuckPolicyOptions() throws IntegrationException {
+        //FIXME have to figure out how to create the properties for this endpoint.
+        BlackDuckProperties blackDuckProperties = new BlackDuckProperties(null, null, null, null, new FieldAccessor(Map.of()));
         Optional<BlackDuckHttpClient> blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
         if (blackDuckHttpClient.isPresent()) {
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient.get(), new Slf4jIntLogger(logger));
