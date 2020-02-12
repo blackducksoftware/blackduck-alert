@@ -22,66 +22,111 @@
  */
 package com.synopsys.integration.alert.common.provider.lifecycle;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
 public class ProviderLifecycleManager {
+    private final Logger logger = LoggerFactory.getLogger(ProviderLifecycleManager.class);
+
     private List<Provider> providers;
     private TaskManager taskManager;
     private ConfigurationAccessor configurationAccessor;
     private DescriptorAccessor descriptorAccessor;
 
-    public void initializeTasksForValidProviders() {
-        // TODO implement
+    @Autowired
+    public ProviderLifecycleManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor, DescriptorAccessor descriptorAccessor) {
+        this.providers = providers;
+        this.taskManager = taskManager;
+        this.configurationAccessor = configurationAccessor;
+        this.descriptorAccessor = descriptorAccessor;
     }
 
-    // TODO consider a callback for scheduled task completion
-    public void runTasksForProviderConfig(ConfigurationModel providerConfig) {
-        try {
-            RegisteredDescriptorModel providerDescriptor = descriptorAccessor.getRegisteredDescriptorById(providerConfig.getDescriptorId())
-                                                               .orElseThrow(() -> new AlertException("The provider did not exist"));
-            providerDescriptor.getName();
+    public List<ProviderTask> initializeConfiguredProviders() {
+        List<ProviderTask> initializedTasks = new ArrayList<>();
+        for (Provider provider : providers) {
+            try {
+                List<ConfigurationModel> providerConfigurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+                List<ProviderTask> initializedTasksForProvider = initializeConfiguredProviders(provider, providerConfigurations);
+                initializedTasks.addAll(initializedTasksForProvider);
+            } catch (AlertDatabaseConstraintException e) {
+                logger.error("Could not retrieve provider config: ", e);
+            }
+        }
+        return initializedTasks;
+    }
 
-            //ProviderProperties providerProperties = provider.createProperties(providerConfig);
-            //List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
-            //runTasks(providerTasks, providerConfig);
-            //        logger.info("Scheduling tasks for <PROVIDER_NAME> provider...");
-        } catch (AlertException e) {
-            // TODO handle
+    public List<ProviderTask> scheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
+        return performSchedulingActionForProviderConfig(provider, providerConfig, "scheduling", task -> taskManager.getNextRunTime(task.getTaskName()).isEmpty(), this::scheduleTask);
+    }
+
+    public List<ProviderTask> unscheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
+        return performSchedulingActionForProviderConfig(provider, providerConfig, "unscheduling", task -> taskManager.getNextRunTime(task.getTaskName()).isPresent(), this::unscheduleTask);
+    }
+
+    private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
+        List<ProviderTask> initializedTasks = new ArrayList<>();
+        for (ConfigurationModel providerConfig : providerConfigurations) {
+            ProviderProperties properties = provider.createProperties(providerConfig);
+            try {
+                if (properties.isConfigEnabled()) {
+                    List<ProviderTask> initializedTasksForConfig = scheduleTasksForProviderConfig(provider, providerConfig);
+                    initializedTasks.addAll(initializedTasksForConfig);
+                } else {
+                    logger.debug("The provider configuration '{}' was disabled. No tasks will be scheduled for this config.", properties.getConfigName());
+                }
+            } catch (AlertException e) {
+                logger.error("Something went wrong while attempting to schedule provider tasks", e);
+            }
+        }
+        return initializedTasks;
+    }
+
+    private List<ProviderTask> performSchedulingActionForProviderConfig(Provider provider, ConfigurationModel providerConfig, String actionName, Predicate<ProviderTask> schedulingCondition, Consumer<ProviderTask> managementAction)
+        throws AlertException {
+        logger.debug("Performing {} task for config with id {} and descriptor id {}", actionName, providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        List<ProviderTask> acceptedTasks = new ArrayList<>();
+
+        ProviderProperties providerProperties = provider.createProperties(providerConfig);
+        if (providerProperties.isConfigEnabled()) {
+            throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", providerProperties.getConfigName()));
         }
 
-        //        taskManager.registerTask(accumulatorTask);
-        //        taskManager.registerTask(projectSyncTask);
-        //
-        //        Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
-        //        blackDuckServerConfig.ifPresent(globalConfig -> {
-        //            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, accumulatorTask.getTaskName());
-        //            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, projectSyncTask.getTaskName());
-        //        });
-    }
-
-    private void runTasks(List<ProviderTask> tasks, ConfigurationModel providerConfig) {
-        // TODO use the provider's property factory to create the properties for this provider config
-        for (ProviderTask providerTask : tasks) {
-            // TODO inject the properties: providerTask.setProviderPropertiesForRun();
-
-            // TODO schedule the task
+        List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
+        for (ProviderTask task : providerTasks) {
+            if (schedulingCondition.test(task)) {
+                managementAction.accept(task);
+                acceptedTasks.add(task);
+            }
         }
+        return acceptedTasks;
     }
 
-    // DESTROY?
-    //        logger.info("Destroying <PROVIDER_NAME> provider...");
-    //        taskManager.unregisterTask(accumulatorTask.getTaskName());
-    //        taskManager.unregisterTask(projectSyncTask.getTaskName());
+    private void scheduleTask(ProviderTask task) {
+        taskManager.registerTask(task);
+        taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.getTaskName());
+    }
+
+    private void unscheduleTask(ProviderTask task) {
+        taskManager.unregisterTask(task.getTaskName());
+    }
 
 }
