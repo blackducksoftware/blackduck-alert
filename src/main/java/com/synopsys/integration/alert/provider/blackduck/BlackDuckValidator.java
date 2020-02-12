@@ -44,22 +44,20 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckValidator extends ProviderValidator {
+public class BlackDuckValidator extends ProviderValidator<BlackDuckProperties> {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     private final AlertProperties alertProperties;
-    private final BlackDuckProperties blackDuckProperties;
     private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
-    public BlackDuckValidator(AlertProperties alertProperties, BlackDuckProperties blackDuckProperties, SystemMessageUtility systemMessageUtility) {
+    public BlackDuckValidator(AlertProperties alertProperties, SystemMessageUtility systemMessageUtility) {
         this.alertProperties = alertProperties;
-        this.blackDuckProperties = blackDuckProperties;
         this.systemMessageUtility = systemMessageUtility;
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(BlackDuckProperties blackDuckProperties) {
         logger.info("Validating Black Duck Provider...");
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
