@@ -214,7 +214,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testSave() {
-        AlertNotificationModel notificationContent = createNotificationContent();
+        AlertNotificationModel notificationContent = createNotificationModel();
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationContent));
         assertNotNull(savedModels);
         assertFalse(savedModels.isEmpty());
@@ -225,7 +225,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindByIds() {
-        AlertNotificationModel notification = createNotificationContent();
+        AlertNotificationModel notification = createNotificationModel();
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification));
         List<Long> notificationIds = savedModels.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
         List<AlertNotificationModel> notificationList = notificationManager.findByIds(notificationIds);
@@ -235,7 +235,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindByIdsInvalidIds() {
-        AlertNotificationModel model = createNotificationContent();
+        AlertNotificationModel model = createNotificationModel();
         model = notificationManager.saveAllNotifications(List.of(model)).get(0);
 
         List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
@@ -249,14 +249,14 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         Date startDate = createDate(time.minusHours(1));
         Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
-        AlertNotificationModel entity = createNotificationContent(createdAt);
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         createdAt = createDate(time.plusMinutes(1));
-        AlertNotificationModel entityToFind1 = createNotificationContent(createdAt);
+        AlertNotificationModel entityToFind1 = createNotificationModel(createdAt);
         createdAt = createDate(time.plusMinutes(5));
-        AlertNotificationModel entityToFind2 = createNotificationContent(createdAt);
+        AlertNotificationModel entityToFind2 = createNotificationModel(createdAt);
         createdAt = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAt);
+        entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
@@ -274,11 +274,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         Date startDate = createDate(time.minusHours(1));
         Date endDate = createDate(time.plusHours(1));
         Date createdAtEarlier = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationContent(createdAtEarlier);
+        AlertNotificationModel entity = createNotificationModel(createdAtEarlier);
         notificationManager.saveAllNotifications(List.of(entity));
 
         Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLater);
+        entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
         List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
@@ -291,10 +291,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         LocalDateTime time = LocalDateTime.now();
         Date searchDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationContent(createdAt);
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         Date createdAtLaterThanSearch = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLaterThanSearch);
+        entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
         List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBefore(searchDate);
@@ -310,10 +310,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     public void findByCreatedAtBeforeDayOffset() {
         LocalDateTime time = LocalDateTime.now();
         Date createdAt = createDate(time.minusDays(5));
-        AlertNotificationModel entity = createNotificationContent(createdAt);
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         Date createdAtLaterThanSearch = createDate(time.plusDays(3));
-        entity = createNotificationContent(createdAtLaterThanSearch);
+        entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
         List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
@@ -330,14 +330,14 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         Date startDate = createDate(time.minusHours(1));
         Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
-        NotificationEntity entity = createNotificationContent(createdAt);
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         Date createdAtInRange = createDate(time.plusMinutes(1));
-        NotificationEntity entityToFind1 = createNotificationContent(createdAtInRange);
+        AlertNotificationModel entityToFind1 = createNotificationModel(createdAtInRange);
         createdAtInRange = createDate(time.plusMinutes(5));
-        NotificationEntity entityToFind2 = createNotificationContent(createdAtInRange);
+        AlertNotificationModel entityToFind2 = createNotificationModel(createdAtInRange);
         Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLater);
+        entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
@@ -352,13 +352,22 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotification() {
-        AlertNotificationModel notificationEntity = createNotificationContent();
+        AlertNotificationModel notificationEntity = createNotificationModel();
         AlertNotificationModel savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
         assertEquals(1, notificationContentRepository.count());
 
         notificationManager.deleteNotification(savedModel);
 
         assertEquals(0, notificationContentRepository.count());
+    }
+
+    private AlertNotificationModel createNotificationModel(Date createdAt) {
+        return new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", NOTIFICATION_TYPE, "{content: \"content is here...\"}", createdAt, createdAt);
+    }
+
+    private AlertNotificationModel createNotificationModel() {
+        Date createdAt = createDate(LocalDateTime.now());
+        return createNotificationModel(createdAt);
     }
 
     private NotificationEntity createNotificationContent(Date createdAt) {

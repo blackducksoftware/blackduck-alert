@@ -98,7 +98,7 @@ public class AuditEntryActionsTest {
         Mockito.when(jobConfigReader.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
-        DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, configurationAccessor, eventManager);
+        DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, jobConfigReader, eventManager);
         DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryUtility, notificationManager, jobConfigReader, null, null);
 
@@ -117,10 +117,10 @@ public class AuditEntryActionsTest {
         int totalPages = 2;
         int currentPage = 0;
         int pageSize = 2;
-
-        NotificationEntity entity_1 = new NotificationEntity();
+        Date createdAt = new Date();
+        AlertNotificationModel entity_1 = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);
         entity_1.setId(1L);
-        NotificationEntity entity_2 = new NotificationEntity();
+        AlertNotificationModel entity_2 = new AlertNotificationModel(2L, 2L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);
         entity_2.setId(2L);
         List<AlertNotificationModel> pagedEntryList = Arrays.asList(entity_1, entity_2);
         Page<AlertNotificationModel> pageResponse = Mockito.mock(Page.class);

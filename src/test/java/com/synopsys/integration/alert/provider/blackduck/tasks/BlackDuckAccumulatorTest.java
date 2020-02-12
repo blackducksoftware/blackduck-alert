@@ -29,8 +29,6 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
@@ -328,7 +326,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
         notificationAccumulator.setProviderPropertiesForRun(testBlackDuckProperties);
         Date creationDate = new Date();
-        NotificationEntity content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate);
         List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 

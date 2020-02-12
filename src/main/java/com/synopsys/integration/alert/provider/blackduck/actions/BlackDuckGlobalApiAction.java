@@ -23,17 +23,18 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -50,16 +51,18 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckPropertiesFactory propertiesFactory;
-    private BlackDuckValidator blackDuckValidator;
+    private final BlackDuckValidator blackDuckValidator;
+    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
 
     @Autowired
     public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator blackDuckValidator, TaskManager taskManager,
-        ProviderDataAccessor providerDataAccessor) {
+        ProviderDataAccessor providerDataAccessor, ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.blackDuckValidator = blackDuckValidator;
         this.propertiesFactory = propertiesFactory;
         this.taskManager = taskManager;
         this.providerDataAccessor = providerDataAccessor;
+        this.configurationFieldModelConverter = configurationFieldModelConverter;
     }
 
     @Override
@@ -83,9 +86,9 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig(FieldModel fieldModel) {
-        //TODO convert the fieldModel values to a field accessor or configurationModel.
-        BlackDuckProperties properties = propertiesFactory.createProperties(Long.valueOf(fieldModel.getId()), new FieldAccessor(Map.of()));
+    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+        FieldAccessor fieldAccessor = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
+        BlackDuckProperties properties = propertiesFactory.createProperties(Long.valueOf(fieldModel.getId()), fieldAccessor);
         boolean valid = blackDuckValidator.validate(properties);
         if (valid) {
             Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);

@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.web;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +43,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
@@ -71,8 +71,8 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    public Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldValueModels);
+    public Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
@@ -99,18 +99,16 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    protected String createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+    protected String createData(FieldModel fieldModel) throws AlertException {
         return "Successfully created Alert plugin on Jira Cloud server.";
     }
 
-    private JiraCloudProperties createJiraProperties(Map<String, FieldValueModel> fieldValueModels) {
-        FieldValueModel fieldUrl = fieldValueModels.get(JiraDescriptor.KEY_JIRA_URL);
-        FieldValueModel fieldAccessToken = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        FieldValueModel fieldUsername = fieldValueModels.get(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-
-        String url = fieldUrl.getValue().orElse("");
-        String username = fieldUsername.getValue().orElse("");
-        String accessToken = getAppropriateAccessToken(fieldAccessToken);
+    private JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
+        String url = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_URL).orElse("");
+        String username = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
+        String accessToken = fieldModel.getFieldValueModel(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
+                                 .map(this::getAppropriateAccessToken)
+                                 .orElse("");
 
         return new JiraCloudProperties(url, accessToken, username);
     }
