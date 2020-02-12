@@ -33,13 +33,13 @@ import org.springframework.stereotype.Component;
 public class TaskManager {
     private final Map<String, ScheduledTask> scheduledTaskMap = new HashMap<>();
 
-    public final void registerTask(final ScheduledTask scheduledTask) {
+    public final void registerTask(ScheduledTask scheduledTask) {
         if (scheduledTask != null) {
             scheduledTaskMap.put(scheduledTask.getTaskName(), scheduledTask);
         }
     }
 
-    public final Optional<ScheduledTask> unregisterTask(final String taskName) {
+    public final Optional<ScheduledTask> unregisterTask(String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
@@ -52,49 +52,50 @@ public class TaskManager {
         return scheduledTaskMap.size();
     }
 
-    public final boolean scheduleCronTask(final String cronExpression, final String taskName) {
+    public final boolean scheduleCronTask(String cronExpression, String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
 
-        final ScheduledTask task = scheduledTaskMap.get(taskName);
+        ScheduledTask task = scheduledTaskMap.get(taskName);
         task.scheduleExecution(cronExpression);
         return true;
     }
 
-    public final boolean scheduleExecutionAtFixedRate(final long period, final String taskName) {
+    public final boolean scheduleExecutionAtFixedRate(long period, String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
 
-        final ScheduledTask task = scheduledTaskMap.get(taskName);
+        ScheduledTask task = scheduledTaskMap.get(taskName);
         task.scheduleExecutionAtFixedRate(period);
         return true;
     }
 
-    public final boolean unScheduleTask(final String taskName) {
+    public final boolean unScheduleTask(String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
 
-        final ScheduledTask task = scheduledTaskMap.get(taskName);
+        ScheduledTask task = scheduledTaskMap.get(taskName);
         task.scheduleExecution("");
         return true;
     }
 
-    public final Optional<String> getNextRunTime(final String taskName) {
+    public final Optional<String> getNextRunTime(String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
         return scheduledTaskMap.get(taskName).getFormatedNextRunTime();
     }
 
-    public final Optional<Long> getDifferenceToNextRun(final String taskName, final TimeUnit timeUnit) {
+    public final Optional<Long> getDifferenceToNextRun(String taskName, TimeUnit timeUnit) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
-        final Optional<Long> millisecondsToNextRun = scheduledTaskMap.get(taskName).getMillisecondsToNextRun();
+        Optional<Long> millisecondsToNextRun = scheduledTaskMap.get(taskName).getMillisecondsToNextRun();
         return millisecondsToNextRun
                    .map(value -> timeUnit.convert(value, TimeUnit.MILLISECONDS));
     }
+
 }
