@@ -33,7 +33,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         ConfigField providerConfigEnabled = new CheckboxConfigField(KEY_PROVIDER_CONFIG_ENABLED, LABEL_PROVIDER_CONFIG_ENABLED, DESCRIPTION_PROVIDER_CONFIG_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
         ConfigField providerConfigName = new TextInputConfigField(KEY_PROVIDER_CONFIG_NAME, LABEL_PROVIDER_CONFIG_NAME, DESCRIPTION_PROVIDER_CONFIG_NAME).applyRequired(true);
 
-        List<ConfigField> providerCommonGlobalFields = List.of(providerConfigName, providerConfigEnabled);
+        List<ConfigField> providerCommonGlobalFields = List.of(providerConfigEnabled, providerConfigName);
         List<ConfigField> providerGlobalFields = createProviderGlobalFields();
         return Streams.concat(providerCommonGlobalFields.stream(), providerGlobalFields.stream()).collect(Collectors.toList());
     }
