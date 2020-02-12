@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.builder.BuilderStatus;
@@ -48,11 +49,11 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @Component
 public class BlackDuckGlobalTestAction extends TestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final BlackDuckProperties blackDuckProperties;
+    private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
-    public BlackDuckGlobalTestAction(BlackDuckProperties blackDuckProperties) {
-        this.blackDuckProperties = blackDuckProperties;
+    public BlackDuckGlobalTestAction(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+        this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 
     @Override
@@ -62,6 +63,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
         String apiToken = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         String url = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         String timeout = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(Long.valueOf(configId), fieldAccessor);
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
@@ -90,5 +92,4 @@ public class BlackDuckGlobalTestAction extends TestAction {
             throw new AlertException("There were issues with the configuration: " + errorMessage);
         }
     }
-
 }

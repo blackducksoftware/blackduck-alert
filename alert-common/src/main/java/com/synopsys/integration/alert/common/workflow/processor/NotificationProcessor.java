@@ -39,7 +39,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
@@ -82,7 +84,10 @@ public class NotificationProcessor {
         }
 
         Provider provider = providerKeyToProvider.get(job.getProviderName());
-        ProviderDistributionFilter distributionFilter = provider.createDistributionFilter();
+        //TODO lookup the configuration for the provider
+        ConfigurationModel providerConfig = null;
+        ProviderProperties providerProperties = provider.createProperties(providerConfig);
+        ProviderDistributionFilter distributionFilter = provider.createDistributionFilter(providerProperties);
         List<AlertNotificationWrapper> notificationsByType = filterNotificationsByType(job, notifications);
         List<AlertNotificationWrapper> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 

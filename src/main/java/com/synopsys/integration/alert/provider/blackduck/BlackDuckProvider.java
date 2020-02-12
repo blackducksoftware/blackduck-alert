@@ -30,6 +30,7 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
@@ -37,7 +38,8 @@ import com.synopsys.integration.alert.common.provider.notification.ProviderNotif
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.factories.DistributionFilterFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -52,31 +54,42 @@ import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocation
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 
 @Component
-public class BlackDuckProvider extends Provider {
+public class BlackDuckProvider extends Provider<BlackDuckProperties> {
     private final BlackDuckAccumulator accumulatorTask;
     private final BlackDuckDataSyncTask projectSyncTask;
 
-    private final ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory;
+    private final DistributionFilterFactory distributionFilterFactory;
     private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
+    private final BlackDuckPropertiesFactory propertiesFactory;
 
     @Autowired
     public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckDataSyncTask projectSyncTask, BlackDuckContent blackDuckContent,
-        ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory) {
+        DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory, BlackDuckPropertiesFactory propertiesFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.distributionFilterFactory = distributionFilterFactory;
         this.messageContentCollectorFactory = messageContentCollectorFactory;
+        this.propertiesFactory = propertiesFactory;
     }
 
     @Override
-    public List<ProviderTask> getProviderTasks() {
-        return List.of(accumulatorTask, projectSyncTask);
+    public List<ProviderTask> createProviderTasks(BlackDuckProperties providerProperties) {
+        List<ProviderTask> tasks = List.of(accumulatorTask, projectSyncTask);
+        for (ProviderTask task : tasks) {
+            task.setProviderPropertiesForRun(providerProperties);
+        }
+        return tasks;
     }
 
     @Override
-    public ProviderDistributionFilter createDistributionFilter() {
-        return distributionFilterFactory.getObject();
+    public BlackDuckProperties createProperties(ConfigurationModel configurationModel) {
+        return propertiesFactory.createProperties(configurationModel);
+    }
+
+    @Override
+    public ProviderDistributionFilter createDistributionFilter(BlackDuckProperties blackDuckProperties) {
+        return distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
     }
 
     @Override

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.workflow.startup.component;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 @Component
 @Order(30)
@@ -69,7 +72,8 @@ public class SystemMessageInitializer extends StartupComponent {
         boolean valid = true;
         logger.info("Validating configured providers: ");
         for (ProviderValidator providerValidator : providerValidators) {
-            valid = valid && providerValidator.validate();
+            // FIXME create an instance of black duck properties
+            valid = valid && providerValidator.validate(new BlackDuckProperties(null, null, null, null, new FieldAccessor(Map.of())));
         }
         return valid;
     }

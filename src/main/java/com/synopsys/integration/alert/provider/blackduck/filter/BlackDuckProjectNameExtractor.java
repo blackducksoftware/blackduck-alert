@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
@@ -55,7 +53,6 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
-@Component
 public class BlackDuckProjectNameExtractor {
     private static final BiFunction<NotificationDeserializationCache, AlertNotificationWrapper, Collection<String>> DEFAULT_EXTRACTOR = (x, y) -> List.of();
 
@@ -63,7 +60,6 @@ public class BlackDuckProjectNameExtractor {
     private Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationWrapper, Collection<String>>> extractorMap = new HashMap<>();
     private BlackDuckProperties blackDuckProperties;
 
-    @Autowired
     public BlackDuckProjectNameExtractor(BlackDuckProperties blackDuckProperties) {
         this.blackDuckProperties = blackDuckProperties;
         initializeExtractorMap();

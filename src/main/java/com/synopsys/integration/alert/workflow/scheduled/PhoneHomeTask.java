@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -85,21 +86,19 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final AuditUtility auditUtility;
-    private final BlackDuckProperties blackDuckProperties;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
     private Boolean skipPhoneHome;
 
     @Autowired
     public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
-        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, BlackDuckProperties blackDuckProperties) {
+        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.gson = gson;
         this.auditUtility = auditUtility;
-        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
@@ -198,6 +197,8 @@ public class PhoneHomeTask extends StartupScheduledTask {
         String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         try {
+            //FIXME fix the creation of the blackduck properties.
+            BlackDuckProperties blackDuckProperties = new BlackDuckProperties(null, null, null, null, new FieldAccessor(Map.of()));
             Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
             if (blackDuckHttpClientOptional.isPresent()) {
                 BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();

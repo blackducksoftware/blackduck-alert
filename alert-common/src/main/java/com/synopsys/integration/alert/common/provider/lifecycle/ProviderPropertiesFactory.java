@@ -20,19 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.common.provider.lifecycle;
 
-public abstract class ProviderProperties {
-    private Long configId;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 
-    public ProviderProperties(Long configId) {
-        this.configId = configId;
+public abstract class ProviderPropertiesFactory<T extends ProviderProperties> {
+    public T createProperties(ConfigurationModel configurationModel) {
+        return createProperties(configurationModel.getConfigurationId(), new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap()));
     }
 
-    public Long getConfigId() {
-        return configId;
-    }
-
-    public abstract void disconnect();
-
+    public abstract T createProperties(Long configId, FieldAccessor fieldAccessor);
 }
