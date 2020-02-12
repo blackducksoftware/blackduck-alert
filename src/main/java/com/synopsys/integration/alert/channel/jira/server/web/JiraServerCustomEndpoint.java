@@ -106,8 +106,8 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
 
     private JiraServerProperties createJiraProperties(FieldModel fieldModel) {
         String url = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_URL).orElse("");
-        String username = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_PASSWORD).orElse("");
-        String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_USERNAME)
+        String username = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_USERNAME).orElse("");
+        String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_PASSWORD)
                               .map(this::getAppropriateAccessToken)
                               .orElse("");
 
