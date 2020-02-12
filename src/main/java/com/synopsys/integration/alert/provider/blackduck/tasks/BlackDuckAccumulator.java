@@ -44,8 +44,7 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -164,7 +163,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<NotificationView> notifications = read(dateRange);
         if (!notifications.isEmpty()) {
             List<NotificationView> sortedNotifications = sort(notifications);
-            List<AlertNotificationWrapper> contentList = process(sortedNotifications);
+            List<AlertNotificationModel> contentList = process(sortedNotifications);
             write(contentList);
             latestNotificationCreatedAtDate = getLatestNotificationCreatedAtDate(sortedNotifications);
         }
@@ -197,7 +196,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                    .map(Enum::name).collect(Collectors.toList());
     }
 
-    protected List<AlertNotificationWrapper> process(List<NotificationView> notifications) {
+    protected List<AlertNotificationModel> process(List<NotificationView> notifications) {
         logger.info("Processing accumulated notifications");
         return notifications
                    .stream()
@@ -205,7 +204,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                    .collect(Collectors.toList());
     }
 
-    protected void write(List<AlertNotificationWrapper> contentList) {
+    protected void write(List<AlertNotificationModel> contentList) {
         logger.info("Writing Notifications...");
         notificationManager.saveAllNotifications(contentList);
     }
@@ -217,13 +216,13 @@ public class BlackDuckAccumulator extends ProviderTask {
                    .collect(Collectors.toList());
     }
 
-    private NotificationContent createContent(NotificationView notification) {
+    private AlertNotificationModel createContent(NotificationView notification) {
         Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
         Date providerCreationTime = notification.getCreatedAt();
         String provider = providerKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
+        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, null, notificationType, jsonContent, createdAt, providerCreationTime);
     }
 
     // Expects that the notifications are sorted oldest to newest

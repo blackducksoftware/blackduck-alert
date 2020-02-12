@@ -31,14 +31,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.OutputLogger;
@@ -98,7 +98,7 @@ public class AuditEntryActionsTest {
         Mockito.when(jobConfigReader.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
-        DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, eventManager);
+        DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, configurationAccessor, eventManager);
         DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryUtility, notificationManager, jobConfigReader, null, null);
 
@@ -118,12 +118,12 @@ public class AuditEntryActionsTest {
         int currentPage = 0;
         int pageSize = 2;
 
-        NotificationContent entity_1 = new NotificationContent();
+        NotificationEntity entity_1 = new NotificationEntity();
         entity_1.setId(1L);
-        NotificationContent entity_2 = new NotificationContent();
+        NotificationEntity entity_2 = new NotificationEntity();
         entity_2.setId(2L);
-        List<AlertNotificationWrapper> pagedEntryList = Arrays.asList(entity_1, entity_2);
-        @SuppressWarnings("unchecked") Page<AlertNotificationWrapper> pageResponse = Mockito.mock(Page.class);
+        List<AlertNotificationModel> pagedEntryList = Arrays.asList(entity_1, entity_2);
+        Page<AlertNotificationModel> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -141,7 +141,7 @@ public class AuditEntryActionsTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
 
-        NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
+        NotificationEntity notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
         ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
@@ -159,7 +159,7 @@ public class AuditEntryActionsTest {
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
 
         for (int index = 0; index < pageSize; index++) {
-            AlertNotificationWrapper entity = pageResponse.getContent().get(index);
+            AlertNotificationModel entity = pageResponse.getContent().get(index);
             AuditEntryModel entryRestModel = restModel.getContent().get(index);
             assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
         }
@@ -170,7 +170,7 @@ public class AuditEntryActionsTest {
         int totalPages = 1;
         int currentPage = 1;
         int pageSize = 1;
-        @SuppressWarnings("unchecked") Page<AlertNotificationWrapper> pageResponse = Mockito.mock(Page.class);
+        Page<AlertNotificationModel> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(Collections.emptyList());
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -188,7 +188,7 @@ public class AuditEntryActionsTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
-        NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
+        NotificationEntity notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
 
         ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
             "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");

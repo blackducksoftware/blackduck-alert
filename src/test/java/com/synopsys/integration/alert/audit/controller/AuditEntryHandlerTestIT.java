@@ -55,8 +55,8 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -116,28 +116,28 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @Test
     public void getTestIT() throws Exception {
-        final MockNotificationContent mockNotification = new MockNotificationContent();
-        final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
+        MockNotificationContent mockNotification = new MockNotificationContent();
+        NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
-        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
+        AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
         ResponseEntity<String> response = auditEntryController.get(null, null, null, null, null, true);
         AlertPagedModel<AuditEntryModel> auditEntries = gson.fromJson(response.getBody(), AlertPagedModel.class);
         assertEquals(1, auditEntries.getContent().size());
 
-        final ResponseEntity<String> auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
+        ResponseEntity<String> auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
         assertNotNull(auditEntryResponse);
         assertEquals(HttpStatus.OK, auditEntryResponse.getStatusCode());
 
@@ -147,17 +147,17 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         AuditEntryModel auditEntry = gson.fromJson(auditEntryModelString, AuditEntryModel.class);
 
         String auditEntryModelByIdString = JsonPath.read(auditEntryResponse.getBody(), "$.message");
-        final AuditEntryModel auditEntryById = gson.fromJson(auditEntryModelByIdString, AuditEntryModel.class);
+        AuditEntryModel auditEntryById = gson.fromJson(auditEntryModelByIdString, AuditEntryModel.class);
         assertEquals(auditEntryById, auditEntry);
 
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
-        final FieldAccessor keyToFieldMap = configurationJobModel.getFieldAccessor();
+        FieldAccessor keyToFieldMap = configurationJobModel.getFieldAccessor();
         assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).get(), auditEntry.getJobs().get(0).getEventType());
         assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_NAME).get(), auditEntry.getJobs().get(0).getName());
 
-        final NotificationConfig notification = auditEntry.getNotification();
+        NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
@@ -168,19 +168,19 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @Test
     public void getGetAuditInfoForJobIT() throws Exception {
-        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
-        final UUID jobID = UUID.randomUUID();
-        final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
+        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
+        UUID jobID = UUID.randomUUID();
+        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
+        AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
-        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
-        final ResponseEntity<String> jobAuditModelResponse = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
+        ResponseEntity<String> jobAuditModelResponse = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
         assertNotNull(jobAuditModelResponse);
         assertEquals(HttpStatus.OK, jobAuditModelResponse.getStatusCode());
 
@@ -189,39 +189,39 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @Test
     public void resendNotificationTestIT() throws Exception {
-        final String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
+        String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
+        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
-        final Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
-        final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
+        NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
+        AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
                                                            .save(new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
                                                                AuditEntryStatus.SUCCESS.toString(),
                                                                null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        final AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager);
 
-        final ResponseEntity<String> invalidIdResponse = auditEntryController.post(-1L, null);
+        ResponseEntity<String> invalidIdResponse = auditEntryController.post(-1L, null);
         assertEquals(HttpStatus.GONE, invalidIdResponse.getStatusCode());
 
-        final ResponseEntity<String> validResponse = auditEntryController.post(savedNotificationEntity.getId(), null);
+        ResponseEntity<String> validResponse = auditEntryController.post(savedNotificationEntity.getId(), null);
         assertEquals(HttpStatus.OK, validResponse.getStatusCode());
 
-        final ResponseEntity<String> invalidJobResponse = auditEntryController.post(savedNotificationEntity.getId(), UUID.randomUUID());
+        ResponseEntity<String> invalidJobResponse = auditEntryController.post(savedNotificationEntity.getId(), UUID.randomUUID());
         assertEquals(HttpStatus.GONE, invalidJobResponse.getStatusCode());
 
-        final ResponseEntity<String> invalidReferenceResponse_1 = auditEntryController.post(savedNotificationEntity.getId(), null);
+        ResponseEntity<String> invalidReferenceResponse_1 = auditEntryController.post(savedNotificationEntity.getId(), null);
         assertEquals(HttpStatus.OK, invalidReferenceResponse_1.getStatusCode());
 
-        final ResponseEntity<String> validJobSpecificResend = auditEntryController.post(savedNotificationEntity.getId(), configurationJobModel.getJobId());
+        ResponseEntity<String> validJobSpecificResend = auditEntryController.post(savedNotificationEntity.getId(), configurationJobModel.getJobId());
         assertEquals(HttpStatus.OK, validJobSpecificResend.getStatusCode());
     }
 

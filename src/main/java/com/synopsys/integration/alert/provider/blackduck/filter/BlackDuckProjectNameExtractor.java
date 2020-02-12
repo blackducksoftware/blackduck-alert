@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
@@ -54,10 +54,10 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckProjectNameExtractor {
-    private static final BiFunction<NotificationDeserializationCache, AlertNotificationWrapper, Collection<String>> DEFAULT_EXTRACTOR = (x, y) -> List.of();
+    private static final BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>> DEFAULT_EXTRACTOR = (x, y) -> List.of();
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectNameExtractor.class);
-    private Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationWrapper, Collection<String>>> extractorMap = new HashMap<>();
+    private Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>>> extractorMap = new HashMap<>();
     private BlackDuckProperties blackDuckProperties;
 
     public BlackDuckProjectNameExtractor(BlackDuckProperties blackDuckProperties) {
@@ -65,13 +65,13 @@ public class BlackDuckProjectNameExtractor {
         initializeExtractorMap();
     }
 
-    public Collection<String> getProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    public Collection<String> getProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         return extractorMap
                    .getOrDefault(notification.getNotificationType(), DEFAULT_EXTRACTOR)
                    .apply(cache, notification);
     }
 
-    private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
         if (optionalBlackDuckHttpClient.isPresent()) {
             BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
@@ -93,32 +93,32 @@ public class BlackDuckProjectNameExtractor {
         return Set.of();
     }
 
-    private Collection<String> getPolicyOverrideProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getPolicyOverrideProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         PolicyOverrideNotificationView notificationView = cache.getTypedContent(notification, PolicyOverrideNotificationView.class);
         return Set.of(notificationView.getContent().getProjectName());
     }
 
-    private Collection<String> getProjectNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getProjectNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         ProjectNotificationView notificationView = cache.getTypedContent(notification, ProjectNotificationView.class);
         return Set.of(notificationView.getContent().getProjectName());
     }
 
-    private Collection<String> getProjectVersionNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getProjectVersionNotificationProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         ProjectVersionNotificationView notificationView = cache.getTypedContent(notification, ProjectVersionNotificationView.class);
         return Set.of(notificationView.getContent().getProjectName());
     }
 
-    private Collection<String> getRuleViolationProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getRuleViolationProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         RuleViolationNotificationView notificationView = cache.getTypedContent(notification, RuleViolationNotificationView.class);
         return Set.of(notificationView.getContent().getProjectName());
     }
 
-    private Collection<String> getRuleViolationClearedProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getRuleViolationClearedProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         RuleViolationClearedNotificationView notificationView = cache.getTypedContent(notification, RuleViolationClearedNotificationView.class);
         return Set.of(notificationView.getContent().getProjectName());
     }
 
-    private Collection<String> getVulnerabilityProjectNames(NotificationDeserializationCache cache, AlertNotificationWrapper notification) {
+    private Collection<String> getVulnerabilityProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
         VulnerabilityNotificationView notificationView = cache.getTypedContent(notification, VulnerabilityNotificationView.class);
         return notificationView.getContent().getAffectedProjectVersions()
                    .stream()

@@ -75,7 +75,7 @@ public final class ConfigurationModel extends AlertSerializableModel {
         return context;
     }
 
-    public Optional<ConfigurationFieldModel> getField(final String fieldKey) {
+    public Optional<ConfigurationFieldModel> getField(String fieldKey) {
         Objects.requireNonNull(fieldKey);
         return Optional.ofNullable(configuredFields.get(fieldKey));
     }
@@ -89,20 +89,20 @@ public final class ConfigurationModel extends AlertSerializableModel {
     }
 
     // TODO it might be worthwhile to expose a builder for this class rather than allowing this method to be used outside of the accessors
-    public void put(final ConfigurationFieldModel configFieldModel) {
+    public void put(ConfigurationFieldModel configFieldModel) {
         Objects.requireNonNull(configFieldModel);
-        final String fieldKey = configFieldModel.getFieldKey();
+        String fieldKey = configFieldModel.getFieldKey();
         Objects.requireNonNull(fieldKey);
         if (configuredFields.containsKey(fieldKey)) {
-            final ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
-            final List<String> values = combine(oldConfigField, configFieldModel);
+            ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
+            List<String> values = combine(oldConfigField, configFieldModel);
             oldConfigField.setFieldValues(values);
         } else {
             configuredFields.put(fieldKey, configFieldModel);
         }
     }
 
-    private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
+    private List<String> combine(ConfigurationFieldModel first, ConfigurationFieldModel second) {
         return Stream.concat(first.getFieldValues().stream(), second.getFieldValues().stream()).collect(Collectors.toList());
     }
 }

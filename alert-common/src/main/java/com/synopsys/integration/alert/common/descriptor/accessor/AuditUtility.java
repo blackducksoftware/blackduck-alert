@@ -31,7 +31,7 @@ import java.util.function.Function;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface AuditUtility {
@@ -40,7 +40,7 @@ public interface AuditUtility {
     Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId);
 
     AlertPagedModel<AuditEntryModel> getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
-        Function<AlertNotificationWrapper, AuditEntryModel> notificationToAuditEntryConverter);
+        Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
     Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup content);
 
@@ -48,5 +48,5 @@ public interface AuditUtility {
 
     void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);
 
-    AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationWrapper notificationContentEntry);
+    AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationModel notificationContentEntry);
 }

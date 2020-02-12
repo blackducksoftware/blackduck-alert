@@ -4,4 +4,6 @@
     <include file="init-config-db.xml" relativeToChangelogFile="true"/>
     <include file="init-auth-db.xml" relativeToChangelogFile="true"/>
     <include file="settings-fields.xml" relativeToChangelogFile="true"/>
+    <include file="notification-migration-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="notifications.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

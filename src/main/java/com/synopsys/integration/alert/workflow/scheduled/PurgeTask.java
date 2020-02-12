@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageU
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
@@ -84,14 +84,14 @@ public class PurgeTask extends StartupScheduledTask {
     @Override
     public String scheduleCronExpression() {
         try {
-            final List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
-            final String purgeSavedCronValue = schedulingConfigs.stream()
+            List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
+            String purgeSavedCronValue = schedulingConfigs.stream()
                                                    .findFirst()
                                                    .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
                                                    .flatMap(ConfigurationFieldModel::getFieldValue)
                                                    .orElse(String.valueOf(DEFAULT_FREQUENCY));
             return String.format(CRON_FORMAT, purgeSavedCronValue);
-        } catch (final AlertDatabaseConstraintException e) {
+        } catch (AlertDatabaseConstraintException e) {
             logger.error("Error connecting to DB", e);
         }
 
@@ -103,7 +103,7 @@ public class PurgeTask extends StartupScheduledTask {
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
-    public void setDayOffset(final int dayOffset) {
+    public void setDayOffset(int dayOffset) {
         this.dayOffset = dayOffset;
     }
 
@@ -113,9 +113,9 @@ public class PurgeTask extends StartupScheduledTask {
 
     private void purgeNotifications() {
         try {
-            final Date date = createDate();
+            Date date = createDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
-            final List<AlertNotificationWrapper> notifications = notificationManager.findByCreatedAtBefore(date);
+            List<AlertNotificationModel> notifications = notificationManager.findByCreatedAtBefore(date);
 
             if (notifications == null || notifications.isEmpty()) {
                 logger.info("No notifications found to purge");
@@ -124,17 +124,17 @@ public class PurgeTask extends StartupScheduledTask {
                 logger.info("Purging {} notifications.", notifications.size());
                 notificationManager.deleteNotificationList(notifications);
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error in purging notifications", ex);
         }
     }
 
     private void purgeSystemMessages() {
         try {
-            final Date date = createDate();
-            final List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
+            Date date = createDate();
+            List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
             systemMessageUtility.deleteSystemMessages(messages);
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error purging system messages", ex);
         }
     }
@@ -150,9 +150,9 @@ public class PurgeTask extends StartupScheduledTask {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
+            Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
-                final Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
+                Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
                                                            .map(SchedulingConfiguration::getDataFrequencyDays)
                                                            .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
                                                            .orElse(DEFAULT_FREQUENCY);
@@ -161,7 +161,7 @@ public class PurgeTask extends StartupScheduledTask {
                 resetDayOffset();
                 return Boolean.TRUE;
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error occurred purging data on startup", ex);
         } finally {
             logger.info("Finished startup purge of old data");

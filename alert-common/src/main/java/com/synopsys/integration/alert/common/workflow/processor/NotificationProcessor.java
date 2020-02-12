@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
@@ -62,19 +62,19 @@ public class NotificationProcessor {
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
-    public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationWrapper> notifications) {
+    public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
         List<ConfigurationJobModel> jobsForFrequency = configurationAccessor.getJobsByFrequency(frequency);
         return processNotificationsForJobs(jobsForFrequency, notifications);
     }
 
-    public List<DistributionEvent> processNotifications(List<AlertNotificationWrapper> notifications) {
+    public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
         List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         return processNotificationsForJobs(allJobs, notifications);
     }
 
-    public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+    public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
         if (!job.isEnabled()) {
             logger.debug("Skipping disabled distribution job: " + job.getName());
             return List.of();
@@ -88,8 +88,8 @@ public class NotificationProcessor {
         ConfigurationModel providerConfig = null;
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
         ProviderDistributionFilter distributionFilter = provider.createDistributionFilter(providerProperties);
-        List<AlertNotificationWrapper> notificationsByType = filterNotificationsByType(job, notifications);
-        List<AlertNotificationWrapper> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
+        List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notifications);
+        List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
         if (!filteredNotifications.isEmpty()) {
             ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector();
@@ -98,7 +98,7 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationWrapper> notifications) {
+    private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationModel> notifications) {
         List<DistributionEvent> distributionEvents = new LinkedList<>();
         for (ConfigurationJobModel job : jobs) {
             List<DistributionEvent> distributionEventsForJob = processNotifications(job, notifications);
@@ -107,16 +107,16 @@ public class NotificationProcessor {
         return distributionEvents;
     }
 
-    private List<AlertNotificationWrapper> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationWrapper> notifications) {
+    private List<AlertNotificationModel> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
         return notifications
                    .stream()
                    .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
                    .collect(Collectors.toList());
     }
 
-    private List<AlertNotificationWrapper> filterNotificationsByProviderFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationWrapper> notifications) {
-        List<AlertNotificationWrapper> filteredNotifications = new LinkedList<>();
-        for (AlertNotificationWrapper notification : notifications) {
+    private List<AlertNotificationModel> filterNotificationsByProviderFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationModel> notifications) {
+        List<AlertNotificationModel> filteredNotifications = new LinkedList<>();
+        for (AlertNotificationModel notification : notifications) {
             if (distributionFilter.doesNotificationApplyToConfiguration(notification, job)) {
                 filteredNotifications.add(notification);
             }
@@ -124,7 +124,7 @@ public class NotificationProcessor {
         return filteredNotifications;
     }
 
-    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) {
+    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) {
         try {
             List<MessageContentGroup> messageGroups = collector.createMessageContentGroups(job, cache, notifications);
             return notificationToEventConverter.convertToEvents(job, messageGroups);

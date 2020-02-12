@@ -27,6 +27,10 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 
 public abstract class ProviderDescriptor extends Descriptor {
+    // FIXME these must be registered with all present and future providers
+    public static final String KEY_PROVIDER_CONFIG_ENABLED = "provider.common.config.enabled";
+    public static final String KEY_PROVIDER_CONFIG_NAME = "provider.common.config.name";
+
     public ProviderDescriptor(ProviderKey providerKey, UIConfig providerUiConfig, UIConfig distributionUIConfig) {
         super(providerKey, DescriptorType.PROVIDER);
         addGlobalUiConfig(providerUiConfig);
