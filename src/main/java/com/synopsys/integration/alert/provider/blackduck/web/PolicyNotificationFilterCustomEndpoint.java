@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -54,11 +55,13 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
+    private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
     protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory,
-        Gson gson) throws AlertException {
+        Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory) throws AlertException {
         super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager, responseFactory, gson);
+        this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 
     @Override

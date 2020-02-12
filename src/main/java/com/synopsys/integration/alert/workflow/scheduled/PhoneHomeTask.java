@@ -197,6 +197,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         String blackDuckUrl = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         try {
+            //FIXME fix the creation of the blackduck properties.
             BlackDuckProperties blackDuckProperties = new BlackDuckProperties(null, null, null, null, new FieldAccessor(Map.of()));
             Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
             if (blackDuckHttpClientOptional.isPresent()) {

@@ -29,6 +29,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
@@ -41,21 +43,21 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-public class BlackDuckValidator extends ProviderValidator {
+@Component
+public class BlackDuckValidator extends ProviderValidator<BlackDuckProperties> {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     private final AlertProperties alertProperties;
-    private final BlackDuckProperties blackDuckProperties;
     private final SystemMessageUtility systemMessageUtility;
 
-    public BlackDuckValidator(AlertProperties alertProperties, BlackDuckProperties blackDuckProperties, SystemMessageUtility systemMessageUtility) {
+    @Autowired
+    public BlackDuckValidator(AlertProperties alertProperties, SystemMessageUtility systemMessageUtility) {
         this.alertProperties = alertProperties;
-        this.blackDuckProperties = blackDuckProperties;
         this.systemMessageUtility = systemMessageUtility;
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(BlackDuckProperties blackDuckProperties) {
         logger.info("Validating Black Duck Provider...");
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);

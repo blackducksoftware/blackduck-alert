@@ -84,6 +84,7 @@ public class NotificationProcessor {
         }
 
         Provider provider = providerKeyToProvider.get(job.getProviderName());
+        //TODO lookup the configuration for the provider
         ConfigurationModel providerConfig = null;
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
         ProviderDistributionFilter distributionFilter = provider.createDistributionFilter(providerProperties);

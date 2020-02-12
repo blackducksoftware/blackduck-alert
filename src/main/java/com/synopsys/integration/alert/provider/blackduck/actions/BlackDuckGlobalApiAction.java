@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckValidatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
@@ -51,13 +50,13 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckPropertiesFactory propertiesFactory;
-    private final BlackDuckValidatorFactory blackDuckValidatorFactory;
+    private BlackDuckValidator blackDuckValidator;
 
     @Autowired
-    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidatorFactory blackDuckValidatorFactory, TaskManager taskManager,
+    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator blackDuckValidator, TaskManager taskManager,
         ProviderDataAccessor providerDataAccessor) {
         this.blackDuckProviderKey = blackDuckProviderKey;
-        this.blackDuckValidatorFactory = blackDuckValidatorFactory;
+        this.blackDuckValidator = blackDuckValidator;
         this.propertiesFactory = propertiesFactory;
         this.taskManager = taskManager;
         this.providerDataAccessor = providerDataAccessor;
@@ -87,8 +86,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private void handleNewOrUpdatedConfig(FieldModel fieldModel) {
         //TODO convert the fieldModel values to a field accessor or configurationModel.
         BlackDuckProperties properties = propertiesFactory.createProperties(Long.valueOf(fieldModel.getId()), new FieldAccessor(Map.of()));
-        BlackDuckValidator validator = blackDuckValidatorFactory.createValidator(properties);
-        boolean valid = validator.validate();
+        boolean valid = blackDuckValidator.validate(properties);
         if (valid) {
             Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
             if (nextRunTime.isEmpty()) {

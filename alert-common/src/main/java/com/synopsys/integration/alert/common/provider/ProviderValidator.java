@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-public abstract class ProviderValidator {
+public abstract class ProviderValidator<T extends ProviderProperties> {
 
-    public abstract boolean validate();
+    public abstract boolean validate(T providerProperties);
 }
