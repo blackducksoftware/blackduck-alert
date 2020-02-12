@@ -22,15 +22,30 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+
 public abstract class ProviderProperties {
     private Long configId;
+    private boolean configEnabled;
+    private String configName;
 
-    public ProviderProperties(Long configId) {
+    public ProviderProperties(Long configId, FieldAccessor fieldAccessor) {
         this.configId = configId;
+        this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
     }
 
     public Long getConfigId() {
         return configId;
+    }
+
+    public boolean isConfigEnabled() {
+        return configEnabled;
+    }
+
+    public String getConfigName() {
+        return configName;
     }
 
     public abstract void disconnect();
