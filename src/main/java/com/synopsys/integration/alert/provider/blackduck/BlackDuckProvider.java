@@ -111,5 +111,4 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
         notificationTypeToContentClass.put(NotificationType.VULNERABILITY.name(), VulnerabilityNotificationView.class);
         return new ProviderNotificationClassMap(notificationTypeToContentClass);
     }
-
 }

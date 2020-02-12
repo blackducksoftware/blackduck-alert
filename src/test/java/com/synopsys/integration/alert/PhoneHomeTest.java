@@ -17,11 +17,13 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeHandlerMap;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -31,6 +33,7 @@ public class PhoneHomeTest {
 
     @Test
     public void runTest() throws AlertDatabaseConstraintException {
+        PhoneHomeHandlerMap phoneHomeHandlerMap = Mockito.mock(PhoneHomeHandlerMap.class);
         AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         Mockito.when(auditUtility.findFirstByJobId(Mockito.any())).thenReturn(Optional.empty());
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
@@ -51,8 +54,8 @@ public class PhoneHomeTest {
         Mockito.when(descriptorKey.getUniversalKey()).thenReturn(TEST_DESCRIPTOR_NAME);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
-
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility);
+        List<Provider> providers = List.of();
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, providers, phoneHomeHandlerMap);
 
         try {
             phoneHomeTask.run();
