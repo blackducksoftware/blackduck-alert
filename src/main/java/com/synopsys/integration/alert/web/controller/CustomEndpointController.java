@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @RestController
@@ -64,8 +61,7 @@ public class CustomEndpointController {
             return responseFactory.createBadRequestResponse("", "Must be given the key associated with the custom functionality.");
         }
 
-        Map<String, FieldValueModel> keyToValues = restModel.getKeyToValues();
-        return customEndpointManager.performFunction(key, keyToValues);
+        return customEndpointManager.performFunction(key, restModel);
     }
 
 }

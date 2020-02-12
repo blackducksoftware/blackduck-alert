@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoint {
@@ -54,13 +53,9 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     }
 
     @Override
-    protected Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
-        FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-        if (fieldValueModel == null) {
-            return Optional.of(responseFactory.createBadRequestResponse("", MISSING_PROVIDER_ERROR));
-        }
+    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+        String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
 
-        String providerName = fieldValueModel.getValue().orElse("");
         if (StringUtils.isBlank(providerName)) {
             return Optional.of(responseFactory.createBadRequestResponse("", MISSING_PROVIDER_ERROR));
         }
@@ -69,8 +64,8 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     }
 
     @Override
-    protected List<?> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
-        String providerName = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).getValue().orElse("");
+    protected List<?> createData(FieldModel fieldModel) throws AlertException {
+        String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         return providerDataAccessor.findByProviderName(providerName);
     }
 }

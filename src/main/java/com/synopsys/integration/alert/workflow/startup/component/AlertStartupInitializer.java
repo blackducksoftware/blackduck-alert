@@ -127,7 +127,6 @@ public class AlertStartupInitializer extends StartupComponent {
         return environmentOverride;
     }
 
-    // TODO consider using a Collection of DescriptorKeys instead
     private void initializeConfiguration(Collection<DescriptorKey> descriptorKeys, boolean overwriteCurrentConfig) {
         for (DescriptorKey descriptorKey : descriptorKeys) {
             logger.info(LINE_DIVIDER);

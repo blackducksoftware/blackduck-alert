@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class ProviderSelectCustomEndpoint extends SelectCustomEndpoint {
@@ -52,7 +51,7 @@ public class ProviderSelectCustomEndpoint extends SelectCustomEndpoint {
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
         return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                    .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                    .flatMap(Optional::stream)

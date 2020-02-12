@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ProcessingTaskTest {
@@ -37,7 +36,7 @@ public class ProcessingTaskTest {
 
     @BeforeEach
     public void initTest() {
-        AlertNotificationModel model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        AlertNotificationModel model = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", new Date(), new Date());
         modelList = Arrays.asList(model);
         eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", FormatType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }

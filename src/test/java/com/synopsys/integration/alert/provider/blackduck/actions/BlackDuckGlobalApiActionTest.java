@@ -15,6 +15,7 @@ import org.springframework.scheduling.Trigger;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -53,13 +54,14 @@ public class BlackDuckGlobalApiActionTest {
     @Test
     public void afterSaveActionSuccessTest() throws AlertException {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        ConfigurationFieldModelConverter fieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
         BlackDuckValidator blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
         Mockito.when(blackDuckValidator.validate(Mockito.any())).thenReturn(true);
         BlackDuckProperties properties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckValidator, taskManager, providerDataAccessor);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckValidator, taskManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
@@ -78,13 +80,14 @@ public class BlackDuckGlobalApiActionTest {
     @Test
     public void afterUpdateActionSuccessTest() throws AlertException {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        ConfigurationFieldModelConverter fieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
         BlackDuckValidator blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
         Mockito.when(blackDuckValidator.validate(Mockito.any())).thenReturn(true);
         BlackDuckProperties properties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckValidator, taskManager, providerDataAccessor);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckValidator, taskManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);

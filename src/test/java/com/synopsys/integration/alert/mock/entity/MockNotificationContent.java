@@ -13,23 +13,29 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     private final String notificationType;
     private final String content;
     private final Long id;
+    private final Long providerId;
 
     public MockNotificationContent() {
         this(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L);
     }
 
     public MockNotificationContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, String content, Long id) {
+        this(createdAt, provider, providerCreationTime, notificationType, content, id, 1L);
+    }
+
+    public MockNotificationContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, String content, Long id, Long providerId) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
         this.id = id;
+        this.providerId = providerId;
     }
 
     @Override
     public NotificationEntity createEntity() {
-        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerCreationTime, notificationType, content);
+        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerId, providerCreationTime, notificationType, content);
         notificationContent.setId(id);
         return notificationContent;
     }
