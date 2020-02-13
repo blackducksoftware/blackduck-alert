@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
@@ -44,20 +45,24 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckValidator extends ProviderValidator<BlackDuckProperties> {
+public class BlackDuckValidator extends ProviderValidator {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
+    private final BlackDuckProvider provider;
     private final AlertProperties alertProperties;
     private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
-    public BlackDuckValidator(AlertProperties alertProperties, SystemMessageUtility systemMessageUtility) {
+    public BlackDuckValidator(BlackDuckProvider provider, AlertProperties alertProperties, SystemMessageUtility systemMessageUtility) {
+        super(provider.getKey());
+        this.provider = provider;
         this.alertProperties = alertProperties;
         this.systemMessageUtility = systemMessageUtility;
     }
 
     @Override
-    public boolean validate(BlackDuckProperties blackDuckProperties) {
+    public boolean validate(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = provider.createProperties(configurationModel);
         logger.info("Validating Black Duck Provider...");
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);

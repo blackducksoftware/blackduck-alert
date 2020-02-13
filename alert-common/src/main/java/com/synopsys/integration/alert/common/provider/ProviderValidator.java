@@ -22,7 +22,18 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-public abstract class ProviderValidator<T extends ProviderProperties> {
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
-    public abstract boolean validate(T providerProperties);
+public abstract class ProviderValidator {
+    private ProviderKey providerKey;
+
+    public ProviderValidator(ProviderKey providerKey) {
+        this.providerKey = providerKey;
+    }
+
+    public ProviderKey getProviderKey() {
+        return providerKey;
+    }
+
+    public abstract boolean validate(ConfigurationModel configurationModel);
 }
