@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -58,7 +59,9 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
@@ -336,7 +339,11 @@ public class DefaultAuditUtility implements AuditUtility {
         String id = contentConverter.getStringValue(notificationEntity.getId());
         String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
         String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
-        return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
+
+        Long providerConfigId = notificationEntity.getProviderConfigId();
+        String providerConfigName = retrieveProviderConfigName(providerConfigId);
+
+        return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerConfigId, providerConfigName, providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
     private Date parseDateString(String dateString) {
@@ -347,6 +354,24 @@ public class DefaultAuditUtility implements AuditUtility {
             logger.error(e.toString());
         }
         return date;
+    }
+
+    private String retrieveProviderConfigName(Long providerConfigId) {
+        String configName = "UNKNOWN PROVIDER CONFIG";
+        try {
+            configName = configurationAccessor.getConfigurationById(providerConfigId)
+                             .stream()
+                             .map(ConfigurationModel::getCopyOfFieldList)
+                             .flatMap(List::stream)
+                             .filter(field -> field.getFieldKey().equals(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME))
+                             .map(ConfigurationFieldModel::getFieldValue)
+                             .flatMap(Optional::stream)
+                             .findFirst()
+                             .orElse(configName);
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("There was a problem retrieving the provider config", e);
+        }
+        return configName;
     }
 
 }

@@ -16,7 +16,7 @@ public class NotificationConfigTest {
 
     @BeforeEach
     public void init() {
-        testNotificationConfig = new NotificationConfig(id, createdAt, provider, providerCreationTime, notificationType, content);
+        testNotificationConfig = new NotificationConfig(id, createdAt, provider, providerConfigId, providerConfigName, providerCreationTime, notificationType, content);
     }
 
     @Test
