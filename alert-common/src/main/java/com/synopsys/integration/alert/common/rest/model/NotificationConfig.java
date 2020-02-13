@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.common.rest.model;
 public class NotificationConfig extends Config {
     private String createdAt;
     private String provider;
+    private Long providerConfigId;
+    private String providerConfigName;
     private String providerCreationTime;
     private String notificationType;
     private String content;
@@ -32,10 +34,12 @@ public class NotificationConfig extends Config {
     public NotificationConfig() {
     }
 
-    public NotificationConfig(final String id, final String createdAt, final String provider, final String providerCreationTime, final String notificationType, final String content) {
+    public NotificationConfig(String id, String createdAt, String provider, Long providerConfigId, String providerConfigName, String providerCreationTime, String notificationType, String content) {
         super(id);
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerConfigId = providerConfigId;
+        this.providerConfigName = providerConfigName;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
@@ -46,7 +50,7 @@ public class NotificationConfig extends Config {
         return content;
     }
 
-    public void setContent(final String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -54,7 +58,7 @@ public class NotificationConfig extends Config {
         return createdAt;
     }
 
-    public void setCreatedAt(final String createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -62,15 +66,31 @@ public class NotificationConfig extends Config {
         return provider;
     }
 
-    public void setProvider(final String provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public void setProviderConfigId(Long providerConfigId) {
+        this.providerConfigId = providerConfigId;
+    }
+
+    public String getProviderConfigName() {
+        return providerConfigName;
+    }
+
+    public void setProviderConfigName(String providerConfigName) {
+        this.providerConfigName = providerConfigName;
     }
 
     public String getProviderCreationTime() {
         return providerCreationTime;
     }
 
-    public void setProviderCreationTime(final String providerCreationTime) {
+    public void setProviderCreationTime(String providerCreationTime) {
         this.providerCreationTime = providerCreationTime;
     }
 
@@ -78,7 +98,7 @@ public class NotificationConfig extends Config {
         return notificationType;
     }
 
-    public void setNotificationType(final String notificationType) {
+    public void setNotificationType(String notificationType) {
         this.notificationType = notificationType;
     }
 

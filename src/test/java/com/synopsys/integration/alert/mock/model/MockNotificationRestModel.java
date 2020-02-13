@@ -9,6 +9,8 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt = new Date(400).toString();
     private final String provider = "provider";
+    private final Long providerConfigId = 1L;
+    private final String providerConfigName = "provider config";
     private final String providerCreationTime = new Date(300).toString();
     private final String notificationType = NotificationType.RULE_VIOLATION.name();
     private final String content = "{content: \" projectName projectVersion\"";
@@ -20,6 +22,14 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     public String getProvider() {
         return provider;
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public String getProviderConfigName() {
+        return providerConfigName;
     }
 
     public String getProviderCreationTime() {
@@ -45,7 +55,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @Override
     public NotificationConfig createRestModel() {
-        return new NotificationConfig(id, createdAt, provider, providerCreationTime, notificationType, content);
+        return new NotificationConfig(id, createdAt, provider, providerConfigId, providerConfigName, providerCreationTime, notificationType, content);
     }
 
     @Override

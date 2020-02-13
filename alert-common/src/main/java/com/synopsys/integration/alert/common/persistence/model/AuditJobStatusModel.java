@@ -32,7 +32,7 @@ public class AuditJobStatusModel extends AlertSerializableModel {
     public AuditJobStatusModel() {
     }
 
-    public AuditJobStatusModel(final String timeAuditCreated, final String timeLastSent, final String status) {
+    public AuditJobStatusModel(String timeAuditCreated, String timeLastSent, String status) {
         this.timeAuditCreated = timeAuditCreated;
         this.timeLastSent = timeLastSent;
         this.status = status;
@@ -49,4 +49,5 @@ public class AuditJobStatusModel extends AlertSerializableModel {
     public String getStatus() {
         return status;
     }
+
 }
