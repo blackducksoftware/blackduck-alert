@@ -18,7 +18,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
     public static final String LABEL_PROVIDER_CONFIG_NAME = "Configuration Name";
 
     public static final String DESCRIPTION_PROVIDER_CONFIG_ENABLED =
-        "If selected, this provider configuration will be able to pull data into Alert and be available to configure with distribution jobs, otherwise, it will not be available for those usages.";
+        "If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages.";
     public static final String DESCRIPTION_PROVIDER_CONFIG_NAME = "The name of this provider configuration. Must be unique.";
 
     private final ProviderKey providerKey;
