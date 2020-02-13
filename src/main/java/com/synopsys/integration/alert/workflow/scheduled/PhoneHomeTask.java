@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -77,23 +77,21 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final AuditUtility auditUtility;
-    private List<Provider> providers;
-    private PhoneHomeHandlerMap phoneHomeHandlerMap;
+    private List<ProviderPhoneHomeHandler> providerHandlers;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
     private Boolean skipPhoneHome;
 
     @Autowired
     public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
-        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, List<Provider> providers, PhoneHomeHandlerMap phoneHomeHandlerMap) {
+        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, List<ProviderPhoneHomeHandler> providerHandlers) {
         super(taskScheduler, TASK_NAME, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.gson = gson;
         this.auditUtility = auditUtility;
-        this.providers = providers;
-        this.phoneHomeHandlerMap = phoneHomeHandlerMap;
+        this.providerHandlers = providerHandlers;
     }
 
     @Override
@@ -116,15 +114,15 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
         ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
-            for (Provider provider : providers) {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+            for (ProviderPhoneHomeHandler handler : providerHandlers) {
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
                     phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
                     phoneHomeBuilder.setArtifactVersion(productVersion);
                     phoneHomeBuilder.setArtifactModules(getChannelMetaData().toArray(String[]::new));
                     PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-                    PhoneHomeRequestBody requestBody = phoneHomeHandlerMap.populatePhoneHomeData(provider, configuration, phoneHomeBuilder).build();
+                    PhoneHomeRequestBody requestBody = handler.populatePhoneHomeData(configuration, phoneHomeBuilder).build();
                     PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(requestBody, System.getenv());
                     Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
                     if (!taskSucceeded) {
