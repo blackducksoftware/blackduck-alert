@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
@@ -51,8 +52,8 @@ public class PhoneHomeTest {
         Mockito.when(descriptorKey.getUniversalKey()).thenReturn(TEST_DESCRIPTOR_NAME);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
-
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility);
+        List<ProviderPhoneHomeHandler> providerHandlers = List.of();
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, providerHandlers);
 
         try {
             phoneHomeTask.run();

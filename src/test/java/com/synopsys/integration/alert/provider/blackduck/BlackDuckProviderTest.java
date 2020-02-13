@@ -24,7 +24,6 @@ public class BlackDuckProviderTest {
     public void testGetNotificationTypes() {
         BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         BlackDuckDataSyncTask projectSyncTask = Mockito.mock(BlackDuckDataSyncTask.class);
-
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, accumulatorTask, projectSyncTask, blackDuckContent, null, null, null);
         Set<String> expectedNotificationTypes = new LinkedHashSet<>();
@@ -44,7 +43,6 @@ public class BlackDuckProviderTest {
     public void testGetSupportedFormatTypes() {
         BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         BlackDuckDataSyncTask projectSyncTask = Mockito.mock(BlackDuckDataSyncTask.class);
-
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, accumulatorTask, projectSyncTask, blackDuckContent, null, null, null);
         Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
