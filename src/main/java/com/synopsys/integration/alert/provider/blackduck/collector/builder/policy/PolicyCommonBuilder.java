@@ -145,12 +145,9 @@ public class PolicyCommonBuilder {
             LinkableItem vulnerabilityIdItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
 
-            VulnerabilityWithRemediationSeverityType vulnerabilityWithRemediationSeverityType = vulnerabilityView.getSeverity();
-            String severity = "UNKNOWN";
-            if (null != vulnerabilityWithRemediationSeverityType) {
-                severity = vulnerabilityWithRemediationSeverityType.name();
-            }
-
+            String severity = Optional.ofNullable(vulnerabilityView.getSeverity())
+                                  .map(VulnerabilityWithRemediationSeverityType::name)
+                                  .orElse("UNKNOWN");
             LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, severity);
 
             severityToVulns.add(severityItem, vulnerabilityIdItem);
