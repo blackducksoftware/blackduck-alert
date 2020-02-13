@@ -6,4 +6,6 @@
     <include file="settings-fields.xml" relativeToChangelogFile="true"/>
     <include file="notification-migration-procedures.xml" relativeToChangelogFile="true"/>
     <include file="notifications.xml" relativeToChangelogFile="true"/>
+    <include file="blackduck-procedures.xml" relativeToChangelogFile="true"/>
+    <include file="provider-fields.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

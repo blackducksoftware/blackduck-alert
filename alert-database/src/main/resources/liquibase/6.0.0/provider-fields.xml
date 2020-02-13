@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Define new common provider fields TODO add context -->
+    <changeSet author="gavink" id="2020-02-12-14-14-31-780">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.enabled'</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="provider.common.config.enabled"/>
+            <column name="sensitive" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-12-14-14-31-781">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.name'</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="provider.common.config.name"/>
+            <column name="sensitive" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <!-- Give context to the new provider fields -->
+    <changeSet author="gavink" id="2020-02-12-14-22-06-521">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('provider.common.config.enabled')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.enabled')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-12-14-22-06-522">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('provider.common.config.name')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
+        </insert>
+    </changeSet>
+
+
+    <!-- Add the new provider fields to the Black Duck Provider -->
+    <changeSet author="gavink" id="2020-02-12-14-22-06-523">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_FIELDS where FIELD_ID = GET_FIELD_ID('provider.common.config.enabled')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.enabled')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-12-14-22-06-524">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_FIELDS where FIELD_ID = GET_FIELD_ID('provider.common.config.name')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
+        </insert>
+    </changeSet>
+
+    <!-- Add new values to existing Black Duck Provider config -->
+    <changeSet author="gavink" id="2020-02-12-14-53-18-259">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_values">
+            <column name="config_id" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.enabled')"/>
+            <column name="field_value" value="true"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-12-14-53-18-260">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_values">
+            <column name="config_id" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
+            <column name="field_value" value="Default Black Duck Config"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
