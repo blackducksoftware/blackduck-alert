@@ -85,7 +85,7 @@ public class EmailActionHelper {
     }
 
     private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, Boolean filterByProject, String providerName) {
-        List<ProviderProject> providerProjects = providerDataAccessor.findByProviderName(providerName);
+        List<ProviderProject> providerProjects = List.of(); // FIXME replace this to use provider config id: providerDataAccessor.findByProviderName(providerName);
         if (filterByProject) {
             Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             Set<String> configuredProjects = new HashSet<>(projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()));

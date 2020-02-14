@@ -25,34 +25,22 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ProviderDataAccessor {
-    Optional<ProviderProject> findFirstByHref(String href);
+    List<ProviderProject> findByProviderConfigName(String providerConfigName);
 
-    Optional<ProviderProject> findFirstByName(String name);
+    List<ProviderProject> findByProviderConfigId(Long providerConfigId);
 
-    List<ProviderProject> findByProviderName(String providerName);
-
-    List<ProviderProject> findByProviderKey(ProviderKey providerKey);
-
-    void deleteProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects);
+    void deleteProjects(Collection<ProviderProject> providerProjects);
 
     Set<String> getEmailAddressesForProjectHref(String projectHref);
 
-    List<ProviderUserModel> getAllUsers(String providerName);
+    List<ProviderUserModel> getAllUsers(Long providerConfigId);
 
-    AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer offset, Integer limit, String q) throws AlertDatabaseConstraintException;
-
-    void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData);
-
-    void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
+    void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 
 }

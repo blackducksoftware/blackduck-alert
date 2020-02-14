@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -47,7 +46,6 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSync
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private final BlackDuckProviderKey blackDuckProviderKey;
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckPropertiesFactory propertiesFactory;
@@ -55,9 +53,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
 
     @Autowired
-    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator blackDuckValidator, TaskManager taskManager,
+    public BlackDuckGlobalApiAction(BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator blackDuckValidator, TaskManager taskManager,
         ProviderDataAccessor providerDataAccessor, ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        this.blackDuckProviderKey = blackDuckProviderKey;
         this.blackDuckValidator = blackDuckValidator;
         this.propertiesFactory = propertiesFactory;
         this.taskManager = taskManager;
@@ -78,12 +75,13 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
+    // FIXME this should now be handled by the ProviderLifeCycleManager
     public void afterDeleteAction(String descriptorName, String context) {
         taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
         taskManager.unScheduleTask(BlackDuckDataSyncTask.TASK_NAME);
 
-        List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderKey(blackDuckProviderKey);
-        providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
+        List<ProviderProject> blackDuckProjects = List.of(); // FIXME this needs to be updated: providerDataAccessor.findByProviderKey(blackDuckProviderKey);
+        providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
     private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertDatabaseConstraintException {

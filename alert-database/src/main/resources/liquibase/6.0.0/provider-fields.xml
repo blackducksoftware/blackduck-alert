@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <!-- Define new common provider fields TODO add context -->
+    <!-- Define new common provider fields -->
     <changeSet author="gavink" id="2020-02-12-14-14-31-780">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.enabled'</sqlCheck>
@@ -83,5 +83,7 @@
             <column name="field_value" value="Default Black Duck Config"/>
         </insert>
     </changeSet>
+
+    <!-- FIXME Add provider config id to provider data tables -->
 
 </databaseChangeLog>

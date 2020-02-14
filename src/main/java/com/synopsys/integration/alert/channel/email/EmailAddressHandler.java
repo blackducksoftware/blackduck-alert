@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 
 @Component
 public class EmailAddressHandler {
@@ -112,18 +111,19 @@ public class EmailAddressHandler {
         Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
         if (optionalProviderName.isPresent() && !additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
-            return providerDataAccessor.getAllUsers(optionalProviderName.get())
-                       .stream()
-                       .map(ProviderUserModel::getEmailAddress)
-                       .filter(additionalEmailAddresses::contains)
-                       .collect(Collectors.toSet());
+            // FIXME replace this with provider config lookup
+            //            return providerDataAccessor.getAllUsers(optionalProviderName.get())
+            //                       .stream()
+            //                       .map(ProviderUserModel::getEmailAddress)
+            //                       .filter(additionalEmailAddresses::contains)
+            //                       .collect(Collectors.toSet());
         }
         logger.debug("No additional email addresses to add");
         return Set.of();
     }
 
     private Set<String> collectProviderEmailsFromProject(String projectName, boolean projectOwnerOnly) {
-        Optional<ProviderProject> optionalProject = providerDataAccessor.findFirstByName(projectName); // FIXME use href
+        Optional<ProviderProject> optionalProject = Optional.empty(); // FIXME replace with real lookup providerDataAccessor.findFirstByName(projectName); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
@@ -133,9 +133,9 @@ public class EmailAddressHandler {
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
     private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
-                                        .stream()
-                                        .map(ProviderMessageContent::getSubTopic)
-                                        .anyMatch(Optional::isPresent);
+                                  .stream()
+                                  .map(ProviderMessageContent::getSubTopic)
+                                  .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
             Boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects = List.of();
@@ -143,13 +143,14 @@ public class EmailAddressHandler {
                 Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
                 associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
-                Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-                if (providerName.isPresent()) {
-                    associatedProjects = providerDataAccessor.findByProviderName(providerName.get())
-                                             .stream()
-                                             .map(ProviderProject::getName)
-                                             .collect(Collectors.toList());
-                }
+                // FIXME replace this with provider config
+                //                Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+                //                if (providerName.isPresent()) {
+                //                    associatedProjects = providerDataAccessor.findByProviderName(providerName.get())
+                //                                             .stream()
+                //                                             .map(ProviderProject::getName)
+                //                                             .collect(Collectors.toList());
+                //                }
             }
             return associatedProjects.stream()
                        .map(projectName -> collectProviderEmailsFromProject(projectName, projectOwnerOnly))

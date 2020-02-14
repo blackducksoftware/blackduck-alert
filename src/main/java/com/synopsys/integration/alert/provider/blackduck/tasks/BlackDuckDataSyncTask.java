@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -65,23 +64,22 @@ public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final ConfigurationAccessor configurationAccessor;
-    private final BlackDuckProviderKey providerKey;
 
     @Autowired
-    public BlackDuckDataSyncTask(TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, BlackDuckProviderKey providerKey) {
+    public BlackDuckDataSyncTask(TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.configurationAccessor = configurationAccessor;
-        this.providerKey = providerKey;
     }
 
     @Override
     public void runProviderTask() {
         try {
-            Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = getProviderProperties().createBlackDuckHttpClientAndLogErrors(logger);
+            BlackDuckProperties providerProperties = getProviderProperties();
+            Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = providerProperties.createBlackDuckHttpClientAndLogErrors(logger);
             if (optionalBlackDuckHttpClient.isPresent()) {
                 BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
-                BlackDuckServicesFactory blackDuckServicesFactory = getProviderProperties().createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+                BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
 
@@ -91,9 +89,9 @@ public class BlackDuckDataSyncTask extends ProviderTask {
 
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
                 Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
-                blackDuckDataAccessor.updateProjectAndUserData(providerKey, projectToEmailAddresses, allRelevantBlackDuckUsers);
+                blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
 
-                blackDuckServicesFactory = getProviderProperties().createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
+                blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
             } else {

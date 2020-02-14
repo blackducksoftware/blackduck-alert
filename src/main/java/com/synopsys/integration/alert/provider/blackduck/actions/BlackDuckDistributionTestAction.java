@@ -52,7 +52,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
-        final Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+        Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         if (projectNamePattern.isPresent()) {
             validatePatternMatchesProject(projectNamePattern.get());
         }
@@ -60,8 +60,8 @@ public class BlackDuckDistributionTestAction extends TestAction {
     }
 
     private void validatePatternMatchesProject(String projectNamePattern) throws AlertFieldException {
-        final List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.findByProviderKey(blackDuckProviderKey);
-        final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
+        List<ProviderProject> blackDuckProjects = List.of(); // FIXME replace this: blackDuckDataAccessor.findByProviderKey(blackDuckProviderKey);
+        boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
         }

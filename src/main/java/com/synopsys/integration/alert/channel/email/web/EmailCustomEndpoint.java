@@ -68,7 +68,7 @@ public class EmailCustomEndpoint {
         }
 
         try {
-            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
+            List<ProviderUserModel> pageOfUsers = List.of(); // FIXME replace this: providerDataAccessor.getAllUsers(provider);
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", provider);
             }

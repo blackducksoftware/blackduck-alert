@@ -81,11 +81,14 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(List.of(user1, user2, user3)));
         Mockito.doNothing().when(projectUsersService).addUserToProject(Mockito.any(), Mockito.any(UserView.class));
 
-        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(null, providerDataAccessor, configurationAccessor, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(null, providerDataAccessor, configurationAccessor);
         projectSyncTask.setProviderPropertiesForRun(blackDuckProperties);
         projectSyncTask.run();
 
-        assertEquals(3, providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).size());
+        // FIXME create a mock provider config
+        Long providerConfigId = 10000L;
+
+        assertEquals(3, providerDataAccessor.findByProviderConfigId(providerConfigId).size());
 
         Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.PROJECTS_LINK_RESPONSE))).thenReturn(List.of(projectView, projectView2));
 
@@ -95,7 +98,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(List.of());
         projectSyncTask.run();
 
-        assertEquals(2, providerDataAccessor.findByProviderName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).size());
+        assertEquals(2, providerDataAccessor.findByProviderConfigId(providerConfigId).size());
     }
 
     private UserView createUserView(String email, Boolean active) {
