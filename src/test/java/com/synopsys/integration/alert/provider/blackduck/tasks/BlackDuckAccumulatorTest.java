@@ -242,6 +242,9 @@ public class BlackDuckAccumulatorTest {
         List<NotificationView> notificationViewList = Arrays.asList(notificationView);
 
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        Mockito.when(mockedBlackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443/alert"));
+        Mockito.when(mockedBlackDuckProperties.getApiToken()).thenReturn("Test Api Key");
+        Mockito.when(mockedBlackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
 
         Mockito.doReturn(Optional.of(blackDuckHttpClient)).when(mockedBlackDuckProperties).createBlackDuckHttpClientAndLogErrors(Mockito.any());
         Mockito.doReturn(blackDuckServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any(), Mockito.any());
@@ -338,7 +341,9 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(BlackDuckProperties blackDuckProperties) {
-        return new BlackDuckAccumulator(taskScheduler, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(taskScheduler, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        accumulator.setProviderPropertiesForRun(blackDuckProperties);
+        return accumulator;
     }
 
 }
