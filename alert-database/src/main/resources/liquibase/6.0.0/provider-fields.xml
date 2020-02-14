@@ -84,6 +84,26 @@
         </insert>
     </changeSet>
 
-    <!-- FIXME Add provider config id to provider data tables -->
+    <!-- Add provider config id to provider data tables -->
+    <changeSet author="gavink" id="2020-02-14-11-34-06-730">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="provider_projects" columnName="provider_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="provider_projects">
+            <column name="provider_config_id" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-14-11-36-31-432">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="provider_users" columnName="provider_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="provider_users">
+            <column name="provider_config_id" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
