@@ -34,20 +34,20 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.ProviderValidator;
+import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 
 @Component
 @Order(30)
 public class SystemMessageInitializer extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
-    private final List<ProviderValidator> providerValidators;
+    private final List<Provider> providers;
     private final SettingsValidator settingsValidator;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor) {
-        this.providerValidators = providerValidators;
+    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor) {
+        this.providers = providers;
         this.settingsValidator = settingsValidator;
         this.configurationAccessor = configurationAccessor;
     }
@@ -73,11 +73,11 @@ public class SystemMessageInitializer extends StartupComponent {
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");
-        for (ProviderValidator providerValidator : providerValidators) {
+        for (Provider provider : providers) {
             try {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(providerValidator.getProviderKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
-                    valid = valid && providerValidator.validate(configuration);
+                    valid = valid && provider.validate(configuration);
                 }
             } catch (AlertDatabaseConstraintException ex) {
                 logger.debug("Error getting provider configurations", ex);

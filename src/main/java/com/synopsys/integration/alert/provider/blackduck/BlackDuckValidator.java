@@ -26,43 +26,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.ProviderValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckValidator extends ProviderValidator {
+public class BlackDuckValidator {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
-
-    private final BlackDuckProvider provider;
-    private final AlertProperties alertProperties;
     private final SystemMessageUtility systemMessageUtility;
 
-    @Autowired
-    public BlackDuckValidator(BlackDuckProvider provider, AlertProperties alertProperties, SystemMessageUtility systemMessageUtility) {
-        super(provider.getKey());
-        this.provider = provider;
-        this.alertProperties = alertProperties;
+    public BlackDuckValidator(SystemMessageUtility systemMessageUtility) {
         this.systemMessageUtility = systemMessageUtility;
     }
 
-    @Override
-    public boolean validate(ConfigurationModel configurationModel) {
-        BlackDuckProperties blackDuckProperties = provider.createProperties(configurationModel);
+    public boolean validate(BlackDuckProperties blackDuckProperties) {
+        boolean valid = true;
         logger.info("Validating Black Duck Provider...");
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
@@ -73,12 +60,11 @@ public class BlackDuckValidator extends ProviderValidator {
                 logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
                 final String errorMessage = "Black Duck Provider invalid: URL missing";
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+                valid = false;
             } else {
                 String blackDuckUrlString = blackDuckUrlOptional.get();
-                Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
                 Integer timeout = blackDuckProperties.getBlackDuckTimeout();
                 logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
-                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
                 logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
                 URL blackDuckUrl = new URL(blackDuckUrlString);
                 if ("localhost".equals(blackDuckUrl.getHost())) {
@@ -94,17 +80,20 @@ public class BlackDuckValidator extends ProviderValidator {
                     } else {
                         final String message = "Can not connect to the Black Duck server with the current configuration.";
                         connectivityWarning(message);
+                        valid = false;
                     }
                 } else {
                     final String message = "The Black Duck configuration is not valid.";
                     connectivityWarning(message);
+                    valid = false;
                 }
             }
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
             logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
+            valid = false;
         }
-        return true;
+        return valid;
     }
 
     private void connectivityWarning(String message) {
