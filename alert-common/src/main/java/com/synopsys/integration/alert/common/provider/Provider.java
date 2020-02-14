@@ -57,4 +57,6 @@ public abstract class Provider<T extends ProviderProperties> {
         return providerContent;
     }
 
+    public abstract boolean validate(ConfigurationModel configurationModel);
+
 }

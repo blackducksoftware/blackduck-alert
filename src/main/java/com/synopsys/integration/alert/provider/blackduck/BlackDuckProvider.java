@@ -61,16 +61,19 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
     private final DistributionFilterFactory distributionFilterFactory;
     private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
     private final BlackDuckPropertiesFactory propertiesFactory;
+    private final BlackDuckValidator validator;
 
     @Autowired
     public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckDataSyncTask projectSyncTask, BlackDuckContent blackDuckContent,
-        DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory, BlackDuckPropertiesFactory propertiesFactory) {
+        DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory, BlackDuckPropertiesFactory propertiesFactory,
+        BlackDuckValidator validator) {
         super(blackDuckProviderKey, blackDuckContent);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
         this.distributionFilterFactory = distributionFilterFactory;
         this.messageContentCollectorFactory = messageContentCollectorFactory;
         this.propertiesFactory = propertiesFactory;
+        this.validator = validator;
     }
 
     @Override
@@ -110,5 +113,11 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
         notificationTypeToContentClass.put(NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED.name(), VersionBomCodeLocationBomComputedNotificationView.class);
         notificationTypeToContentClass.put(NotificationType.VULNERABILITY.name(), VulnerabilityNotificationView.class);
         return new ProviderNotificationClassMap(notificationTypeToContentClass);
+    }
+
+    @Override
+    public boolean validate(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = createProperties(configurationModel);
+        return validator.validate(blackDuckProperties);
     }
 }
