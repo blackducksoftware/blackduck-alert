@@ -150,7 +150,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserRepository.save(newUser3);
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
-        List<ProviderUserModel> allProviderUsers = providerDataAccessor.getAllUsers(providerConfigId);
+        List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         assertEquals(3, allProviderUsers.size());
     }
 

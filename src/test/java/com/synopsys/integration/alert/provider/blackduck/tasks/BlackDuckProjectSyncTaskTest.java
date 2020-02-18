@@ -88,7 +88,7 @@ public class BlackDuckProjectSyncTaskTest {
         // FIXME create a mock provider config
         Long providerConfigId = 10000L;
 
-        assertEquals(3, providerDataAccessor.findByProviderConfigId(providerConfigId).size());
+        assertEquals(3, providerDataAccessor.getProjectsByProviderConfigId(providerConfigId).size());
 
         Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.PROJECTS_LINK_RESPONSE))).thenReturn(List.of(projectView, projectView2));
 
@@ -98,7 +98,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(List.of());
         projectSyncTask.run();
 
-        assertEquals(2, providerDataAccessor.findByProviderConfigId(providerConfigId).size());
+        assertEquals(2, providerDataAccessor.getProjectsByProviderConfigId(providerConfigId).size());
     }
 
     private UserView createUserView(String email, Boolean active) {

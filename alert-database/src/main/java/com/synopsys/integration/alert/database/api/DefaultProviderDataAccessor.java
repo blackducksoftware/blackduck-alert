@@ -74,7 +74,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderProject> findByProviderConfigName(String providerConfigName) {
+    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         try {
             Optional<Long> optionalConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
                                                   .map(ConfigurationModel::getConfigurationId);
@@ -91,7 +91,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderProject> findByProviderConfigId(Long providerConfigId) {
+    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
         return providerProjectRepository.findByProviderConfigId(providerConfigId)
                    .stream()
                    .map(this::convertToProjectModel)
@@ -122,11 +122,30 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderUserModel> getAllUsers(Long providerConfigId) {
+    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
+        if (null == providerConfigId) {
+            return List.of();
+        }
         return providerUserRepository.findByProviderConfigId(providerConfigId)
                    .stream()
                    .map(this::convertToUserModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
+        if (StringUtils.isBlank(providerConfigName)) {
+            return List.of();
+        }
+        try {
+            Optional<Long> optionalProviderConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                          .map(ConfigurationModel::getConfigurationId);
+            if (optionalProviderConfigId.isPresent()) {
+                return getUsersByProviderConfigId(optionalProviderConfigId.get());
+            }
+        } catch (AlertDatabaseConstraintException ignored) {
+        }
+        return List.of();
     }
 
     @Override
@@ -197,7 +216,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     private List<ProviderProject> updateProjectDB(Long providerConfigId, Set<ProviderProject> currentProjects) {
         Set<ProviderProject> projectsToAdd = new HashSet<>();
         Set<ProviderProject> projectsToRemove = new HashSet<>();
-        List<ProviderProject> storedProjects = findByProviderConfigId(providerConfigId);
+        List<ProviderProject> storedProjects = getProjectsByProviderConfigId(providerConfigId);
 
         projectsToRemove.addAll(storedProjects);
         projectsToRemove.removeIf(currentProjects::contains);
@@ -215,7 +234,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         Set<String> emailsToAdd = new HashSet<>();
         Set<String> emailsToRemove = new HashSet<>();
 
-        List<ProviderUserModel> providerUserEntities = getAllUsers(providerConfigId);
+        List<ProviderUserModel> providerUserEntities = getUsersByProviderConfigId(providerConfigId);
         Set<String> storedEmails = providerUserEntities
                                        .stream()
                                        .map(ProviderUserModel::getEmailAddress)

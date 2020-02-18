@@ -66,6 +66,6 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     @Override
     protected List<?> createData(FieldModel fieldModel) throws AlertException {
         String providerConfigName = fieldModel.getFieldValue(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
-        return providerDataAccessor.findByProviderConfigName(providerConfigName);
+        return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
     }
 }

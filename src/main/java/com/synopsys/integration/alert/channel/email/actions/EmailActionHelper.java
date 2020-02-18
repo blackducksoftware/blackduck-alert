@@ -34,8 +34,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -60,11 +60,11 @@ public class EmailActionHelper {
         }
 
         Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        String providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
+        String providerConfigName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
         Boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
-        if (StringUtils.isNotBlank(providerName) && !onlyAdditionalEmails) {
-            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerName);
+        if (StringUtils.isNotBlank(providerConfigName) && !onlyAdditionalEmails) {
+            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerConfigName);
             if (null != providerProjects) {
                 Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
                 emailAddresses.addAll(providerEmailAddresses);
@@ -84,8 +84,8 @@ public class EmailActionHelper {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, Boolean filterByProject, String providerName) {
-        List<ProviderProject> providerProjects = List.of(); // FIXME replace this to use provider config id: providerDataAccessor.findByProviderName(providerName);
+    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, Boolean filterByProject, String providerConfigName) {
+        List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
         if (filterByProject) {
             Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             Set<String> configuredProjects = new HashSet<>(projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()));

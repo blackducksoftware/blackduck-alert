@@ -92,9 +92,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         // FIXME create provider config
         Long providerConfigId = 10000L;
 
-        List<ProviderUserModel> allUsers = providerDataAccessor.getAllUsers(providerConfigId);
+        List<ProviderUserModel> allUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         deleteUsers(providerConfigId, allUsers);
-        List<ProviderProject> allProjects = providerDataAccessor.findByProviderConfigId(providerConfigId);
+        List<ProviderProject> allProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         providerDataAccessor.deleteProjects(allProjects);
 
         ProviderProject project1 = saveProject(providerConfigId, new ProviderProject(UNIT_TEST_PROJECT_NAME, "", "", ""));

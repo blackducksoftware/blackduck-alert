@@ -58,12 +58,12 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderProject> findByProviderConfigName(String providerConfigName) {
+    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         return new ArrayList<>(providerProjectMap.get(DEFAULT_PROVIDER_CONFIG_ID));
     }
 
     @Override
-    public List<ProviderProject> findByProviderConfigId(Long providerConfigId) {
+    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
         return new ArrayList<>(providerProjectMap.get(providerConfigId));
     }
 
@@ -72,7 +72,7 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderUserModel> getAllUsers(Long providerConfigId) {
+    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
         return new ArrayList<>(users);
     }
 
@@ -98,7 +98,7 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         Set<String> emailsToAdd = new HashSet<>();
         Set<String> emailsToRemove = new HashSet<>();
 
-        List<ProviderUserModel> providerUserEntities = getAllUsers(providerConfigId);
+        List<ProviderUserModel> providerUserEntities = getUsersByProviderConfigId(providerConfigId);
         Set<String> storedEmails = providerUserEntities
                                        .stream()
                                        .map(ProviderUserModel::getEmailAddress)

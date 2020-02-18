@@ -31,15 +31,17 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 
 public interface ProviderDataAccessor {
-    List<ProviderProject> findByProviderConfigName(String providerConfigName);
+    List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName);
 
-    List<ProviderProject> findByProviderConfigId(Long providerConfigId);
+    List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId);
 
     void deleteProjects(Collection<ProviderProject> providerProjects);
 
     Set<String> getEmailAddressesForProjectHref(String projectHref);
 
-    List<ProviderUserModel> getAllUsers(Long providerConfigId);
+    List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId);
+
+    List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName);
 
     void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 

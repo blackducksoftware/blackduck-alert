@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -34,27 +33,24 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private final TaskManager taskManager;
+    private ProviderLifecycleManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckPropertiesFactory propertiesFactory;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
 
-    public BlackDuckGlobalApiAction(BlackDuckPropertiesFactory propertiesFactory, BlackDuckProvider blackDuckProvider, TaskManager taskManager,
-        ProviderDataAccessor providerDataAccessor, ConfigurationFieldModelConverter configurationFieldModelConverter) {
+    public BlackDuckGlobalApiAction(BlackDuckPropertiesFactory propertiesFactory, BlackDuckProvider blackDuckProvider, ProviderLifecycleManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
+        ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.blackDuckProvider = blackDuckProvider;
         this.propertiesFactory = propertiesFactory;
-        this.taskManager = taskManager;
+        this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
         this.configurationFieldModelConverter = configurationFieldModelConverter;
     }
@@ -72,12 +68,11 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    // FIXME this should now be handled by the ProviderLifeCycleManager
     public void afterDeleteAction(String descriptorName, String context) {
-        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unScheduleTask(BlackDuckDataSyncTask.TASK_NAME);
+        // FIXME this should now be handled by the ProviderLifeCycleManager
+        //  providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, )
 
-        List<ProviderProject> blackDuckProjects = List.of(); // FIXME this needs to be updated: providerDataAccessor.findByProviderKey(blackDuckProviderKey);
+        List<ProviderProject> blackDuckProjects = List.of(); // providerDataAccessor.getProjectsByProviderConfigName(); // FIXME this needs to be updated: providerDataAccessor.findByProviderKey(blackDuckProviderKey);
         providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
@@ -85,12 +80,11 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         ConfigurationModel configurationModel = configurationFieldModelConverter.convertToConfigurationModel(fieldModel);
         boolean valid = blackDuckProvider.validate(configurationModel);
         if (valid) {
-            Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-            if (nextRunTime.isEmpty()) {
-                // FIXME this should now be handled by the ProviderLifeCycleManager
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckDataSyncTask.TASK_NAME);
-            }
+            // FIXME figure out what to do with this: Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
+            //  if (nextRunTime.isEmpty()) {
+            // FIXME this should now be handled by the ProviderLifeCycleManager
+            //  providerLifecycleManager.scheduleTasksForProviderConfig(blackDuckProvider, );
+            //  }
         }
     }
 
