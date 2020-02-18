@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -159,6 +160,24 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         for (Long configId : configIdsForJob) {
             deleteConfiguration(configId);
         }
+    }
+
+    @Override
+    public Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(providerConfigName)) {
+            throw new AlertDatabaseConstraintException("The provider configuration name cannot be null");
+        }
+        Long fieldId = definedFieldRepository.findFirstByKey(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)
+                           .map(DefinedFieldEntity::getId)
+                           .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("The key '%s' is not registered in the database", ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)));
+        Optional<Long> optionalProviderConfigId = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
+                                                      .stream()
+                                                      .map(FieldValueEntity::getConfigId)
+                                                      .findFirst();
+        if (optionalProviderConfigId.isPresent()) {
+            return getConfigurationById(optionalProviderConfigId.get());
+        }
+        return Optional.empty();
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <!-- Define new common provider fields TODO add context -->
+    <!-- Define new common provider fields -->
     <changeSet author="gavink" id="2020-02-12-14-14-31-780">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.enabled'</sqlCheck>
@@ -82,6 +82,42 @@
             <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
             <column name="field_value" value="Default Black Duck Config"/>
         </insert>
+    </changeSet>
+
+    <!-- Add provider config id to provider data tables -->
+    <changeSet author="gavink" id="2020-02-14-11-34-06-730">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="provider_projects" columnName="provider_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="provider_projects">
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-14-11-36-31-432">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="provider_users" columnName="provider_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="provider_users">
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Drop provider column from provider data tables -->
+    <changeSet author="gavink" id="2020-02-14-11-34-06-731">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="alert" tableName="provider_projects" columnName="provider"/>
+        </preConditions>
+        <dropColumn schemaName="alert" tableName="provider_projects" columnName="provider"/>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-14-11-34-06-732">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="alert" tableName="provider_users" columnName="provider"/>
+        </preConditions>
+        <dropColumn schemaName="alert" tableName="provider_users" columnName="provider"/>
     </changeSet>
 
 </databaseChangeLog>

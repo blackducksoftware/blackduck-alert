@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -60,17 +60,17 @@ public class EmailCustomEndpoint {
     }
 
     public ResponseEntity<String> createEmailOptions(FieldModel fieldModel) {
-        String provider = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
+        String providerConfigName = fieldModel.getFieldValue(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
-        if (StringUtils.isBlank(provider)) {
-            logger.debug("Received provider user email data request with a blank provider");
-            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider to populate data.");
+        if (StringUtils.isBlank(providerConfigName)) {
+            logger.debug("Received provider user email data request with a blank provider config name");
+            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
-            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
+            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigName(providerConfigName);
             if (pageOfUsers.isEmpty()) {
-                logger.info("No user emails found in the database for the provider: {}", provider);
+                logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
             String usersJson = gson.toJson(pageOfUsers);
             return responseFactory.createOkContentResponse(usersJson);

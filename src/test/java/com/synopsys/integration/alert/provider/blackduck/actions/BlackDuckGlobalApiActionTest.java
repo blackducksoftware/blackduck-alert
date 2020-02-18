@@ -16,11 +16,11 @@ import org.springframework.scheduling.Trigger;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
@@ -53,7 +53,7 @@ public class BlackDuckGlobalApiActionTest {
 
     @Test
     public void afterSaveActionSuccessTest() throws AlertException {
-        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        ProviderLifecycleManager providerLifecycleManager = Mockito.mock(ProviderLifecycleManager.class); // FIXME mock methods
         ConfigurationFieldModelConverter fieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
         BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.validate(Mockito.any())).thenReturn(true);
@@ -61,7 +61,7 @@ public class BlackDuckGlobalApiActionTest {
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckProvider, taskManager, providerDataAccessor, fieldModelConverter);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(propertiesFactory, blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
@@ -79,7 +79,7 @@ public class BlackDuckGlobalApiActionTest {
 
     @Test
     public void afterUpdateActionSuccessTest() throws AlertException {
-        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        ProviderLifecycleManager providerLifecycleManager = Mockito.mock(ProviderLifecycleManager.class); // FIXME mock methods
         ConfigurationFieldModelConverter fieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
         BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.validate(Mockito.any())).thenReturn(true);
@@ -87,7 +87,7 @@ public class BlackDuckGlobalApiActionTest {
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, propertiesFactory, blackDuckProvider, taskManager, providerDataAccessor, fieldModelConverter);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(propertiesFactory, blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);

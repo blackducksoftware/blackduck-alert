@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,41 +15,41 @@ import org.junit.jupiter.api.Assertions;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 
+// FIXME this needs to be cleaned up to be useful again
 public final class MockProviderDataAccessor extends DefaultProviderDataAccessor {
-    private final Map<String, Set<ProviderProject>> providerProjectMap;
+    public static final Long DEFAULT_PROVIDER_CONFIG_ID = 10000L;
+
+    private final Map<Long, Set<ProviderProject>> providerProjectMap;
     private final Set<ProviderUserModel> users;
     private Set<String> expectedEmailAddresses = Set.of();
 
     public MockProviderDataAccessor() {
-        super(null, null, null);
-        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        super(null, null, null, null);
         providerProjectMap = new HashMap<>();
-        providerProjectMap.put(blackDuckProviderKey.getUniversalKey(), new HashSet<>());
+        providerProjectMap.put(DEFAULT_PROVIDER_CONFIG_ID, new HashSet<>());
         users = new HashSet<>();
     }
 
     @Override
-    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
-        updateProjectDB(providerKey, projectToUserData.keySet());
+    public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
+        updateProjectDB(providerConfigId, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
         userData.addAll(additionalRelevantUsers);
-        updateUserDB(providerKey, userData);
+        updateUserDB(providerConfigId, userData);
         updateUserProjectRelations(projectToUserData);
     }
 
     @Override
-    public void deleteProjects(ProviderKey descriptorKey, Collection<ProviderProject> providerProjects) {
-        Set<ProviderProject> projects = providerProjectMap.get(descriptorKey.getUniversalKey());
+    public void deleteProjects(Collection<ProviderProject> providerProjects) {
+        Set<ProviderProject> projects = providerProjectMap.get(DEFAULT_PROVIDER_CONFIG_ID);
         if (null == projects) {
             projects = new HashSet<>();
         }
         projects.removeAll(providerProjects);
-        providerProjectMap.put(descriptorKey.getUniversalKey(), projects);
+        providerProjectMap.put(DEFAULT_PROVIDER_CONFIG_ID, projects);
     }
 
     @Override
@@ -59,22 +58,13 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public Optional<ProviderProject> findFirstByName(String name) {
-        return providerProjectMap.values()
-                   .stream()
-                   .flatMap(Collection::stream)
-                   .filter(providerProject -> name.equals(providerProject.getName()))
-                   .findFirst();
+    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
+        return new ArrayList<>(providerProjectMap.get(DEFAULT_PROVIDER_CONFIG_ID));
     }
 
     @Override
-    public List<ProviderProject> findByProviderName(String providerName) {
-        return new ArrayList<>(providerProjectMap.get(providerName));
-    }
-
-    @Override
-    public List<ProviderProject> findByProviderKey(ProviderKey descriptorKey) {
-        return new ArrayList<>(providerProjectMap.get(descriptorKey.getUniversalKey()));
+    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
+        return new ArrayList<>(providerProjectMap.get(providerConfigId));
     }
 
     public void setExpectedEmailAddresses(Set<String> expectedEmailAddresses) {
@@ -82,14 +72,14 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
     }
 
     @Override
-    public List<ProviderUserModel> getAllUsers(String providerName) {
+    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
         return new ArrayList<>(users);
     }
 
-    private List<ProviderProject> updateProjectDB(ProviderKey providerKey, Set<ProviderProject> currentProjects) {
+    private List<ProviderProject> updateProjectDB(Long providerConfigId, Set<ProviderProject> currentProjects) {
         Set<ProviderProject> projectsToAdd = new HashSet<>();
         Set<ProviderProject> projectsToRemove = new HashSet<>();
-        List<ProviderProject> storedProjects = findByProviderKey(providerKey);
+        List<ProviderProject> storedProjects = new ArrayList<>(providerProjectMap.get(providerConfigId));
 
         projectsToRemove.addAll(storedProjects);
         projectsToRemove.removeIf(currentProjects::contains);
@@ -97,18 +87,18 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         projectsToAdd.addAll(currentProjects);
         projectsToAdd.removeIf(storedProjects::contains);
 
-        deleteProjects(providerKey, projectsToRemove);
+        deleteProjects(projectsToRemove);
 
-        Set<ProviderProject> providerProjects = providerProjectMap.get(providerKey.getUniversalKey());
+        Set<ProviderProject> providerProjects = providerProjectMap.get(providerConfigId);
         providerProjects.addAll(projectsToAdd);
         return new ArrayList<>(providerProjects);
     }
 
-    private void updateUserDB(ProviderKey providerKey, Set<String> userEmailAddresses) {
+    private void updateUserDB(Long providerConfigId, Set<String> userEmailAddresses) {
         Set<String> emailsToAdd = new HashSet<>();
         Set<String> emailsToRemove = new HashSet<>();
 
-        List<ProviderUserModel> providerUserEntities = getAllUsers(providerKey.getUniversalKey());
+        List<ProviderUserModel> providerUserEntities = getUsersByProviderConfigId(providerConfigId);
         Set<String> storedEmails = providerUserEntities
                                        .stream()
                                        .map(ProviderUserModel::getEmailAddress)
@@ -156,9 +146,9 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         // Do nothing
     }
 
-    private ProviderProjectEntity convertToProjectEntity(ProviderKey providerKey, ProviderProject providerProject) {
+    private ProviderProjectEntity convertToProjectEntity(Long providerConfigId, ProviderProject providerProject) {
         String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerKey.getUniversalKey());
+        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerConfigId);
     }
 
 }

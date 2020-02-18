@@ -34,20 +34,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -58,9 +54,6 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 @Component
 @Transactional
 public class DefaultProviderDataAccessor implements ProviderDataAccessor {
-    public static final Integer DEFAULT_OFFSET = 0;
-    public static final Integer DEFAULT_LIMIT = 100;
-
     public static final int MAX_DESCRIPTION_LENGTH = 250;
     public static final int MAX_PROJECT_NAME_LENGTH = 507;
 
@@ -68,46 +61,45 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
     private final ProviderUserRepository providerUserRepository;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DefaultProviderDataAccessor(ProviderProjectRepository providerProjectRepository, ProviderUserProjectRelationRepository providerUserProjectRelationRepository, ProviderUserRepository providerUserRepository) {
+    public DefaultProviderDataAccessor(ProviderProjectRepository providerProjectRepository, ProviderUserProjectRelationRepository providerUserProjectRelationRepository, ProviderUserRepository providerUserRepository,
+        ConfigurationAccessor configurationAccessor) {
         this.providerProjectRepository = providerProjectRepository;
         this.providerUserProjectRelationRepository = providerUserProjectRelationRepository;
         this.providerUserRepository = providerUserRepository;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<ProviderProject> findFirstByHref(String href) {
-        return providerProjectRepository.findFirstByHref(href).map(this::convertToProjectModel);
+    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
+        try {
+            Optional<Long> optionalConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                  .map(ConfigurationModel::getConfigurationId);
+            if (optionalConfigId.isPresent()) {
+                return providerProjectRepository.findByProviderConfigId(optionalConfigId.get())
+                           .stream()
+                           .map(this::convertToProjectModel)
+                           .collect(Collectors.toList());
+            }
+        } catch (AlertDatabaseConstraintException ignored) {
+        }
+        return List.of();
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<ProviderProject> findFirstByName(String name) {
-        return providerProjectRepository.findFirstByName(name).map(this::convertToProjectModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderProject> findByProviderName(String providerName) {
-        return providerProjectRepository.findByProvider(providerName)
+    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
+        return providerProjectRepository.findByProviderConfigId(providerConfigId)
                    .stream()
                    .map(this::convertToProjectModel)
                    .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderProject> findByProviderKey(ProviderKey providerKey) {
-        return providerProjectRepository.findByProvider(providerKey.getUniversalKey())
-                   .stream()
-                   .map(this::convertToProjectModel)
-                   .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
+    public void deleteProjects(Collection<ProviderProject> providerProjects) {
         providerProjects.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
     }
 
@@ -130,78 +122,70 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<ProviderUserModel> getAllUsers(String providerName) {
-        return providerUserRepository.findByProvider(providerName)
+    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
+        if (null == providerConfigId) {
+            return List.of();
+        }
+        return providerUserRepository.findByProviderConfigId(providerConfigId)
                    .stream()
                    .map(this::convertToUserModel)
                    .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public AlertPagedModel<ProviderUserModel> getPageOfUsers(String providerName, Integer pageNumber, Integer pageSize, String q) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(providerName)) {
-            throw new AlertDatabaseConstraintException("The field 'providerName' cannot be blank.");
+    public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
+        if (StringUtils.isBlank(providerConfigName)) {
+            return List.of();
         }
-        if (StringUtils.isBlank(q)) {
-            q = "@";
+        try {
+            Optional<Long> optionalProviderConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                          .map(ConfigurationModel::getConfigurationId);
+            if (optionalProviderConfigId.isPresent()) {
+                return getUsersByProviderConfigId(optionalProviderConfigId.get());
+            }
+        } catch (AlertDatabaseConstraintException ignored) {
         }
-
-        Integer pageNumberToUse = isUsableParam(pageNumber) ? pageNumber : DEFAULT_OFFSET;
-        Integer pageSizeToUse = isUsableParam(pageSize) ? pageSize : DEFAULT_LIMIT;
-        PageRequest pageRequest = PageRequest.of(pageNumberToUse, pageSizeToUse, Sort.by(Sort.Order.desc("emailAddress")));
-
-        Page<ProviderUserEntity> pageOfUsers = providerUserRepository.findPageOfUsersByProviderAndEmailSearchTerm(providerName, q, pageRequest);
-        List<ProviderUserModel> userModels = pageOfUsers.getContent()
-                                                 .stream()
-                                                 .map(entry -> new ProviderUserModel(entry.getEmailAddress(), entry.getOptOut()))
-                                                 .collect(Collectors.toList());
-        return new AlertPagedModel<>(pageOfUsers.getTotalPages(), pageOfUsers.getNumber(), userModels.size(), userModels);
+        return List.of();
     }
 
     @Override
-    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData) {
-        updateProjectAndUserData(providerKey, projectToUserData, Set.of());
-    }
-
-    @Override
-    public void updateProjectAndUserData(ProviderKey providerKey, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
-        updateProjectDB(providerKey, projectToUserData.keySet());
+    public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
+        updateProjectDB(providerConfigId, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
         userData.addAll(additionalRelevantUsers);
-        updateUserDB(providerKey, userData);
-        updateUserProjectRelations(projectToUserData);
+        updateUserDB(providerConfigId, userData);
+        updateUserProjectRelations(providerConfigId, projectToUserData);
     }
 
-    private void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    private void mapUsersToProjectByEmail(Long providerConfigId, String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
         ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
                                             .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
         Long projectId = project.getId();
         for (String emailAddress : emailAddresses) {
-            providerUserRepository.findByEmailAddressAndProvider(emailAddress, project.getProvider())
+            providerUserRepository.findByEmailAddressAndProviderConfigId(emailAddress, providerConfigId)
                 .stream()
                 .map(ProviderUserEntity::getId)
                 .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));
         }
     }
 
-    private List<ProviderUserModel> saveUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
+    private List<ProviderUserModel> saveUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
         return users
                    .stream()
-                   .map(user -> convertToUserEntity(providerKey, user))
+                   .map(user -> convertToUserEntity(providerConfigId, user))
                    .map(providerUserRepository::save)
                    .map(this::convertToUserModel)
                    .collect(Collectors.toList());
     }
 
-    private void deleteUsers(ProviderKey providerKey, Collection<ProviderUserModel> users) {
-        users.forEach(user -> providerUserRepository.deleteByProviderAndEmailAddress(providerKey.getUniversalKey(), user.getEmailAddress()));
+    private void deleteUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
+        users.forEach(user -> providerUserRepository.deleteByProviderConfigIdAndEmailAddress(providerConfigId, user.getEmailAddress()));
     }
 
-    private List<ProviderProject> saveProjects(ProviderKey providerKey, Collection<ProviderProject> providerProjects) {
+    private List<ProviderProject> saveProjects(Long providerConfigId, Collection<ProviderProject> providerProjects) {
         Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
                                                                       .stream()
-                                                                      .map(project -> convertToProjectEntity(providerKey, project))
+                                                                      .map(project -> convertToProjectEntity(providerConfigId, project))
                                                                       .collect(Collectors.toSet());
         List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
         return savedEntities
@@ -215,24 +199,24 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
             providerProjectEntity.getProjectOwnerEmail());
     }
 
-    private ProviderProjectEntity convertToProjectEntity(ProviderKey providerKey, ProviderProject providerProject) {
+    private ProviderProjectEntity convertToProjectEntity(Long providerConfigId, ProviderProject providerProject) {
         String trimmedProjectName = StringUtils.abbreviate(providerProject.getName(), MAX_PROJECT_NAME_LENGTH);
         String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(trimmedProjectName, trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerKey.getUniversalKey());
+        return new ProviderProjectEntity(trimmedProjectName, trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerConfigId);
     }
 
     private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
         return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
     }
 
-    private ProviderUserEntity convertToUserEntity(ProviderKey providerKey, ProviderUserModel providerUserModel) {
-        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerKey.getUniversalKey());
+    private ProviderUserEntity convertToUserEntity(Long providerConfigId, ProviderUserModel providerUserModel) {
+        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerConfigId);
     }
 
-    private List<ProviderProject> updateProjectDB(ProviderKey providerKey, Set<ProviderProject> currentProjects) {
+    private List<ProviderProject> updateProjectDB(Long providerConfigId, Set<ProviderProject> currentProjects) {
         Set<ProviderProject> projectsToAdd = new HashSet<>();
         Set<ProviderProject> projectsToRemove = new HashSet<>();
-        List<ProviderProject> storedProjects = findByProviderKey(providerKey);
+        List<ProviderProject> storedProjects = getProjectsByProviderConfigId(providerConfigId);
 
         projectsToRemove.addAll(storedProjects);
         projectsToRemove.removeIf(currentProjects::contains);
@@ -242,15 +226,15 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
 
         logger.info("Adding {} projects", projectsToAdd.size());
         logger.info("Removing {} projects", projectsToRemove.size());
-        deleteProjects(providerKey, projectsToRemove);
-        return saveProjects(providerKey, projectsToAdd);
+        deleteProjects(projectsToRemove);
+        return saveProjects(providerConfigId, projectsToAdd);
     }
 
-    private void updateUserDB(ProviderKey providerKey, Set<String> userEmailAddresses) {
+    private void updateUserDB(Long providerConfigId, Set<String> userEmailAddresses) {
         Set<String> emailsToAdd = new HashSet<>();
         Set<String> emailsToRemove = new HashSet<>();
 
-        List<ProviderUserModel> providerUserEntities = getAllUsers(providerKey.getUniversalKey());
+        List<ProviderUserModel> providerUserEntities = getUsersByProviderConfigId(providerConfigId);
         Set<String> storedEmails = providerUserEntities
                                        .stream()
                                        .map(ProviderUserModel::getEmailAddress)
@@ -282,22 +266,18 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                                                                 .stream()
                                                                 .map(email -> new ProviderUserModel(email, false))
                                                                 .collect(Collectors.toList());
-        deleteUsers(providerKey, providerUserEntitiesToRemove);
-        saveUsers(providerKey, providerUserEntitiesToAdd);
+        deleteUsers(providerConfigId, providerUserEntitiesToRemove);
+        saveUsers(providerConfigId, providerUserEntitiesToAdd);
     }
 
-    private void updateUserProjectRelations(Map<ProviderProject, Set<String>> projectToEmailAddresses) {
+    private void updateUserProjectRelations(Long providerConfigId, Map<ProviderProject, Set<String>> projectToEmailAddresses) {
         for (Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                mapUsersToProjectByEmail(projectToEmail.getKey().getHref(), projectToEmail.getValue());
+                mapUsersToProjectByEmail(providerConfigId, projectToEmail.getKey().getHref(), projectToEmail.getValue());
             } catch (AlertDatabaseConstraintException e) {
                 logger.error("Problem mapping users to projects", e);
             }
         }
-    }
-
-    private boolean isUsableParam(Integer param) {
-        return null != param && 0 <= param;
     }
 
 }

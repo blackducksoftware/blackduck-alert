@@ -39,8 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -60,21 +60,22 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    // FIXME This does not filter by provider. This works fine for now but will cause bugs in the future when we have multiple providers. Will probably need to modify our tables
     public FieldAccessor updateEmailAddresses(MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
         Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
-        Boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
 
+        String providerConfigName = originalAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(StringUtils.EMPTY);
+        boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
         boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
+
         if (!useOnlyAdditionalEmailAddresses) {
-            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
+            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
             emailAddresses.addAll(projectEmailAddresses);
         }
 
         if (emailAddresses.isEmpty()) {
             // Temporary fix for license notifications
-            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, projectOwnerOnly);
+            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigName, projectOwnerOnly);
             emailAddresses.addAll(licenseNotificationEmails);
         }
 
@@ -108,11 +109,11 @@ public class EmailAddressHandler {
     }
 
     public Set<String> collectAdditionalEmailAddresses(FieldAccessor fieldAccessor) {
-        Optional<String> optionalProviderName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        Optional<String> optionalProviderConfigName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
         Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
-        if (optionalProviderName.isPresent() && !additionalEmailAddresses.isEmpty()) {
+        if (optionalProviderConfigName.isPresent() && !additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
-            return providerDataAccessor.getAllUsers(optionalProviderName.get())
+            return providerDataAccessor.getUsersByProviderConfigName(optionalProviderConfigName.get())
                        .stream()
                        .map(ProviderUserModel::getEmailAddress)
                        .filter(additionalEmailAddresses::contains)
@@ -122,8 +123,11 @@ public class EmailAddressHandler {
         return Set.of();
     }
 
-    private Set<String> collectProviderEmailsFromProject(String projectName, boolean projectOwnerOnly) {
-        Optional<ProviderProject> optionalProject = providerDataAccessor.findFirstByName(projectName); // FIXME use href
+    private Set<String> collectProviderEmailsFromProject(String providerConfigName, String projectName, boolean projectOwnerOnly) {
+        Optional<ProviderProject> optionalProject = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
+                                                        .stream()
+                                                        .filter(project -> project.getName().equals(projectName))
+                                                        .findFirst(); // FIXME use href
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
@@ -131,28 +135,25 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, boolean projectOwnerOnly) {
+    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, String providerConfigName, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
-                                        .stream()
-                                        .map(ProviderMessageContent::getSubTopic)
-                                        .anyMatch(Optional::isPresent);
+                                  .stream()
+                                  .map(ProviderMessageContent::getSubTopic)
+                                  .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
             Boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
-            List<String> associatedProjects = List.of();
+            List<String> associatedProjects;
             if (filterByProject) {
                 Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
                 associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
-                Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-                if (providerName.isPresent()) {
-                    associatedProjects = providerDataAccessor.findByProviderName(providerName.get())
-                                             .stream()
-                                             .map(ProviderProject::getName)
-                                             .collect(Collectors.toList());
-                }
+                associatedProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
+                                         .stream()
+                                         .map(ProviderProject::getName)
+                                         .collect(Collectors.toList());
             }
             return associatedProjects.stream()
-                       .map(projectName -> collectProviderEmailsFromProject(projectName, projectOwnerOnly))
+                       .map(projectName -> collectProviderEmailsFromProject(providerConfigName, projectName, projectOwnerOnly))
                        .flatMap(Set::stream)
                        .collect(Collectors.toSet());
         }
