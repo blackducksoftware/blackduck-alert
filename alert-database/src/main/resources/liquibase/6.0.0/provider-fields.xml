@@ -106,4 +106,18 @@
         </addColumn>
     </changeSet>
 
+    <!-- Drop provider column from provider data tables -->
+    <changeSet author="gavink" id="2020-02-14-11-34-06-730">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="alert" tableName="provider_projects" columnName="provider"/>
+        </preConditions>
+        <dropColumn schemaName="alert" tableName="provider_projects" columnName="provider"/>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-14-11-36-31-432">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="alert" tableName="provider_users" columnName="provider"/>
+        </preConditions>
+        <dropColumn schemaName="alert" tableName="provider_users" columnName="provider"/>
+    </changeSet>
+
 </databaseChangeLog>
