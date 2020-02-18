@@ -52,6 +52,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.throwaway.generated.enumeration.VulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
@@ -141,10 +142,13 @@ public class PolicyCommonBuilder {
             if (vulnerabilityViews.containsKey(vulnerabilityId)) {
                 vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
             }
-
             LinkableItem vulnerabilityIdItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
-            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, blackDuckResponseCache.getSeverity(vulnerabilityUrl));
+
+            String severity = Optional.ofNullable(vulnerabilityView.getSeverity())
+                                  .map(VulnerabilityWithRemediationSeverityType::name)
+                                  .orElse("UNKNOWN");
+            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, severity);
 
             severityToVulns.add(severityItem, vulnerabilityIdItem);
         }
