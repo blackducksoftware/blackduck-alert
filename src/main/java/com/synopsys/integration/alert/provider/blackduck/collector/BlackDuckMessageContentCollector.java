@@ -78,7 +78,8 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
                 String url = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl();
-                CommonMessageData commonMessageData = new CommonMessageData(notification.getId(), notification.getProviderConfigId(), notification.getProviderConfigName(), url, notification.getProviderCreationTime(), job);
+                CommonMessageData commonMessageData = new CommonMessageData(notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), url,
+                    notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
                         .buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);

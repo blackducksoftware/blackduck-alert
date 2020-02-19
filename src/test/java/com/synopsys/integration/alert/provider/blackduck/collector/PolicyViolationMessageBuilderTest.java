@@ -74,7 +74,7 @@ public class PolicyViolationMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerUrl", new Date(), job);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", new Date(), job);
         List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }

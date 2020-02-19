@@ -33,10 +33,10 @@ public class ChannelEventManagerTest {
 
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider", 1L)
-                                                   .applyTopic("testTopic", "topic")
-                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                   .build();
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
+                                             .applyTopic("testTopic", "topic")
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
         FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
         DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
             MessageContentGroup.singleton(content), fieldAccessor);
@@ -52,10 +52,10 @@ public class ChannelEventManagerTest {
         ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider", 1L)
-                                                   .applyTopic("testTopic", "topic")
-                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                   .build();
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
+                                             .applyTopic("testTopic", "topic")
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
         AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }

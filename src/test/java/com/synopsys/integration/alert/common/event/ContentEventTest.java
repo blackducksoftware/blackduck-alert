@@ -29,10 +29,10 @@ public class ContentEventTest {
     public void getContentTest() throws Exception {
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider", 1L)
-                                                   .applyTopic("testTopic", "topic")
-                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                   .build();
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
+                                             .applyTopic("testTopic", "topic")
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
         assertEquals(contentGroup, event.getContent());

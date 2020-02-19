@@ -156,7 +156,7 @@ public class AuditEntryAccessorTest {
         LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
         return new ProviderMessageContent.Builder()
-                   .applyProvider("provider", 1L)
+                   .applyProvider("provider", 1L, "providerConfig")
                    .applyTopic("Topic", "audit utility test", "https://google.com")
                    .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2, componentItem_3))

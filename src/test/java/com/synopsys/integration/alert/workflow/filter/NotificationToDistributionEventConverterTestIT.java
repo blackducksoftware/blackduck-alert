@@ -53,7 +53,9 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     }
 
     private ProviderMessageContent createMessageContent(String value) throws AlertException {
-        return new ProviderMessageContent.Builder().applyProvider("testProvider", 1L).applyTopic("Name", value).build();
+        return new ProviderMessageContent.Builder()
+                   .applyProvider("testProvider", 1L, "testProviderConfig")
+                   .applyTopic("Name", value).build();
     }
 
 }

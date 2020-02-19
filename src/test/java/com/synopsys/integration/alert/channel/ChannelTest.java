@@ -107,7 +107,7 @@ public abstract class ChannelTest {
 
         ProviderMessageContent.Builder providerBuilder = new ProviderMessageContent.Builder();
         providerBuilder
-            .applyProvider("Test Provider", 1L)
+            .applyProvider("testProvider", 1L, "testProviderConfig")
             .applyTopic("Topic", testName, "https://google.com")
             .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
             .applyAllComponentItems(items);

@@ -214,7 +214,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
                                           .applyNotificationId(notificationId)
                                           .build();
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider", 1L)
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyTopic("testTopic", "")
                                              .applyAllComponentItems(List.of(componentItem))
                                              .build();
