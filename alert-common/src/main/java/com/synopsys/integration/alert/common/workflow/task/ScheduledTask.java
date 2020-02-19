@@ -46,36 +46,41 @@ public abstract class ScheduledTask implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
-    private final String taskName;
     private ScheduledFuture<?> future;
 
-    public ScheduledTask(final TaskScheduler taskScheduler, final String taskName) {
-        this.taskScheduler = taskScheduler;
-        this.taskName = taskName;
+    public static String computeTaskName(Class<? extends ScheduledTask> clazz) {
+        String packageName = clazz.getPackageName();
+        String simpleClassName = clazz.getSimpleName();
+
+        return String.format("Task::Class[%s.%s]", packageName, simpleClassName);
     }
 
-    public String getTaskName() {
-        return taskName;
+    public ScheduledTask(TaskScheduler taskScheduler) {
+        this.taskScheduler = taskScheduler;
+    }
+
+    public String computeTaskName() {
+        return ScheduledTask.computeTaskName(getClass());
     }
 
     @Override
     @Async
     public void run() {
-        logger.info("### {} Task Started...", taskName);
+        logger.info("### {} Task Started...", computeTaskName());
         runTask();
-        logger.info("### {} Task Finished", taskName);
+        logger.info("### {} Task Finished", computeTaskName());
     }
 
     public abstract void runTask();
 
-    public void scheduleExecution(final String cron) {
+    public void scheduleExecution(String cron) {
         if (StringUtils.isNotBlank(cron)) {
             try {
-                final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
+                CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
                 unscheduleTask();
                 logger.info("Scheduling {} with cron : {}", this.getClass().getSimpleName(), cron);
                 future = taskScheduler.schedule(this, cronTrigger);
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
@@ -86,7 +91,7 @@ public abstract class ScheduledTask implements Runnable {
         }
     }
 
-    public void scheduleExecutionAtFixedRate(final long period) {
+    public void scheduleExecutionAtFixedRate(long period) {
         if (period > 0) {
             unscheduleTask();
             logger.info("Scheduling {} with fixed rate : {}", this.getClass().getSimpleName(), period);
@@ -114,18 +119,18 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     public Optional<String> getFormatedNextRunTime() {
-        final Optional<Long> msToNextRun = getMillisecondsToNextRun();
+        Optional<Long> msToNextRun = getMillisecondsToNextRun();
         if (msToNextRun.isPresent()) {
 
-            final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
+            ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
             ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun.get(), ChronoUnit.MILLIS);
-            final int seconds = nextRunTime.getSecond();
+            int seconds = nextRunTime.getSecond();
             if (seconds >= 30) {
                 nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
             } else {
                 nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES);
             }
-            final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
+            String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
             return Optional.of(formattedString + " UTC");
         }
         return Optional.empty();

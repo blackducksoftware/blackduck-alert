@@ -63,15 +63,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
-    private BlackDuckProviderKey providerKey;
+    private BlackDuckProviderKey blackDuckProviderKey;
 
     @Autowired
-    public BlackDuckAccumulator(TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, BlackDuckProviderKey providerKey) {
-        super(taskScheduler, TASK_NAME);
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil) {
+        super(blackDuckProviderKey, taskScheduler);
+        this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
-        this.providerKey = providerKey;
-        searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
+        this.searchRangeFileName = String.format("%s-last-search.txt", computeTaskName());
     }
 
     public String getSearchRangeFileName() {
@@ -219,7 +219,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     private AlertNotificationModel createContent(NotificationView notification) {
         Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
         Date providerCreationTime = notification.getCreatedAt();
-        String provider = providerKey.getUniversalKey();
+        String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
         return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, null, notificationType, jsonContent, createdAt, providerCreationTime);

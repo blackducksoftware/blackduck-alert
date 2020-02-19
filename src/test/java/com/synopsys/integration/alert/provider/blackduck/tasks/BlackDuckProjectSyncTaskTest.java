@@ -81,7 +81,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(List.of(user1, user2, user3)));
         Mockito.doNothing().when(projectUsersService).addUserToProject(Mockito.any(), Mockito.any(UserView.class));
 
-        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(null, providerDataAccessor, configurationAccessor);
+        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(BLACK_DUCK_PROVIDER_KEY, null, providerDataAccessor, configurationAccessor);
         projectSyncTask.setProviderPropertiesForRun(blackDuckProperties);
         projectSyncTask.run();
 

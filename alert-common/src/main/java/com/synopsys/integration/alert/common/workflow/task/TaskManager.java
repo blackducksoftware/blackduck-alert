@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.workflow.task;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class TaskManager {
 
     public final void registerTask(ScheduledTask scheduledTask) {
         if (scheduledTask != null) {
-            scheduledTaskMap.put(scheduledTask.getTaskName(), scheduledTask);
+            scheduledTaskMap.put(scheduledTask.computeTaskName(), scheduledTask);
         }
     }
 
@@ -80,6 +81,10 @@ public class TaskManager {
         ScheduledTask task = scheduledTaskMap.get(taskName);
         task.scheduleExecution("");
         return true;
+    }
+
+    public Set<String> getRunningTaskNames() {
+        return scheduledTaskMap.keySet();
     }
 
     public final Optional<String> getNextRunTime(String taskName) {

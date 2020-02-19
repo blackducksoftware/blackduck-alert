@@ -85,7 +85,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     @Autowired
     public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
         TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, List<ProviderPhoneHomeHandler> providerHandlers) {
-        super(taskScheduler, TASK_NAME, taskManager);
+        super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
@@ -96,12 +96,11 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     @Override
     public void checkTaskEnabled() {
-        Map<String, String> environmentVariables = System.getenv();
         if (skipPhoneHome) {
-            logger.info("Will not schedule the task {}. {} is TRUE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+            logger.info("Will not schedule the task {}. {} is TRUE. ", computeTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
             setEnabled(false);
         } else {
-            logger.debug("Will schedule the task {}. {} is FALSE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+            logger.debug("Will schedule the task {}. {} is FALSE. ", computeTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
         }
     }
 
@@ -189,4 +188,5 @@ public class PhoneHomeTask extends StartupScheduledTask {
         Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
         createdDistributions.put(name, channelCount);
     }
+
 }

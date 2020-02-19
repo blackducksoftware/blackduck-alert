@@ -61,7 +61,7 @@ public class BlackDuckGlobalApiActionTest {
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(propertiesFactory, blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);
@@ -87,7 +87,7 @@ public class BlackDuckGlobalApiActionTest {
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(propertiesFactory, blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(BlackDuckDataSyncTask.TASK_NAME);

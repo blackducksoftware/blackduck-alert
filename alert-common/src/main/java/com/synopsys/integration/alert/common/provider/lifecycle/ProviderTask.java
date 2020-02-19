@@ -25,24 +25,48 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public abstract class ProviderTask extends ScheduledTask {
+    private ProviderKey providerKey;
     private ProviderProperties providerProperties;
 
-    public ProviderTask(TaskScheduler taskScheduler, String taskName) {
-        super(taskScheduler, taskName);
-        this.providerProperties = null;
+    public static String computeProviderTaskName(ProviderKey providerKey, String providerConfigName, Class<? extends ProviderTask> providerTaskClass) {
+        String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
+        String providerUniversalKey = providerKey.getUniversalKey();
+
+        return String.format("%s::Provider[%s]::Configuration[%s]", superTaskName, providerUniversalKey, providerConfigName);
     }
 
-    public abstract void runProviderTask();
+    public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler) {
+        super(taskScheduler);
+        this.providerKey = providerKey;
+        this.providerProperties = null;
+    }
 
     @Override
     public final void runTask() {
         validateProviderProperties();
         runProviderTask();
         invalidateProviderProperties();
+    }
+
+    public abstract void runProviderTask();
+
+    @Override
+    public String computeTaskName() {
+        validateProviderProperties();
+        return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigName(), getClass());
+    }
+
+    public final void setProviderPropertiesForRun(ProviderProperties providerProperties) {
+        this.providerProperties = providerProperties;
+    }
+
+    protected ProviderProperties getProviderProperties() {
+        return providerProperties;
     }
 
     private void validateProviderProperties() {
@@ -56,14 +80,6 @@ public abstract class ProviderTask extends ScheduledTask {
             providerProperties.disconnect();
         }
         providerProperties = null;
-    }
-
-    public final void setProviderPropertiesForRun(ProviderProperties providerProperties) {
-        this.providerProperties = providerProperties;
-    }
-
-    protected ProviderProperties getProviderProperties() {
-        return providerProperties;
     }
 
 }
