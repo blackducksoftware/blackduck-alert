@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -73,7 +74,8 @@ public class PolicyViolationMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(1L, 1L, new Date(), job, notificationView, blackDuckBucket, blackDuckServicesFactory);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerUrl", new Date(), job);
+        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 

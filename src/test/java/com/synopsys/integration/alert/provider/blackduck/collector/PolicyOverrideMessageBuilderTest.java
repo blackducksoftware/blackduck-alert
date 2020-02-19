@@ -19,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -58,7 +59,8 @@ public class PolicyOverrideMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(1L, 1L, new Date(), job, notification, blackDuckBucket, blackDuckServicesFactory);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerUrl", new Date(), job);
+        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());
         Set<String> categories = new HashSet<>();
         for (ProviderMessageContent messageContent : messageContentGroups) {

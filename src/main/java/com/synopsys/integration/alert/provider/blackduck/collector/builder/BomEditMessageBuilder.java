@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -37,10 +36,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
@@ -81,7 +80,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, BomEditNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, BomEditNotificationView notificationView, BlackDuckBucket blackDuckBucket,
         BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
@@ -90,6 +89,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
         Optional<ProjectVersionComponentView> bomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
+        Long notificationId = commonMessageData.getNotificationId();
 
         // TODO Stop using this when Black Duck supports going back to the project-version
         // blackduck-common-api 2019.12.0.4+ should have the project version link in the BomEditNotificationContent
@@ -99,12 +99,13 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
             try {
                 ProjectVersionComponentView projectVersionComponentView = bomComponent.get();
                 ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
-                ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
-                                                                                  .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                                  .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectVersionData.getProjectView().getName())
-                                                                                  .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
-                                                                                      projectVersionData.getProjectVersionView().getHref().orElse(null))
-                                                                                  .applyProviderCreationTime(providerCreationDate);
+                ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
+
+                messageContentBuilder
+                    .applyCommonData(commonMessageData)
+                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectVersionData.getProjectView().getName())
+                    .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
+                        projectVersionData.getProjectVersionView().getHref().orElse(null));
 
                 List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent.get()).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent.get()).stream())
                                                           .collect(Collectors.toList());
@@ -112,8 +113,8 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                 List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, projectVersionComponentView, projectVersionData, commonAttributes));
                 projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, projectVersionComponentView, commonAttributes)));
 
-                projectVersionMessageBuilder.applyAllComponentItems(componentItems);
-                return List.of(projectVersionMessageBuilder.build());
+                messageContentBuilder.applyAllComponentItems(componentItems);
+                return List.of(messageContentBuilder.build());
             } catch (AlertException ex) {
                 logger.error("Error creating policy violation message.", ex);
             }

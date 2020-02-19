@@ -162,6 +162,12 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
         }
 
+        public Builder applyCommonData(CommonMessageData commonMessageData) {
+            return applyNotificationId(commonMessageData.getNotificationId())
+                       .applyProvider(commonMessageData.getProviderName(), commonMessageData.getProviderConfigId(), commonMessageData.getProviderURL())
+                       .applyProviderCreationTime(commonMessageData.getProviderCreationDate());
+        }
+
         public Builder applyProvider(String providerName, Long providerConfigId) {
             this.providerName = providerName;
             this.providerConfigId = providerConfigId;
