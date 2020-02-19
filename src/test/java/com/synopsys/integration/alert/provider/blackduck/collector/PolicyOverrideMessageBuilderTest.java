@@ -58,7 +58,7 @@ public class PolicyOverrideMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(1L, new Date(), job, notification, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(1L, 1L, new Date(), job, notification, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());
         Set<String> categories = new HashSet<>();
         for (ProviderMessageContent messageContent : messageContentGroups) {

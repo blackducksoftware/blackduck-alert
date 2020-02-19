@@ -81,7 +81,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, BomEditNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, BomEditNotificationView notificationView, BlackDuckBucket blackDuckBucket,
         BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
@@ -100,7 +100,7 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
                 ProjectVersionComponentView projectVersionComponentView = bomComponent.get();
                 ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
                 ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
-                                                                                  .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
+                                                                                  .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
                                                                                   .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectVersionData.getProjectView().getName())
                                                                                   .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
                                                                                       projectVersionData.getProjectVersionView().getHref().orElse(null))

@@ -40,7 +40,7 @@ public abstract class TestAction {
         String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
         String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
         return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert")
+                   .applyProvider("Alert", -1L)
                    .applyTopic("Test Topic", customTopic)
                    .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))

@@ -12,6 +12,8 @@ public class NotificationConfigTest {
     private final String providerCreationTime = "test-providerCreationTime";
     private final String notificationType = "test-notificationType";
     private final String content = "test-content";
+    private final Long providerConfigId = 1L;
+    private final String providerConfigName = "test-provider-config";
     private NotificationConfig testNotificationConfig;
 
     @BeforeEach

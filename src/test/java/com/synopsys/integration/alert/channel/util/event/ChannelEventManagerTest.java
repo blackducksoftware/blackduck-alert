@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.ContentEvent;
@@ -25,38 +25,38 @@ public class ChannelEventManagerTest {
 
     @Test
     public void testSendEvents() throws Exception {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
-        final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
+        ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
+        LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider", 1L)
                                                    .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
-        final FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
-        final DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
+        FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
+        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
             MessageContentGroup.singleton(content), fieldAccessor);
         eventManager.sendEvents(List.of(event));
     }
 
     @Test
     public void testNotAbstractChannelEvent() throws Exception {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
-        final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
-        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
+        ChannelEventManager eventManager = new ChannelEventManager(contentConverter, jmsTemplate, auditUtility);
+        LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                                   .applyProvider("testProvider", 1L)
                                                    .applyTopic("testTopic", "topic")
                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                    .build();
-        final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
+        AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }
 }

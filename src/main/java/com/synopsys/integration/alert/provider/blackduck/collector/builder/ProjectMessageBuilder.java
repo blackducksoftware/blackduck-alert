@@ -57,7 +57,7 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket,
         BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
@@ -69,7 +69,7 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
 
         try {
             ProviderMessageContent.Builder projectMessageBuilder = new ProviderMessageContent.Builder()
-                                                                       .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
+                                                                       .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
                                                                        .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), projectUrl)
                                                                        .applyAction(projectLevelAction)
                                                                        .applyNotificationId(notificationId)

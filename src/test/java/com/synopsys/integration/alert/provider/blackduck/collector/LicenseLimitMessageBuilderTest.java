@@ -28,13 +28,13 @@ public class LicenseLimitMessageBuilderTest {
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
 
-        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(1L, new Date(), null, licenseLimitNotificationView, null, blackDuckServicesFactory);
+        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(1L, 1L, new Date(), null, licenseLimitNotificationView, null, blackDuckServicesFactory);
 
         assertEquals(1, providerMessageContents.size());
     }
 
     private LicenseLimitNotificationContent createContent() {
-        final LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
+        LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
         content.setLicenseViolationType(LicenseLimitType.MANAGED_CODEBASE_BYTES_NEW);
         content.setMarketingPageUrl("https://google.com");
         content.setMessage("Unit test message");

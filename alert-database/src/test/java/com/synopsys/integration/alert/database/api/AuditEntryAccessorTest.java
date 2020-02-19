@@ -30,20 +30,20 @@ public class AuditEntryAccessorTest {
 
     @Test
     public void createAuditEntryTest() throws Exception {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
-        final ProviderMessageContent content = createMessageContent();
-        final UUID commonConfigUUID = UUID.randomUUID();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
+        ProviderMessageContent content = createMessageContent();
+        UUID commonConfigUUID = UUID.randomUUID();
+        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         final Long auditID = 10L;
         savedAuditEntryEntity.setId(auditID);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedAuditEntryEntity));
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
 
-        final Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
+        Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
         existingNotificationIdToAuditId.put(1L, auditID);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, MessageContentGroup.singleton(content));
+        Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, MessageContentGroup.singleton(content));
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
@@ -54,16 +54,16 @@ public class AuditEntryAccessorTest {
 
     @Test
     public void createAuditEntryNullEntryIdTest() throws Exception {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
-        final ProviderMessageContent content = createMessageContent();
-        final UUID commonConfigUUID = UUID.randomUUID();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
+        ProviderMessageContent content = createMessageContent();
+        UUID commonConfigUUID = UUID.randomUUID();
+        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
 
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, MessageContentGroup.singleton(content));
+        Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, MessageContentGroup.singleton(content));
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.values().iterator().next());
@@ -74,16 +74,16 @@ public class AuditEntryAccessorTest {
 
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntrySuccess(Collections.singletonList(1L));
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
 
-        final AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -95,15 +95,15 @@ public class AuditEntryAccessorTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntryFailure(Collections.singletonList(1L), null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
-        final AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -115,57 +115,57 @@ public class AuditEntryAccessorTest {
     }
 
     public ProviderMessageContent createMessageContent() throws AlertException {
-        final LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
-        final LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
+        LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
+        LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
 
         final String nameKey = "Same Key";
-        final LinkableItem linkableItem3 = new LinkableItem(nameKey, "Value", "https://google.com");
-        final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
-        final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
+        LinkableItem linkableItem3 = new LinkableItem(nameKey, "Value", "https://google.com");
+        LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
+        LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
         final String category = "category";
 
-        final ComponentItem componentItem_1 = new ComponentItem.Builder()
-                                                  .applyCategory(category)
-                                                  .applyOperation(ItemOperation.ADD)
-                                                  .applyComponentData("component", "component_1")
-                                                  .applyCategoryItem("category item", "category_item_1")
-                                                  .applyNotificationId(1L)
-                                                  .applyComponentAttribute(linkableItem1)
-                                                  .applyComponentAttribute(linkableItem2)
-                                                  .build();
-        final ComponentItem componentItem_2 = new ComponentItem.Builder()
-                                                  .applyCategory(category)
-                                                  .applyOperation(ItemOperation.UPDATE)
-                                                  .applyNotificationId(2L)
-                                                  .applyComponentData("component", "component_2")
-                                                  .applyCategoryItem("category item", "category_item_2")
-                                                  .applyComponentAttribute(linkableItem2)
-                                                  .build();
-        final ComponentItem componentItem_3 = new ComponentItem.Builder()
-                                                  .applyCategory(category)
-                                                  .applyOperation(ItemOperation.DELETE)
-                                                  .applyNotificationId(1L)
-                                                  .applyComponentData("component", "component_1")
-                                                  .applyCategoryItem("category item", "category_item_1")
-                                                  .applyComponentAttribute(linkableItem3)
-                                                  .applyComponentAttribute(linkableItem4)
-                                                  .applyComponentAttribute(linkableItem5)
-                                                  .build();
+        ComponentItem componentItem_1 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.ADD)
+                                            .applyComponentData("component", "component_1")
+                                            .applyCategoryItem("category item", "category_item_1")
+                                            .applyNotificationId(1L)
+                                            .applyComponentAttribute(linkableItem1)
+                                            .applyComponentAttribute(linkableItem2)
+                                            .build();
+        ComponentItem componentItem_2 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.UPDATE)
+                                            .applyNotificationId(2L)
+                                            .applyComponentData("component", "component_2")
+                                            .applyCategoryItem("category item", "category_item_2")
+                                            .applyComponentAttribute(linkableItem2)
+                                            .build();
+        ComponentItem componentItem_3 = new ComponentItem.Builder()
+                                            .applyCategory(category)
+                                            .applyOperation(ItemOperation.DELETE)
+                                            .applyNotificationId(1L)
+                                            .applyComponentData("component", "component_1")
+                                            .applyCategoryItem("category item", "category_item_1")
+                                            .applyComponentAttribute(linkableItem3)
+                                            .applyComponentAttribute(linkableItem4)
+                                            .applyComponentAttribute(linkableItem5)
+                                            .build();
 
-        final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
+        LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
         return new ProviderMessageContent.Builder()
-                   .applyProvider("provider")
+                   .applyProvider("provider", 1L)
                    .applyTopic("Topic", "audit utility test", "https://google.com")
                    .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2, componentItem_3))
                    .build();
     }
 
-    private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {
+    private void mockAuditRepositorySave(AuditEntryRepository auditEntryRepository, AuditEntryEntity savedAuditEntryEntity) {
         Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).then(invocation -> {
-            final AuditEntryEntity originalEntity = invocation.getArgument(0);
+            AuditEntryEntity originalEntity = invocation.getArgument(0);
             if (null != originalEntity.getId()) {
                 savedAuditEntryEntity.setId(originalEntity.getId());
             }

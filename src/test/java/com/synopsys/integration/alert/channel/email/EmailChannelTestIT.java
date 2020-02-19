@@ -81,7 +81,7 @@ public class EmailChannelTestIT extends ChannelTest {
             EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
             LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                 .applyProvider("testProvider")
+                                                 .applyProvider("testProvider", 1L)
                                                  .applyTopic("testTopic", "topic")
                                                  .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                  .build();

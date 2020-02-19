@@ -88,7 +88,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, RuleViolationNotificationView notificationView,
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, RuleViolationNotificationView notificationView,
         BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
@@ -99,7 +99,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         ItemOperation operation = ItemOperation.ADD;
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
-                                                                              .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
+                                                                              .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
                                                                               .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName())
                                                                               .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion())
                                                                               .applyProviderCreationTime(providerCreationDate);

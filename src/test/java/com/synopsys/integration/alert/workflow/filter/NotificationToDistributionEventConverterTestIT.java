@@ -27,33 +27,33 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     @Test
     public void convertToEventsTest() throws Exception {
-        final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
-        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor, descriptorMap);
-        final List<MessageContentGroup> messageContentGroups = new ArrayList<>();
-        final MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
-        final MessageContentGroup contentGroup2 = MessageContentGroup.singleton(createMessageContent("example"));
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
+        NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor, descriptorMap);
+        List<MessageContentGroup> messageContentGroups = new ArrayList<>();
+        MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
+        MessageContentGroup contentGroup2 = MessageContentGroup.singleton(createMessageContent("example"));
         messageContentGroups.add(contentGroup1);
         messageContentGroups.add(contentGroup2);
 
-        final List<DistributionEvent> emailEvents = converter.convertToEvents(createEmailConfig(), messageContentGroups);
-        final List<DistributionEvent> slackEvents = converter.convertToEvents(createSlackConfig(), messageContentGroups);
+        List<DistributionEvent> emailEvents = converter.convertToEvents(createEmailConfig(), messageContentGroups);
+        List<DistributionEvent> slackEvents = converter.convertToEvents(createSlackConfig(), messageContentGroups);
         assertEquals(4, emailEvents.size() + slackEvents.size());
     }
 
     private ConfigurationJobModel createEmailConfig() {
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
+        List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
         fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         return MockConfigurationModelFactory.createDistributionJob(fields);
     }
 
     private ConfigurationJobModel createSlackConfig() {
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
+        List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
         fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         return MockConfigurationModelFactory.createDistributionJob(fields);
     }
 
-    private ProviderMessageContent createMessageContent(final String value) throws AlertException {
-        return new ProviderMessageContent.Builder().applyProvider("testProvider").applyTopic("Name", value).build();
+    private ProviderMessageContent createMessageContent(String value) throws AlertException {
+        return new ProviderMessageContent.Builder().applyProvider("testProvider", 1L).applyTopic("Name", value).build();
     }
 
 }

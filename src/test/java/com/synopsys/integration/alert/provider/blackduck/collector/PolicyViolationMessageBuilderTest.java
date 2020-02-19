@@ -73,7 +73,7 @@ public class PolicyViolationMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(1L, new Date(), job, notificationView, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(1L, 1L, new Date(), job, notificationView, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 

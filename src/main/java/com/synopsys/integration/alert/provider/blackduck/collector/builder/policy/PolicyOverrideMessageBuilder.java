@@ -68,7 +68,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, PolicyOverrideNotificationView notificationView,
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, PolicyOverrideNotificationView notificationView,
         BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
@@ -76,7 +76,7 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
         try {
             ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
-                                                                              .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
+                                                                              .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
                                                                               .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName())
                                                                               .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), overrideContent.getProjectVersion())
                                                                               .applyProviderCreationTime(providerCreationDate);

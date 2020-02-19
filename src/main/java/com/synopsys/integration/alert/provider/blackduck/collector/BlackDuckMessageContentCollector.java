@@ -78,7 +78,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             } else {
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
-                        .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                        .buildMessageContents(notification.getId(), notification.getProviderConfigId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);
             }
         }

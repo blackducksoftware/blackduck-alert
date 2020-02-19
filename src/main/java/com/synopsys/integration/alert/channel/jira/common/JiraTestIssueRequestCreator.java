@@ -96,7 +96,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
 
     private ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {
         return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert")
+                   .applyProvider("Alert", -1L)
                    .applyTopic("Test Topic", customTopic)
                    .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))

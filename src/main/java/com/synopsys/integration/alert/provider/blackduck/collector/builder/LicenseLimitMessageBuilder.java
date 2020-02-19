@@ -49,13 +49,13 @@ public class LicenseLimitMessageBuilder implements BlackDuckMessageBuilder<Licen
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, LicenseLimitNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Long providerConfigId, Date providerCreationDate, ConfigurationJobModel job, LicenseLimitNotificationView notificationView, BlackDuckBucket blackDuckBucket,
         BlackDuckServicesFactory blackDuckServicesFactory) {
         LicenseLimitNotificationContent notificationContent = notificationView.getContent();
         try {
             String usageMessage = createUsageMessage(notificationContent);
             ProviderMessageContent.Builder projectMessageBuilder = new ProviderMessageContent.Builder()
-                                                                       .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
+                                                                       .applyProvider(getProviderName(), providerConfigId, blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
                                                                        .applyTopic(MessageBuilderConstants.LABEL_LICENSE_LIMIT_MESSAGE, notificationContent.getMessage())
                                                                        .applySubTopic(MessageBuilderConstants.LABEL_USAGE_INFO, usageMessage)
                                                                        .applyAction(ItemOperation.INFO)

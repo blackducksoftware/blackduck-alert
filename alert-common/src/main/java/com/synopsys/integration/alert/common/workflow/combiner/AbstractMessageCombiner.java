@@ -66,7 +66,7 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
         Long notificationId = oldMessage.getNotificationId().orElse(null);
 
         return new ProviderMessageContent.Builder()
-                   .applyProvider(provider.getValue(), provider.getUrl().orElse(null))
+                   .applyProvider(provider.getValue(), oldMessage.getProviderConfigId(), provider.getUrl().orElse(null))
                    .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
                    .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
                    .applyAction(action)

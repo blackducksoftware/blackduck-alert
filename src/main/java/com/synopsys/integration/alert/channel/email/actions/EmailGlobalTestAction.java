@@ -76,7 +76,7 @@ public class EmailGlobalTestAction extends TestAction {
                                                      .applyNotificationId(1L);
 
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
-                                                     .applyProvider("Test Provider")
+                                                     .applyProvider("Test Provider", -1L)
                                                      .applyTopic("Message Content", "Test from Alert")
                                                      .applyAllComponentItems(List.of(componentBuilder.build()));
 

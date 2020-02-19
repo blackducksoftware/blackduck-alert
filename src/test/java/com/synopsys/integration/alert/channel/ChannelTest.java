@@ -58,14 +58,14 @@ public abstract class ChannelTest {
         outputLogger.cleanup();
     }
 
-    public ProviderMessageContent createMessageContent(final String testName) throws AlertException {
-        final LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
-        final LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
+    public ProviderMessageContent createMessageContent(String testName) throws AlertException {
+        LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
+        LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
 
         final String nameKey = "Same Key";
-        final LinkableItem linkableItem3 = new LinkableItem(nameKey, "Value", "https://google.com");
-        final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
-        final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
+        LinkableItem linkableItem3 = new LinkableItem(nameKey, "Value", "https://google.com");
+        LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
+        LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
         ComponentItem.Builder componentBuilder1 = new ComponentItem.Builder();
         ComponentItem.Builder componentBuilder2 = new ComponentItem.Builder();
@@ -98,16 +98,16 @@ public abstract class ChannelTest {
             .applyComponentAttribute(linkableItem4)
             .applyComponentAttribute(linkableItem5);
 
-        final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
+        LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
 
-        final Collection<ComponentItem> items = new LinkedList<>();
+        Collection<ComponentItem> items = new LinkedList<>();
         items.add(componentBuilder1.build());
         items.add(componentBuilder2.build());
         items.add(componentBuilder3.build());
 
         ProviderMessageContent.Builder providerBuilder = new ProviderMessageContent.Builder();
         providerBuilder
-            .applyProvider("Test Provider")
+            .applyProvider("Test Provider", 1L)
             .applyTopic("Topic", testName, "https://google.com")
             .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
             .applyAllComponentItems(items);
@@ -120,16 +120,16 @@ public abstract class ChannelTest {
     }
 
     public RestChannelUtility createRestChannelUtility() {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         return new RestChannelUtility(channelRestConnectionFactory);
     }
 
-    private SortedSet<LinkableItem> asSet(final LinkableItem... items) {
-        final SortedSet<LinkableItem> collection = new TreeSet<>();
-        for (final LinkableItem item : items) {
+    private SortedSet<LinkableItem> asSet(LinkableItem... items) {
+        SortedSet<LinkableItem> collection = new TreeSet<>();
+        for (LinkableItem item : items) {
             collection.add(item);
         }
         return collection;

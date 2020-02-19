@@ -214,10 +214,10 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
                                           .applyNotificationId(notificationId)
                                           .build();
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("testTopic", "")
-                                                   .applyAllComponentItems(List.of(componentItem))
-                                                   .build();
+                                             .applyProvider("testProvider", 1L)
+                                             .applyTopic("testTopic", "")
+                                             .applyAllComponentItems(List.of(componentItem))
+                                             .build();
         return MessageContentGroup.singleton(content);
     }
 
