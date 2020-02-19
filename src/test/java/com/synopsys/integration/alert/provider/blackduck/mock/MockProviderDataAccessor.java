@@ -6,31 +6,82 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Assertions;
-
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
-import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
+import com.synopsys.integration.datastructure.SetMap;
 
-// FIXME this needs to be cleaned up to be useful again
-public final class MockProviderDataAccessor extends DefaultProviderDataAccessor {
-    public static final Long DEFAULT_PROVIDER_CONFIG_ID = 10000L;
+public final class MockProviderDataAccessor implements ProviderDataAccessor {
+    private Map<Long, String> providerConfigs;
+    private SetMap<Long, ProviderProject> providerProjects;
+    private SetMap<Long, ProviderUserModel> providerUsers;
 
-    private final Map<Long, Set<ProviderProject>> providerProjectMap;
-    private final Set<ProviderUserModel> users;
+    private SetMap<ProviderUserModel, ProviderProject> providerUsersToProjects;
     private Set<String> expectedEmailAddresses = Set.of();
 
     public MockProviderDataAccessor() {
-        super(null, null, null, null);
-        providerProjectMap = new HashMap<>();
-        providerProjectMap.put(DEFAULT_PROVIDER_CONFIG_ID, new HashSet<>());
-        users = new HashSet<>();
+        providerConfigs = new HashMap<>();
+        providerProjects = SetMap.createDefault();
+        providerUsers = SetMap.createDefault();
+        providerUsersToProjects = SetMap.createDefault();
+    }
+
+    public void associateProviderConfigIdWithProviderConfigName(Long id, String name) {
+        providerConfigs.put(id, name);
+    }
+
+    @Override
+    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
+        return getProviderConfigId(providerConfigName)
+                   .map(this::getProjectsByProviderConfigId)
+                   .orElse(List.of());
+    }
+
+    @Override
+    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
+        Set<ProviderProject> providerProjectSet = this.providerProjects.get(providerConfigId);
+        if (null != providerProjectSet) {
+            return new ArrayList<>(providerProjectSet);
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
+        Set<ProviderUserModel> providerUserModels = providerUsers.get(providerConfigId);
+        if (null != providerUserModels) {
+            return new ArrayList<>(providerUserModels);
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
+        return getProviderConfigId(providerConfigName)
+                   .map(this::getUsersByProviderConfigId)
+                   .orElse(List.of());
+    }
+
+    @Override
+    public Set<String> getEmailAddressesForProjectHref(String href) {
+        // This will just be gotten/set by tests
+        return expectedEmailAddresses;
+    }
+
+    public void setExpectedEmailAddresses(Set<String> expectedEmailAddresses) {
+        this.expectedEmailAddresses = expectedEmailAddresses;
+    }
+
+    @Override
+    public void deleteProjects(Collection<ProviderProject> providerProjects) {
+        for (Set<ProviderProject> currentProjects : this.providerProjects.values()) {
+            currentProjects.removeAll(providerProjects);
+        }
     }
 
     @Override
@@ -42,56 +93,22 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
         updateUserProjectRelations(projectToUserData);
     }
 
-    @Override
-    public void deleteProjects(Collection<ProviderProject> providerProjects) {
-        Set<ProviderProject> projects = providerProjectMap.get(DEFAULT_PROVIDER_CONFIG_ID);
-        if (null == projects) {
-            projects = new HashSet<>();
-        }
-        projects.removeAll(providerProjects);
-        providerProjectMap.put(DEFAULT_PROVIDER_CONFIG_ID, projects);
-    }
-
-    @Override
-    public Set<String> getEmailAddressesForProjectHref(String href) {
-        return expectedEmailAddresses;
-    }
-
-    @Override
-    public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
-        return new ArrayList<>(providerProjectMap.get(DEFAULT_PROVIDER_CONFIG_ID));
-    }
-
-    @Override
-    public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
-        return new ArrayList<>(providerProjectMap.get(providerConfigId));
-    }
-
-    public void setExpectedEmailAddresses(Set<String> expectedEmailAddresses) {
-        this.expectedEmailAddresses = expectedEmailAddresses;
-    }
-
-    @Override
-    public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
-        return new ArrayList<>(users);
-    }
-
     private List<ProviderProject> updateProjectDB(Long providerConfigId, Set<ProviderProject> currentProjects) {
-        Set<ProviderProject> projectsToAdd = new HashSet<>();
-        Set<ProviderProject> projectsToRemove = new HashSet<>();
-        List<ProviderProject> storedProjects = new ArrayList<>(providerProjectMap.get(providerConfigId));
+        Set<ProviderProject> storedProjectsSet = providerProjects.get(providerConfigId);
+        if (null == storedProjectsSet) {
+            storedProjectsSet = new HashSet<>();
+        }
 
-        projectsToRemove.addAll(storedProjects);
+        Set<ProviderProject> projectsToRemove = new HashSet<>(storedProjectsSet);
         projectsToRemove.removeIf(currentProjects::contains);
 
-        projectsToAdd.addAll(currentProjects);
-        projectsToAdd.removeIf(storedProjects::contains);
+        Set<ProviderProject> projectsToAdd = new HashSet<>(currentProjects);
+        projectsToAdd.removeIf(storedProjectsSet::contains);
 
         deleteProjects(projectsToRemove);
 
-        Set<ProviderProject> providerProjects = providerProjectMap.get(providerConfigId);
-        providerProjects.addAll(projectsToAdd);
-        return new ArrayList<>(providerProjects);
+        this.providerProjects.addAll(providerConfigId, projectsToAdd);
+        return new ArrayList<>(this.providerProjects.get(providerConfigId));
     }
 
     private void updateUserDB(Long providerConfigId, Set<String> userEmailAddresses) {
@@ -104,51 +121,64 @@ public final class MockProviderDataAccessor extends DefaultProviderDataAccessor 
                                        .map(ProviderUserModel::getEmailAddress)
                                        .collect(Collectors.toSet());
 
-        storedEmails.forEach(storedData -> {
-            // If the storedData no longer exists in the current then we need to remove the entry
+        for (String storedData : storedEmails) {// If the storedData no longer exists in the current then we need to remove the entry
             // If any of the fields have changed in the currentData, then the storedData will not be in the currentData so we will need to remove the old entry
             if (!userEmailAddresses.contains(storedData)) {
                 emailsToRemove.add(storedData);
             }
-        });
-        userEmailAddresses.forEach(currentData -> {
-            // If the currentData is not found in the stored data then we will need to add a new entry
+        }
+
+        for (String currentData : userEmailAddresses) {// If the currentData is not found in the stored data then we will need to add a new entry
             // If any of the fields have changed in the currentData, then it wont be in the stored data so we will need to add a new entry
             if (!storedEmails.contains(currentData)) {
                 emailsToAdd.add(currentData);
             }
+        }
+
+        Set<ProviderUserModel> providerUserEntitiesToRemove = providerUserEntities
+                                                                  .stream()
+                                                                  .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
+                                                                  .collect(Collectors.toSet());
+
+        Set<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
+                                                               .stream()
+                                                               .map(email -> new ProviderUserModel(email, false))
+                                                               .collect(Collectors.toSet());
+        providerUsers.computeIfPresent(providerConfigId, (id, users) -> {
+            users.removeAll(providerUserEntitiesToRemove);
+            return providerUserEntitiesToRemove;
         });
-
-        List<ProviderUserModel> providerUserEntitiesToRemove = providerUserEntities
-                                                                   .stream()
-                                                                   .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
-                                                                   .collect(Collectors.toList());
-
-        List<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
-                                                                .stream()
-                                                                .map(email -> new ProviderUserModel(email, false))
-                                                                .collect(Collectors.toList());
-        users.removeAll(providerUserEntitiesToRemove);
-        users.addAll(providerUserEntitiesToAdd);
+        providerUsers.addAll(providerConfigId, providerUserEntitiesToAdd);
     }
 
     private void updateUserProjectRelations(Map<ProviderProject, Set<String>> projectToEmailAddresses) {
         for (Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
-                mapUsersToProjectByEmail(projectToEmail.getKey().getHref(), projectToEmail.getValue());
-            } catch (AlertDatabaseConstraintException e) {
-                Assertions.fail(e.getMessage());
+                mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
+            } catch (AlertDatabaseConstraintException ignored) {
             }
         }
     }
 
-    private void mapUsersToProjectByEmail(String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
-        // Do nothing
+    private void mapUsersToProjectByEmail(ProviderProject project, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+        Set<ProviderUserModel> applicableUsers = providerUsers
+                                                     .values()
+                                                     .stream()
+                                                     .flatMap(Set::stream)
+                                                     .filter(emailAddresses::contains)
+                                                     .collect(Collectors.toSet());
+        for (ProviderUserModel user : applicableUsers) {
+            providerUsersToProjects.add(user, project);
+        }
     }
 
-    private ProviderProjectEntity convertToProjectEntity(Long providerConfigId, ProviderProject providerProject) {
-        String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerConfigId);
+    private Optional<Long> getProviderConfigId(String providerConfigName) {
+        return providerConfigs
+                   .entrySet()
+                   .stream()
+                   .filter(entry -> entry.getValue().equals(providerConfigName))
+                   .map(Map.Entry::getKey)
+                   .findFirst();
     }
 
 }
