@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public class ScheduledTaskTest {
     private final String validCronExpression = "0 0/1 * 1/1 * *";
-    private final String taskName = "scheduledTaskTest";
     private TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
     private ScheduledTask task;
@@ -31,7 +30,7 @@ public class ScheduledTaskTest {
     public void initializeTest() {
         taskScheduler = Mockito.mock(TaskScheduler.class);
         future = Mockito.mock(ScheduledFuture.class);
-        task = new ScheduledTask(taskScheduler, taskName) {
+        task = new ScheduledTask(taskScheduler) {
             @Override
             public void runTask() {
 
@@ -40,29 +39,29 @@ public class ScheduledTaskTest {
     }
 
     @Test
-    public void testGetTaskName() {
-        assertEquals(taskName, task.getTaskName());
+    public void testComputeTaskName() {
+        assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.computeTaskName());
     }
 
     @Test
     public void testNextFormattedRuntime() {
         final Long millisecondsToNextRun = 10000L;
-        final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime expectedDateTime = currentUTCTime.plus(millisecondsToNextRun, ChronoUnit.MILLIS);
-        final int seconds = expectedDateTime.getSecond();
+        int seconds = expectedDateTime.getSecond();
         if (seconds >= 30) {
             expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
         } else {
             expectedDateTime = expectedDateTime.truncatedTo(ChronoUnit.MINUTES);
         }
-        final String expectedNextRunTime = expectedDateTime.format(DateTimeFormatter.ofPattern(ScheduledTask.FORMAT_PATTERN)) + " UTC";
+        String expectedNextRunTime = expectedDateTime.format(DateTimeFormatter.ofPattern(ScheduledTask.FORMAT_PATTERN)) + " UTC";
 
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.getDelay(TimeUnit.MILLISECONDS)).thenReturn(millisecondsToNextRun);
         task.scheduleExecution(validCronExpression);
-        final Optional<String> nextRunTime = task.getFormatedNextRunTime();
+        Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertTrue(nextRunTime.isPresent());
-        final String nextTime = nextRunTime.get();
+        String nextTime = nextRunTime.get();
         assertEquals(expectedNextRunTime, nextTime);
     }
 
@@ -70,7 +69,7 @@ public class ScheduledTaskTest {
     public void testNextFormattedRuntimeNullFuture() {
         Mockito.doReturn(null).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         task.scheduleExecution(validCronExpression);
-        final Optional<String> nextRunTime = task.getFormatedNextRunTime();
+        Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertFalse(nextRunTime.isPresent());
     }
 
@@ -79,7 +78,7 @@ public class ScheduledTaskTest {
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.isCancelled()).thenReturn(true);
         task.scheduleExecution(validCronExpression);
-        final Optional<String> nextRunTime = task.getFormatedNextRunTime();
+        Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertFalse(nextRunTime.isPresent());
     }
 
@@ -88,7 +87,7 @@ public class ScheduledTaskTest {
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.isDone()).thenReturn(true);
         task.scheduleExecution(validCronExpression);
-        final Optional<String> nextRunTime = task.getFormatedNextRunTime();
+        Optional<String> nextRunTime = task.getFormatedNextRunTime();
         assertFalse(nextRunTime.isPresent());
     }
 
@@ -98,7 +97,7 @@ public class ScheduledTaskTest {
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.getDelay(TimeUnit.MILLISECONDS)).thenReturn(expectedNextRun);
         task.scheduleExecution(validCronExpression);
-        final Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
+        Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
         assertTrue(actualNextRun.isPresent());
         assertEquals(expectedNextRun, actualNextRun.get());
     }
@@ -107,7 +106,7 @@ public class ScheduledTaskTest {
     public void testNextRuntimeNullFuture() {
         Mockito.doReturn(null).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         task.scheduleExecution(validCronExpression);
-        final Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
+        Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
         assertFalse(actualNextRun.isPresent());
     }
 
@@ -116,7 +115,7 @@ public class ScheduledTaskTest {
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.isCancelled()).thenReturn(true);
         task.scheduleExecution(validCronExpression);
-        final Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
+        Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
         assertFalse(actualNextRun.isPresent());
     }
 
@@ -125,7 +124,7 @@ public class ScheduledTaskTest {
         Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         Mockito.when(future.isDone()).thenReturn(true);
         task.scheduleExecution(validCronExpression);
-        final Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
+        Optional<Long> actualNextRun = task.getMillisecondsToNextRun();
         assertFalse(actualNextRun.isPresent());
     }
 

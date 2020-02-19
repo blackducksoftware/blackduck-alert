@@ -57,12 +57,10 @@ import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class BlackDuckAccumulator extends ProviderTask {
-    public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
-    private final String searchRangeFileName;
     private BlackDuckProviderKey blackDuckProviderKey;
 
     @Autowired
@@ -71,15 +69,15 @@ public class BlackDuckAccumulator extends ProviderTask {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
-        this.searchRangeFileName = String.format("%s-last-search.txt", computeTaskName());
-    }
-
-    public String getSearchRangeFileName() {
-        return searchRangeFileName;
     }
 
     public String formatDate(Date date) {
         return RestConstants.formatDate(date);
+    }
+
+    public String getSearchRangeFileName() {
+        // FIXME delete this
+        return null;
     }
 
     @Override
@@ -94,10 +92,11 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     public void accumulate() {
         try {
-            if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
-                initializeSearchRangeFile();
-            }
-            DateRange dateRange = createDateRange(getSearchRangeFileName());
+            // FIXME read from the database
+            //            if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
+            //                initializeSearchRangeFile();
+            //            }
+            DateRange dateRange = null; // FIXME createDateRange(getSearchRangeFileName());
             Date nextSearchStartTime = accumulate(dateRange);
             String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
@@ -118,11 +117,11 @@ public class BlackDuckAccumulator extends ProviderTask {
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withSecond(0).withNano(0);
         Date date = Date.from(zonedDate.toInstant());
-        filePersistenceUtil.writeToFile(getSearchRangeFileName(), formatDate(date));
+        // FIXME replace this with database write: filePersistenceUtil.writeToFile(getSearchRangeFileName(), formatDate(date));
     }
 
     protected void saveNextSearchStart(String nextSearchStart) throws IOException {
-        filePersistenceUtil.writeToFile(getSearchRangeFileName(), nextSearchStart);
+        // FIXME replace this with database write: filePersistenceUtil.writeToFile(getSearchRangeFileName(), nextSearchStart);
     }
 
     protected DateRange createDateRange(String lastSearchFileName) {
