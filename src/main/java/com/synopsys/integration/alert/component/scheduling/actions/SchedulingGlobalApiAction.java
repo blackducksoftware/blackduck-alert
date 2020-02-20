@@ -23,26 +23,33 @@
 package com.synopsys.integration.alert.component.scheduling.actions;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
+// FIXME this class needs to be updated to handle multiple providers
 public class SchedulingGlobalApiAction extends ApiAction {
-    private final TaskManager taskManager;
+    private BlackDuckProviderKey blackDuckProviderKey;
+    private TaskManager taskManager;
 
     @Autowired
-    public SchedulingGlobalApiAction(TaskManager taskManager) {
+    public SchedulingGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, TaskManager taskManager) {
+        this.blackDuckProviderKey = blackDuckProviderKey;
         this.taskManager = taskManager;
     }
 
@@ -58,8 +65,16 @@ public class SchedulingGlobalApiAction extends ApiAction {
 
     @Override
     public FieldModel afterGetAction(FieldModel fieldModel) {
-        String blackDuckNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS).map(String::valueOf).orElse("");
+        Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        String blackDuckGlobalConfigName = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)
+                                               .getValue()
+                                               .orElseThrow();
+
+        // FIXME do this dynamically:
+        String accumulatorTaskName = ProviderTask.computeProviderTaskName(blackDuckProviderKey, blackDuckGlobalConfigName, BlackDuckAccumulator.class);
+        String blackDuckNextRun = taskManager.getDifferenceToNextRun(accumulatorTaskName, TimeUnit.SECONDS).map(String::valueOf).orElse("");
         fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
+        // end of block to clean up
 
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         String processFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(String.valueOf(DailyTask.DEFAULT_HOUR_OF_DAY));

@@ -23,11 +23,12 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -35,21 +36,19 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
     private ProviderLifecycleManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
-    private final BlackDuckPropertiesFactory propertiesFactory;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
 
-    public BlackDuckGlobalApiAction(BlackDuckPropertiesFactory propertiesFactory, BlackDuckProvider blackDuckProvider, ProviderLifecycleManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
+    public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderLifecycleManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.blackDuckProvider = blackDuckProvider;
-        this.propertiesFactory = propertiesFactory;
         this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
         this.configurationFieldModelConverter = configurationFieldModelConverter;
@@ -68,23 +67,22 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public void afterDeleteAction(String descriptorName, String context) {
-        // FIXME this should now be handled by the ProviderLifeCycleManager
-        //  providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, )
+    public void afterDeleteAction(FieldModel fieldModel) {
+        Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        FieldValueModel fieldValueModel = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
-        List<ProviderProject> blackDuckProjects = List.of(); // providerDataAccessor.getProjectsByProviderConfigName(); // FIXME this needs to be updated: providerDataAccessor.findByProviderKey(blackDuckProviderKey);
+        providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, blackDuckGlobalConfigName);
+
+        List<ProviderProject> blackDuckProjects = providerDataAccessor.getProjectsByProviderConfigName(blackDuckGlobalConfigName);
         providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertDatabaseConstraintException {
-        ConfigurationModel configurationModel = configurationFieldModelConverter.convertToConfigurationModel(fieldModel);
-        boolean valid = blackDuckProvider.validate(configurationModel);
+    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertException {
+        ConfigurationModel blackDuckGlobalConfiguration = configurationFieldModelConverter.convertToConfigurationModel(fieldModel);
+        boolean valid = blackDuckProvider.validate(blackDuckGlobalConfiguration);
         if (valid) {
-            // FIXME figure out what to do with this: Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-            //  if (nextRunTime.isEmpty()) {
-            // FIXME this should now be handled by the ProviderLifeCycleManager
-            //  providerLifecycleManager.scheduleTasksForProviderConfig(blackDuckProvider, );
-            //  }
+            providerLifecycleManager.scheduleTasksForProviderConfig(blackDuckProvider, blackDuckGlobalConfiguration);
         }
     }
 

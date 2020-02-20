@@ -44,8 +44,8 @@ public class UpdateNotifierTask extends StartupScheduledTask {
     private final UpdateEmailService updateEmailService;
 
     @Autowired
-    public UpdateNotifierTask(final TaskScheduler taskScheduler, final UpdateChecker updateChecker, final SystemMessageUtility systemMessageUtility, final UpdateEmailService updateEmailService, final TaskManager taskManager) {
-        super(taskScheduler, TASK_NAME, taskManager);
+    public UpdateNotifierTask(TaskScheduler taskScheduler, UpdateChecker updateChecker, SystemMessageUtility systemMessageUtility, UpdateEmailService updateEmailService, TaskManager taskManager) {
+        super(taskScheduler, taskManager);
         this.updateChecker = updateChecker;
         this.systemMessageUtility = systemMessageUtility;
         this.updateEmailService = updateEmailService;
@@ -53,7 +53,7 @@ public class UpdateNotifierTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        final UpdateModel updateModel = updateChecker.getUpdateModel();
+        UpdateModel updateModel = updateChecker.getUpdateModel();
         if (updateModel.getUpdatable()) {
             addSystemMessage(updateModel.getDockerTagVersion());
             updateEmailService.sendUpdateEmail(updateModel);
@@ -65,8 +65,8 @@ public class UpdateNotifierTask extends StartupScheduledTask {
         return CRON_EXPRESSION;
     }
 
-    private void addSystemMessage(final String versionName) {
-        final String message = String.format("There is a new version of %s available: %s", AlertConstants.ALERT_APPLICATION_NAME, versionName);
+    private void addSystemMessage(String versionName) {
+        String message = String.format("There is a new version of %s available: %s", AlertConstants.ALERT_APPLICATION_NAME, versionName);
         systemMessageUtility.removeSystemMessagesByType(SystemMessageType.UPDATE_AVAILABLE);
         systemMessageUtility.addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.UPDATE_AVAILABLE);
     }

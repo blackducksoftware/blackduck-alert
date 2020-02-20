@@ -49,8 +49,8 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     private ChannelEventManager eventManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, String taskName, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
-        super(taskScheduler, taskName, taskManager);
+    public ProcessingTask(TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
+        super(taskScheduler, taskManager);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;

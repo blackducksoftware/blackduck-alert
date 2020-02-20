@@ -55,7 +55,7 @@ public class DailyTask extends ProcessingTask {
     @Autowired
     public DailyTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
         TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
-        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, eventManager, taskManager);
+        super(taskScheduler, notificationManager, notificationProcessor, eventManager, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }

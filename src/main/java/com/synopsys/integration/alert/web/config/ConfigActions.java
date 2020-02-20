@@ -111,10 +111,8 @@ public class ConfigActions {
                 ConfigurationModel configurationModel = configuration.get();
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
-                String descriptorName = fieldModel.getDescriptorName();
-                String context = fieldModel.getContext();
                 configurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
-                fieldModelProcessor.performAfterDeleteAction(descriptorName, context);
+                fieldModelProcessor.performAfterDeleteAction(fieldModel);
             }
         }
     }

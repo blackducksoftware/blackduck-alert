@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
 import com.synopsys.integration.blackduck.api.core.BlackDuckPathSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -79,7 +80,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(List.of(user1, user2, user3)));
         Mockito.doNothing().when(projectUsersService).addUserToProject(Mockito.any(), Mockito.any(UserView.class));
 
-        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(null, providerDataAccessor, configurationAccessor);
+        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(new BlackDuckProviderKey(), null, providerDataAccessor, configurationAccessor);
         projectSyncTask.setProviderPropertiesForRun(blackDuckProperties);
         projectSyncTask.run();
 

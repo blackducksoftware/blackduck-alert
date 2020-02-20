@@ -67,7 +67,7 @@ public class PurgeTask extends StartupScheduledTask {
     @Autowired
     public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager, SystemMessageUtility systemMessageUtility, TaskManager taskManager,
         ConfigurationAccessor configurationAccessor) {
-        super(taskScheduler, TASK_NAME, taskManager);
+        super(taskScheduler, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.notificationManager = notificationManager;
         this.systemMessageUtility = systemMessageUtility;
@@ -86,10 +86,10 @@ public class PurgeTask extends StartupScheduledTask {
         try {
             List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
             String purgeSavedCronValue = schedulingConfigs.stream()
-                                                   .findFirst()
-                                                   .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
-                                                   .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                   .orElse(String.valueOf(DEFAULT_FREQUENCY));
+                                             .findFirst()
+                                             .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
+                                             .flatMap(ConfigurationFieldModel::getFieldValue)
+                                             .orElse(String.valueOf(DEFAULT_FREQUENCY));
             return String.format(CRON_FORMAT, purgeSavedCronValue);
         } catch (AlertDatabaseConstraintException e) {
             logger.error("Error connecting to DB", e);
@@ -153,9 +153,9 @@ public class PurgeTask extends StartupScheduledTask {
             Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
-                                                           .map(SchedulingConfiguration::getDataFrequencyDays)
-                                                           .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
-                                                           .orElse(DEFAULT_FREQUENCY);
+                                                     .map(SchedulingConfiguration::getDataFrequencyDays)
+                                                     .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
+                                                     .orElse(DEFAULT_FREQUENCY);
                 setDayOffset(purgeDataFrequencyDays);
                 run();
                 resetDayOffset();

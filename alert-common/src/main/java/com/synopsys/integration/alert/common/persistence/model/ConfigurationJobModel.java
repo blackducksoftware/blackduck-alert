@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -72,6 +73,10 @@ public class ConfigurationJobModel extends AlertSerializableModel {
 
     public String getProviderName() {
         return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+    }
+
+    public String getProviderConfigName() {
+        return getFieldAccessor().getStringOrNull(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
     }
 
     public FrequencyType getFrequencyType() {

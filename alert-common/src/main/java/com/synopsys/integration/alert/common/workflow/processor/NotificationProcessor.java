@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -84,8 +85,7 @@ public class NotificationProcessor {
         }
 
         Provider provider = providerKeyToProvider.get(job.getProviderName());
-        //TODO lookup the configuration for the provider
-        ConfigurationModel providerConfig = null;
+        ConfigurationModel providerConfig = retrieveProviderConfig(job);
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
         ProviderDistributionFilter distributionFilter = provider.createDistributionFilter(providerProperties);
         List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notifications);
@@ -132,6 +132,14 @@ public class NotificationProcessor {
             logger.error("Could not create distribution events", e);
         }
         return List.of();
+    }
+
+    private ConfigurationModel retrieveProviderConfig(ConfigurationJobModel job) {
+        try {
+            return configurationAccessor.getProviderConfigurationByName(job.getProviderConfigName()).orElseThrow();
+        } catch (Exception e) {
+            throw new AlertRuntimeException(String.format("Could not retrieve the provider config for job: %s. Exiting task.", job.getName()), e);
+        }
     }
 
 }

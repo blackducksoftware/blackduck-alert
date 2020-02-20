@@ -43,7 +43,7 @@ public class ProcessingTaskTest {
 
     public ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
         TaskManager taskManager) {
-        return new ProcessingTask(taskScheduler, taskName, notificationManager, notificationProcessor, eventManager, taskManager) {
+        return new ProcessingTask(taskScheduler, notificationManager, notificationProcessor, eventManager, taskManager) {
 
             @Override
             public String scheduleCronExpression() {
