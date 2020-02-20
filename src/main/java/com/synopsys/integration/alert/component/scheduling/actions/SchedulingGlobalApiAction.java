@@ -24,13 +24,20 @@ package com.synopsys.integration.alert.component.scheduling.actions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -44,13 +51,16 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 @Component
 // FIXME this class needs to be updated to handle multiple providers
 public class SchedulingGlobalApiAction extends ApiAction {
+    private static final Logger logger = LoggerFactory.getLogger(SchedulingGlobalApiAction.class);
     private BlackDuckProviderKey blackDuckProviderKey;
     private TaskManager taskManager;
+    private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public SchedulingGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, TaskManager taskManager) {
+    public SchedulingGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.taskManager = taskManager;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -71,9 +81,15 @@ public class SchedulingGlobalApiAction extends ApiAction {
                                                .orElseThrow();
 
         // FIXME do this dynamically:
-        String accumulatorTaskName = ProviderTask.computeProviderTaskName(blackDuckProviderKey, blackDuckGlobalConfigName, BlackDuckAccumulator.class);
-        String blackDuckNextRun = taskManager.getDifferenceToNextRun(accumulatorTaskName, TimeUnit.SECONDS).map(String::valueOf).orElse("");
-        fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
+        try {
+            Optional<ConfigurationModel> configurationModel = configurationAccessor.getProviderConfigurationByName(blackDuckGlobalConfigName);
+            Long configId = configurationModel.map(ConfigurationModel::getConfigurationId).orElse(ProviderProperties.UNKNOWN_CONFIG_ID);
+            String accumulatorTaskName = ProviderTask.computeProviderTaskName(blackDuckProviderKey, configId, BlackDuckAccumulator.class);
+            String blackDuckNextRun = taskManager.getDifferenceToNextRun(accumulatorTaskName, TimeUnit.SECONDS).map(String::valueOf).orElse("");
+            fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
+        } catch (AlertDatabaseConstraintException ex) {
+            logger.error("Error finding provider configuration to provide updated task information.", ex);
+        }
         // end of block to clean up
 
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));

@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobal
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public abstract class ProviderProperties {
+    public static final Long UNKNOWN_CONFIG_ID = -1L;
     private Long configId;
     private boolean configEnabled;
     private String configName;
