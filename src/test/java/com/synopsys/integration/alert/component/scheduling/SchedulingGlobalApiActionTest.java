@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
@@ -139,10 +140,11 @@ public class SchedulingGlobalApiActionTest {
         final Long accumulatorTime = 998L;
         final String nextRunTimeString = "task_next_run_time";
         TaskManager taskManager = Mockito.mock(TaskManager.class);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(taskManager.getDifferenceToNextRun(Mockito.anyString(), Mockito.any(TimeUnit.class))).thenReturn(Optional.of(accumulatorTime));
         Mockito.when(taskManager.getNextRunTime(Mockito.anyString())).thenReturn(Optional.of(nextRunTimeString));
 
-        SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager);
+        SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager, configurationAccessor);
         FieldModel fieldModel = new FieldModel(SCHEDULING_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         FieldModel actualFieldModel = schedulingActionApi.afterGetAction(fieldModel);
         Optional<String> accumulatorNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN);
@@ -161,7 +163,8 @@ public class SchedulingGlobalApiActionTest {
     @Test
     public void testUpdateConfig() {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
-        SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager, configurationAccessor);
 
         FieldModel fieldModel = new FieldModel(SCHEDULING_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("1"), false));
@@ -174,7 +177,8 @@ public class SchedulingGlobalApiActionTest {
     @Test
     public void testSaveConfig() {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
-        SchedulingGlobalApiAction actionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        SchedulingGlobalApiAction actionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager, configurationAccessor);
 
         FieldModel fieldModel = new FieldModel(SCHEDULING_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("2"), false));

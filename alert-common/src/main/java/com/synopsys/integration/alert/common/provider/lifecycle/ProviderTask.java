@@ -34,11 +34,11 @@ public abstract class ProviderTask extends ScheduledTask {
     private ProviderProperties providerProperties;
 
     // TODO reevaluate if this is needed once scheduling supports multiple providers
-    public static String computeProviderTaskName(ProviderKey providerKey, String providerConfigName, Class<? extends ProviderTask> providerTaskClass) {
+    public static String computeProviderTaskName(ProviderKey providerKey, Long providerConfigId, Class<? extends ProviderTask> providerTaskClass) {
         String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
         String providerUniversalKey = providerKey.getUniversalKey();
 
-        return String.format("%s::Provider[%s]::Configuration[%s]", superTaskName, providerUniversalKey, providerConfigName);
+        return String.format("%s::Provider[%s]::Configuration[id:%d]", superTaskName, providerUniversalKey, providerConfigId);
     }
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler) {
@@ -59,7 +59,7 @@ public abstract class ProviderTask extends ScheduledTask {
     @Override
     public String getTaskName() {
         validateProviderProperties();
-        return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigName(), getClass());
+        return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
     }
 
     public final void setProviderPropertiesForRun(ProviderProperties providerProperties) {
