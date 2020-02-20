@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 
@@ -29,7 +30,7 @@ public class DailyTaskTest {
     @Test
     public void testGetTaskName() {
         DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
-        assertEquals(DailyTask.TASK_NAME, task.getTaskName());
+        assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.getTaskName());
     }
 
     @Test

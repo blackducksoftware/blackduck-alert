@@ -45,7 +45,6 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 @Component
 public class DailyTask extends ProcessingTask {
     private final Logger logger = LoggerFactory.getLogger(DailyTask.class);
-    public static final String TASK_NAME = "daily-frequency";
     public static final String CRON_FORMAT = "0 0 %s 1/1 * ?";
     public static final int DEFAULT_HOUR_OF_DAY = 0;
 

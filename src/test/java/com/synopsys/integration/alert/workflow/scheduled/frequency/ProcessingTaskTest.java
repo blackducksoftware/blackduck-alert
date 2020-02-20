@@ -30,7 +30,6 @@ import com.synopsys.integration.rest.RestConstants;
 
 public class ProcessingTaskTest {
 
-    private final String taskName = "processing-test-task";
     private List<AlertNotificationModel> modelList;
     private List<DistributionEvent> eventList;
 
@@ -60,7 +59,7 @@ public class ProcessingTaskTest {
     @Test
     public void testGetTaskName() {
         ProcessingTask task = createTask(null, null, null, null, null);
-        assertEquals(taskName, task.getTaskName());
+        assertEquals(ProcessingTask.computeTaskName(task.getClass()), task.getTaskName());
     }
 
     @Test

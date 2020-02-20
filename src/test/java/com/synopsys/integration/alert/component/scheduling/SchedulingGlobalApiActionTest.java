@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.actions.SchedulingGlobalApiAction;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -166,8 +167,8 @@ public class SchedulingGlobalApiActionTest {
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("1"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("5"), false));
         schedulingActionApi.handleNewAndSavedConfig(fieldModel);
-        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
-        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
+        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(DailyTask.class)));
+        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(PurgeTask.class)));
     }
 
     @Test
@@ -179,8 +180,8 @@ public class SchedulingGlobalApiActionTest {
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of("2"), false));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of("6"), false));
         actionApi.handleNewAndSavedConfig(fieldModel);
-        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(DailyTask.TASK_NAME));
-        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(PurgeTask.TASK_NAME));
+        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(DailyTask.class)));
+        Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(PurgeTask.class)));
     }
 
 }
