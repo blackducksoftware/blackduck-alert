@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-02-20-14-35-09-961">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="provider_task_properties"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="provider_task_properties">
+            <column name="provider_config_id" type="BIGINT"/>
+            <column name="task_name" type="VARCHAR"/>
+            <column name="property_name" type="VARCHAR"/>
+            <column name="value" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-20-14-55-54-948">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="provider_task_properties_provider_config_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="provider_task_properties"
+                baseColumnNames="provider_config_id"
+                constraintName="provider_task_properties_provider_config_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="descriptor_configs"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <!-- FIXME create upgrade script for existing tasks -->
+</databaseChangeLog>

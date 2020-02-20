@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -40,9 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -57,27 +57,24 @@ import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class BlackDuckAccumulator extends ProviderTask {
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+    public static final String TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE = "last.search.end.date";
 
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+
+    private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationManager notificationManager;
-    private final FilePersistenceUtil filePersistenceUtil;
-    private BlackDuckProviderKey blackDuckProviderKey;
+    private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
     @Autowired
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil) {
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
         super(blackDuckProviderKey, taskScheduler);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
-        this.filePersistenceUtil = filePersistenceUtil;
+        this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
     }
 
     public String formatDate(Date date) {
         return RestConstants.formatDate(date);
-    }
-
-    public String getSearchRangeFileName() {
-        // FIXME delete this
-        return null;
     }
 
     @Override
@@ -92,17 +89,13 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     public void accumulate() {
         try {
-            // FIXME read from the database
-            //            if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
-            //                initializeSearchRangeFile();
-            //            }
-            DateRange dateRange = null; // FIXME createDateRange(getSearchRangeFileName());
+            DateRange dateRange = createDateRange();
             Date nextSearchStartTime = accumulate(dateRange);
             String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
             saveNextSearchStart(nextSearchStartString);
-        } catch (IOException ex) {
-            logger.error("Error occurred accumulating data! ", ex);
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("Error occurred accumulating data! ", e);
         } finally {
             Optional<Long> nextRun = getMillisecondsToNextRun();
             if (nextRun.isPresent()) {
@@ -112,43 +105,40 @@ public class BlackDuckAccumulator extends ProviderTask {
         }
     }
 
-    protected void initializeSearchRangeFile() throws IOException {
-        ZonedDateTime zonedDate = ZonedDateTime.now();
-        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
-        zonedDate = zonedDate.withSecond(0).withNano(0);
+    protected void initializeSearchRangeFile() throws AlertDatabaseConstraintException {
+        ZonedDateTime zonedDate = getCurrentZonedDate();
         Date date = Date.from(zonedDate.toInstant());
-        // FIXME replace this with database write: filePersistenceUtil.writeToFile(getSearchRangeFileName(), formatDate(date));
+        saveNextSearchStart(formatDate(date));
     }
 
-    protected void saveNextSearchStart(String nextSearchStart) throws IOException {
-        // FIXME replace this with database write: filePersistenceUtil.writeToFile(getSearchRangeFileName(), nextSearchStart);
+    protected Optional<String> getNextSearchStart() {
+        return providerTaskPropertiesAccessor.getTaskProperty(getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
     }
 
-    protected DateRange createDateRange(String lastSearchFileName) {
-        ZonedDateTime zonedEndDate = ZonedDateTime.now();
-        zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
-        zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
+    protected void saveNextSearchStart(String nextSearchStart) throws AlertDatabaseConstraintException {
+        providerTaskPropertiesAccessor.setTaskProperty(getProviderProperties().getConfigId(), getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, nextSearchStart);
+    }
+
+    protected DateRange createDateRange() {
+        ZonedDateTime zonedEndDate = getCurrentZonedDate();
         ZonedDateTime zonedStartDate = zonedEndDate;
         Date endDate = Date.from(zonedEndDate.toInstant());
 
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
-            if (filePersistenceUtil.exists(lastSearchFileName)) {
-                String lastRunValue = readSearchStartTime(lastSearchFileName);
+            Optional<String> nextSearchStartTime = getNextSearchStart();
+            if (nextSearchStartTime.isPresent()) {
+                String lastRunValue = nextSearchStartTime.get();
                 Date startTime = parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
                 zonedStartDate = zonedEndDate.minusMinutes(1);
             }
             startDate = Date.from(zonedStartDate.toInstant());
-        } catch (IOException | ParseException e) {
+        } catch (ParseException e) {
             logger.error("Error creating date range", e);
         }
         return DateRange.of(startDate, endDate);
-    }
-
-    protected String readSearchStartTime(String lastSearchFileName) throws IOException {
-        return filePersistenceUtil.readFromFile(lastSearchFileName);
     }
 
     protected Date parseDateString(String date) throws ParseException {
@@ -247,6 +237,14 @@ public class BlackDuckAccumulator extends ProviderTask {
             logger.info("No notifications found; using current search time");
         }
         return newStartDate;
+    }
+
+    private ZonedDateTime getCurrentZonedDate() {
+        return ZonedDateTime
+                   .now()
+                   .withZoneSameInstant(ZoneOffset.UTC)
+                   .withSecond(0)
+                   .withNano(0);
     }
 
 }
