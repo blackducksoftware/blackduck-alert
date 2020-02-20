@@ -9,8 +9,12 @@
         </preConditions>
         <createTable schemaName="alert" tableName="provider_task_properties">
             <column name="provider_config_id" type="BIGINT"/>
-            <column name="task_name" type="VARCHAR"/>
-            <column name="property_name" type="VARCHAR"/>
+            <column name="task_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="property_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
             <column name="value" type="VARCHAR"/>
         </createTable>
     </changeSet>

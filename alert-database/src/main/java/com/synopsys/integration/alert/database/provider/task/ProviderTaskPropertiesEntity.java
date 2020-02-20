@@ -6,12 +6,12 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.DatabaseEntity;
+import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
 @IdClass(ProviderTaskPropertiesEntityPK.class)
 @Table(schema = "alert", name = "provider_task_properties")
-public class ProviderTaskPropertiesEntity extends DatabaseEntity {
+public class ProviderTaskPropertiesEntity extends BaseEntity {
     @Column(name = "provider_config_id")
     private Long providerConfigId;
 
