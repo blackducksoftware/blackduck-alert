@@ -102,4 +102,5 @@ public class BlackDuckGlobalApiActionTest {
         assertTrue(accumulatorNextRunTime.isPresent());
         assertTrue(syncNextRunTime.isPresent());
     }
+
 }
