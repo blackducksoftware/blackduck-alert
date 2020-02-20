@@ -24,8 +24,8 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +75,38 @@ public class ProviderLifecycleManager {
     }
 
     public List<ProviderTask> scheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
-        return performSchedulingActionForProviderConfig(provider, providerConfig, "scheduling", task -> taskManager.getNextRunTime(task.getTaskName()).isEmpty(), this::scheduleTask);
+        logger.debug("Performing scheduling task for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        List<ProviderTask> acceptedTasks = new ArrayList<>();
+
+        ProviderProperties providerProperties = provider.createProperties(providerConfig);
+        if (providerProperties.isConfigEnabled()) {
+            throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", providerProperties.getConfigName()));
+        }
+
+        List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
+        for (ProviderTask task : providerTasks) {
+            if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
+                scheduleTask(task);
+                acceptedTasks.add(task);
+            }
+        }
+        return acceptedTasks;
     }
 
-    public List<ProviderTask> unscheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
-        return performSchedulingActionForProviderConfig(provider, providerConfig, "unscheduling", task -> taskManager.getNextRunTime(task.getTaskName()).isPresent(), this::unscheduleTask);
+    public void unscheduleTasksForProviderConfig(Provider provider, String providerConfigName) {
+        logger.debug("Performing unscheduling task for provider config: {}", providerConfigName);
+
+        // TODO find a better way to get the task names
+        Set<String> runningTasksForProviderConfig = taskManager.getRunningTaskNames()
+                                                        .stream()
+                                                        .filter(name -> name.contains(provider.getKey().getUniversalKey()))
+                                                        .filter(name -> name.contains(providerConfigName))
+                                                        .collect(Collectors.toSet());
+        for (String taskName : runningTasksForProviderConfig) {
+            if (taskManager.getNextRunTime(taskName).isPresent()) {
+                unscheduleTask(taskName);
+            }
+        }
     }
 
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
@@ -100,33 +127,13 @@ public class ProviderLifecycleManager {
         return initializedTasks;
     }
 
-    private List<ProviderTask> performSchedulingActionForProviderConfig(Provider provider, ConfigurationModel providerConfig, String actionName, Predicate<ProviderTask> schedulingCondition, Consumer<ProviderTask> managementAction)
-        throws AlertException {
-        logger.debug("Performing {} task for config with id {} and descriptor id {}", actionName, providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
-        List<ProviderTask> acceptedTasks = new ArrayList<>();
-
-        ProviderProperties providerProperties = provider.createProperties(providerConfig);
-        if (providerProperties.isConfigEnabled()) {
-            throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", providerProperties.getConfigName()));
-        }
-
-        List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
-        for (ProviderTask task : providerTasks) {
-            if (schedulingCondition.test(task)) {
-                managementAction.accept(task);
-                acceptedTasks.add(task);
-            }
-        }
-        return acceptedTasks;
-    }
-
     private void scheduleTask(ProviderTask task) {
         taskManager.registerTask(task);
         taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.getTaskName());
     }
 
-    private void unscheduleTask(ProviderTask task) {
-        taskManager.unregisterTask(task.getTaskName());
+    private void unscheduleTask(String taskName) {
+        taskManager.unregisterTask(taskName);
     }
 
 }

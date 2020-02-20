@@ -50,86 +50,86 @@ public class FieldModelProcessor {
     private final DescriptorProcessor descriptorProcessor;
 
     @Autowired
-    public FieldModelProcessor(final ConfigurationFieldModelConverter fieldModelConverter, final FieldValidationAction fieldValidationAction, final DescriptorProcessor descriptorProcessor) {
+    public FieldModelProcessor(ConfigurationFieldModelConverter fieldModelConverter, FieldValidationAction fieldValidationAction, DescriptorProcessor descriptorProcessor) {
         this.fieldModelConverter = fieldModelConverter;
         this.fieldValidationAction = fieldValidationAction;
         this.descriptorProcessor = descriptorProcessor;
     }
 
-    public FieldModel performAfterReadAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performAfterReadAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.afterGetAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public FieldModel performBeforeDeleteAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performBeforeDeleteAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.beforeDeleteAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public void performAfterDeleteAction(final String descriptorName, final String context) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(descriptorName, context);
+    public void performAfterDeleteAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
-            apiAction.afterDeleteAction(descriptorName, context);
+            ApiAction apiAction = optionalApiAction.get();
+            apiAction.afterDeleteAction(fieldModel);
         }
     }
 
-    public FieldModel performBeforeSaveAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performBeforeSaveAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.beforeSaveAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public FieldModel performAfterSaveAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performAfterSaveAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.afterSaveAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public FieldModel performBeforeUpdateAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performBeforeUpdateAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.beforeUpdateAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public FieldModel performAfterUpdateAction(final FieldModel fieldModel) throws AlertException {
-        final Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performAfterUpdateAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
-            final ApiAction apiAction = optionalApiAction.get();
+            ApiAction apiAction = optionalApiAction.get();
             return apiAction.afterUpdateAction(fieldModel);
         }
         return fieldModel;
     }
 
-    public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        final List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
+    public Map<String, String> validateFieldModel(FieldModel fieldModel) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);
         return fieldErrors;
     }
 
-    public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
-        final Optional<ConfigurationModel> configurationModel = descriptorProcessor.getSavedEntity(id);
+    public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {
+        Optional<ConfigurationModel> configurationModel = descriptorProcessor.getSavedEntity(id);
         if (configurationModel.isPresent()) {
-            final Map<String, FieldValueModel> updatedFieldValueModels = updateConfigurationWithSavedConfiguration(fieldModel.getKeyToValues(), configurationModel.get().getCopyOfFieldList());
+            Map<String, FieldValueModel> updatedFieldValueModels = updateConfigurationWithSavedConfiguration(fieldModel.getKeyToValues(), configurationModel.get().getCopyOfFieldList());
             fieldModel.setKeyToValues(updatedFieldValueModels);
             return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
         }
@@ -137,35 +137,35 @@ public class FieldModelProcessor {
         return fieldModelConverter.convertToConfigurationFieldModelMap(fieldModel).values();
     }
 
-    public FieldModel createCustomMessageFieldModel(final FieldModel fieldModel) throws AlertException {
-        final String id = fieldModel.getId();
+    public FieldModel createCustomMessageFieldModel(FieldModel fieldModel) throws AlertException {
+        String id = fieldModel.getId();
         FieldModel upToDateFieldModel = fieldModel;
         if (StringUtils.isNotBlank(id)) {
-            final Long convertedId = Long.parseLong(id);
+            Long convertedId = Long.parseLong(id);
             upToDateFieldModel = populateTestFieldModel(convertedId, fieldModel);
         }
         return upToDateFieldModel;
     }
 
-    private FieldModel populateTestFieldModel(final Long id, final FieldModel fieldModel) throws AlertException {
-        final Collection<ConfigurationFieldModel> configurationFieldModels = fillFieldModelWithExistingData(id, fieldModel);
-        final Map<String, FieldValueModel> fields = new HashMap<>();
-        for (final ConfigurationFieldModel configurationFieldModel : configurationFieldModels) {
-            final FieldValueModel fieldValueModel = new FieldValueModel(configurationFieldModel.getFieldValues(), configurationFieldModel.isSet());
+    private FieldModel populateTestFieldModel(Long id, FieldModel fieldModel) throws AlertException {
+        Collection<ConfigurationFieldModel> configurationFieldModels = fillFieldModelWithExistingData(id, fieldModel);
+        Map<String, FieldValueModel> fields = new HashMap<>();
+        for (ConfigurationFieldModel configurationFieldModel : configurationFieldModels) {
+            FieldValueModel fieldValueModel = new FieldValueModel(configurationFieldModel.getFieldValues(), configurationFieldModel.isSet());
             fields.put(configurationFieldModel.getFieldKey(), fieldValueModel);
         }
-        final FieldModel newFieldModel = new FieldModel("", "", fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields);
+        FieldModel newFieldModel = new FieldModel("", "", fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields);
         return fieldModel.fill(newFieldModel);
     }
 
-    private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(final Map<String, FieldValueModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {
-        final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(ConfigurationFieldModel::isSensitive).collect(Collectors.toSet());
-        for (final ConfigurationFieldModel sensitiveConfigurationFieldModel : sensitiveFields) {
-            final String key = sensitiveConfigurationFieldModel.getFieldKey();
+    private Map<String, FieldValueModel> updateConfigurationWithSavedConfiguration(Map<String, FieldValueModel> newConfiguration, Collection<ConfigurationFieldModel> savedConfiguration) {
+        Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(ConfigurationFieldModel::isSensitive).collect(Collectors.toSet());
+        for (ConfigurationFieldModel sensitiveConfigurationFieldModel : sensitiveFields) {
+            String key = sensitiveConfigurationFieldModel.getFieldKey();
             if (newConfiguration.containsKey(key)) {
-                final FieldValueModel sensitiveFieldValueModel = newConfiguration.get(key);
+                FieldValueModel sensitiveFieldValueModel = newConfiguration.get(key);
                 if (sensitiveFieldValueModel.isSet() && !sensitiveFieldValueModel.hasValues()) {
-                    final FieldValueModel newFieldModel = newConfiguration.get(key);
+                    FieldValueModel newFieldModel = newConfiguration.get(key);
                     newFieldModel.setValues(sensitiveConfigurationFieldModel.getFieldValues());
                 }
             }

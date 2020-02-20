@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -60,14 +61,13 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckDataSyncTask extends ProviderTask {
-    public static final String TASK_NAME = "blackduck-sync-project-task";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckDataSyncTask(TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor) {
-        super(taskScheduler, TASK_NAME);
+    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor) {
+        super(blackDuckProviderKey, taskScheduler);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.configurationAccessor = configurationAccessor;
     }

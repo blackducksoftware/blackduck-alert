@@ -22,30 +22,31 @@ public class DailyTaskTest {
 
     @Test
     public void testDigestType() {
-        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
         assertEquals(FrequencyType.DAILY, task.getDigestType());
     }
 
     @Test
     public void testGetTaskName() {
-        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
         assertEquals(DailyTask.TASK_NAME, task.getTaskName());
     }
 
     @Test
     public void cronExpressionNotDefault() throws AlertDatabaseConstraintException {
         final String notDefaultValue = "44";
-        final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        final ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
+        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
 
-        final DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, configurationAccessor);
-        final String cronWithNotDefault = task.scheduleCronExpression();
-        final String expectedCron = String.format(DailyTask.CRON_FORMAT, notDefaultValue);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, configurationAccessor);
+        String cronWithNotDefault = task.scheduleCronExpression();
+        String expectedCron = String.format(DailyTask.CRON_FORMAT, notDefaultValue);
 
         assertEquals(expectedCron, cronWithNotDefault);
     }
+
 }
