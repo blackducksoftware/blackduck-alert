@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.provider.blackduck.factories;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -18,13 +19,14 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSync
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {
-    private BlackDuckProviderKey blackDuckProviderKey;
-    private TaskScheduler taskScheduler;
-    private ProviderDataAccessor blackDuckDataAccessor;
-    private ConfigurationAccessor configurationAccessor;
+    private final BlackDuckProviderKey blackDuckProviderKey;
+    private final TaskScheduler taskScheduler;
+    private final ProviderDataAccessor blackDuckDataAccessor;
+    private final ConfigurationAccessor configurationAccessor;
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
 
+    @Autowired
     public BlackDuckTaskFactory(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor,
         ConfigurationAccessor configurationAccessor, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil) {
         this.blackDuckProviderKey = blackDuckProviderKey;
