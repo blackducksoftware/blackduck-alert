@@ -13,8 +13,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class BlackDuckProviderTest {
@@ -22,10 +21,9 @@ public class BlackDuckProviderTest {
 
     @Test
     public void testGetNotificationTypes() {
-        BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        BlackDuckDataSyncTask projectSyncTask = Mockito.mock(BlackDuckDataSyncTask.class);
+        BlackDuckTaskFactory taskFactory = Mockito.mock(BlackDuckTaskFactory.class);
         BlackDuckContent blackDuckContent = new BlackDuckContent();
-        BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, accumulatorTask, projectSyncTask, blackDuckContent, null, null, null, null);
+        BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, blackDuckContent, null, null, null, null, taskFactory);
         Set<String> expectedNotificationTypes = new LinkedHashSet<>();
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
@@ -41,10 +39,9 @@ public class BlackDuckProviderTest {
 
     @Test
     public void testGetSupportedFormatTypes() {
-        BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        BlackDuckDataSyncTask projectSyncTask = Mockito.mock(BlackDuckDataSyncTask.class);
+        BlackDuckTaskFactory taskFactory = Mockito.mock(BlackDuckTaskFactory.class);
         BlackDuckContent blackDuckContent = new BlackDuckContent();
-        BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, accumulatorTask, projectSyncTask, blackDuckContent, null, null, null, null);
+        BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, blackDuckContent, null, null, null, null, taskFactory);
         Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
         Set<FormatType> providerNotificationTypes = provider.getProviderContent().getSupportedContentFormats();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);

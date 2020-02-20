@@ -36,9 +36,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
@@ -55,7 +53,6 @@ import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 
-@Component
 public class BlackDuckAccumulator extends ProviderTask {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
@@ -63,7 +60,6 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final FilePersistenceUtil filePersistenceUtil;
     private BlackDuckProviderKey blackDuckProviderKey;
 
-    @Autowired
     public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil) {
         super(blackDuckProviderKey, taskScheduler);
         this.blackDuckProviderKey = blackDuckProviderKey;

@@ -39,9 +39,8 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
 import com.synopsys.integration.alert.provider.blackduck.factories.DistributionFilterFactory;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
@@ -55,34 +54,26 @@ import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificat
 
 @Component
 public class BlackDuckProvider extends Provider<BlackDuckProperties> {
-    private final BlackDuckAccumulator accumulatorTask;
-    private final BlackDuckDataSyncTask projectSyncTask;
-
     private final DistributionFilterFactory distributionFilterFactory;
     private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
     private final BlackDuckPropertiesFactory propertiesFactory;
     private final BlackDuckValidator validator;
+    private final BlackDuckTaskFactory taskFactory;
 
     @Autowired
-    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckDataSyncTask projectSyncTask, BlackDuckContent blackDuckContent,
-        DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory, BlackDuckPropertiesFactory propertiesFactory,
-        BlackDuckValidator validator) {
+    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent, DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory,
+        BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator validator, BlackDuckTaskFactory taskFactory) {
         super(blackDuckProviderKey, blackDuckContent);
-        this.accumulatorTask = accumulatorTask;
-        this.projectSyncTask = projectSyncTask;
         this.distributionFilterFactory = distributionFilterFactory;
         this.messageContentCollectorFactory = messageContentCollectorFactory;
         this.propertiesFactory = propertiesFactory;
         this.validator = validator;
+        this.taskFactory = taskFactory;
     }
 
     @Override
     public List<ProviderTask> createProviderTasks(BlackDuckProperties providerProperties) {
-        List<ProviderTask> tasks = List.of(accumulatorTask, projectSyncTask);
-        for (ProviderTask task : tasks) {
-            task.setProviderPropertiesForRun(providerProperties);
-        }
-        return tasks;
+        return taskFactory.createTasks(providerProperties);
     }
 
     @Override
