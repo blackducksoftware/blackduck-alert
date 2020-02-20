@@ -60,7 +60,7 @@ public class ProcessingTaskTest {
     @Test
     public void testGetTaskName() {
         ProcessingTask task = createTask(null, null, null, null, null);
-        assertEquals(taskName, task.computeTaskName());
+        assertEquals(taskName, task.getTaskName());
     }
 
     @Test

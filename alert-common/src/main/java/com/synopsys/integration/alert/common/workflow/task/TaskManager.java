@@ -36,7 +36,7 @@ public class TaskManager {
 
     public final void registerTask(ScheduledTask scheduledTask) {
         if (scheduledTask != null) {
-            scheduledTaskMap.put(scheduledTask.computeTaskName(), scheduledTask);
+            scheduledTaskMap.put(scheduledTask.getTaskName(), scheduledTask);
         }
     }
 

@@ -46,7 +46,7 @@ public abstract class StartupScheduledTask extends ScheduledTask {
 
     public void startTask() {
         checkTaskEnabled();
-        String taskName = computeTaskName();
+        String taskName = getTaskName();
         if (!getEnabled()) {
             logger.info("{} is disabled and will not be scheduled to run.", taskName);
             return;
@@ -69,5 +69,5 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-    
+
 }

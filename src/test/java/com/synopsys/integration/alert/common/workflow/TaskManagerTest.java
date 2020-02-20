@@ -18,7 +18,7 @@ public class TaskManagerTest {
     public void testRegistration() {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -38,7 +38,7 @@ public class TaskManagerTest {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
         final String cronExpression = "cron_expression";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -51,7 +51,7 @@ public class TaskManagerTest {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
         final String cronExpression = "cron_expression";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -67,7 +67,7 @@ public class TaskManagerTest {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
         final long period = 999;
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -80,7 +80,7 @@ public class TaskManagerTest {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
         final long period = 999;
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -96,7 +96,7 @@ public class TaskManagerTest {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
         final String cronExpression = "cron_expression";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -111,7 +111,7 @@ public class TaskManagerTest {
     public void testGetNextRunTime() {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -123,7 +123,7 @@ public class TaskManagerTest {
     public void testGetNextRunTimeForUnknownTask() {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
 
         TaskManager taskManager = new TaskManager();
         taskManager.registerTask(task);
@@ -138,7 +138,7 @@ public class TaskManagerTest {
     public void testGetDifferenceToNextRunTime() {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
         Mockito.when(task.getMillisecondsToNextRun()).thenReturn(Optional.of(999L));
 
         TaskManager taskManager = new TaskManager();
@@ -151,7 +151,7 @@ public class TaskManagerTest {
     public void testGetDifferenceToNextRunTimeForUnknownTask() {
         ScheduledTask task = Mockito.mock(ScheduledTask.class);
         final String taskName = "a_task";
-        Mockito.when(task.computeTaskName()).thenReturn(taskName);
+        Mockito.when(task.getTaskName()).thenReturn(taskName);
         Mockito.when(task.getMillisecondsToNextRun()).thenReturn(Optional.of(999L));
 
         TaskManager taskManager = new TaskManager();

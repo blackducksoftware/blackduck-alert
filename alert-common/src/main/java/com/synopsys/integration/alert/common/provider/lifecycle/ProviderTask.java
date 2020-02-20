@@ -33,6 +33,7 @@ public abstract class ProviderTask extends ScheduledTask {
     private ProviderKey providerKey;
     private ProviderProperties providerProperties;
 
+    // TODO reevaluate if this is needed once scheduling supports multiple providers
     public static String computeProviderTaskName(ProviderKey providerKey, String providerConfigName, Class<? extends ProviderTask> providerTaskClass) {
         String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
         String providerUniversalKey = providerKey.getUniversalKey();
@@ -56,7 +57,7 @@ public abstract class ProviderTask extends ScheduledTask {
     public abstract void runProviderTask();
 
     @Override
-    public String computeTaskName() {
+    public String getTaskName() {
         validateProviderProperties();
         return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigName(), getClass());
     }

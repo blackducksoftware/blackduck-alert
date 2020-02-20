@@ -43,9 +43,11 @@ public abstract class ScheduledTask implements Runnable {
     public static final String STOP_SCHEDULE_EXPRESSION = "";
     public static final String EVERY_MINUTE_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
     public static final Long EVERY_MINUTE_SECONDS = 60L;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
+    private final String taskName;
     private ScheduledFuture<?> future;
 
     public static String computeTaskName(Class<? extends ScheduledTask> clazz) {
@@ -57,18 +59,19 @@ public abstract class ScheduledTask implements Runnable {
 
     public ScheduledTask(TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
+        this.taskName = computeTaskName(getClass());
     }
 
-    public String computeTaskName() {
-        return ScheduledTask.computeTaskName(getClass());
+    public String getTaskName() {
+        return taskName;
     }
 
     @Override
     @Async
     public void run() {
-        logger.info("### {} Task Started...", computeTaskName());
+        logger.info("### {} Task Started...", taskName);
         runTask();
-        logger.info("### {} Task Finished", computeTaskName());
+        logger.info("### {} Task Finished", taskName);
     }
 
     public abstract void runTask();
@@ -78,14 +81,14 @@ public abstract class ScheduledTask implements Runnable {
             try {
                 CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
                 unscheduleTask();
-                logger.info("Scheduling {} with cron : {}", this.getClass().getSimpleName(), cron);
+                logger.info("Scheduling {} with cron : {}", taskName, cron);
                 future = taskScheduler.schedule(this, cronTrigger);
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", taskName);
                 unscheduleTask();
             }
         }
@@ -94,11 +97,11 @@ public abstract class ScheduledTask implements Runnable {
     public void scheduleExecutionAtFixedRate(long period) {
         if (period > 0) {
             unscheduleTask();
-            logger.info("Scheduling {} with fixed rate : {}", this.getClass().getSimpleName(), period);
+            logger.info("Scheduling {} with fixed rate : {}", taskName, period);
             future = taskScheduler.scheduleAtFixedRate(this, period);
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", taskName);
                 unscheduleTask();
             }
         }

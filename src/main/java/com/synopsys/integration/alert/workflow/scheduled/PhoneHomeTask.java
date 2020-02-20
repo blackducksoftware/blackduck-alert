@@ -97,10 +97,10 @@ public class PhoneHomeTask extends StartupScheduledTask {
     @Override
     public void checkTaskEnabled() {
         if (skipPhoneHome) {
-            logger.info("Will not schedule the task {}. {} is TRUE. ", computeTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+            logger.info("Will not schedule the task {}. {} is TRUE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
             setEnabled(false);
         } else {
-            logger.debug("Will schedule the task {}. {} is FALSE. ", computeTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
+            logger.debug("Will schedule the task {}. {} is FALSE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
         }
     }
 

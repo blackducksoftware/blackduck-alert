@@ -85,7 +85,7 @@ public class ProviderLifecycleManager {
 
         List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
         for (ProviderTask task : providerTasks) {
-            if (taskManager.getNextRunTime(task.computeTaskName()).isEmpty()) {
+            if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
                 acceptedTasks.add(task);
             }
@@ -129,7 +129,7 @@ public class ProviderLifecycleManager {
 
     private void scheduleTask(ProviderTask task) {
         taskManager.registerTask(task);
-        taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.computeTaskName());
+        taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.getTaskName());
     }
 
     private void unscheduleTask(String taskName) {

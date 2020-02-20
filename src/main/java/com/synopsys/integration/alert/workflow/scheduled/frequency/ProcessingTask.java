@@ -81,7 +81,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     public List<AlertNotificationModel> read(DateRange dateRange) {
         try {
-            String taskName = computeTaskName();
+            String taskName = getTaskName();
             Date startDate = dateRange.getStart();
             Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));

@@ -40,7 +40,7 @@ public class ScheduledTaskTest {
 
     @Test
     public void testComputeTaskName() {
-        assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.computeTaskName());
+        assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.getTaskName());
     }
 
     @Test

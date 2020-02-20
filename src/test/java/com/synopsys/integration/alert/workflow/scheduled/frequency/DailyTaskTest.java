@@ -29,7 +29,7 @@ public class DailyTaskTest {
     @Test
     public void testGetTaskName() {
         DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
-        assertEquals(DailyTask.TASK_NAME, task.computeTaskName());
+        assertEquals(DailyTask.TASK_NAME, task.getTaskName());
     }
 
     @Test
