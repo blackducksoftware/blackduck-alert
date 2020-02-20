@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -62,8 +63,8 @@ public class BlackDuckDataSyncTask extends ProviderTask {
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final ConfigurationAccessor configurationAccessor;
 
-    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor) {
-        super(blackDuckProviderKey, taskScheduler);
+    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, ProviderProperties providerProperties) {
+        super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.configurationAccessor = configurationAccessor;
     }

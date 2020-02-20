@@ -41,6 +41,7 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -60,8 +61,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final FilePersistenceUtil filePersistenceUtil;
     private BlackDuckProviderKey blackDuckProviderKey;
 
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil) {
-        super(blackDuckProviderKey, taskScheduler);
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, FilePersistenceUtil filePersistenceUtil, ProviderProperties providerProperties) {
+        super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;

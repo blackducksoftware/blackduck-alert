@@ -61,9 +61,8 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
 
     @Override
     public List<ProviderTask> createTasks(ProviderProperties providerProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationManager, filePersistenceUtil);
-        accumulator.setProviderPropertiesForRun(providerProperties);
-        BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, configurationAccessor);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationManager, filePersistenceUtil, providerProperties);
+        BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, configurationAccessor, providerProperties);
         return List.of(accumulator, syncTask);
     }
 }

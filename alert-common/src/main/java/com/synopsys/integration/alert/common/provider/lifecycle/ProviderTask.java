@@ -41,10 +41,10 @@ public abstract class ProviderTask extends ScheduledTask {
         return String.format("%s::Provider[%s]::Configuration[id:%d]", superTaskName, providerUniversalKey, providerConfigId);
     }
 
-    public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler) {
+    public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);
         this.providerKey = providerKey;
-        this.providerProperties = null;
+        this.providerProperties = providerProperties;
     }
 
     @Override
@@ -60,10 +60,6 @@ public abstract class ProviderTask extends ScheduledTask {
     public String getTaskName() {
         validateProviderProperties();
         return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
-    }
-
-    public final void setProviderPropertiesForRun(ProviderProperties providerProperties) {
-        this.providerProperties = providerProperties;
     }
 
     protected ProviderProperties getProviderProperties() {
