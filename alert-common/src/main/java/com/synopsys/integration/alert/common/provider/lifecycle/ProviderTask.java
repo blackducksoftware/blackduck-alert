@@ -38,7 +38,7 @@ public abstract class ProviderTask extends ScheduledTask {
         String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
         String providerUniversalKey = providerKey.getUniversalKey();
 
-        return String.format("%s::Provider[%s]::Configuration[%d]", superTaskName, providerUniversalKey, providerConfigId);
+        return String.format("%s::Provider[%s]::Configuration[id:%d]", superTaskName, providerUniversalKey, providerConfigId);
     }
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler) {
