@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -76,9 +77,12 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             if (null == blackDuckMessageBuilder) {
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
+                String url = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl();
+                CommonMessageData commonMessageData = new CommonMessageData(notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), url,
+                    notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
-                        .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                        .buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);
             }
         }

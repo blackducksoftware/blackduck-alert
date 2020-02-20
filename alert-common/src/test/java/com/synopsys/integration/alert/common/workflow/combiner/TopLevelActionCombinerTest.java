@@ -17,6 +17,8 @@ public class TopLevelActionCombinerTest {
         TopLevelActionCombiner topLevelActionCombiner = new TopLevelActionCombiner();
 
         String commonProviderValue = "common_provider";
+        Long commonProviderId = 1L;
+        String commonProviderConfig = "common_provider_config";
         String commonTopicName = "common topic name";
         String commonTopicValue = "common topic value";
         String commonSubTopicName = "common_sub_topic_name";
@@ -24,7 +26,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
-                                               .applyProvider(commonProviderValue)
+                                               .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                .applyTopic(commonTopicName, commonTopicValue)
                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
@@ -32,7 +34,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
@@ -40,7 +42,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
-                                                .applyProvider(commonProviderValue)
+                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                 .applyTopic(commonTopicName, commonTopicValue)
                                                 .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyAction(ItemOperation.INFO)
@@ -48,7 +50,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
-                                                       .applyProvider(commonProviderValue)
+                                                       .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                        .applyTopic("uncommon topic name 123", "random value")
                                                        .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
@@ -56,7 +58,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
@@ -72,6 +74,8 @@ public class TopLevelActionCombinerTest {
         TopLevelActionCombiner topLevelActionCombiner = new TopLevelActionCombiner();
 
         String commonProviderValue = "common_provider";
+        Long commonProviderId = 1L;
+        String commonProviderConfig = "common_provider_config";
         String commonTopicName = "common topic name";
         String commonTopicValue = "common topic value";
         String commonSubTopicName = "common_sub_topic_name";
@@ -79,7 +83,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
-                                               .applyProvider(commonProviderValue)
+                                               .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                .applyTopic(commonTopicName, commonTopicValue)
                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
@@ -87,7 +91,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
@@ -95,7 +99,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
-                                                .applyProvider(commonProviderValue)
+                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                 .applyTopic(commonTopicName, commonTopicValue)
                                                 .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyAction(ItemOperation.INFO)
@@ -103,7 +107,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
-                                                       .applyProvider(commonProviderValue)
+                                                       .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                        .applyTopic("uncommon topic name 123", "random value")
                                                        .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
@@ -111,7 +115,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
                                                   .build();
@@ -126,6 +130,8 @@ public class TopLevelActionCombinerTest {
         TopLevelActionCombiner topLevelActionCombiner = new TopLevelActionCombiner();
 
         String commonProviderValue = "common_provider";
+        Long commonProviderId = 1L;
+        String commonProviderConfig = "common_provider_config";
         String commonTopicName = "common topic name";
         String commonTopicValue = "common topic value";
         String commonSubTopicName = "common_sub_topic_name";
@@ -133,7 +139,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
-                                               .applyProvider(commonProviderValue)
+                                               .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                .applyTopic(commonTopicName, commonTopicValue)
                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
@@ -141,21 +147,21 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
                                                   .build();
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
-                                                .applyProvider(commonProviderValue)
+                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                 .applyTopic(commonTopicName, commonTopicValue)
                                                 .applyAction(ItemOperation.INFO)
                                                 .build();
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
-                                                       .applyProvider(commonProviderValue)
+                                                       .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                        .applyTopic("uncommon topic name 123", "random value")
                                                        .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
@@ -163,7 +169,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
@@ -179,6 +185,8 @@ public class TopLevelActionCombinerTest {
         TopLevelActionCombiner topLevelActionCombiner = new TopLevelActionCombiner();
 
         String commonProviderValue = "common_provider";
+        Long commonProviderId = 1L;
+        String commonProviderConfig = "common_provider_config";
         String commonTopicName = "common topic name";
         String commonTopicValue = "common topic value";
         String commonSubTopicName = "common_sub_topic_name";
@@ -194,7 +202,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
-                                               .applyProvider(commonProviderValue)
+                                               .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                .applyTopic(commonTopicName, commonTopicValue)
                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
@@ -202,7 +210,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyComponentItem(componentItem)
@@ -211,7 +219,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
-                                                .applyProvider(commonProviderValue)
+                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                 .applyTopic(commonTopicName, commonTopicValue)
                                                 .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyComponentItem(componentItem)
@@ -220,7 +228,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
-                                                       .applyProvider(commonProviderValue)
+                                                       .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                        .applyTopic("uncommon topic name 123", "random value")
                                                        .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
@@ -228,7 +236,7 @@ public class TopLevelActionCombinerTest {
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
-                                                  .applyProvider(commonProviderValue)
+                                                  .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
                                                   .applyTopic(commonTopicName, commonTopicValue)
                                                   .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
