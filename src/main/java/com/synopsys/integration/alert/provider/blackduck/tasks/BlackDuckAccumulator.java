@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -64,7 +63,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final NotificationManager notificationManager;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor, ProviderProperties providerProperties) {
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
+        ProviderProperties providerProperties) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
@@ -101,12 +101,6 @@ public class BlackDuckAccumulator extends ProviderTask {
                 logger.debug("Accumulator next run: {} seconds", seconds);
             }
         }
-    }
-
-    protected void initializeSearchRangeFile() throws AlertDatabaseConstraintException {
-        ZonedDateTime zonedDate = getCurrentZonedDate();
-        Date date = Date.from(zonedDate.toInstant());
-        saveNextSearchStart(formatDate(date));
     }
 
     protected Optional<String> getNextSearchStart() {
