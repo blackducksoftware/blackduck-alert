@@ -73,7 +73,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         FieldValueModel fieldValueModel = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
         String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
-        Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), ""));
+        Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), "-1"));
         providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, configId);
 
         List<ProviderProject> blackDuckProjects = providerDataAccessor.getProjectsByProviderConfigName(blackDuckGlobalConfigName);
