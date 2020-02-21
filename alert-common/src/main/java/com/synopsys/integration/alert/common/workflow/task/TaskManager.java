@@ -22,11 +22,15 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -85,6 +89,13 @@ public class TaskManager {
 
     public Set<String> getRunningTaskNames() {
         return scheduledTaskMap.keySet();
+    }
+
+    public <T extends ScheduledTask> Collection<T> getTasksByClass(Class<T> clazz) {
+        List<?> taskList = scheduledTaskMap.values().stream()
+                               .filter(task -> task.getClass().equals(clazz))
+                               .collect(Collectors.toList());
+        return new ArrayList(taskList);
     }
 
     public final Optional<String> getNextRunTime(String taskName) {

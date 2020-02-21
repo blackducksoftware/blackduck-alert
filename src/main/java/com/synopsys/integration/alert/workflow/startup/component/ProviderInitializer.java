@@ -39,9 +39,7 @@ public class ProviderInitializer extends StartupComponent {
     }
 
     @Override
-    // FIXME determine if this is the correct place to initialize providers once lifecycle management exists
     protected void initialize() {
         providerLifecycleManager.initializeConfiguredProviders();
     }
-
 }
