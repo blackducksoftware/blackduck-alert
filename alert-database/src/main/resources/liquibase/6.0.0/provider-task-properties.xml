@@ -38,7 +38,7 @@
 
     <!-- Read old last-run-search-date from file -->
     <!-- FIXME can we better control the relative path to the file? Maybe with docker local overrides? -->
-    <changeSet author="gavink" id="2020-02-21-08-34-06-927"> <!-- TODO do we want to do this: failOnError="false"> -->
+    <changeSet author="gavink" id="2020-02-21-08-34-06-927">
         <preConditions onFail="MARK_RAN">
             <and>
                 <!-- currently necessary because we use 'h2' for tests/runServer task -->
