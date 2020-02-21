@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- TODO deleting the data may not be necessary if we add a defaultValueComputed to the new column -->
     <changeSet author="gavink" id="2020-02-11-08-56-39-443">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and GET_CONTEXT_ID('GLOBAL')</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')</sqlCheck>
         </preConditions>
         <delete schemaName="alert" tableName="raw_notification_content"/>
     </changeSet>
@@ -14,7 +15,7 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="raw_notification_content">
-            <column name="provider_config_id" type="BIGINT(19)" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
