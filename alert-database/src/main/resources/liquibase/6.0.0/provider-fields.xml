@@ -70,7 +70,7 @@
         <insert schemaName="alert" tableName="field_values">
             <column name="config_id" valueComputed="GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()"/>
             <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.enabled')"/>
-            <column name="field_value" valueBoolean="true"/>
+            <column name="field_value" value="true"/>
         </insert>
     </changeSet>
     <changeSet author="gavink" id="2020-02-12-14-53-18-260">
