@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gavink" id="2020-02-11-08-58-36-804">
         <createProcedure schemaName="ALERT" dbms="postgresql">
-            CREATE OR REPLACE FUNCTION GET_PROVIDER_CONFIG_ID(provider)
+            CREATE OR REPLACE FUNCTION GET_PROVIDER_CONFIG_ID(text)
             RETURNS BIGINT AS $result$
                 DECLARE result BIGINT;
                 BEGIN

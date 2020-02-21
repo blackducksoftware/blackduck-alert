@@ -35,5 +35,33 @@
                 onDelete="CASCADE"
         />
     </changeSet>
-    <!-- FIXME create upgrade script for existing tasks -->
+
+    <!-- Read old last-run-search-date from file -->
+    <!-- FIXME can we better control the relative path to the file? Maybe with docker local overrides? -->
+    <changeSet author="gavink" id="2020-02-21-08-34-06-927">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <!-- currently necessary because we use 'h2' for tests/runServer task -->
+                <dbms type="postgresql"/>
+                <and>
+                    <sqlCheck expectedResult="1">
+                        select count(case when stringFromFile != NULL then 1 else 0 end)
+                        from pg_read_file('../../blackduck-accumulator-task-last-search.txt', 0, 102400, true) stringFromFile;
+                    </sqlCheck>
+                    <sqlCheck expectedResult="1">
+                        select count(case when configId != NULL then 1 else 0 end)
+                        from GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() configId;
+                    </sqlCheck>
+                </and>
+            </and>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into alert.provider_task_properties (task_name, property_name, value)
+            values (
+                'Task::Class[com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:' || GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() || ']',
+                'last.search.end.date',
+                pg_read_file('../../blackduck-accumulator-task-last-search.txt')
+            );
+        </sql>
+    </changeSet>
 </databaseChangeLog>

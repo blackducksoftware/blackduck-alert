@@ -8,4 +8,5 @@
     <include file="notifications.xml" relativeToChangelogFile="true"/>
     <include file="blackduck-procedures.xml" relativeToChangelogFile="true"/>
     <include file="provider-fields.xml" relativeToChangelogFile="true"/>
+    <include file="provider-task-properties.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
