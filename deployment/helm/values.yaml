@@ -27,6 +27,7 @@ cfssl:
 enablePersistentStorage: false
 pvcSize: "5G"
 storageClassName: ""
+volumeName: ""
 
 # Expose Alert's User Interface
 exposeui: true
