@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
@@ -49,34 +48,18 @@ public abstract class ProviderTask extends ScheduledTask {
 
     @Override
     public final void runTask() {
-        validateProviderProperties();
         runProviderTask();
-        invalidateProviderProperties();
     }
 
     public abstract void runProviderTask();
 
     @Override
     public String getTaskName() {
-        validateProviderProperties();
         return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
     }
 
     protected ProviderProperties getProviderProperties() {
         return providerProperties;
-    }
-
-    private void validateProviderProperties() {
-        if (null == providerProperties) {
-            throw new AlertRuntimeException("No provider properties were provided to the task.");
-        }
-    }
-
-    private void invalidateProviderProperties() {
-        if (null != providerProperties) {
-            providerProperties.disconnect();
-        }
-        providerProperties = null;
     }
 
 }
