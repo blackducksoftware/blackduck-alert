@@ -160,8 +160,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
-        Mockito.verify(spiedAccumulator, Mockito.times(2)).formatDate(Mockito.any());
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
+        Mockito.verify(spiedAccumulator).formatDate(Mockito.any());
         Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
@@ -172,8 +171,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.doThrow(new AlertDatabaseConstraintException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
         spiedAccumulator.accumulate();
-        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
+        assertFalse(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
         Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
@@ -185,7 +183,6 @@ public class BlackDuckAccumulatorTest {
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
         spiedAccumulator.accumulate();
         assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
         Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
@@ -209,7 +206,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
         Mockito.doReturn(notificationViewList).when(notificationService).getFilteredNotifications(Mockito.any(), Mockito.any(), Mockito.anyList());
 
-        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         DateRange dateRange = spiedAccumulator.createDateRange();
         spiedAccumulator.accumulate(dateRange);
