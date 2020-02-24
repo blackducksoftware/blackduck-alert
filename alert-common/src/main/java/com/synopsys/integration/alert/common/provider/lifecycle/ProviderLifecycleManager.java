@@ -71,7 +71,7 @@ public class ProviderLifecycleManager {
     }
 
     public List<ProviderTask> scheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
-        logger.debug("Performing scheduling task for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        logger.debug("Performing scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
         List<ProviderTask> acceptedTasks = new ArrayList<>();
 
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
@@ -87,12 +87,12 @@ public class ProviderLifecycleManager {
                 acceptedTasks.add(task);
             }
         }
-        logger.debug("Finished scheduling task for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        logger.debug("Finished scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
         return acceptedTasks;
     }
 
     public void unscheduleTasksForProviderConfig(Provider provider, Long providerConfigId) {
-        logger.debug("Performing unscheduling task for provider config: id={}", providerConfigId);
+        logger.debug("Performing unscheduling tasks for provider config: id={}", providerConfigId);
 
         List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class).stream()
                                        .filter(task -> task.getProviderProperties().getConfigId().equals(providerConfigId))
@@ -101,7 +101,7 @@ public class ProviderLifecycleManager {
         for (ProviderTask task : tasks) {
             unscheduleTask(task.getTaskName());
         }
-        logger.debug("Finished unscheduling task for provider config: id={}", providerConfigId);
+        logger.debug("Finished unscheduling tasks for provider config: id={}", providerConfigId);
     }
 
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
