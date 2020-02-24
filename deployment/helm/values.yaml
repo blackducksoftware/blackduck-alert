@@ -5,8 +5,11 @@
 # alert - configurations for the Alert Pod
 alert:
   image: "docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN"
-  limitMemory: "2560M"
-  requestMemory: "2560M"
+  resources:
+    limits:
+      memory: "2560M"
+    requests:
+      memory: "2560M"
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -17,8 +20,11 @@ deployAlertWithBlackDuck: false
 enableStandalone: true
 cfssl:
   image: "docker.io/blackducksoftware/blackduck-cfssl:1.0.0"
-  limitMemory: "640M"
-  requestMemory: "640M"
+  resources:
+    limits:
+      memory: "640M"
+    requests:
+      memory: "640M"
   nodeSelector: {}
   tolerations: []
   affinity: {}
