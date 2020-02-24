@@ -119,7 +119,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         MockNotificationContent mockNotification = new MockNotificationContent();
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
-        notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
+        notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L, 1L).createEntity());
 
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
         ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
@@ -191,7 +191,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public void resendNotificationTestIT() throws Exception {
         String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
+        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L, 1L);
 
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
         ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
@@ -199,9 +199,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                           .save(new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
-                                                               AuditEntryStatus.SUCCESS.toString(),
-                                                               null, null));
+                                                     .save(new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
+                                                         AuditEntryStatus.SUCCESS.toString(),
+                                                         null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 

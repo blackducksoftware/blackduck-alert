@@ -29,14 +29,14 @@ public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUt
     }
 
     public void verifyEmptyEntity() throws JSONException {
-        final String emptyEntity = createEmptyEntity().toString();
-        final String emptyJson = getEmptyEntityJson();
+        String emptyEntity = createEmptyEntity().toString();
+        String emptyJson = getEmptyEntityJson();
         JSONAssert.assertEquals(emptyEntity, emptyJson, false);
     }
 
     public void verifyEntity() throws JSONException {
-        final String entity = createEntity().toString();
-        final String json = getEntityJson();
+        String entity = createEntity().toString();
+        String json = getEntityJson();
         JSONAssert.assertEquals(entity, json, false);
     }
 
@@ -46,4 +46,5 @@ public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUt
         verifyEntity();
         verifyEmptyEntity();
     }
+
 }
