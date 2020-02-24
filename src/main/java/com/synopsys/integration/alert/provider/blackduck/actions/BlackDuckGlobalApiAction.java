@@ -29,7 +29,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -70,7 +70,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     @Override
     public void afterDeleteAction(FieldModel fieldModel) {
         Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
-        FieldValueModel fieldValueModel = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        FieldValueModel fieldValueModel = keyToValues.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
         Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), "-1"));

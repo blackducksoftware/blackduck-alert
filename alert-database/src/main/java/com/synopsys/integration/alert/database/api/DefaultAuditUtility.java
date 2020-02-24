@@ -49,8 +49,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -363,7 +363,7 @@ public class DefaultAuditUtility implements AuditUtility {
                              .stream()
                              .map(ConfigurationModel::getCopyOfFieldList)
                              .flatMap(List::stream)
-                             .filter(field -> field.getFieldKey().equals(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME))
+                             .filter(field -> field.getFieldKey().equals(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
                              .map(ConfigurationFieldModel::getFieldValue)
                              .flatMap(Optional::stream)
                              .findFirst()

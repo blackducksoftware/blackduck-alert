@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -94,9 +94,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @BeforeEach
     public void testSetup() throws Exception {
-        ConfigurationFieldModel nameField = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        ConfigurationFieldModel nameField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         nameField.setFieldValue(EMAIL_TEST_PROVIDER_CONFIG_NAME);
-        ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         enabledField.setFieldValue("true");
         providerConfig = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, List.of(nameField, enabledField));
         Long providerConfigId = providerConfig.getConfigurationId();

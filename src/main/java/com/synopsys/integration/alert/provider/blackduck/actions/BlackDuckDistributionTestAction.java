@@ -30,8 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -50,14 +50,14 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
-        Optional<String> optionalProviderConfigName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        Optional<String> optionalProviderConfigName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (optionalProviderConfigName.isPresent()) {
             Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (projectNamePattern.isPresent()) {
                 validatePatternMatchesProject(optionalProviderConfigName.get(), projectNamePattern.get());
             }
         } else {
-            throw AlertFieldException.singleFieldError(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required");
+            throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required");
         }
         return new MessageResult("Successfully tested BlackDuck provider fields");
     }

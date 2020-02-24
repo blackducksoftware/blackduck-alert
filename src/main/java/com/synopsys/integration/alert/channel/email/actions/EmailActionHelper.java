@@ -34,8 +34,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -60,7 +60,7 @@ public class EmailActionHelper {
         }
 
         Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        String providerConfigName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
+        String providerConfigName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         Boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
         if (StringUtils.isNotBlank(providerConfigName) && !onlyAdditionalEmails) {

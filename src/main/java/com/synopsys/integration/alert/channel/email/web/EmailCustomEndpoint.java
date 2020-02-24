@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -60,7 +60,7 @@ public class EmailCustomEndpoint {
     }
 
     public ResponseEntity<String> createEmailOptions(FieldModel fieldModel) {
-        String providerConfigName = fieldModel.getFieldValue(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
+        String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
             logger.debug("Received provider user email data request with a blank provider config name");

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -65,7 +66,7 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
 
     @Override
     protected List<?> createData(FieldModel fieldModel) throws AlertException {
-        String providerConfigName = fieldModel.getFieldValue(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("");
+        String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
     }
 }
