@@ -25,12 +25,13 @@ package com.synopsys.integration.alert.common.event;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 
 public class ContentEvent extends AlertEvent {
+    private static final long serialVersionUID = -4226565845990359050L;
     private final String createdAt;
     private final String provider;
     private final String formatType;
     private final MessageContentGroup contentGroup;
 
-    public ContentEvent(final String destination, final String createdAt, final String provider, final String formatType, final MessageContentGroup contentGroup) {
+    public ContentEvent(String destination, String createdAt, String provider, String formatType, MessageContentGroup contentGroup) {
         super(destination);
         this.createdAt = createdAt;
         this.provider = provider;

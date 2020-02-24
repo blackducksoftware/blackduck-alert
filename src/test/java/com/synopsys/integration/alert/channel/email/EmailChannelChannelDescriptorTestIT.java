@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -64,6 +66,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
+    private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     @Autowired
     private DefaultProviderDataAccessor providerDataAccessor;
     @Autowired
@@ -87,10 +90,16 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Autowired
     private EmailChannelMessageParser emailChannelMessageParser;
 
+    private ConfigurationModel providerConfig;
+
     @BeforeEach
     public void testSetup() throws Exception {
-        // FIXME create provider config
-        Long providerConfigId = 10000L;
+        ConfigurationFieldModel nameField = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        nameField.setFieldValue(EMAIL_TEST_PROVIDER_CONFIG_NAME);
+        ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        enabledField.setFieldValue("true");
+        providerConfig = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, List.of(nameField, enabledField));
+        Long providerConfigId = providerConfig.getConfigurationId();
 
         List<ProviderUserModel> allUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         deleteUsers(providerConfigId, allUsers);
@@ -128,6 +137,13 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         provider_global = configurationAccessor
                               .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
 
+    }
+
+    @AfterEach
+    public void cleanUp() throws Exception {
+        if (null != providerConfig) {
+            configurationAccessor.deleteConfiguration(providerConfig);
+        }
     }
 
     @Override
@@ -183,7 +199,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
-        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(),
+        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, EMAIL_TEST_PROVIDER_CONFIG_NAME, FormatType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }
