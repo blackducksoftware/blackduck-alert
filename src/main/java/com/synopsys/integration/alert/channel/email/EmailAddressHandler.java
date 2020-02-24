@@ -40,7 +40,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -60,26 +59,25 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldAccessor updateEmailAddresses(MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
+    public FieldAccessor updateEmailAddresses(String eventProviderConfigName, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
         Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
 
-        String providerConfigName = originalAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(StringUtils.EMPTY);
         boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
         boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
 
         if (!useOnlyAdditionalEmailAddresses) {
-            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
+            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(eventProviderConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
             emailAddresses.addAll(projectEmailAddresses);
         }
 
         if (emailAddresses.isEmpty()) {
             // Temporary fix for license notifications
-            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigName, projectOwnerOnly);
+            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, eventProviderConfigName, projectOwnerOnly);
             emailAddresses.addAll(licenseNotificationEmails);
         }
 
-        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(originalAccessor);
+        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(eventProviderConfigName, originalAccessor);
         emailAddresses.addAll(additionalEmailAddresses);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
@@ -108,12 +106,11 @@ public class EmailAddressHandler {
         return emailAddresses;
     }
 
-    public Set<String> collectAdditionalEmailAddresses(FieldAccessor fieldAccessor) {
-        Optional<String> optionalProviderConfigName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+    public Set<String> collectAdditionalEmailAddresses(String providerConfigName, FieldAccessor fieldAccessor) {
         Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
-        if (optionalProviderConfigName.isPresent() && !additionalEmailAddresses.isEmpty()) {
+        if (!additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
-            return providerDataAccessor.getUsersByProviderConfigName(optionalProviderConfigName.get())
+            return providerDataAccessor.getUsersByProviderConfigName(providerConfigName)
                        .stream()
                        .map(ProviderUserModel::getEmailAddress)
                        .filter(additionalEmailAddresses::contains)
