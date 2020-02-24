@@ -34,18 +34,7 @@ import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
-@Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
-    @Column(name = "CONTEXT_ID")
-    private Long contextId;
-    @Column(name = "CREATED_AT")
-    private Date createdAt;
-    @Column(name = "LAST_UPDATED")
-    private Date lastUpdated;
-
+public class DescriptorConfigEntity extends DescriptorConfigJPAContract {
     @OneToMany
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<FieldValueEntity> fieldValueEntities;
@@ -53,37 +42,6 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     @OneToOne
     @JoinColumn(name = "ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
-
-    public DescriptorConfigEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public DescriptorConfigEntity(Long descriptorId, Long contextId, Date createdAt, Date lastUpdated) {
-        this.descriptorId = descriptorId;
-        this.contextId = contextId;
-        this.createdAt = createdAt;
-        this.lastUpdated = lastUpdated;
-    }
-
-    public Long getDescriptorId() {
-        return descriptorId;
-    }
-
-    public Long getContextId() {
-        return contextId;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
 
     public List<FieldValueEntity> getFieldValueEntities() {
         if (null == fieldValueEntities) {
@@ -95,4 +53,5 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     public ConfigGroupEntity getConfigGroupEntity() {
         return configGroupEntity;
     }
+
 }
