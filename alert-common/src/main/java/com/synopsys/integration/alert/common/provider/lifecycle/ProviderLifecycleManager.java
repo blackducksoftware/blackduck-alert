@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class ProviderLifecycleManager {
     }
 
     public List<ProviderTask> scheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
-        logger.debug("Performing scheduling task for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        logger.debug("Performing scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
         List<ProviderTask> acceptedTasks = new ArrayList<>();
 
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
@@ -81,29 +80,28 @@ public class ProviderLifecycleManager {
         }
 
         List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
+        unscheduleTasksForProviderConfig(provider, providerProperties.getConfigId());
         for (ProviderTask task : providerTasks) {
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
                 acceptedTasks.add(task);
             }
         }
+        logger.debug("Finished scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
         return acceptedTasks;
     }
 
     public void unscheduleTasksForProviderConfig(Provider provider, Long providerConfigId) {
-        logger.debug("Performing unscheduling task for provider config: id={}", providerConfigId);
+        logger.debug("Performing unscheduling tasks for provider config: id={}", providerConfigId);
 
-        // TODO find a better way to get the task names
-        Set<String> runningTasksForProviderConfig = taskManager.getRunningTaskNames()
-                                                        .stream()
-                                                        .filter(name -> name.contains(provider.getKey().getUniversalKey()))
-                                                        .filter(name -> name.contains("id:" + providerConfigId))
-                                                        .collect(Collectors.toSet());
-        for (String taskName : runningTasksForProviderConfig) {
-            if (taskManager.getNextRunTime(taskName).isPresent()) {
-                unscheduleTask(taskName);
-            }
+        List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class).stream()
+                                       .filter(task -> task.getProviderProperties().getConfigId().equals(providerConfigId))
+                                       .collect(Collectors.toList());
+
+        for (ProviderTask task : tasks) {
+            unscheduleTask(task.getTaskName());
         }
+        logger.debug("Finished unscheduling tasks for provider config: id={}", providerConfigId);
     }
 
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
