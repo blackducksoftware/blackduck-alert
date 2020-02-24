@@ -100,10 +100,7 @@ public class ProviderLifecycleManager {
                                        .collect(Collectors.toList());
 
         for (ProviderTask task : tasks) {
-            String taskName = task.getTaskName();
-            if (taskManager.getNextRunTime(taskName).isPresent()) {
-                unscheduleTask(taskName);
-            }
+            unscheduleTask(task.getTaskName());
         }
     }
 
