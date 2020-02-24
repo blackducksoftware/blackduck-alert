@@ -27,7 +27,7 @@
             <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('provider.common.config.enabled')</sqlCheck>
         </preConditions>
         <insert schemaName="alert" tableName="field_contexts">
-            <column name="context_id" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
             <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.enabled')"/>
         </insert>
     </changeSet>
@@ -37,6 +37,10 @@
         </preConditions>
         <insert schemaName="alert" tableName="field_contexts">
             <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
+        </insert>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
             <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
         </insert>
     </changeSet>
@@ -63,6 +67,7 @@
     </changeSet>
 
     <!-- Add new values to existing Black Duck Provider config -->
+    <!-- FIXME also add to provider distribution config -->
     <changeSet author="gavink" id="2020-02-12-14-53-18-259">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')</sqlCheck>

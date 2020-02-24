@@ -12,7 +12,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     private final String notificationType;
     private final String content;
     private final Long id;
-    private final Long providerConfigId;
+    private Long providerConfigId;
 
     public MockNotificationContent() {
         this(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L, 1L);
@@ -57,6 +57,14 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     @Override
     public Long getId() {
         return id;
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public void setProviderConfigId(final Long providerConfigId) {
+        this.providerConfigId = providerConfigId;
     }
 
 }

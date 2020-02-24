@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,8 +38,10 @@ import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -60,6 +64,7 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryController;
@@ -86,7 +91,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private AuditEntryActions auditEntryActions;
     @Autowired
-    private ConfigurationAccessor baseConfigurationAccessor;
+    private ConfigurationAccessor configurationAccessor;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
@@ -94,35 +99,53 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
 
+    private ConfigurationModel providerConfigModel = null;
+
+    MockNotificationContent mockNotification = new MockNotificationContent();
+
     @BeforeEach
-    public void init() {
+    public void init() throws AlertDatabaseConstraintException {
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
 
-        auditEntryRepository.flush();
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("true");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("My Black Duck Config");
+
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://a-blackduck-server");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue("300");
+
+        List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
+        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
+        mockNotification.setProviderConfigId(providerConfigModel.getConfigurationId());
     }
 
     @AfterEach
-    public void cleanup() {
+    public void cleanup() throws AlertDatabaseConstraintException {
+        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
-
-        auditEntryRepository.flush();
     }
 
     @Test
     public void getTestIT() throws Exception {
-        MockNotificationContent mockNotification = new MockNotificationContent();
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
-        notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L, 1L).createEntity());
+        notificationContentRepository
+            .save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
 
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
@@ -169,7 +192,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Test
     public void getGetAuditInfoForJobIT() throws Exception {
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         UUID jobID = UUID.randomUUID();
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
@@ -191,10 +214,14 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public void resendNotificationTestIT() throws Exception {
         String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L, 1L);
+        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L, providerConfigModel.getConfigurationId());
 
-        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        List<ConfigurationFieldModel> slackFieldsList = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
+
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        slackFieldsList.add(providerConfigName);
+
+        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
 
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
