@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
@@ -50,14 +49,12 @@ public class ProviderLifecycleManager {
     private List<Provider> providers;
     private TaskManager taskManager;
     private ConfigurationAccessor configurationAccessor;
-    private DescriptorAccessor descriptorAccessor;
 
     @Autowired
-    public ProviderLifecycleManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor, DescriptorAccessor descriptorAccessor) {
+    public ProviderLifecycleManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
         this.providers = providers;
         this.taskManager = taskManager;
         this.configurationAccessor = configurationAccessor;
-        this.descriptorAccessor = descriptorAccessor;
     }
 
     public List<ProviderTask> initializeConfiguredProviders() {
@@ -93,14 +90,14 @@ public class ProviderLifecycleManager {
         return acceptedTasks;
     }
 
-    public void unscheduleTasksForProviderConfig(Provider provider, String providerConfigName) {
-        logger.debug("Performing unscheduling task for provider config: {}", providerConfigName);
+    public void unscheduleTasksForProviderConfig(Provider provider, Long providerConfigId) {
+        logger.debug("Performing unscheduling task for provider config: id={}", providerConfigId);
 
         // TODO find a better way to get the task names
         Set<String> runningTasksForProviderConfig = taskManager.getRunningTaskNames()
                                                         .stream()
                                                         .filter(name -> name.contains(provider.getKey().getUniversalKey()))
-                                                        .filter(name -> name.contains(providerConfigName))
+                                                        .filter(name -> name.contains("id:" + providerConfigId))
                                                         .collect(Collectors.toSet());
         for (String taskName : runningTasksForProviderConfig) {
             if (taskManager.getNextRunTime(taskName).isPresent()) {
