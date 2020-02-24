@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
@@ -72,7 +73,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         FieldValueModel fieldValueModel = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
         String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
-        providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, blackDuckGlobalConfigName);
+        Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), "-1"));
+        providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, configId);
 
         List<ProviderProject> blackDuckProjects = providerDataAccessor.getProjectsByProviderConfigName(blackDuckGlobalConfigName);
         providerDataAccessor.deleteProjects(blackDuckProjects);
