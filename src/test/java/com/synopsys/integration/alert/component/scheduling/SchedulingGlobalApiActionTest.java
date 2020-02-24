@@ -147,15 +147,12 @@ public class SchedulingGlobalApiActionTest {
         SchedulingGlobalApiAction schedulingActionApi = new SchedulingGlobalApiAction(BLACK_DUCK_PROVIDER_KEY, taskManager, configurationAccessor);
         FieldModel fieldModel = new FieldModel(SCHEDULING_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         FieldModel actualFieldModel = schedulingActionApi.afterGetAction(fieldModel);
-        Optional<String> accumulatorNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN);
         Optional<String> dailyTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN);
         Optional<String> purgeTaskNextRun = actualFieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN);
 
-        assertTrue(accumulatorNextRun.isPresent());
         assertTrue(dailyTaskNextRun.isPresent());
         assertTrue(purgeTaskNextRun.isPresent());
 
-        assertEquals(accumulatorTime, Long.valueOf(accumulatorNextRun.get()));
         assertEquals(nextRunTimeString, dailyTaskNextRun.get());
         assertEquals(nextRunTimeString, purgeTaskNextRun.get());
     }
