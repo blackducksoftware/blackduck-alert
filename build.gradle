@@ -29,7 +29,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '5.2.2-SNAPSHOT'
+version = '5.2.2'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
