@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.HideCheckbo
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -74,6 +75,12 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
+        // TODO extract label and description
+        // FIXME add endpoint
+        ConfigField providerConfigName = new EndpointSelectField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME, "Provider Config Name", "The name of the provider configuration to use for this distribution job.")
+                                             .applyClearable(false)
+                                             .applyRequired(true);
+
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
                                                                    .map(this::convertToLabelValueOption)
@@ -103,7 +110,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
-        List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> configFields = List.of(providerConfigName, notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
