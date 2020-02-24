@@ -63,6 +63,8 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
         JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);
         json.addProperty("provider", provider);
+        json.addProperty("providerConfigId", providerConfigId);
+        json.addProperty("providerConfigName", providerConfigName);
         json.addProperty("providerCreationTime", providerCreationTime);
         json.addProperty("notificationType", notificationType);
         json.addProperty("content", content);
