@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -96,13 +95,12 @@ public class ProviderLifecycleManager {
     public void unscheduleTasksForProviderConfig(Provider provider, String providerConfigName) {
         logger.debug("Performing unscheduling task for provider config: {}", providerConfigName);
 
-        // TODO find a better way to get the task names
-        Set<String> runningTasksForProviderConfig = taskManager.getRunningTaskNames()
-                                                        .stream()
-                                                        .filter(name -> name.contains(provider.getKey().getUniversalKey()))
-                                                        .filter(name -> name.contains(providerConfigName))
-                                                        .collect(Collectors.toSet());
-        for (String taskName : runningTasksForProviderConfig) {
+        List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class).stream()
+                                       .filter(task -> task.getProviderProperties().getConfigName().equals(providerConfigName))
+                                       .collect(Collectors.toList());
+
+        for (ProviderTask task : tasks) {
+            String taskName = task.getTaskName();
             if (taskManager.getNextRunTime(taskName).isPresent()) {
                 unscheduleTask(taskName);
             }
