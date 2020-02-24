@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
-
     private final List<Descriptor> descriptors = new LinkedList<>();
     @Autowired
     private DescriptorAccessor descriptorAccessor;

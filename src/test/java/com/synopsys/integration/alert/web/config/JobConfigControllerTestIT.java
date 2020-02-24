@@ -228,7 +228,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
-            ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
+            ChannelDistributionUIConfig.KEY_FREQUENCY, frequency
+        );
         FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
         if (StringUtils.isNotBlank(channelId)) {
             fieldModel.setId(channelId);
@@ -246,7 +247,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
             ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType,
             ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject,
-            ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames);
+            ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames
+        );
         FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
         if (StringUtils.isNotBlank(providerId)) {
             bdFieldModel.setId(providerId);

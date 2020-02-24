@@ -22,9 +22,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
@@ -47,6 +52,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
@@ -75,7 +82,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private EmailChannelKey emailChannelKey;
 
     @Autowired
+    private ConfigurationAccessor configurationAccessor;
+    @Autowired
     private DefaultNotificationManager notificationManager;
+
+    private ConfigurationModel providerConfigModel = null;
 
     public void assertNotificationModel(AlertNotificationModel notification, AlertNotificationModel savedNotification) {
         assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());
@@ -85,12 +96,28 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     @BeforeEach
-    public void init() {
+    public void init() throws AlertDatabaseConstraintException {
         cleanDB();
+
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("true");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("My Black Duck Config");
+
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://a-blackduck-server");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue("300");
+
+        List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
+        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
     }
 
     @AfterEach
-    public void cleanUpDB() {
+    public void cleanUpDB() throws AlertDatabaseConstraintException {
+        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
         cleanDB();
     }
 
@@ -362,7 +389,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private AlertNotificationModel createNotificationModel(Date createdAt) {
-        return new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", NOTIFICATION_TYPE, "{content: \"content is here...\"}", createdAt, createdAt);
+        return new AlertNotificationModel(1L, providerConfigModel.getConfigurationId(), "provider", "providerConfigName", NOTIFICATION_TYPE, "{content: \"content is here...\"}", createdAt, createdAt);
     }
 
     private AlertNotificationModel createNotificationModel() {
@@ -371,7 +398,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private NotificationEntity createNotificationContent(Date createdAt) {
-        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null);
+        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null, providerConfigModel.getConfigurationId());
         return mockedNotificationContent.createEntity();
     }
 
@@ -383,4 +410,5 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private Date createDate(LocalDateTime localTime) {
         return Date.from(localTime.toInstant(ZoneOffset.UTC));
     }
+
 }

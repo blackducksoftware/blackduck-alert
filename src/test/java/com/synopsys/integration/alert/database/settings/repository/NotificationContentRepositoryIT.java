@@ -27,16 +27,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
@@ -53,9 +53,9 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private AuditEntryRepository auditEntryRepository;
     @Autowired
-    private DefaultAuditUtility defaultAuditUtility;
+    private AuditUtility auditUtility;
     @Autowired
-    private DefaultConfigurationAccessor defaultConfigurationAccessor;
+    private ConfigurationAccessor configurationAccessor;
 
     @BeforeEach
     public void init() {
@@ -181,11 +181,11 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         fieldModel.setFieldValue("false");
-        ConfigurationJobModel configJob = defaultConfigurationAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
+        ConfigurationJobModel configJob = configurationAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
 
         for (NotificationEntity notification : savedNotifications) {
             MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());
-            defaultAuditUtility.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
+            auditUtility.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
         }
 
         auditEntryRepository.flush();
@@ -202,7 +202,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         Date providerCreationTime = createdAt;
         final String provider = "provider_1";
         final String notificationType = "type_1";
-        NotificationEntity entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
+        NotificationEntity entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null, 1L).createEntity();
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
     }
