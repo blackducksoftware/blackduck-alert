@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.audit.controller;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -147,7 +147,10 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testPostConfig() throws Exception {
-        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        slackFields.add(providerConfigName);
+
         SlackChannelKey slackChannelKey = new SlackChannelKey();
         ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
