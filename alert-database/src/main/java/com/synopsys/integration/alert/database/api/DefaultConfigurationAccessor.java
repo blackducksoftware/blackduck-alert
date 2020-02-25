@@ -170,12 +170,19 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         Long fieldId = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                            .map(DefinedFieldEntity::getId)
                            .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("The key '%s' is not registered in the database", ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)));
-        Optional<Long> optionalProviderConfigId = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
-                                                      .stream()
-                                                      .map(FieldValueEntity::getConfigId)
-                                                      .findFirst();
-        if (optionalProviderConfigId.isPresent()) {
-            return getConfigurationById(optionalProviderConfigId.get());
+        List<Long> providerConfigIds = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
+                                           .stream()
+                                           .map(FieldValueEntity::getConfigId)
+                                           .collect(Collectors.toList());
+        if (!providerConfigIds.isEmpty()) {
+            for (Long configId : providerConfigIds) {
+                Optional<ConfigurationModel> configurationModel = getConfigurationById(configId);
+                Optional<ConfigurationModel> globalModel = configurationModel
+                                                               .filter(model -> model.getDescriptorContext() == ConfigContextEnum.GLOBAL);
+                if (globalModel.isPresent()) {
+                    return globalModel;
+                }
+            }
         }
         return Optional.empty();
     }
