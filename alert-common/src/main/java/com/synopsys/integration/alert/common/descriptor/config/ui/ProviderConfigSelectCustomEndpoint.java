@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +36,8 @@ public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
 
     @Override
     protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
-        Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-        Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName.orElse(StringUtils.EMPTY));
+        String providerName = fieldModel.getDescriptorName();
+        Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         if (descriptorKey.isPresent()) {
             List<LabelValueSelectOption> options = new LinkedList<>();
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
