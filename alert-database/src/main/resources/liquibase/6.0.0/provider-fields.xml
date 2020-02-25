@@ -67,7 +67,6 @@
     </changeSet>
 
     <!-- Add new values to existing Black Duck Provider config -->
-    <!-- FIXME also add to provider distribution config -->
     <changeSet author="gavink" id="2020-02-12-14-53-18-259">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">select count(*) from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck') and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')</sqlCheck>
@@ -87,6 +86,28 @@
             <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.name')"/>
             <column name="field_value" value="Default Black Duck Config"/>
         </insert>
+    </changeSet>
+
+    <!-- Add provider config name to existing distribution jobs -->
+    <changeSet author="gavink" id="2020-02-24-15-38-48-453">
+        <sql stripComments="true">
+            INSERT INTO alert.field_values (config_id, field_id, field_value)
+            SELECT config.id, GET_FIELD_ID('provider.common.config.name'), 'Default Black Duck Config'
+            FROM (
+                SELECT id
+                FROM alert.descriptor_configs
+                WHERE context_id = GET_CONTEXT_ID('DISTRIBUTION')
+                AND descriptor_id IN (
+                    SELECT id
+                    FROM alert.registered_descriptors
+                    WHERE type_id IN (
+                        SELECT id
+                        FROM alert.descriptor_types
+                        WHERE type = 'CHANNEL'
+                    )
+                )
+            ) config;
+        </sql>
     </changeSet>
 
     <!-- Add provider config id to provider data tables -->
