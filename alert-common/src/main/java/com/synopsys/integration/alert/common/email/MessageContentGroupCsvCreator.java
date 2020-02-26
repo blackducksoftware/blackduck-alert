@@ -179,10 +179,14 @@ public class MessageContentGroupCsvCreator {
     }
 
     private String createFlattenedItemsString(Collection<LinkableItem> items) {
-        return items
-                   .stream()
-                   .map(item -> String.format("%s: %s", item.getName(), item.getValue()))
-                   .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
+        String flattenedString = items
+                                     .stream()
+                                     .map(item -> String.format("%s: %s", item.getName(), item.getValue()))
+                                     .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
+        if (StringUtils.isNotBlank(flattenedString)) {
+            return flattenedString;
+        }
+        return UNDEFINED_VALUE;
     }
 
     private void appendLine(StringBuilder csvBuilder, List<String> values) {
