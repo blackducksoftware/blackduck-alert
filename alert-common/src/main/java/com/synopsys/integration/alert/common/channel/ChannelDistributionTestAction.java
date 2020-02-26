@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -55,10 +56,10 @@ public abstract class ChannelDistributionTestAction extends TestAction {
         ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
 
         String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        String providerName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        String providerConfigName = fieldAccessor.getStringOrEmpty(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
 
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
     public DistributionChannel getDistributionChannel() {

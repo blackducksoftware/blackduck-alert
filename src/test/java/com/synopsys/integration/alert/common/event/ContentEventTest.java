@@ -22,7 +22,7 @@ public class ContentEventTest {
     @Test
     public void getProviderTest() {
         ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
-        assertEquals(PROVIDER, event.getProvider());
+        assertEquals(PROVIDER, event.getProviderConfigName());
     }
 
     @Test
