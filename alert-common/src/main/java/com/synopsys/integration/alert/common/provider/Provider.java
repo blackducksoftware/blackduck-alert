@@ -51,7 +51,7 @@ public abstract class Provider<T extends ProviderProperties> {
 
     public abstract ProviderNotificationClassMap getNotificationClassMap();
 
-    public abstract ProviderMessageContentCollector createMessageContentCollector();
+    public abstract ProviderMessageContentCollector createMessageContentCollector(T providerProperties);
 
     public ProviderContent getProviderContent() {
         return providerContent;

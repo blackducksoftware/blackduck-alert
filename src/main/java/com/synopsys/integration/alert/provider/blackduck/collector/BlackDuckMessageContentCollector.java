@@ -29,10 +29,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
@@ -49,8 +45,6 @@ import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
@@ -58,7 +52,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
     private BlackDuckBucket blackDuckBucket;
 
-    @Autowired
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;

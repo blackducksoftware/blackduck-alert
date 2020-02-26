@@ -92,7 +92,7 @@ public class NotificationProcessor {
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
         if (!filteredNotifications.isEmpty()) {
-            ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector();
+            ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector(providerProperties);
             return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
         }
         return List.of();
