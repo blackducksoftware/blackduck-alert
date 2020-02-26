@@ -42,7 +42,7 @@ class PermissionTable extends Component {
         const { name, value, type, checked } = e.target;
         const { permissionsData } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
-            .toLowerCase() === 'true' : value;
+        .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
         const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
         this.setState({
@@ -113,7 +113,7 @@ class PermissionTable extends Component {
         const splitPermissions = permissionsColumn.split('-');
 
         const prettyNameObject = this.createDescriptorOptions()
-            .find(option => descriptorName === option.label);
+        .find(option => descriptorName === option.label);
         const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
 
         return {
@@ -251,7 +251,7 @@ class PermissionTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, inProgress, fetching } = this.props;
+        const { canCreate, canDelete, inProgress, fetching, nestedInModal } = this.props;
 
         return (
             <div>
@@ -276,7 +276,8 @@ class PermissionTable extends Component {
                     newButton={canCreate}
                     sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
                     errorDialogMessage={this.state.errorMessage}
-                    clearModalFieldState={() => this.setState({ errorMessage: null })} />
+                    clearModalFieldState={() => this.setState({ errorMessage: null })}
+                    nestedInAnotherModal={nestedInModal} />
             </div>
         );
     }
@@ -290,7 +291,8 @@ PermissionTable.propTypes = {
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
     inProgress: PropTypes.bool,
-    fetching: PropTypes.bool
+    fetching: PropTypes.bool,
+    nestedInModal: PropTypes.bool
 };
 
 PermissionTable.defaultProps = {
@@ -298,7 +300,8 @@ PermissionTable.defaultProps = {
     canDelete: true,
     descriptors: [],
     inProgress: false,
-    fetching: false
+    fetching: false,
+    nestedInModal: false
 };
 
 export default PermissionTable;
