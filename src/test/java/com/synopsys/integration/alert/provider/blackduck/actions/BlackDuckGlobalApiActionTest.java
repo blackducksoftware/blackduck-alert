@@ -38,7 +38,7 @@ public class BlackDuckGlobalApiActionTest {
     private void runApiActionTest(ThrowingBiFunction<BlackDuckGlobalApiAction, FieldModel, FieldModel, AlertException> apiAction) throws AlertException {
         TaskManager taskManager = new TaskManager();
         BlackDuckProperties properties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(properties.isConfigEnabled()).thenReturn(false);
+        Mockito.when(properties.isConfigEnabled()).thenReturn(true);
         FieldModel fieldModel = Mockito.mock(FieldModel.class);
         Mockito.when(fieldModel.getFieldValue(Mockito.eq(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))).thenReturn(Optional.of("Test Provider Config"));
 

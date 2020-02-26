@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,16 +39,14 @@ public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         if (descriptorKey.isPresent()) {
-            List<LabelValueSelectOption> options = new LinkedList<>();
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
-            for (ConfigurationModel configurationModel : configurationModels) {
-                FieldAccessor accessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-                Optional<String> configName = accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-                if (configName.isPresent()) {
-                    options.add(new LabelValueSelectOption(configName.get()));
-                }
-            }
-            return options;
+            return configurationModels.stream()
+                       .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                       .map(FieldAccessor::new)
+                       .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                       .flatMap(Optional::stream)
+                       .map(LabelValueSelectOption::new)
+                       .collect(Collectors.toList());
         }
         return List.of();
     }

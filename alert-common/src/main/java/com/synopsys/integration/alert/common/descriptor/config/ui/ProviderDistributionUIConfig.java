@@ -76,9 +76,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField providerConfigField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
-                                              .applyClearable(false)
-                                              .applyRequired(true);
+        ConfigField providerConfigNameField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
+                                                  .applyClearable(false)
+                                                  .applyRequired(true);
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
                                                                    .map(this::convertToLabelValueOption)
@@ -109,7 +109,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
-        List<ConfigField> configFields = List.of(providerConfigField, notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> configFields = List.of(providerConfigNameField, notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }

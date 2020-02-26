@@ -67,7 +67,11 @@ public class BlackDuckGlobalTestAction extends TestAction {
         Long parsedConfigurationId = ProviderProperties.UNKNOWN_CONFIG_ID;
 
         if (StringUtils.isNotBlank(configId)) {
-            parsedConfigurationId = Long.valueOf(configId);
+            try {
+                parsedConfigurationId = Long.valueOf(configId);
+            } catch (NumberFormatException ex) {
+                throw new AlertException("Configuration id not valid.");
+            }
         }
 
         BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(parsedConfigurationId, fieldAccessor);
