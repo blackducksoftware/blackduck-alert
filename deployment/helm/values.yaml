@@ -52,4 +52,5 @@ secretEnvirons: []
 setEncryptionSecretData: false
 
 # Alert's certificate information
-enableCertificateSecret: false
+webserverCustomCertificatesSecretName: "" # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=WEBSERVER_CUSTOM_CERT_FILE=tls.crt --from-file=WEBSERVER_CUSTOM_KEY_FILE=tls.key
+javaKeystoreSecretName: ""                # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=cacerts  

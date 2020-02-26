@@ -25,16 +25,10 @@ spec:
       name: {{ .Release.Name }}-alert
     spec:
       containers:
-      {{- if .Values.enableCertificateSecret }}
       - env:
         - name: RUN_SECRETS_DIR
-          valueFrom:
-            fieldRef:
-                fieldPath: metadata.name
+          value: /tmp/secrets
         envFrom:
-      {{- else }}
-      - envFrom:
-      {{- end }}
         - configMapRef:
             name: {{ .Release.Name }}-alert-environs
         - secretRef:
@@ -62,15 +56,17 @@ spec:
         volumeMounts:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
-        {{- if .Values.enableCertificateSecret }}
+        {{- if .Values.webserverCustomCertificatesSecretName }}
         - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_CERT_FILE
           name: certificate
           subPath: WEBSERVER_CUSTOM_CERT_FILE
         - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_KEY_FILE
           name: certificate
           subPath: WEBSERVER_CUSTOM_KEY_FILE
+        {{- end }}
+        {{- if .Values.javaKeystoreSecretName }}
         - mountPath: /tmp/secrets/cacerts
-          name: certificate
+          name: java-keystore
           subPath: cacerts
         {{- end }}
       dnsPolicy: ClusterFirst
@@ -95,11 +91,17 @@ spec:
       - emptyDir: {}
         name: dir-alert
       {{- end }}
-      {{- if .Values.enableCertificateSecret }}
+      {{- if.Values.webserverCustomCertificatesSecretName }}
       - name: certificate
         secret:
           defaultMode: 292
-          secretName: {{ (required "must provide --set certificateSecretName=\"\"" .Values.certificateSecretName) }}
+          secretName: {{ .Values.webserverCustomCertificatesSecretName }}
+      {{- end }}
+      {{- if .Values.javaKeystoreSecretName }}
+      - name: java-keystore
+        secret:
+          defaultMode: 292
+          secretName: {{ .Values.javaKeystoreSecretName }}
       {{- end }}
 ---
 
