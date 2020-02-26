@@ -134,9 +134,8 @@ Overview:
 3. Create ALERT_ENCRYPTION_GLOBAL_SALT file.
 4. Manage certificates.
 5. Modify environment variables.
-6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-7. Install Black Duck. Follow the documented installation procedure for Black Duck.
-8. Bring the containers up.
+6. Install Black Duck. Follow the documented installation procedure for Black Duck.
+7. Bring the containers up.
 
 #### Details
 This section will walk through each step of the installation procedure.  
@@ -200,16 +199,10 @@ Please see [Environment Variables](#environment-variables)
 - Set the required environment variable PUBLIC_HUB_WEBSERVER_HOST. See [Black Duck Web Server Host](#black-duck-web-server-host)
 - Set any other optional environment variables as needed.
 
-##### 6. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-In the Black Duck deployment files set the following variable for the webserver container: 
-```bash
-USE_ALERT=1
-```
-
-##### 7. Install Black Duck.
+##### 6. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. Do not start the containers. Skip the step to start the containers.
 
-##### 8. Bring the containers up.
+##### 7. Bring the containers up.
 - Copy the blackduck-alert.env file to the same location where the Black Duck docker-compose files are located.
 - Start the containers.
     ```bash
