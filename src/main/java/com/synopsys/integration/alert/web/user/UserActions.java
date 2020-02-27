@@ -50,9 +50,9 @@ import com.synopsys.integration.alert.web.model.UserConfig;
 @Component
 @Transactional
 public class UserActions {
-    private static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
-    private static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
-    private static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
+    public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
+    public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
+    public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private UserAccessor userAccessor;
     private AuthorizationUtility authorizationUtility;
@@ -103,7 +103,9 @@ public class UserActions {
             Map<String, String> fieldErrors = new HashMap<>();
 
             validateUserExistsById(fieldErrors, userId, userName);
-            validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+            if (!existingUser.isExternal()) {
+                validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+            }
             if (!userConfig.isPasswordSet() || !passwordMissing) {
                 validatePasswordLength(fieldErrors, password);
             }
