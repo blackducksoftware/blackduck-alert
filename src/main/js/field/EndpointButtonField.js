@@ -44,7 +44,7 @@ class EndpointButtonField extends Component {
             fieldKey, csrfToken, onChange, currentConfig, endpoint, requestedDataFieldKeys
         } = this.props;
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requestedDataFieldKeys);
-        const mergedData = FieldModelUtilities.combineFieldModels(newFieldModel, popupData);
+        const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
             this.setState({
@@ -62,17 +62,17 @@ class EndpointButtonField extends Component {
                 });
             } else {
                 response.json()
-                    .then((data) => {
-                        const target = {
-                            name: [fieldKey],
-                            checked: false,
-                            type: 'checkbox'
-                        };
-                        onChange({ target });
-                        this.setState({
-                            fieldError: data.message
-                        });
+                .then((data) => {
+                    const target = {
+                        name: [fieldKey],
+                        checked: false,
+                        type: 'checkbox'
+                    };
+                    onChange({ target });
+                    this.setState({
+                        fieldError: data.message
                     });
+                });
             }
         });
     }
