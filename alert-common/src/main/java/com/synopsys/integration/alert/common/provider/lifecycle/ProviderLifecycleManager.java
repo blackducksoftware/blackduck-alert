@@ -75,7 +75,7 @@ public class ProviderLifecycleManager {
         List<ProviderTask> acceptedTasks = new ArrayList<>();
 
         ProviderProperties providerProperties = provider.createProperties(providerConfig);
-        if (providerProperties.isConfigEnabled()) {
+        if (!providerProperties.isConfigEnabled()) {
             throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", providerProperties.getConfigName()));
         }
 

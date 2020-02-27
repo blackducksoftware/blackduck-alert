@@ -8,7 +8,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -36,7 +38,9 @@ public class BlackDuckGlobalApiActionTest {
     private void runApiActionTest(ThrowingBiFunction<BlackDuckGlobalApiAction, FieldModel, FieldModel, AlertException> apiAction) throws AlertException {
         TaskManager taskManager = new TaskManager();
         BlackDuckProperties properties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(properties.isConfigEnabled()).thenReturn(false);
+        Mockito.when(properties.isConfigEnabled()).thenReturn(true);
+        FieldModel fieldModel = Mockito.mock(FieldModel.class);
+        Mockito.when(fieldModel.getFieldValue(Mockito.eq(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))).thenReturn(Optional.of("Test Provider Config"));
 
         BlackDuckAccumulator blackDuckAccumulator = Mockito.mock(BlackDuckAccumulator.class);
         Mockito.when(blackDuckAccumulator.getTaskName()).thenReturn("accumulator-task");
@@ -48,6 +52,9 @@ public class BlackDuckGlobalApiActionTest {
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(-1L);
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(-1L);
+
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(configurationModel));
 
         BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.validate(configurationModel)).thenReturn(true);
@@ -62,7 +69,7 @@ public class BlackDuckGlobalApiActionTest {
         Mockito.when(fieldModelConverter.convertToConfigurationModel(Mockito.any())).thenReturn(configurationModel);
 
         ProviderLifecycleManager providerLifecycleManager = new ProviderLifecycleManager(List.of(blackDuckProvider), taskManager, null);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, fieldModelConverter, configurationAccessor);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(blackDuckAccumulator.getTaskName());
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(blackDuckDataSyncTask.getTaskName());
@@ -70,7 +77,7 @@ public class BlackDuckGlobalApiActionTest {
         assertTrue(initialAccumulatorNextRunTime.isEmpty());
         assertTrue(initialSyncNextRunTime.isEmpty());
 
-        apiAction.apply(blackDuckGlobalApiAction, null);
+        apiAction.apply(blackDuckGlobalApiAction, fieldModel);
         Optional<String> accumulatorNextRunTime = taskManager.getNextRunTime(blackDuckAccumulator.getTaskName());
         Optional<String> syncNextRunTime = taskManager.getNextRunTime(blackDuckDataSyncTask.getTaskName());
 

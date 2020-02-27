@@ -36,9 +36,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -214,6 +214,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String descriptorName = slackChannelKey.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
+        FieldValueModel providerConfig = new FieldValueModel(List.of("Default Black Duck Config"), true);
         FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
         FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         FieldValueModel name = new FieldValueModel(List.of("name"), true);
@@ -225,6 +226,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDistributionUIConfig.KEY_NAME, name,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
             ChannelDistributionUIConfig.KEY_FREQUENCY, frequency
         );
@@ -236,15 +238,13 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String bdDescriptorName = blackDuckProviderKey.getUniversalKey();
         String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
-        FieldValueModel bdGlobalConfigName = new FieldValueModel(List.of("global_config"), true);
         FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);
         FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
         FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
         FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
-        Map<String, FieldValueModel> bdFields = Map.of(
-            ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME, bdGlobalConfigName,
-            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType,
+        Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
             ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType,
             ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject,
             ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +35,7 @@ import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.MessageContentCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
@@ -55,13 +54,13 @@ import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificat
 @Component
 public class BlackDuckProvider extends Provider<BlackDuckProperties> {
     private final DistributionFilterFactory distributionFilterFactory;
-    private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
+    private final MessageContentCollectorFactory messageContentCollectorFactory;
     private final BlackDuckPropertiesFactory propertiesFactory;
     private final BlackDuckValidator validator;
     private final BlackDuckTaskFactory taskFactory;
 
     @Autowired
-    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent, DistributionFilterFactory distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory,
+    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent, DistributionFilterFactory distributionFilterFactory, MessageContentCollectorFactory messageContentCollectorFactory,
         BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator validator, BlackDuckTaskFactory taskFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.distributionFilterFactory = distributionFilterFactory;
@@ -87,8 +86,8 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
     }
 
     @Override
-    public ProviderMessageContentCollector createMessageContentCollector() {
-        return messageContentCollectorFactory.getObject();
+    public ProviderMessageContentCollector createMessageContentCollector(BlackDuckProperties blackDuckProperties) {
+        return messageContentCollectorFactory.createCollector(blackDuckProperties);
     }
 
     @Override

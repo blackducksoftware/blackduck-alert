@@ -22,8 +22,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -99,9 +99,9 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     public void init() throws AlertDatabaseConstraintException {
         cleanDB();
 
-        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         providerConfigEnabled.setFieldValue("true");
-        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         providerConfigName.setFieldValue("My Black Duck Config");
 
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);

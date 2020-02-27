@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -217,7 +217,7 @@ public class DefaultNotificationManager implements NotificationManager {
         if (null != providerConfigId) {
             try {
                 providerConfigName = configurationAccessor.getConfigurationById(providerConfigId)
-                                         .flatMap(field -> field.getField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME))
+                                         .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
                                          .flatMap(ConfigurationFieldModel::getFieldValue)
                                          .orElse(providerConfigName);
             } catch (AlertDatabaseConstraintException e) {

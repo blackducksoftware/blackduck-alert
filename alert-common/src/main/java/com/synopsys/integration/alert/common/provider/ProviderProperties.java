@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public abstract class ProviderProperties {
@@ -33,8 +33,8 @@ public abstract class ProviderProperties {
 
     public ProviderProperties(Long configId, FieldAccessor fieldAccessor) {
         this.configId = configId;
-        this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
-        this.configName = fieldAccessor.getString(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
+        this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
     }
 
     public Long getConfigId() {

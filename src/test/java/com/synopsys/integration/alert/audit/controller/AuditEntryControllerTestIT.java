@@ -22,7 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -75,9 +75,9 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         cleanup();
 
-        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         providerConfigEnabled.setFieldValue("true");
-        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         providerConfigName.setFieldValue("My Black Duck Config");
 
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
@@ -148,7 +148,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testPostConfig() throws Exception {
         List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
-        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
         slackFields.add(providerConfigName);
 
         SlackChannelKey slackChannelKey = new SlackChannelKey();

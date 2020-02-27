@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
@@ -63,7 +64,17 @@ public class BlackDuckGlobalTestAction extends TestAction {
         String apiToken = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         String url = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         String timeout = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
-        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(Long.valueOf(configId), fieldAccessor);
+        Long parsedConfigurationId = ProviderProperties.UNKNOWN_CONFIG_ID;
+
+        if (StringUtils.isNotBlank(configId)) {
+            try {
+                parsedConfigurationId = Long.valueOf(configId);
+            } catch (NumberFormatException ex) {
+                throw new AlertException("Configuration id not valid.");
+            }
+        }
+
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(parsedConfigurationId, fieldAccessor);
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);

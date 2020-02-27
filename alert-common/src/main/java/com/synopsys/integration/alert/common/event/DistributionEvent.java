@@ -31,12 +31,13 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public class DistributionEvent extends ContentEvent {
+    private static final long serialVersionUID = -2067819359358348281L;
     private final FieldAccessor fieldAccessor;
     private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(String configId, String destination, String createdAt, String provider, String formatType, MessageContentGroup contentGroup, FieldAccessor fieldAccessor) {
-        super(destination, createdAt, provider, formatType, contentGroup);
+    public DistributionEvent(String configId, String destination, String createdAt, String providerConfigName, String formatType, MessageContentGroup contentGroup, FieldAccessor fieldAccessor) {
+        super(destination, createdAt, providerConfigName, formatType, contentGroup);
         this.fieldAccessor = fieldAccessor;
         this.configId = configId;
     }

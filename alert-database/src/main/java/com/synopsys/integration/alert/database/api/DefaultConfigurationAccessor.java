@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -167,15 +167,21 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         if (StringUtils.isBlank(providerConfigName)) {
             throw new AlertDatabaseConstraintException("The provider configuration name cannot be null");
         }
-        Long fieldId = definedFieldRepository.findFirstByKey(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)
+        Long fieldId = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                            .map(DefinedFieldEntity::getId)
-                           .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("The key '%s' is not registered in the database", ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)));
-        Optional<Long> optionalProviderConfigId = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
-                                                      .stream()
-                                                      .map(FieldValueEntity::getConfigId)
-                                                      .findFirst();
-        if (optionalProviderConfigId.isPresent()) {
-            return getConfigurationById(optionalProviderConfigId.get());
+                           .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("The key '%s' is not registered in the database", ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)));
+        List<Long> providerConfigIds = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
+                                           .stream()
+                                           .map(FieldValueEntity::getConfigId)
+                                           .collect(Collectors.toList());
+        if (!providerConfigIds.isEmpty()) {
+            for (Long configId : providerConfigIds) {
+                Optional<ConfigurationModel> globalModel = getConfigurationById(configId)
+                                                               .filter(model -> model.getDescriptorContext() == ConfigContextEnum.GLOBAL);
+                if (globalModel.isPresent()) {
+                    return globalModel;
+                }
+            }
         }
         return Optional.empty();
     }

@@ -27,15 +27,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ConfigurationJobModel extends AlertSerializableModel {
+    private static final long serialVersionUID = 4714533679724412017L;
     private final UUID jobId;
     private final Set<ConfigurationModel> configurations;
     private final FieldAccessor fieldAccessor;
@@ -76,7 +77,7 @@ public class ConfigurationJobModel extends AlertSerializableModel {
     }
 
     public String getProviderConfigName() {
-        return getFieldAccessor().getStringOrNull(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        return getFieldAccessor().getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
     }
 
     public FrequencyType getFrequencyType() {

@@ -59,7 +59,7 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldAccessor updateEmailAddresses(String eventProviderConfigName, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
+    public FieldAccessor updateEmailAddresses(String providerConfigName, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
         Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
 
@@ -67,17 +67,17 @@ public class EmailAddressHandler {
         boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
 
         if (!useOnlyAdditionalEmailAddresses) {
-            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(eventProviderConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
+            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
             emailAddresses.addAll(projectEmailAddresses);
         }
 
         if (emailAddresses.isEmpty()) {
             // Temporary fix for license notifications
-            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, eventProviderConfigName, projectOwnerOnly);
+            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigName, projectOwnerOnly);
             emailAddresses.addAll(licenseNotificationEmails);
         }
 
-        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(eventProviderConfigName, originalAccessor);
+        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(providerConfigName, originalAccessor);
         emailAddresses.addAll(additionalEmailAddresses);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();

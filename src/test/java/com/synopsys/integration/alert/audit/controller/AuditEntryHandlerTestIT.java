@@ -37,8 +37,8 @@ import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -110,9 +110,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
 
-        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_ENABLED);
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         providerConfigEnabled.setFieldValue("true");
-        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME);
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         providerConfigName.setFieldValue("My Black Duck Config");
 
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
@@ -218,7 +218,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         List<ConfigurationFieldModel> slackFieldsList = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
 
-        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
         slackFieldsList.add(providerConfigName);
 
         ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
