@@ -305,7 +305,9 @@ class TableSelectInput extends Component {
             </div>);
     }
 
-    selectOnClick() {
+    selectOnClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.retrieveTableData();
         this.setState({ showTable: true })
     }
