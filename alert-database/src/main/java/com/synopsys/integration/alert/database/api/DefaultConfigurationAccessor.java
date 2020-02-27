@@ -176,8 +176,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                                            .collect(Collectors.toList());
         if (!providerConfigIds.isEmpty()) {
             for (Long configId : providerConfigIds) {
-                Optional<ConfigurationModel> configurationModel = getConfigurationById(configId);
-                Optional<ConfigurationModel> globalModel = configurationModel
+                Optional<ConfigurationModel> globalModel = getConfigurationById(configId)
                                                                .filter(model -> model.getDescriptorContext() == ConfigContextEnum.GLOBAL);
                 if (globalModel.isPresent()) {
                     return globalModel;
