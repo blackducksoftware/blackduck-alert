@@ -22,9 +22,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.io.Serializable;
+
 import com.synopsys.integration.util.Stringable;
 
-public abstract class DescriptorKey extends Stringable {
+public abstract class DescriptorKey extends Stringable implements Serializable {
     public abstract String getUniversalKey();
 
     public abstract String getDisplayName();
