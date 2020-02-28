@@ -45,7 +45,7 @@ public class DefaultProviderTaskPropertiesAccessor implements ProviderTaskProper
     @Override
     public Optional<String> getTaskProperty(String taskName, String propertyKey) {
         if (StringUtils.isBlank(taskName) || StringUtils.isBlank(propertyKey)) {
-            Optional.empty();
+            return Optional.empty();
         }
         return providerTaskPropertiesRepository.findByTaskNameAndPropertyName(taskName, propertyKey).map(ProviderTaskPropertiesEntity::getValue);
     }
