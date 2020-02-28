@@ -31,13 +31,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
-import com.synopsys.integration.blackduck.api.generated.component.VulnerabilityCvss3View;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
@@ -121,14 +118,6 @@ public class BlackDuckResponseCache {
 
         }
 
-        return Optional.empty();
-    }
-
-    private Optional<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType> getCvss3Severity(VulnerabilityView vulnerabilityView) {
-        VulnerabilityCvss3View vulnerabilityCvss3View = vulnerabilityView.getCvss3();
-        if (vulnerabilityCvss3View != null) {
-            return Optional.ofNullable(vulnerabilityCvss3View.getSeverity());
-        }
         return Optional.empty();
     }
 
