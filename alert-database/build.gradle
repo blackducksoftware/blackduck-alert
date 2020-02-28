@@ -17,7 +17,6 @@ def alertDatabaseDockerImageVersion = '1.0.0'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql:42.2.8'
     runtimeOnly 'org.liquibase:liquibase-core'
 
