@@ -81,8 +81,9 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
             // Mimic keystore functionality
             id = customCertificateRepository.findByAlias(alias).map(CustomCertificateEntity::getId).orElse(null);
         } else {
-            customCertificateRepository.findById(id)
-                .orElseThrow(() -> new AlertDatabaseConstraintException("A custom certificate with that id did not exist"));
+            if (!customCertificateRepository.existsById(id)) {
+                throw new AlertDatabaseConstraintException("A custom certificate with that id did not exist");
+            }
         }
 
         entityToSave.setId(id);

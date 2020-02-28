@@ -43,10 +43,7 @@ spec:
             - containerPort: 8888
               protocol: TCP
           resources:
-            limits:
-              memory: {{ .Values.cfssl.limitMemory }}
-            requests:
-              memory: {{ .Values.cfssl.requestMemory }}
+            {{- toYaml .Values.cfssl.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/cfssl
               name: dir-cfssl

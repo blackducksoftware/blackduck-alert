@@ -140,9 +140,8 @@ Overview:
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
 3. Create any optional secrets.
 4. Modify environment variables.
-5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-6. Install Black Duck. Follow the documented installation procedure for Black Duck.
-7. Deploy the stack.
+5. Install Black Duck. Follow the documented installation procedure for Black Duck.
+6. Deploy the stack.
 
 #### Details 
 This section will walk through each step of the installation procedure.
@@ -220,19 +219,13 @@ Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set any other optional environment variables as needed.
 
-##### 5. Update the Black Duck installation to set the USE_ALERT environment variable for the NGinX container.
-In the Black Duck deployment files set the following variable for the webserver container: 
-```bash
-USE_ALERT=1
-``` 
-
-##### 6. Install Black Duck.
+##### 5. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. 
 
 Note: The NGinX container will not start correctly when it is waiting for the alert service to be available.  
 Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running. 
 
-##### 7. Deploy the stack.
+##### 6. Deploy the stack.
 - Execute the command to add Alert to the stack: 
     ```
     docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>

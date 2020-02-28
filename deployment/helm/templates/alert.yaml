@@ -55,10 +55,7 @@ spec:
           - containerPort: 8443
             protocol: TCP
         resources:
-          limits:
-            memory: {{ .Values.alert.limitMemory }}
-          requests:
-            memory: {{ .Values.alert.requestMemory }}
+          {{- toYaml .Values.alert.resources | nindent 12 }}
         volumeMounts:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
@@ -133,14 +130,17 @@ metadata:
   name: {{ .Release.Name }}-alert-pvc
   namespace: {{ .Release.Namespace }}
 spec:
+  {{ if .Values.storageClassName -}}
+  storageClassName: {{ .Values.storageClassName }}
+  {{ end -}}
+  {{ if .Values.volumeName -}}
+  volumeName: {{ .Values.volumeName }}
+  {{ end -}}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.pvcSize }}
-{{ if .Values.storageClassName -}}
-  storageClassName: {{ .Values.storageClassName }}
-{{ end -}}
 ---
 {{- end }}
 

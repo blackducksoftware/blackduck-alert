@@ -33,7 +33,7 @@ class RoleTable extends Component {
         const { name, value, type, checked } = e.target;
         const { role } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
-            .toLowerCase() === 'true' : value;
+        .toLowerCase() === 'true' : value;
         const newRole = Object.assign(role, { [name]: updatedValue });
         this.setState({
             role: newRole
@@ -116,7 +116,6 @@ class RoleTable extends Component {
         this.setState({
             role: role
         });
-        this.props.saveRole(role);
         return true;
     }
 
@@ -169,7 +168,8 @@ class RoleTable extends Component {
                     deleteRole={this.deletePermission}
                     descriptors={this.props.descriptors}
                     canCreate={canCreate}
-                    canDelete={canDelete} />
+                    canDelete={canDelete}
+                    nestedInModal={true} />
             </div>
         );
     }

@@ -35,6 +35,8 @@ class TableDisplay extends Component {
         this.copyButtonClick = this.copyButtonClick.bind(this);
         this.isShowModal = this.isShowModal.bind(this);
         this.createErrorModal = this.createErrorModal.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -134,9 +136,25 @@ class TableDisplay extends Component {
         this.updateData();
     }
 
+    handleInsertModalSubmit(event, onModalClose) {
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation();
+        }
+        const { nestedInAnotherModal } = this.props;
+        // nested modals are not supported by react-bootstrap.
+        // if this table is nested in a modal it cannot call onModalClose because it would close all modals.
+        if (!nestedInAnotherModal) {
+            onModalClose();
+        }
+        this.handleSubmit();
+    }
+
     handleSubmit(event) {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation();
+        }
         const result = this.props.onConfigSave();
         const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
         this.setState({
@@ -176,6 +194,12 @@ class TableDisplay extends Component {
         return this.state.showConfiguration || this.props.hasFieldErrors;
     }
 
+    hideModal() {
+        this.setState({
+            showConfiguration: false
+        });
+    }
+
     createInsertModal(onModalClose) {
         const { showConfiguration } = this.state;
         const { modalTitle, newConfigFields, inProgress } = this.props;
@@ -189,9 +213,12 @@ class TableDisplay extends Component {
                 <PopUp
                     onCancel={() => {
                         onModalClose();
+                        this.hideModal();
                         this.handleClose();
                     }}
-                    handleSubmit={this.handleSubmit}
+                    handleSubmit={(event) => {
+                        this.handleInsertModalSubmit(event, onModalClose);
+                    }}
                     show={showConfiguration}
                     title={modalTitle}
                     okLabel="Save"
@@ -439,7 +466,8 @@ TableDisplay.propTypes = {
     tableSearchable: PropTypes.bool,
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
-    errorDialogMessage: PropTypes.string
+    errorDialogMessage: PropTypes.string,
+    nestedInAnotherModal: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -462,7 +490,8 @@ TableDisplay.defaultProps = {
     tableSearchable: true,
     tableRefresh: true,
     hasFieldErrors: false,
-    errorDialogMessage: null
+    errorDialogMessage: null,
+    nestedInAnotherModal: false
 };
 
 const mapStateToProps = state => ({

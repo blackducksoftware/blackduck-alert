@@ -171,7 +171,7 @@ public class RoleActions {
         validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
-            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that username already exists.");
+            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that role name already exists.");
         }
     }
 
