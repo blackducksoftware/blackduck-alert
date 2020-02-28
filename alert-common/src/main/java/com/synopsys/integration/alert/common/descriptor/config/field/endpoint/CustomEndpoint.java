@@ -22,38 +22,37 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class CustomEndpoint<R> {
     public CustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         customEndpointManager.registerFunction(fieldKey, this::createResponse);
     }
 
-    protected Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
+    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
         return Optional.empty();
     }
 
-    protected abstract R createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException;
+    protected abstract R createData(FieldModel fieldModel) throws AlertException;
 
     protected abstract ResponseEntity<String> createErrorResponse(Exception e);
 
     protected abstract ResponseEntity<String> createSuccessResponse(R response);
 
-    public final ResponseEntity<String> createResponse(Map<String, FieldValueModel> fieldValueModels) {
-        Optional<ResponseEntity<String>> processedFieldValueModels = preprocessRequest(fieldValueModels);
+    public final ResponseEntity<String> createResponse(FieldModel fieldModel) {
+        Optional<ResponseEntity<String>> processedFieldValueModels = preprocessRequest(fieldModel);
         if (processedFieldValueModels.isPresent()) {
             return processedFieldValueModels.get();
         }
 
         try {
-            R response = createData(fieldValueModels);
+            R response = createData(fieldModel);
             return createSuccessResponse(response);
         } catch (Exception e) {
             return createErrorResponse(e);

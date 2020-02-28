@@ -22,54 +22,33 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 public abstract class ProviderProperties {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ProviderKey providerKey;
-    protected final ConfigurationAccessor configurationAccessor;
+    public static final Long UNKNOWN_CONFIG_ID = -1L;
+    private Long configId;
+    private boolean configEnabled;
+    private String configName;
 
-    public ProviderProperties(ProviderKey providerKey, ConfigurationAccessor configurationAccessor) {
-        this.providerKey = providerKey;
-        this.configurationAccessor = configurationAccessor;
+    public ProviderProperties(Long configId, FieldAccessor fieldAccessor) {
+        this.configId = configId;
+        this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
     }
 
-    // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
-    public Optional<ConfigurationModel> retrieveGlobalConfig() {
-        try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL);
-            if (null != configurations && !configurations.isEmpty()) {
-                return Optional.of(configurations.get(0));
-            }
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Problem connecting to DB.", e);
-        }
-        return Optional.empty();
+    public Long getConfigId() {
+        return configId;
     }
 
-    protected FieldAccessor createFieldAccessor() {
-        return retrieveGlobalConfig()
-                   .map(config -> new FieldAccessor(config.getCopyOfKeyToFieldMap()))
-                   .orElse(new FieldAccessor(Map.of()));
+    public boolean isConfigEnabled() {
+        return configEnabled;
     }
 
-    protected Optional<String> createOptionalString(String value) {
-        if (StringUtils.isNotBlank(value)) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
+    public String getConfigName() {
+        return configName;
     }
+
+    public abstract void disconnect();
 
 }

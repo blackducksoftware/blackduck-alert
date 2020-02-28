@@ -27,23 +27,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 
 public interface NotificationManager {
-    List<AlertNotificationWrapper> saveAllNotifications(final Collection<AlertNotificationWrapper> notifications);
+    List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications);
 
-    List<AlertNotificationWrapper> findByIds(final List<Long> notificationIds);
+    List<AlertNotificationModel> findByIds(List<Long> notificationIds);
 
-    Optional<AlertNotificationWrapper> findById(final Long notificationId);
+    Optional<AlertNotificationModel> findById(Long notificationId);
 
-    List<AlertNotificationWrapper> findByCreatedAtBetween(final Date startDate, final Date endDate);
+    List<AlertNotificationModel> findByCreatedAtBetween(Date startDate, Date endDate);
 
-    List<AlertNotificationWrapper> findByCreatedAtBefore(final Date date);
+    List<AlertNotificationModel> findByCreatedAtBefore(Date date);
 
-    List<AlertNotificationWrapper> findByCreatedAtBeforeDayOffset(final int dayOffset);
+    List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
 
-    void deleteNotificationList(final List<AlertNotificationWrapper> notifications);
+    void deleteNotificationList(List<AlertNotificationModel> notifications);
 
-    void deleteNotification(final AlertNotificationWrapper notification);
+    void deleteNotification(AlertNotificationModel notification);
 
 }

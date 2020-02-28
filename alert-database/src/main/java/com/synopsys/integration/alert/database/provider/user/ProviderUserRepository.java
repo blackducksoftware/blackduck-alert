@@ -31,15 +31,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity, Long> {
-    List<ProviderUserEntity> findByProvider(String provider);
+    List<ProviderUserEntity> findByProviderConfigId(Long providerConfigId);
 
-    @Query(value = "SELECT DISTINCT new ProviderUserEntity(providerUser.emailAddress, providerUser.optOut, providerUser.provider) "
+    @Query(value = "SELECT DISTINCT new ProviderUserEntity(providerUser.emailAddress, providerUser.optOut, providerUser.providerConfigId) "
                        + "FROM ProviderUserEntity providerUser "
-                       + "WHERE providerUser.provider = :provider "
+                       + "WHERE providerUser.providerConfigId = :providerConfigId "
                        + "AND providerUser.emailAddress LIKE %:emailSearchTerm%")
-    Page<ProviderUserEntity> findPageOfUsersByProviderAndEmailSearchTerm(@Param("provider") String provider, @Param("emailSearchTerm") String emailSearchTerm, Pageable pageable);
+    Page<ProviderUserEntity> findPageOfUsersByProviderAndEmailSearchTerm(@Param("provider") Long providerConfigId, @Param("emailSearchTerm") String emailSearchTerm, Pageable pageable);
 
-    List<ProviderUserEntity> findByEmailAddressAndProvider(String emailAddress, String provider);
+    List<ProviderUserEntity> findByEmailAddressAndProviderConfigId(String emailAddress, Long providerConfigId);
 
-    void deleteByProviderAndEmailAddress(String provider, String emailAddress);
+    void deleteByProviderConfigIdAndEmailAddress(Long providerConfigId, String emailAddress);
 }

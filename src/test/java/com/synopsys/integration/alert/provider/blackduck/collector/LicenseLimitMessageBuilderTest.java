@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.LicenseLimitMessageBuilder;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
@@ -27,14 +28,14 @@ public class LicenseLimitMessageBuilderTest {
         Mockito.when(blackDuckHttpClient.getBaseUrl()).thenReturn(null);
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
-
-        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(1L, new Date(), null, licenseLimitNotificationView, null, blackDuckServicesFactory);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", new Date(), null);
+        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(commonMessageData, licenseLimitNotificationView, null, blackDuckServicesFactory);
 
         assertEquals(1, providerMessageContents.size());
     }
 
     private LicenseLimitNotificationContent createContent() {
-        final LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
+        LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
         content.setLicenseViolationType(LicenseLimitType.MANAGED_CODEBASE_BYTES_NEW);
         content.setMarketingPageUrl("https://google.com");
         content.setMessage("Unit test message");

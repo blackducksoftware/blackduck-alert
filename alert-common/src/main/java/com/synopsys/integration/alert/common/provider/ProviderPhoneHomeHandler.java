@@ -20,20 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.provider;
 
-import java.util.Date;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 
-public interface AlertNotificationWrapper {
-    Long getId();
+public interface ProviderPhoneHomeHandler {
+    ProviderKey getProviderKey();
 
-    Date getCreatedAt();
-
-    String getProvider();
-
-    String getNotificationType();
-
-    String getContent();
-
-    Date getProviderCreationTime();
+    PhoneHomeRequestBody.Builder populatePhoneHomeData(ConfigurationModel configurationModel, PhoneHomeRequestBody.Builder phoneHomeBuilder);
 }

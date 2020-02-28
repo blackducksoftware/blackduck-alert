@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.common.persistence.model;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProviderProject extends AlertSerializableModel {
-    private final String name;
-    private final String description;
-    private final String href;
-    private final String projectOwnerEmail;
+    private String name;
+    private String description;
+    private String href;
+    private String projectOwnerEmail;
 
     public ProviderProject(String name, String description, String href, String projectOwnerEmail) {
         this.name = name;

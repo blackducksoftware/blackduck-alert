@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
 
@@ -65,7 +65,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 return;
             }
             logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
-            List<AlertNotificationWrapper> notifications = notificationManager.findByIds(event.getNotificationIds());
+            List<AlertNotificationModel> notifications = notificationManager.findByIds(event.getNotificationIds());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             eventManager.sendEvents(distributionEvents);
         } else {

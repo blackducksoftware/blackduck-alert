@@ -110,16 +110,16 @@ public class JobConfigActions {
     public void deleteJobById(UUID id) throws AlertException {
         Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
         if (jobs.isPresent()) {
-            LinkedList<String> descriptorNames = new LinkedList<>();
+            LinkedList<FieldModel> processedFieldModels = new LinkedList<>();
             ConfigurationJobModel configurationJobModel = jobs.get();
             for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
-                descriptorNames.add(fieldModel.getDescriptorName());
+                processedFieldModels.add(fieldModel);
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
-            for (String descriptorName : descriptorNames) {
-                fieldModelProcessor.performAfterDeleteAction(descriptorName, ConfigContextEnum.DISTRIBUTION.name());
+            for (FieldModel fieldModel : processedFieldModels) {
+                fieldModelProcessor.performAfterDeleteAction(fieldModel);
             }
         }
     }
@@ -328,4 +328,5 @@ public class JobConfigActions {
         }
         return Optional.empty();
     }
+
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-02-20-14-35-09-961">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="provider_task_properties"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="provider_task_properties">
+            <column name="provider_config_id" type="BIGINT"/>
+            <column name="task_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="property_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="value" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-20-14-55-54-948">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="provider_task_properties_provider_config_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="provider_task_properties"
+                baseColumnNames="provider_config_id"
+                constraintName="provider_task_properties_provider_config_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="descriptor_configs"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Read old last-run-search-date from file -->
+    <!-- FIXME can we better control the relative path to the file? Maybe with docker local overrides? -->
+    <changeSet author="gavink" id="2020-02-21-08-34-06-927">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <!-- currently necessary because we use 'h2' for tests/runServer task -->
+                <dbms type="postgresql"/>
+                <and>
+                    <sqlCheck expectedResult="1">
+                        select count(case when stringFromFile != NULL then 1 else 0 end)
+                        from pg_read_file('../../blackduck-accumulator-task-last-search.txt', 0, 102400, true) stringFromFile;
+                    </sqlCheck>
+                    <sqlCheck expectedResult="1">
+                        select count(case when configId != NULL then 1 else 0 end)
+                        from GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() configId;
+                    </sqlCheck>
+                </and>
+            </and>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            insert into alert.provider_task_properties (task_name, property_name, value)
+            values (
+                'Task::Class[com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:' || GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() || ']',
+                'last.search.end.date',
+                pg_read_file('../../blackduck-accumulator-task-last-search.txt')
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

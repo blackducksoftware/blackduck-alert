@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -76,7 +77,7 @@ public class EmailGlobalTestAction extends TestAction {
                                                      .applyNotificationId(1L);
 
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
-                                                     .applyProvider("Test Provider")
+                                                     .applyProvider("Test Provider", ProviderProperties.UNKNOWN_CONFIG_ID, "Test Provider Config")
                                                      .applyTopic("Message Content", "Test from Alert")
                                                      .applyAllComponentItems(List.of(componentBuilder.build()));
 

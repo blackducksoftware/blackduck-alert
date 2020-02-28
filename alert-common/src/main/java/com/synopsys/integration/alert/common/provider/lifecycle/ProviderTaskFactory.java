@@ -20,9 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.common.provider.lifecycle;
 
-public abstract class ProviderValidator {
+import java.util.List;
 
-    public abstract boolean validate();
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
+
+public interface ProviderTaskFactory {
+    List<ProviderTask> createTasks(ProviderProperties providerProperties);
 }

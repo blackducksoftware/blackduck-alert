@@ -32,4 +32,7 @@ import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 @Component
 public interface FieldValueRepository extends JpaRepository<FieldValueEntity, Long> {
     List<FieldValueEntity> findByConfigId(Long configId);
+
+    List<FieldValueEntity> findAllByFieldIdAndValue(Long fieldId, String value);
+
 }

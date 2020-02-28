@@ -33,11 +33,13 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.HideCheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -74,6 +76,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
+        ConfigField providerConfigNameField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
+                                                  .applyClearable(false)
+                                                  .applyRequired(true);
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
                                                                    .map(this::convertToLabelValueOption)
@@ -101,9 +106,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
                                             .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
                                             .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
-        List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> configFields = List.of(providerConfigNameField, notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
         List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }

@@ -83,7 +83,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public DistributionEvent createChannelEvent() throws AlertException {
         LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider")
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyTopic("testTopic", "")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();

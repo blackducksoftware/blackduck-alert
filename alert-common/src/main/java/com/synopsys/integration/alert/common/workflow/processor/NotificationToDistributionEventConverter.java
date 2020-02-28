@@ -86,7 +86,7 @@ public class NotificationToDistributionEventConverter {
     }
 
     private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
-        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderName(), job.getFormatType().name(), contentGroup, job.getFieldAccessor());
+        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigName(), job.getFormatType().name(), contentGroup, job.getFieldAccessor());
     }
 
 }

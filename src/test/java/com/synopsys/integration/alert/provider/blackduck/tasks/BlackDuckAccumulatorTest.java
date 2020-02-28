@@ -7,14 +7,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -25,22 +26,24 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
+import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class BlackDuckAccumulatorTest {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
@@ -50,23 +53,36 @@ public class BlackDuckAccumulatorTest {
     private TestBlackDuckProperties testBlackDuckProperties;
     private DefaultNotificationManager notificationManager;
     private TaskScheduler taskScheduler;
-    private FilePersistenceUtil filePersistenceUtil;
-    private Gson gson;
+    private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
     @BeforeEach
     public void init() throws Exception {
-        gson = new Gson();
         testAccumulatorParent = new File("testAccumulatorDirectory");
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
 
         TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
-        testBlackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, new TestProperties(), proxyManager);
 
         notificationManager = Mockito.mock(DefaultNotificationManager.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
-        filePersistenceUtil = new FilePersistenceUtil(testAlertProperties, new Gson());
+
+        providerTaskPropertiesAccessor = new ProviderTaskPropertiesAccessor() {
+            Map<String, String> properties = new HashMap<>();
+
+            @Override
+            public Optional<String> getTaskProperty(String taskName, String propertyKey) {
+                return Optional.ofNullable(properties.get(taskName + propertyKey));
+            }
+
+            @Override
+            public void setTaskProperty(Long configId, String taskName, String propertyKey, String propertyValue) throws AlertDatabaseConstraintException {
+                properties.put(taskName + propertyKey, propertyValue);
+            }
+        };
     }
 
     @AfterEach
@@ -84,30 +100,13 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testCreateDateRange() {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = notificationAccumulator.createDateRange();
         assertNotNull(dateRange);
         ZonedDateTime startTime = ZonedDateTime.ofInstant(dateRange.getStart().toInstant(), ZoneOffset.UTC);
         ZonedDateTime endTime = ZonedDateTime.ofInstant(dateRange.getEnd().toInstant(), ZoneOffset.UTC);
         assertNotEquals(dateRange.getStart(), dateRange.getEnd());
         ZonedDateTime expectedStartTime = endTime.minusMinutes(1);
         assertEquals(expectedStartTime, startTime);
-    }
-
-    @Test
-    public void testCreateDateRangeIOException() throws Exception {
-        BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        ZonedDateTime startDateTime = ZonedDateTime.now();
-        startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        startDateTime = startDateTime.withSecond(0).withNano(0);
-        startDateTime = startDateTime.minusMinutes(5);
-        Date expectedStartDate = Date.from(startDateTime.toInstant());
-        String startString = notificationAccumulator.formatDate(expectedStartDate);
-        filePersistenceUtil.writeToFile(notificationAccumulator.getSearchRangeFileName(), startString);
-        BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        Mockito.doThrow(new IOException("Can't read file test exception")).when(spiedAccumulator).readSearchStartTime(Mockito.any());
-        DateRange dateRange = spiedAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
-        assertNotNull(dateRange);
-        assertEquals(dateRange.getStart(), dateRange.getEnd());
     }
 
     @Test
@@ -119,10 +118,11 @@ public class BlackDuckAccumulatorTest {
         startDateTime = startDateTime.minusMinutes(5);
         Date expectedStartDate = Date.from(startDateTime.toInstant());
         String startString = notificationAccumulator.formatDate(expectedStartDate);
-        filePersistenceUtil.writeToFile(notificationAccumulator.getSearchRangeFileName(), startString);
+
+        providerTaskPropertiesAccessor.setTaskProperty(null, notificationAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, startString);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.doThrow(new ParseException("Can't parse date test exception", 1)).when(spiedAccumulator).parseDateString(Mockito.any());
-        DateRange dateRange = spiedAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = spiedAccumulator.createDateRange();
         assertNotNull(dateRange);
         assertEquals(dateRange.getStart(), dateRange.getEnd());
     }
@@ -136,8 +136,9 @@ public class BlackDuckAccumulatorTest {
         startDateTime = startDateTime.minusMinutes(5);
         Date expectedStartDate = Date.from(startDateTime.toInstant());
         String startString = notificationAccumulator.formatDate(expectedStartDate);
-        filePersistenceUtil.writeToFile(notificationAccumulator.getSearchRangeFileName(), startString);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+
+        providerTaskPropertiesAccessor.setTaskProperty(null, notificationAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, startString);
+        DateRange dateRange = notificationAccumulator.createDateRange();
         assertNotNull(dateRange);
         Date actualStartDate = dateRange.getStart();
         Date actualEndDate = dateRange.getEnd();
@@ -147,7 +148,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testRun() {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
@@ -155,37 +156,34 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulate() throws Exception {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
-        assertTrue(filePersistenceUtil.exists(spiedAccumulator.getSearchRangeFileName()));
-        Mockito.verify(spiedAccumulator, Mockito.times(2)).formatDate(Mockito.any());
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
-        Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
+        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
+        Mockito.verify(spiedAccumulator).formatDate(Mockito.any());
+        Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
 
     @Test
     public void testAccumulateException() throws Exception {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        Mockito.doThrow(new IOException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
+        Mockito.doThrow(new AlertDatabaseConstraintException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
         spiedAccumulator.accumulate();
-        assertTrue(filePersistenceUtil.exists(spiedAccumulator.getSearchRangeFileName()));
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
-        Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
+        assertFalse(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
+        Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
 
     @Test
     public void testAccumulateGetNextRunHasValue() throws Exception {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
         spiedAccumulator.accumulate();
-        assertTrue(filePersistenceUtil.exists(spiedAccumulator.getSearchRangeFileName()));
-        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
-        Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
+        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
+        Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
 
@@ -208,11 +206,11 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
         Mockito.doReturn(notificationViewList).when(notificationService).getFilteredNotifications(Mockito.any(), Mockito.any(), Mockito.anyList());
 
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        DateRange dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFileName());
+        DateRange dateRange = spiedAccumulator.createDateRange();
         spiedAccumulator.accumulate(dateRange);
-        Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
+        Mockito.verify(spiedAccumulator).createDateRange();
         Mockito.verify(spiedAccumulator).read(Mockito.any());
         Mockito.verify(spiedAccumulator).process(Mockito.any());
         Mockito.verify(spiedAccumulator).write(Mockito.any());
@@ -220,7 +218,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateNextRunEmpty() {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         Mockito.verify(spiedAccumulator).getMillisecondsToNextRun();
@@ -238,6 +236,9 @@ public class BlackDuckAccumulatorTest {
         List<NotificationView> notificationViewList = Arrays.asList(notificationView);
 
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        Mockito.when(mockedBlackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443/alert"));
+        Mockito.when(mockedBlackDuckProperties.getApiToken()).thenReturn("Test Api Key");
+        Mockito.when(mockedBlackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
 
         Mockito.doReturn(Optional.of(blackDuckHttpClient)).when(mockedBlackDuckProperties).createBlackDuckHttpClientAndLogErrors(Mockito.any());
         Mockito.doReturn(blackDuckServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any(), Mockito.any());
@@ -247,7 +248,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(notificationViewList).when(notificationService).getAllNotifications(Mockito.any(), Mockito.any());
 
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = notificationAccumulator.createDateRange();
         List<NotificationView> notificationViews = notificationAccumulator.read(dateRange);
         assertFalse(notificationViews.isEmpty());
     }
@@ -266,7 +267,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(notificationViewList).when(notificationService).getAllNotifications(Mockito.any(), Mockito.any());
 
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = notificationAccumulator.createDateRange();
         List<NotificationView> notificationViews = notificationAccumulator.read(dateRange);
         assertTrue(notificationViews.isEmpty());
     }
@@ -277,7 +278,7 @@ public class BlackDuckAccumulatorTest {
 
         Mockito.doReturn(Optional.empty()).when(mockedBlackDuckProperties).createBlackDuckHttpClientAndLogErrors(Mockito.any());
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = notificationAccumulator.createDateRange();
         List<NotificationView> notificationViews = notificationAccumulator.read(dateRange);
         assertTrue(notificationViews.isEmpty());
     }
@@ -290,7 +291,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doThrow(RuntimeException.class).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any(), Mockito.any());
 
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
-        DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
+        DateRange dateRange = notificationAccumulator.createDateRange();
         List<NotificationView> notificationViews = notificationAccumulator.read(dateRange);
         assertTrue(notificationViews.isEmpty());
 
@@ -305,7 +306,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
         notificationView.setJson("{ content: \"content is here...\"}");
-        List<AlertNotificationWrapper> notificationContentList = notificationAccumulator.process(List.of(notificationView));
+        List<AlertNotificationModel> notificationContentList = notificationAccumulator.process(List.of(notificationView));
         assertFalse(notificationContentList.isEmpty());
     }
 
@@ -313,16 +314,16 @@ public class BlackDuckAccumulatorTest {
     public void testProcessEmptyList() {
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
-        List<AlertNotificationWrapper> contentList = notificationAccumulator.process(List.of());
+        List<AlertNotificationModel> contentList = notificationAccumulator.process(List.of());
         assertTrue(contentList.isEmpty());
     }
 
     @Test
     public void testWrite() {
-        BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         Date creationDate = new Date();
-        NotificationContent content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
-        List<AlertNotificationWrapper> notificationContentList = Collections.singletonList(content);
+        AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate);
+        List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 
         Mockito.verify(notificationManager, Mockito.times(notificationContentList.size())).saveAllNotifications(Mockito.any());
@@ -333,7 +334,8 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(BlackDuckProperties blackDuckProperties) {
-        return new BlackDuckAccumulator(taskScheduler, blackDuckProperties, notificationManager, filePersistenceUtil, BLACK_DUCK_PROVIDER_KEY);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties);
+        return accumulator;
     }
 
 }

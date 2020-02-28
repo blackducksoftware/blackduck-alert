@@ -17,7 +17,7 @@ public class MessageContentGroupCsvCreatorTest {
         MessageContentGroup messageContentGroup = new MessageContentGroup();
 
         ProviderMessageContent.Builder providerMessageBuilder = new ProviderMessageContent.Builder();
-        providerMessageBuilder.applyProvider("Example Provider");
+        providerMessageBuilder.applyProvider("Example Provider", 1L, "Example Config");
         providerMessageBuilder.applyTopic("Example Topic Name", "Example Topic Value");
 
         ComponentItem.Builder componentItemBuilder = new ComponentItem.Builder();

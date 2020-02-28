@@ -14,7 +14,7 @@ public abstract class ProcessorTest {
         return new LinkableItem(name, value);
     }
 
-    public ComponentItem createComponentItem(String component, String componentValue, final ItemOperation operation, LinkableItem categoryItem) throws AlertException {
+    public ComponentItem createComponentItem(String component, String componentValue, ItemOperation operation, LinkableItem categoryItem) throws AlertException {
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder();
         componentBuilder
             .applyCategory("category")
@@ -26,9 +26,9 @@ public abstract class ProcessorTest {
         return componentBuilder.build();
     }
 
-    public ProviderMessageContent createProviderMessageContent(final String name, final String value, final ComponentItem... componentItems) throws AlertException {
+    public ProviderMessageContent createProviderMessageContent(String name, String value, ComponentItem... componentItems) throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
-                                                     .applyProvider("Black Duck")
+                                                     .applyProvider("Black Duck", 1L, "providerConfig")
                                                      .applyTopic(name, value);
         for (ComponentItem componentItem : componentItems) {
             builder.applyComponentItem(componentItem);

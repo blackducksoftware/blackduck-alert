@@ -28,13 +28,10 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
@@ -50,40 +47,60 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.util.NoThreadExecutorService;
 
-@Component
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Gson gson;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
+    private final String url;
+    private final Integer timeout;
+    private final String apiToken;
 
-    @Autowired
-    public BlackDuckProperties(BlackDuckProviderKey blackDuckProviderKey, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor, ProxyManager proxyManager) {
-        super(blackDuckProviderKey, configurationAccessor);
+    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel) {
+        this(configId, gson, alertProperties, proxyManager, createFieldAccessor(configurationModel));
+    }
+
+    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, FieldAccessor fieldAccessor) {
+        super(configId, fieldAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
+        this.url = fieldAccessor
+                       .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
+                       .filter(StringUtils::isNotBlank)
+                       .orElse(null);
+        this.timeout = fieldAccessor
+                           .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+                           .orElse(DEFAULT_TIMEOUT);
+        this.apiToken = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+    }
+
+    private static FieldAccessor createFieldAccessor(ConfigurationModel configurationModel) {
+        return Optional.ofNullable(configurationModel)
+                   .map(config -> new FieldAccessor(config.getCopyOfKeyToFieldMap()))
+                   .orElse(new FieldAccessor(Map.of()));
+    }
+
+    @Override
+    public void disconnect() {
+        // TODO implement
     }
 
     public Optional<String> getBlackDuckUrl() {
-        return createFieldAccessor()
-                   .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
-                   .filter(StringUtils::isNotBlank);
+        return Optional.ofNullable(url);
     }
 
     public Integer getBlackDuckTimeout() {
-        return createFieldAccessor()
-                   .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                   .orElse(DEFAULT_TIMEOUT);
+        return timeout;
     }
 
-    public Optional<ConfigurationModel> getBlackDuckConfig() {
-        return retrieveGlobalConfig();
+    public String getApiToken() {
+        return apiToken;
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
-        return new BlackDuckServicesFactory(new IntEnvironmentVariables(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger,
-            BlackDuckServicesFactory.createDefaultMediaTypeDiscovery());
+        return new BlackDuckServicesFactory(
+            new IntEnvironmentVariables(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultMediaTypeDiscovery());
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {
@@ -118,19 +135,10 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public Optional<BlackDuckServerConfig> createBlackDuckServerConfig(IntLogger logger) throws AlertException {
-        Optional<ConfigurationModel> optionalGlobalBlackDuckConfig = getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfig.isPresent()) {
-            ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
-            FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
-
-            Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
-            String apiKey = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
-            if (apiKey == null) {
-                throw new AlertException("Invalid global config settings. API Token is null.");
-            }
-            return Optional.of(createBlackDuckServerConfig(logger, timeout, apiKey));
+        if (apiToken == null) {
+            throw new AlertException("Invalid global config settings. API Token is null.");
         }
-        return Optional.empty();
+        return Optional.of(createBlackDuckServerConfig(logger, timeout, apiToken));
     }
 
     public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(IntLogger logger) {

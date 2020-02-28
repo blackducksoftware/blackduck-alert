@@ -37,17 +37,17 @@ public class ProviderUserEntity extends DatabaseEntity {
     @Column(name = "opt_out")
     private Boolean optOut;
 
-    @Column(name = "provider")
-    private String provider;
+    @Column(name = "provider_config_id")
+    private Long providerConfigId;
 
     public ProviderUserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public ProviderUserEntity(String emailAddress, Boolean optOut, String provider) {
+    public ProviderUserEntity(String emailAddress, Boolean optOut, Long providerConfigId) {
         this.emailAddress = emailAddress;
         this.optOut = optOut;
-        this.provider = provider;
+        this.providerConfigId = providerConfigId;
     }
 
     public String getEmailAddress() {
@@ -58,7 +58,8 @@ public class ProviderUserEntity extends DatabaseEntity {
         return optOut;
     }
 
-    public String getProvider() {
-        return provider;
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
+
 }
