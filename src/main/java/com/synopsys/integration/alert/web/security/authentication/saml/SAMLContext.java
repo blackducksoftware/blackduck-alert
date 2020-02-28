@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.saml;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -37,10 +38,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
-public class SAMLContext {
+public class SAMLContext implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private AuthenticationDescriptorKey descriptorKey;
-    private ConfigurationAccessor configurationAccessor;
+    private transient ConfigurationAccessor configurationAccessor;
 
     public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor) {
         this.descriptorKey = descriptorKey;

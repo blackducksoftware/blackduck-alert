@@ -100,7 +100,7 @@ public class CertificatesController extends BaseController {
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue importing the certificate: {}", message);
-            logger.debug("Cause", ex);
+            logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
         }
     }
@@ -119,7 +119,7 @@ public class CertificatesController extends BaseController {
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);
-            logger.debug("Cause", ex);
+            logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue updating the certificate. %s", message));
         }
     }
@@ -135,7 +135,7 @@ public class CertificatesController extends BaseController {
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue deleting the certificate: {}", message);
-            logger.debug("Cause", ex);
+            logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue deleting the certificate. %s", message));
         }
     }
