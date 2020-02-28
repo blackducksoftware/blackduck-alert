@@ -26,45 +26,26 @@ import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class DockerTagModel extends AlertSerializableModel {
+    // This is not all of the data that Docker provides for tags. These are just the fields we use.
     private String name;
-    @SerializedName("full_size")
-    private Long fullSize;
-    //private List<Object> images;
     private Long id;
     private Long repository;
-    private Long creator;
-    @SerializedName("last_updater")
-    private Long lastUpdater;
     @SerializedName("last_updated")
     private String lastUpdated;
-    private boolean v2;
 
     public DockerTagModel() {
     }
 
-    public DockerTagModel(String name, Long fullSize, Long id, Long repository, Long creator, Long lastUpdater, String lastUpdated, boolean v2) {
+    public DockerTagModel(String name, Long id, Long repository, String lastUpdated) {
         this.name = name;
-        this.fullSize = fullSize;
         this.id = id;
         this.repository = repository;
-        this.creator = creator;
-        this.lastUpdater = lastUpdater;
         this.lastUpdated = lastUpdated;
-        this.v2 = v2;
     }
 
     public String getName() {
         return name;
     }
-
-    public Long getFullSize() {
-        return fullSize;
-    }
-
-    // If necessary, this can return a list of more specific Objects.
-    //    public List<Object> getImages() {
-    //        return images;
-    //    }
 
     public Long getId() {
         return id;
@@ -74,20 +55,8 @@ public class DockerTagModel extends AlertSerializableModel {
         return repository;
     }
 
-    public Long getCreator() {
-        return creator;
-    }
-
-    public Long getLastUpdater() {
-        return lastUpdater;
-    }
-
     public String getLastUpdated() {
         return lastUpdated;
-    }
-
-    public boolean isV2() {
-        return v2;
     }
 
 }

@@ -78,7 +78,7 @@ public class DockerTagRetrieverTest {
     }
 
     private DockerTagModel createDockerTagModel(String tagName) {
-        return new DockerTagModel(tagName, 1L, 1L, 1L, 1L, 1L, "<date>", true);
+        return new DockerTagModel(tagName, 1L, 1L, "<date>");
     }
 
 }
