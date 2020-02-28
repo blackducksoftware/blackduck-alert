@@ -34,16 +34,16 @@ public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
     private static final Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);
     private final SAMLContext samlContext;
 
-    public AlertWebSSOProfileOptions(final SAMLContext samlContext) {
+    public AlertWebSSOProfileOptions(SAMLContext samlContext) {
         this.samlContext = samlContext;
     }
 
     @Override
     public Boolean getForceAuthN() {
         try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
             return samlContext.getFieldValueBoolean(currentConfiguration, AuthenticationDescriptor.KEY_SAML_FORCE_AUTH);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error("Could not get the SAML force Auth.", e);
         }
         return false;

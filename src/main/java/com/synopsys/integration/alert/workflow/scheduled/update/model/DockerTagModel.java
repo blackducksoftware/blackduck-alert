@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled.update.model;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -31,7 +29,7 @@ public class DockerTagModel extends AlertSerializableModel {
     private String name;
     @SerializedName("full_size")
     private Long fullSize;
-    private List<Object> images;
+    //private List<Object> images;
     private Long id;
     private Long repository;
     private Long creator;
@@ -44,10 +42,9 @@ public class DockerTagModel extends AlertSerializableModel {
     public DockerTagModel() {
     }
 
-    public DockerTagModel(final String name, final Long fullSize, final List<Object> images, final Long id, final Long repository, final Long creator, final Long lastUpdater, final String lastUpdated, final boolean v2) {
+    public DockerTagModel(String name, Long fullSize, Long id, Long repository, Long creator, Long lastUpdater, String lastUpdated, boolean v2) {
         this.name = name;
         this.fullSize = fullSize;
-        this.images = images;
         this.id = id;
         this.repository = repository;
         this.creator = creator;
@@ -65,9 +62,9 @@ public class DockerTagModel extends AlertSerializableModel {
     }
 
     // If necessary, this can return a list of more specific Objects.
-    public List<Object> getImages() {
-        return images;
-    }
+    //    public List<Object> getImages() {
+    //        return images;
+    //    }
 
     public Long getId() {
         return id;
