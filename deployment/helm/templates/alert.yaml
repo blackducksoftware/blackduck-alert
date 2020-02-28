@@ -55,10 +55,7 @@ spec:
           - containerPort: 8443
             protocol: TCP
         resources:
-          limits:
-            memory: {{ .Values.alert.limitMemory }}
-          requests:
-            memory: {{ .Values.alert.requestMemory }}
+          {{- toYaml .Values.alert.resources | nindent 12 }}
         volumeMounts:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
