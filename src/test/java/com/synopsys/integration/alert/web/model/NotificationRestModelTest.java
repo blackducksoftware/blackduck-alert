@@ -13,7 +13,7 @@ public class NotificationRestModelTest extends RestModelTest<NotificationConfig>
     }
 
     @Override
-    public void assertRestModelFieldsFull(final NotificationConfig restModel) {
+    public void assertRestModelFieldsFull(NotificationConfig restModel) {
         assertEquals(getMockUtil().getCreatedAt(), restModel.getCreatedAt());
         assertEquals(getMockUtil().getProvider(), restModel.getProvider());
         assertEquals(getMockUtil().getNotificationType(), restModel.getNotificationType());

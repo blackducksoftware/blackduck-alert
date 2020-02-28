@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class TestAction {
@@ -40,7 +41,7 @@ public abstract class TestAction {
         String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
         String customMessage = fieldAccessor.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
         return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert")
+                   .applyProvider("Alert", ProviderProperties.UNKNOWN_CONFIG_ID, "Test")
                    .applyTopic("Test Topic", customTopic)
                    .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))

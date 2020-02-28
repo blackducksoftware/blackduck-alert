@@ -59,7 +59,7 @@ public class AuditEntryController extends BaseController {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AuditEntryController(final AuditEntryActions auditEntryActions, final ContentConverter contentConverter, final ResponseFactory responseFactory, final AuthorizationManager authorizationManager) {
+    public AuditEntryController(AuditEntryActions auditEntryActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager) {
         this.auditEntryActions = auditEntryActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
@@ -67,23 +67,23 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<String> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-        @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
-        @RequestParam(value = "sortOrder", required = false) final String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) final Boolean onlyShowSentNotifications) {
+    public ResponseEntity<String> get(@RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
+        @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam(value = "sortField", required = false) String sortField,
+        @RequestParam(value = "sortOrder", required = false) String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) Boolean onlyShowSentNotifications) {
         if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
-        final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(auditEntries));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
+    public ResponseEntity<String> get(@PathVariable(value = "id") Long id) {
         if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
-        final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
-        final String stringId = contentConverter.getStringValue(id);
+        Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
+        String stringId = contentConverter.getStringValue(id);
         if (auditEntryModel.isPresent()) {
             return responseFactory.createOkResponse(stringId, contentConverter.getJsonString(auditEntryModel.get()));
         } else {
@@ -92,12 +92,12 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping(value = "/job/{jobId}")
-    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
+    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") UUID jobId) {
         if (!hasPermission(authorizationManager::hasReadPermission)) {
             return responseFactory.createForbiddenResponse();
         }
-        final Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
-        final String jobIdString = jobId.toString();
+        Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
+        String jobIdString = jobId.toString();
         if (jobAuditModel.isPresent()) {
             return responseFactory.createOkResponse(jobIdString, contentConverter.getJsonString(jobAuditModel.get()));
         } else {
@@ -106,7 +106,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId) {
+    public ResponseEntity<String> post(@PathVariable(value = "id") Long notificationId) {
         if (!hasPermission(authorizationManager::hasExecutePermission)) {
             return responseFactory.createForbiddenResponse();
         }
@@ -114,23 +114,23 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final UUID jobId) {
+    public ResponseEntity<String> post(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         if (!hasPermission(authorizationManager::hasExecutePermission)) {
             return responseFactory.createForbiddenResponse();
         }
         return resendNotification(notificationId, jobId);
     }
 
-    private ResponseEntity<String> resendNotification(final Long notificationId, final UUID commonConfigId) {
-        final String stringNotificationId = contentConverter.getStringValue(notificationId);
+    private ResponseEntity<String> resendNotification(Long notificationId, UUID commonConfigId) {
+        String stringNotificationId = contentConverter.getStringValue(notificationId);
         try {
-            final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
+            AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
             return responseFactory.createOkResponse(stringNotificationId, contentConverter.getJsonString(auditEntries));
-        } catch (final AlertNotificationPurgedException e) {
+        } catch (AlertNotificationPurgedException e) {
             return responseFactory.createGoneResponse(stringNotificationId, e.getMessage());
-        } catch (final AlertJobMissingException e) {
+        } catch (AlertJobMissingException e) {
             return responseFactory.createGoneResponse(e.getMissingUUID().toString(), e.getMessage());
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             return responseFactory.createBadRequestResponse(stringNotificationId, e.getMessage());
         }
     }

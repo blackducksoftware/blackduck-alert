@@ -19,7 +19,6 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -40,21 +39,23 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     private String blackDuckApiKey;
     private boolean apiKeySet;
+    private Long configId;
+    private boolean configIdSet;
 
-    public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
-        this(new Gson(), alertProperties, Mockito.mock(ConfigurationAccessor.class), Mockito.mock(ProxyManager.class));
+    public TestBlackDuckProperties(TestAlertProperties alertProperties) {
+        this(new Gson(), alertProperties, new TestProperties(), Mockito.mock(ProxyManager.class));
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager) {
-        this(gson, alertProperties, baseConfigurationAccessor, proxyManager, 300, true);
+    public TestBlackDuckProperties(Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
+        this(1L, gson, alertProperties, testProperties, proxyManager, 300, true);
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final ConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
-        final boolean trustCertificates) {
-        super(new BlackDuckProviderKey(), gson, alertProperties, baseConfigurationAccessor, proxyManager);
+    public TestBlackDuckProperties(Long configId, Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
+        boolean trustCertificates) {
+        super(configId, gson, alertProperties, proxyManager, getConfigurationModel(testProperties));
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
-        testProperties = new TestProperties();
+        this.testProperties = testProperties;
         testAlertProperties.setAlertTrustCertificate(trustCertificates);
     }
 
@@ -66,21 +67,35 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         return Optional.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
     }
 
-    public void setBlackDuckUrl(final String blackDuckUrl) {
+    public void setBlackDuckUrl(String blackDuckUrl) {
         this.blackDuckUrl = blackDuckUrl;
         urlSet = true;
     }
 
-    public String getBlackDuckApiKey() {
+    @Override
+    public String getApiToken() {
         if (apiKeySet) {
             return blackDuckApiKey;
         }
         return testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
     }
 
-    public void setBlackDuckApiKey(final String blackDuckApiKey) {
+    public void setBlackDuckApiKey(String blackDuckApiKey) {
         this.blackDuckApiKey = blackDuckApiKey;
         apiKeySet = true;
+    }
+
+    @Override
+    public Long getConfigId() {
+        if (configIdSet) {
+            return this.configId;
+        }
+        return super.getConfigId();
+    }
+
+    public void setConfigId(Long configId) {
+        this.configId = configId;
+        this.configIdSet = true;
     }
 
     @Override
@@ -88,51 +103,54 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         return blackDuckTimeout;
     }
 
-    public void setBlackDuckTimeout(final Integer blackDuckTimeout) {
+    public void setBlackDuckTimeout(Integer blackDuckTimeout) {
         this.blackDuckTimeout = blackDuckTimeout;
     }
 
     @Override
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger) throws AlertException {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
         testAlertProperties.setAlertTrustCertificate(true);
         return super.createBlackDuckHttpClient(intLogger);
     }
 
-    @Override
-    public Optional<ConfigurationModel> getBlackDuckConfig() {
+    public static ConfigurationModel getConfigurationModel(TestProperties testProperties) {
+        String url = Optional.ofNullable(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)).orElse("URL not set");
+        String apiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        String timeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
+
         final Long defaultDescriptorId = 1L;
         final Long defaultConfigurationId = 1L;
-        final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
+        ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
 
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(defaultDescriptorId);
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(defaultConfigurationId);
 
         final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
-        final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
-        blackDuckTimeoutField.setFieldValue(String.valueOf(getBlackDuckTimeout()));
+        ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
+        blackDuckTimeoutField.setFieldValue(String.valueOf(timeout));
         Mockito.when(configurationModel.getField(blackDuckTimeoutKey)).thenReturn(Optional.of(blackDuckTimeoutField));
 
         final String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
-        final ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
-        blackDuckApiField.setFieldValue(getBlackDuckApiKey());
+        ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
+        blackDuckApiField.setFieldValue(apiToken);
         Mockito.when(configurationModel.getField(blackDuckApiKey)).thenReturn(Optional.of(blackDuckApiField));
 
         final String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
-        final ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
-        blackDuckProviderUrlField.setFieldValue(getBlackDuckUrl().orElse("URL not set"));
+        ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
+        blackDuckProviderUrlField.setFieldValue(url);
         Mockito.when(configurationModel.getField(blackDuckProviderUrlKey)).thenReturn(Optional.of(blackDuckProviderUrlField));
         Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(Map.of(blackDuckApiKey, blackDuckApiField, blackDuckProviderUrlKey, blackDuckProviderUrlField, blackDuckTimeoutKey, blackDuckTimeoutField));
         Mockito.when(configurationModel.getCopyOfFieldList()).thenReturn(List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
 
-        return Optional.of(configurationModel);
+        return configurationModel;
     }
 
     @Override
-    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
+    public BlackDuckServerConfig createBlackDuckServerConfig(IntLogger logger, int blackDuckTimeout, String blackDuckUsername, String blackDuckPassword) throws AlertException {
         return createHubServerConfigWithCredentials(logger);
     }
 
-    public BlackDuckServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
+    public BlackDuckServerConfig createHubServerConfigWithCredentials(IntLogger logger) throws NumberFormatException, AlertException {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
             testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }

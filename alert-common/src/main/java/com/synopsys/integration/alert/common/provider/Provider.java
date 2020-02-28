@@ -22,11 +22,15 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
+import java.util.List;
+
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 
-public abstract class Provider {
+public abstract class Provider<T extends ProviderProperties> {
     private final ProviderKey key;
     private final ProviderContent providerContent;
 
@@ -39,18 +43,20 @@ public abstract class Provider {
         return key;
     }
 
-    public abstract void initialize();
+    public abstract List<ProviderTask> createProviderTasks(T providerProperties);
 
-    public abstract void destroy();
+    public abstract T createProperties(ConfigurationModel configurationModel);
 
-    public abstract ProviderDistributionFilter createDistributionFilter();
+    public abstract ProviderDistributionFilter createDistributionFilter(T providerProperties);
 
     public abstract ProviderNotificationClassMap getNotificationClassMap();
 
-    public abstract ProviderMessageContentCollector createMessageContentCollector();
+    public abstract ProviderMessageContentCollector createMessageContentCollector(T providerProperties);
 
     public ProviderContent getProviderContent() {
         return providerContent;
     }
+
+    public abstract boolean validate(ConfigurationModel configurationModel);
 
 }

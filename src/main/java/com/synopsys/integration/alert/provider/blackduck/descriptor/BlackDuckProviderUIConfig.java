@@ -34,13 +34,14 @@ import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 
 @Component
-public class BlackDuckProviderUIConfig extends UIConfig {
+public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
     private static final String LABEL_URL = "Url";
     private static final String LABEL_API_TOKEN = "API Token";
     private static final String LABEL_TIMEOUT = "Timeout";
@@ -51,13 +52,13 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     private EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
-    public BlackDuckProviderUIConfig(EncryptionSettingsValidator encryptionValidator) {
-        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL);
+    public BlackDuckProviderUIConfig(BlackDuckProviderKey blackDuckProviderKey, EncryptionSettingsValidator encryptionValidator) {
+        super(blackDuckProviderKey, BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL);
         this.encryptionValidator = encryptionValidator;
     }
 
     @Override
-    public List<ConfigField> createFields() {
+    public List<ConfigField> createProviderGlobalFields() {
         ConfigField blackDuckUrl = new URLInputConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_URL, LABEL_URL, BLACKDUCK_URL_DESCRIPTION).applyRequired(true);
         ConfigField blackDuckApiKey = new PasswordConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, LABEL_API_TOKEN, BLACKDUCK_API_KEY_DESCRIPTION, encryptionValidator)
                                           .applyRequired(true)

@@ -43,15 +43,23 @@ public abstract class ScheduledTask implements Runnable {
     public static final String STOP_SCHEDULE_EXPRESSION = "";
     public static final String EVERY_MINUTE_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
     public static final Long EVERY_MINUTE_SECONDS = 60L;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
     private final String taskName;
     private ScheduledFuture<?> future;
 
-    public ScheduledTask(final TaskScheduler taskScheduler, final String taskName) {
+    public static String computeTaskName(Class<? extends ScheduledTask> clazz) {
+        String packageName = clazz.getPackageName();
+        String simpleClassName = clazz.getSimpleName();
+
+        return String.format("Task::Class[%s.%s]", packageName, simpleClassName);
+    }
+
+    public ScheduledTask(TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
-        this.taskName = taskName;
+        this.taskName = computeTaskName(getClass());
     }
 
     public String getTaskName() {
@@ -68,32 +76,32 @@ public abstract class ScheduledTask implements Runnable {
 
     public abstract void runTask();
 
-    public void scheduleExecution(final String cron) {
+    public void scheduleExecution(String cron) {
         if (StringUtils.isNotBlank(cron)) {
             try {
-                final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
+                CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
                 unscheduleTask();
-                logger.info("Scheduling {} with cron : {}", this.getClass().getSimpleName(), cron);
+                logger.info("Scheduling {} with cron : {}", taskName, cron);
                 future = taskScheduler.schedule(this, cronTrigger);
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", taskName);
                 unscheduleTask();
             }
         }
     }
 
-    public void scheduleExecutionAtFixedRate(final long period) {
+    public void scheduleExecutionAtFixedRate(long period) {
         if (period > 0) {
             unscheduleTask();
-            logger.info("Scheduling {} with fixed rate : {}", this.getClass().getSimpleName(), period);
+            logger.info("Scheduling {} with fixed rate : {}", taskName, period);
             future = taskScheduler.scheduleAtFixedRate(this, period);
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", taskName);
                 unscheduleTask();
             }
         }
@@ -114,18 +122,18 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     public Optional<String> getFormatedNextRunTime() {
-        final Optional<Long> msToNextRun = getMillisecondsToNextRun();
+        Optional<Long> msToNextRun = getMillisecondsToNextRun();
         if (msToNextRun.isPresent()) {
 
-            final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
+            ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
             ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun.get(), ChronoUnit.MILLIS);
-            final int seconds = nextRunTime.getSecond();
+            int seconds = nextRunTime.getSecond();
             if (seconds >= 30) {
                 nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
             } else {
                 nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES);
             }
-            final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
+            String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
             return Optional.of(formattedString + " UTC");
         }
         return Optional.empty();

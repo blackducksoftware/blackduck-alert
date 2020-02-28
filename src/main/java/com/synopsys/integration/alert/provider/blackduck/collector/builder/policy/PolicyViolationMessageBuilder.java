@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector.builder.poli
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +38,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
@@ -88,7 +87,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(Long notificationId, Date providerCreationDate, ConfigurationJobModel job, RuleViolationNotificationView notificationView,
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationNotificationView notificationView,
         BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
@@ -98,25 +97,26 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
         RuleViolationNotificationContent violationContent = notificationView.getContent();
         ItemOperation operation = ItemOperation.ADD;
         try {
-            ProviderMessageContent.Builder projectVersionMessageBuilder = new ProviderMessageContent.Builder()
-                                                                              .applyProvider(getProviderName(), blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl())
-                                                                              .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName())
-                                                                              .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion())
-                                                                              .applyProviderCreationTime(providerCreationDate);
+            ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
+            messageContentBuilder
+                .applyCommonData(commonMessageData)
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName())
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion());
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
-            FieldAccessor fieldAccessor = job.getFieldAccessor();
+            FieldAccessor fieldAccessor = commonMessageData.getJob().getFieldAccessor();
             Collection<String> policyFilters = fieldAccessor.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
             List<ComponentItem> items = new LinkedList<>();
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, blackDuckService, componentService, componentVersionStatus, policies, notificationId, operation, violationContent.getProjectVersion(),
+                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, blackDuckService, componentService, componentVersionStatus, policies, commonMessageData.getNotificationId(), operation,
+                    violationContent.getProjectVersion(),
                     policyFilters);
                 items.addAll(componentItems);
             }
-            projectVersionMessageBuilder.applyAllComponentItems(items);
-            return List.of(projectVersionMessageBuilder.build());
+            messageContentBuilder.applyAllComponentItems(items);
+            return List.of(messageContentBuilder.build());
         } catch (AlertException ex) {
             logger.error("Error creating policy violation message.", ex);
         }

@@ -29,15 +29,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
@@ -48,8 +45,6 @@ import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
@@ -57,7 +52,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
     private BlackDuckBucket blackDuckBucket;
 
-    @Autowired
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
@@ -66,19 +60,22 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     }
 
     @Override
-    protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationWrapper> notifications) throws AlertException {
+    protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) throws AlertException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory();
 
         List<ProviderMessageContent> providerMessageContents = new LinkedList<>();
-        for (AlertNotificationWrapper notification : notifications) {
+        for (AlertNotificationModel notification : notifications) {
             String notificationType = notification.getNotificationType();
             BlackDuckMessageBuilder blackDuckMessageBuilder = messageBuilderMap.get(notificationType);
             if (null == blackDuckMessageBuilder) {
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
+                String url = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl();
+                CommonMessageData commonMessageData = new CommonMessageData(notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), url,
+                    notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder
-                        .buildMessageContents(notification.getId(), notification.getProviderCreationTime(), job, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                        .buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);
             }
         }

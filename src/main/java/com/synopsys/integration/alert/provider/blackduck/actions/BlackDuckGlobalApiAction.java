@@ -23,68 +23,77 @@
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private final BlackDuckProviderKey blackDuckProviderKey;
-    private final BlackDuckValidator blackDuckValidator;
-    private final TaskManager taskManager;
+    private ProviderLifecycleManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
+    private final BlackDuckProvider blackDuckProvider;
+    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
+    private final ConfigurationAccessor configurationAccessor;
 
-    @Autowired
-    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckValidator blackDuckValidator, TaskManager taskManager, ProviderDataAccessor providerDataAccessor) {
-        this.blackDuckProviderKey = blackDuckProviderKey;
-        this.blackDuckValidator = blackDuckValidator;
-        this.taskManager = taskManager;
+    public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderLifecycleManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
+        ConfigurationFieldModelConverter configurationFieldModelConverter, ConfigurationAccessor configurationAccessor) {
+        this.blackDuckProvider = blackDuckProvider;
+        this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
+        this.configurationFieldModelConverter = configurationFieldModelConverter;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig();
+        handleNewOrUpdatedConfig(fieldModel);
         return super.afterSaveAction(fieldModel);
     }
 
     @Override
     public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig();
+        handleNewOrUpdatedConfig(fieldModel);
         return super.afterUpdateAction(fieldModel);
     }
 
     @Override
-    public void afterDeleteAction(String descriptorName, String context) {
-        taskManager.unScheduleTask(BlackDuckAccumulator.TASK_NAME);
-        taskManager.unScheduleTask(BlackDuckDataSyncTask.TASK_NAME);
+    public void afterDeleteAction(FieldModel fieldModel) {
+        Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        FieldValueModel fieldValueModel = keyToValues.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
-        List<ProviderProject> blackDuckProjects = providerDataAccessor.findByProviderKey(blackDuckProviderKey);
-        providerDataAccessor.deleteProjects(blackDuckProviderKey, blackDuckProjects);
+        Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), "-1"));
+        providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, configId);
+
+        List<ProviderProject> blackDuckProjects = providerDataAccessor.getProjectsByProviderConfigName(blackDuckGlobalConfigName);
+        providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig() {
-        boolean valid = blackDuckValidator.validate();
-        if (valid) {
-            Optional<String> nextRunTime = taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME);
-            if (nextRunTime.isEmpty()) {
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckAccumulator.TASK_NAME);
-                taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, BlackDuckDataSyncTask.TASK_NAME);
+    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertException {
+        Optional<String> providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        if (providerConfigName.isPresent()) {
+            Optional<ConfigurationModel> blackDuckGlobalConfiguration = configurationAccessor.getProviderConfigurationByName(providerConfigName.get());
+            boolean valid = blackDuckGlobalConfiguration
+                                .map(blackDuckProvider::validate)
+                                .orElse(false);
+            if (valid) {
+                providerLifecycleManager.scheduleTasksForProviderConfig(blackDuckProvider, blackDuckGlobalConfiguration.get());
             }
         }
     }
-
 }

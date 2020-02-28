@@ -43,19 +43,19 @@ public class ProviderProjectEntity extends DatabaseEntity {
     @Column(name = "project_owner_email")
     private String projectOwnerEmail;
 
-    @Column(name = "provider")
-    private String provider;
+    @Column(name = "provider_config_id")
+    private Long providerConfigId;
 
     public ProviderProjectEntity() {
         // JPA requires default constructor definitions
     }
 
-    public ProviderProjectEntity(String name, String description, String href, String projectOwnerEmail, String provider) {
+    public ProviderProjectEntity(String name, String description, String href, String projectOwnerEmail, Long providerConfigId) {
         this.name = name;
         this.description = description;
         this.href = href;
         this.projectOwnerEmail = projectOwnerEmail;
-        this.provider = provider;
+        this.providerConfigId = providerConfigId;
     }
 
     public String getName() {
@@ -74,7 +74,8 @@ public class ProviderProjectEntity extends DatabaseEntity {
         return projectOwnerEmail;
     }
 
-    public String getProvider() {
-        return provider;
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
+
 }

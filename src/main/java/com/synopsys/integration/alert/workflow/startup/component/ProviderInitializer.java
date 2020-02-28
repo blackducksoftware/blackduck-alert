@@ -22,26 +22,24 @@
  */
 package com.synopsys.integration.alert.workflow.startup.component;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
 
 @Component
 @Order(60)
 public class ProviderInitializer extends StartupComponent {
-    private final List<Provider> providers;
+    private final ProviderLifecycleManager providerLifecycleManager;
 
     @Autowired
-    public ProviderInitializer(List<Provider> providers) {
-        this.providers = providers;
+    public ProviderInitializer(ProviderLifecycleManager providerLifecycleManager) {
+        this.providerLifecycleManager = providerLifecycleManager;
     }
 
     @Override
     protected void initialize() {
-        providers.forEach(Provider::initialize);
+        providerLifecycleManager.initializeConfiguredProviders();
     }
 }

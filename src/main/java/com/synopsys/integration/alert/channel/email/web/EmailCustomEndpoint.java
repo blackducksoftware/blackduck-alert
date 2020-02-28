@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,12 +35,12 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class EmailCustomEndpoint {
@@ -60,23 +59,18 @@ public class EmailCustomEndpoint {
         customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ResponseEntity<String> createEmailOptions(Map<String, FieldValueModel> fieldValueModels) {
-        FieldValueModel fieldValueModel = fieldValueModels.get(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+    public ResponseEntity<String> createEmailOptions(FieldModel fieldModel) {
+        String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
-        String provider = null;
-        if (null != fieldValueModel) {
-            provider = fieldValueModel.getValue().orElse("");
-        }
-
-        if (StringUtils.isBlank(provider)) {
-            logger.debug("Received provider user email data request with a blank provider");
-            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider to populate data.");
+        if (StringUtils.isBlank(providerConfigName)) {
+            logger.debug("Received provider user email data request with a blank provider config name");
+            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
-            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getAllUsers(provider);
+            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigName(providerConfigName);
             if (pageOfUsers.isEmpty()) {
-                logger.info("No user emails found in the database for the provider: {}", provider);
+                logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
             String usersJson = gson.toJson(pageOfUsers);
             return responseFactory.createOkContentResponse(usersJson);
