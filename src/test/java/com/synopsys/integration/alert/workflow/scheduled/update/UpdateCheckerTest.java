@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -214,12 +213,155 @@ public class UpdateCheckerTest {
     }
 
     @Test
+    public void testAlertIsNewerQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", null, "0.1.0", null, null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsNewerQABuildPatch() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-SIGQA1", null, "1.0.0", null, null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsNewerButCloseQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderButCloseQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderQABuildDockerPatch() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0.1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsNewerBothQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", null, "0.1.0-SIGQA1", null, null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsNewerDateBothQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsNewerButCloseBothQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderButCloseBothQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderBothQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SIGQA1", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderButCloseDockerQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
+    public void testAlertIsOlderDockerQABuild() {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SIGQA1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @Test
     @Tags({
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    @Disabled
-    // FIXME: test with the SIGQA versioning
     public void getUpdateModelTest() {
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
