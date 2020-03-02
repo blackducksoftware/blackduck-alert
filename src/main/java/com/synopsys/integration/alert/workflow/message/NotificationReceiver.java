@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
-import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {

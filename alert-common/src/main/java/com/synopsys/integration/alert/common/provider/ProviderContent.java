@@ -25,23 +25,23 @@ package com.synopsys.integration.alert.common.provider;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 
 public abstract class ProviderContent {
     private final Set<ProviderNotificationType> supportedNotificationTypes;
-    private final Set<FormatType> supportedContentFormats;
+    private final Set<ProcessingType> supportedProcessingTypes;
 
-    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<FormatType> supportedContentFormats) {
+    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<ProcessingType> supportedProcessingTypes) {
         this.supportedNotificationTypes = supportedNotificationTypes;
-        this.supportedContentFormats = supportedContentFormats;
+        this.supportedProcessingTypes = supportedProcessingTypes;
     }
 
     public Set<ProviderNotificationType> getContentTypes() {
         return ImmutableSet.copyOf(supportedNotificationTypes);
     }
 
-    public Set<FormatType> getSupportedContentFormats() {
-        return ImmutableSet.copyOf(supportedContentFormats);
+    public Set<ProcessingType> getSupportedProcessingTypes() {
+        return ImmutableSet.copyOf(supportedProcessingTypes);
     }
 
 }

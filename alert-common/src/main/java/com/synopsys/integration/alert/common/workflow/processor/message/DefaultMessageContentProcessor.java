@@ -20,31 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.formatter;
+package com.synopsys.integration.alert.common.workflow.processor.message;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
 import com.synopsys.integration.alert.common.workflow.combiner.DefaultMessageCombiner;
 
 @Component
-public class DefaultMessageContentFormatter extends MessageContentFormatter {
+public class DefaultMessageContentProcessor extends MessageContentProcessor {
     private final AbstractMessageCombiner messageCombiner;
 
     @Autowired
-    public DefaultMessageContentFormatter(DefaultMessageCombiner messageCombiner) {
-        super(FormatType.DEFAULT);
+    public DefaultMessageContentProcessor(DefaultMessageCombiner messageCombiner) {
+        super(ProcessingType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
         List<ProviderMessageContent> combinedMessages = messageCombiner.combine(messages);
         return createMessageContentGroups(combinedMessages);
     }

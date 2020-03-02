@@ -18,8 +18,8 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -90,7 +90,7 @@ public class MockConfigurationModelFactory {
         List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         ConfigurationFieldModel notificationTypes = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()));
-        ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.DEFAULT.toString());
+        ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, ProcessingType.DEFAULT.toString());
         ConfigurationFieldModel filterByProject = createFieldModel(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, "true");
         ConfigurationFieldModel projectNamePattern = createFieldModel(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
         ConfigurationFieldModel configuredProject = createFieldModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
@@ -134,7 +134,7 @@ public class MockConfigurationModelFactory {
         mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, distributionType);
 
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypes);
-        mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType);
+        mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, formatType);
 
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject);
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, projectNamePattern);

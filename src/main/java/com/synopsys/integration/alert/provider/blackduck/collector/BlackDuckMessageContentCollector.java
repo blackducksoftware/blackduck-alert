@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -52,7 +52,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
     private BlackDuckBucket blackDuckBucket;
 
-    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
+    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
         this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, BlackDuckMessageBuilder::getNotificationType);

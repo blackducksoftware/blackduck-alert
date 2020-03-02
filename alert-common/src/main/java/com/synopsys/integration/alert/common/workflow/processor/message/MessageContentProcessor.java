@@ -20,30 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.formatter;
+package com.synopsys.integration.alert.common.workflow.processor.message;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
-public abstract class MessageContentFormatter {
-    private final FormatType formatType;
+public abstract class MessageContentProcessor {
+    private final ProcessingType processingType;
 
-    public MessageContentFormatter(FormatType formatType) {
-        this.formatType = formatType;
+    public MessageContentProcessor(ProcessingType processingType) {
+        this.processingType = processingType;
     }
 
-    public FormatType getFormat() {
-        return formatType;
+    public ProcessingType getProcessingType() {
+        return processingType;
     }
 
-    public abstract List<MessageContentGroup> format(List<ProviderMessageContent> messages);
+    public abstract List<MessageContentGroup> process(List<ProviderMessageContent> messages);
 
     public List<MessageContentGroup> createMessageContentGroups(List<ProviderMessageContent> messages) {
         Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();

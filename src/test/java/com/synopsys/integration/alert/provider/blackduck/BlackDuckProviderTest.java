@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
@@ -42,8 +42,8 @@ public class BlackDuckProviderTest {
         BlackDuckTaskFactory taskFactory = Mockito.mock(BlackDuckTaskFactory.class);
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, blackDuckContent, null, null, null, null, taskFactory);
-        Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST, FormatType.SUMMARY);
-        Set<FormatType> providerNotificationTypes = provider.getProviderContent().getSupportedContentFormats();
+        Set<ProcessingType> expectedNotificationTypes = EnumSet.of(ProcessingType.DEFAULT, ProcessingType.DIGEST, ProcessingType.SUMMARY);
+        Set<ProcessingType> providerNotificationTypes = provider.getProviderContent().getSupportedProcessingTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 

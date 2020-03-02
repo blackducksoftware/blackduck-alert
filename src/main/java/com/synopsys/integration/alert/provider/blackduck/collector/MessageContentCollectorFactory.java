@@ -26,16 +26,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 
 @Component
 public class MessageContentCollectorFactory {
-    private final List<MessageContentFormatter> messageContentProcessors;
+    private final List<MessageContentProcessor> messageContentProcessors;
     private final List<BlackDuckMessageBuilder> messageBuilders;
 
-    public MessageContentCollectorFactory(List<MessageContentFormatter> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
+    public MessageContentCollectorFactory(List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         this.messageContentProcessors = messageContentProcessors;
         this.messageBuilders = messageBuilders;
     }

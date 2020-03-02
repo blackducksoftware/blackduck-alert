@@ -17,13 +17,13 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.rest.RestConstants;
@@ -37,7 +37,7 @@ public class ProcessingTaskTest {
     public void initTest() {
         AlertNotificationModel model = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", new Date(), new Date());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", FormatType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
+        eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", ProcessingType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }
 
     public ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,

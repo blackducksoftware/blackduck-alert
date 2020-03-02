@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -199,7 +199,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
-        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, EMAIL_TEST_PROVIDER_CONFIG_NAME, FormatType.DEFAULT.name(),
+        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, EMAIL_TEST_PROVIDER_CONFIG_NAME, ProcessingType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }
