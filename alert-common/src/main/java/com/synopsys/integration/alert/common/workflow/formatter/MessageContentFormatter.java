@@ -27,19 +27,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 public abstract class MessageContentFormatter {
-    private final FormatType formatType;
+    private final ProcessingType formatType;
 
-    public MessageContentFormatter(FormatType formatType) {
+    public MessageContentFormatter(ProcessingType formatType) {
         this.formatType = formatType;
     }
 
-    public FormatType getFormat() {
+    public ProcessingType getFormat() {
         return formatType;
     }
 

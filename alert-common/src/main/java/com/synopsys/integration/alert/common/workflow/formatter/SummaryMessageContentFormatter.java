@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -60,7 +60,7 @@ public class SummaryMessageContentFormatter extends MessageContentFormatter {
 
     @Autowired
     public SummaryMessageContentFormatter(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
-        super(FormatType.SUMMARY);
+        super(ProcessingType.SUMMARY);
         this.topLevelActionCombiner = topLevelActionCombiner;
         this.messageOperationCombiner = messageOperationCombiner;
     }

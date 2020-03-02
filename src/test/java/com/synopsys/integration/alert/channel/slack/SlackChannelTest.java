@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventParser;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelMessageParser;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -80,7 +80,7 @@ public class SlackChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -344,7 +344,7 @@ public class SlackChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -360,7 +360,7 @@ public class SlackChannelTest extends ChannelTest {
 
         fieldAccessor = new FieldAccessor(fieldModels);
         event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         try {
             request = slackChannel.createRequests(event);
@@ -387,7 +387,7 @@ public class SlackChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         slackChannel.sendMessage(event);
 
@@ -408,7 +408,7 @@ public class SlackChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), new MessageContentGroup(), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), new MessageContentGroup(), fieldAccessor);
         SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");

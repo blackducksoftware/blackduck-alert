@@ -27,7 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
@@ -39,7 +39,7 @@ public class DefaultMessageContentFormatter extends MessageContentFormatter {
 
     @Autowired
     public DefaultMessageContentFormatter(DefaultMessageCombiner messageCombiner) {
-        super(FormatType.DEFAULT);
+        super(ProcessingType.DEFAULT);
         this.messageCombiner = messageCombiner;
     }
 

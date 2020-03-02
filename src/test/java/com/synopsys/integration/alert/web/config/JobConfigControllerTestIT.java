@@ -40,8 +40,8 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -239,7 +239,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
         FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);
-        FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
+        FieldValueModel formatType = new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true);
         FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
         FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 

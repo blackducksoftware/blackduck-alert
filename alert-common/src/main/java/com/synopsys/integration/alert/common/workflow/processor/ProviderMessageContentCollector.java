@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.List;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserial
 import com.synopsys.integration.alert.common.workflow.formatter.MessageContentFormatter;
 
 public abstract class ProviderMessageContentCollector {
-    private Map<FormatType, MessageContentFormatter> messageContentFormatterMap;
+    private Map<ProcessingType, MessageContentFormatter> messageContentFormatterMap;
 
     public ProviderMessageContentCollector(List<MessageContentFormatter> messageContentFormatters) {
         this.messageContentFormatterMap = DataStructureUtils.mapToValues(messageContentFormatters, MessageContentFormatter::getFormat);

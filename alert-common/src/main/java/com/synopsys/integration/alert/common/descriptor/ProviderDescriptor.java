@@ -32,7 +32,7 @@ public abstract class ProviderDescriptor extends Descriptor {
     public static final String KEY_PROVIDER_CONFIG_NAME = KEY_COMMON_PROVIDER_PREFIX + "config.name";
     public static final String KEY_PROVIDER_CONFIG_ENABLED = KEY_COMMON_PROVIDER_PREFIX + "config.enabled";
     public static final String LABEL_PROVIDER_CONFIG_ENABLED = "Enabled";
-    public static final String LABEL_PROVIDER_CONFIG_NAME = "Configuration Name";
+    public static final String LABEL_PROVIDER_CONFIG_NAME = "Provider Configuration";
     public static final String DESCRIPTION_PROVIDER_CONFIG_ENABLED =
         "If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages.";
     public static final String DESCRIPTION_PROVIDER_CONFIG_NAME = "The name of this provider configuration. Must be unique.";
