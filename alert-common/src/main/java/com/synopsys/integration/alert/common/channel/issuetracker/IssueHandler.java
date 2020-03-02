@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -107,9 +108,10 @@ public abstract class IssueHandler<T> {
                         .forEach(issueKeys::add);
                 } else if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
                     IssueContentModel contentModel = issueTrackerMessageParser.createIssueContentModel(providerName, topic, nullableSubTopic, componentItems, arbitraryItem);
-                    T issueModel = createIssue(issueConfig, providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey, contentModel);
-                    String issueKey = getIssueKey(issueModel);
-                    issueKeys.add(issueKey);
+                    Optional<T> issueModel = createIssue(issueConfig, providerName, providerUrl, topic, nullableSubTopic, arbitraryItem, trackingKey, contentModel);
+                    issueModel
+                        .map(this::getIssueKey)
+                        .ifPresent(issueKeys::add);
                 } else {
                     logger.warn("Expected to find an existing issue, but none existed.");
                 }
@@ -130,7 +132,7 @@ public abstract class IssueHandler<T> {
         return issueKeys;
     }
 
-    protected abstract T createIssue(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
+    protected abstract Optional<T> createIssue(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem,
         String trackingKey, IssueContentModel contentModel) throws IntegrationException;
 
     protected abstract List<T> retrieveExistingIssues(String projectSearchIdentifier, String provider, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String alertIssueUniqueId)

@@ -73,7 +73,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
 
     @Override
-    protected IssueResponseModel createIssue(IssueConfig jiraIssueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem, String trackingKey,
+    protected Optional<IssueResponseModel> createIssue(IssueConfig jiraIssueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem arbitraryItem, String trackingKey,
         IssueContentModel contentModel)
         throws IntegrationException {
         IssueContentModel issueContentModel = contentModel;
@@ -99,10 +99,12 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
                     addComment(issueKey, comment);
                 }
             }
-            return issue;
+            return Optional.ofNullable(issue);
         } catch (IntegrationRestException e) {
-            throw improveRestException(e, issueCreator);
+            logger.error("Error creating issue", improveRestException(e, issueCreator));
         }
+
+        return Optional.empty();
     }
 
     @Override
