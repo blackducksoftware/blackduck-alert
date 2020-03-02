@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
-    public static final String KEY_FORMAT_TYPE = "provider.distribution.processing.type";
+    public static final String KEY_PROCESSING_TYPE = "provider.distribution.processing.type";
     public static final String KEY_FILTER_BY_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
     public static final String KEY_PROJECT_NAME_PATTERN = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
     public static final String KEY_CONFIGURED_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
@@ -88,12 +88,12 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                                  .applyMultiSelect(true)
                                                  .applyRequired(true);
 
-        List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedContentFormats()
+        List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedProcessingTypes()
                                                                   .stream()
                                                                   .map(this::convertToLabelValueOption)
                                                                   .sorted()
                                                                   .collect(Collectors.toList());
-        ConfigField processingField = new SelectConfigField(KEY_FORMAT_TYPE, LABEL_PROCESSING, DESCRIPTION_PROCESSING + createFormatDescription(), supportedFormatOptions)
+        ConfigField processingField = new SelectConfigField(KEY_PROCESSING_TYPE, LABEL_PROCESSING, DESCRIPTION_PROCESSING + createFormatDescription(), supportedFormatOptions)
                                           .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
@@ -128,7 +128,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     private String createFormatDescription() {
         StringBuilder formatDescription = new StringBuilder();
-        for (ProcessingType format : providerContent.getSupportedContentFormats()) {
+        for (ProcessingType format : providerContent.getSupportedProcessingTypes()) {
             String label = format.getLabel();
             String description = format.getDescription();
 

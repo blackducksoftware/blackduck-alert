@@ -84,8 +84,8 @@ public class ConfigurationJobModel extends AlertSerializableModel {
         return getFieldAccessor().getEnum(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
     }
 
-    public ProcessingType getFormatType() {
-        return getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, ProcessingType.class).orElse(null);
+    public ProcessingType getProcessingType() {
+        return getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, ProcessingType.class).orElse(null);
     }
 
     public Set<String> getNotificationTypes() {

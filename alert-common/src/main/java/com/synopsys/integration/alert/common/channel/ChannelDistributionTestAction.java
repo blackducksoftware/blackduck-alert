@@ -57,7 +57,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
 
         String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
         String providerConfigName = fieldAccessor.getStringOrEmpty(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
+        String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
 
         return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }

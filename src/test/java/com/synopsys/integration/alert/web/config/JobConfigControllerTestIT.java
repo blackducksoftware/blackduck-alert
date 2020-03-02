@@ -245,7 +245,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
-            ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType,
+            ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, formatType,
             ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject,
             ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames
         );

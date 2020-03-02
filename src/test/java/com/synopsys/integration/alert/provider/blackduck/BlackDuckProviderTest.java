@@ -43,7 +43,7 @@ public class BlackDuckProviderTest {
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckProvider provider = new BlackDuckProvider(BLACK_DUCK_PROVIDER_KEY, blackDuckContent, null, null, null, null, taskFactory);
         Set<ProcessingType> expectedNotificationTypes = EnumSet.of(ProcessingType.DEFAULT, ProcessingType.DIGEST, ProcessingType.SUMMARY);
-        Set<ProcessingType> providerNotificationTypes = provider.getProviderContent().getSupportedContentFormats();
+        Set<ProcessingType> providerNotificationTypes = provider.getProviderContent().getSupportedProcessingTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 

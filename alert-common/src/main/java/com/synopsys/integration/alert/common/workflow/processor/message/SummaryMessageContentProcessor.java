@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.formatter;
+package com.synopsys.integration.alert.common.workflow.processor.message;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,23 +50,23 @@ import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCom
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
-public class SummaryMessageContentFormatter extends MessageContentFormatter {
+public class SummaryMessageContentProcessor extends MessageContentProcessor {
     public static final String COMPONENT_ITEM_NAME_SUMMARY_VALUE = "Summary";
     public static final String COMPONENT_ITEM_NAME_SUMMARY_LABEL = "Format";
 
-    private final Logger logger = LoggerFactory.getLogger(SummaryMessageContentFormatter.class);
+    private final Logger logger = LoggerFactory.getLogger(SummaryMessageContentProcessor.class);
     private final TopLevelActionCombiner topLevelActionCombiner;
     private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public SummaryMessageContentFormatter(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
+    public SummaryMessageContentProcessor(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
         super(ProcessingType.SUMMARY);
         this.topLevelActionCombiner = topLevelActionCombiner;
         this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
         List<ProviderMessageContent> messagesCombinedAtTopLevel = topLevelActionCombiner.combine(messages);
         List<ProviderMessageContent> messagesCombinedAtComponentLevel = messageOperationCombiner.combine(messagesCombinedAtTopLevel);
 

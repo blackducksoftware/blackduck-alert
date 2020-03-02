@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.formatter;
+package com.synopsys.integration.alert.common.workflow.processor.message;
 
 import java.util.List;
 
@@ -30,23 +30,26 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.workflow.combiner.AbstractMessageCombiner;
-import com.synopsys.integration.alert.common.workflow.combiner.DefaultMessageCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
+import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCombiner;
 
 @Component
-public class DefaultMessageContentFormatter extends MessageContentFormatter {
-    private final AbstractMessageCombiner messageCombiner;
+public class DigestMessageContentProcessor extends MessageContentProcessor {
+    private final TopLevelActionCombiner topLevelActionCombiner;
+    private final MessageOperationCombiner messageOperationCombiner;
 
     @Autowired
-    public DefaultMessageContentFormatter(DefaultMessageCombiner messageCombiner) {
-        super(ProcessingType.DEFAULT);
-        this.messageCombiner = messageCombiner;
+    public DigestMessageContentProcessor(TopLevelActionCombiner topLevelActionCombiner, MessageOperationCombiner messageOperationCombiner) {
+        super(ProcessingType.DIGEST);
+        this.topLevelActionCombiner = topLevelActionCombiner;
+        this.messageOperationCombiner = messageOperationCombiner;
     }
 
     @Override
-    public List<MessageContentGroup> format(List<ProviderMessageContent> messages) {
-        List<ProviderMessageContent> combinedMessages = messageCombiner.combine(messages);
-        return createMessageContentGroups(combinedMessages);
+    public List<MessageContentGroup> process(List<ProviderMessageContent> messages) {
+        List<ProviderMessageContent> messagesCombinedAtTopLevel = topLevelActionCombiner.combine(messages);
+        List<ProviderMessageContent> messagesCombinedAtComponentLevel = messageOperationCombiner.combine(messagesCombinedAtTopLevel);
+        return createMessageContentGroups(messagesCombinedAtComponentLevel);
     }
 
 }

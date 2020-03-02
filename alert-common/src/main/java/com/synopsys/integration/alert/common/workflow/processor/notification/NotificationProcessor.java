@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.workflow.processor;
+package com.synopsys.integration.alert.common.workflow.processor.notification;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -47,6 +47,8 @@ import com.synopsys.integration.alert.common.provider.notification.ProviderDistr
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
+import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
+import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 
 @Component
 public class NotificationProcessor {

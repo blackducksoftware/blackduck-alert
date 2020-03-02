@@ -12,15 +12,15 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.workflow.combiner.MessageOperationCombiner;
 import com.synopsys.integration.alert.common.workflow.combiner.TopLevelActionCombiner;
-import com.synopsys.integration.alert.common.workflow.formatter.DigestMessageContentFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.message.DigestMessageContentProcessor;
 
 public class DigestMessageContentProcessorTest extends ProcessorTest {
     @Test
     public void processTest() throws AlertException {
-        DigestMessageContentFormatter digestMessageContentProcessor = new DigestMessageContentFormatter(new TopLevelActionCombiner(), new MessageOperationCombiner());
+        DigestMessageContentProcessor digestMessageContentProcessor = new DigestMessageContentProcessor(new TopLevelActionCombiner(), new MessageOperationCombiner());
         List<ProviderMessageContent> messages = createDefaultMessages();
 
-        List<MessageContentGroup> messageGroups = digestMessageContentProcessor.format(messages);
+        List<MessageContentGroup> messageGroups = digestMessageContentProcessor.process(messages);
         assertFalse(messageGroups.isEmpty());
         assertEquals(2, messageGroups.size());
         messageGroups.forEach(group -> assertEquals(1, group.getSubContent().size()));

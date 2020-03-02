@@ -29,19 +29,19 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 
 public abstract class ProviderContent {
     private final Set<ProviderNotificationType> supportedNotificationTypes;
-    private final Set<ProcessingType> supportedContentFormats;
+    private final Set<ProcessingType> supportedProcessingTypes;
 
-    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<ProcessingType> supportedContentFormats) {
+    public ProviderContent(Set<ProviderNotificationType> supportedNotificationTypes, Set<ProcessingType> supportedProcessingTypes) {
         this.supportedNotificationTypes = supportedNotificationTypes;
-        this.supportedContentFormats = supportedContentFormats;
+        this.supportedProcessingTypes = supportedProcessingTypes;
     }
 
     public Set<ProviderNotificationType> getContentTypes() {
         return ImmutableSet.copyOf(supportedNotificationTypes);
     }
 
-    public Set<ProcessingType> getSupportedContentFormats() {
-        return ImmutableSet.copyOf(supportedContentFormats);
+    public Set<ProcessingType> getSupportedProcessingTypes() {
+        return ImmutableSet.copyOf(supportedProcessingTypes);
     }
 
 }
