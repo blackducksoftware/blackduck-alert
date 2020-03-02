@@ -17,7 +17,6 @@ def alertDatabaseDockerImageVersion = '1.0.0'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql:42.2.8'
     runtimeOnly 'org.liquibase:liquibase-core'
 
@@ -27,6 +26,9 @@ dependencies {
     runtimeClasspath 'org.hibernate:hibernate-c3p0:5.4.2.Final'
 
     implementation project(':alert-common')
+
+    // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
+    runtimeOnly 'com.h2database:h2'
 }
 
 task dockerLogin(type: Exec) {

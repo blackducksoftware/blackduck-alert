@@ -18,20 +18,5 @@
             $result$
             LANGUAGE plpgsql;
         </createProcedure>
-        <createProcedure schemaName="ALERT" dbms="h2">
-            CREATE ALIAS IF NOT EXISTS GET_PROVIDER_CONFIG_ID AS $$
-                java.lang.Integer getProviderConfigId(final java.sql.Connection connection, final java.lang.String provider) throws java.sql.SQLException {
-                    try (final java.sql.Statement statement = connection.createStatement()) {
-                        final java.sql.ResultSet resultSet = statement.executeQuery(
-                            "select ID from ALERT.DESCRIPTOR_CONFIGS where DESCRIPTOR_CONFIGS.DESCRIPTOR_ID = GET_DESCRIPTOR_ID('" + provider.toLowerCase() + "') and DESCRIPTOR_CONFIGS.CONTEXT_ID = GET_CONTEXT_ID('GLOBAL') LIMIT 1;");
-                        if (resultSet.next()) {
-                            return resultSet.getInt("ID");
-                        } else {
-                            throw new java.sql.SQLException("No values returned for that query");
-                        }
-                    }
-                }
-            $$;
-        </createProcedure>
     </changeSet>
 </databaseChangeLog>
