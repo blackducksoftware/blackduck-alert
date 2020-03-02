@@ -41,15 +41,13 @@
     <changeSet author="gavink" id="2020-02-21-08-34-06-927">
         <preConditions onFail="MARK_RAN">
             <and>
-                <and>
-                    <sqlCheck expectedResult="1">
-                        select count(pg_stat_file('../../blackduck-accumulator-task-last-search.txt', true));
-                    </sqlCheck>
-                    <sqlCheck expectedResult="1">
-                        select count(case when configId != NULL then 1 else 0 end)
-                        from GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() configId;
-                    </sqlCheck>
-                </and>
+                <sqlCheck expectedResult="1">
+                    select count(pg_stat_file('../../blackduck-accumulator-task-last-search.txt', true));
+                </sqlCheck>
+                <sqlCheck expectedResult="1">
+                    select count(case when configId != NULL then 1 else 0 end)
+                    from GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID() configId;
+                </sqlCheck>
             </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">

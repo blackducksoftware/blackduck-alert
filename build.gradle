@@ -100,9 +100,13 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
-    // Test/RunServer
+    // =============
+    // Test and Dev
+    // =============
     testImplementation 'org.testcontainers:postgresql:1.12.5'
-    runtimeClasspath 'org.testcontainers:postgresql:1.12.5'
+    if (getGradle().getStartParameter().taskNames.contains('runServer')) {
+        runtimeClasspath 'org.testcontainers:postgresql:1.12.5'
+    }
 }
 
 bootJar {
@@ -216,7 +220,6 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
                                 '--spring.datasource.url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
                                 '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
-                                //'--spring.test.database=',
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",

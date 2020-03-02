@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 @WebAppConfiguration
 @Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("testdb")
+@ActiveProfiles("alertdb")
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class AlertIntegrationTest {
     public static final String ROLE_ALERT_ADMIN = "ALERT_ADMIN";
