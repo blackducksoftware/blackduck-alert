@@ -27,9 +27,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -37,11 +40,13 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.rest.RestConstants;
@@ -57,15 +62,34 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 
+    private ConfigurationModel providerConfigModel = null;
+
     @BeforeEach
-    public void init() {
+    public void init() throws AlertDatabaseConstraintException {
         notificationContentRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.flush();
+
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("true");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("My Black Duck Config");
+
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://a-blackduck-server");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue("300");
+
+        List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
+        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
     }
 
     @AfterEach
-    public void cleanup() {
+    public void cleanup() throws AlertDatabaseConstraintException {
+        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+
         notificationContentRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
     }
@@ -200,9 +224,9 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     private NotificationEntity createEntity(String dateString, String content) throws ParseException {
         Date createdAt = RestConstants.parseDateString(dateString);
         Date providerCreationTime = createdAt;
-        final String provider = "provider_1";
+        final String provider = "provider_blackduck";
         final String notificationType = "type_1";
-        NotificationEntity entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null, 1L).createEntity();
+        NotificationEntity entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null, providerConfigModel.getConfigurationId()).createEntity();
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
     }
