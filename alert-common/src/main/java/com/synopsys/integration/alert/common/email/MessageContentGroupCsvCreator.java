@@ -61,10 +61,11 @@ public class MessageContentGroupCsvCreator {
         return csvBuilder.toString();
     }
 
-    // Provider | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Additional Attributes | Item URL
+    // Provider | Provider Config Name | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Additional Attributes | Item URL
     private List<String> createColumnNames(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<String> columnNames = new ArrayList<>();
-        columnNames.add(commonProvider.getName());
+        columnNames.add("Provider");
+        columnNames.add("Provider Config");
         columnNames.add(commonTopic.getName());
 
         String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getSubTopic);
@@ -107,15 +108,16 @@ public class MessageContentGroupCsvCreator {
         for (ProviderMessageContent message : contents) {
             String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
             for (ComponentItem componentItem : message.getComponentItems()) {
-                List<String> columnValues = createColumnValues(commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
+                List<String> columnValues = createColumnValues(commonProvider.getName(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
             }
         }
         return rows;
     }
 
-    private List<String> createColumnValues(String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
+    private List<String> createColumnValues(String providerName, String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
         List<String> columnValues = new ArrayList<>();
+        columnValues.add(providerName);
         columnValues.add(providerValue);
         columnValues.add(topicValue);
         columnValues.add(subTopicValue);
