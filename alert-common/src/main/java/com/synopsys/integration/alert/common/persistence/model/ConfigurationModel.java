@@ -88,7 +88,6 @@ public final class ConfigurationModel extends AlertSerializableModel {
         return new HashMap<>(configuredFields);
     }
 
-    // TODO it might be worthwhile to expose a builder for this class rather than allowing this method to be used outside of the accessors
     public void put(ConfigurationFieldModel configFieldModel) {
         Objects.requireNonNull(configFieldModel);
         String fieldKey = configFieldModel.getFieldKey();

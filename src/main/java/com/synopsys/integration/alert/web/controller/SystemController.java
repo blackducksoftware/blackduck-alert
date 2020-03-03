@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,7 +49,7 @@ public class SystemController extends BaseController {
     private final ResponseFactory responseFactory;
 
     @Autowired
-    public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
+    public SystemController(SystemActions systemActions, ContentConverter contentConverter, ResponseFactory responseFactory) {
         this.systemActions = systemActions;
         this.contentConverter = contentConverter;
         this.responseFactory = responseFactory;
@@ -58,44 +57,30 @@ public class SystemController extends BaseController {
 
     @GetMapping(value = "/system/messages/latest")
     public ResponseEntity<String> getLatestSystemMessages() {
-        final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesSinceStartup();
+        List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesSinceStartup();
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
     }
 
     @GetMapping(value = "/system/messages")
-    public ResponseEntity<String> getSystemMessages(@RequestParam(value = "startDate", required = false) final String startDate, @RequestParam(value = "endDate", required = false) final String endDate) {
+    public ResponseEntity<String> getSystemMessages(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) {
         try {
             if (StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)) {
-                final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessages();
+                List<SystemMessageModel> systemMessageList = systemActions.getSystemMessages();
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else if (StringUtils.isNotBlank(startDate) && StringUtils.isBlank(endDate)) {
-                final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesAfter(startDate);
+                List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesAfter(startDate);
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else if (StringUtils.isBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-                final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBefore(endDate);
+                List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBefore(endDate);
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else {
-                final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBetween(startDate, endDate);
+                List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBetween(startDate, endDate);
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             }
-        } catch (final ParseException ex) {
+        } catch (ParseException ex) {
             logger.error("error occurred getting system messages", ex);
             return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
-    }
-
-    @GetMapping(value = "/system/setup/initial")
-    @Deprecated
-    public ResponseEntity<String> getInitialSystemSetup() {
-        // FIXME: 6.0.0 remove this method
-        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
-    }
-
-    @PostMapping(value = "/system/setup/initial")
-    @Deprecated
-    public ResponseEntity<String> initialSystemSetup() {
-        // FIXME: 6.0.0 remove this method
-        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
     }
 
     @GetMapping(value = "/system/setup/descriptor")
@@ -103,4 +88,5 @@ public class SystemController extends BaseController {
     public ResponseEntity<String> getInitialSystemSetupDescriptor() {
         return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
     }
+
 }

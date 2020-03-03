@@ -81,11 +81,6 @@ public class BlackDuckProperties extends ProviderProperties {
                    .orElse(new FieldAccessor(Map.of()));
     }
 
-    @Override
-    public void disconnect() {
-        // TODO implement
-    }
-
     public Optional<String> getBlackDuckUrl() {
         return Optional.ofNullable(url);
     }

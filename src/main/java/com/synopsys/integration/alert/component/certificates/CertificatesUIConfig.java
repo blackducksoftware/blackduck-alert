@@ -41,4 +41,5 @@ public class CertificatesUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         return List.of();
     }
+    
 }

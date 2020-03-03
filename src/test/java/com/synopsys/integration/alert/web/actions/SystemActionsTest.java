@@ -43,7 +43,7 @@ public class SystemActionsTest {
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         settingsUtility = Mockito.mock(SettingsUtility.class);
         fieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
-        final List<SystemMessageModel> messages = createSystemMessageList();
+        List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
         Mockito.when(settingsUtility.getKey()).thenReturn(SETTINGS_DESCRIPTOR_KEY);
@@ -52,7 +52,7 @@ public class SystemActionsTest {
 
     @Test
     public void getSystemMessagesSinceStartup() {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         systemActions.getSystemMessagesSinceStartup();
         Mockito.verify(defaultSystemStatusUtility).getStartupTime();
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesAfter(Mockito.any());
@@ -60,35 +60,35 @@ public class SystemActionsTest {
 
     @Test
     public void testGetSystemMessagesAfter() throws Exception {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         systemActions.getSystemMessagesAfter("2018-11-13T00:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesAfter(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBefore() throws Exception {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         systemActions.getSystemMessagesBefore("2018-11-13T00:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).getSystemMessagesBefore(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBetween() throws Exception {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         systemActions.getSystemMessagesBetween("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(defaultSystemMessageUtility).findBetween(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessages() {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         systemActions.getSystemMessages();
         Mockito.verify(defaultSystemMessageUtility).getSystemMessages();
     }
 
     @Test
     public void testIsInitiailzed() {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
 
         assertFalse(systemActions.isSystemInitialized());
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
@@ -97,8 +97,7 @@ public class SystemActionsTest {
 
     @Test
     public void testGetCurrentSystemSetup() throws Exception {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
-        final String defaultAdminPassword = "defaultPassword";
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
         final String proxyHost = "host";
@@ -106,9 +105,8 @@ public class SystemActionsTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        final FieldModel expected = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
-        expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        Map<String, FieldValueModel> valueMap = new HashMap<>();
+        FieldModel expected = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
         expected.putField(ProxyManager.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
@@ -118,7 +116,7 @@ public class SystemActionsTest {
 
         Mockito.when(settingsUtility.getFieldModel()).thenReturn(Optional.of(expected));
 
-        final FieldModel actual = systemActions.getCurrentSystemSetup();
+        FieldModel actual = systemActions.getCurrentSystemSetup();
 
         assertEquals(globalEncryptionPassword, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(globalEncryptionSalt, actual.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> field.getValue()).orElse(null));
@@ -130,8 +128,7 @@ public class SystemActionsTest {
 
     @Test
     public void testSaveRequiredInformation() throws Exception {
-        final SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
-        final String defaultAdminPassword = "defaultPassword";
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
         final String proxyHost = "host";
@@ -139,9 +136,8 @@ public class SystemActionsTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final Map<String, FieldValueModel> valueMap = new HashMap<>();
-        final FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
-        model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        Map<String, FieldValueModel> valueMap = new HashMap<>();
+        FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
         model.putField(ProxyManager.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
@@ -151,7 +147,7 @@ public class SystemActionsTest {
 
         Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(false);
 
-        final Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
         systemActions.saveRequiredInformation(model, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
@@ -161,4 +157,5 @@ public class SystemActionsTest {
         zonedDateTime = zonedDateTime.minusMinutes(1);
         return Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(Date.from(zonedDateTime.toInstant())), "type", "content", "type"));
     }
+
 }

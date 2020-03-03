@@ -61,10 +61,9 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
-        boolean defaultUserSettingsValid = settingsValidator.validateUser().isEmpty();
         boolean encryptionValid = settingsValidator.validateEncryption().isEmpty();
         boolean providersValid = validateProviders();
-        boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
+        boolean valid = encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         return valid;

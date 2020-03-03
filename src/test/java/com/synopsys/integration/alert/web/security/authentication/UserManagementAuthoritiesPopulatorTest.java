@@ -12,13 +12,11 @@ import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
@@ -41,13 +39,10 @@ public class UserManagementAuthoritiesPopulatorTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
 
         GrantedAuthority testAdminRole = new SimpleGrantedAuthority(roleNameMapping);
-        String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
-        GrantedAuthority expectedAdminRole = new SimpleGrantedAuthority(expectedRoleName);
         Set<GrantedAuthority> inputRoles = Set.of(testAdminRole);
         Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(TEST_USERNAME, inputRoles);
 
-        assertEquals(inputRoles.size() + 1, actualRoles.size());
-        assertTrue(actualRoles.contains(expectedAdminRole));
+        assertTrue(actualRoles.contains(testAdminRole), "The actual roles did not contain the expected role name: " + roleNameMapping);
     }
 
     @Test
@@ -86,12 +81,10 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
-        String expectedRoleName = DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
-        assertEquals(inputRoles.size() + 1, actualRoles.size());
-        assertTrue(actualRoles.contains(expectedRoleName));
+        assertTrue(actualRoles.contains(roleNameMapping), "The actual roles did not contain the expected role name: " + roleNameMapping);
     }
 
     @Test
@@ -116,12 +109,10 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
-        String expectedRoleName = UserModel.ROLE_PREFIX + DefaultUserRole.ALERT_ADMIN.name();
         Set<String> inputRoles = Set.of(roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, true);
 
-        assertEquals(inputRoles.size() + 1, actualRoles.size());
-        assertTrue(actualRoles.contains(expectedRoleName));
+        assertTrue(actualRoles.contains(roleNameMapping), "The actual roles did not contain the expected role name: " + roleNameMapping);
     }
 
     @Test
@@ -154,4 +145,5 @@ public class UserManagementAuthoritiesPopulatorTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
         assertEquals(attributeName, authoritiesPopulator.getSAMLRoleAttributeName(attributeName));
     }
+
 }

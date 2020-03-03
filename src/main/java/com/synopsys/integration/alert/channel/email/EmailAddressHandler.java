@@ -67,8 +67,13 @@ public class EmailAddressHandler {
         boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
 
         if (!useOnlyAdditionalEmailAddresses) {
-            Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, contentGroup.getCommonTopic().getValue(), projectOwnerOnly);
-            emailAddresses.addAll(projectEmailAddresses);
+            Optional<String> optionalHref = contentGroup.getCommonTopic().getUrl();
+            if (optionalHref.isPresent()) {
+                Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, optionalHref.get(), projectOwnerOnly);
+                emailAddresses.addAll(projectEmailAddresses);
+            } else {
+                logger.warn("The topic '{}' did not have an href, cannot get emails", contentGroup.getCommonTopic().getName());
+            }
         }
 
         if (emailAddresses.isEmpty()) {
@@ -120,11 +125,11 @@ public class EmailAddressHandler {
         return Set.of();
     }
 
-    private Set<String> collectProviderEmailsFromProject(String providerConfigName, String projectName, boolean projectOwnerOnly) {
+    private Set<String> collectProviderEmailsFromProject(String providerConfigName, String projectHref, boolean projectOwnerOnly) {
         Optional<ProviderProject> optionalProject = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
                                                         .stream()
-                                                        .filter(project -> project.getName().equals(projectName))
-                                                        .findFirst(); // FIXME use href
+                                                        .filter(project -> project.getHref().equals(projectHref))
+                                                        .findFirst();
         if (optionalProject.isPresent()) {
             return getEmailAddressesForProject(optionalProject.get(), projectOwnerOnly);
         }
@@ -146,11 +151,11 @@ public class EmailAddressHandler {
             } else {
                 associatedProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
                                          .stream()
-                                         .map(ProviderProject::getName)
+                                         .map(ProviderProject::getHref)
                                          .collect(Collectors.toList());
             }
             return associatedProjects.stream()
-                       .map(projectName -> collectProviderEmailsFromProject(providerConfigName, projectName, projectOwnerOnly))
+                       .map(projectHref -> collectProviderEmailsFromProject(providerConfigName, projectHref, projectOwnerOnly))
                        .flatMap(Set::stream)
                        .collect(Collectors.toSet());
         }

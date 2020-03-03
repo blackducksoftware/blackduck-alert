@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 @Component
 public class CertificatesDescriptor extends ComponentDescriptor {
@@ -39,14 +38,4 @@ public class CertificatesDescriptor extends ComponentDescriptor {
         super(descriptorKey, componentUIConfig);
     }
 
-    //TODO: In 6.0.0 remove the overridden hasUIConfigs and hasUIConfigForType methods.
-    @Override
-    public boolean hasUIConfigs() {
-        return false;
-    }
-
-    @Override
-    public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
-        return false;
-    }
 }
