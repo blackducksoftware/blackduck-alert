@@ -99,6 +99,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
+        Mockito.when(content.getTopic()).thenReturn(new LinkableItem("topic", "topicVal"));
+
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");
@@ -121,6 +123,8 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
+        Mockito.when(content.getTopic()).thenReturn(new LinkableItem("topic", "topicVal"));
+
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");

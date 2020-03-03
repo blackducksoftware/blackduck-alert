@@ -15,6 +15,8 @@ import com.synopsys.integration.blackduck.api.manual.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.ProjectGetService;
+import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -40,10 +42,11 @@ public class BlackDuckMessageBuilderTestHelper {
     public static BlackDuckServicesFactory mockServicesFactory() {
         BlackDuckServicesFactory mockServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         BlackDuckService blackDuckService = mockBlackDuckService();
-
+        ProjectService projectService = mockProjectService();
         BlackDuckBucketService bucketService = mockBucketService();
 
         Mockito.when(mockServicesFactory.createBlackDuckService()).thenReturn(blackDuckService);
+        Mockito.when(mockServicesFactory.createProjectService()).thenReturn(projectService);
         Mockito.when(mockServicesFactory.createBlackDuckBucketService()).thenReturn(bucketService);
 
         return mockServicesFactory;
@@ -103,6 +106,10 @@ public class BlackDuckMessageBuilderTestHelper {
         }
 
         return mockBlackDuckService;
+    }
+
+    public static ProjectService mockProjectService() {
+        return new ProjectService(mockBlackDuckService(), mockLogger(), Mockito.mock(ProjectGetService.class));
     }
 
     public static BlackDuckBucketService mockBucketService() {
