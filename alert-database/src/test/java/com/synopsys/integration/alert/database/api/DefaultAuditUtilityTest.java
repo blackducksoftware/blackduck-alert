@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
-public class AuditEntryAccessorTest {
+public class DefaultAuditUtilityTest {
 
     @Test
     public void createAuditEntryTest() throws Exception {
