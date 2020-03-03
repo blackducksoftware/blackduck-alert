@@ -1,7 +1,8 @@
 package com.synopsys.integration.alert.database.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -29,6 +30,26 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 public class DefaultAuditUtilityTest {
 
     @Test
+    public void findMatchingAuditIdTest() {
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        Optional<Long> nullValue = auditUtility.findMatchingAuditId(1L, UUID.randomUUID());
+
+        assertFalse(nullValue.isPresent());
+
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(null, null, null, null, null, null);
+        Long expectedLong = 2L;
+        auditEntryEntity.setId(expectedLong);
+        Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
+        Optional<Long> actualValue = auditUtility.findMatchingAuditId(expectedLong, UUID.randomUUID());
+
+        assertTrue(actualValue.isPresent());
+        assertEquals(expectedLong, actualValue.get());
+    }
+
+    //TODO: Remove this test later
+    @Test
     public void createAuditEntryTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
@@ -52,6 +73,7 @@ public class DefaultAuditUtilityTest {
         Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
+    //TODO: Remove this test later
     @Test
     public void createAuditEntryNullEntryIdTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -72,12 +94,14 @@ public class DefaultAuditUtilityTest {
         Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
+    //TODO: Remove this test later
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntrySuccess(Collections.singletonList(1L));
     }
 
+    //TODO: Remove this test later
     @Test
     public void setAuditEntrySuccessTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -93,12 +117,14 @@ public class DefaultAuditUtilityTest {
         assertEquals(AuditEntryStatus.SUCCESS.toString(), entity.getStatus());
     }
 
+    //TODO: Remove this test later
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntryFailure(Collections.singletonList(1L), null, null);
     }
 
+    //TODO: Remove this test later
     @Test
     public void setAuditEntryFailureTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -114,6 +140,7 @@ public class DefaultAuditUtilityTest {
         assertEquals("error", entity.getErrorMessage());
     }
 
+    //TODO:  (May want to keep the helper method)
     public ProviderMessageContent createMessageContent() throws AlertException {
         LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
         LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
@@ -163,6 +190,7 @@ public class DefaultAuditUtilityTest {
                    .build();
     }
 
+    //TODO:  (May want to keep the helper method)
     private void mockAuditRepositorySave(AuditEntryRepository auditEntryRepository, AuditEntryEntity savedAuditEntryEntity) {
         Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).then(invocation -> {
             AuditEntryEntity originalEntity = invocation.getArgument(0);
