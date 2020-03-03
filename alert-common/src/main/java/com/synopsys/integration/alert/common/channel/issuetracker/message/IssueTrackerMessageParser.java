@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
@@ -38,7 +39,9 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
-    public IssueContentModel createIssueContentModel(String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
+    public static final String DESCRIPTION_TRUNCATED_TEXT = "... (Comments are disabled.  Description data will be lost. See Black Duck project information for data.)";
+
+    public IssueContentModel createIssueContentModel(IssueConfig issueConfig, String providerName, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
@@ -52,7 +55,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         }
 
         List<String> additionalComments = new ArrayList<>();
-        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, additionalComments);
+        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(issueConfig.getCommentOnIssues(), description.length(), componentItems, additionalComments);
         description.append(additionalDescriptionInfo);
         return IssueContentModel.of(title, description.toString(), additionalComments);
     }
@@ -108,7 +111,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         return StringUtils.abbreviate(title.toString(), getTitleSizeLimit());
     }
 
-    private String createAdditionalDescriptionInfoOrAddToAdditionalComments(int initialDescriptionLength, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
+    private String createAdditionalDescriptionInfoOrAddToAdditionalComments(boolean commentOnIssues, int initialDescriptionLength, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
         StringBuilder additionalDescriptionInfo = new StringBuilder();
         List<String> tempAdditionalComments = new ArrayList<>();
 
@@ -130,7 +133,12 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         MessageSplitter splitter = new MessageSplitter(getMessageSizeLimit(), getLineSeparator());
         additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, true));
 
-        return additionalDescriptionInfo.toString();
+        String description = additionalDescriptionInfo.toString();
+        if (description.length() == getMessageSizeLimit() && !commentOnIssues) {
+            String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
+            description = StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
+        }
+        return description;
     }
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {

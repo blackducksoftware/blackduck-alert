@@ -55,7 +55,6 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
-    public static final String DESCRIPTION_TRUNCATED_TEXT = "... (Comments are disabled.  Description data will be lost. See Black Duck project information for data.)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -77,10 +76,6 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         IssueContentModel contentModel)
         throws IntegrationException {
         IssueContentModel issueContentModel = contentModel;
-        if (!contentModel.getAdditionalComments().isEmpty() && !jiraIssueConfig.getCommentOnIssues()) {
-            String description = createDescriptionText(contentModel.getDescription());
-            issueContentModel = IssueContentModel.of(contentModel.getTitle(), description, List.of());
-        }
 
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(issueContentModel);
         fieldsBuilder.setProject(jiraIssueConfig.getProjectId());
@@ -119,11 +114,6 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             return categoryItem.getName() + categoryItem.getValue();
         }
         return StringUtils.EMPTY;
-    }
-
-    private String createDescriptionText(String description) {
-        String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
-        return StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
