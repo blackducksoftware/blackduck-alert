@@ -37,7 +37,6 @@ import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.datastructure.SetMap;
 
 public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
-    public static final String LABEL_PROVIDER = "Provider";
     private static final long serialVersionUID = -9019185621384719085L;
 
     private final LinkableItem provider;

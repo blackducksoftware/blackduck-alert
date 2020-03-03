@@ -70,10 +70,11 @@ public class UserManagementAuthoritiesPopulator {
 
     public Set<String> addAdditionalRoleNames(String userName, Set<String> existingRoles, boolean appendRolePrefix) {
         Set<String> rolesFromDB = getRolesFromDatabase(userName, appendRolePrefix);
-        Set<String> roles = new LinkedHashSet<>();
-        roles.addAll(rolesFromDB);
-        roles.addAll(existingRoles.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()));
-
+        Set<String> roles = new LinkedHashSet<>(rolesFromDB);
+        existingRoles
+            .stream()
+            .filter(StringUtils::isNotBlank)
+            .forEach(roles::add);
         return roles;
     }
 

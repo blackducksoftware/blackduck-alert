@@ -52,6 +52,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRule
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -99,11 +100,12 @@ public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNot
             try {
                 ProjectVersionComponentView projectVersionComponentView = bomComponent.get();
                 ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
+                ProjectView projectView = projectVersionData.getProjectView();
                 ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
 
                 messageContentBuilder
                     .applyCommonData(commonMessageData)
-                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectVersionData.getProjectView().getName())
+                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().orElse(null))
                     .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
                         projectVersionData.getProjectVersionView().getHref().orElse(null));
 
