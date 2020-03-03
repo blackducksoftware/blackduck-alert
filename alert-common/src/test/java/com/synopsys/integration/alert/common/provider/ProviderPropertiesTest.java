@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -35,15 +34,11 @@ public class ProviderPropertiesTest {
     }
 
     @Test
-    public void getConfigIdTest() throws AlertDatabaseConstraintException {
+    public void getConfigIdTest() {
         Long id = 23L;
         FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
-        ProviderProperties properties = new ProviderProperties(id, fieldAccessor) {
-            @Override
-            public void disconnect() {
-
-            }
-        };
+        ProviderProperties properties = new ProviderProperties(id, fieldAccessor) {};
         assertEquals(id, properties.getConfigId());
     }
+
 }

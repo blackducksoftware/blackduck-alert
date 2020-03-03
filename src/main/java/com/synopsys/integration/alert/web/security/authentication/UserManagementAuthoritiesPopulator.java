@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.web.security.authentication;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -38,7 +36,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -72,20 +69,12 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     public Set<String> addAdditionalRoleNames(String userName, Set<String> existingRoles, boolean appendRolePrefix) {
-        // TODO remove in 6.0.0 the createRolesMapping method.
-        Map<String, String> roleMap = createRolesMapping(appendRolePrefix);
         Set<String> rolesFromDB = getRolesFromDatabase(userName, appendRolePrefix);
-        Set<String> roles = new LinkedHashSet<>();
-        roles.addAll(rolesFromDB);
-        roles.addAll(existingRoles.stream().filter(role -> StringUtils.isNotBlank(role)).collect(Collectors.toSet()));
-        //TODO remove in 6.0.0 with the deprecated method
-        if (!roleMap.isEmpty()) {
-            roles.addAll(existingRoles.stream()
-                             .filter(roleMap::containsKey)
-                             .map(roleMap::get)
-                             .collect(Collectors.toSet()));
-        }
-
+        Set<String> roles = new LinkedHashSet<>(rolesFromDB);
+        existingRoles
+            .stream()
+            .filter(StringUtils::isNotBlank)
+            .forEach(roles::add);
         return roles;
     }
 
@@ -99,24 +88,6 @@ public class UserManagementAuthoritiesPopulator {
         return defaultName;
     }
 
-    // TODO remove in 6.0.0
-    private Map<String, String> createRolesMapping(boolean appendRolePrefix) {
-        Map<String, String> roleMapping = new HashMap<>(DefaultUserRole.values().length);
-        try {
-            ConfigurationModel configuration = getCurrentConfiguration();
-            Function<DefaultUserRole, String> function = appendRolePrefix ? this::createRoleWithPrefix : DefaultUserRole::name;
-            Optional<String> adminRoleMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN);
-            Optional<String> jobManagerMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER);
-            Optional<String> userMappingName = getFieldValue(configuration, AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER);
-            adminRoleMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_ADMIN)));
-            jobManagerMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_JOB_MANAGER)));
-            userMappingName.ifPresent(roleName -> roleMapping.put(roleName, function.apply(DefaultUserRole.ALERT_USER)));
-        } catch (AlertException ex) {
-            logger.debug("Error mapping roles to alert roles.", ex);
-        }
-        return roleMapping;
-    }
-
     private Set<String> getRolesFromDatabase(String userName, boolean appendRolePrefix) {
         Function<String, String> function = appendRolePrefix ? (roleName) -> UserModel.ROLE_PREFIX + roleName : Function.identity();
         Optional<UserModel> userModel = userAccessor.getUser(userName);
@@ -128,12 +99,6 @@ public class UserManagementAuthoritiesPopulator {
         return newRoleNames;
     }
 
-    // TODO remove in 6.0.0
-    private String createRoleWithPrefix(DefaultUserRole alertRole) {
-        return UserModel.ROLE_PREFIX + alertRole.name();
-    }
-
-    // TODO remove in 6.0.0
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKey(AuthenticationDescriptorKey)
                    .stream()
@@ -141,7 +106,6 @@ public class UserManagementAuthoritiesPopulator {
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));
     }
 
-    // TODO remove in 6.0.0
     private Optional<String> getFieldValue(ConfigurationModel configurationModel, String fieldKey) {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue);
     }

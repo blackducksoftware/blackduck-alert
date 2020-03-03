@@ -67,17 +67,19 @@ public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<Pol
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, PolicyOverrideNotificationView notificationView,
-        BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, PolicyOverrideNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
+
+        String projectName = overrideContent.getProjectName();
+        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName())
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName(), projectUrl)
                 .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), overrideContent.getProjectVersion());
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();

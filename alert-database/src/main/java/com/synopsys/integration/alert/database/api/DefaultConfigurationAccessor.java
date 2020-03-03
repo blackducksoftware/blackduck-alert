@@ -425,7 +425,6 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
 
         ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
         List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
-        // TODO should empty fields be included?
         for (FieldValueEntity fieldValueEntity : fieldValueEntities) {
             DefinedFieldEntity definedFieldEntity = definedFieldRepository
                                                         .findById(fieldValueEntity.getFieldId())

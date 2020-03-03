@@ -15,14 +15,13 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 
 public class EnvironmentVariableUtilityTest {
-
     @Test
     public void testKeyConversion() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
-        String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(settingsDescriptorKey, SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
-        String expectedPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL";
+        String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(settingsDescriptorKey, SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+        String expectedPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
         assertEquals(expectedPropertyKey, actualPropertyKey);
     }
 

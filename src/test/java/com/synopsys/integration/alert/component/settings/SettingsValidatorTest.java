@@ -34,7 +34,7 @@ public class SettingsValidatorTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        SettingsValidator settingsValidator = new SettingsValidator(userAccessor, encryptionUtility, defaultSystemMessageUtility);
+        SettingsValidator settingsValidator = new SettingsValidator(encryptionUtility, defaultSystemMessageUtility);
         settingsValidator.validateEncryption();
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -46,7 +46,7 @@ public class SettingsValidatorTest {
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        SettingsValidator settingsValidator = new SettingsValidator(userAccessor, encryptionUtility, defaultSystemMessageUtility);
+        SettingsValidator settingsValidator = new SettingsValidator(encryptionUtility, defaultSystemMessageUtility);
         settingsValidator.validateEncryption();
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,40 +34,19 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 @Component
 public class SettingsValidator {
     private static final Logger logger = LoggerFactory.getLogger(SettingsValidator.class);
-    private UserAccessor userAccessor;
     private EncryptionUtility encryptionUtility;
     private SystemMessageUtility systemMessageUtility;
 
     @Autowired
-    public SettingsValidator(UserAccessor userAccessor, EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility) {
-        this.userAccessor = userAccessor;
+    public SettingsValidator(EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility) {
         this.encryptionUtility = encryptionUtility;
         this.systemMessageUtility = systemMessageUtility;
-    }
-
-    public Map<String, String> validateUser() {
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-
-        Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
-        Map<String, String> fieldErrors = new HashMap<>();
-
-        boolean hasEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();
-        validationCheck(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, hasEmailAddress)
-            .ifPresent(error -> fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, error));
-
-        boolean isPasswordSet = userModel.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isEmpty();
-        validationCheck(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, isPasswordSet)
-            .ifPresent(error -> fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, error));
-
-        return fieldErrors;
     }
 
     public Map<String, String> validateEncryption() {

@@ -36,8 +36,8 @@ public class MessageContentGroup extends AlertSerializableModel {
     private LinkableItem comonProvider;
     private LinkableItem commonTopic;
 
-    public static MessageContentGroup singleton(final ProviderMessageContent message) {
-        final MessageContentGroup group = new MessageContentGroup();
+    public static MessageContentGroup singleton(ProviderMessageContent message) {
+        MessageContentGroup group = new MessageContentGroup();
         group.add(message);
         return group;
     }
@@ -47,21 +47,26 @@ public class MessageContentGroup extends AlertSerializableModel {
         this.commonTopic = null;
     }
 
-    public boolean applies(final ProviderMessageContent message) {
+    public boolean applies(ProviderMessageContent message) {
         return null == commonTopic || commonTopic.getValue().equals(message.getTopic().getValue());
     }
 
-    public void add(final ProviderMessageContent message) {
+    public void add(ProviderMessageContent message) {
         if (null == commonTopic) {
-            this.comonProvider = message.getProvider();
-            this.commonTopic = message.getTopic();
+            comonProvider = message.getProvider();
+            commonTopic = message.getTopic();
         } else if (!commonTopic.getValue().equals(message.getTopic().getValue())) {
             throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getTopic().getValue()));
         }
+
+        if (commonTopic.getUrl().isEmpty() && message.getTopic().getUrl().isPresent()) {
+            commonTopic = message.getTopic();
+        }
+
         subContent.add(message);
     }
 
-    public void addAll(final Collection<ProviderMessageContent> messages) {
+    public void addAll(Collection<ProviderMessageContent> messages) {
         messages.forEach(this::add);
     }
 

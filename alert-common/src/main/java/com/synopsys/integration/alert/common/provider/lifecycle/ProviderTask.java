@@ -29,21 +29,13 @@ import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public abstract class ProviderTask extends ScheduledTask {
-    private ProviderKey providerKey;
     private ProviderProperties providerProperties;
-
-    // TODO reevaluate if this is needed once scheduling supports multiple providers
-    public static String computeProviderTaskName(ProviderKey providerKey, Long providerConfigId, Class<? extends ProviderTask> providerTaskClass) {
-        String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
-        String providerUniversalKey = providerKey.getUniversalKey();
-
-        return String.format("%s::Provider[%s]::Configuration[id:%d]", superTaskName, providerUniversalKey, providerConfigId);
-    }
+    private String taskName;
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);
-        this.providerKey = providerKey;
         this.providerProperties = providerProperties;
+        this.taskName = computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
     }
 
     @Override
@@ -55,11 +47,18 @@ public abstract class ProviderTask extends ScheduledTask {
 
     @Override
     public String getTaskName() {
-        return ProviderTask.computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
+        return taskName;
     }
 
     protected ProviderProperties getProviderProperties() {
         return providerProperties;
+    }
+
+    private String computeProviderTaskName(ProviderKey providerKey, Long providerConfigId, Class<? extends ProviderTask> providerTaskClass) {
+        String superTaskName = ScheduledTask.computeTaskName(providerTaskClass);
+        String providerUniversalKey = providerKey.getUniversalKey();
+
+        return String.format("%s::Provider[%s]::Configuration[id:%d]", superTaskName, providerUniversalKey, providerConfigId);
     }
 
 }

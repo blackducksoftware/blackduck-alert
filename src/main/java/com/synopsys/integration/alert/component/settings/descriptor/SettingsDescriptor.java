@@ -31,19 +31,13 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
-    public static final String SETTINGS_DESCRIPTION = "This page allows you to configure the admin settings.";
+    public static final String SETTINGS_DESCRIPTION = "This page allows you to configure the global settings.";
 
     // Values not stored in the database, but keys must be registered
-    //TODO deprecate these fields in 5.3.0 and remove them in 6.0.0.
-    public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
-    public static final String KEY_DEFAULT_SYSTEM_ADMIN_PWD = "settings.user.default.admin.password";
     public static final String KEY_ENCRYPTION_PWD = "settings.encryption.password";
     public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";
 
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
-
-    public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
-    public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
 
     public static final String FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT = "The value must be at least 8 characters.";
     public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
