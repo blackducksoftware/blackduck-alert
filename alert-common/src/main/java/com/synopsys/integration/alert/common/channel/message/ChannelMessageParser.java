@@ -51,11 +51,13 @@ public abstract class ChannelMessageParser {
         if (StringUtils.isNotBlank(header)) {
             messagePieces.add(header + getLineSeparator());
         }
-        String commonTopicString = getCommonTopic(messageContentGroup);
+
+        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup);
+        String commonTopicString = getCommonTopic(messageContentGroup, nullableTopLevelAction);
         messagePieces.add(commonTopicString);
 
         for (ProviderMessageContent messageContent : messageContentGroup.getSubContent()) {
-            String componentSubTopic = getComponentSubTopic(messageContent);
+            String componentSubTopic = getComponentSubTopic(messageContent, nullableTopLevelAction);
             if (StringUtils.isNotBlank(componentSubTopic)) {
                 messagePieces.add(componentSubTopic + getLineSeparator());
             }
@@ -77,14 +79,24 @@ public abstract class ChannelMessageParser {
         return headerSeparator;
     }
 
-    public String getCommonTopic(MessageContentGroup messageContentGroup) {
-        return createLinkableItemString(messageContentGroup.getCommonTopic(), true) + getLineSeparator();
+    public String getCommonTopic(MessageContentGroup messageContent, ItemOperation nullableTopLevelAction) {
+        LinkableItem commonTopic = messageContent.getCommonTopic();
+        if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
+            commonTopic = new LinkableItem(commonTopic.getName(), commonTopic.getValue());
+        }
+        return createLinkableItemString(commonTopic, true) + getLineSeparator();
     }
 
-    public String getComponentSubTopic(ProviderMessageContent messageContent) {
-        return messageContent.getSubTopic()
-                   .map(item -> createLinkableItemString(item, true))
-                   .orElse("");
+    public String getComponentSubTopic(ProviderMessageContent messageContent, ItemOperation nullableTopLevelAction) {
+        Optional<LinkableItem> optionalSubTopic = messageContent.getSubTopic();
+        if (optionalSubTopic.isPresent()) {
+            LinkableItem subTopic = optionalSubTopic.get();
+            if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
+                subTopic = new LinkableItem(subTopic.getName(), subTopic.getValue());
+            }
+            return createLinkableItemString(subTopic, true);
+        }
+        return StringUtils.EMPTY;
     }
 
     public List<String> createComponentItemMessage(ProviderMessageContent messageContent) {
@@ -327,6 +339,16 @@ public abstract class ChannelMessageParser {
         return collection
                    .stream()
                    .findAny();
+    }
+
+    protected ItemOperation getNullableTopLevelAction(MessageContentGroup messageContentGroup) {
+        return messageContentGroup.getSubContent()
+                   .stream()
+                   .filter(ProviderMessageContent::isTopLevelActionOnly)
+                   .map(ProviderMessageContent::getAction)
+                   .flatMap(Optional::stream)
+                   .findAny()
+                   .orElse(null);
     }
 
 }
