@@ -67,9 +67,9 @@ class RoleTable extends Component {
         });
     }
 
-    onSave() {
+    async onSave() {
         const { role } = this.state;
-        this.props.saveRole(role);
+        await this.props.saveRole(role);
         this.setState({
             role: {
                 permissions: []
@@ -97,7 +97,7 @@ class RoleTable extends Component {
         this.props.clearFieldErrors();
     }
 
-    savePermissions(permission) {
+    async savePermissions(permission) {
         const { role, incrementalId } = this.state;
         const { permissions } = role;
         if (!permission.id) {
