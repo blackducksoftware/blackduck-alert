@@ -91,9 +91,15 @@ public class TaskManager {
         return scheduledTaskMap.keySet();
     }
 
-    public <T extends ScheduledTask> Collection<T> getTasksByClass(Class<T> clazz) {
-        List<?> taskList = scheduledTaskMap.values().stream()
-                               .filter(task -> task.getClass().equals(clazz))
+    /**
+     * @param classOrSuperclass A class object that a ScheduledTask may be assignable to
+     * @param <T>               A class that extends ScheduledTask
+     * @return All tasks assignable to the 'classOrSuperclass' parameter
+     */
+    public <T extends ScheduledTask> Collection<T> getTasksByClass(Class<T> classOrSuperclass) {
+        List<?> taskList = scheduledTaskMap.values()
+                               .stream()
+                               .filter(task -> classOrSuperclass.isAssignableFrom(task.getClass()))
                                .collect(Collectors.toList());
         return new ArrayList(taskList);
     }

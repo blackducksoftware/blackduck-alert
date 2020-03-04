@@ -212,7 +212,7 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
 
-                                '--hibernate.default_schema=ALERT',
+                                '--hibernate.default_schema=alert',
                                 '--spring.jpa.hibernate.ddl-auto=none',
                                 '--spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect',
                                 '--spring.datasource.username=sa',
