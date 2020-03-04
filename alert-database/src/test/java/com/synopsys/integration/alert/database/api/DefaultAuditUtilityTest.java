@@ -2,8 +2,10 @@ package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -22,6 +25,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -47,6 +51,66 @@ public class DefaultAuditUtilityTest {
         assertTrue(actualValue.isPresent());
         assertEquals(expectedLong, actualValue.get());
     }
+
+    @Test
+    public void findFirstByJobIdEmptyTest() {
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+
+        assertFalse(auditUtility.findFirstByJobId(UUID.randomUUID()).isPresent());
+    }
+
+    @Test
+    public void findFirstByJobIdNullTest() {
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(null, null, null, null, null, null);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
+
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+
+        UUID testUUID = UUID.randomUUID();
+        AuditJobStatusModel auditJobStatusModel = auditUtility.findFirstByJobId(testUUID).get();
+        String timeAuditCreated = auditJobStatusModel.getTimeAuditCreated();
+        String timeLastSent = auditJobStatusModel.getTimeLastSent();
+        String status = auditJobStatusModel.getStatus();
+
+        assertTrue(auditUtility.findFirstByJobId(testUUID).isPresent());
+        assertNull(timeAuditCreated);
+        assertNull(timeLastSent);
+        assertNull(status);
+    }
+
+    @Test
+    public void findFirstByJobIdNotNullTest() {
+        Date timeCreated = Date.from(Instant.now());
+        Date timeLastSent = Date.from(Instant.now().minusSeconds(600L));
+        AuditEntryStatus status = AuditEntryStatus.PENDING;
+        UUID testUUID = UUID.randomUUID();
+
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(testUUID, timeCreated, timeLastSent, status.name(), null, null);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
+        Mockito.when(contentConverter.getStringValue(Mockito.eq(timeCreated))).thenReturn(timeCreated.toString());
+        Mockito.when(contentConverter.getStringValue(Mockito.eq(timeLastSent))).thenReturn(timeLastSent.toString());
+
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+        AuditJobStatusModel auditJobStatusModel = auditUtility.findFirstByJobId(testUUID).get();
+
+        String testTimeAuditCreated = auditJobStatusModel.getTimeAuditCreated();
+        String testTimeLastSent = auditJobStatusModel.getTimeLastSent();
+        String testStatus = auditJobStatusModel.getStatus();
+
+        assertTrue(auditUtility.findFirstByJobId(testUUID).isPresent());
+        assertEquals(timeCreated.toString(), testTimeAuditCreated);
+        assertEquals(timeLastSent.toString(), testTimeLastSent);
+        assertEquals(status.getDisplayName(), testStatus);
+    }
+
+    //TODO: We should take a look at the tests below and see if we want to replace them with new tests.
 
     //TODO: Remove this test later
     @Test
