@@ -241,7 +241,13 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        return this.props.saveRole(permissionsData);
+        const saved = this.props.saveRole(permissionsData);
+        if (saved) {
+            this.setState({
+                permissionsData: {}
+            });
+        }
+        return saved;
     }
 
     onDeletePermissions(permissionsToDelete) {
