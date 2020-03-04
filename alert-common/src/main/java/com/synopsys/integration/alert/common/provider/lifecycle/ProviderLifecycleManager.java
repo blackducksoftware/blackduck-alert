@@ -80,7 +80,7 @@ public class ProviderLifecycleManager {
         }
 
         List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
-        unscheduleTasksForProviderConfig(provider, providerProperties.getConfigId());
+        unscheduleTasksForProviderConfig(providerProperties.getConfigId());
         for (ProviderTask task : providerTasks) {
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
@@ -91,15 +91,16 @@ public class ProviderLifecycleManager {
         return acceptedTasks;
     }
 
-    public void unscheduleTasksForProviderConfig(Provider provider, Long providerConfigId) {
+    public void unscheduleTasksForProviderConfig(Long providerConfigId) {
         logger.debug("Performing unscheduling tasks for provider config: id={}", providerConfigId);
 
-        List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class).stream()
+        List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class)
+                                       .stream()
                                        .filter(task -> task.getProviderProperties().getConfigId().equals(providerConfigId))
                                        .collect(Collectors.toList());
 
         for (ProviderTask task : tasks) {
-            unscheduleTask(task.getTaskName());
+            unscheduleTask(task);
         }
         logger.debug("Finished unscheduling tasks for provider config: id={}", providerConfigId);
     }
@@ -127,8 +128,8 @@ public class ProviderLifecycleManager {
         taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.getTaskName());
     }
 
-    private void unscheduleTask(String taskName) {
-        taskManager.unregisterTask(taskName);
+    private void unscheduleTask(ProviderTask task) {
+        taskManager.unregisterTask(task.getTaskName());
     }
 
 }

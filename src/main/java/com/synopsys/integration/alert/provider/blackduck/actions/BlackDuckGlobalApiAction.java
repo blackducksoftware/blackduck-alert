@@ -78,7 +78,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         String blackDuckGlobalConfigName = fieldValueModel.getValue().orElse("");
 
         Long configId = Long.parseLong(Objects.requireNonNullElse(fieldModel.getId(), "-1"));
-        providerLifecycleManager.unscheduleTasksForProviderConfig(blackDuckProvider, configId);
+        providerLifecycleManager.unscheduleTasksForProviderConfig(configId);
 
         List<ProviderProject> blackDuckProjects = providerDataAccessor.getProjectsByProviderConfigName(blackDuckGlobalConfigName);
         providerDataAccessor.deleteProjects(blackDuckProjects);
