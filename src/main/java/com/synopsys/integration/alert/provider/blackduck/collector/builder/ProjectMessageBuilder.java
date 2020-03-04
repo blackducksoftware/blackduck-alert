@@ -57,20 +57,14 @@ public class ProjectMessageBuilder implements BlackDuckMessageBuilder<ProjectNot
 
     @Override
     public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
-
         ProjectNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
-
-        String projectUrl = null;
-        if (!projectLevelAction.equals(ItemOperation.DELETE)) {
-            projectUrl = notificationContent.getProject();
-        }
 
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), projectUrl)
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
                 .applyAction(projectLevelAction);
 
             return List.of(messageContentBuilder.build());
