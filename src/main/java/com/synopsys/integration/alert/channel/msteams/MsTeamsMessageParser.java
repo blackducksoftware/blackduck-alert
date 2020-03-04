@@ -98,7 +98,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     public MsTeamsMessage createMsTeamsMessage(MessageContentGroup messageContentGroup) {
         String header = createHeader(messageContentGroup);
-        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup);
+        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup).orElse(null);
         String commonTopic = getCommonTopic(messageContentGroup, nullableTopLevelAction);
         List<MsTeamsSection> messagePieces = createMessageParts(messageContentGroup);
         return new MsTeamsMessage(header, commonTopic, messagePieces);

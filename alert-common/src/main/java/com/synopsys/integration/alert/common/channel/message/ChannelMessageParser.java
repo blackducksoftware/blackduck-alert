@@ -30,6 +30,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -52,7 +54,7 @@ public abstract class ChannelMessageParser {
             messagePieces.add(header + getLineSeparator());
         }
 
-        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup);
+        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup).orElse(null);
         String commonTopicString = getCommonTopic(messageContentGroup, nullableTopLevelAction);
         messagePieces.add(commonTopicString);
 
@@ -79,7 +81,7 @@ public abstract class ChannelMessageParser {
         return headerSeparator;
     }
 
-    public String getCommonTopic(MessageContentGroup messageContent, ItemOperation nullableTopLevelAction) {
+    public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
         LinkableItem commonTopic = messageContent.getCommonTopic();
         if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
             commonTopic = new LinkableItem(commonTopic.getName(), commonTopic.getValue());
@@ -87,7 +89,7 @@ public abstract class ChannelMessageParser {
         return createLinkableItemString(commonTopic, true) + getLineSeparator();
     }
 
-    public String getComponentSubTopic(ProviderMessageContent messageContent, ItemOperation nullableTopLevelAction) {
+    public String getComponentSubTopic(ProviderMessageContent messageContent, @Nullable ItemOperation nullableTopLevelAction) {
         Optional<LinkableItem> optionalSubTopic = messageContent.getSubTopic();
         if (optionalSubTopic.isPresent()) {
             LinkableItem subTopic = optionalSubTopic.get();
@@ -341,14 +343,13 @@ public abstract class ChannelMessageParser {
                    .findAny();
     }
 
-    protected ItemOperation getNullableTopLevelAction(MessageContentGroup messageContentGroup) {
+    protected Optional<ItemOperation> getNullableTopLevelAction(MessageContentGroup messageContentGroup) {
         return messageContentGroup.getSubContent()
                    .stream()
                    .filter(ProviderMessageContent::isTopLevelActionOnly)
                    .map(ProviderMessageContent::getAction)
                    .flatMap(Optional::stream)
-                   .findAny()
-                   .orElse(null);
+                   .findAny();
     }
 
 }
