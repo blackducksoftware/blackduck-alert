@@ -216,7 +216,7 @@ class UserTable extends Component {
     render() {
         const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0 || this.state.user.confirmPasswordError && this.state.user.confirmPasswordError.length > 0;
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0 || this.state.user['confirmPasswordError'] && this.state.user['confirmPasswordError'].length > 0;
         return (
             <div>
                 <div>
