@@ -49,4 +49,5 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
     public BlackDuckProperties createProperties(Long configId, FieldAccessor fieldAccessor) {
         return new BlackDuckProperties(configId, gson, alertProperties, proxyManager, fieldAccessor);
     }
+
 }

@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.response.CurrentVersionView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -70,7 +71,9 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
         String blackDuckVersion = PhoneHomeRequestBody.Builder.UNKNOWN_ID;
         try {
             descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId());
-            BlackDuckProperties blackDuckProperties = provider.createProperties(configurationModel);
+            StatefulProvider statefulProvider = provider.createStatefulProvider(configurationModel);
+            BlackDuckProperties blackDuckProperties = (BlackDuckProperties) statefulProvider.getProperties();
+
             Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
             if (blackDuckHttpClientOptional.isPresent()) {
                 BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
@@ -96,4 +99,5 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
         phoneHomeBuilder.setProductVersion(blackDuckVersion);
         return phoneHomeBuilder;
     }
+
 }

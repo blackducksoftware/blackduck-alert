@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.issuetracker.common.IssueOperation;
 import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
 import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;

@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.provider;
 
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 
 public abstract class ProviderContent {
@@ -37,11 +36,11 @@ public abstract class ProviderContent {
     }
 
     public Set<ProviderNotificationType> getContentTypes() {
-        return ImmutableSet.copyOf(supportedNotificationTypes);
+        return Set.copyOf(supportedNotificationTypes);
     }
 
     public Set<ProcessingType> getSupportedProcessingTypes() {
-        return ImmutableSet.copyOf(supportedProcessingTypes);
+        return Set.copyOf(supportedProcessingTypes);
     }
 
 }

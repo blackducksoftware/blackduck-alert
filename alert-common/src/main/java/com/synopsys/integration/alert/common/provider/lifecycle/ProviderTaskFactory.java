@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 
 public interface ProviderTaskFactory {
     List<ProviderTask> createTasks(ProviderProperties providerProperties);

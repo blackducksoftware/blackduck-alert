@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
@@ -88,13 +88,14 @@ public class NotificationProcessor {
 
         Provider provider = providerKeyToProvider.get(job.getProviderName());
         ConfigurationModel providerConfig = retrieveProviderConfig(job);
-        ProviderProperties providerProperties = provider.createProperties(providerConfig);
-        ProviderDistributionFilter distributionFilter = provider.createDistributionFilter(providerProperties);
+        StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
+
+        ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
         List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notifications);
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
         if (!filteredNotifications.isEmpty()) {
-            ProviderMessageContentCollector messageContentCollector = provider.createMessageContentCollector(providerProperties);
+            ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
             return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
         }
         return List.of();

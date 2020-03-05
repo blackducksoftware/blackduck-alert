@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 
 public abstract class ProviderPropertiesFactory<T extends ProviderProperties> {
     public T createProperties(ConfigurationModel configurationModel) {
