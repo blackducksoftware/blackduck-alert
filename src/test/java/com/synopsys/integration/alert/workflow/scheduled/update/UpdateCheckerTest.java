@@ -13,6 +13,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -25,189 +27,204 @@ import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateMode
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class UpdateCheckerTest {
+    private static final String SUFFIX_SNAPSHOT = "SNAPSHOT";
+    private static final String SUFFIX_SIGQA_1 = "SIGQA1";
     private final Gson gson = new Gson();
 
     @Test
     public void testAlertIsNewer() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "0.1.0", null, null);
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "0.1.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
     @Test
     public void testAlertIsNewerPatch() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, "1.0.0", null, null);
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, "1.0.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
     @Test
     public void testAlertIsOlder() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.1", null, null);
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.1", null, null);
 
         assertTrue(updateModel.getUpdatable());
     }
 
     @Test
     public void testAlertIsSame() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0", null, null);
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
     @Test
     public void testAlertIsOlderDockerPatch() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
 
         assertTrue(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsNewerSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0", null, null);
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, null, "0.1.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsNewerSnapshotPatch() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-SNAPSHOT", null, "1.0.0", null, null);
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerSnapshotPatch(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-" + versionSuffix, null, "1.0.0", null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsNewerButCloseSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerButCloseSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
         assertTrue(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsOlderButCloseSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderButCloseSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
-
-        assertTrue(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsOlderSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
         assertTrue(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsOlderSnapshotDockerPatch() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0.1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
-
-        assertTrue(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsNewerBothSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", null, "0.1.0-SNAPSHOT", null, null);
-
-        assertFalse(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsNewerDateBothSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, -80);
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
-
-        assertFalse(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsNewerButCloseBothSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
-
-        assertFalse(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsOlderButCloseBothSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
-
-        assertFalse(updateModel.getUpdatable());
-    }
-
-    @Test
-    public void testAlertIsOlderBothSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
-
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
-
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-SNAPSHOT", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
         assertTrue(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsOlderButCloseDockerSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderSnapshotDockerPatch(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0.1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerBothSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, null, "0.1.0-" + versionSuffix, null, null);
 
         assertFalse(updateModel.getUpdatable());
     }
 
-    @Test
-    public void testAlertIsOlderDockerSnapshot() {
-        final UpdateChecker updateChecker = getEmptyUpdateChecker();
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerDateBothSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        final Date alertTime = new Date();
-        final Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -80);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-SNAPSHOT", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsNewerButCloseBothSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderButCloseBothSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderBothSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertTrue(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderButCloseDockerSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
+
+        assertFalse(updateModel.getUpdatable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    public void testAlertIsOlderDockerSnapshot(String versionSuffix) {
+        UpdateChecker updateChecker = getEmptyUpdateChecker();
+
+        Date alertTime = new Date();
+        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+
+        UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
         assertFalse(updateModel.getUpdatable());
     }
@@ -218,20 +235,20 @@ public class UpdateCheckerTest {
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
     public void getUpdateModelTest() {
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
-        final DefaultSystemStatusUtility defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
+        DefaultSystemStatusUtility defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
-        final AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility);
-        final UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
+        AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility);
+        UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
-        final UpdateModel updateModel = updateChecker.getUpdateModel();
+        UpdateModel updateModel = updateChecker.getUpdateModel();
 
         assertNotNull(updateModel);
     }
