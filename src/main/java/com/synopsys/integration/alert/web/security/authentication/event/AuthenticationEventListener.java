@@ -56,7 +56,11 @@ public class AuthenticationEventListener extends MessageReceiver<AlertAuthentica
             try {
                 Optional<UserModel> userModel = userAccessor.getUser(user.getName());
                 if (userModel.isPresent() && user.isExternal()) {
-                    userAccessor.updateUser(user, true);
+                    UserModel model = userModel.get();
+                    UserModel updatedUser = UserModel.existingUser(
+                        model.getId(), user.getName(), user.getPassword(), user.getEmailAddress(),
+                        user.getAuthenticationType(), user.getRoles(), user.isEnabled());
+                    userAccessor.updateUser(updatedUser, true);
                 } else {
                     userAccessor.addUser(user, true);
                 }
