@@ -36,10 +36,10 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
-    private static final String LABEL_BLACKDUCK_NEXT_RUN = "Collecting Black Duck data in";
-    private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily digest hour of day";
+    private static final String LABEL_BLACKDUCK_NEXT_RUN = "Collecting Black Duck Data In";
+    private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily Digest Hour Of Day";
     private static final String LABEL_DAILY_PROCESSOR_NEXT_RUN = "Daily Digest Cron Next Run";
-    private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge data frequency in days";
+    private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge Data Frequency In Days";
     private static final String LABEL_PURGE_DATA_NEXT_RUN = "Purge Cron Next Run";
 
     private static final String ACCUMULATOR_NEXT_RUN_DESCRIPTION = "By default, Black Duck collects data every 60 seconds. This value indicates the number of seconds until the next time Black Duck pulls data.";
