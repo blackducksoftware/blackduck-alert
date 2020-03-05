@@ -34,7 +34,8 @@ class PermissionTable extends Component {
 
         this.state = {
             permissionsData: {},
-            errorMessage: null
+            errorMessage: null,
+            saveInProgress: false
         };
     }
 
@@ -233,7 +234,10 @@ class PermissionTable extends Component {
         );
     }
 
-    onSavePermissions() {
+    async onSavePermissions() {
+        await this.setState({
+            saveInProgress: true
+        });
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             this.setState({
@@ -241,7 +245,16 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        return this.props.saveRole(permissionsData);
+        const saved = this.props.saveRole(permissionsData);
+        if (saved) {
+            this.setState({
+                permissionsData: {}
+            });
+        }
+        await this.setState({
+            saveInProgress: false
+        });
+        return saved;
     }
 
     onDeletePermissions(permissionsToDelete) {
@@ -252,12 +265,12 @@ class PermissionTable extends Component {
 
     render() {
         const { canCreate, canDelete, inProgress, fetching, nestedInModal } = this.props;
-
+        const savingInProgress = inProgress || this.state.saveInProgress;
         return (
             <div>
                 <TableDisplay
                     modalTitle="Role Permissions"
-                    inProgress={inProgress}
+                    inProgress={savingInProgress}
                     fetching={fetching}
                     tableNewButtonLabel="Add"
                     tableDeleteButtonLabel="Remove"
