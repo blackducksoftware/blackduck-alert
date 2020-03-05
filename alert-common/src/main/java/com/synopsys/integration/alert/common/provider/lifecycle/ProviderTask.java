@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.provider.lifecycle;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 public abstract class ProviderTask extends ScheduledTask {

@@ -36,19 +36,19 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private ProviderLifecycleManager providerLifecycleManager;
+    private ProviderSchedulingManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
 
-    public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderLifecycleManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
+    public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderSchedulingManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
         ConfigurationAccessor configurationAccessor) {
         this.blackDuckProvider = blackDuckProvider;
         this.providerLifecycleManager = providerLifecycleManager;

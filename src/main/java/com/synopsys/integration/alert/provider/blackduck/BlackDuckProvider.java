@@ -34,7 +34,8 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.MessageContentCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
@@ -52,7 +53,7 @@ import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocation
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 
 @Component
-public class BlackDuckProvider extends Provider<BlackDuckProperties> {
+public class BlackDuckProvider extends Provider {
     private final DistributionFilterFactory distributionFilterFactory;
     private final MessageContentCollectorFactory messageContentCollectorFactory;
     private final BlackDuckPropertiesFactory propertiesFactory;
@@ -71,23 +72,19 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
     }
 
     @Override
-    public List<ProviderTask> createProviderTasks(BlackDuckProperties providerProperties) {
-        return taskFactory.createTasks(providerProperties);
+    public boolean validate(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
+        return validator.validate(blackDuckProperties);
     }
 
     @Override
-    public BlackDuckProperties createProperties(ConfigurationModel configurationModel) {
-        return propertiesFactory.createProperties(configurationModel);
-    }
+    public StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
+        List<ProviderTask> tasks = taskFactory.createTasks(blackDuckProperties);
+        ProviderDistributionFilter distributionFilter = distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
+        BlackDuckMessageContentCollector messageContentCollector = messageContentCollectorFactory.createCollector(blackDuckProperties);
 
-    @Override
-    public ProviderDistributionFilter createDistributionFilter(BlackDuckProperties blackDuckProperties) {
-        return distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
-    }
-
-    @Override
-    public ProviderMessageContentCollector createMessageContentCollector(BlackDuckProperties blackDuckProperties) {
-        return messageContentCollectorFactory.createCollector(blackDuckProperties);
+        return StatefulProvider.create(getKey(), configurationModel, tasks, blackDuckProperties, distributionFilter, messageContentCollector);
     }
 
     @Override
@@ -105,9 +102,4 @@ public class BlackDuckProvider extends Provider<BlackDuckProperties> {
         return new ProviderNotificationClassMap(notificationTypeToContentClass);
     }
 
-    @Override
-    public boolean validate(ConfigurationModel configurationModel) {
-        BlackDuckProperties blackDuckProperties = createProperties(configurationModel);
-        return validator.validate(blackDuckProperties);
-    }
 }

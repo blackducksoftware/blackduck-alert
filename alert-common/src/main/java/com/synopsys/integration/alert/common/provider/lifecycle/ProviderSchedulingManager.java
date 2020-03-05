@@ -37,20 +37,20 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderProperties;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
-public class ProviderLifecycleManager {
-    private final Logger logger = LoggerFactory.getLogger(ProviderLifecycleManager.class);
+public class ProviderSchedulingManager {
+    private final Logger logger = LoggerFactory.getLogger(ProviderSchedulingManager.class);
 
     private List<Provider> providers;
     private TaskManager taskManager;
     private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public ProviderLifecycleManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
+    public ProviderSchedulingManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
         this.providers = providers;
         this.taskManager = taskManager;
         this.configurationAccessor = configurationAccessor;
@@ -71,23 +71,27 @@ public class ProviderLifecycleManager {
     }
 
     public List<ProviderTask> scheduleTasksForProviderConfig(Provider provider, ConfigurationModel providerConfig) throws AlertException {
-        logger.debug("Performing scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
+        return scheduleTasksForProviderConfig(statefulProvider);
+    }
+
+    public List<ProviderTask> scheduleTasksForProviderConfig(StatefulProvider statefulProvider) throws AlertException {
+        logger.debug("Performing scheduling tasks for config with id {} and provider {}", statefulProvider.getConfigId(), statefulProvider.getKey().getDisplayName());
         List<ProviderTask> acceptedTasks = new ArrayList<>();
 
-        ProviderProperties providerProperties = provider.createProperties(providerConfig);
-        if (!providerProperties.isConfigEnabled()) {
-            throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", providerProperties.getConfigName()));
+        if (!statefulProvider.isConfigEnabled()) {
+            throw new AlertException(String.format("The provider configuration '%s' cannot have tasks scheduled while it is disabled.", statefulProvider.getConfigName()));
         }
 
-        List<ProviderTask> providerTasks = provider.createProviderTasks(providerProperties);
-        unscheduleTasksForProviderConfig(providerProperties.getConfigId());
+        List<ProviderTask> providerTasks = statefulProvider.getTasks();
+        unscheduleTasksForProviderConfig(statefulProvider.getConfigId());
         for (ProviderTask task : providerTasks) {
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
                 acceptedTasks.add(task);
             }
         }
-        logger.debug("Finished scheduling tasks for config with id {} and descriptor id {}", providerConfig.getConfigurationId(), providerConfig.getDescriptorId());
+        logger.debug("Finished scheduling tasks for config with id {} and descriptor id {}", statefulProvider.getConfigId(), statefulProvider.getConfigId());
         return acceptedTasks;
     }
 
@@ -108,13 +112,13 @@ public class ProviderLifecycleManager {
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
         List<ProviderTask> initializedTasks = new ArrayList<>();
         for (ConfigurationModel providerConfig : providerConfigurations) {
-            ProviderProperties properties = provider.createProperties(providerConfig);
+            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
             try {
-                if (properties.isConfigEnabled()) {
+                if (statefulProvider.isConfigEnabled()) {
                     List<ProviderTask> initializedTasksForConfig = scheduleTasksForProviderConfig(provider, providerConfig);
                     initializedTasks.addAll(initializedTasksForConfig);
                 } else {
-                    logger.debug("The provider configuration '{}' was disabled. No tasks will be scheduled for this config.", properties.getConfigName());
+                    logger.debug("The provider configuration '{}' was disabled. No tasks will be scheduled for this config.", statefulProvider.getConfigName());
                 }
             } catch (AlertException e) {
                 logger.error("Something went wrong while attempting to schedule provider tasks", e);

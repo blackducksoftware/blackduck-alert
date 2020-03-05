@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
@@ -79,8 +80,11 @@ public class SystemValidatorTest {
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.empty());
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
+
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(provider.createProperties(Mockito.any())).thenReturn(blackDuckProperties);
+        Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
 
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
@@ -95,8 +99,11 @@ public class SystemValidatorTest {
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443"));
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
+
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(provider.createProperties(Mockito.any())).thenReturn(blackDuckProperties);
+        Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
 
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
@@ -116,10 +123,12 @@ public class SystemValidatorTest {
         BlackDuckServerConfig serverConfig = Mockito.mock(BlackDuckServerConfig.class);
         Mockito.when(serverConfig.canConnect(Mockito.any(IntLogger.class))).thenReturn(false);
         Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(Optional.of(serverConfig));
-
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(provider.createProperties(Mockito.any())).thenReturn(blackDuckProperties);
+        Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
 
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
         blackDuckValidator.validate(blackDuckProperties);
@@ -141,8 +150,11 @@ public class SystemValidatorTest {
         Mockito.when(serverConfig.canConnect(Mockito.any(IntLogger.class))).thenReturn(true);
         Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(Optional.of(serverConfig));
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(provider.createProperties(Mockito.any())).thenReturn(blackDuckProperties);
+        Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
 
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
         blackDuckValidator.validate(blackDuckProperties);
@@ -175,8 +187,11 @@ public class SystemValidatorTest {
         BlackDuckServerConfig serverConfig = Mockito.mock(BlackDuckServerConfig.class);
         Mockito.when(serverConfig.canConnect(Mockito.any(IntLogger.class))).thenReturn(false);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        Mockito.when(provider.createProperties(Mockito.any())).thenReturn(blackDuckProperties);
+        Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
 
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
         blackDuckValidator.validate(blackDuckProperties);

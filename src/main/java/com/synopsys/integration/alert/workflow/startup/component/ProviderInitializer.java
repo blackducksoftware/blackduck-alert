@@ -26,15 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.lifecycle.ProviderLifecycleManager;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 
 @Component
 @Order(60)
 public class ProviderInitializer extends StartupComponent {
-    private final ProviderLifecycleManager providerLifecycleManager;
+    private final ProviderSchedulingManager providerLifecycleManager;
 
     @Autowired
-    public ProviderInitializer(ProviderLifecycleManager providerLifecycleManager) {
+    public ProviderInitializer(ProviderSchedulingManager providerLifecycleManager) {
         this.providerLifecycleManager = providerLifecycleManager;
     }
 
