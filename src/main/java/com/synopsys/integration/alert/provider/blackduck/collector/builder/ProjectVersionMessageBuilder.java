@@ -61,19 +61,12 @@ public class ProjectVersionMessageBuilder implements BlackDuckMessageBuilder<Pro
         ProjectVersionNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
 
-        String projectUrl = null;
-        String projectVersionUrl = null;
-        if (!projectLevelAction.equals(ItemOperation.DELETE)) {
-            projectUrl = notificationContent.getProject();
-            projectVersionUrl = notificationContent.getProjectVersion();
-        }
-
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), projectVersionUrl)
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
                 .applyAction(projectLevelAction);
             return List.of(messageContentBuilder.build());
         } catch (AlertException e) {

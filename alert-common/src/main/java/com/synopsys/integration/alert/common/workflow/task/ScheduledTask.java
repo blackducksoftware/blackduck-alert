@@ -69,9 +69,9 @@ public abstract class ScheduledTask implements Runnable {
     @Override
     @Async
     public void run() {
-        logger.info("### {} Task Started...", taskName);
+        logger.info("### {} Task Started...", getTaskName());
         runTask();
-        logger.info("### {} Task Finished", taskName);
+        logger.info("### {} Task Finished", getTaskName());
     }
 
     public abstract void runTask();
@@ -81,14 +81,14 @@ public abstract class ScheduledTask implements Runnable {
             try {
                 CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
                 unscheduleTask();
-                logger.info("Scheduling {} with cron : {}", taskName, cron);
+                logger.info("Scheduling {} with cron : {}", getTaskName(), cron);
                 future = taskScheduler.schedule(this, cronTrigger);
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", taskName);
+                logger.info("Un-Scheduling {}", getTaskName());
                 unscheduleTask();
             }
         }
@@ -97,11 +97,11 @@ public abstract class ScheduledTask implements Runnable {
     public void scheduleExecutionAtFixedRate(long period) {
         if (period > 0) {
             unscheduleTask();
-            logger.info("Scheduling {} with fixed rate : {}", taskName, period);
+            logger.info("Scheduling {} with fixed rate : {}", getTaskName(), period);
             future = taskScheduler.scheduleAtFixedRate(this, period);
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling {}", taskName);
+                logger.info("Un-Scheduling {}", getTaskName());
                 unscheduleTask();
             }
         }
