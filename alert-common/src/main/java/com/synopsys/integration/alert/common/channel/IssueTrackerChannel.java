@@ -54,8 +54,14 @@ public abstract class IssueTrackerChannel extends DistributionChannel {
         IssueTrackerContext context = getIssueTrackerContext(event);
         IssueTrackerService service = getIssueTrackerService();
         List<IssueTrackerRequest> requests = createRequests(context, event);
-        IssueTrackerResponse result = service.sendRequests(context, requests);
-        return new MessageResult(result.getStatusMessage());
+        String statusMessage;
+        if (requests.isEmpty()) {
+            statusMessage = String.format("No requests to send to issue tracker: %s", descriptorKey.getDisplayName());
+        } else {
+            IssueTrackerResponse result = service.sendRequests(context, requests);
+            statusMessage = result.getStatusMessage();
+        }
+        return new MessageResult(statusMessage);
     }
 
     @Override
