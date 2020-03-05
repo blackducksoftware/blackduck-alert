@@ -73,8 +73,7 @@ class UserTable extends Component {
         const { name, value, type, checked } = e.target;
         const { user } = this.state;
 
-        const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser
