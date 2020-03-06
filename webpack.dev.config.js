@@ -64,9 +64,10 @@ module.exports = {
         historyApiFallback: true,
         disableHostCheck: true,
         proxy: [{
-            context: ['/api'],
-            target: 'https://localhost.local:8443',
-            secure: true,
+            context: ['/alert/api/**'],
+            target: 'https://localhost:8443/alert/api/',
+            secure: false,
+            changeOrigin: true,
             cookieDomainRewrite: {
                 '*': ''
             }
