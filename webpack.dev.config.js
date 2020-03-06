@@ -1,5 +1,7 @@
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
 
@@ -11,6 +13,7 @@ module.exports = {
         extensions: ['.js']
     },
     entry: ['@babel/polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
+    mode: 'development',
     devtool: 'sourcemaps',
     output: {
         path: buildDir,
@@ -21,32 +24,39 @@ module.exports = {
         rules: [{
             test: /\.js$/,
             exclude: /(node_modules)/,
-            use: ['babel-loader']
+            loader: 'babel-loader'
         }, {
             test: /\.(jpg|png|svg)$/,
+            exclude: /(node_modules)/,
             loader: 'file-loader',
             options: {
                 name: '[path][name].[ext]'
             }
         }, {
             test: /\.scss$/,
-            use: ['style-loader', 'css-loader', 'sass-loader']
+            loader: ExtractTextPlugin.extract('css-loader!sass-loader')
         }, {
             test: /\.css$/,
             include: /(node_modules)/,
-            use: ['style-loader', 'css-loader']
+            loader: ExtractTextPlugin.extract('css-loader')
         }, {
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+            loader: 'url-loader?limit=10000&mimetype=application/font-woff&name=fonts/[name].[ext]'
         }, {
             test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'file-loader'
+            loader: 'url-loader?limit=10000&name=fonts/[name].[ext]'
         }]
     },
-    plugins: [new HtmlWebpackPlugin({
-        favicon: 'src/main/resources/favicon.ico',
-        template: 'src/main/js/templates/index.html'
-    })],
+    plugins: [
+        new HtmlWebpackPlugin({
+            favicon: 'src/main/resources/favicon.ico',
+            template: 'src/main/js/templates/index.html',
+            xhtml: true
+        }),
+        new ExtractTextPlugin('css/style.css', {
+            allChunks: true
+        })
+    ],
     devServer: {
         hot: true,
         port: 9000,
@@ -55,8 +65,8 @@ module.exports = {
         disableHostCheck: true,
         proxy: [{
             context: ['/api'],
-            target: 'http://localhost.local:8080',
-            secure: false,
+            target: 'https://localhost.local:8443',
+            secure: true,
             cookieDomainRewrite: {
                 '*': ''
             }
