@@ -149,8 +149,9 @@ public class JobConfigActions {
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
-        Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        validateJobNameUnique(jobFieldModel);
         Set<String> descriptorNames = new HashSet<>();
+        Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
             descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
