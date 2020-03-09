@@ -45,6 +45,7 @@ class MainPage extends Component {
         } = component;
         if (!automaticallyGenerateUI) {
             return (<Route
+                exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
                 render={() => <DescriptorContentLoader componentNamespace={componentNamespace} />}
@@ -52,6 +53,7 @@ class MainPage extends Component {
         }
 
         return (<Route
+            exact
             key={urlName}
             path={`${uriPrefix}${urlName}`}
             render={() => <GlobalConfiguration key={name} descriptor={component} />}
@@ -84,9 +86,9 @@ class MainPage extends Component {
                 />
                 {providers}
                 {channels}
-                <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
+                <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
-                <Route path="/alert/general/about" component={AboutInfo} />
+                <Route exact path="/alert/general/about" component={AboutInfo} />
             </div>
         );
 

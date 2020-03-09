@@ -60,6 +60,7 @@ module.exports = {
     devServer: {
         contentBase: [jsDir, path.resolve(srcDir, 'css'), path.resolve(srcDir, 'img')],
         contentBasePublicPath: '/alert/',
+        https: true,
         hot: true,
         port: 9000,
         compress: true,
