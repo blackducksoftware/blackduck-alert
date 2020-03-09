@@ -189,13 +189,7 @@ public class JobConfigActions {
                 List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
 
                 boolean foundDuplicateName = jobs.stream()
-                                                 .filter(job -> {
-                                                     if (null != currentJobId) {
-                                                         return !job.getJobId().equals(currentJobId);
-                                                     } else {
-                                                         return true;
-                                                     }
-                                                 })
+                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
                                                  .flatMap(job -> job.getCopyOfConfigurations().stream())
                                                  .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
                                                  .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
@@ -209,6 +203,14 @@ public class JobConfigActions {
         }
         if (StringUtils.isNotBlank(error)) {
             throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
+        }
+    }
+
+    private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
+        if (null != currentJobId && null != configurationJobModel && null != configurationJobModel.getJobId()) {
+            return !configurationJobModel.getJobId().equals(currentJobId);
+        } else {
+            return true;
         }
     }
 
