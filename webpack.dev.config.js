@@ -71,12 +71,6 @@ module.exports = {
             target: 'https://localhost:8443',
             secure: false,
             changeOrigin: true,
-            /* TODO: may need to remove the headers */
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-                "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-            },
             cookieDomainRewrite: {
                 '*': ''
             },
