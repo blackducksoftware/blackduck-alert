@@ -1,65 +1,31 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const merge = require('webpack-merge');
+const commonConfig = require("./webpack.common.config.js");
+
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
 
-const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
-
-module.exports = {
-    resolve: {
-        modules: [path.resolve(__dirname, 'src', 'main', 'js'), 'node_modules'],
-        extensions: ['.js']
-    },
-    entry: ['@babel/polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
+module.exports = merge.smart(commonConfig, {
+    mode: 'development',
     devtool: 'sourcemaps',
-    output: {
-        path: buildDir,
-        filename: 'js/bundle.js',
-        publicPath: '/alert/'
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /(node_modules)/,
-            use: ['babel-loader']
-        }, {
-            test: /\.(jpg|png|svg)$/,
-            loader: 'file-loader',
-            options: {
-                name: '[path][name].[ext]'
-            }
-        }, {
-            test: /\.scss$/,
-            use: ['style-loader', 'css-loader', 'sass-loader']
-        }, {
-            test: /\.css$/,
-            include: /(node_modules)/,
-            use: ['style-loader', 'css-loader']
-        }, {
-            test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-        }, {
-            test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'file-loader'
-        }]
-    },
-    plugins: [new HtmlWebpackPlugin({
-        favicon: 'src/main/resources/favicon.ico',
-        template: 'src/main/js/templates/index.html'
-    })],
     devServer: {
+        contentBase: [jsDir, path.resolve(srcDir, 'css'), path.resolve(srcDir, 'img')],
+        contentBasePublicPath: '/alert/',
+        https: true,
         hot: true,
         port: 9000,
         compress: true,
         historyApiFallback: true,
         disableHostCheck: true,
         proxy: [{
-            context: ['/api'],
-            target: 'http://localhost.local:8080',
+            context: ['/alert/api/**'],
+            target: 'https://localhost:8443',
             secure: false,
+            changeOrigin: true,
             cookieDomainRewrite: {
                 '*': ''
-            }
+            },
+            logLevel: 'debug'
         }]
     }
-};
+});
