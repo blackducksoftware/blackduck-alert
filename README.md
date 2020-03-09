@@ -17,17 +17,17 @@ This application provides the ability to send notifications from a provider to v
 To compile the UI and create the jar file run:
 
 
-```
+```bash
 ./gradlew clean build
 ```
 To build the docker image:
 
-```
+```bash
 ./gradlew buildDockerImage
 ```
 To build the zip file containing the orchestration files for deployment:
 
-```
+```bash
 ./gradlew createDeploymentZip
 ```
 
@@ -37,19 +37,27 @@ This section describes running the server locally.
 #### Run Commands ####
 Execute the one of the following commands which will build the source code and then start the server:
 
-##### Without the Initial Settings Splash Screen #####
-```
-./gradlew runServer --nosplash
-```
-Note: The 'nosplash' option sets the encryption and default email address to default values.  With these items set the initial settings screen is not displayed because Alert is configured with its minimum default values.
-
-##### With the All Features ##### 
-```
+##### Run the Server Locally #####
+```bash
 ./gradlew runServer
 ```
+Note: The server will be running locally over: https://localhost:8443/alert
 
-#### Accessing the Server #### 
-You can access the Alert user interface at the following URL: https://localhost:8443/alert
+#### UI Development with Hot Module Replacement
+These commands will start a webpack dev server that can access the backend for rapid UI development.  
+The UI files will automatically be reloaded if there are changes through hot module replacement.
+
+##### 1. Start the Backend Server #####
+```bash
+./gradlew runServer
+```
+Note: The server will be running locally over: https://localhost:8443/alert
+
+##### 2. Start the webpack dev server #####
+```bash
+npm run start
+```
+Note: The webpack dev server will be running locally over: https://localhost:9000/alert 
 
 ## Where can I get the latest release? ##
 <!-- The comments following wrap around the project url string for parsing during the build. Do Not Remove -->
