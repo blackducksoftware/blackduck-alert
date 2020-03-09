@@ -207,7 +207,7 @@ public class JobConfigActions {
     }
 
     private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
-        if (null != currentJobId && null != configurationJobModel && null != configurationJobModel.getJobId()) {
+        if (null != currentJobId && null != configurationJobModel.getJobId()) {
             return !configurationJobModel.getJobId().equals(currentJobId);
         } else {
             return true;
