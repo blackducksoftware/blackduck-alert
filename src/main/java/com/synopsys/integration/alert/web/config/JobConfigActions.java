@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +128,7 @@ public class JobConfigActions {
 
     public JobFieldModel saveJob(JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
-        validateJobNameUnique(jobFieldModel);
+        validateJobNameUnique(null, jobFieldModel);
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -149,7 +151,7 @@ public class JobConfigActions {
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
-        validateJobNameUnique(jobFieldModel);
+        validateJobNameUnique(id, jobFieldModel);
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -172,20 +174,22 @@ public class JobConfigActions {
         return savedJobFieldModel;
     }
 
-    private void validateJobNameUnique(JobFieldModel jobFieldModel) throws AlertFieldException {
+    private void validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) throws AlertFieldException {
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            validateJobNameUnique(fieldModel);
+            validateJobNameUnique(currentJobId, fieldModel);
         }
     }
 
-    private void validateJobNameUnique(FieldModel fieldModel) throws AlertFieldException {
+    private void validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) throws AlertFieldException {
         Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
         String error = "";
         if (jobNameFieldOptional.isPresent()) {
             String jobName = jobNameFieldOptional.get().getValue().orElse(null);
             if (StringUtils.isNotBlank(jobName)) {
                 List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
+
                 boolean foundDuplicateName = jobs.stream()
+                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
                                                  .flatMap(job -> job.getCopyOfConfigurations().stream())
                                                  .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
                                                  .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
@@ -199,6 +203,14 @@ public class JobConfigActions {
         }
         if (StringUtils.isNotBlank(error)) {
             throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
+        }
+    }
+
+    private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
+        if (null != currentJobId && null != configurationJobModel.getJobId()) {
+            return !configurationJobModel.getJobId().equals(currentJobId);
+        } else {
+            return true;
         }
     }
 
