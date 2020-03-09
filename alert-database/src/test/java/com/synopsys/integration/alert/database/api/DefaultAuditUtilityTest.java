@@ -13,9 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -25,7 +30,11 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -85,8 +94,8 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void findFirstByJobIdNotNullTest() {
-        Date timeCreated = Date.from(Instant.now());
-        Date timeLastSent = Date.from(Instant.now().minusSeconds(600L));
+        Date timeCreated = Date.from(Instant.now().minusSeconds(600L));
+        Date timeLastSent = Date.from(Instant.now());
         AuditEntryStatus status = AuditEntryStatus.PENDING;
         UUID testUUID = UUID.randomUUID();
 
@@ -108,6 +117,58 @@ public class DefaultAuditUtilityTest {
         assertEquals(timeCreated.toString(), testTimeAuditCreated);
         assertEquals(timeLastSent.toString(), testTimeLastSent);
         assertEquals(status.getDisplayName(), testStatus);
+    }
+
+    @Test
+    public void getPageOfAuditEntriesTest() {
+        Integer pageNumber = 1;
+        int pageSize = 1;
+        String searchTerm = "testSearchTerm";
+        String sortField = "testSortField";
+        String sortOrder = "testSortOrder";
+        Boolean onlyShowSentNotifications = Boolean.TRUE;
+
+        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
+        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
+
+        Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
+
+        PageRequest pageRequest = Mockito.mock(PageRequest.class);
+        Mockito.when(notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder)).thenReturn(pageRequest);
+        String content = "contentString";
+
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", content, new Date(), new Date());
+        Pageable auditPageable = Mockito.mock(Pageable.class);
+        Mockito.when(auditPageable.getOffset()).thenReturn(pageNumber.longValue());
+        Mockito.when(auditPageable.getPageSize()).thenReturn(pageSize);
+        Page<AlertNotificationModel> auditPage = new PageImpl<>(List.of(alertNotificationModel), auditPageable, 1);
+        //We cannot change the correct pageable because it is overriden by the default method.
+        Page<AlertNotificationModel> spyAuditPage = Mockito.spy(auditPage);
+        Mockito.doReturn(pageNumber).when(spyAuditPage).getNumber();
+        Mockito.when(notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications)).thenReturn(spyAuditPage);
+
+        NotificationConfig notificationConfig = new NotificationConfig("3", "createdAtString", "providerString", 2L, "providerConfigNameString", "providerCreationTimeString", "notificationTypeString", content);
+        String overallStatus = "overallStatusString";
+        String lastSent = "lastSentString";
+        AuditEntryModel auditEntryModel = new AuditEntryModel("2", notificationConfig, List.of(), overallStatus, lastSent);
+        Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter = (AlertNotificationModel notificationModel) -> auditEntryModel;
+
+        AlertPagedModel<AuditEntryModel> alertPagedModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, notificationToAuditEntryConverter);
+
+        assertEquals(1, alertPagedModel.getTotalPages());
+        assertEquals(pageNumber.intValue(), alertPagedModel.getCurrentPage());
+        assertEquals(pageSize, alertPagedModel.getPageSize());
+        assertEquals(1, alertPagedModel.getContent().size());
+
+        AuditEntryModel auditContentTest = alertPagedModel.getContent().stream().findFirst().orElse(null);
+
+        assertEquals(auditEntryModel.getId(), auditContentTest.getId());
+        assertEquals(notificationConfig, auditContentTest.getNotification());
+        assertEquals(0, auditContentTest.getJobs().size());
+        assertEquals(overallStatus, auditContentTest.getOverallStatus());
+        assertEquals(lastSent, auditContentTest.getLastSent());
     }
 
     //TODO: We should take a look at the tests below and see if we want to replace them with new tests.
