@@ -121,7 +121,7 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void getPageOfAuditEntriesTest() {
-        Integer pageNumber = 1;
+        Integer pageNumber = 0;
         int pageSize = 1;
         String searchTerm = "testSearchTerm";
         String sortField = "testSortField";
@@ -133,7 +133,6 @@ public class DefaultAuditUtilityTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
 
         Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.empty());
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
 
         PageRequest pageRequest = Mockito.mock(PageRequest.class);
         Mockito.when(notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder)).thenReturn(pageRequest);
@@ -144,10 +143,7 @@ public class DefaultAuditUtilityTest {
         Mockito.when(auditPageable.getOffset()).thenReturn(pageNumber.longValue());
         Mockito.when(auditPageable.getPageSize()).thenReturn(pageSize);
         Page<AlertNotificationModel> auditPage = new PageImpl<>(List.of(alertNotificationModel), auditPageable, 1);
-        //We cannot change the correct pageable because it is overriden by the default method.
-        Page<AlertNotificationModel> spyAuditPage = Mockito.spy(auditPage);
-        Mockito.doReturn(pageNumber).when(spyAuditPage).getNumber();
-        Mockito.when(notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications)).thenReturn(spyAuditPage);
+        Mockito.when(notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications)).thenReturn(auditPage);
 
         NotificationConfig notificationConfig = new NotificationConfig("3", "createdAtString", "providerString", 2L, "providerConfigNameString", "providerCreationTimeString", "notificationTypeString", content);
         String overallStatus = "overallStatusString";
@@ -155,6 +151,8 @@ public class DefaultAuditUtilityTest {
         AuditEntryModel auditEntryModel = new AuditEntryModel("2", notificationConfig, List.of(), overallStatus, lastSent);
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter = (AlertNotificationModel notificationModel) -> auditEntryModel;
 
+        //Starting Test
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
         AlertPagedModel<AuditEntryModel> alertPagedModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, notificationToAuditEntryConverter);
 
         assertEquals(1, alertPagedModel.getTotalPages());
