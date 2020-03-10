@@ -1,4 +1,5 @@
 import {
+    CERTIFICATES_CLEAR_FIELD_ERRORS,
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
     CERTIFICATES_DELETING,
@@ -77,16 +78,22 @@ function deletingCertificateError({ message, errors }) {
     };
 }
 
+function clearFieldErrors() {
+    return {
+        type: CERTIFICATES_CLEAR_FIELD_ERRORS
+    };
+}
+
 export function fetchCertificates() {
     return (dispatch, getState) => {
-        dispatch(CERTIFICATES_FETCHING_ALL);
+        dispatch(fetchingAllCertificates());
         const { csrfToken } = getState().session;
         const request = RequestUtilities.createReadRequest(CERTIFICATES_API_URL, csrfToken);
         request.then((response) => {
             if (response.ok) {
                 response.json()
                 .then((jsonArray) => {
-                    dispatch(fetchCertificates(jsonArray));
+                    dispatch(fetchedAllCertificates(jsonArray));
                 });
             } else {
                 switch (response.status) {
@@ -121,7 +128,8 @@ export function saveCertificate(certificate) {
         const { csrfToken } = getState().session;
         let request;
         if (id) {
-            request = RequestUtilities.createUpdateRequest(CERTIFICATES_API_URL, csrfToken, id, certificate);
+            const url = CERTIFICATES_API_URL.concat(`/${id}`);
+            request = RequestUtilities.createUpdateRequest(url, csrfToken, certificate);
         } else {
             request = RequestUtilities.createPostRequest(CERTIFICATES_API_URL, csrfToken, certificate);
         }
@@ -177,5 +185,11 @@ export function deleteCertificate(certificateId) {
         })
         .then(() => dispatch(fetchUsers()))
         .catch(console.error);
+    };
+}
+
+export function clearCertificateFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

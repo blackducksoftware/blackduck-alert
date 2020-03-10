@@ -1,4 +1,5 @@
 import {
+    CERTIFICATES_CLEAR_FIELD_ERRORS,
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
     CERTIFICATES_DELETING,
@@ -19,6 +20,7 @@ const initialState = {
     certificateFetchError: '',
     certificateSaveError: null,
     certificateDeleteError: null,
+    fieldErrors: {}
 };
 
 const certificates = (state = initialState, action) => {
@@ -27,12 +29,14 @@ const certificates = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                certificateDeleteError: action.certificateDeleteError
+                certificateDeleteError: action.certificateDeleteError,
+                fieldErrors: action.errors || {}
             });
         case CERTIFICATES_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: true
+                deleteSuccess: true,
+                fieldErrors: {}
             });
         case CERTIFICATES_DELETING:
             return Object.assign({}, state, {
@@ -64,18 +68,26 @@ const certificates = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                certificateSaveError: action.certificateSaveError
+                certificateSaveError: action.certificateSaveError,
+                fieldErrors: action.errors || {}
             });
         case CERTIFICATES_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
-                deleteSuccess: false
+                deleteSuccess: false,
+                fieldErrors: {}
             });
         case CERTIFICATES_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false
             });
+        case CERTIFICATES_CLEAR_FIELD_ERRORS: {
+            return Object.assign({}, state, {
+                certificateDeleteError: null,
+                fieldErrors: {}
+            });
+        }
         case SERIALIZE:
             return initialState;
 
