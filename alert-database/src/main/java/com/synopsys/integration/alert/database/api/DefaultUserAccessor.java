@@ -207,7 +207,7 @@ public class DefaultUserAccessor implements UserAccessor {
             AuthenticationType authenticationType = authenticationTypeOptional.get();
             if (AuthenticationType.DATABASE != authenticationType) {
                 String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-                throw new AlertForbiddenOperationException(String.format("The '%s' user is from an external system and cannot be deleted", userIdentifier));
+                throw new AlertForbiddenOperationException(String.format("The '%s' user is from an external system and cannot be deleted.", userIdentifier));
             }
         }
         if (!RESERVED_USER_IDS.contains(userId)) {
@@ -215,7 +215,7 @@ public class DefaultUserAccessor implements UserAccessor {
             userRepository.deleteById(userId);
         } else {
             String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userIdentifier));
+            throw new AlertForbiddenOperationException(String.format("The '%s' user is reserved and cannot be deleted.", userIdentifier));
         }
     }
 
