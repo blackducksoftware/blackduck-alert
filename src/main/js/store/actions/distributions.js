@@ -155,20 +155,20 @@ export function deleteDistributionJob(job) {
                 dispatch(deletingJobConfigSuccess(jobId));
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(jobDeleteError(data.message));
-                            case 401:
-                                dispatch(jobDeleteError(data.message));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 412:
-                                return dispatch(jobDeleteError(data.message));
-                            default: {
-                                return dispatch(jobDeleteError(data.message, null));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 400:
+                            return dispatch(jobDeleteError(data.message));
+                        case 401:
+                            dispatch(jobDeleteError(data.message));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 412:
+                            return dispatch(jobDeleteError(data.message));
+                        default: {
+                            return dispatch(jobDeleteError(data.message, null));
                         }
-                    });
+                    }
+                });
             }
         }).catch(console.error);
     };
@@ -200,7 +200,6 @@ export function fetchDistributionJobs() {
                     case 404:
                         dispatch(fetchingAllJobsNoneFound());
                         break;
-                    case 403:
                     default:
                         response.json().then((json) => {
                             let message = '';
@@ -237,7 +236,6 @@ export function fetchJobsValidationResults() {
             } else {
                 switch (response.status) {
                     case 401:
-                    case 403:
                         dispatch(verifyLoginByStatus(response.status));
                         break;
                     default:

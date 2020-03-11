@@ -91,35 +91,34 @@ export function fetchUsers() {
                 'Content-Type': 'application/json'
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json()
-                        .then((jsonArray) => {
-                            dispatch(fetchedAllUsers(jsonArray));
+        .then((response) => {
+            if (response.ok) {
+                response.json()
+                .then((jsonArray) => {
+                    dispatch(fetchedAllUsers(jsonArray));
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    default:
+                        response.json()
+                        .then((json) => {
+                            let message = '';
+                            if (json && json.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = json.message.toString();
+                            }
+                            dispatch(fetchingAllUsersError(message));
                         });
-                } else {
-                    switch (response.status) {
-                        case 401:
-                        case 403:
-                            dispatch(verifyLoginByStatus(response.status));
-                            break;
-                        default:
-                            response.json()
-                                .then((json) => {
-                                    let message = '';
-                                    if (json && json.message) {
-                                        // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                        message = json.message.toString();
-                                    }
-                                    dispatch(fetchingAllUsersError(message));
-                                });
-                    }
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-                dispatch(fetchingAllUsersError(error));
-            });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(fetchingAllUsersError(error));
+        });
     };
 }
 
@@ -137,26 +136,26 @@ export function saveUser(user) {
         request.then((response) => {
             if (response.ok) {
                 response.json()
-                    .then(() => {
-                        dispatch(savedUser());
-                    });
+                .then(() => {
+                    dispatch(savedUser());
+                });
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(saveUserError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(saveUserError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(saveUserError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 400:
+                        default: {
+                            return dispatch(saveUserError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchUsers()))
-            .catch(console.error);
+        .then(() => dispatch(fetchUsers()))
+        .catch(console.error);
     };
 }
 
@@ -170,21 +169,21 @@ export function deleteUser(userId) {
                 dispatch(deletedUser());
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(deletingUserError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(deletingUserError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(deletingUserError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 400:
+                        default: {
+                            return dispatch(deletingUserError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchUsers()))
-            .catch(console.error);
+        .then(() => dispatch(fetchUsers()))
+        .catch(console.error);
     };
 }
 

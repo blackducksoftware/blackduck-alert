@@ -143,7 +143,6 @@ export function getDistributionJob(jobId) {
                 } else {
                     switch (response.status) {
                         case 401:
-                        case 403:
                             dispatch(verifyLoginByStatus(response.status));
                             break;
                         default:

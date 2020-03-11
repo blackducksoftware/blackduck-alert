@@ -90,35 +90,34 @@ export function fetchRoles() {
                 'Content-Type': 'application/json'
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json()
-                        .then((jsonArray) => {
-                            dispatch(fetchedAllRoles(jsonArray));
+        .then((response) => {
+            if (response.ok) {
+                response.json()
+                .then((jsonArray) => {
+                    dispatch(fetchedAllRoles(jsonArray));
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    default:
+                        response.json()
+                        .then((json) => {
+                            let message = '';
+                            if (json && json.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = json.message.toString();
+                            }
+                            dispatch(fetchingAllRolesError(message));
                         });
-                } else {
-                    switch (response.status) {
-                        case 401:
-                        case 403:
-                            dispatch(verifyLoginByStatus(response.status));
-                            break;
-                        default:
-                            response.json()
-                                .then((json) => {
-                                    let message = '';
-                                    if (json && json.message) {
-                                        // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                        message = json.message.toString();
-                                    }
-                                    dispatch(fetchingAllRolesError(message));
-                                });
-                    }
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-                dispatch(fetchingAllRolesError(error));
-            });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(fetchingAllRolesError(error));
+        });
     };
 }
 
@@ -136,26 +135,26 @@ export function saveRole(role) {
         request.then((response) => {
             if (response.ok) {
                 response.json()
-                    .then(() => {
-                        dispatch(savedRole());
-                    });
+                .then(() => {
+                    dispatch(savedRole());
+                });
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(saveRoleError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(saveRoleError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(saveRoleError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 400:
+                        default: {
+                            return dispatch(saveRoleError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchRoles()))
-            .catch(console.error);
+        .then(() => dispatch(fetchRoles()))
+        .catch(console.error);
     };
 }
 
@@ -169,21 +168,21 @@ export function deleteRole(roleId) {
                 dispatch(deletedRole());
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(deletingRoleError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(deletingRoleError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(deletingRoleError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 400:
+                        default: {
+                            return dispatch(deletingRoleError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchRoles()))
-            .catch(console.error);
+        .then(() => dispatch(fetchRoles()))
+        .catch(console.error);
     };
 }
 
