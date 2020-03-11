@@ -326,20 +326,24 @@ class TableDisplay extends Component {
 
     render() {
         const tableColumns = this.createTableColumns();
-        tableColumns.push(<TableHeaderColumn
-            dataField=""
-            width="48"
-            columnClassName="tableCell"
-            dataFormat={this.editButtonClick}
-            thStyle={{ textAlign: 'center' }}
-        >Edit</TableHeaderColumn>);
-        tableColumns.push(<TableHeaderColumn
-            dataField=""
-            width="48"
-            columnClassName="tableCell"
-            dataFormat={this.copyButtonClick}
-            thStyle={{ textAlign: 'center' }}
-        >Copy</TableHeaderColumn>);
+        if (this.props.enableEdit) {
+            tableColumns.push(<TableHeaderColumn
+                dataField=""
+                width="48"
+                columnClassName="tableCell"
+                dataFormat={this.editButtonClick}
+                thStyle={{ textAlign: 'center' }}
+            >Edit</TableHeaderColumn>);
+        }
+        if (this.props.enableCopy) {
+            tableColumns.push(<TableHeaderColumn
+                dataField=""
+                width="48"
+                columnClassName="tableCell"
+                dataFormat={this.copyButtonClick}
+                thStyle={{ textAlign: 'center' }}
+            >Copy</TableHeaderColumn>);
+        }
 
         const {
             selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable
@@ -467,7 +471,9 @@ TableDisplay.propTypes = {
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
     errorDialogMessage: PropTypes.string,
-    nestedInAnotherModal: PropTypes.bool
+    nestedInAnotherModal: PropTypes.bool,
+    enableEdit: PropTypes.bool,
+    enableCopy: PropTypes.bool
 };
 
 TableDisplay.defaultProps = {
@@ -491,7 +497,9 @@ TableDisplay.defaultProps = {
     tableRefresh: true,
     hasFieldErrors: false,
     errorDialogMessage: null,
-    nestedInAnotherModal: false
+    nestedInAnotherModal: false,
+    enableEdit: true,
+    enableCopy: true
 };
 
 const mapStateToProps = state => ({

@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate } from "store/actions/certificates";
-import TableDisplay from "field/TableDisplay";
-import ConfigurationLabel from "component/common/ConfigurationLabel";
 import PropTypes from "prop-types";
-import TextInput from "../../../field/input/TextInput";
+import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate } from "store/actions/certificates";
+import ConfigurationLabel from "component/common/ConfigurationLabel";
+import TableDisplay from "field/TableDisplay";
+import TextInput from "field/input/TextInput";
+import TextArea from "field/input/TextArea";
 
 class CertificatesPage extends Component {
     constructor(props) {
         super(props);
         this.retrieveData = this.retrieveData.bind(this);
+        this.clearModalFieldState = this.clearModalFieldState.bind(this);
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onConfigClose = this.onConfigClose.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.onEdit = this.onEdit.bind(this);
@@ -34,9 +37,21 @@ class CertificatesPage extends Component {
                 header: 'alias',
                 headerLabel: 'Alias',
                 isKey: false,
-                hidden: true
+                hidden: false
             }
         ];
+    }
+
+    onConfigClose() {
+        this.props.clearFieldErrors();
+    }
+
+    clearModalFieldState() {
+        if (this.state.certificate && Object.keys(this.state.certificate).length > 0) {
+            this.setState({
+                certificate: {}
+            });
+        }
     }
 
     retrieveData() {
@@ -73,6 +88,7 @@ class CertificatesPage extends Component {
         const { certificate } = this.state;
         const { fieldErrors } = this.props;
         const aliasKey = 'alias';
+        const certificateContentKey = 'certificateContent';
         return (
             <div>
                 <TextInput
@@ -80,6 +96,11 @@ class CertificatesPage extends Component {
                     required onChange={this.handleChange} value={certificate[aliasKey]}
                     errorName={aliasKey}
                     errorValue={fieldErrors[aliasKey]} />
+                <TextArea
+                    name={certificateContentKey} label="Certificate Content" description="The certificate content text."
+                    required onChange={this.handleChange} value={certificate[certificateContentKey]}
+                    errorName={certificateContentKey}
+                    errorValue={fieldErrors[certificateContentKey]} />
             </div>
         );
     }
@@ -101,11 +122,13 @@ class CertificatesPage extends Component {
                     <TableDisplay
                         newConfigFields={this.createModalFields}
                         modalTitle="Certificate"
+                        clearModalFieldState={this.clearModalFieldState}
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
+                        onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
                         editState={this.onEdit}
-                        data={certificates}
+                        data={this.props.certificates}
                         columns={this.createColumns()}
                         newButton={true}
                         deleteButton={true}
@@ -113,6 +136,7 @@ class CertificatesPage extends Component {
                         errorDialogMessage={certificateDeleteError}
                         inProgress={inProgress}
                         fetching={fetching}
+                        enableCopy={false}
                     />
                 </div>
             </div>
