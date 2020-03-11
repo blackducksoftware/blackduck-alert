@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.database.user.RoleEntity;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
-public class AuthorizationUtilityTest {
+public class DefaultAuthorizationUtilityTest {
     @Test
     public void testSuperSetRoles() {
         RoleRepository roleRepository = Mockito.mock(RoleRepository.class);
