@@ -6,6 +6,7 @@ import ConfigurationLabel from "component/common/ConfigurationLabel";
 import TableDisplay from "field/TableDisplay";
 import TextInput from "field/input/TextInput";
 import TextArea from "field/input/TextArea";
+import ReadOnlyField from "field/ReadOnlyField";
 
 class CertificatesPage extends Component {
     constructor(props) {
@@ -38,7 +39,14 @@ class CertificatesPage extends Component {
                 headerLabel: 'Alias',
                 isKey: false,
                 hidden: false
+            },
+            {
+                header: 'lastUpdated',
+                headerLabel: 'Last Updated',
+                isKey: false,
+                hidden: false
             }
+
         ];
     }
 
@@ -91,6 +99,7 @@ class CertificatesPage extends Component {
         const certificateContentKey = 'certificateContent';
         return (
             <div>
+                <ReadOnlyField label="Last Updated" name="lastUpdated" readOnly="true" value={certificate['lastUpdated']} />
                 <TextInput
                     name={aliasKey} label="Alias" description="The certificate alias name."
                     required onChange={this.handleChange} value={certificate[aliasKey]}
@@ -112,11 +121,11 @@ class CertificatesPage extends Component {
     }
 
     render() {
-        const { fetching, inProgress, certificates, certificateDeleteError } = this.props;
+        const { fetching, inProgress, certificates, certificateDeleteError, label, description } = this.props;
         return (
             <div>
                 <div>
-                    <ConfigurationLabel configurationName="Certificates" />
+                    <ConfigurationLabel configurationName={label} description={description} />
                 </div>
                 <div>
                     <TableDisplay
@@ -128,7 +137,7 @@ class CertificatesPage extends Component {
                         onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
                         editState={this.onEdit}
-                        data={this.props.certificates}
+                        data={certificates}
                         columns={this.createColumns()}
                         newButton={true}
                         deleteButton={true}
@@ -155,6 +164,8 @@ CertificatesPage.propTypes = {
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
     fieldErrors: PropTypes.object,
+    description: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired
 };
 
 CertificatesPage.defaultProps = {
@@ -163,7 +174,9 @@ CertificatesPage.defaultProps = {
     autoRefresh: true,
     fetching: false,
     certificates: [],
-    fieldErrors: {}
+    fieldErrors: {},
+    description: '',
+    label: ''
 };
 
 const mapStateToProps = state => ({

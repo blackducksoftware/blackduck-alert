@@ -41,14 +41,14 @@ class MainPage extends Component {
 
     createConfigurationPage(component, uriPrefix) {
         const {
-            urlName, name, automaticallyGenerateUI, componentNamespace
+            urlName, name, automaticallyGenerateUI, componentNamespace, label, description
         } = component;
         if (!automaticallyGenerateUI) {
             return (<Route
                 exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} />}
+                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} label={label} description={description} />}
             />);
         }
 

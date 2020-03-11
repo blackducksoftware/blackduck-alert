@@ -16,15 +16,18 @@ export class DescriptorContentLoader extends Component {
     }
 
     render() {
-        const Component = ComponentRegistry[this.props.componentNamespace];
+        const { componentNamespace, description, label } = this.props;
+        const Component = ComponentRegistry[componentNamespace];
         return (
-            <Component />
+            <Component description={description} label={label} />
         );
     }
 }
 
 DescriptorContentLoader.propTypes = {
-    componentNamespace: PropTypes.string.isRequired
+    componentNamespace: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired
 };
 
 export default DescriptorContentLoader;
