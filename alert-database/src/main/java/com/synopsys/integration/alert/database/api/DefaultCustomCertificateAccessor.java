@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 
@@ -75,7 +76,7 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
             throw new AlertDatabaseConstraintException("The field 'certificateContent' cannot be blank");
         }
 
-        CustomCertificateEntity entityToSave = new CustomCertificateEntity(alias, certificateContent);
+        CustomCertificateEntity entityToSave = new CustomCertificateEntity(alias, certificateContent, DateUtils.createCurrentDateTimestamp());
         Long id = certificateModel.getNullableId();
         if (null == id) {
             // Mimic keystore functionality
@@ -112,7 +113,7 @@ public class DefaultCustomCertificateAccessor implements CustomCertificateAccess
     }
 
     private CustomCertificateModel createModel(CustomCertificateEntity entity) {
-        CustomCertificateModel customCertificateModel = new CustomCertificateModel(entity.getAlias(), entity.getCertificateContent());
+        CustomCertificateModel customCertificateModel = new CustomCertificateModel(entity.getAlias(), entity.getCertificateContent(), DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         customCertificateModel.setId(entity.getId());
         return customCertificateModel;
     }

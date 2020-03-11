@@ -25,20 +25,24 @@ package com.synopsys.integration.alert.common.persistence.model;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class CustomCertificateModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -6655684999195764188L;
     private Long id;
     private String alias;
     private String certificateContent;
+    private String lastUpdated;
 
-    public CustomCertificateModel(String alias, String certificateContent) {
+    public CustomCertificateModel(String alias, String certificateContent, String lastUpdated) {
         this.id = null;
         this.alias = alias;
         this.certificateContent = certificateContent;
+        this.lastUpdated = lastUpdated;
     }
 
-    public CustomCertificateModel(Long id, String alias, String certificateContent) {
+    public CustomCertificateModel(Long id, String alias, String certificateContent, String lastUpdated) {
         this.id = id;
         this.alias = alias;
         this.certificateContent = certificateContent;
+        this.lastUpdated = lastUpdated;
     }
 
     public Long getNullableId() {
@@ -57,4 +61,7 @@ public class CustomCertificateModel extends AlertSerializableModel {
         return certificateContent;
     }
 
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
 }

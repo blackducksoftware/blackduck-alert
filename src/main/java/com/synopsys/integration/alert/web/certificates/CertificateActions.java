@@ -120,11 +120,11 @@ public class CertificateActions {
 
     private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertifcateModel) {
         String id = databaseCertifcateModel.getNullableId() != null ? Long.toString(databaseCertifcateModel.getNullableId()) : null;
-        return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent());
+        return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent(), databaseCertifcateModel.getLastUpdated());
     }
 
     private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
         Long id = StringUtils.isNotBlank(certificateModel.getId()) ? Long.valueOf(certificateModel.getId()) : null;
-        return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent());
+        return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent(), certificateModel.getLastUpdated());
     }
 }

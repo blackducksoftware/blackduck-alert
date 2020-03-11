@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.model.CertificateModel;
@@ -43,7 +44,7 @@ public class CertificateTestUtil extends AlertIntegrationTest {
 
     protected CertificateModel createCertificate(CertificateActions actions) throws AlertException, IOException {
         String certificateContent = readCertificateContents();
-        CertificateModel certificateModel = new CertificateModel(TEST_ALIAS, certificateContent);
+        CertificateModel certificateModel = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         CertificateModel savedCertificate = actions.createCertificate(certificateModel);
 
         return savedCertificate;
