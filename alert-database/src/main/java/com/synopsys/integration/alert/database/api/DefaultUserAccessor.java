@@ -202,14 +202,6 @@ public class DefaultUserAccessor implements UserAccessor {
 
     private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
         Long userId = userEntity.getId();
-        Optional<AuthenticationType> authenticationTypeOptional = authenticationTypeAccessor.getAuthenticationType(userEntity.getAuthenticationType());
-        if (authenticationTypeOptional.isPresent()) {
-            AuthenticationType authenticationType = authenticationTypeOptional.get();
-            if (AuthenticationType.DATABASE != authenticationType) {
-                String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-                throw new AlertForbiddenOperationException(String.format("The '%s' user is from an external system and cannot be deleted.", userIdentifier));
-            }
-        }
         if (!RESERVED_USER_IDS.contains(userId)) {
             authorizationUtility.updateUserRoles(userId, Set.of());
             userRepository.deleteById(userId);
