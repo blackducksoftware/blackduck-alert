@@ -11,6 +11,7 @@ import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ProviderTable from "providers/ProviderTable";
 
 
 class MainPage extends Component {
@@ -84,6 +85,7 @@ class MainPage extends Component {
                         <Redirect to="/alert/general/about" />
                     )}
                 />
+                <Route exact path="/alert/providers" component={ProviderTable} />
                 {providers}
                 {channels}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />

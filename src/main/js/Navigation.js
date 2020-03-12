@@ -45,6 +45,14 @@ class Navigation extends Component {
 
         const nav = (
             <Fragment>
+                <li className="navHeader">
+                    Providers
+                </li>
+                <li>
+                    <NavLink to="/alert/providers" activeClassName="activeNav">
+                        Black Duck
+                    </NavLink>
+                </li>
                 {providers}
                 {channelGlobals}
                 <li className="navHeader">
