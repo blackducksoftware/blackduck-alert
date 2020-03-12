@@ -441,6 +441,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     // SAML 2.0 WebSSO Assertion Consumer
     @Bean
     public WebSSOProfileConsumer webSSOprofileConsumer() {
+        // If the machine running Alert has a different time than the SSO system the maximum difference allowed by default is 60 seconds
+        // setResponseSkew(...) to change the skew time if needed
         return new WebSSOProfileConsumerImpl();
     }
 

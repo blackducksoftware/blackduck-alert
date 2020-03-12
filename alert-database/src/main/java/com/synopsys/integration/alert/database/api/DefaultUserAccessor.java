@@ -207,7 +207,7 @@ public class DefaultUserAccessor implements UserAccessor {
             userRepository.deleteById(userId);
         } else {
             String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
-            throw new AlertForbiddenOperationException(String.format("The '%s' user cannot be deleted", userIdentifier));
+            throw new AlertForbiddenOperationException(String.format("The '%s' user is reserved and cannot be deleted.", userIdentifier));
         }
     }
 
