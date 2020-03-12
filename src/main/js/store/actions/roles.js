@@ -45,6 +45,13 @@ function savedRole() {
     };
 }
 
+function saveRoleErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
+        roleError: message
+    };
+}
+
 function saveRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
@@ -62,6 +69,13 @@ function deletingRole() {
 function deletedRole() {
     return {
         type: USER_MANAGEMENT_ROLE_DELETED
+    };
+}
+
+function deletingRoleErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
+        roleError: message
     };
 }
 
@@ -100,6 +114,9 @@ export function fetchRoles() {
                 switch (response.status) {
                     case 401:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(fetchingAllRolesError('You are not permitted to view this information.'));
                         break;
                     default:
                         response.json()
@@ -145,6 +162,8 @@ export function saveRole(role) {
                         case 401:
                             dispatch(saveRoleError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(saveRoleErrorMessage('You are not permitted to perform this action.'));
                         case 400:
                         default: {
                             return dispatch(saveRoleError(data));
@@ -173,6 +192,8 @@ export function deleteRole(roleId) {
                         case 401:
                             dispatch(deletingRoleError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(deletingRoleErrorMessage('You are not permitted to perform this action.'));
                         case 400:
                         default: {
                             return dispatch(deletingRoleError(data));

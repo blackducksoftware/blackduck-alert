@@ -167,6 +167,7 @@ export function verifyLoginByStatus(status) {
     return (dispatch) => {
         switch (status) {
             case 401:
+            case 403:
                 return dispatch(loggedOut());
         }
     };

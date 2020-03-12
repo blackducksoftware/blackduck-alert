@@ -45,6 +45,13 @@ function savedUser() {
     };
 }
 
+function saveUserErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_USER_SAVE_ERROR,
+        userSaveError: message
+    };
+}
+
 function saveUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
@@ -63,6 +70,13 @@ function deletingUser() {
 function deletedUser() {
     return {
         type: USER_MANAGEMENT_USER_DELETED
+    };
+}
+
+function deletingUserErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_USER_DELETE_ERROR,
+        userDeleteError: message
     };
 }
 
@@ -101,6 +115,9 @@ export function fetchUsers() {
                 switch (response.status) {
                     case 401:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(fetchingAllUsersError('You are not permitted to view this information.'));
                         break;
                     default:
                         response.json()
@@ -146,6 +163,8 @@ export function saveUser(user) {
                         case 401:
                             dispatch(saveUserError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(saveUserErrorMessage('You are not permitted to perform this action.'));
                         case 400:
                         default: {
                             return dispatch(saveUserError(data));
@@ -174,6 +193,8 @@ export function deleteUser(userId) {
                         case 401:
                             dispatch(deletingUserError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(deletingUserErrorMessage('You are not permitted to perform this action.'));
                         case 400:
                         default: {
                             return dispatch(deletingUserError(data));

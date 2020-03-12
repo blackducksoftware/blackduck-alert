@@ -37,6 +37,13 @@ function jobFetchError() {
     };
 }
 
+function jobFetchErrorMessage(message) {
+    return {
+        type: DISTRIBUTION_JOB_FETCH_ERROR,
+        configurationMessage: message
+    };
+}
+
 function savingJobConfig() {
     return {
         type: DISTRIBUTION_JOB_SAVING
@@ -144,6 +151,9 @@ export function getDistributionJob(jobId) {
                     switch (response.status) {
                         case 401:
                             dispatch(verifyLoginByStatus(response.status));
+                            break;
+                        case 403:
+                            dispatch(jobFetchErrorMessage('You are not permitted to view this information.'));
                             break;
                         default:
                             dispatch(jobFetchError());

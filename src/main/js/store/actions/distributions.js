@@ -162,6 +162,8 @@ export function deleteDistributionJob(job) {
                         case 401:
                             dispatch(jobDeleteError(data.message));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(jobDeleteError('You are not permitted to perform this action.'));
                         case 412:
                             return dispatch(jobDeleteError(data.message));
                         default: {
@@ -196,6 +198,9 @@ export function fetchDistributionJobs() {
                 switch (response.status) {
                     case 401:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(fetchingAllJobsError('You are not permitted to view this information.'));
                         break;
                     case 404:
                         dispatch(fetchingAllJobsNoneFound());
@@ -237,6 +242,9 @@ export function fetchJobsValidationResults() {
                 switch (response.status) {
                     case 401:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(jobsValidationError('You are not permitted to perform this action.'));
                         break;
                     default:
                         response.json().then((json) => {
