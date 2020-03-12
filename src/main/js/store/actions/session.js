@@ -1,15 +1,5 @@
 import { push } from 'react-router-redux';
-import {
-    SAML_ENABLED,
-    SESSION_CANCEL_LOGOUT,
-    SESSION_CONFIRM_LOGOUT,
-    SESSION_INITIALIZING,
-    SESSION_LOGGED_IN,
-    SESSION_LOGGED_OUT,
-    SESSION_LOGGING_IN,
-    SESSION_LOGIN_ERROR,
-    SESSION_LOGOUT
-} from 'store/actions/types';
+import { SAML_ENABLED, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 
 /**
  * Triggers Logging In Reducer
@@ -164,12 +154,12 @@ export function logout() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-            .then(() => dispatch(loggedOut()))
-            .then(() => dispatch(logOut()))
-            .then(() => dispatch(push('/alert')))
-            .catch((error) => {
-                console.log(error);
-            });
+        .then(() => dispatch(loggedOut()))
+        .then(() => dispatch(logOut()))
+        .then(() => dispatch(push('/alert')))
+        .catch((error) => {
+            console.log(error);
+        });
     };
 }
 
