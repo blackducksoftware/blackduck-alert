@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from "prop-types";
-import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate } from "store/actions/certificates";
-import ConfigurationLabel from "component/common/ConfigurationLabel";
-import TableDisplay from "field/TableDisplay";
-import TextInput from "field/input/TextInput";
-import TextArea from "field/input/TextArea";
-import ReadOnlyField from "field/ReadOnlyField";
+import PropTypes from 'prop-types';
+import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate } from 'store/actions/certificates';
+import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import TableDisplay from 'field/TableDisplay';
+import TextInput from 'field/input/TextInput';
+import TextArea from 'field/input/TextArea';
+import ReadOnlyField from 'field/ReadOnlyField';
 
 class CertificatesPage extends Component {
     constructor(props) {

@@ -12,8 +12,8 @@ import {
 } from "store/actions/types";
 
 import * as RequestUtilities from 'util/RequestUtilities'
-import { verifyLoginByStatus } from "./session";
-import { fetchUsers } from "./users";
+import { verifyLoginByStatus } from 'store/actions/session';
+import { fetchUsers } from 'store/actions/users';
 
 const CERTIFICATES_API_URL = `/alert/api/certificates`;
 
