@@ -70,6 +70,13 @@ function deletedCertificate() {
     };
 }
 
+function deletingCertificateErrorMessage(message) {
+    return {
+        type: CERTIFICATES_DELETE_ERROR,
+        certificateDeleteError: message
+    };
+}
+
 function deletingCertificateError({ message, errors }) {
     return {
         type: CERTIFICATES_DELETE_ERROR,
@@ -98,8 +105,10 @@ export function fetchCertificates() {
             } else {
                 switch (response.status) {
                     case 401:
-                    case 403:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(fetchingAllCertificatesError('You are not permitted to view this information.'));
                         break;
                     default:
                         response.json()
@@ -146,6 +155,9 @@ export function saveCertificate(certificate) {
                         case 401:
                             dispatch(saveCertificateError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            dispatch(saveCertificateError('You are not permitted to perform this action.'));
+                            break;
                         case 400:
                         default: {
                             return dispatch(saveCertificateError(data));
@@ -175,6 +187,9 @@ export function deleteCertificate(certificateId) {
                         case 401:
                             dispatch(deletingCertificateError(data));
                             return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            dispatch(deletingCertificateErrorMessage('You are not permitted to perform this action.'));
+                            break;
                         case 400:
                         default: {
                             return dispatch(deletingCertificateError(data));
