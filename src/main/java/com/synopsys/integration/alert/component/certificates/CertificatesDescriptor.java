@@ -31,7 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 public class CertificatesDescriptor extends ComponentDescriptor {
     public static final String CERTIFICATES_LABEL = "Certificates";
     public static final String CERTIFICATES_URL = "certificates";
-    public static final String CERTIFICATES_DESCRIPTION = "This page allows you to configure user certificates for Alert.";
+    public static final String CERTIFICATES_DESCRIPTION = "This page allows you to configure certificates for Alert to establish secure communication.";
+    public static final String CERTIFICATES_COMPONENT_NAMESPACE = "certificates.CertificatesPage";
 
     @Autowired
     public CertificatesDescriptor(CertificatesDescriptorKey descriptorKey, CertificatesUIConfig componentUIConfig) {

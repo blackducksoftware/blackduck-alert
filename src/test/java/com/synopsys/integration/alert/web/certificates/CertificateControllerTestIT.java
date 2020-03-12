@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.model.CertificateModel;
@@ -84,7 +85,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void createTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent);
+        CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         String url = CertificatesController.API_BASE_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
@@ -98,7 +99,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void updateTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
-        CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent());
+        CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent(), expectedCertificate.getLastUpdated());
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
@@ -142,7 +143,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @Test
     public void createForbiddenTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent);
+        CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         String url = CertificatesController.API_BASE_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))

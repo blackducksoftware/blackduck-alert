@@ -10,4 +10,5 @@
     <include file="provider-fields.xml" relativeToChangelogFile="true"/>
     <include file="provider-task-properties.xml" relativeToChangelogFile="true"/>
     <include file="refactor-field-names.xml" relativeToChangelogFile="true"/>
+    <include file="certificates-timestamp.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

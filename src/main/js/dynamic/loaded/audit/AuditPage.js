@@ -300,10 +300,11 @@ class AuditPage extends Component {
         const auditFetchInfo = {
             dataTotalSize: this.props.totalPageCount * this.state.currentPageSize
         };
+        const { label, description } = this.props;
 
         return (
             <div>
-                <ConfigurationLabel configurationName="Audit" />
+                <ConfigurationLabel configurationName={label} description={description} />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
                 </div>
@@ -402,7 +403,9 @@ AuditPage.defaultProps = {
     fetching: false,
     totalPageCount: 0,
     descriptors: [],
-    items: []
+    items: [],
+    description: '',
+    label: ''
 };
 
 AuditPage.propTypes = {
@@ -413,7 +416,9 @@ AuditPage.propTypes = {
     totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
     resendNotification: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object)
+    descriptors: PropTypes.arrayOf(PropTypes.object),
+    description: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => ({

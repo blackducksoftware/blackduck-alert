@@ -22,24 +22,16 @@
  */
 package com.synopsys.integration.alert.component.certificates;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CustomUIConfig;
 
 @Component
-public class CertificatesUIConfig extends UIConfig {
+public class CertificatesUIConfig extends CustomUIConfig {
     @Autowired
     public CertificatesUIConfig() {
-        super(CertificatesDescriptor.CERTIFICATES_LABEL, CertificatesDescriptor.CERTIFICATES_DESCRIPTION, CertificatesDescriptor.CERTIFICATES_URL);
+        super(CertificatesDescriptor.CERTIFICATES_LABEL, CertificatesDescriptor.CERTIFICATES_DESCRIPTION, CertificatesDescriptor.CERTIFICATES_URL, CertificatesDescriptor.CERTIFICATES_COMPONENT_NAMESPACE);
     }
 
-    @Override
-    public List<ConfigField> createFields() {
-        return List.of();
-    }
-    
 }

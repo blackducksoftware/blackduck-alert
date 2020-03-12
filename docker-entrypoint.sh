@@ -297,36 +297,6 @@ createDataBackUp(){
     fi
 }
 
-checkVolumeDirectories() {
-  echo "Checking volume directory: $alertConfigHome"
-  if [ -d $alertConfigHome ];
-  then
-    echo "$alertConfigHome exists"
-    echo "Validating write access..."
-
-    if [ -d $alertConfigHome/data ];
-    then
-      echo "$alertConfigHome/data exists"
-    else
-      mkdir $alertConfigHome/data
-    fi
-
-    testFile=$alertConfigHome/data/volumeAccessTest.txt
-    touch $testFile
-
-    if [ -f $testFile ];
-    then
-      echo "Validated write access to directory: $alertConfigHome"
-      rm $testFile
-    else
-      echo "Cannot write to volume directory: $alertConfigHome"
-      echo "Cannot continue; stopping in 10 seconds..."
-      sleep 10
-      exit 1;
-    fi
-  fi
-}
-
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
   $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
@@ -416,8 +386,6 @@ postgresPrepare600Upgrade() {
         fi
     fi
 }
-
-checkVolumeDirectories
 
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
