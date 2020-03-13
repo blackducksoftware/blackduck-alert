@@ -1,4 +1,5 @@
 import {
+    CONFIG_ALL_FETCHED,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCHED,
@@ -36,6 +37,13 @@ function configFetched(config) {
         type: CONFIG_FETCHED,
         config
     };
+}
+
+function configAllFetched(config) {
+    return {
+        type: CONFIG_ALL_FETCHED,
+        config
+    }
 }
 
 function configRefreshed(config) {
@@ -143,6 +151,27 @@ export function refreshConfig(id) {
                         dispatch(configRefreshed(body));
                     } else {
                         dispatch(configRefreshed({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
+            }
+        }).catch(console.error);
+    };
+}
+
+export function getAllConfigs(descriptorName) {
+    return (dispatch, getState) => {
+        dispatch(fetchingConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configAllFetched(body));
+                    } else {
+                        dispatch(configAllFetched({}));
                     }
                 });
             } else {

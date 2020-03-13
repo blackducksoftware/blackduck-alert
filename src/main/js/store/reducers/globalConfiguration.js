@@ -1,4 +1,5 @@
 import {
+    CONFIG_ALL_FETCHED,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCHED,
@@ -23,7 +24,8 @@ const initialState = {
         message: '',
         fieldErrors: {}
     },
-    config: {}
+    config: {},
+    allConfigs: []
 };
 
 const globalConfiguration = (state = initialState, action) => {
@@ -35,7 +37,11 @@ const globalConfiguration = (state = initialState, action) => {
                 testing: false,
                 actionMessage: null
             });
-
+        case CONFIG_ALL_FETCHED:
+            return Object.assign({}, state, {
+                fetching: false,
+                allConfigs: action.config,
+            });
         case CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
