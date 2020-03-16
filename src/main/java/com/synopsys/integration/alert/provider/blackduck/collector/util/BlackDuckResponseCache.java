@@ -55,13 +55,19 @@ public class BlackDuckResponseCache {
     public <T extends BlackDuckResponse> Optional<T> getItem(Class<T> responseClass, String url) {
         try {
             Future<Optional<T>> optionalProjectVersionFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
-            return optionalProjectVersionFuture
-                       .get(timeout, TimeUnit.SECONDS);
+            if (bucket.hasAnyErrors()) {
+                Optional<Exception> error = bucket.getError(url);
+                error.ifPresent(exception -> logger.error(String.format("There was a problem retrieving the link '%s'.", url), exception));
+            }
+            if (null != optionalProjectVersionFuture) {
+                return optionalProjectVersionFuture
+                           .get(timeout, TimeUnit.SECONDS);
+            }
         } catch (InterruptedException interruptedException) {
             logger.debug("The thread was interrupted, failing safely...");
             Thread.currentThread().interrupt();
         } catch (Exception genericException) {
-            logger.error("There was a problem retrieving the Project Version link.", genericException);
+            logger.error(String.format("There was a problem retrieving the link '%s'.", url), genericException);
         }
 
         return Optional.empty();
