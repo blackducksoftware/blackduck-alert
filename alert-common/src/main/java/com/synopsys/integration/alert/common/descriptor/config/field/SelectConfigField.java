@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
     public static final String INVALID_OPTION_SELECTED = "Invalid option selected";
+    private static final long serialVersionUID = -3122384908284112253L;
 
     private final Collection<LabelValueSelectOption> options;
 
@@ -51,7 +52,7 @@ public class SelectConfigField extends ConfigField {
         this.searchable = true;
         this.multiSelect = false;
         this.removeSelected = true;
-        this.clearable = false;
+        this.clearable = true;
         createValidators(List.of(this::validateIsValidOption), null);
     }
 

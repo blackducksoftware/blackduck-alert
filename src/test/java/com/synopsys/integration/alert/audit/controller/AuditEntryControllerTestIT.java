@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.audit.controller;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,7 +22,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -32,16 +35,17 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @Transactional
 public class AuditEntryControllerTestIT extends AlertIntegrationTest {
-
     private final String auditUrl = BaseController.BASE_PATH + "/audit";
     @Autowired
     NotificationContentRepository notificationRepository;
@@ -59,83 +63,109 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
 
+    @Autowired
+    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModel providerConfigModel = null;
+
+    MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+    MockNotificationContent mockNotificationContent = new MockNotificationContent();
+
     @BeforeEach
-    public void setup() {
+    public void setup() throws AlertDatabaseConstraintException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         cleanup();
+
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("true");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("My Black Duck Config");
+
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://a-blackduck-server");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue("300");
+
+        List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
+        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
+        mockNotificationContent.setProviderConfigId(providerConfigModel.getConfigurationId());
     }
 
     @AfterEach
-    public void cleanup() {
+    public void cleanup() throws AlertDatabaseConstraintException {
         auditEntryRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         notificationRepository.deleteAllInBatch();
+
+        if (null != providerConfigModel && null != providerConfigModel.getConfigurationId()) {
+            configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+        }
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigWithId() throws Exception {
-        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
 
-        final MockNotificationContent mockNotificationContent = new MockNotificationContent();
-        NotificationContent notificationContent = mockNotificationContent.createEntity();
+        NotificationEntity notificationContent = mockNotificationContent.createEntity();
         notificationContent = notificationRepository.save(notificationContent);
 
         auditNotificationRepository.save(new AuditNotificationRelation(entity.getId(), notificationContent.getId()));
 
-        final String getUrl = auditUrl + "/" + notificationContent.getId();
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        String getUrl = auditUrl + "/" + notificationContent.getId();
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetAuditInfoForJob() throws Exception {
-        AuditEntryEntity entity = new MockAuditEntryEntity().createEntity();
+        AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
-        final String getUrl = auditUrl + "/job/" + entity.getCommonConfigId();
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        String getUrl = auditUrl + "/job/" + entity.getCommonConfigId();
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testPostConfig() throws Exception {
-        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
+        List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        slackFields.add(providerConfigName);
+
         SlackChannelKey slackChannelKey = new SlackChannelKey();
         ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
 
-        final MockNotificationContent mockNotifications = new MockNotificationContent();
-        NotificationContent notificationEntity = mockNotifications.createEntity();
+        NotificationEntity notificationEntity = mockNotificationContent.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
-        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         mockAuditEntryEntity.setCommonConfigId(configurationJobModel.getJobId());
         AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
 
-        final String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 

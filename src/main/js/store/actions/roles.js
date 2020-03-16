@@ -45,6 +45,13 @@ function savedRole() {
     };
 }
 
+function saveRoleErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
+        roleError: message
+    };
+}
+
 function saveRoleError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
@@ -62,6 +69,13 @@ function deletingRole() {
 function deletedRole() {
     return {
         type: USER_MANAGEMENT_ROLE_DELETED
+    };
+}
+
+function deletingRoleErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
+        roleError: message
     };
 }
 
@@ -90,35 +104,37 @@ export function fetchRoles() {
                 'Content-Type': 'application/json'
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json()
-                        .then((jsonArray) => {
-                            dispatch(fetchedAllRoles(jsonArray));
+        .then((response) => {
+            if (response.ok) {
+                response.json()
+                .then((jsonArray) => {
+                    dispatch(fetchedAllRoles(jsonArray));
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(fetchingAllRolesError('You are not permitted to view this information.'));
+                        break;
+                    default:
+                        response.json()
+                        .then((json) => {
+                            let message = '';
+                            if (json && json.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = json.message.toString();
+                            }
+                            dispatch(fetchingAllRolesError(message));
                         });
-                } else {
-                    switch (response.status) {
-                        case 401:
-                        case 403:
-                            dispatch(verifyLoginByStatus(response.status));
-                            break;
-                        default:
-                            response.json()
-                                .then((json) => {
-                                    let message = '';
-                                    if (json && json.message) {
-                                        // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                        message = json.message.toString();
-                                    }
-                                    dispatch(fetchingAllRolesError(message));
-                                });
-                    }
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-                dispatch(fetchingAllRolesError(error));
-            });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(fetchingAllRolesError(error));
+        });
     };
 }
 
@@ -136,26 +152,28 @@ export function saveRole(role) {
         request.then((response) => {
             if (response.ok) {
                 response.json()
-                    .then(() => {
-                        dispatch(savedRole());
-                    });
+                .then(() => {
+                    dispatch(savedRole());
+                });
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(saveRoleError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(saveRoleError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(saveRoleError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(saveRoleErrorMessage('You are not permitted to perform this action.'));
+                        case 400:
+                        default: {
+                            return dispatch(saveRoleError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchRoles()))
-            .catch(console.error);
+        .then(() => dispatch(fetchRoles()))
+        .catch(console.error);
     };
 }
 
@@ -169,21 +187,23 @@ export function deleteRole(roleId) {
                 dispatch(deletedRole());
             } else {
                 response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 401:
-                                dispatch(deletingRoleError(data));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            case 400:
-                            default: {
-                                return dispatch(deletingRoleError(data));
-                            }
+                .then((data) => {
+                    switch (response.status) {
+                        case 401:
+                            dispatch(deletingRoleError(data));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        case 403:
+                            return dispatch(deletingRoleErrorMessage('You are not permitted to perform this action.'));
+                        case 400:
+                        default: {
+                            return dispatch(deletingRoleError(data));
                         }
-                    });
+                    }
+                });
             }
         })
-            .then(() => dispatch(fetchRoles()))
-            .catch(console.error);
+        .then(() => dispatch(fetchRoles()))
+        .catch(console.error);
     };
 }
 

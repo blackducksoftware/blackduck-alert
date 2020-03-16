@@ -37,7 +37,7 @@ import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.datastructure.SetMap;
 
 public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
-    public static final String LABEL_PROVIDER = "Provider";
+    private static final long serialVersionUID = -9019185621384719085L;
 
     private final LinkableItem provider;
     private final LinkableItem topic;
@@ -49,9 +49,10 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
     private final Set<ComponentItem> componentItems;
     private final Date providerCreationTime;
+    private final Long providerConfigId;
 
     private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
-        Date providerCreationTime) {
+        Date providerCreationTime, Long providerConfigId) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
@@ -60,6 +61,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         this.notificationId = notificationId;
         this.componentItems = componentItems;
         this.providerCreationTime = providerCreationTime;
+        this.providerConfigId = providerConfigId;
     }
 
     public LinkableItem getProvider() {
@@ -101,6 +103,10 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return providerCreationTime;
     }
 
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
     /**
      * Creates a logical grouping of ComponentItems using ComponentItem.createKey()
      */
@@ -124,6 +130,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     public static class Builder {
         private final Set<ComponentItem> componentItems = new LinkedHashSet<>();
         private String providerName;
+        private String providerConfigName;
         private String providerUrl;
         private String topicName;
         private String topicValue;
@@ -134,33 +141,44 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         private ItemOperation action;
         private Long notificationId;
         private Date providerCreationTime;
+        private Long providerConfigId;
 
         public ProviderMessageContent build() throws AlertException {
-            if (null == providerName || null == topicName || null == topicValue) {
+            if (null == providerName || null == providerConfigId || null == providerConfigName || null == topicName || null == topicValue) {
                 throw new AlertException("Missing required field(s)");
             }
 
-            LinkableItem provider = new LinkableItem(LABEL_PROVIDER, providerName, providerUrl);
+            LinkableItem provider = new LinkableItem(providerName, providerConfigName, providerUrl);
             LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
             LinkableItem subTopic = null;
             if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
                 subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
             }
-            ContentKey key = ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
-            return new ProviderMessageContent(provider, topic, subTopic, key, action, notificationId, componentItems, providerCreationTime);
+            ContentKey key = ContentKey.of(providerName, providerConfigId, topicName, topicValue, subTopicName, subTopicValue, action);
+            return new ProviderMessageContent(provider, topic, subTopic, key, action, notificationId, componentItems, providerCreationTime, providerConfigId);
         }
 
         public ContentKey getCurrentContentKey() {
-            return ContentKey.of(providerName, topicName, topicValue, subTopicName, subTopicValue, action);
+            return ContentKey.of(providerName, providerConfigId, topicName, topicValue, subTopicName, subTopicValue, action);
         }
 
-        public Builder applyProvider(String providerName) {
+        public Builder applyCommonData(CommonMessageData commonMessageData) {
+            return applyNotificationId(commonMessageData.getNotificationId())
+                       .applyProvider(commonMessageData.getProviderName(), commonMessageData.getProviderConfigId(), commonMessageData.getProviderConfigName(), commonMessageData.getProviderURL())
+                       .applyProviderCreationTime(commonMessageData.getProviderCreationDate());
+        }
+
+        public Builder applyProvider(String providerName, Long providerConfigId, String providerConfigName) {
             this.providerName = providerName;
+            this.providerConfigId = providerConfigId;
+            this.providerConfigName = providerConfigName;
             return this;
         }
 
-        public Builder applyProvider(String providerName, String providerUrl) {
+        public Builder applyProvider(String providerName, Long providerConfigId, String providerConfigName, String providerUrl) {
             this.providerName = providerName;
+            this.providerConfigId = providerConfigId;
+            this.providerConfigName = providerConfigName;
             this.providerUrl = providerUrl;
             return this;
         }

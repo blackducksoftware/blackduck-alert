@@ -57,6 +57,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @Component
 public class UpdateChecker {
     private static final String SNAPSHOT = "-SNAPSHOT";
+    private static final String QA_BUILD = "-SIGQA";
     private static final char VERSION_SEPARATOR = '.';
 
     private final Logger logger = LoggerFactory.getLogger(UpdateChecker.class);
@@ -139,7 +140,7 @@ public class UpdateChecker {
     }
 
     private boolean isProductionVersion(String version) {
-        return StringUtils.isNotBlank(version) && !version.contains(SNAPSHOT) && isComprisedOfNumericTokens(version);
+        return StringUtils.isNotBlank(version) && !version.contains(SNAPSHOT) && !version.contains(QA_BUILD) && isComprisedOfNumericTokens(version);
     }
 
     private boolean isComprisedOfNumericTokens(String version) {
@@ -170,12 +171,8 @@ public class UpdateChecker {
             String firstVersionToken = firstVersionTokens[i];
             String secondVersionToken = secondVersionTokens[i];
 
-            if (firstVersionToken.contains(SNAPSHOT)) {
-                firstVersionToken = firstVersionToken.substring(0, firstVersionToken.indexOf(SNAPSHOT));
-            }
-            if (secondVersionToken.contains(SNAPSHOT)) {
-                secondVersionToken = secondVersionToken.substring(0, secondVersionToken.indexOf(SNAPSHOT));
-            }
+            firstVersionToken = getVersionToken(firstVersionToken);
+            secondVersionToken = getVersionToken(secondVersionToken);
 
             int firstToken = Integer.parseInt(firstVersionToken);
             int secondToken = Integer.parseInt(secondVersionToken);
@@ -194,6 +191,17 @@ public class UpdateChecker {
             return 1;
         }
         return 0;
+    }
+
+    private String getVersionToken(String versionToken) {
+        String resultToken = versionToken;
+        if (versionToken.contains(SNAPSHOT)) {
+            resultToken = versionToken.substring(0, versionToken.indexOf(SNAPSHOT));
+        } else if (versionToken.contains(QA_BUILD)) {
+            resultToken = versionToken.substring(0, versionToken.indexOf(QA_BUILD));
+        }
+
+        return resultToken;
     }
 
     private int compareProductionAndSnapshotVersions(String firstVersion, String secondVersion) {

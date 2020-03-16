@@ -36,8 +36,8 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
-import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.rest.RestConstants;
@@ -49,8 +49,8 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     private ChannelEventManager eventManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, String taskName, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
-        super(taskScheduler, taskName, taskManager);
+    public ProcessingTask(TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
+        super(taskScheduler, taskManager);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
@@ -73,19 +73,19 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     @Override
     public void runTask() {
         DateRange dateRange = getDateRange();
-        List<AlertNotificationWrapper> notificationList = read(dateRange);
+        List<AlertNotificationModel> notificationList = read(dateRange);
         List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
         eventManager.sendEvents(distributionEvents);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
     }
 
-    public List<AlertNotificationWrapper> read(DateRange dateRange) {
+    public List<AlertNotificationModel> read(DateRange dateRange) {
         try {
             String taskName = getTaskName();
             Date startDate = dateRange.getStart();
             Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-            List<AlertNotificationWrapper> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+            List<AlertNotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
                 return List.of();

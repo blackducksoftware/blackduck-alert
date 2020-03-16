@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.email;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,7 +41,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 @Component
 public class MessageContentGroupCsvCreator {
     private static final String UNDEFINED_VALUE = "N/A";
-    private static final String MULTI_VALUE_DELIMITER = " / ";
+    private static final String MULTI_VALUE_COLUMN_NAME_DELIMITER = " / ";
+    private static final String MULTI_VALUE_CELL_DELIMITER = " | ";
 
     public String createCsvString(MessageContentGroup messageContentGroup) {
         LinkableItem commonProvider = messageContentGroup.getCommonProvider();
@@ -59,10 +61,11 @@ public class MessageContentGroupCsvCreator {
         return csvBuilder.toString();
     }
 
-    // Provider | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Item URL
+    // Provider | Provider Config Name | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Additional Attributes | Item URL
     private List<String> createColumnNames(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<String> columnNames = new ArrayList<>();
-        columnNames.add(commonProvider.getName());
+        columnNames.add("Provider");
+        columnNames.add("Provider Config");
         columnNames.add(commonTopic.getName());
 
         String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getSubTopic);
@@ -94,6 +97,7 @@ public class MessageContentGroupCsvCreator {
         String categoryGroupingAttributeNamesCombined = createOptionalColumnNameString(allComponentItems, ComponentItem::getCategoryGroupingAttribute);
         columnNames.add(categoryGroupingAttributeNamesCombined);
 
+        columnNames.add("Additional Attributes");
         columnNames.add("Item URL");
 
         return columnNames;
@@ -104,15 +108,16 @@ public class MessageContentGroupCsvCreator {
         for (ProviderMessageContent message : contents) {
             String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
             for (ComponentItem componentItem : message.getComponentItems()) {
-                List<String> columnValues = createColumnValues(commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
+                List<String> columnValues = createColumnValues(commonProvider.getName(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
             }
         }
         return rows;
     }
 
-    private List<String> createColumnValues(String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
+    private List<String> createColumnValues(String providerName, String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
         List<String> columnValues = new ArrayList<>();
+        columnValues.add(providerName);
         columnValues.add(providerValue);
         columnValues.add(topicValue);
         columnValues.add(subTopicValue);
@@ -133,6 +138,10 @@ public class MessageContentGroupCsvCreator {
         columnValues.add(componentItem.getCategoryItem().getValue());
         String categoryGroupingAttribute = createOptionalValueString(componentItem.getCategoryGroupingAttribute(), LinkableItem::getValue);
         columnValues.add(categoryGroupingAttribute);
+
+        String additionalAttributes = createFlattenedItemsString(componentItem.getComponentAttributes());
+        columnValues.add(additionalAttributes);
+
         String categoryItemUrl = componentItem.getCategoryItem().getUrl().orElse(UNDEFINED_VALUE);
         columnValues.add(categoryItemUrl);
         return columnValues;
@@ -161,7 +170,7 @@ public class MessageContentGroupCsvCreator {
         if (columnNameCandidates.isEmpty()) {
             return UNDEFINED_VALUE;
         }
-        return String.join(MULTI_VALUE_DELIMITER, columnNameCandidates);
+        return String.join(MULTI_VALUE_COLUMN_NAME_DELIMITER, columnNameCandidates);
     }
 
     private String createOptionalValueString(Optional<LinkableItem> item, Function<LinkableItem, String> attributeMapper) {
@@ -169,6 +178,17 @@ public class MessageContentGroupCsvCreator {
                    .map(attributeMapper)
                    .filter(StringUtils::isNotBlank)
                    .orElse(UNDEFINED_VALUE);
+    }
+
+    private String createFlattenedItemsString(Collection<LinkableItem> items) {
+        String flattenedString = items
+                                     .stream()
+                                     .map(item -> String.format("%s: %s", item.getName(), item.getValue()))
+                                     .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
+        if (StringUtils.isNotBlank(flattenedString)) {
+            return flattenedString;
+        }
+        return UNDEFINED_VALUE;
     }
 
     private void appendLine(StringBuilder csvBuilder, List<String> values) {

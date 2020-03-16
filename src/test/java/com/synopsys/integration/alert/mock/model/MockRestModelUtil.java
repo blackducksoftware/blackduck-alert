@@ -38,4 +38,5 @@ public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
     public void testConfiguration() throws JSONException {
         verifyRestModel();
     }
+
 }

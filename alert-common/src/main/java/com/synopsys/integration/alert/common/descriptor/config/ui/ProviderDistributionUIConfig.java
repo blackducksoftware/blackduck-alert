@@ -33,14 +33,16 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.HideCheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -48,7 +50,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
-    public static final String KEY_FORMAT_TYPE = "provider.distribution.format.type";
+    public static final String KEY_PROCESSING_TYPE = "provider.distribution.processing.type";
     public static final String KEY_FILTER_BY_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
     public static final String KEY_PROJECT_NAME_PATTERN = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
     public static final String KEY_CONFIGURED_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
@@ -61,9 +63,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_PROJECTS = "Select a project or projects that will be used to retrieve notifications from your provider.";
 
     private static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
-    private static final String LABEL_FORMAT = "Format";
+    private static final String LABEL_PROCESSING = "Processing";
     private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
-    private static final String DESCRIPTION_FORMAT = "Select the format of the message that will be created: ";
+    private static final String DESCRIPTION_PROCESSING = "Select the way messages will be processed: ";
 
     private final ProviderContent providerContent;
 
@@ -74,6 +76,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
+        ConfigField providerConfigNameField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
+                                                  .applyClearable(false)
+                                                  .applyRequired(true);
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
                                                                    .map(this::convertToLabelValueOption)
@@ -83,13 +88,13 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                                  .applyMultiSelect(true)
                                                  .applyRequired(true);
 
-        List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedContentFormats()
+        List<LabelValueSelectOption> supportedFormatOptions = providerContent.getSupportedProcessingTypes()
                                                                   .stream()
                                                                   .map(this::convertToLabelValueOption)
                                                                   .sorted()
                                                                   .collect(Collectors.toList());
-        ConfigField formatField = new SelectConfigField(KEY_FORMAT_TYPE, LABEL_FORMAT, DESCRIPTION_FORMAT + createFormatDescription(), supportedFormatOptions)
-                                      .applyRequired(true);
+        ConfigField processingField = new SelectConfigField(KEY_PROCESSING_TYPE, LABEL_PROCESSING, DESCRIPTION_PROCESSING + createFormatDescription(), supportedFormatOptions)
+                                          .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
                                           .applyRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
@@ -101,9 +106,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
                                             .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
                                             .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
-        List<ConfigField> configFields = List.of(notificationTypesField, formatField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> configFields = List.of(providerConfigNameField, notificationTypesField, processingField, filterByProject, projectNamePattern, configuredProject);
         List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
@@ -116,13 +122,13 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         return new LabelValueSelectOption(notificationTypeLabel, notificationType);
     }
 
-    private LabelValueSelectOption convertToLabelValueOption(FormatType formatType) {
+    private LabelValueSelectOption convertToLabelValueOption(ProcessingType formatType) {
         return new LabelValueSelectOption(formatType.getLabel(), formatType.name());
     }
 
     private String createFormatDescription() {
         StringBuilder formatDescription = new StringBuilder();
-        for (FormatType format : providerContent.getSupportedContentFormats()) {
+        for (ProcessingType format : providerContent.getSupportedProcessingTypes()) {
             String label = format.getLabel();
             String description = format.getDescription();
 

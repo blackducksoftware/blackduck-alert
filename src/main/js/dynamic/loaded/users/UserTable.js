@@ -9,6 +9,8 @@ import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
+
 class UserTable extends Component {
     constructor(props) {
         super(props);
@@ -73,8 +75,7 @@ class UserTable extends Component {
         const { name, value, type, checked } = e.target;
         const { user } = this.state;
 
-        const updatedValue = type === 'checkbox' ? checked.toString()
-            .toLowerCase() === 'true' : value;
+        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser
@@ -93,7 +94,7 @@ class UserTable extends Component {
     checkIfPasswordsMatch(user) {
         const passwordKey = 'password';
         const confirmPasswordKey = 'confirmPassword';
-        const confirmPasswordError = 'confirmPasswordError';
+        const confirmPasswordError = KEY_CONFIRM_PASSWORD_ERROR;
 
         let passwordError = '';
         let matching = true;
@@ -119,6 +120,9 @@ class UserTable extends Component {
 
     onConfigClose() {
         this.props.clearFieldErrors();
+        if (this.state.user && this.state.user[KEY_CONFIRM_PASSWORD_ERROR]) {
+            delete this.state.user[KEY_CONFIRM_PASSWORD_ERROR];
+        }
     }
 
     clearModalFieldState() {
@@ -152,7 +156,7 @@ class UserTable extends Component {
         const usernameKey = 'username';
         const passwordKey = 'password';
         const confirmPasswordKey = 'confirmPassword';
-        const confirmPasswordError = 'confirmPasswordError';
+        const confirmPasswordError = KEY_CONFIRM_PASSWORD_ERROR;
         const emailKey = 'emailAddress';
         const roleNames = 'roleNames';
         const passwordSetKey = 'passwordSet';
@@ -216,7 +220,7 @@ class UserTable extends Component {
     render() {
         const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
+        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0 || this.state.user[KEY_CONFIRM_PASSWORD_ERROR] && this.state.user[KEY_CONFIRM_PASSWORD_ERROR].length > 0;
         return (
             <div>
                 <div>

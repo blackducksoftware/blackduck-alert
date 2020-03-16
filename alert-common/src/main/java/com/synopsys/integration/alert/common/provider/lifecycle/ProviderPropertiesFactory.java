@@ -20,20 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.provider.lifecycle;
 
-import java.util.Date;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 
-public interface AlertNotificationWrapper {
-    Long getId();
+public abstract class ProviderPropertiesFactory<T extends ProviderProperties> {
+    public T createProperties(ConfigurationModel configurationModel) {
+        return createProperties(configurationModel.getConfigurationId(), new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap()));
+    }
 
-    Date getCreatedAt();
-
-    String getProvider();
-
-    String getNotificationType();
-
-    String getContent();
-
-    Date getProviderCreationTime();
+    public abstract T createProperties(Long configId, FieldAccessor fieldAccessor);
 }

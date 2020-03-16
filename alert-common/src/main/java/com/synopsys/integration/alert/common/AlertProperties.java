@@ -35,6 +35,9 @@ public class AlertProperties {
     @Value("${alert.config.home:}")
     private String alertConfigHome;
 
+    /**
+     * @deprecated in 5.1.0
+     */
     @Deprecated
     @Value("${alert.templates.dir:}")
     private String alertTemplatesDir;
@@ -101,6 +104,9 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertConfigHome);
     }
 
+    /**
+     * @deprecated in 5.1.0
+     */
     @Deprecated
     public String getAlertTemplatesDir() {
         return StringUtils.trimToNull(alertTemplatesDir);

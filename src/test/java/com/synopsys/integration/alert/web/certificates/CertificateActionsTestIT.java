@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.model.CertificateModel;
@@ -73,7 +74,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     public void createCertificateIdTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
         try {
-            CertificateModel certificate = new CertificateModel("alias", certificateContent);
+            CertificateModel certificate = new CertificateModel("alias", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
             certificate.setId("badId");
             certificateActions.createCertificate(certificate);
             fail();
@@ -102,7 +103,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
         CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions);
 
         String updatedAlias = "updated-alias";
-        CertificateModel newModel = new CertificateModel(savedCertificate.getId(), updatedAlias, certificateContent);
+        CertificateModel newModel = new CertificateModel(savedCertificate.getId(), updatedAlias, certificateContent, savedCertificate.getLastUpdated());
         Optional<CertificateModel> updatedCertificate = certificateActions.updateCertificate(Long.valueOf(savedCertificate.getId()), newModel);
         assertTrue(updatedCertificate.isPresent());
 
@@ -115,7 +116,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Test
     public void updateCertificateMissingIdTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel certificate = new CertificateModel("-1", certificateContent);
+        CertificateModel certificate = new CertificateModel("-1", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         Optional<CertificateModel> result = certificateActions.updateCertificate(-1L, certificate);
         assertTrue(result.isEmpty());
     }
@@ -130,7 +131,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Test
     public void createExceptionTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent);
+        CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         CertificateUtility certificateUtility = Mockito.mock(CertificateUtility.class);
         Mockito.doThrow(new AlertException("Test exception")).when(certificateUtility).importCertificate(Mockito.any(CustomCertificateModel.class));
         CertificateActions certificateActions = new CertificateActions(certificateAccessor, certificateUtility);

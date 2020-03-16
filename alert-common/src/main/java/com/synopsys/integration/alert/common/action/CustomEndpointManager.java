@@ -31,30 +31,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class CustomEndpointManager {
     public static final String CUSTOM_ENDPOINT_URL = "/api/function";
-    private Map<String, Function<Map<String, FieldValueModel>, ResponseEntity<String>>> endpointFunctions = new HashMap<>();
+    private Map<String, Function<FieldModel, ResponseEntity<String>>> endpointFunctions = new HashMap<>();
 
     public boolean containsFunction(String functionKey) {
         return endpointFunctions.containsKey(functionKey);
     }
 
-    public void registerFunction(String functionKey, Function<Map<String, FieldValueModel>, ResponseEntity<String>> endpointFunction) throws AlertException {
+    public void registerFunction(String functionKey, Function<FieldModel, ResponseEntity<String>> endpointFunction) throws AlertException {
         if (containsFunction(functionKey)) {
             throw new AlertException("A custom endpoint is already registered for " + functionKey);
         }
         endpointFunctions.put(functionKey, endpointFunction);
     }
 
-    public ResponseEntity<String> performFunction(String endpointKey, Map<String, FieldValueModel> fieldModelValues) {
+    public ResponseEntity<String> performFunction(String endpointKey, FieldModel fieldModel) {
         if (!containsFunction(endpointKey)) {
             return new ResponseEntity("No functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
         }
 
-        return endpointFunctions.get(endpointKey).apply(fieldModelValues);
+        return endpointFunctions.get(endpointKey).apply(fieldModel);
     }
 
 }

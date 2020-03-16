@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.common.security;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.Optional;
 
 import org.apache.commons.codec.Charsets;
@@ -46,36 +44,34 @@ public class EncryptionUtility {
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
     private static final String SECRETS_ENCRYPTION_PASSWORD = "ALERT_ENCRYPTION_PASSWORD";
     private static final String SECRETS_ENCRYPTION_SALT = "ALERT_ENCRYPTION_GLOBAL_SALT";
-    // TODO: In 6.x remove the old salt variable.
-    private static final String SECRETS_ENCRYPTION_SALT_OLD = "ALERT_ENCRYPTION_SALT";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
 
     @Autowired
-    public EncryptionUtility(final AlertProperties alertProperties, final FilePersistenceUtil filePersistenceUtil) {
+    public EncryptionUtility(AlertProperties alertProperties, FilePersistenceUtil filePersistenceUtil) {
         this.alertProperties = alertProperties;
         this.filePersistenceUtil = filePersistenceUtil;
     }
 
-    public String encrypt(final String value) {
-        final String password = getPassword();
-        final String salt = getEncodedSalt();
+    public String encrypt(String value) {
+        String password = getPassword();
+        String salt = getEncodedSalt();
         if (StringUtils.isNotBlank(value) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(salt)) {
-            final TextEncryptor encryptor = Encryptors.delux(password, salt);
+            TextEncryptor encryptor = Encryptors.delux(password, salt);
             return encryptor.encrypt(value);
         }
         return StringUtils.EMPTY;
     }
 
-    public String decrypt(final String encryptedValue) {
+    public String decrypt(String encryptedValue) {
         try {
-            final String password = getPassword();
-            final String salt = getEncodedSalt();
+            String password = getPassword();
+            String salt = getEncodedSalt();
             if (StringUtils.isNotBlank(encryptedValue) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(salt)) {
-                final TextEncryptor decryptor = Encryptors.delux(password, salt);
+                TextEncryptor decryptor = Encryptors.delux(password, salt);
                 return decryptor.decrypt(encryptedValue);
             }
-        } catch (final IllegalArgumentException | IllegalStateException | NullPointerException ex) {
+        } catch (IllegalArgumentException | IllegalStateException | NullPointerException ex) {
             logger.error("Error decrypting value", ex);
         }
         return StringUtils.EMPTY;
@@ -85,31 +81,31 @@ public class EncryptionUtility {
         return isPasswordSet() && isGlobalSaltSet();
     }
 
-    public void updatePasswordField(final String password) throws IOException {
+    public void updatePasswordField(String password) throws IOException {
         if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException("Encryption password cannot be blank");
         }
 
-        final EncryptionFileData encryptionFileData = new EncryptionFileData(password, getGlobalSalt());
+        EncryptionFileData encryptionFileData = new EncryptionFileData(password, getGlobalSalt());
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
 
-    public void updateSaltField(final String globalSalt) throws IOException {
+    public void updateSaltField(String globalSalt) throws IOException {
         if (StringUtils.isBlank(globalSalt)) {
             throw new IllegalArgumentException("Encryption global salt cannot be blank");
         }
-        final EncryptionFileData encryptionFileData = new EncryptionFileData(getPassword(), globalSalt);
+        EncryptionFileData encryptionFileData = new EncryptionFileData(getPassword(), globalSalt);
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
 
-    public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {
+    public void updateEncryptionFields(String password, String globalSalt) throws IOException {
         updatePasswordField(password);
         updateSaltField(globalSalt);
     }
 
     private String getEncodedSalt() {
         if (isInitialized()) {
-            final byte[] saltBytes = getGlobalSalt().getBytes(Charsets.UTF_8);
+            byte[] saltBytes = getGlobalSalt().getBytes(Charsets.UTF_8);
             return Hex.encodeHexString(saltBytes);
         } else {
             return null;
@@ -121,28 +117,28 @@ public class EncryptionUtility {
     }
 
     private String getPassword() {
-        final Optional<String> passwordFromEnvironment = alertProperties.getAlertEncryptionPassword();
+        Optional<String> passwordFromEnvironment = alertProperties.getAlertEncryptionPassword();
         return passwordFromEnvironment.orElseGet(this::getPasswordFromFile);
     }
 
     private String getPasswordFromFile() {
-        final Optional<String> passwordFromSecrets = readPasswordFromSecretsFile();
+        Optional<String> passwordFromSecrets = readPasswordFromSecretsFile();
         return passwordFromSecrets.orElseGet(this::readPasswordFromVolumeDataFile);
     }
 
     private Optional<String> readPasswordFromSecretsFile() {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_PASSWORD));
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             return Optional.empty();
         }
     }
 
     private String readPasswordFromVolumeDataFile() {
         try {
-            final EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
+            EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getPassword();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             logger.debug("Error getting password from file.", ex);
             return null;
         }
@@ -153,32 +149,20 @@ public class EncryptionUtility {
     }
 
     private String getGlobalSalt() {
-        final Optional<String> saltFromEnvironment = alertProperties.getAlertEncryptionGlobalSalt();
+        Optional<String> saltFromEnvironment = alertProperties.getAlertEncryptionGlobalSalt();
         return saltFromEnvironment.orElseGet(this::getGlobalSaltFromFile);
     }
 
     private String getGlobalSaltFromFile() {
-        final Optional<String> saltFromSecrets = readGlobalSaltFromSecretsFile();
+        Optional<String> saltFromSecrets = readGlobalSaltFromSecretsFile();
         return saltFromSecrets.orElseGet(this::readGlobalSaltFromVolumeDataFile);
     }
 
     private Optional<String> readGlobalSaltFromSecretsFile() {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
-        } catch (FileNotFoundException | NoSuchFileException ex) {
-            // TODO in 6.x remove this catch block
-            // ignore so we can attempt the old file.
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             logger.debug("Error getting new global salt file.", ex);
-        }
-
-        // TODO remove in 6.x
-        try {
-            return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT_OLD));
-        } catch (FileNotFoundException | NoSuchFileException ex) {
-            // ignore if not found.
-        } catch (final IOException ex) {
-            logger.debug("Error getting old global salt file.", ex);
         }
 
         return Optional.empty();
@@ -186,9 +170,9 @@ public class EncryptionUtility {
 
     private String readGlobalSaltFromVolumeDataFile() {
         try {
-            final EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
+            EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getGlobalSalt();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             logger.debug("Error getting password from file.", ex);
             return null;
         }
@@ -198,7 +182,7 @@ public class EncryptionUtility {
         private final String password;
         private final String globalSalt;
 
-        private EncryptionFileData(final String password, final String globalSalt) {
+        private EncryptionFileData(String password, String globalSalt) {
             this.password = password;
             this.globalSalt = globalSalt;
         }
@@ -210,5 +194,7 @@ public class EncryptionUtility {
         public String getGlobalSalt() {
             return globalSalt;
         }
+
     }
+
 }

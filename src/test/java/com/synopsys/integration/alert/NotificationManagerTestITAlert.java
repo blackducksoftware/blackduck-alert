@@ -22,10 +22,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -44,9 +49,11 @@ import com.synopsys.integration.alert.database.configuration.repository.DefinedF
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContent;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
@@ -75,9 +82,13 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private EmailChannelKey emailChannelKey;
 
     @Autowired
+    private ConfigurationAccessor configurationAccessor;
+    @Autowired
     private DefaultNotificationManager notificationManager;
 
-    public void assertNotificationModel(final AlertNotificationWrapper notification, final AlertNotificationWrapper savedNotification) {
+    private ConfigurationModel providerConfigModel = null;
+
+    public void assertNotificationModel(AlertNotificationModel notification, AlertNotificationModel savedNotification) {
         assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());
         assertEquals(notification.getProvider(), savedNotification.getProvider());
         assertEquals(notification.getNotificationType(), savedNotification.getNotificationType());
@@ -85,12 +96,28 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     @BeforeEach
-    public void init() {
+    public void init() throws AlertDatabaseConstraintException {
         cleanDB();
+
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("true");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("My Black Duck Config");
+
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://a-blackduck-server");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue("300");
+
+        List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
+        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
     }
 
     @AfterEach
-    public void cleanUpDB() {
+    public void cleanUpDB() throws AlertDatabaseConstraintException {
+        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
         cleanDB();
     }
 
@@ -106,8 +133,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindAllEmpty() {
-        final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationWrapper> all = notificationManager.findAll(pageRequest, false);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<AlertNotificationModel> all = notificationManager.findAll(pageRequest, false);
         assertTrue(all.isEmpty());
 
         all = notificationManager.findAll(pageRequest, true);
@@ -116,21 +143,21 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindAll() {
-        NotificationContent notificationContent = createNotificationContent();
+        NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
-        final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationWrapper> all = notificationManager.findAll(pageRequest, false);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<AlertNotificationModel> all = notificationManager.findAll(pageRequest, false);
         assertFalse(all.isEmpty());
 
         all = notificationManager.findAll(pageRequest, true);
         assertTrue(all.isEmpty());
 
-        final Date now = new Date();
-        final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
-        final AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
+        Date now = new Date();
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
-        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
+        AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
 
         all = notificationManager.findAll(pageRequest, true);
@@ -139,8 +166,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindAllWithSearchEmpty() {
-        final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
         assertTrue(all.isEmpty());
 
         all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, true);
@@ -149,11 +176,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindAllWithSearch() {
-        NotificationContent notificationContent = createNotificationContent();
+        NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
-        final PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
         // Search term should not match anything in the saved notifications
         assertTrue(all.isEmpty());
 
@@ -165,11 +192,11 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         // Search term should match the notification type but it was never sent so no match
         assertTrue(all.isEmpty());
 
-        final Date now = new Date();
-        final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
-        final AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
+        Date now = new Date();
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
-        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
+        AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(saveAuditEntry.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
 
         all = notificationManager.findAllWithSearch(NOTIFICATION_TYPE, pageRequest, true);
@@ -179,89 +206,89 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindAllWithSearchByFieldValue() {
-        NotificationContent notificationContent = createNotificationContent();
+        NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
-        final UUID jobId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
 
-        final RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(emailChannelKey.getUniversalKey()).orElse(null);
-        final ConfigContextEntity configContextEntity = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElse(null);
+        RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(emailChannelKey.getUniversalKey()).orElse(null);
+        ConfigContextEntity configContextEntity = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElse(null);
 
         Date currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfig = new DescriptorConfigEntity(registeredDescriptorEntity.getId(), configContextEntity.getId(), currentTime, currentTime);
         descriptorConfig = descriptorConfigRepository.save(descriptorConfig);
 
-        final ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
+        ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
         configGroupRepository.save(configGroupEntity);
 
-        final DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+        DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
 
-        final FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), emailChannelKey.getUniversalKey());
+        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), emailChannelKey.getUniversalKey());
         fieldValueRepository.save(fieldValueEntity);
 
         final String auditStatus = "audit status thing";
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(), new Date(), auditStatus, "", "");
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
-        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
+        AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
 
-        final PageRequest pageRequest = PageRequest.of(0, 10);
-        final Page<AlertNotificationWrapper> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
         // Search term should match the channel name
         assertFalse(all.isEmpty());
     }
 
     @Test
     public void testSave() {
-        final AlertNotificationWrapper notificationContent = createNotificationContent();
-        final List<AlertNotificationWrapper> savedModels = notificationManager.saveAllNotifications(List.of(notificationContent));
+        AlertNotificationModel notificationContent = createNotificationModel();
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationContent));
         assertNotNull(savedModels);
         assertFalse(savedModels.isEmpty());
-        final AlertNotificationWrapper savedModel = savedModels.get(0);
+        AlertNotificationModel savedModel = savedModels.get(0);
         assertNotNull(savedModel.getId());
         assertNotificationModel(notificationContent, savedModel);
     }
 
     @Test
     public void testFindByIds() {
-        final AlertNotificationWrapper notification = createNotificationContent();
-        final List<AlertNotificationWrapper> savedModels = notificationManager.saveAllNotifications(List.of(notification));
-        final List<Long> notificationIds = savedModels.stream().map(AlertNotificationWrapper::getId).collect(Collectors.toList());
-        final List<AlertNotificationWrapper> notificationList = notificationManager.findByIds(notificationIds);
+        AlertNotificationModel notification = createNotificationModel();
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification));
+        List<Long> notificationIds = savedModels.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
+        List<AlertNotificationModel> notificationList = notificationManager.findByIds(notificationIds);
 
         assertEquals(1, notificationList.size());
     }
 
     @Test
     public void testFindByIdsInvalidIds() {
-        AlertNotificationWrapper model = createNotificationContent();
+        AlertNotificationModel model = createNotificationModel();
         model = notificationManager.saveAllNotifications(List.of(model)).get(0);
 
-        final List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
-        final List<AlertNotificationWrapper> notificationModelList = notificationManager.findByIds(notificationIds);
+        List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
+        List<AlertNotificationModel> notificationModelList = notificationManager.findByIds(notificationIds);
         assertTrue(notificationModelList.isEmpty());
     }
 
     @Test
     public void findByCreatedAtBetween() {
-        final LocalDateTime time = LocalDateTime.now();
-        final Date startDate = createDate(time.minusHours(1));
-        final Date endDate = createDate(time.plusHours(1));
+        LocalDateTime time = LocalDateTime.now();
+        Date startDate = createDate(time.minusHours(1));
+        Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
-        AlertNotificationWrapper entity = createNotificationContent(createdAt);
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         createdAt = createDate(time.plusMinutes(1));
-        final AlertNotificationWrapper entityToFind1 = createNotificationContent(createdAt);
+        AlertNotificationModel entityToFind1 = createNotificationModel(createdAt);
         createdAt = createDate(time.plusMinutes(5));
-        final AlertNotificationWrapper entityToFind2 = createNotificationContent(createdAt);
+        AlertNotificationModel entityToFind2 = createNotificationModel(createdAt);
         createdAt = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAt);
+        entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
 
-        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -270,34 +297,34 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBetweenInvalidDate() {
-        final LocalDateTime time = LocalDateTime.now();
-        final Date startDate = createDate(time.minusHours(1));
-        final Date endDate = createDate(time.plusHours(1));
-        final Date createdAtEarlier = createDate(time.minusHours(5));
-        NotificationContent entity = createNotificationContent(createdAtEarlier);
+        LocalDateTime time = LocalDateTime.now();
+        Date startDate = createDate(time.minusHours(1));
+        Date endDate = createDate(time.plusHours(1));
+        Date createdAtEarlier = createDate(time.minusHours(5));
+        AlertNotificationModel entity = createNotificationModel(createdAtEarlier);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        final Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLater);
+        Date createdAtLater = createDate(time.plusHours(3));
+        entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertTrue(foundList.isEmpty());
     }
 
     @Test
     public void findByCreatedAtBefore() {
-        final LocalDateTime time = LocalDateTime.now();
+        LocalDateTime time = LocalDateTime.now();
         Date searchDate = createDate(time.plusHours(1));
-        final Date createdAt = createDate(time.minusHours(5));
-        NotificationContent entity = createNotificationContent(createdAt);
+        Date createdAt = createDate(time.minusHours(5));
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        final Date createdAtLaterThanSearch = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLaterThanSearch);
+        Date createdAtLaterThanSearch = createDate(time.plusHours(3));
+        entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBefore(searchDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBefore(searchDate);
 
         assertEquals(1, foundList.size());
 
@@ -308,15 +335,15 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBeforeDayOffset() {
-        final LocalDateTime time = LocalDateTime.now();
-        final Date createdAt = createDate(time.minusDays(5));
-        AlertNotificationWrapper entity = createNotificationContent(createdAt);
+        LocalDateTime time = LocalDateTime.now();
+        Date createdAt = createDate(time.minusDays(5));
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        final Date createdAtLaterThanSearch = createDate(time.plusDays(3));
-        entity = createNotificationContent(createdAtLaterThanSearch);
+        Date createdAtLaterThanSearch = createDate(time.plusDays(3));
+        entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
 
         assertEquals(1, foundList.size());
 
@@ -326,23 +353,23 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotificationList() {
-        final LocalDateTime time = LocalDateTime.now();
-        final Date startDate = createDate(time.minusHours(1));
-        final Date endDate = createDate(time.plusHours(1));
-        final Date createdAt = createDate(time.minusHours(3));
-        NotificationContent entity = createNotificationContent(createdAt);
+        LocalDateTime time = LocalDateTime.now();
+        Date startDate = createDate(time.minusHours(1));
+        Date endDate = createDate(time.plusHours(1));
+        Date createdAt = createDate(time.minusHours(3));
+        AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         Date createdAtInRange = createDate(time.plusMinutes(1));
-        final NotificationContent entityToFind1 = createNotificationContent(createdAtInRange);
+        AlertNotificationModel entityToFind1 = createNotificationModel(createdAtInRange);
         createdAtInRange = createDate(time.plusMinutes(5));
-        final NotificationContent entityToFind2 = createNotificationContent(createdAtInRange);
-        final Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationContent(createdAtLater);
+        AlertNotificationModel entityToFind2 = createNotificationModel(createdAtInRange);
+        Date createdAtLater = createDate(time.plusHours(3));
+        entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
 
-        final List<AlertNotificationWrapper> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
         assertEquals(4, notificationContentRepository.count());
 
         notificationManager.deleteNotificationList(foundList);
@@ -352,8 +379,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotification() {
-        final AlertNotificationWrapper notificationEntity = createNotificationContent();
-        final AlertNotificationWrapper savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
+        AlertNotificationModel notificationEntity = createNotificationModel();
+        AlertNotificationModel savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
         assertEquals(1, notificationContentRepository.count());
 
         notificationManager.deleteNotification(savedModel);
@@ -361,17 +388,27 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         assertEquals(0, notificationContentRepository.count());
     }
 
-    private NotificationContent createNotificationContent(final Date createdAt) {
-        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null);
+    private AlertNotificationModel createNotificationModel(Date createdAt) {
+        return new AlertNotificationModel(1L, providerConfigModel.getConfigurationId(), "provider", "providerConfigName", NOTIFICATION_TYPE, "{content: \"content is here...\"}", createdAt, createdAt);
+    }
+
+    private AlertNotificationModel createNotificationModel() {
+        Date createdAt = createDate(LocalDateTime.now());
+        return createNotificationModel(createdAt);
+    }
+
+    private NotificationEntity createNotificationContent(Date createdAt) {
+        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null, providerConfigModel.getConfigurationId());
         return mockedNotificationContent.createEntity();
     }
 
-    private NotificationContent createNotificationContent() {
-        final Date createdAt = createDate(LocalDateTime.now());
+    private NotificationEntity createNotificationContent() {
+        Date createdAt = createDate(LocalDateTime.now());
         return createNotificationContent(createdAt);
     }
 
-    private Date createDate(final LocalDateTime localTime) {
+    private Date createDate(LocalDateTime localTime) {
         return Date.from(localTime.toInstant(ZoneOffset.UTC));
     }
+
 }

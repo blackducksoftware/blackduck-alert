@@ -41,17 +41,19 @@ class MainPage extends Component {
 
     createConfigurationPage(component, uriPrefix) {
         const {
-            urlName, name, automaticallyGenerateUI, componentNamespace
+            urlName, name, automaticallyGenerateUI, componentNamespace, label, description
         } = component;
         if (!automaticallyGenerateUI) {
             return (<Route
+                exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} />}
+                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} label={label} description={description} />}
             />);
         }
 
         return (<Route
+            exact
             key={urlName}
             path={`${uriPrefix}${urlName}`}
             render={() => <GlobalConfiguration key={name} descriptor={component} />}
@@ -84,9 +86,9 @@ class MainPage extends Component {
                 />
                 {providers}
                 {channels}
-                <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
+                <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
-                <Route path="/alert/general/about" component={AboutInfo} />
+                <Route exact path="/alert/general/about" component={AboutInfo} />
             </div>
         );
 

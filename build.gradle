@@ -99,6 +99,14 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    // =============
+    // Test and Dev
+    // =============
+    testImplementation 'org.testcontainers:postgresql:1.12.5'
+    if (getGradle().getStartParameter().taskNames.contains('runServer')) {
+        runtimeClasspath 'org.testcontainers:postgresql:1.12.5'
+    }
 }
 
 bootJar {
@@ -204,15 +212,15 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
                                 '--server.port=8443',
 
-                                '--hibernate.default_schema=ALERT',
-                                '--spring.h2.console.enabled=true',
+                                '--hibernate.default_schema=alert',
                                 '--spring.jpa.hibernate.ddl-auto=none',
-                                '--spring.datasource.driver-class-name=org.h2.Driver',
-                                '--spring.jpa.database-platform=org.hibernate.dialect.H2Dialect',
+                                '--spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect',
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
-                                '--spring.datasource.url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
-                                '--spring.datasource.hikari.jdbc-url=jdbc:h2:file:${ALERT_DB_DIR:./data/alertdb};MODE=PostgreSQL;INIT=create schema if not exists ALERT',
+                                '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
+                                '--spring.datasource.url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
                                 "--alert.templates.dir=${project.buildDir}/resources/main/templates",

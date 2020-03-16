@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-02-12-15-43-59-483">
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_OLD_BLACK_DUCK_PROVIDER_CONFIG_ID()
+            RETURNS BIGINT AS $result$
+                DECLARE result BIGINT;
+                BEGIN
+                    select ID
+                    into result
+                    from ALERT.DESCRIPTOR_CONFIGS where CONTEXT_ID = GET_CONTEXT_ID('GLOBAL') and DESCRIPTOR_ID = GET_DESCRIPTOR_ID('provider_blackduck');
+                    RETURN result;
+                END;
+            $result$
+            LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+
+</databaseChangeLog>

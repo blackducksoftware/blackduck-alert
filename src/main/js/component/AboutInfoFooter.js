@@ -159,7 +159,7 @@ class AboutInfoFooter extends React.Component {
                 </span>
                 <span className="productVersion">v{version}</span>
                 <span className="copyright">
-                    &nbsp;© 2019&nbsp;
+                    &nbsp;© 2020&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
                     &nbsp;All rights reserved
                 </span>

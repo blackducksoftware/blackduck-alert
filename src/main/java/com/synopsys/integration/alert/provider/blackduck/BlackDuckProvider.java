@@ -23,26 +23,24 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.MessageContentCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
-import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
+import com.synopsys.integration.alert.provider.blackduck.factories.DistributionFilterFactory;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
@@ -53,62 +51,40 @@ import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNo
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocationBomComputedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckProvider extends Provider {
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
-
-    private final BlackDuckAccumulator accumulatorTask;
-    private final BlackDuckDataSyncTask projectSyncTask;
-    private final TaskManager taskManager;
-    private final BlackDuckProperties blackDuckProperties;
-
-    private final ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory;
-    private final ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory;
+    private final DistributionFilterFactory distributionFilterFactory;
+    private final MessageContentCollectorFactory messageContentCollectorFactory;
+    private final BlackDuckPropertiesFactory propertiesFactory;
+    private final BlackDuckValidator validator;
+    private final BlackDuckTaskFactory taskFactory;
 
     @Autowired
-    public BlackDuckProvider(
-        BlackDuckProviderKey blackDuckProviderKey, BlackDuckAccumulator accumulatorTask, BlackDuckDataSyncTask projectSyncTask, BlackDuckContent blackDuckContent, TaskManager taskManager, BlackDuckProperties blackDuckProperties,
-        ObjectFactory<BlackDuckDistributionFilter> distributionFilterFactory, ObjectFactory<BlackDuckMessageContentCollector> messageContentCollectorFactory) {
+    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent, DistributionFilterFactory distributionFilterFactory, MessageContentCollectorFactory messageContentCollectorFactory,
+        BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator validator, BlackDuckTaskFactory taskFactory) {
         super(blackDuckProviderKey, blackDuckContent);
-        this.accumulatorTask = accumulatorTask;
-        this.projectSyncTask = projectSyncTask;
-        this.taskManager = taskManager;
-        this.blackDuckProperties = blackDuckProperties;
         this.distributionFilterFactory = distributionFilterFactory;
         this.messageContentCollectorFactory = messageContentCollectorFactory;
+        this.propertiesFactory = propertiesFactory;
+        this.validator = validator;
+        this.taskFactory = taskFactory;
     }
 
     @Override
-    public void initialize() {
-        logger.info("Initializing Black Duck provider...");
-        taskManager.registerTask(accumulatorTask);
-        taskManager.registerTask(projectSyncTask);
-
-        Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfigSafely(new Slf4jIntLogger(logger));
-        blackDuckServerConfig.ifPresent(globalConfig -> {
-            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, accumulatorTask.getTaskName());
-            taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, projectSyncTask.getTaskName());
-        });
+    public boolean validate(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
+        return validator.validate(blackDuckProperties);
     }
 
     @Override
-    public void destroy() {
-        logger.info("Destroying Black Duck provider...");
-        taskManager.unregisterTask(accumulatorTask.getTaskName());
-        taskManager.unregisterTask(projectSyncTask.getTaskName());
-    }
+    public StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) {
+        BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
+        List<ProviderTask> tasks = taskFactory.createTasks(blackDuckProperties);
+        ProviderDistributionFilter distributionFilter = distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
+        BlackDuckMessageContentCollector messageContentCollector = messageContentCollectorFactory.createCollector(blackDuckProperties);
 
-    @Override
-    public ProviderDistributionFilter createDistributionFilter() {
-        return distributionFilterFactory.getObject();
-    }
-
-    @Override
-    public ProviderMessageContentCollector createMessageContentCollector() {
-        return messageContentCollectorFactory.getObject();
+        return StatefulProvider.create(getKey(), configurationModel, tasks, blackDuckProperties, distributionFilter, messageContentCollector);
     }
 
     @Override

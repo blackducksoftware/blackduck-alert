@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -97,7 +98,8 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     public MsTeamsMessage createMsTeamsMessage(MessageContentGroup messageContentGroup) {
         String header = createHeader(messageContentGroup);
-        String commonTopic = getCommonTopic(messageContentGroup);
+        ItemOperation nullableTopLevelAction = getNullableTopLevelAction(messageContentGroup).orElse(null);
+        String commonTopic = getCommonTopic(messageContentGroup, nullableTopLevelAction);
         List<MsTeamsSection> messagePieces = createMessageParts(messageContentGroup);
         return new MsTeamsMessage(header, commonTopic, messagePieces);
     }
@@ -111,11 +113,13 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
 
     private MsTeamsSection createMessageSection(ProviderMessageContent providerMessageContent) {
         MsTeamsSection msTeamsSection = new MsTeamsSection();
-        String componentSubTopic = getComponentSubTopic(providerMessageContent);
+        ItemOperation nullableTopLevelAction = providerMessageContent.isTopLevelActionOnly() ? providerMessageContent.getAction().orElse(null) : null;
+        String componentSubTopic = getComponentSubTopic(providerMessageContent, nullableTopLevelAction);
         msTeamsSection.setSubTopic(componentSubTopic);
         List<String> componentItemMessage = createComponentItemMessage(providerMessageContent);
         msTeamsSection.setComponentsMessage(componentItemMessage);
 
         return msTeamsSection;
     }
+
 }

@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 
 import about from 'store/reducers/about';
 import audit from 'store/reducers/audit';
+import certificates from "store/reducers/certificates";
 import descriptors from 'store/reducers/descriptors';
 import distributions from 'store/reducers/distributions';
 import distributionConfigs from 'store/reducers/distributionConfigs';
@@ -17,6 +18,7 @@ import users from 'store/reducers/users';
 const rootReducer = combineReducers({
     about,
     audit,
+    certificates,
     globalConfiguration,
     descriptors,
     distributions,

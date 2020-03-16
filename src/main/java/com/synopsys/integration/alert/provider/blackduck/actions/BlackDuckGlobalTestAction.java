@@ -34,8 +34,10 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.builder.BuilderStatus;
@@ -48,11 +50,11 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @Component
 public class BlackDuckGlobalTestAction extends TestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final BlackDuckProperties blackDuckProperties;
+    private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
-    public BlackDuckGlobalTestAction(BlackDuckProperties blackDuckProperties) {
-        this.blackDuckProperties = blackDuckProperties;
+    public BlackDuckGlobalTestAction(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+        this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 
     @Override
@@ -62,6 +64,17 @@ public class BlackDuckGlobalTestAction extends TestAction {
         String apiToken = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         String url = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         String timeout = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        Long parsedConfigurationId = ProviderProperties.UNKNOWN_CONFIG_ID;
+
+        if (StringUtils.isNotBlank(configId)) {
+            try {
+                parsedConfigurationId = Long.valueOf(configId);
+            } catch (NumberFormatException ex) {
+                throw new AlertException("Configuration id not valid.");
+            }
+        }
+
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(parsedConfigurationId, fieldAccessor);
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
@@ -90,5 +103,4 @@ public class BlackDuckGlobalTestAction extends TestAction {
             throw new AlertException("There were issues with the configuration: " + errorMessage);
         }
     }
-
 }

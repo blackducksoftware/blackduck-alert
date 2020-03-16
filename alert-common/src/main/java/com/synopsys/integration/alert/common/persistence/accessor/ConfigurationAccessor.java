@@ -39,34 +39,36 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 public interface ConfigurationAccessor {
     List<ConfigurationJobModel> getAllJobs();
 
-    Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationJobModel> getJobsByFrequency(final FrequencyType frequency);
+    List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency);
 
-    ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    ConfigurationJobModel updateJob(final UUID jobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException;
+    void deleteJob(UUID jobId) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getChannelConfigurationsByFrequency(final FrequencyType frequencyType) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) throws AlertDatabaseConstraintException;
 
-    Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) throws AlertDatabaseConstraintException;
+
+    Optional<ConfigurationModel> getConfigurationById(Long id) throws AlertDatabaseConstraintException;
 
     List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getConfigurationsByDescriptorType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
     List<ConfigurationModel> getConfigurationByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
-    ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException;
+    void deleteConfiguration(ConfigurationModel configModel) throws AlertDatabaseConstraintException;
 
-    void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException;
+    void deleteConfiguration(Long descriptorConfigId) throws AlertDatabaseConstraintException;
 
 }

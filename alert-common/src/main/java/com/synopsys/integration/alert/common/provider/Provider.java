@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 
 public abstract class Provider {
     private final ProviderKey key;
@@ -39,15 +39,11 @@ public abstract class Provider {
         return key;
     }
 
-    public abstract void initialize();
+    public abstract boolean validate(ConfigurationModel configurationModel);
 
-    public abstract void destroy();
-
-    public abstract ProviderDistributionFilter createDistributionFilter();
+    public abstract StatefulProvider createStatefulProvider(ConfigurationModel configurationModel);
 
     public abstract ProviderNotificationClassMap getNotificationClassMap();
-
-    public abstract ProviderMessageContentCollector createMessageContentCollector();
 
     public ProviderContent getProviderContent() {
         return providerContent;

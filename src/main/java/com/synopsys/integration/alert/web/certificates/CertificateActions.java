@@ -38,17 +38,20 @@ import com.synopsys.integration.alert.common.persistence.accessor.CustomCertific
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.web.model.CertificateModel;
+import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions {
     private static final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private CertificateUtility certificateUtility;
     private CustomCertificateAccessor certificateAccessor;
+    private IntegrationEscapeUtil escapeUtil;
 
     @Autowired
     public CertificateActions(CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {
         this.certificateAccessor = certificateAccessor;
         this.certificateUtility = certificateUtility;
+        escapeUtil = new IntegrationEscapeUtil();
     }
 
     public List<CertificateModel> readCertificates() {
@@ -66,17 +69,20 @@ public class CertificateActions {
         if (null != certificateModel.getId()) {
             throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
         }
-        logger.info("Importing certificate with alias {}", certificateModel.getAlias());
+        String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
+        logger.info("Importing certificate with alias {}", loggableAlias);
         return importCertificate(certificateModel);
     }
 
     public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
         Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
-        logger.info("Updating certificate with id: {} and alias: {}", certificateModel.getId(), certificateModel.getAlias());
+        String logableId = escapeUtil.replaceWithUnderscore(certificateModel.getId());
+        String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
+        logger.info("Updating certificate with id: {} and alias: {}", logableId, loggableAlias);
         if (existingCertificate.isPresent()) {
             return Optional.ofNullable(importCertificate(certificateModel));
         }
-        logger.error("Certificate with id: {} missing.", certificateModel.getId());
+        logger.error("Certificate with id: {} missing.", logableId);
         return Optional.empty();
     }
 
@@ -114,11 +120,11 @@ public class CertificateActions {
 
     private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertifcateModel) {
         String id = databaseCertifcateModel.getNullableId() != null ? Long.toString(databaseCertifcateModel.getNullableId()) : null;
-        return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent());
+        return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent(), databaseCertifcateModel.getLastUpdated());
     }
 
     private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
         Long id = StringUtils.isNotBlank(certificateModel.getId()) ? Long.valueOf(certificateModel.getId()) : null;
-        return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent());
+        return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent(), certificateModel.getLastUpdated());
     }
 }

@@ -34,7 +34,8 @@ class PermissionTable extends Component {
 
         this.state = {
             permissionsData: {},
-            errorMessage: null
+            errorMessage: null,
+            saveInProgress: false
         };
     }
 
@@ -42,7 +43,7 @@ class PermissionTable extends Component {
         const { name, value, type, checked } = e.target;
         const { permissionsData } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
-            .toLowerCase() === 'true' : value;
+        .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
         const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
         this.setState({
@@ -113,7 +114,7 @@ class PermissionTable extends Component {
         const splitPermissions = permissionsColumn.split('-');
 
         const prettyNameObject = this.createDescriptorOptions()
-            .find(option => descriptorName === option.label);
+        .find(option => descriptorName === option.label);
         const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
 
         return {
@@ -233,7 +234,10 @@ class PermissionTable extends Component {
         );
     }
 
-    onSavePermissions() {
+    async onSavePermissions() {
+        await this.setState({
+            saveInProgress: true
+        });
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
             this.setState({
@@ -241,7 +245,16 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        return this.props.saveRole(permissionsData);
+        const saved = this.props.saveRole(permissionsData);
+        if (saved) {
+            this.setState({
+                permissionsData: {}
+            });
+        }
+        await this.setState({
+            saveInProgress: false
+        });
+        return saved;
     }
 
     onDeletePermissions(permissionsToDelete) {
@@ -251,13 +264,13 @@ class PermissionTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, inProgress, fetching } = this.props;
-
+        const { canCreate, canDelete, inProgress, fetching, nestedInModal } = this.props;
+        const savingInProgress = inProgress || this.state.saveInProgress;
         return (
             <div>
                 <TableDisplay
                     modalTitle="Role Permissions"
-                    inProgress={inProgress}
+                    inProgress={savingInProgress}
                     fetching={fetching}
                     tableNewButtonLabel="Add"
                     tableDeleteButtonLabel="Remove"
@@ -276,7 +289,8 @@ class PermissionTable extends Component {
                     newButton={canCreate}
                     sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
                     errorDialogMessage={this.state.errorMessage}
-                    clearModalFieldState={() => this.setState({ errorMessage: null })} />
+                    clearModalFieldState={() => this.setState({ errorMessage: null })}
+                    nestedInAnotherModal={nestedInModal} />
             </div>
         );
     }
@@ -290,7 +304,8 @@ PermissionTable.propTypes = {
     canDelete: PropTypes.bool,
     descriptors: PropTypes.array,
     inProgress: PropTypes.bool,
-    fetching: PropTypes.bool
+    fetching: PropTypes.bool,
+    nestedInModal: PropTypes.bool
 };
 
 PermissionTable.defaultProps = {
@@ -298,7 +313,8 @@ PermissionTable.defaultProps = {
     canDelete: true,
     descriptors: [],
     inProgress: false,
-    fetching: false
+    fetching: false,
+    nestedInModal: false
 };
 
 export default PermissionTable;

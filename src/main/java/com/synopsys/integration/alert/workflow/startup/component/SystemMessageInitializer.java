@@ -30,20 +30,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.ProviderValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 
 @Component
 @Order(30)
 public class SystemMessageInitializer extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
-    private final List<ProviderValidator> providerValidators;
-    private SettingsValidator settingsValidator;
+    private final List<Provider> providers;
+    private final SettingsValidator settingsValidator;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, SettingsValidator settingsValidator) {
-        this.providerValidators = providerValidators;
+    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor) {
+        this.providers = providers;
         this.settingsValidator = settingsValidator;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -55,10 +61,9 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
-        boolean defaultUserSettingsValid = settingsValidator.validateUser().isEmpty();
         boolean encryptionValid = settingsValidator.validateEncryption().isEmpty();
         boolean providersValid = validateProviders();
-        boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
+        boolean valid = encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         return valid;
@@ -67,8 +72,15 @@ public class SystemMessageInitializer extends StartupComponent {
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");
-        for (ProviderValidator providerValidator : providerValidators) {
-            valid = valid && providerValidator.validate();
+        for (Provider provider : providers) {
+            try {
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+                for (ConfigurationModel configuration : configurations) {
+                    valid = valid && provider.validate(configuration);
+                }
+            } catch (AlertDatabaseConstraintException ex) {
+                logger.debug("Error getting provider configurations", ex);
+            }
         }
         return valid;
     }

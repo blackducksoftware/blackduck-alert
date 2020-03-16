@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-03-02-13-18-14-863">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">SELECT count(id) FROM alert.defined_fields WHERE source_key = 'provider.distribution.format.type'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT count(id) FROM alert.defined_fields WHERE source_key = 'provider.distribution.processing.type'</sqlCheck>
+            </and>
+        </preConditions>
+        <update schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="provider.distribution.processing.type"/>
+            <where>source_key = 'provider.distribution.format.type'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

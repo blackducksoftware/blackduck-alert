@@ -45,7 +45,7 @@ public class SAMLAuthProvider extends SAMLAuthenticationProvider {
         Authentication currentAuth = super.authenticate(authentication);
         logger.debug("User authenticated: {}", currentAuth.isAuthenticated());
         if (currentAuth.isAuthenticated()) {
-            authenticationEventManager.sendAuthenticationEvent(authentication, AuthenticationType.SAML);
+            authenticationEventManager.sendAuthenticationEvent(currentAuth, AuthenticationType.SAML);
             SecurityContextHolder.getContext().setAuthentication(currentAuth);
         }
         return currentAuth;

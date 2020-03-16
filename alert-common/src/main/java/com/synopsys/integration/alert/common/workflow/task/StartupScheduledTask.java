@@ -32,8 +32,8 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     private final TaskManager taskManager;
     private Boolean enabled;
 
-    public StartupScheduledTask(TaskScheduler taskScheduler, String taskName, TaskManager taskManager) {
-        super(taskScheduler, taskName);
+    public StartupScheduledTask(TaskScheduler taskScheduler, TaskManager taskManager) {
+        super(taskScheduler);
         this.taskManager = taskManager;
         this.enabled = true;
     }
@@ -52,7 +52,7 @@ public abstract class StartupScheduledTask extends ScheduledTask {
             return;
         }
         taskManager.registerTask(this);
-        taskManager.scheduleCronTask(scheduleCronExpression(), getTaskName());
+        taskManager.scheduleCronTask(scheduleCronExpression(), taskName);
         String nextRun = taskManager.getNextRunTime(taskName).orElse("");
         logger.info("{} next run:     {}", taskName, nextRun);
         postTaskStartup();
@@ -69,4 +69,5 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
+
 }

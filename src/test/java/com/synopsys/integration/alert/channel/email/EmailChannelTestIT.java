@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.channel.email.template.EmailChannelMessage
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -69,7 +69,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
+            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldAccessor);
         emailChannel.sendAuditedMessage(event);
     }
 
@@ -81,7 +81,7 @@ public class EmailChannelTestIT extends ChannelTest {
             EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
             LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                 .applyProvider("testProvider")
+                                                 .applyProvider("testProvider", 1L, "testProviderConfig")
                                                  .applyTopic("testTopic", "topic")
                                                  .applySubTopic(subTopic.getName(), subTopic.getValue())
                                                  .build();

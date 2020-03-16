@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -45,7 +45,7 @@ public class MsTeamsChannelTest extends ChannelTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), new BlackDuckProviderKey().getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
+            "1L", msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), new BlackDuckProviderKey().getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldAccessor);
 
         msTeamsChannel.sendAuditedMessage(event);
 

@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.event;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -52,7 +54,16 @@ public class AuthenticationEventListener extends MessageReceiver<AlertAuthentica
         UserModel user = event.getUser();
         if (null != user) {
             try {
-                userAccessor.addUser(user, true);
+                Optional<UserModel> userModel = userAccessor.getUser(user.getName());
+                if (userModel.isPresent() && user.isExternal()) {
+                    UserModel model = userModel.get();
+                    UserModel updatedUser = UserModel.existingUser(
+                        model.getId(), user.getName(), user.getPassword(), user.getEmailAddress(),
+                        user.getAuthenticationType(), user.getRoles(), user.isEnabled());
+                    userAccessor.updateUser(updatedUser, true);
+                } else {
+                    userAccessor.addUser(user, true);
+                }
             } catch (AlertDatabaseConstraintException ignored) {
                 // User already exists. Nothing to do.
             }

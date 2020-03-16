@@ -124,7 +124,7 @@ public class UserController extends BaseController {
             userActions.deleteUser(userId);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Deleted");
         } catch (AlertForbiddenOperationException ex) {
-            return responseFactory.createForbiddenResponse("The user is reserved and cannot be deleted.");
+            return responseFactory.createForbiddenResponse(ex.getMessage());
         }
     }
 

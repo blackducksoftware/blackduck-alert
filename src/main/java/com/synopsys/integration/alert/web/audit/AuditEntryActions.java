@@ -44,9 +44,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationMa
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.workflow.processor.NotificationProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -81,7 +81,7 @@ public class AuditEntryActions {
 
     public Optional<AuditEntryModel> get(Long id) {
         if (id != null) {
-            Optional<AlertNotificationWrapper> notificationContent = notificationManager.findById(id);
+            Optional<AlertNotificationModel> notificationContent = notificationManager.findById(id);
             return notificationContent.map(auditUtility::convertToAuditEntryModelFromNotification);
         }
         return Optional.empty();
@@ -95,9 +95,9 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> resendNotification(Long notificationId, UUID commonConfigId) throws IntegrationException {
-        AlertNotificationWrapper notificationContent = notificationManager
-                                                           .findById(notificationId)
-                                                           .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
+        AlertNotificationModel notificationContent = notificationManager
+                                                         .findById(notificationId)
+                                                         .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
         List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
             ConfigurationJobModel commonDistributionConfig = jobConfigReader.getJobById(commonConfigId).orElseThrow(() -> {
@@ -128,4 +128,5 @@ public class AuditEntryActions {
         }
         return get();
     }
+
 }

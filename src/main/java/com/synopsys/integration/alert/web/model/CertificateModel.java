@@ -28,20 +28,23 @@ public class CertificateModel extends Config {
     private static final long serialVersionUID = 5148208006398190462L;
     private String alias;
     private String certificateContent;
+    private String lastUpdated;
 
     public CertificateModel() {
         super();
     }
 
-    public CertificateModel(String alias, String certificateContent) {
+    public CertificateModel(String alias, String certificateContent, String lastUpdated) {
         this.alias = alias;
         this.certificateContent = certificateContent;
+        this.lastUpdated = lastUpdated;
     }
 
-    public CertificateModel(String id, String alias, String certificateContent) {
+    public CertificateModel(String id, String alias, String certificateContent, String lastUpdated) {
         super(id);
         this.alias = alias;
         this.certificateContent = certificateContent;
+        this.lastUpdated = lastUpdated;
     }
 
     public String getAlias() {
@@ -50,5 +53,9 @@ public class CertificateModel extends Config {
 
     public String getCertificateContent() {
         return certificateContent;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
     }
 }

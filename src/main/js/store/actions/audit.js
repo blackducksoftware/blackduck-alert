@@ -88,7 +88,18 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
                     dispatch(auditDataFetched(body.totalPages, body.content));
                 });
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                switch (response.status) {
+                    case 401:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(auditDataFetchError('You are not permitted to view this information.'));
+                        break;
+                    default:
+                        response.json().then((json) => {
+                            dispatch(auditDataFetchError(json.message));
+                        });
+                }
             }
         }).catch((error) => {
             dispatch(auditDataFetchError(error));
@@ -116,8 +127,10 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
             if (!response.ok) {
                 switch (response.status) {
                     case 401:
-                    case 403:
                         dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 403:
+                        dispatch(auditResendError('You are not permitted to perform this action.'));
                         break;
                     default:
                         response.json().then((json) => {

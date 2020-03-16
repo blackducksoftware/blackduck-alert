@@ -153,7 +153,6 @@ public class UploadEndpointManager {
                 File fileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
                 Collection<String> errors = validationFunction.get().apply(fileToValidate);
                 filePersistenceUtil.delete(fileToValidate);
-                // TODO Implement a ValidationResult object that UploadValidationFunction and ConfigValidationFunction can return.
                 if (errors.isEmpty()) {
                     writeFile(targetFilename, fileResource);
                     return responseFactory.createCreatedResponse("", "File uploaded.");

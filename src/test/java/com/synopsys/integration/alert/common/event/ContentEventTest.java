@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 public class ContentEventTest {
     private static final String TOPIC = "TOPIC";
@@ -15,26 +15,26 @@ public class ContentEventTest {
 
     @Test
     public void getCreatedAtDateTest() {
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
+        ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
         assertEquals(CREATED_AT, event.getCreatedAt());
     }
 
     @Test
     public void getProviderTest() {
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
-        assertEquals(PROVIDER, event.getProvider());
+        ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
+        assertEquals(PROVIDER, event.getProviderConfigName());
     }
 
     @Test
     public void getContentTest() throws Exception {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
-        final ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                   .applyProvider("testProvider")
-                                                   .applyTopic("testTopic", "topic")
-                                                   .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                   .build();
-        final MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
+        LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
+                                             .applyTopic("testTopic", "topic")
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
+        MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
+        ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, contentGroup);
         assertEquals(contentGroup, event.getContent());
     }
 }

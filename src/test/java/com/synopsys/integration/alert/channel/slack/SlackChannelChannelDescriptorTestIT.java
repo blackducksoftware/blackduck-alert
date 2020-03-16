@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -83,7 +83,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public DistributionEvent createChannelEvent() throws AlertException {
         LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider")
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyTopic("testTopic", "")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
@@ -102,7 +102,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
         DistributionEvent event = new DistributionEvent(
-            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), FormatType.DEFAULT.name(), MessageContentGroup.singleton(content),
+            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content),
             fieldAccessor);
         return event;
     }

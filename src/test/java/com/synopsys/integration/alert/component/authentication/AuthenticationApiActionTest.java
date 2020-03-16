@@ -29,20 +29,19 @@ public class AuthenticationApiActionTest {
     @Test
     public void testLdapEnabled() {
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
+        EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         AuthenticationUIConfig authenticationUIConfig = new AuthenticationUIConfig(filePersistenceUtil, encryptionValidator);
         AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
-        final FieldModel fieldModel = new FieldModel(authenticationDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(), true));
+        FieldModel fieldModel = new FieldModel(authenticationDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.createFields(), ConfigField::getKey);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.createFields(), ConfigField::getKey);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(AuthenticationDescriptor.KEY_LDAP_SERVER));

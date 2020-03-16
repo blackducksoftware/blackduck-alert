@@ -61,4 +61,5 @@ public class UserDetailsService implements SAMLUserDetailsService {
         UserModel userModel = UserModel.newUser(userName, "", emailAddress, AuthenticationType.SAML, roles, true);
         return new UserPrincipal(userModel);
     }
+
 }

@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.web;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
@@ -72,8 +72,8 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    public Optional<ResponseEntity<String>> preprocessRequest(Map<String, FieldValueModel> fieldValueModels) {
-        JiraServerProperties jiraProperties = createJiraProperties(fieldValueModels);
+    public Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+        JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
@@ -100,19 +100,16 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    protected String createData(Map<String, FieldValueModel> fieldValueModels) throws AlertException {
+    protected String createData(FieldModel fieldModel) throws AlertException {
         return "Successfully created Alert plugin on Jira server.";
     }
 
-    private JiraServerProperties createJiraProperties(Map<String, FieldValueModel> fieldValueModels) {
-        FieldValueModel fieldUrl = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_URL);
-        FieldValueModel fieldPassword = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        FieldValueModel fieldUsername = fieldValueModels.get(JiraServerDescriptor.KEY_SERVER_USERNAME);
-
-        // for jira server the url should be
-        String url = fieldUrl.getValue().orElse("");
-        String username = fieldUsername.getValue().orElse("");
-        String password = getAppropriateAccessToken(fieldPassword);
+    private JiraServerProperties createJiraProperties(FieldModel fieldModel) {
+        String url = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_URL).orElse("");
+        String username = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_USERNAME).orElse("");
+        String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_PASSWORD)
+                              .map(this::getAppropriateAccessToken)
+                              .orElse("");
 
         return new JiraServerProperties(url, password, username);
     }

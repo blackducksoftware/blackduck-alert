@@ -33,18 +33,19 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 
 @Entity
 @Table(schema = "alert", name = "raw_notification_content")
-public class NotificationContent extends DatabaseEntity implements AlertNotificationWrapper {
+public class NotificationEntity extends DatabaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
     @Column(name = "provider")
     private String provider;
+    @Column(name = "provider_config_id")
+    private Long providerConfigId;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "provider_creation_time")
     private Date providerCreationTime;
@@ -56,49 +57,50 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
-    public NotificationContent() {
+    public NotificationEntity() {
         // JPA requires default constructor definitions
     }
 
     // Reserved for queries
-    public NotificationContent(Long id, Date createdAt, String provider, Date providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(Long id, Date createdAt, String provider, Long providerConfigId, Date providerCreationTime, String notificationType, String content) {
         this.setId(id);
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerConfigId = providerConfigId;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
     }
 
-    public NotificationContent(Date createdAt, String provider, Date providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(Date createdAt, String provider, Long providerConfigId, Date providerCreationTime, String notificationType, String content) {
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerConfigId = providerConfigId;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
     }
 
-    @Override
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    @Override
     public String getProvider() {
         return provider;
     }
 
-    @Override
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
     public String getNotificationType() {
         return notificationType;
     }
 
-    @Override
     public String getContent() {
         return content;
     }
 
-    @Override
     public Date getProviderCreationTime() {
         return providerCreationTime;
     }
@@ -106,4 +108,5 @@ public class NotificationContent extends DatabaseEntity implements AlertNotifica
     public List<AuditNotificationRelation> getAuditNotificationRelations() {
         return auditNotificationRelations;
     }
+
 }

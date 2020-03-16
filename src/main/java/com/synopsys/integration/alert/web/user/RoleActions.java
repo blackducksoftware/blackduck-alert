@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.web.model.PermissionModel;
 import com.synopsys.integration.alert.web.model.RolePermissionModel;
@@ -55,10 +56,12 @@ public class RoleActions {
     private static final Logger logger = LoggerFactory.getLogger(RoleActions.class);
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private AuthorizationUtility authorizationUtility;
+    private AuthorizationManager authorizationManager;
 
     @Autowired
-    public RoleActions(AuthorizationUtility authorizationUtility) {
+    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager) {
         this.authorizationUtility = authorizationUtility;
+        this.authorizationManager = authorizationManager;
     }
 
     public Collection<RolePermissionModel> getRoles() {
@@ -86,6 +89,7 @@ public class RoleActions {
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
         PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
+        authorizationManager.loadPermissionsIntoCache();
         return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
     }
 
@@ -171,7 +175,7 @@ public class RoleActions {
         validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
-            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that username already exists.");
+            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that role name already exists.");
         }
     }
 

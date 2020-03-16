@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.database.certificates;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -31,17 +33,21 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "custom_certificates")
 public class CustomCertificateEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -4913195698406375327L;
     @Column(name = "alias")
     private String alias;
     @Column(name = "certificate_content")
     private String certificateContent;
+    @Column(name = "last_updated")
+    private Date lastUpdated;
 
     public CustomCertificateEntity() {
     }
 
-    public CustomCertificateEntity(String alias, String certificateContent) {
+    public CustomCertificateEntity(String alias, String certificateContent, Date lastUpdated) {
         this.alias = alias;
         this.certificateContent = certificateContent;
+        this.lastUpdated = lastUpdated;
     }
 
     public String getAlias() {
@@ -52,4 +58,7 @@ public class CustomCertificateEntity extends DatabaseEntity {
         return certificateContent;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
 }

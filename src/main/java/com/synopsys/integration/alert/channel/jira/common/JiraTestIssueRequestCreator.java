@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.issuetracker.common.IssueOperation;
 import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
 import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
@@ -96,7 +97,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
 
     private ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {
         return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert")
+                   .applyProvider("Alert", ProviderProperties.UNKNOWN_CONFIG_ID, "Test")
                    .applyTopic("Test Topic", customTopic)
                    .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet id="2020-03-11-14-09-33-637" author="psantos">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="custom_certificates" columnName="last_updated" schemaName="alert"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="custom_certificates" schemaName="alert">
+            <column name="last_updated" type="timestamp" valueComputed="now()"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

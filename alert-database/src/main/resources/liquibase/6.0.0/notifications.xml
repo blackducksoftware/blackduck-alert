@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-02-11-09-13-57-663">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="raw_notification_content" columnName="provider_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="raw_notification_content">
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gavink" id="2020-02-11-09-21-42-238">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="FK_NOTIFICATION_PROVIDER_CONFIG_ID"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="raw_notification_content"
+                baseColumnNames="provider_config_id"
+                constraintName="FK_NOTIFICATION_PROVIDER_CONFIG_ID"
+                referencedTableSchemaName="alert"
+                referencedTableName="descriptor_configs"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
