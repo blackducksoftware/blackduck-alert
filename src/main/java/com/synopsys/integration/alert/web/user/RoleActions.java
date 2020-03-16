@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.user;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -55,13 +57,15 @@ import com.synopsys.integration.alert.web.model.RolePermissionModel;
 public class RoleActions {
     private static final Logger logger = LoggerFactory.getLogger(RoleActions.class);
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
-    private AuthorizationUtility authorizationUtility;
-    private AuthorizationManager authorizationManager;
+    private final AuthorizationUtility authorizationUtility;
+    private final AuthorizationManager authorizationManager;
+    private final Map<String, String> descriptorKeyToName;
 
     @Autowired
-    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager) {
+    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, List<DescriptorKey> descriptorKeys) {
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
+        this.descriptorKeyToName = descriptorKeys.stream().collect(Collectors.toMap(DescriptorKey::getUniversalKey, DescriptorKey::getDisplayName));
     }
 
     public Collection<RolePermissionModel> getRoles() {
@@ -109,9 +113,10 @@ public class RoleActions {
         for (Map.Entry<PermissionKey, Integer> matrixRow : permissionMatrixModel.getPermissions().entrySet()) {
             Integer accessOperations = matrixRow.getValue();
             PermissionKey permissionKey = matrixRow.getKey();
+            String descriptorDisplayName = descriptorKeyToName.getOrDefault(permissionKey.getDescriptorName(), permissionKey.getDescriptorName());
 
             PermissionModel permissionModel = new PermissionModel(
-                permissionKey.getDescriptorName(),
+                descriptorDisplayName,
                 permissionKey.getContext(),
                 BitwiseUtil.containsBits(accessOperations, AccessOperation.CREATE.getBit()),
                 BitwiseUtil.containsBits(accessOperations, AccessOperation.READ.getBit()),
@@ -130,9 +135,9 @@ public class RoleActions {
     private PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {
         Map<PermissionKey, Integer> permissionMatrix = new HashMap<>();
         for (PermissionModel permissionModel : permissionModels) {
-            String descriptorName = permissionModel.getDescriptorName();
+            String descriptorKey = permissionModel.getDescriptorName();
             String context = permissionModel.getContext();
-            PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+            PermissionKey permissionKey = new PermissionKey(context, descriptorKey);
 
             int accessOperationsBits = 0;
             if (permissionModel.isCreate()) {
