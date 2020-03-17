@@ -24,6 +24,7 @@ class TableDisplay extends Component {
         this.createInsertModal = this.createInsertModal.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTest = this.handleTest.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -37,6 +38,7 @@ class TableDisplay extends Component {
         this.createErrorModal = this.createErrorModal.bind(this);
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
+        this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
 
         this.state = {
             currentRowSelected: null,
@@ -150,6 +152,20 @@ class TableDisplay extends Component {
         this.handleSubmit();
     }
 
+    handleInsertModalTest(event, onModalClose) {
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation();
+        }
+        const { nestedInAnotherModal } = this.props;
+        // nested modals are not supported by react-bootstrap.
+        // if this table is nested in a modal it cannot call onModalClose because it would close all modals.
+        if (!nestedInAnotherModal) {
+            onModalClose();
+        }
+        this.handleTest();
+    }
+
     handleSubmit(event) {
         if (event) {
             event.preventDefault()
@@ -165,10 +181,23 @@ class TableDisplay extends Component {
         });
     }
 
+    handleTest(event) {
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation();
+        }
+        const result = this.props.onConfigTest();
+        const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
+        this.setState({
+            uiValidation: validationState
+        });
+    }
+
     createEditModal() {
         const { currentRowSelected } = this.state;
-        const { modalTitle, newConfigFields, inProgress } = this.props;
+        const { modalTitle, newConfigFields, inProgress, testButton } = this.props;
         const showModal = Boolean(currentRowSelected) || this.isShowModal();
+        const testLabel = testButton ? "Test Configuration" : null;
         return (
             <div
                 onKeyDown={e => e.stopPropagation()}
@@ -179,6 +208,8 @@ class TableDisplay extends Component {
                 <PopUp
                     onCancel={this.handleClose}
                     handleSubmit={this.handleSubmit}
+                    handleTest={this.handleTest}
+                    testLabel={testLabel}
                     show={showModal}
                     title={modalTitle}
                     okLabel={'Save'}
@@ -202,7 +233,8 @@ class TableDisplay extends Component {
 
     createInsertModal(onModalClose) {
         const { showConfiguration } = this.state;
-        const { modalTitle, newConfigFields, inProgress } = this.props;
+        const { modalTitle, newConfigFields, inProgress, testButton } = this.props;
+        const testLabel = testButton ? "Test Configuration" : null;
         return (
             <div
                 onKeyDown={e => e.stopPropagation()}
@@ -219,6 +251,11 @@ class TableDisplay extends Component {
                     handleSubmit={(event) => {
                         this.handleInsertModalSubmit(event, onModalClose);
                     }}
+                    handleTest={(event) => {
+                        this.handleInsertModalTest(event, onModalClose);
+                    }}
+
+                    testLabel={testLabel}
                     show={showConfiguration}
                     title={modalTitle}
                     okLabel="Save"
@@ -442,7 +479,7 @@ class TableDisplay extends Component {
 
 TableDisplay.propTypes = {
     refreshData: PropTypes.func.isRequired,
-    data: PropTypes.array.isRequired,
+    data: PropTypes.array,
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
@@ -452,6 +489,7 @@ TableDisplay.propTypes = {
     newConfigFields: PropTypes.func.isRequired,
     editState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
+    onConfigTest: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
     clearModalFieldState: PropTypes.func,
@@ -462,6 +500,7 @@ TableDisplay.propTypes = {
     autoRefresh: PropTypes.bool,
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
+    testButton: PropTypes.bool,
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
     modalTitle: PropTypes.string,
@@ -484,9 +523,11 @@ TableDisplay.defaultProps = {
     autoRefresh: true,
     newButton: true,
     deleteButton: true,
+    testButton: false,
     inProgress: false,
     fetching: false,
     onConfigSave: () => true,
+    onConfigTest: () => true,
     onConfigDelete: () => null,
     onConfigClose: () => null,
     clearModalFieldState: () => null,

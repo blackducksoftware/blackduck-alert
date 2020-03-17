@@ -23,6 +23,7 @@ class ProviderTable extends Component {
         this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.onTest = this.onTest.bind(this);
         this.onConfigClose = this.onConfigClose.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
@@ -134,6 +135,13 @@ class ProviderTable extends Component {
         return true;
     }
 
+    onTest() {
+        const { providerConfig } = this.state;
+        const configToUpdate = this.combineModelWithDefaults(providerConfig);
+        this.props.testConfig(configToUpdate, '');
+        return true;
+    }
+
     onDelete(configsToDelete) {
         if (configsToDelete) {
             configsToDelete.forEach(configId => {
@@ -219,6 +227,7 @@ class ProviderTable extends Component {
 
         const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
+        const canTest = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.EXECUTE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         return (
@@ -230,6 +239,7 @@ class ProviderTable extends Component {
                         modalTitle="Black Duck Provider"
                         clearModalFieldState={this.clearModalFieldState}
                         onConfigSave={this.onSave}
+                        onConfigTest={this.onTest}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
                         refreshData={this.retrieveData}
@@ -238,6 +248,7 @@ class ProviderTable extends Component {
                         columns={this.createColumns()}
                         newButton={canCreate}
                         deleteButton={canDelete}
+                        testButton={canTest}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
                         inProgress={inProgress}
