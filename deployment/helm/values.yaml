@@ -39,23 +39,22 @@ volumeName: ""
 exposeui: true
 exposedServiceType: NodePort # ClusterIP | NodePort | LoadBalancer
 
-# environs is a list of *additional* environs to add to the Alert's ConfigMap
+# environs is a map of *additional* environs to add to the Alert's ConfigMap
 # The follwing environs are already set in the ConfigMap
 # at /templates/alert-environ-resources.yaml (go there to set them):
-#   - HUB_WEBAPP_HOST
-#   - HUB_CFSSL_HOST
-#   - ALERT_SERVER_PORT
-# Format: array of strings delimited by commas; each string has the format "KEY:VALUE" e.g. ["HUB_WEBAPP_HOST:localhost", "ALERT_SERVER_PORT:443"]
-environs: []
+#   HUB_WEBAPP_HOST
+#   HUB_CFSSL_HOST
+#   ALERT_SERVER_PORT
+# if you are setting the value using set flag in helm command, do --set environs.* = ""; i.e.: --set environs.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+environs: {}
 
-# secretEnvirons is a list of environs to add to the Alert's Secret
-# The follwing environs are handled by setting .Values.setEncryptionSecretData:
-#   - ALERT_ENCRYPTION_PASSWORD
-#   - ALERT_ENCRYPTION_GLOBAL_SALT
-# Format: array of strings delimited by commas; each string has the format "KEY:VALUE" e.g. ["KEY:VALUE", "KEY:VALUE"]
-secretEnvirons: []
+# secretEnvirons is a map of environs to add to the Alert's Secret
+# if you are setting the value using set flag in helm command, do --set secretEnvirons.* = ""; i.e.: --set secretEnvirons.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+secretEnvirons: {}
 
-# If true, requires the user to set alertEncryptionPassword and alertEncryptionGlobalSalt
+# If true, requires the user to set...
+#   the value alertEncryptionPassword or the secretEnviron ALERT_ENCRYPTION_PASSWORD
+#   the value alertEncryptionGlobalSalt or the secretEnviron ALERT_ENCRYPTION_GLOBAL_SALT
 setEncryptionSecretData: false
 
 # Alert's certificate information
