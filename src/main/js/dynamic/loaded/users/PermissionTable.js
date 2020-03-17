@@ -83,8 +83,6 @@ class PermissionTable extends Component {
             return [];
         }
 
-        const descriptorOptions = this.createDescriptorOptions();
-
         return data.map(permission => {
             const permissionShorthand = [];
             permission[PERMISSIONS_TABLE.CREATE] && permissionShorthand.push('c');
@@ -97,12 +95,9 @@ class PermissionTable extends Component {
             permission[PERMISSIONS_TABLE.UPLOAD_DELETE] && permissionShorthand.push('ud');
 
             const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
-            const prettyNameObject = descriptorOptions.find(option => descriptorName === option.value);
-            const prettyName = (prettyNameObject) ? prettyNameObject.label : descriptorName;
-
             return {
                 id: permission.id,
-                [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: prettyName,
+                [PERMISSIONS_TABLE.DESCRIPTOR_NAME]: descriptorName,
                 [PERMISSIONS_TABLE.CONTEXT]: permission[PERMISSIONS_TABLE.CONTEXT],
                 permissionsColumn: permissionShorthand.join('-')
             };
@@ -113,13 +108,9 @@ class PermissionTable extends Component {
         const { permissionsColumn, descriptorName, context, id } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
-        const prettyNameObject = this.createDescriptorOptions()
-        .find(option => descriptorName === option.label);
-        const prettyName = (prettyNameObject) ? prettyNameObject.value : descriptorName;
-
         return {
             id,
-            descriptorName: prettyName,
+            descriptorName,
             context,
             [PERMISSIONS_TABLE.CREATE]: splitPermissions.includes('c'),
             [PERMISSIONS_TABLE.DELETE_OPERATION]: splitPermissions.includes('d'),
@@ -138,12 +129,12 @@ class PermissionTable extends Component {
         const nameCache = [];
 
         descriptors.forEach(descriptor => {
-            const { label, name } = descriptor;
-            if (!nameCache.includes(name)) {
-                nameCache.push(name);
+            const { label } = descriptor;
+            if (!nameCache.includes(label)) {
+                nameCache.push(label);
                 descriptorOptions.push({
-                    label: label,
-                    value: name
+                    label,
+                    value: label
                 });
             }
         });

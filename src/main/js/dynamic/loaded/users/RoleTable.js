@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable from 'dynamic/loaded/users/PermissionTable';
+import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
 import { clearRoleFieldErrors, deleteRole, fetchRoles, saveRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -68,7 +68,20 @@ class RoleTable extends Component {
     }
 
     async onSave() {
+        const { descriptors } = this.props;
         const { role } = this.state;
+        const { permissions } = role;
+        let correctedPermissions = [];
+        permissions.forEach(permission => {
+            const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
+            const descriptor = descriptors.find(currentDescriptor => currentDescriptor.label === descriptorName);
+            const descriptorKey = descriptor.name;
+
+            permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] = descriptorKey;
+            correctedPermissions.push(permission);
+        });
+        role.permissions = correctedPermissions;
+
         await this.props.saveRole(role);
         this.setState({
             role: {
