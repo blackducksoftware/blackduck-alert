@@ -1,5 +1,6 @@
 import {
     CONFIG_ALL_FETCHED,
+    CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCHED,
@@ -118,6 +119,12 @@ function deletingConfig() {
 function configDeleted() {
     return {
         type: CONFIG_DELETED
+    };
+}
+
+function clearFieldErrors() {
+    return {
+        type: CONFIG_CLEAR_FIELD_ERRORS
     };
 }
 
@@ -272,5 +279,11 @@ export function deleteConfig(id) {
                 handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
+    };
+}
+
+export function clearConfigFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

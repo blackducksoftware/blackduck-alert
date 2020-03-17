@@ -1,5 +1,6 @@
 import {
     CONFIG_ALL_FETCHED,
+    CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCHED,
@@ -151,6 +152,14 @@ const globalConfiguration = (state = initialState, action) => {
             return Object.assign({}, state, {
                 actionMessage: null,
                 updateStatus: 'DELETING',
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
+            });
+
+        case CONFIG_CLEAR_FIELD_ERRORS:
+            return Object.assign({}, state, {
                 error: {
                     message: '',
                     fieldErrors: {}
