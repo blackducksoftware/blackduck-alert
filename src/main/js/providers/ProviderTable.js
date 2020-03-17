@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import { clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -218,7 +218,7 @@ class ProviderTable extends Component {
 
     render() {
         const { descriptor } = this.state;
-        const { providerConfigs, inProgress, fetching, fieldErrors, errorMessage } = this.props;
+        const { providerConfigs, inProgress, fetching, fieldErrors, errorMessage, actionMessage } = this.props;
         const descriptorHeader = descriptor && (
             <div>
                 <ConfigurationLabel configurationName={descriptor.label} description={descriptor.description} />
@@ -251,6 +251,7 @@ class ProviderTable extends Component {
                         testButton={canTest}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
+                        actionMessage={actionMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                     />
@@ -268,6 +269,7 @@ ProviderTable.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     providerConfigs: PropTypes.arrayOf(PropTypes.object).isRequired,
     errorMessage: PropTypes.string,
+    actionMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
     getAllConfigs: PropTypes.func.isRequired
 };
@@ -277,8 +279,8 @@ ProviderTable.defaultProps = {
     descriptors: [],
     inProgress: false,
     errorMessage: '',
+    actionMessage: null,
     fieldErrors: {}
-
 };
 
 const mapStateToProps = state => ({
@@ -286,6 +288,7 @@ const mapStateToProps = state => ({
     descriptorFetching: state.descriptors.fetching,
     providerConfigs: state.globalConfiguration.allConfigs,
     errorMessage: state.globalConfiguration.error.message,
+    actionMessage: state.globalConfiguration.actionMessage,
     fieldErrors: state.globalConfiguration.error.fieldErrors
 });
 

@@ -21,7 +21,7 @@ class PopUp extends Component {
 
     render() {
         const {
-            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction, testLabel, handleTest
+            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction, testLabel, handleTest, actionMessage
         } = this.props;
         const includeTest = Boolean(testLabel) && Boolean(handleTest);
         return (
@@ -58,6 +58,7 @@ class PopUp extends Component {
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
+                            <p name="actionMessage">{actionMessage}</p>
                         </form>
                     </Modal.Body>
                 </Modal>
@@ -76,7 +77,8 @@ PopUp.propTypes = {
     cancelLabel: PropTypes.string,
     okLabel: PropTypes.string,
     testLabel: PropTypes.string,
-    performingAction: PropTypes.bool
+    performingAction: PropTypes.bool,
+    actionMessage: PropTypes.string
 };
 
 PopUp.defaultProps = {
@@ -87,7 +89,8 @@ PopUp.defaultProps = {
     testLabel: null,
     handleSubmit: (event) => true,
     handleTest: null,
-    performingAction: false
+    performingAction: false,
+    actionMessage: null
 };
 
 export default PopUp;
