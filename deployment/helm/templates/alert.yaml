@@ -7,7 +7,11 @@ metadata:
   name: {{ .Release.Name }}-alert
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  {{- if eq .Values.status "Running" }} 
+  replicas: 1 
+  {{- else }} 
+  replicas: 0 
+  {{- end }}
   selector:
     matchLabels:
       app: alert
