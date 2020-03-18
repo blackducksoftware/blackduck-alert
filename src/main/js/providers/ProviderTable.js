@@ -38,7 +38,8 @@ class ProviderTable extends Component {
     }
 
     componentDidMount() {
-        const descriptor = this.props.descriptors.find(descriptor => descriptor.name === DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK)
+        const descriptor = this.props.descriptors.find(descriptor => descriptor.name === DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK
+            && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
         if (descriptor) {
             const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
             this.setState({
@@ -51,15 +52,15 @@ class ProviderTable extends Component {
 
     combineModelWithDefaults(providerConfig) {
         const { descriptor } = this.state;
-        if (descriptor) {
-            const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
-            const updatedFieldModel = FieldModelUtilities.combineFieldModels(emptyConfig, providerConfig);
-            if (providerConfig.id) {
-                updatedFieldModel.id = providerConfig.id;
-            }
-            return updatedFieldModel;
+        if (!descriptor) {
+            return {};
         }
-        return {};
+        const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
+        const updatedFieldModel = FieldModelUtilities.combineFieldModels(emptyConfig, providerConfig);
+        if (providerConfig.id) {
+            updatedFieldModel.id = providerConfig.id;
+        }
+        return updatedFieldModel;
     }
 
     createColumns() {
