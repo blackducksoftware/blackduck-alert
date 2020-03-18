@@ -219,13 +219,16 @@ class ProviderTable extends Component {
 
     render() {
         const { descriptor } = this.state;
-        const { providerConfigs, inProgress, fetching, fieldErrors, errorMessage, actionMessage } = this.props;
+        const { providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage } = this.props;
         const descriptorHeader = descriptor && (
             <div>
                 <ConfigurationLabel configurationName={descriptor.label} description={descriptor.description} />
             </div>
         );
-
+        const updating = Object.is(updateStatus, 'UPDATING');
+        const deleting = Object.is(updateStatus, 'DELETING');
+        const inProgress = testInProgress || updating || deleting;
+        const fetching = descriptorFetching || configFetching;
         const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
         const canTest = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.EXECUTE);
@@ -267,7 +270,9 @@ ProviderTable.propTypes = {
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     descriptorFetching: PropTypes.bool.isRequired,
-    inProgress: PropTypes.bool.isRequired,
+    configFetching: PropTypes.bool.isRequired,
+    testInProgress: PropTypes.bool.isRequired,
+    updateStatus: PropTypes.string,
     providerConfigs: PropTypes.arrayOf(PropTypes.object).isRequired,
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
@@ -278,7 +283,10 @@ ProviderTable.propTypes = {
 ProviderTable.defaultProps = {
     autoRefresh: true,
     descriptors: [],
-    inProgress: false,
+    descriptorFetching: false,
+    configFetching: false,
+    testInProgress: false,
+    updateStatus: '',
     errorMessage: '',
     actionMessage: null,
     fieldErrors: {}
@@ -287,6 +295,9 @@ ProviderTable.defaultProps = {
 const mapStateToProps = state => ({
     descriptors: state.descriptors.items,
     descriptorFetching: state.descriptors.fetching,
+    configFetching: state.globalConfiguration.fetching,
+    updateStatus: state.globalConfiguration.updateStatus,
+    testInProgress: state.globalConfiguration.testing,
     providerConfigs: state.globalConfiguration.allConfigs,
     errorMessage: state.globalConfiguration.error.message,
     actionMessage: state.globalConfiguration.actionMessage,

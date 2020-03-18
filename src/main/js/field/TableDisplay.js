@@ -189,7 +189,7 @@ class TableDisplay extends Component {
     createEditModal() {
         const { currentRowSelected } = this.state;
         const { modalTitle, newConfigFields, inProgress, testButton, testButtonLabel, errorDialogMessage, actionMessage } = this.props;
-        const showModal = Boolean(currentRowSelected) || this.isShowModal();
+        const showModal = this.isShowModal();
         const testLabel = testButton ? testButtonLabel : null;
         const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
         return (
@@ -200,7 +200,10 @@ class TableDisplay extends Component {
                 onMouseOver={e => e.stopPropagation()}
             >
                 <PopUp
-                    onCancel={this.handleClose}
+                    onCancel={() => {
+                        this.hideModal();
+                        this.handleClose();
+                    }}
                     handleSubmit={this.handleSubmit}
                     handleTest={this.handleTest}
                     testLabel={testLabel}
@@ -296,7 +299,8 @@ class TableDisplay extends Component {
         this.props.clearModalFieldState();
         this.props.editState(currentRowSelected);
         this.setState({
-            currentRowSelected
+            currentRowSelected,
+            showConfiguration: true
         });
     }
 
