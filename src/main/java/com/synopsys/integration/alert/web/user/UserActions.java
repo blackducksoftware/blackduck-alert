@@ -116,11 +116,11 @@ public class UserActions {
             userAccessor.updateUser(newUserModel, passwordMissing);
 
             Set<String> configuredRoleNames = userConfig.getRoleNames();
-            if (null != configuredRoleNames && !configuredRoleNames.isEmpty() && userModel.isPresent()) {
+            if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
                 Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
-                authorizationUtility.updateUserRoles(userModel.get().getId(), roleNames);
+                authorizationUtility.updateUserRoles(existingUser.getId(), roleNames);
                 authorizationManager.loadPermissionsIntoCache();
             }
         }
