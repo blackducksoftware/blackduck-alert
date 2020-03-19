@@ -31,6 +31,7 @@ cfssl:
 
 # Storage configurations
 enablePersistentStorage: false
+persistentVolumeClaimName: ""
 pvcSize: "5G"
 storageClassName: ""
 volumeName: ""
