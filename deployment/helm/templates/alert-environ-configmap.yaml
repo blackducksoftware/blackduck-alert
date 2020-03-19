@@ -12,9 +12,8 @@ data:
   HUB_CFSSL_HOST: {{ .Release.Name }}-alert-cfssl
   {{- end }}
   {{- end }}
-  {{- range $key, $value := .Values.environs }}
-  {{- $parts := splitn ":" 2 $value }}
-  {{ $parts._0 }}: {{ $parts._1 }}
+  {{- if .Values.environs }}
+  {{ .Values.environs | toYaml | trimSuffix "\n" }}
   {{- end }}
 metadata:
   labels:
