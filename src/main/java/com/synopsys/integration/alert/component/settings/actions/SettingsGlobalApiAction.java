@@ -1,7 +1,7 @@
 /**
  * blackduck-alert
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -54,7 +55,7 @@ public class SettingsGlobalApiAction extends ApiAction {
     private final SAMLManager samlManager;
 
     @Autowired
-    public SettingsGlobalApiAction(final EncryptionUtility encryptionUtility, final DefaultUserAccessor userAccessor, final SystemValidator systemValidator, final SAMLManager samlManager) {
+    public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, DefaultUserAccessor userAccessor, SystemValidator systemValidator, SAMLManager samlManager) {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
@@ -62,11 +63,11 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterGetAction(final FieldModel fieldModel) {
-        final Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
-        final FieldModel fieldModelCopy = createFieldModelCopy(fieldModel);
-        final String defaultUserEmail = defaultUser.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).orElse("");
-        final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
+    public FieldModel afterGetAction(FieldModel fieldModel) {
+        Optional<UserModel> defaultUser = userAccessor.getUser(DefaultUserAccessor.DEFAULT_ADMIN_USER);
+        FieldModel fieldModelCopy = createFieldModelCopy(fieldModel);
+        String defaultUserEmail = defaultUser.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).orElse("");
+        boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
         fieldModelCopy.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(defaultUserEmail), StringUtils.isNotBlank(defaultUserEmail)));
         fieldModelCopy.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
         fieldModelCopy.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
@@ -75,35 +76,46 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel beforeSaveAction(final FieldModel fieldModel) {
+    public FieldModel beforeSaveAction(FieldModel fieldModel) {
         return handleNewAndUpdatedConfig(fieldModel);
     }
 
     @Override
-    public FieldModel beforeUpdateAction(final FieldModel fieldModel) {
+    public FieldModel beforeUpdateAction(FieldModel fieldModel) {
         return handleNewAndUpdatedConfig(fieldModel);
     }
 
-    private FieldModel createFieldModelCopy(final FieldModel fieldModel) {
-        final HashMap<String, FieldValueModel> fields = new HashMap<>();
+    private FieldModel createFieldModelCopy(FieldModel fieldModel) {
+        HashMap<String, FieldValueModel> fields = new HashMap<>();
         fields.putAll(fieldModel.getKeyToValues());
 
-        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
         modelToSave.setId(fieldModel.getId());
         return modelToSave;
     }
 
-    private FieldModel handleNewAndUpdatedConfig(final FieldModel fieldModel) {
+    @Override
+    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
+        addSAMLMetadata(fieldModel);
+        return fieldModel;
+    }
+
+    @Override
+    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
+        addSAMLMetadata(fieldModel);
+        return fieldModel;
+    }
+
+    private FieldModel handleNewAndUpdatedConfig(FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
-        addSAMLMetadata(fieldModel);
         systemValidator.validate();
         return scrubModel(fieldModel);
     }
 
-    private FieldModel scrubModel(final FieldModel fieldModel) {
-        final Map<String, FieldValueModel> keyToValues = new HashMap<>(fieldModel.getKeyToValues());
+    private FieldModel scrubModel(FieldModel fieldModel) {
+        Map<String, FieldValueModel> keyToValues = new HashMap<>(fieldModel.getKeyToValues());
         keyToValues.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
@@ -111,60 +123,64 @@ public class SettingsGlobalApiAction extends ApiAction {
         return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), keyToValues);
     }
 
-    private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
-        final String password = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
+    private void saveDefaultAdminUserPassword(FieldModel fieldModel) {
+        String password = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
         if (StringUtils.isNotBlank(password)) {
             userAccessor.changeUserPassword(DefaultUserAccessor.DEFAULT_ADMIN_USER, password);
         }
     }
 
-    private void saveDefaultAdminUserEmail(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> optionalEmail = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
+    private void saveDefaultAdminUserEmail(FieldModel fieldModel) {
+        Optional<FieldValueModel> optionalEmail = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
         if (optionalEmail.isPresent()) {
             userAccessor.changeUserEmailAddress(DefaultUserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
         }
     }
 
-    private void saveEncryptionProperties(final FieldModel fieldModel) {
+    private void saveEncryptionProperties(FieldModel fieldModel) {
         try {
-            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD);
-            final Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+            Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+            Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
             if (optionalEncryptionPassword.isPresent()) {
-                final String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");
+                String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(passwordToSave)) {
                     encryptionUtility.updatePasswordField(passwordToSave);
                 }
             }
 
             if (optionalEncryptionSalt.isPresent()) {
-                final String saltToSave = optionalEncryptionSalt.get().getValue().orElse("");
+                String saltToSave = optionalEncryptionSalt.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(saltToSave)) {
                     encryptionUtility.updateSaltField(saltToSave);
                 }
             }
-        } catch (final IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration.", ex);
         }
     }
 
-    private void addSAMLMetadata(final FieldModel fieldModel) {
-        final Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
-                                        .map(fieldValueModel -> fieldValueModel.getValue()
-                                                                    .map(BooleanUtils::toBoolean)
-                                                                    .orElse(false)
-                                        ).orElse(false);
-        final Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
-        final Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_ID);
-        final Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
-        if (metadataURLFieldValueOptional.isPresent() && metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
-            final FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
-            final FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
-            final FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
-            final String metadataURL = metadataURLFieldValue.getValue().orElse("");
-            final String entityId = metadataEntityFieldValue.getValue().orElse("");
-            final String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
-            samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
+    private void addSAMLMetadata(FieldModel fieldModel) {
+        try {
+            Boolean samlEnabled = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENABLED)
+                                      .map(fieldValueModel -> fieldValueModel.getValue()
+                                                                  .map(BooleanUtils::toBoolean)
+                                                                  .orElse(false)
+                                      ).orElse(false);
+            Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_METADATA_URL);
+            Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_ID);
+            Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            if (metadataURLFieldValueOptional.isPresent() && metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
+                FieldValueModel metadataURLFieldValue = metadataURLFieldValueOptional.get();
+                FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
+                FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
+                String metadataURL = metadataURLFieldValue.getValue().orElse("");
+                String entityId = metadataEntityFieldValue.getValue().orElse("");
+                String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
+                samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
+            }
+        } catch (Exception ex) {
+            logger.error("Error updating SAML settings.", ex);
         }
     }
 }

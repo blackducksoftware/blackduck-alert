@@ -1,7 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -30,24 +30,43 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(StartupScheduledTask.class);
 
     private final TaskManager taskManager;
+    private Boolean enabled;
 
-    public StartupScheduledTask(final TaskScheduler taskScheduler, final String taskName, final TaskManager taskManager) {
+    public StartupScheduledTask(TaskScheduler taskScheduler, String taskName, TaskManager taskManager) {
         super(taskScheduler, taskName);
         this.taskManager = taskManager;
+        this.enabled = true;
     }
 
     public abstract String scheduleCronExpression();
 
+    public void checkTaskEnabled() {
+        enabled = true;
+    }
+
     public void startTask() {
+        checkTaskEnabled();
+        String taskName = getTaskName();
+        if (!getEnabled()) {
+            logger.info("{} is disabled and will not be scheduled to run.", taskName);
+            return;
+        }
         taskManager.registerTask(this);
-        final String taskName = getTaskName();
         taskManager.scheduleCronTask(scheduleCronExpression(), getTaskName());
-        final String nextRun = taskManager.getNextRunTime(taskName).orElse("");
+        String nextRun = taskManager.getNextRunTime(taskName).orElse("");
         logger.info("{} next run:     {}", taskName, nextRun);
         postTaskStartup();
     }
 
     protected void postTaskStartup() {
 
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

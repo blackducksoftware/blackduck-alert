@@ -4,6 +4,7 @@ certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/security
 alertHome=/opt/blackduck/alert
 alertConfigHome=$alertHome/alert-config
+alertDatabaseDir=$alertConfigHome/data/alertdb
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -347,6 +348,19 @@ checkVolumeDirectories() {
   fi
 }
 
+liquibaseChangelockReset() {
+  echo "Begin releasing liquibase changeloglock."
+  $JAVA_HOME/bin/java -cp "/opt/blackduck/alert/alert-tar/lib/liquibase/*" \
+  liquibase.integration.commandline.Main \
+  --url="jdbc:h2:file:$alertDatabaseDir" \
+  --username="sa" \
+  --password="" \
+  --driver="org.h2.Driver" \
+  --changeLogFile="$alertHome/alert-tar/changelogs/release-locks-changelog.xml" \
+  releaseLocks
+  echo "End releasing liquibase changeloglock."
+}
+
 checkVolumeDirectories
 
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
@@ -373,6 +387,7 @@ else
   importBlackDuckWebServerCertificate
   importDockerHubServerCertificate
   createDataBackUp
+  liquibaseChangelockReset
 
   if [ -f "$truststoreFile" ];
   then

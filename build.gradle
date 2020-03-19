@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.73'
+        classpath 'com.synopsys.integration:common-gradle-plugin:1.1.1'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
     }
@@ -30,11 +30,11 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '5.0.0'
+version = '5.0.3-SNAPSHOT'
 
 
 apply plugin: 'idea'
-apply plugin: 'com.blackducksoftware.integration.solution'
+apply plugin: 'com.synopsys.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 allprojects {
@@ -51,7 +51,7 @@ allprojects {
 
 subprojects {
     version = rootProject.version
-    apply plugin: 'com.blackducksoftware.integration.simple'
+    apply plugin: 'com.synopsys.integration.simple'
 
     license {
         header rootProject.file('LICENSE')
@@ -121,11 +121,38 @@ bootJar {
 distributions {
     boot {
         contents {
+            from("$project.buildDir/libs/liquibase") {
+                include 'h2*.jar'
+                include 'liquibase-core*.jar'
+                include 'logback-*.jar'
+                include 'slf4j-api*.jar'
+                include 'snakeyaml*.jar'
+                into 'lib/liquibase'
+            }
+            from('src/main/resources/db/release-locks-changelog.xml') { into 'changelogs' }
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
         }
     }
 }
+
+task copyToLib(type: Copy, dependsOn: [compileJava]) {
+    from findJar('h2')
+    from findJar('liquibase')
+    from findJar('logback-classic')
+    from findJar('logback-core')
+    from findJar('slf4j-api')
+    from findJar('snakeyaml')
+    into "${project.buildDir}/libs/liquibase"
+}
+
+def findJar(prefix) {
+    configurations.runtimeClasspath.filter {
+        it.name.startsWith(prefix)
+    }
+}
+
+tasks.compileJava.finalizedBy(tasks.copyToLib)
 
 // run alert locally
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
@@ -139,7 +166,6 @@ gradle.taskGraph.whenReady { graph ->
         test.enabled = false
     }
 }
-
 
 task createKeystore(type: Exec) {
     doFirst {

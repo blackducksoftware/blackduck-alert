@@ -1,7 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -51,7 +51,7 @@ public class AlertProperties {
     @Value("${alert.encryption.global.salt:}")
     private String alertEncryptionGlobalSalt;
 
-    @Value("${logging.level.com.blackducksoftware.integration:}")
+    @Value("${alert.logging.level:INFO}")
     private String loggingLevel;
 
     // SSL properties
@@ -112,7 +112,7 @@ public class AlertProperties {
     }
 
     public String getAlertImagesDirPath() {
-        final String imagesDirectory = getAlertImagesDir();
+        String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return imagesDirectory + "/synopsys.png";
         }
@@ -185,7 +185,7 @@ public class AlertProperties {
         return getOptionalString(alertHostName);
     }
 
-    private Optional<String> getOptionalString(final String value) {
+    private Optional<String> getOptionalString(String value) {
         if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
         }
@@ -194,9 +194,9 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
-            final String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
-            final String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
-            final String path = getContextPath().orElse("");
+            String hostName = getAlertHostName().orElse(getPublicWebserverHost().orElse("localhost"));
+            String port = getServerPort().orElse(getPublicWebserverPort().orElse(getServerPort().orElse("")));
+            String path = getContextPath().orElse("");
             String protocol = "http";
             if (getSslEnabled()) {
                 protocol = "https";
