@@ -35,6 +35,9 @@ pvcSize: "5G"
 storageClassName: ""
 volumeName: ""
 
+# Used to start or stop the alert instance. Set to "Running" to start, or "Stopped" to stop
+status: Running
+
 # Expose Alert's User Interface
 exposeui: true
 exposedServiceType: NodePort # ClusterIP | NodePort | LoadBalancer
