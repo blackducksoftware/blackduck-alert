@@ -32,7 +32,11 @@ spec:
         - envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-alert-environs
-          image: {{ .Values.cfssl.image }}
+          {{- if .Values.cfssl.registry }}
+          image: {{ .Values.cfssl.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }}
+          {{- else }}
+          image: {{ .Values.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }} 
+          {{- end }}
           livenessProbe:
             exec:
               command:

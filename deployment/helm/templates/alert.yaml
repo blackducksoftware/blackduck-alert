@@ -37,7 +37,11 @@ spec:
             name: {{ .Release.Name }}-alert-environs
         - secretRef:
             name: {{ .Release.Name }}-alert-environs-secret
-        image: {{ .Values.alert.image }}
+        {{- if .Values.alert.registry }}
+        image: {{ .Values.alert.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
+        {{- else }}
+        image: {{ .Values.registry }}/blackduck-alert:{{ .Values.alert.imageTag }} 
+        {{- end }}
         imagePullPolicy: Always
         livenessProbe:
           exec:

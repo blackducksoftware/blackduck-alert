@@ -2,9 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+registry: "docker.io/blackducksoftware"
+
 # alert - configurations for the Alert Pod
 alert:
-  image: "docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN"
+  imageTag: VERSION_TOKEN
+  registry: "" # override the docker registry at container level
   port: 8443
   resources:
     limits:
@@ -20,7 +23,8 @@ deployAlertWithBlackDuck: false
 # enableStandalone deploys a cfssl instance with Alert
 enableStandalone: true
 cfssl:
-  image: "docker.io/blackducksoftware/blackduck-cfssl:1.0.0"
+  imageTag: 1.0.0
+  registry: "" # override the docker registry at container level
   resources:
     limits:
       memory: "640Mi"
