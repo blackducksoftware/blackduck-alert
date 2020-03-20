@@ -271,8 +271,8 @@ class PermissionTable extends Component {
                     onConfigSave={this.onSavePermissions}
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
+                    onEditState={this.onEdit}
                     newConfigFields={this.createPermissionsModal}
-                    editState={this.onEdit}
                     columns={this.createPermissionsColumns()}
                     data={this.retrievePermissionsData()}
                     refreshData={() => null}

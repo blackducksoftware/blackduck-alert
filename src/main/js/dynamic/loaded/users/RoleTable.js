@@ -196,7 +196,7 @@ class RoleTable extends Component {
                 <TableDisplay
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
-                    editState={this.onEdit}
+                    onEditState={this.onEdit}
                     onConfigSave={this.onSave}
                     onConfigDelete={this.onDelete}
                     onConfigClose={this.onRoleClose}

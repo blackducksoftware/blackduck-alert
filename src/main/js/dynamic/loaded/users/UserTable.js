@@ -231,8 +231,8 @@ class UserTable extends Component {
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onEditState={this.onEdit}
                         refreshData={this.retrieveData}
-                        editState={this.onEdit}
                         data={this.props.users}
                         columns={this.createColumns()}
                         newButton={canCreate}

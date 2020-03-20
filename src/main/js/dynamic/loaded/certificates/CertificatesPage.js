@@ -135,8 +135,8 @@ class CertificatesPage extends Component {
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onEditState={this.onEdit}
                         refreshData={this.retrieveData}
-                        editState={this.onEdit}
                         data={certificates}
                         columns={this.createColumns()}
                         newButton={true}

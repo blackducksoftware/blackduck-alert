@@ -53,7 +53,12 @@ class TableDisplay extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        console.log("Prev Props: ", prevProps);
+        console.log("current props: ", this.props);
+        console.log("prev state: ", prevState);
+        console.log("current state: ", this.state);
         if (!this.state.showConfiguration && this.state.currentRowSelected && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
+            console.log("component did update handle close to be called.");
             this.handleClose();
         }
     }
@@ -123,12 +128,16 @@ class TableDisplay extends Component {
     }
 
     handleClose() {
+        const stateCallback = () => {
+            const closeCallback = () => {
+                this.refs.table.cleanSelected();
+                this.updateData();
+            };
+            this.props.onConfigClose(closeCallback);
+        }
         this.setState({
             currentRowSelected: null
-        });
-        this.props.onConfigClose();
-        this.refs.table.cleanSelected();
-        this.updateData();
+        }, stateCallback);
     }
 
     handleInsertModalSubmit(event, onModalClose) {
@@ -164,14 +173,16 @@ class TableDisplay extends Component {
             event.preventDefault()
             event.stopPropagation();
         }
-        const result = this.props.onConfigSave();
-        const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
-        this.setState({
-            uiValidation: validationState
-        });
-        this.setState({
-            showConfiguration: false
-        });
+        const callback = (result) => {
+            const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
+            const validationSetCallback = () => this.setState({
+                showConfiguration: false
+            });
+            this.setState({
+                uiValidation: validationState
+            }, validationSetCallback);
+        };
+        this.props.onConfigSave(callback);
     }
 
     handleTest(event) {
@@ -179,11 +190,13 @@ class TableDisplay extends Component {
             event.preventDefault()
             event.stopPropagation();
         }
-        const result = this.props.onConfigTest();
-        const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
-        this.setState({
-            uiValidation: validationState
-        });
+        const callback = (result) => {
+            const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
+            this.setState({
+                uiValidation: validationState
+            });
+        };
+        this.props.onConfigTest(callback);
     }
 
     createEditModal() {
@@ -291,17 +304,16 @@ class TableDisplay extends Component {
     deleteItems(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.props.onConfigDelete(this.state.rowsToDelete);
-        this.closeDeleteModal();
+        this.props.onConfigDelete(this.state.rowsToDelete, this.closeDeleteModal);
     }
 
     editButtonClicked(currentRowSelected) {
         this.props.clearModalFieldState();
-        this.props.editState(currentRowSelected);
-        this.setState({
+        const callback = () => this.setState({
             currentRowSelected,
             showConfiguration: true
         });
+        this.props.onEditState(currentRowSelected, callback());
     }
 
     editButtonClick(cell, row) {
@@ -315,7 +327,7 @@ class TableDisplay extends Component {
 
     copyButtonClicked(currentRowSelected) {
         currentRowSelected.id = null;
-        this.props.editState(currentRowSelected);
+        this.props.onEditState(currentRowSelected);
         this.setState({
             currentRowSelected
         });
@@ -456,7 +468,7 @@ TableDisplay.propTypes = {
         hidden: PropTypes.bool.isRequired
     })).isRequired,
     newConfigFields: PropTypes.func.isRequired,
-    editState: PropTypes.func.isRequired,
+    onEditState: PropTypes.func.isRequired,
     onConfigSave: PropTypes.func,
     onConfigTest: PropTypes.func,
     onConfigDelete: PropTypes.func,

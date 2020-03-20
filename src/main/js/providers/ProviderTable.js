@@ -33,7 +33,8 @@ class ProviderTable extends Component {
 
         this.state = {
             descriptor: null,
-            providerConfig: {}
+            providerConfig: {},
+            saveCallback: () => null
         };
     }
 
@@ -47,6 +48,12 @@ class ProviderTable extends Component {
                 providerConfig: emptyConfig
             });
             this.props.getAllConfigs(descriptor.name);
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.updateStatus === 'UPDATING' && (this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'ERROR')) {
+            this.state.saveCallback(true);
         }
     }
 
@@ -98,8 +105,11 @@ class ProviderTable extends Component {
         ];
     }
 
-    onConfigClose() {
+    onConfigClose(callback) {
+        debugger;
         this.props.clearFieldErrors();
+        debugger;
+        callback();
     }
 
     clearModalFieldState() {
@@ -129,27 +139,32 @@ class ProviderTable extends Component {
         });
     }
 
-    onSave() {
+    onSave(callback) {
         const { providerConfig } = this.state;
         const configToUpdate = this.combineModelWithDefaults(providerConfig);
         this.props.updateConfig(configToUpdate);
+        this.setState({
+            saveCallback: callback
+        });
         return true;
     }
 
-    onTest() {
+    onTest(callback) {
         const { providerConfig } = this.state;
         const configToUpdate = this.combineModelWithDefaults(providerConfig);
         this.props.testConfig(configToUpdate, '');
+        callback(true);
         return true;
     }
 
-    onDelete(configsToDelete) {
+    onDelete(configsToDelete, callback) {
         if (configsToDelete) {
             configsToDelete.forEach(configId => {
                 this.props.deleteConfig(configId);
             });
         }
         this.retrieveData();
+        callback();
     }
 
     createModalFields() {
@@ -172,13 +187,13 @@ class ProviderTable extends Component {
         return <div />;
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         const { id } = selectedRow;
         const { providerConfigs } = this.props;
         const selectedConfig = providerConfigs.find(config => config.id === id);
         this.setState({
             providerConfig: selectedConfig
-        });
+        }, callback);
     }
 
     checkJobPermissions(operation) {
@@ -246,8 +261,8 @@ class ProviderTable extends Component {
                         onConfigTest={this.onTest}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onEditState={this.onEdit}
                         refreshData={this.retrieveData}
-                        editState={this.onEdit}
                         data={data}
                         columns={this.createColumns()}
                         newButton={canCreate}
