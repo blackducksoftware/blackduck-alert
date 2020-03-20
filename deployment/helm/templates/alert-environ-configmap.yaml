@@ -13,7 +13,7 @@ data:
   {{- end }}
   {{- end }}
   {{- if .Values.environs }}
-  {{ .Values.environs | toYaml | trimSuffix "\n" }}
+  {{- .Values.environs | toYaml | nindent 2 | trimSuffix "\n" }}
   {{- end }}
 metadata:
   labels:
