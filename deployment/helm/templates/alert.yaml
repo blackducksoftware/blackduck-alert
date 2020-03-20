@@ -50,7 +50,7 @@ spec:
           timeoutSeconds: 10
         name: blackduck-alert
         ports:
-          - containerPort: 8443
+          - containerPort: {{ .Values.alert.port }}
             protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
@@ -116,10 +116,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    - name: port-8443
-      port: 8443
+    - name: port-{{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
       protocol: TCP
-      targetPort: 8443
+      targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
     name: {{ .Release.Name }}
@@ -161,10 +161,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    - name: port-8443
-      port: 8443
+    - name: port-{{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
       protocol: TCP
-      targetPort: 8443
+      targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
     name: {{ .Release.Name }}

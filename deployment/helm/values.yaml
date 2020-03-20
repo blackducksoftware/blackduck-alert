@@ -5,6 +5,7 @@
 # alert - configurations for the Alert Pod
 alert:
   image: "docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN"
+  port: 8443
   resources:
     limits:
       memory: "2560Mi"
