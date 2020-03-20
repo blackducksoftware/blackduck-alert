@@ -52,6 +52,7 @@ spec:
             - mountPath: /etc/cfssl
               name: dir-cfssl
       dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.cfssl.nodeSelector }}
       nodeSelector:
       {{ toYaml . | indent 2 }}

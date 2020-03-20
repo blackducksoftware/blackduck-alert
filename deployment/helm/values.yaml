@@ -16,6 +16,7 @@ alert:
 
 # Set if Alert will be deployed with a Black Duck instance
 deployAlertWithBlackDuck: false
+
 # enableStandalone deploys a cfssl instance with Alert
 enableStandalone: true
 cfssl:
@@ -35,6 +36,12 @@ persistentVolumeClaimName: ""
 pvcSize: "5G"
 storageClassName: ""
 volumeName: ""
+
+# image pull secret to download the images (mostly applicable for air gapped customers)
+# Format: a list of objects (key: value). Example:
+# imagePullSecrets
+# - name: registryName
+imagePullSecrets: []
 
 # Used to start or stop the alert instance. Set to "Running" to start, or "Stopped" to stop
 status: Running
