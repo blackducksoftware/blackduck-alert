@@ -53,12 +53,7 @@ class TableDisplay extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("Prev Props: ", prevProps);
-        console.log("current props: ", this.props);
-        console.log("prev state: ", prevState);
-        console.log("current state: ", this.state);
-        if (!this.state.showConfiguration && this.state.currentRowSelected && prevProps.inProgress && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
-            console.log("component did update handle close to be called.");
+        if (!this.state.showConfiguration && this.state.currentRowSelected && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
         }
     }

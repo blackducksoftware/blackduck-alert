@@ -106,9 +106,7 @@ class ProviderTable extends Component {
     }
 
     onConfigClose(callback) {
-        debugger;
         this.props.clearFieldErrors();
-        debugger;
         callback();
     }
 
