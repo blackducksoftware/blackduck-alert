@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
@@ -84,10 +85,12 @@ public class RoleController extends BaseController {
         try {
             roleActions.updateRole(roleId, rolePermissionModel);
         } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, String.format("Failed to update role: %s", ex.getMessage()));
+            return responseFactory.createInternalServerErrorResponse(String.valueOf(roleId), String.format("Failed to update role: %s", ex.getMessage()));
+        } catch (AlertConfigurationException e) {
+            return responseFactory.createBadRequestResponse(String.valueOf(roleId), e.getMessage());
         }
 
-        return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role updated.");
+        return responseFactory.createCreatedResponse(String.valueOf(roleId), "Role updated.");
     }
 
     @PostMapping
@@ -101,6 +104,8 @@ public class RoleController extends BaseController {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, String.format("Failed to create the role: %s", ex.getMessage()));
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
+        } catch (AlertConfigurationException e) {
+            return responseFactory.createBadRequestResponse(ResponseFactory.EMPTY_ID, e.getMessage());
         }
 
         return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");

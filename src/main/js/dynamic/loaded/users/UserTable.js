@@ -178,7 +178,7 @@ class UserTable extends Component {
         let passwordConfirmField = null;
         if (!external) {
             passwordConfirmField = (<PasswordInput
-                name={confirmPasswordKey} label="Confirm Password" description="The users password." readOnly={false}
+                name={confirmPasswordKey} label="Confirm Password" description="The user's password." readOnly={false}
                 required onChange={this.handleChange} value={user[confirmPasswordKey]}
                 errorName={confirmPasswordKey} errorValue={user[confirmPasswordError]}
             />);
@@ -188,19 +188,19 @@ class UserTable extends Component {
             <div>
                 {external && externalNote}
                 <TextInput
-                    name={usernameKey} label="Username" description="The users username." readOnly={external}
+                    name={usernameKey} label="Username" description="The user's username." readOnly={external}
                     required={!external} onChange={this.handleChange} value={user[usernameKey]}
                     errorName={usernameKey}
                     errorValue={fieldErrors[usernameKey]} />
                 <PasswordInput
-                    name={passwordKey} label="Password" description="The users password." readOnly={external}
+                    name={passwordKey} label="Password" description="The user's password." readOnly={external}
                     required={!external} onChange={this.handleChange} value={user[passwordKey]}
                     isSet={user[passwordSetKey]}
                     errorName={passwordKey}
                     errorValue={fieldErrors[passwordKey]} />
                 {passwordConfirmField}
                 <TextInput
-                    name={emailKey} label="Email" description="The users email." readOnly={external}
+                    name={emailKey} label="Email" description="The user's email." readOnly={external}
                     required={!external} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey}
                     errorValue={fieldErrors[emailKey]} />
                 <DynamicSelectInput

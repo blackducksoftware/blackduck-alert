@@ -7,7 +7,11 @@ metadata:
   name: {{ .Release.Name }}-alert
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  {{- if eq .Values.status "Running" }} 
+  replicas: 1 
+  {{- else }} 
+  replicas: 0 
+  {{- end }}
   selector:
     matchLabels:
       app: alert
@@ -33,7 +37,11 @@ spec:
             name: {{ .Release.Name }}-alert-environs
         - secretRef:
             name: {{ .Release.Name }}-alert-environs-secret
-        image: {{ .Values.alert.image }}
+        {{- if .Values.alert.registry }}
+        image: {{ .Values.alert.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
+        {{- else }}
+        image: {{ .Values.registry }}/blackduck-alert:{{ .Values.alert.imageTag }} 
+        {{- end }}
         imagePullPolicy: Always
         livenessProbe:
           exec:
@@ -46,7 +54,7 @@ spec:
           timeoutSeconds: 10
         name: blackduck-alert
         ports:
-          - containerPort: 8443
+          - containerPort: {{ .Values.alert.port }}
             protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
@@ -83,7 +91,7 @@ spec:
       {{- if .Values.enablePersistentStorage }}
       - name: dir-alert
         persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-alert-pvc
+          claimName: {{if .Values.persistentVolumeClaimName}} {{.Values.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-alert-pvc {{end}}
       {{- else }}
       - emptyDir: {}
         name: dir-alert
@@ -112,17 +120,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    - name: port-8443
-      port: 8443
+    - name: port-{{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
       protocol: TCP
-      targetPort: 8443
+      targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
     name: {{ .Release.Name }}
   type: ClusterIP
 ---
 
-{{- if .Values.enablePersistentStorage -}}
+{{- if and .Values.enablePersistentStorage (not .Values.persistentVolumeClaimName) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -157,10 +165,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    - name: port-8443
-      port: 8443
+    - name: port-{{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
       protocol: TCP
-      targetPort: 8443
+      targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
     name: {{ .Release.Name }}

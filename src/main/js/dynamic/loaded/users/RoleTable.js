@@ -75,10 +75,12 @@ class RoleTable extends Component {
         permissions.forEach(permission => {
             const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
             const descriptor = descriptors.find(currentDescriptor => currentDescriptor.label === descriptorName);
-            const descriptorKey = descriptor.name;
+            if (descriptor) {
+                const descriptorKey = descriptor.name;
 
-            permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] = descriptorKey;
-            correctedPermissions.push(permission);
+                permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] = descriptorKey;
+                correctedPermissions.push(permission);
+            }
         });
         role.permissions = correctedPermissions;
 

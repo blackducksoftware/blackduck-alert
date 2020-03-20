@@ -39,8 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
@@ -59,13 +61,13 @@ public class RoleActions {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final AuthorizationUtility authorizationUtility;
     private final AuthorizationManager authorizationManager;
-    private final Map<String, String> descriptorKeyToName;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, List<DescriptorKey> descriptorKeys) {
+    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
-        this.descriptorKeyToName = descriptorKeys.stream().collect(Collectors.toMap(DescriptorKey::getUniversalKey, DescriptorKey::getDisplayName));
+        this.descriptorMap = descriptorMap;
     }
 
     public Collection<RolePermissionModel> getRoles() {
@@ -74,7 +76,7 @@ public class RoleActions {
                    .collect(Collectors.toList());
     }
 
-    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException {
+    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
         Map<String, String> fieldErrors = new HashMap<>();
         validateCreationRoleName(fieldErrors, roleName);
@@ -82,15 +84,17 @@ public class RoleActions {
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
-
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(rolePermissionModel.getPermissions());
+        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
+        validatePermissions(permissions);
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
         return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
     }
 
-    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException {
+    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
         authorizationUtility.updateRoleName(roleId, roleName);
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
+        validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
         PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
         authorizationManager.loadPermissionsIntoCache();
@@ -113,7 +117,7 @@ public class RoleActions {
         for (Map.Entry<PermissionKey, Integer> matrixRow : permissionMatrixModel.getPermissions().entrySet()) {
             Integer accessOperations = matrixRow.getValue();
             PermissionKey permissionKey = matrixRow.getKey();
-            String descriptorDisplayName = descriptorKeyToName.getOrDefault(permissionKey.getDescriptorName(), permissionKey.getDescriptorName());
+            String descriptorDisplayName = descriptorMap.getDescriptorKey(permissionKey.getDescriptorName()).map(DescriptorKey::getDisplayName).orElse(permissionKey.getDescriptorName());
 
             PermissionModel permissionModel = new PermissionModel(
                 descriptorDisplayName,
@@ -181,6 +185,18 @@ public class RoleActions {
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
             fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that role name already exists.");
+        }
+    }
+
+    private void validatePermissions(Set<PermissionModel> permissionModels) throws AlertConfigurationException {
+        Set<PermissionKey> descriptorContexts = new HashSet<>();
+        for (PermissionModel permissionModel : permissionModels) {
+            PermissionKey pair = new PermissionKey(permissionModel.getContext(), permissionModel.getDescriptorName());
+            if (descriptorContexts.contains(pair)) {
+                throw new AlertConfigurationException(String.format("Can't save duplicate permissions for a role. Duplicate permission for '%s' with context '%s' found.", pair.getDescriptorName(), pair.getContext()));
+            } else {
+                descriptorContexts.add(pair);
+            }
         }
     }
 
