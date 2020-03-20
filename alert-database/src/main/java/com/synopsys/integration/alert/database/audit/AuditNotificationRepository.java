@@ -25,9 +25,18 @@ package com.synopsys.integration.alert.database.audit;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
-    List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+    List<AuditNotificationRelation> findByAuditEntryId(Long auditEntryId);
 
-    List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
+    List<AuditNotificationRelation> findByNotificationId(Long notificationId);
+
+    // 03-19-2020 psantos:
+    // Had to write the query for deletion manually. JPA will throw an exception if the method is declared only to derive the delete query via JPA.
+    // Delete by the notification id. In case the audit entry id is deleted we need to delete any relations with with the notificationId. Doesn't occur in newer versions.
+    @Modifying
+    @Query("DELETE FROM AuditNotificationRelation relation WHERE relation.notificationId = ?1")
+    void deleteByNotificationId(Long notificationId);
 }
