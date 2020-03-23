@@ -19,6 +19,7 @@ class GlobalConfiguration extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
 
         const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
@@ -81,16 +82,23 @@ class GlobalConfiguration extends React.Component {
         const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentConfig.context, currentConfig.descriptorName);
         newConfig.id = currentConfig.id;
         Object.keys(currentConfig.keyToValues)
-            .filter(key => filteredFieldKeys.includes(key))
-            .forEach((key) => {
-                newConfig.keyToValues[key] = currentConfig.keyToValues[key];
-            });
+        .filter(key => filteredFieldKeys.includes(key))
+        .forEach((key) => {
+            newConfig.keyToValues[key] = currentConfig.keyToValues[key];
+        });
         const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(newConfig);
         const id = FieldModelUtilities.getFieldModelId(newConfig);
         if (emptyModel && id) {
             this.props.deleteConfig(id);
         } else {
             this.props.updateConfig(currentConfig);
+        }
+    }
+
+    handleDelete() {
+        const { currentConfig } = this.state;
+        if (currentConfig.id) {
+            this.props.deleteConfig(currentConfig.id);
         }
     }
 
@@ -101,8 +109,9 @@ class GlobalConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
-        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && (type != DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
+        const displayDelete = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const body = (!Array.isArray(fields) || !fields.length) ?
             (
                 <div className="form-horizontal">There is no global configuration required. The configuration is handled in the distribution jobs.</div>
@@ -121,8 +130,11 @@ class GlobalConfiguration extends React.Component {
                     <ConfigButtons
                         includeSave={displaySave}
                         includeTest={displayTest}
+                        includeDelete={displayDelete}
                         type="submit"
                         onTestClick={this.handleTest}
+                        onDeleteClick={this.handleDelete}
+                        confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     />
                     <ChannelTestModal
                         sendTestMessage={this.props.testConfig}
