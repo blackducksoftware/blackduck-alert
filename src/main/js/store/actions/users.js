@@ -173,7 +173,6 @@ export function saveUser(user) {
                 });
             }
         })
-        .then(() => dispatch(fetchUsers()))
         .catch(console.error);
     };
 }
@@ -203,7 +202,6 @@ export function deleteUser(userId) {
                 });
             }
         })
-        .then(() => dispatch(fetchUsers()))
         .catch(console.error);
     };
 }

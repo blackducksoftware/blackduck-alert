@@ -20,7 +20,8 @@ const initialState = {
     userFetchError: '',
     userSaveError: null,
     userDeleteError: null,
-    fieldErrors: {}
+    fieldErrors: {},
+    saveStatus: ''
 };
 
 const users = (state = initialState, action) => {
@@ -30,62 +31,72 @@ const users = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 userDeleteError: action.userDeleteError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_DELETING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_FETCH_ERROR_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 userFetchError: action.userFetchError,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: action.data,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: [],
-                fetching: true
+                fetching: true,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_USER_SAVE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 userSaveError: action.userSaveError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: 'ERROR'
             });
         case USER_MANAGEMENT_USER_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: 'SAVED'
             });
         case USER_MANAGEMENT_USER_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: 'SAVING'
             });
         case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
                 userDeleteError: null,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         }
         case SERIALIZE:
