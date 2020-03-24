@@ -25,8 +25,19 @@ class RoleTable extends Component {
             role: {
                 permissions: []
             },
-            incrementalId: 1
+            incrementalId: 1,
+            saveCallback: () => null
         };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.saveStatus === 'SAVING' && (this.props.saveStatus === 'SAVED' || this.props.saveStatus === 'ERROR')) {
+            this.setState({
+                role: {
+                    permissions: []
+                }
+            }, () => this.state.saveCallback(true));
+        }
     }
 
     handleChange(e) {
@@ -61,13 +72,13 @@ class RoleTable extends Component {
         this.props.getRoles();
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         this.setState({
             role: selectedRow
-        });
+        }, callback);
     }
 
-    async onSave() {
+    onSave(callback) {
         const { descriptors } = this.props;
         const { role } = this.state;
         const { permissions } = role;
@@ -84,37 +95,37 @@ class RoleTable extends Component {
         });
         role.permissions = correctedPermissions;
 
-        await this.props.saveRole(role);
         this.setState({
-            role: {
-                permissions: []
-            }
-        });
-        this.retrieveData();
+            saveCallback: callback
+        }, () => this.props.saveRole(role));
+
         return true;
     }
 
-    onDelete(rolesToDelete) {
+    onDelete(rolesToDelete, callback) {
         if (rolesToDelete) {
             rolesToDelete.forEach(roleId => {
                 this.props.deleteRole(roleId);
             });
         }
+        callback();
         this.retrieveData();
     }
 
-    onRoleClose() {
+    onRoleClose(callback) {
         this.setState({
             role: {
                 permissions: []
             }
-        });
+        }, callback);
         this.props.clearFieldErrors();
+
     }
 
     async savePermissions(permission) {
         const { role, incrementalId } = this.state;
         const { permissions } = role;
+
         if (!permission.id) {
             permission.id = incrementalId;
             this.setState({
@@ -236,7 +247,8 @@ RoleTable.propTypes = {
     roleError: PropTypes.string,
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
-    fetching: PropTypes.bool
+    fetching: PropTypes.bool,
+    saveStatus: PropTypes.string
 };
 
 const mapStateToProps = state => ({
@@ -245,7 +257,8 @@ const mapStateToProps = state => ({
     roleError: state.roles.roleError,
     fieldErrors: state.roles.fieldErrors,
     inProgress: state.roles.inProgress,
-    fetching: state.roles.fetching
+    fetching: state.roles.fetching,
+    saveStatus: state.roles.saveStatus
 });
 
 const mapDispatchToProps = dispatch => ({

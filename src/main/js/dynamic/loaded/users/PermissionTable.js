@@ -152,17 +152,17 @@ class PermissionTable extends Component {
         }];
     }
 
-    onPermissionsClose() {
+    onPermissionsClose(callback) {
         this.setState({
             permissionsData: {}
-        });
+        }, callback);
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         const parsedPermissions = this.convertPermissionsColumn(selectedRow);
         this.setState({
             permissionsData: parsedPermissions
-        });
+        }, callback);
     }
 
     createPermissionsModal() {
@@ -225,7 +225,7 @@ class PermissionTable extends Component {
         );
     }
 
-    async onSavePermissions() {
+    async onSavePermissions(callback) {
         await this.setState({
             saveInProgress: true
         });
@@ -237,11 +237,11 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        const duplicate = data.find(permission =>
+        const existingPermission = data.find(permission =>
             permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
             permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
         );
-        if (duplicate) {
+        if (existingPermission && existingPermission.id !== permissionsData.id) {
             await this.setState({
                 errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor:${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context:${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
                 saveInProgress: false
@@ -258,12 +258,14 @@ class PermissionTable extends Component {
         await this.setState({
             saveInProgress: false
         });
+        callback(saved);
         return saved;
     }
 
-    onDeletePermissions(permissionsToDelete) {
+    onDeletePermissions(permissionsToDelete, callback) {
         if (permissionsToDelete) {
             this.props.deleteRole(permissionsToDelete);
+            callback();
         }
     }
 

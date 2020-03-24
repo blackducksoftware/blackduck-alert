@@ -172,7 +172,6 @@ export function saveRole(role) {
                 });
             }
         })
-        .then(() => dispatch(fetchRoles()))
         .catch(console.error);
     };
 }
@@ -202,7 +201,6 @@ export function deleteRole(roleId) {
                 });
             }
         })
-        .then(() => dispatch(fetchRoles()))
         .catch(console.error);
     };
 }
