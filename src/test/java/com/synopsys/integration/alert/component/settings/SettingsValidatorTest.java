@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
 import com.synopsys.integration.alert.util.OutputLogger;
 
@@ -33,8 +32,7 @@ public class SettingsValidatorTest {
     public void testValidateEncryptionProperties() throws IOException {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
-        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        SettingsValidator settingsValidator = new SettingsValidator(userAccessor, encryptionUtility, defaultSystemMessageUtility);
+        SettingsSystemValidator settingsValidator = new SettingsSystemValidator(encryptionUtility, defaultSystemMessageUtility);
         settingsValidator.validateEncryption();
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Not Initialized"));
@@ -45,8 +43,7 @@ public class SettingsValidatorTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
-        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
-        SettingsValidator settingsValidator = new SettingsValidator(userAccessor, encryptionUtility, defaultSystemMessageUtility);
+        SettingsSystemValidator settingsValidator = new SettingsSystemValidator(encryptionUtility, defaultSystemMessageUtility);
         settingsValidator.validateEncryption();
         Mockito.verify(encryptionUtility).isInitialized();
         assertTrue(outputLogger.isLineContainingText("Encryption utilities: Initialized"));

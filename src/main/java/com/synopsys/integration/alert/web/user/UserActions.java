@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuthenticationTyp
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
@@ -58,13 +59,16 @@ public class UserActions {
     private AuthorizationUtility authorizationUtility;
     private AuthorizationManager authorizationManager;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
+    private UserSystemValidator userSystemValidator;
 
     @Autowired
-    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor) {
+    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor,
+        UserSystemValidator userSystemValidator) {
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
         this.authenticationTypeAccessor = authenticationTypeAccessor;
+        this.userSystemValidator = userSystemValidator;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -88,6 +92,7 @@ public class UserActions {
             authorizationUtility.updateUserRoles(userId, roleNames);
         }
         userModel = userAccessor.getUser(userId).orElse(userModel);
+        userSystemValidator.validateSysadminUser();
         return convertToCustomUserRoleModel(userModel);
     }
 
@@ -124,6 +129,7 @@ public class UserActions {
                 authorizationManager.loadPermissionsIntoCache();
             }
         }
+        userSystemValidator.validateSysadminUser();
         return userAccessor.getUser(userId)
                    .map(this::convertToCustomUserRoleModel)
                    .orElse(userConfig);

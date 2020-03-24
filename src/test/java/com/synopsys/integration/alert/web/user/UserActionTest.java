@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 public class UserActionTest {
@@ -39,13 +40,14 @@ public class UserActionTest {
         AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         AuthenticationTypeAccessor authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
+        UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
 
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationType.name(), true);
-        UserActions userActions = new UserActions(userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor);
+        UserActions userActions = new UserActions(userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         try {
             UserConfig newConfig = userActions.updateUser(id, userConfig);
             fail("Email adress is missing and should be validated.");
@@ -69,13 +71,14 @@ public class UserActionTest {
         AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         AuthenticationTypeAccessor authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
+        UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
 
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationType.name(), true);
-        UserActions userActions = new UserActions(userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor);
+        UserActions userActions = new UserActions(userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         UserConfig newConfig = userActions.updateUser(id, userConfig);
         assertEquals(String.valueOf(id), newConfig.getId());
         assertEquals(name, newConfig.getUsername());

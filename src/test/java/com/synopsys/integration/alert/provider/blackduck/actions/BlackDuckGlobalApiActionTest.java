@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
@@ -51,7 +51,7 @@ public class BlackDuckGlobalApiActionTest {
     @Test
     public void afterSaveActionSuccessTest() throws AlertException {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        BlackDuckValidator blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
+        BlackDuckSystemValidator blackDuckValidator = Mockito.mock(BlackDuckSystemValidator.class);
         Mockito.when(blackDuckValidator.validate()).thenReturn(true);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, blackDuckValidator, taskManager, providerDataAccessor);
@@ -73,7 +73,7 @@ public class BlackDuckGlobalApiActionTest {
     @Test
     public void afterUpdateActionSuccessTest() throws AlertException {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        BlackDuckValidator blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
+        BlackDuckSystemValidator blackDuckValidator = Mockito.mock(BlackDuckSystemValidator.class);
         Mockito.when(blackDuckValidator.validate()).thenReturn(true);
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProviderKey, blackDuckValidator, taskManager, providerDataAccessor);

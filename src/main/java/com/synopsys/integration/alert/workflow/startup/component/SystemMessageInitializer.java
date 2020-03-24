@@ -30,20 +30,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.ProviderValidator;
-import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.common.provider.ProviderSystemValidator;
+import com.synopsys.integration.alert.component.settings.SettingsSystemValidator;
+import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Order(30)
 public class SystemMessageInitializer extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
-    private final List<ProviderValidator> providerValidators;
-    private SettingsValidator settingsValidator;
+    private final List<ProviderSystemValidator> providerValidators;
+    private SettingsSystemValidator settingsValidator;
+    private UserSystemValidator userSystemValidator;
 
     @Autowired
-    public SystemMessageInitializer(List<ProviderValidator> providerValidators, SettingsValidator settingsValidator) {
+    public SystemMessageInitializer(List<ProviderSystemValidator> providerValidators, SettingsSystemValidator settingsValidator, UserSystemValidator userSystemValidator) {
         this.providerValidators = providerValidators;
         this.settingsValidator = settingsValidator;
+        this.userSystemValidator = userSystemValidator;
     }
 
     @Override
@@ -55,8 +58,8 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
-        boolean defaultUserSettingsValid = settingsValidator.validateUser().isEmpty();
-        boolean encryptionValid = settingsValidator.validateEncryption().isEmpty();
+        boolean defaultUserSettingsValid = userSystemValidator.validateSysadminUser();
+        boolean encryptionValid = settingsValidator.validateEncryption();
         boolean providersValid = validateProviders();
         boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
@@ -67,7 +70,7 @@ public class SystemMessageInitializer extends StartupComponent {
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");
-        for (ProviderValidator providerValidator : providerValidators) {
+        for (ProviderSystemValidator providerValidator : providerValidators) {
             valid = valid && providerValidator.validate();
         }
         return valid;

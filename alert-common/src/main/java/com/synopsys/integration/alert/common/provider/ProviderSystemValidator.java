@@ -22,7 +22,14 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-public abstract class ProviderValidator {
+import com.synopsys.integration.alert.common.BaseSystemValidator;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+
+public abstract class ProviderSystemValidator extends BaseSystemValidator {
+
+    public ProviderSystemValidator(SystemMessageUtility systemMessageUtility) {
+        super(systemMessageUtility);
+    }
 
     public abstract boolean validate();
 }

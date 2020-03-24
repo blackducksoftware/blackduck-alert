@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.component.settings.actions;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,36 +35,27 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.component.settings.SettingsSystemValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 @Component
 public class SettingsGlobalApiAction extends ApiAction {
     private static final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
-    private final UserAccessor userAccessor;
-    private SettingsValidator settingsValidator;
+    private SettingsSystemValidator settingsValidator;
 
     @Autowired
-    public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, UserAccessor userAccessor, SettingsValidator settingsValidator) {
+    public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, SettingsSystemValidator settingsValidator) {
         this.encryptionUtility = encryptionUtility;
-        this.userAccessor = userAccessor;
         this.settingsValidator = settingsValidator;
     }
 
     @Override
     public FieldModel afterGetAction(FieldModel fieldModel) {
-        Optional<UserModel> defaultUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         FieldModel fieldModelCopy = createFieldModelCopy(fieldModel);
-        String defaultUserEmail = defaultUser.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).orElse("");
-        boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
-        fieldModelCopy.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(defaultUserEmail), StringUtils.isNotBlank(defaultUserEmail)));
-        fieldModelCopy.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
         fieldModelCopy.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
         fieldModelCopy.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isGlobalSaltSet()));
         return fieldModelCopy;
@@ -104,14 +94,11 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     private FieldModel handleNewAndUpdatedConfig(FieldModel fieldModel) {
-        saveDefaultAdminUserPassword(fieldModel);
-        saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
         return scrubModel(fieldModel);
     }
 
     private void handleAfterNewAndUpdate() {
-        settingsValidator.validateUser();
         settingsValidator.validateEncryption();
     }
 
@@ -122,30 +109,6 @@ public class SettingsGlobalApiAction extends ApiAction {
         keyToValues.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
         return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), keyToValues);
-    }
-
-    private void saveDefaultAdminUserPassword(FieldModel fieldModel) {
-        String password = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD).flatMap(FieldValueModel::getValue).orElse("");
-        if (StringUtils.isNotBlank(password)) {
-            Optional<UserModel> adminUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
-            if (adminUser.isPresent()) {
-                userAccessor.changeUserPassword(adminUser.get().getName(), password);
-            } else {
-                logger.error("Critical Error. Default admin user could not be found in the database.");
-            }
-        }
-    }
-
-    private void saveDefaultAdminUserEmail(FieldModel fieldModel) {
-        Optional<FieldValueModel> optionalEmail = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
-        if (optionalEmail.isPresent()) {
-            Optional<UserModel> adminUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
-            if (adminUser.isPresent()) {
-                userAccessor.changeUserEmailAddress(adminUser.get().getName(), optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
-            } else {
-                logger.error("Critical Error. Default admin user could not be found in the database.");
-            }
-        }
     }
 
     private void saveEncryptionProperties(FieldModel fieldModel) {

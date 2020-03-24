@@ -36,19 +36,19 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final BlackDuckValidator blackDuckValidator;
+    private final BlackDuckSystemValidator blackDuckValidator;
     private final TaskManager taskManager;
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckValidator blackDuckValidator, TaskManager taskManager, ProviderDataAccessor providerDataAccessor) {
+    public BlackDuckGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, BlackDuckSystemValidator blackDuckValidator, TaskManager taskManager, ProviderDataAccessor providerDataAccessor) {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.blackDuckValidator = blackDuckValidator;
         this.taskManager = taskManager;
