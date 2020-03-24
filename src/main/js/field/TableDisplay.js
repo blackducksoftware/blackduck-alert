@@ -172,7 +172,7 @@ class TableDisplay extends Component {
             const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
             const validationSetCallback = () => this.setState({
                 showConfiguration: false
-            });
+            }, this.updateData);
             this.setState({
                 uiValidation: validationState
             }, validationSetCallback);
@@ -287,7 +287,7 @@ class TableDisplay extends Component {
         this.flipDeleteModalShowFlag();
         this.setState({
             rowsToDelete: []
-        });
+        }, this.updateData);
     }
 
     flipDeleteModalShowFlag() {
@@ -308,7 +308,7 @@ class TableDisplay extends Component {
             currentRowSelected,
             showConfiguration: true
         });
-        this.props.onEditState(currentRowSelected, callback());
+        this.props.onEditState(currentRowSelected, callback);
     }
 
     editButtonClick(cell, row) {
