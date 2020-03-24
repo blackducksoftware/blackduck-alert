@@ -16,8 +16,10 @@ ALERT_ENCRYPTION_GLOBAL_SALT: {{ required "must provide --set alertEncryptionGlo
 Image pull secrets to pull the image
 */}}
 {{- define "alert.imagePullSecrets" -}}
-{{- with .Values.imagePullSecrets -}}
+{{- if .Values.imagePullSecrets -}}
 imagePullSecrets:
-{{- toYaml . | nindent 0 -}}
-{{- end -}}
-{{- end -}}
+{{- range .Values.imagePullSecrets }}
+- name: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}
