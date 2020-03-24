@@ -11,3 +11,13 @@ ALERT_ENCRYPTION_PASSWORD: {{ required "must provide --set alertEncryptionPasswo
 ALERT_ENCRYPTION_GLOBAL_SALT: {{ required "must provide --set alertEncryptionGlobalSalt=\"\"" .Values.alertEncryptionGlobalSalt | b64enc }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Image pull secrets to pull the image
+*/}}
+{{- define "alert.imagePullSecrets" -}}
+{{- with .Values.imagePullSecrets -}}
+imagePullSecrets:
+{{- toYaml . | nindent 0 -}}
+{{- end -}}
+{{- end -}}

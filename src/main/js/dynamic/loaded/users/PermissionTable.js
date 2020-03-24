@@ -237,11 +237,13 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        const existingPermission = data.find(permission =>
+        const duplicates = data.filter(permission =>
             permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT] &&
+            permission.id !== permissionsData.id
         );
-        if (existingPermission && existingPermission.id !== permissionsData.id) {
+
+        if (duplicates && duplicates.length > 0) {
             await this.setState({
                 errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor:${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context:${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
                 saveInProgress: false
