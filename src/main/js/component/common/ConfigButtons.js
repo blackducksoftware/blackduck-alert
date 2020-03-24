@@ -4,8 +4,19 @@ import CancelButton from 'field/input/CancelButton';
 import SubmitButton from 'field/input/SubmitButton';
 import GeneralButton from 'field/input/GeneralButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ConfirmModal from 'component/common/ConfirmModal';
 
 class ConfigButtons extends Component {
+    constructor(props) {
+        super();
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteConfirmed = this.handleDeleteConfirmed.bind(this);
+        this.handleDeleteCancelled = this.handleDeleteCancelled.bind(this);
+        this.state = {
+            showDeleteConfirmation: false
+        };
+    }
+
     createTestButton() {
         const { includeTest, onTestClick, testLabel } = this.props;
         if (includeTest) {
@@ -39,13 +50,53 @@ class ConfigButtons extends Component {
         return null;
     }
 
+    createDeleteButton() {
+        const { includeDelete, includeSave, onDeleteClick, deleteLabel } = this.props;
+        const borderLeft = includeSave ? '1px solid #aaa' : 'none';
+        const style = {
+            display: 'inline-block',
+            paddingLeft: '12px',
+            marginLeft: '12px'
+        };
+        if (includeDelete) {
+            return (<div style={Object.assign(style, { borderLeft })}
+                >
+                    <GeneralButton id="deleteButton" onClick={this.handleDelete}>{deleteLabel}</GeneralButton>
+                </div>
+            );
+        }
+        return null;
+    }
+
+    handleDelete() {
+        this.setState({
+            showDeleteConfirmation: true
+        });
+    }
+
+    handleDeleteConfirmed() {
+        this.setState({
+            showDeleteConfirmation: false
+        });
+        this.props.onDeleteClick();
+    }
+
+    handleDeleteCancelled() {
+        this.setState({
+            showDeleteConfirmation: false
+        });
+    }
+
     createButtonContent() {
         const {
-            isFixed, performingAction
+            isFixed, performingAction, confirmDeleteMessage, confirmDeleteTitle
         } = this.props;
+
+        const { showDeleteConfirmation } = this.state;
         const testButton = this.createTestButton();
         const saveButton = this.createSaveButton();
         const cancelButton = this.createCancelButton();
+        const deleteButton = this.createDeleteButton();
         const buttonContainerClass = isFixed ? '' : 'configButtonContainer';
         return (
             <div className={buttonContainerClass}>
@@ -58,7 +109,16 @@ class ConfigButtons extends Component {
                 </div>
                 {testButton}
                 {saveButton}
+                {deleteButton}
                 {cancelButton}
+                <div>
+                    <ConfirmModal showModal={showDeleteConfirmation}
+                                  title={confirmDeleteTitle}
+                                  message={confirmDeleteMessage}
+                                  affirmativeAction={this.handleDeleteConfirmed}
+                                  negativeAction={this.handleDeleteCancelled}
+                    />
+                </div>
             </div>
         );
     }
@@ -91,26 +151,35 @@ ConfigButtons.propTypes = {
     includeCancel: PropTypes.bool,
     includeSave: PropTypes.bool,
     includeTest: PropTypes.bool,
+    includeDelete: PropTypes.bool,
     onCancelClick: PropTypes.func,
     onTestClick: PropTypes.func,
+    onDeleteClick: PropTypes.func,
     performingAction: PropTypes.bool,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
     cancelLabel: PropTypes.string,
-    isFixed: PropTypes.bool
+    isFixed: PropTypes.bool,
+    confirmDeleteTitle: PropTypes.string,
+    confirmDeleteMessage: PropTypes.string
 };
 
 ConfigButtons.defaultProps = {
     includeCancel: false,
     includeSave: true,
     includeTest: false,
+    includeDelete: false,
     performingAction: false,
     onCancelClick: () => true,
     onTestClick: (evt) => true,
+    onDeleteClick: () => true,
     submitLabel: 'Save',
     testLabel: 'Test Configuration',
+    deleteLabel: 'Delete',
     cancelLabel: 'Cancel',
-    isFixed: true
+    isFixed: true,
+    confirmDeleteTitle: 'Confirm Delete',
+    confirmDeleteMessage: 'Are you sure you want to delete?'
 };
 
 export default ConfigButtons;
