@@ -75,6 +75,7 @@ spec:
           subPath: cacerts
         {{- end }}
       dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.alert.nodeSelector }}
       nodeSelector:
       {{ toYaml . | indent 2 }}
