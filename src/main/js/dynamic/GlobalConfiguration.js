@@ -86,13 +86,7 @@ class GlobalConfiguration extends React.Component {
         .forEach((key) => {
             newConfig.keyToValues[key] = currentConfig.keyToValues[key];
         });
-        const emptyModel = !FieldModelUtilities.hasAnyValuesExcludingId(newConfig);
-        const id = FieldModelUtilities.getFieldModelId(newConfig);
-        if (emptyModel && id) {
-            this.props.deleteConfig(id);
-        } else {
-            this.props.updateConfig(currentConfig);
-        }
+        this.props.updateConfig(currentConfig);
     }
 
     handleDelete() {
