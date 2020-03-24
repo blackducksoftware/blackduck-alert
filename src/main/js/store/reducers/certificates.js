@@ -20,7 +20,8 @@ const initialState = {
     certificateFetchError: '',
     certificateSaveError: null,
     certificateDeleteError: null,
-    fieldErrors: {}
+    fieldErrors: {},
+    saveStatus: ''
 };
 
 const certificates = (state = initialState, action) => {
@@ -30,62 +31,73 @@ const certificates = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 certificateDeleteError: action.certificateDeleteError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: ''
             });
         case CERTIFICATES_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         case CERTIFICATES_DELETING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: ''
             });
         case CERTIFICATES_FETCH_ERROR_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 certificatesFetchError: action.certificatesFetchError,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case CERTIFICATES_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: action.certificates,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case CERTIFICATES_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: [],
-                fetching: true
+                fetching: true,
+                saveStatus: ''
+
             });
         case CERTIFICATES_SAVE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 certificateSaveError: action.certificateSaveError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: 'ERROR'
             });
         case CERTIFICATES_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: 'SAVED'
             });
         case CERTIFICATES_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: 'SAVING'
             });
         case CERTIFICATES_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
                 certificateDeleteError: null,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         }
         case SERIALIZE:
