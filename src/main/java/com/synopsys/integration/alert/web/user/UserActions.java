@@ -50,12 +50,14 @@ import com.synopsys.integration.alert.common.persistence.model.AuthenticationTyp
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
 @Transactional
 public class UserActions {
+    public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
+    public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
+
     private static final Logger logger = LoggerFactory.getLogger(UserActions.class);
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
@@ -218,14 +220,14 @@ public class UserActions {
             Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
             boolean missingEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();
             if (missingEmailAddress) {
-                systemMessageUtility.addSystemMessage(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-                logger.error(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL);
+                systemMessageUtility.addSystemMessage(FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+                logger.error(FIELD_ERROR_DEFAULT_USER_EMAIL);
             }
 
             boolean missingPassword = userModel.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isEmpty();
             if (missingPassword) {
-                systemMessageUtility.addSystemMessage(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-                logger.error(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PWD);
+                systemMessageUtility.addSystemMessage(FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+                logger.error(FIELD_ERROR_DEFAULT_USER_PWD);
             }
         } catch (Exception e) {
             logger.error("There was an unexpected error when attempting to validate the default admin user.", e);
