@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -25,7 +24,6 @@ import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalA
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsUIConfig;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 
 public class SettingsGlobalApiActionTest {
@@ -40,7 +38,6 @@ public class SettingsGlobalApiActionTest {
     @Test
     public void testReadConfig() {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
 
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
@@ -51,7 +48,6 @@ public class SettingsGlobalApiActionTest {
         Mockito.when(encryptionUtility.isGlobalSaltSet()).thenReturn(true);
         UserModel userModel = Mockito.mock(UserModel.class);
         Mockito.when(userModel.getPassword()).thenReturn("valid_test_value");
-        Mockito.when(userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)).thenReturn(Optional.of(userModel));
         FieldModel withFields = actionApi.afterGetAction(fieldModel);
         assertFieldsPresent(withFields);
     }

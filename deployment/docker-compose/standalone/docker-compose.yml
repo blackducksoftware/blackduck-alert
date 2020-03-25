@@ -10,13 +10,13 @@ services:
       retries: 5
     user: cfssl:root
     restart: always
-    mem_limit: 512M
+    mem_limit: 640M
   alertdb:
     image: blackducksoftware/alert-database:1.0.0
     ports: ['5432']
     hostname: alertdb
     restart: always
-    shm_size: 512M
+    shm_size: 640M
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
     healthcheck:
       test: [CMD, /usr/local/bin/alertdb-healthcheck.sh]
