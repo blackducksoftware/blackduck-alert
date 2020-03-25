@@ -59,26 +59,30 @@ class TableDisplay extends Component {
     }
 
     createTableColumns() {
-        const assignDataFormat = (cell) => {
+        const defaultDataFormat = (cell) => {
             if (cell) {
                 return <div title={cell.toString()}> {cell} </div>;
             }
             return <div> {cell} </div>;
         };
 
-        return this.props.columns.map(column => (
-            <TableHeaderColumn
-                key={column.header}
-                dataField={column.header}
-                isKey={column.isKey}
-                hidden={column.hidden}
-                dataSort
-                columnClassName="tableCell"
-                tdStyle={{ whiteSpace: 'normal' }}
-                dataFormat={assignDataFormat}
-            >{column.headerLabel}
-            </TableHeaderColumn>
-        ));
+        return this.props.columns.map(column => {
+
+            const assignedDataFormate = column['dataFormat'] ? column['dataFormat'] : defaultDataFormat;
+            return (
+                <TableHeaderColumn
+                    key={column.header}
+                    dataField={column.header}
+                    isKey={column.isKey}
+                    hidden={column.hidden}
+                    dataSort
+                    columnClassName="tableCell"
+                    tdStyle={{ whiteSpace: 'normal' }}
+                    dataFormat={assignedDataFormate}
+                >{column.headerLabel}
+                </TableHeaderColumn>
+            )
+        });
     }
 
     updateData() {

@@ -8,6 +8,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
 import FieldsPanel from 'field/FieldsPanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ProviderCommonKeys = {
     KEY_NAME: 'provider.common.config.name',
@@ -100,9 +101,22 @@ class ProviderTable extends Component {
                 header: 'enabled',
                 headerLabel: 'Enabled',
                 isKey: false,
-                hidden: false
+                hidden: false,
+                dataFormat: this.enabledState
             }
         ];
+    }
+
+    enabledState(cell) {
+        const icon = (cell == 'true') ? 'check' : 'times';
+        const color = (cell == 'true') ? 'synopsysGreen' : 'synopsysRed';
+        const className = `alert-icon ${color}`;
+
+        return (
+            <div className="btn btn-link jobIconButton">
+                <FontAwesomeIcon icon={icon} className={className} size="lg" />
+            </div>
+        );
     }
 
     onConfigClose(callback) {
