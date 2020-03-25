@@ -5,7 +5,7 @@ services:
     ports: ['5432']
     hostname: alertdb
     restart: always
-    shm_size: 512M
+    shm_size: 640M
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
     healthcheck:
       test: [CMD, /usr/local/bin/alertdb-healthcheck.sh]

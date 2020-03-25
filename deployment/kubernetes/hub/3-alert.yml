@@ -36,9 +36,9 @@ items:
               imagePullPolicy: Always
               resources:
                 requests:
-                  memory: 512M
+                  memory: 640M
                 limits:
-                  memory: 512M
+                  memory: 640M
               envFrom:
                 - configMapRef:
                     name: blackduck-alert-config
