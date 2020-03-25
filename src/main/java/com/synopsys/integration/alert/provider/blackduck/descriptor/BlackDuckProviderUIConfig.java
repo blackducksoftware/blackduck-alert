@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -52,8 +53,8 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
     private EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
-    public BlackDuckProviderUIConfig(BlackDuckProviderKey blackDuckProviderKey, EncryptionSettingsValidator encryptionValidator) {
-        super(blackDuckProviderKey, BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL);
+    public BlackDuckProviderUIConfig(BlackDuckProviderKey blackDuckProviderKey, EncryptionSettingsValidator encryptionValidator, ConfigurationAccessor configurationAccessor) {
+        super(blackDuckProviderKey, BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_DESCRIPTION, BlackDuckDescriptor.BLACKDUCK_URL, configurationAccessor);
         this.encryptionValidator = encryptionValidator;
     }
 
