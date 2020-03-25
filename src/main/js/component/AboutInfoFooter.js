@@ -132,9 +132,9 @@ class AboutInfoFooter extends React.Component {
     }
 
     startAutoReload() {
-        // Run reload in 10seconds - kill an existing timer if it exists.
+        // Run reload in 30seconds - kill an existing timer if it exists.
         this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.reload(), 10000);
+        this.timeout = setTimeout(() => this.reload(), 30000);
     }
 
     reload() {
