@@ -113,7 +113,11 @@ public class EncryptionUtility {
     }
 
     public boolean isPasswordSet() {
-        return null != getPassword();
+        return StringUtils.isNotBlank(getPassword());
+    }
+
+    public boolean isPasswordMissing() {
+        return StringUtils.isBlank(getPassword());
     }
 
     private String getPassword() {
@@ -145,7 +149,11 @@ public class EncryptionUtility {
     }
 
     public boolean isGlobalSaltSet() {
-        return null != getGlobalSalt();
+        return StringUtils.isNotBlank(getGlobalSalt());
+    }
+
+    public boolean isGlobalSaltMissing() {
+        return StringUtils.isBlank(getGlobalSalt());
     }
 
     private String getGlobalSalt() {
