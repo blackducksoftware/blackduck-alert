@@ -40,7 +40,7 @@ class ProviderTable extends Component {
     }
 
     componentDidMount() {
-        const descriptor = this.props.descriptors.find(descriptor => descriptor.name === DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK
+        const descriptor = this.props.descriptors.find(descriptor => descriptor.name === this.props.descriptorName
             && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
         if (descriptor) {
             const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
@@ -324,7 +324,8 @@ ProviderTable.propTypes = {
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
-    getAllConfigs: PropTypes.func.isRequired
+    getAllConfigs: PropTypes.func.isRequired,
+    descriptorName: PropTypes.string.isRequired
 };
 
 ProviderTable.defaultProps = {

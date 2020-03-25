@@ -63,7 +63,6 @@ class MainPage extends Component {
 
     render() {
         const channels = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
-        const providers = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
         const components = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         const spinner = (
@@ -85,8 +84,7 @@ class MainPage extends Component {
                         <Redirect to="/alert/general/about" />
                     )}
                 />
-                <Route exact path="/alert/providers" component={ProviderTable} />
-                {providers}
+                <Route exact path="/alert/providers/blackduck" render={() => <ProviderTable descriptorName={DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK} />} />
                 {channels}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
