@@ -20,6 +20,7 @@ class CertificatesPage extends Component {
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
             certificate: {},
@@ -137,6 +138,13 @@ class CertificatesPage extends Component {
         }, callback);
     }
 
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null;
+        this.setState({
+            certificate: selectedRow
+        }, callback);
+    }
+
     render() {
         const { fetching, inProgress, certificates, certificateDeleteError, label, description } = this.props;
         return (
@@ -152,6 +160,7 @@ class CertificatesPage extends Component {
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onConfigCopy={this.onCopy}
                         onEditState={this.onEdit}
                         refreshData={this.retrieveData}
                         data={certificates}

@@ -31,6 +31,7 @@ class PermissionTable extends Component {
         this.onDeletePermissions = this.onDeletePermissions.bind(this);
         this.onPermissionsClose = this.onPermissionsClose.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
             permissionsData: {},
@@ -165,6 +166,14 @@ class PermissionTable extends Component {
         }, callback);
     }
 
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null
+        const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+        this.setState({
+            permissionsData: parsedPermissions
+        }, callback);
+    }
+
     createPermissionsModal() {
         const { permissionsData } = this.state;
 
@@ -289,6 +298,7 @@ class PermissionTable extends Component {
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
                     onEditState={this.onEdit}
+                    onConfigCopy={this.onCopy}
                     newConfigFields={this.createPermissionsModal}
                     columns={this.createPermissionsColumns()}
                     data={this.retrievePermissionsData()}

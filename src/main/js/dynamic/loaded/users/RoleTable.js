@@ -20,7 +20,8 @@ class RoleTable extends Component {
         this.savePermissions = this.savePermissions.bind(this);
         this.deletePermission = this.deletePermission.bind(this);
         this.onEdit = this.onEdit.bind(this);
-
+        this.onCopy = this.onCopy.bind(this);
+        
         this.state = {
             role: {
                 permissions: []
@@ -73,6 +74,13 @@ class RoleTable extends Component {
     }
 
     onEdit(selectedRow, callback) {
+        this.setState({
+            role: selectedRow
+        }, callback);
+    }
+
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null;
         this.setState({
             role: selectedRow
         }, callback);
@@ -213,6 +221,7 @@ class RoleTable extends Component {
                     onConfigSave={this.onSave}
                     onConfigDelete={this.onDelete}
                     onConfigClose={this.onRoleClose}
+                    onConfigCopy={this.onCopy}
                     refreshData={this.retrieveData}
                     data={this.props.roles}
                     columns={this.createColumns()}

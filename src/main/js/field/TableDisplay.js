@@ -321,11 +321,11 @@ class TableDisplay extends Component {
     }
 
     copyButtonClicked(currentRowSelected) {
-        currentRowSelected.id = null;
-        this.props.onEditState(currentRowSelected);
-        this.setState({
-            currentRowSelected
+        const callback = () => this.setState({
+            currentRowSelected,
+            showConfiguration: true
         });
+        this.props.onConfigCopy(currentRowSelected, callback);
     }
 
     copyButtonClick(cell, row) {
@@ -468,6 +468,7 @@ TableDisplay.propTypes = {
     onConfigTest: PropTypes.func,
     onConfigDelete: PropTypes.func,
     onConfigClose: PropTypes.func,
+    onConfigCopy: PropTypes.func,
     clearModalFieldState: PropTypes.func,
     sortName: PropTypes.string,
     sortOrder: PropTypes.string,
@@ -508,6 +509,7 @@ TableDisplay.defaultProps = {
     onConfigTest: () => true,
     onConfigDelete: () => null,
     onConfigClose: () => null,
+    onConfigCopy: () => null,
     clearModalFieldState: () => null,
     modalTitle: 'New',
     tableNewButtonLabel: 'New',

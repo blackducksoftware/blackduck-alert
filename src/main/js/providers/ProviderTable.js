@@ -28,8 +28,8 @@ class ProviderTable extends Component {
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
         this.combineModelWithDefaults = this.combineModelWithDefaults.bind(this);
-
 
         this.state = {
             descriptor: null,
@@ -80,7 +80,7 @@ class ProviderTable extends Component {
             },
             {
                 header: 'name',
-                headerLabel: 'Alias',
+                headerLabel: 'Name',
                 isKey: false,
                 hidden: false
             },
@@ -194,6 +194,16 @@ class ProviderTable extends Component {
         }, callback);
     }
 
+    onCopy(selectedRow, callback) {
+        const { id } = selectedRow;
+        const { providerConfigs } = this.props;
+        const selectedConfig = providerConfigs.find(config => config.id === id);
+        selectedConfig.id = null;
+        this.setState({
+            providerConfig: selectedConfig
+        }, callback);
+    }
+
     checkJobPermissions(operation) {
         const { descriptors } = this.props;
         if (descriptors) {
@@ -259,6 +269,7 @@ class ProviderTable extends Component {
                         onConfigTest={this.onTest}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onConfigCopy={this.onCopy}
                         onEditState={this.onEdit}
                         refreshData={this.retrieveData}
                         data={data}

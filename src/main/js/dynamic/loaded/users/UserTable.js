@@ -26,6 +26,7 @@ class UserTable extends Component {
         this.retrieveRoles = this.retrieveRoles.bind(this);
         this.clearModalFieldState = this.clearModalFieldState.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
             user: {},
@@ -164,6 +165,14 @@ class UserTable extends Component {
         callback();
     }
 
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null;
+        this.setState({
+            user: selectedRow
+        });
+        callback();
+    }
+
     createModalFields() {
         const { user } = this.state;
         const { fieldErrors } = this.props;
@@ -247,6 +256,7 @@ class UserTable extends Component {
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
                         onEditState={this.onEdit}
+                        onConfigCopy={this.onCopy}
                         refreshData={this.retrieveData}
                         data={this.props.users}
                         columns={this.createColumns()}
