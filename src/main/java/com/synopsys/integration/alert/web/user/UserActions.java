@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +51,6 @@ import com.synopsys.integration.alert.web.model.UserConfig;
 @Component
 @Transactional
 public class UserActions {
-    private static final Logger logger = LoggerFactory.getLogger(UserActions.class);
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
