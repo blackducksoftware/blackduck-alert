@@ -175,8 +175,8 @@ class ProviderTable extends Component {
                 this.props.deleteConfig(configId);
             });
         }
-        this.retrieveData();
         callback();
+        this.retrieveData();
     }
 
     createModalFields() {

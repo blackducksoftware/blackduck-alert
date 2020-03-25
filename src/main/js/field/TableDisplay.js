@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
-import { Modal } from 'react-bootstrap';
-import ConfigButtons from 'component/common/ConfigButtons';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PopUp from 'field/PopUp';
+import ConfirmModal from 'component/common/ConfirmModal';
 
 const VALIDATION_STATE = {
     NONE: 'NONE',
@@ -28,7 +27,6 @@ class TableDisplay extends Component {
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
-        this.flipDeleteModalShowFlag = this.flipDeleteModalShowFlag.bind(this);
         this.deleteItems = this.deleteItems.bind(this);
         this.editButtonClicked = this.editButtonClicked.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
@@ -288,21 +286,13 @@ class TableDisplay extends Component {
     }
 
     closeDeleteModal() {
-        this.flipDeleteModalShowFlag();
         this.setState({
-            rowsToDelete: []
+            rowsToDelete: [],
+            showDelete: false
         }, this.updateData);
     }
 
-    flipDeleteModalShowFlag() {
-        this.setState({
-            showDelete: !this.state.showDelete
-        });
-    }
-
-    deleteItems(event) {
-        event.preventDefault();
-        event.stopPropagation();
+    deleteItems() {
         this.props.onConfigDelete(this.state.rowsToDelete, this.closeDeleteModal);
     }
 
@@ -384,28 +374,13 @@ class TableDisplay extends Component {
                 return isSelect && '#e8e8e8';
             }
         };
-
-        const deleteModal = (
-            <Modal size="lg" show={this.state.showDelete} onHide={this.closeDeleteModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal" onSubmit={this.deleteItems}>
-                        <p name="tableDeleteMessage">Are you sure you want to delete these items?</p>
-                        <ConfigButtons
-                            performingAction={this.props.inProgress}
-                            cancelId="delete-cancel"
-                            submitId="delete-submit"
-                            submitLabel="Confirm"
-                            includeSave
-                            includeCancel
-                            onCancelClick={this.closeDeleteModal}
-                            isFixed={false}
-                        />
-                    </form>
-                </Modal.Body>
-            </Modal>
+        const deleteModal = (<ConfirmModal title="Delete"
+                                           affirmativeAction={this.deleteItems}
+                                           affirmativeButtonText="Confirm"
+                                           negativeAction={this.closeDeleteModal}
+                                           negativeButtonText="Cancel"
+                                           message="Are you sure you want to delete these items?"
+                                           showModal={this.state.showDelete} />
         );
 
         const content = (
