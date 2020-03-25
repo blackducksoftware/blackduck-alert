@@ -211,7 +211,16 @@ class ProviderTable extends Component {
     onCopy(selectedRow, callback) {
         const { id } = selectedRow;
         const { providerConfigs } = this.props;
-        const selectedConfig = providerConfigs.find(config => config.id === id);
+        let selectedConfig = providerConfigs.find(config => config.id === id);
+        const { descriptor } = this.state;
+        if (descriptor) {
+            descriptor.fields.forEach(field => {
+                if (field.sensitive) {
+                    selectedConfig = FieldModelUtilities.updateFieldModelSingleValue(selectedConfig, field.key, "");
+                }
+            });
+        }
+
         selectedConfig.id = null;
         this.setState({
             providerConfig: selectedConfig
