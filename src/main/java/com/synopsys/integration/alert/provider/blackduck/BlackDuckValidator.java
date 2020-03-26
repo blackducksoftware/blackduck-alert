@@ -34,42 +34,47 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckValidator {
+public class BlackDuckValidator extends BaseSystemValidator {
+    public static final String MISSING_BLACKDUCK_URL_ERROR = "Black Duck Provider Invalid. Black Duck URL missing.";
+    public static final String BLACKDUCK_LOCALHOST_ERROR = "Black Duck Provider using localhost.";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
-    private final SystemMessageUtility systemMessageUtility;
 
     public BlackDuckValidator(SystemMessageUtility systemMessageUtility) {
-        this.systemMessageUtility = systemMessageUtility;
+        super(systemMessageUtility);
     }
 
     public boolean validate(BlackDuckProperties blackDuckProperties) {
         boolean valid = true;
         logger.info("Validating Black Duck Provider...");
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
+        getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
+        getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+        getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            if (blackDuckUrlOptional.isEmpty()) {
-                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
-                final String errorMessage = "Black Duck Provider invalid: URL missing";
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+            boolean missingUrl = addSystemMessageForError(MISSING_BLACKDUCK_URL_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
+                blackDuckUrlOptional.isEmpty());
+            if (missingUrl) {
+                logger.error("  -> {}", MISSING_BLACKDUCK_URL_ERROR);
                 valid = false;
-            } else {
+            }
+            if (blackDuckUrlOptional.isPresent()) {
                 String blackDuckUrlString = blackDuckUrlOptional.get();
                 Integer timeout = blackDuckProperties.getBlackDuckTimeout();
                 logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
                 logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
                 URL blackDuckUrl = new URL(blackDuckUrlString);
-                if ("localhost".equals(blackDuckUrl.getHost())) {
-                    logger.warn("  -> Black Duck Provider Using localhost...");
-                    systemMessageUtility.addSystemMessage("Black Duck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
+
+                boolean localHostError = addSystemMessageForError(BLACKDUCK_LOCALHOST_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
+                    "localhost".equals(blackDuckUrl.getHost()));
+                if (localHostError) {
+                    logger.warn("  -> {}", BLACKDUCK_LOCALHOST_ERROR);
                 }
                 IntLogger intLogger = new Slf4jIntLogger(logger);
                 Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
@@ -98,6 +103,6 @@ public class BlackDuckValidator {
 
     private void connectivityWarning(String message) {
         logger.warn(message);
-        systemMessageUtility.addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
+        getSystemMessageUtility().addSystemMessage(message, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
     }
 }

@@ -32,33 +32,25 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 @Component
 @Transactional
 public class UserActions {
-    public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
-    public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
-
-    private static final Logger logger = LoggerFactory.getLogger(UserActions.class);
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
@@ -67,16 +59,16 @@ public class UserActions {
     private AuthorizationUtility authorizationUtility;
     private AuthorizationManager authorizationManager;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
-    private SystemMessageUtility systemMessageUtility;
+    private UserSystemValidator userSystemValidator;
 
     @Autowired
     public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor,
-        SystemMessageUtility systemMessageUtility) {
+        UserSystemValidator userSystemValidator) {
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
         this.authenticationTypeAccessor = authenticationTypeAccessor;
-        this.systemMessageUtility = systemMessageUtility;
+        this.userSystemValidator = userSystemValidator;
     }
 
     public Collection<UserConfig> getUsers() {
@@ -100,7 +92,7 @@ public class UserActions {
             authorizationUtility.updateUserRoles(userId, roleNames);
         }
         userModel = userAccessor.getUser(userId).orElse(userModel);
-        validateSysadminUser(userId);
+        userSystemValidator.validateDefaultAdminUser(userId);
         return convertToCustomUserRoleModel(userModel);
     }
 
@@ -137,7 +129,7 @@ public class UserActions {
                 authorizationManager.loadPermissionsIntoCache();
             }
         }
-        validateSysadminUser(userId);
+        userSystemValidator.validateDefaultAdminUser(userId);
         return userAccessor.getUser(userId)
                    .map(this::convertToCustomUserRoleModel)
                    .orElse(userConfig);
@@ -211,26 +203,4 @@ public class UserActions {
         }
     }
 
-    public void validateSysadminUser(Long userId) {
-        if (userId != UserAccessor.DEFAULT_ADMIN_USER_ID) {
-            return;
-        }
-        try {
-            systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-            Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
-            boolean missingEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();
-            if (missingEmailAddress) {
-                systemMessageUtility.addSystemMessage(FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-                logger.error(FIELD_ERROR_DEFAULT_USER_EMAIL);
-            }
-
-            boolean missingPassword = userModel.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isEmpty();
-            if (missingPassword) {
-                systemMessageUtility.addSystemMessage(FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-                logger.error(FIELD_ERROR_DEFAULT_USER_PWD);
-            }
-        } catch (Exception e) {
-            logger.error("There was an unexpected error when attempting to validate the default admin user.", e);
-        }
-    }
 }

@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Order(30)
@@ -44,12 +45,14 @@ public class SystemMessageInitializer extends StartupComponent {
     private final List<Provider> providers;
     private final SettingsValidator settingsValidator;
     private final ConfigurationAccessor configurationAccessor;
+    private final UserSystemValidator userSystemValidator;
 
     @Autowired
-    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor) {
+    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator) {
         this.providers = providers;
         this.settingsValidator = settingsValidator;
         this.configurationAccessor = configurationAccessor;
+        this.userSystemValidator = userSystemValidator;
     }
 
     @Override
@@ -61,9 +64,10 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
-        boolean encryptionValid = settingsValidator.validateEncryption().isEmpty();
+        boolean defaultAdminValid = userSystemValidator.validateDefaultAdminUser();
+        boolean encryptionValid = settingsValidator.validateEncryption();
         boolean providersValid = validateProviders();
-        boolean valid = encryptionValid && providersValid;
+        boolean valid = defaultAdminValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         return valid;
