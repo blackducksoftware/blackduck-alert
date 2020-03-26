@@ -10,8 +10,8 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ProviderTable from "providers/ProviderTable";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ProviderTable from 'providers/ProviderTable';
 
 
 class MainPage extends Component {
