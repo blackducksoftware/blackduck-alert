@@ -64,14 +64,14 @@ public class UserSystemValidator extends BaseSystemValidator {
             getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
             Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
             boolean missingEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();
-            boolean missingEmailError = addSystemMessageIfHasError(FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, missingEmailAddress);
+            boolean missingEmailError = addSystemMessageForError(FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, missingEmailAddress);
             if (missingEmailError) {
                 valid = false;
                 logger.error(FIELD_ERROR_DEFAULT_USER_EMAIL);
             }
 
             boolean missingPassword = userModel.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isEmpty();
-            boolean missingPasswordError = addSystemMessageIfHasError(FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, missingPassword);
+            boolean missingPasswordError = addSystemMessageForError(FIELD_ERROR_DEFAULT_USER_PWD, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, missingPassword);
             if (missingPasswordError) {
                 valid = false;
                 logger.error(FIELD_ERROR_DEFAULT_USER_PWD);

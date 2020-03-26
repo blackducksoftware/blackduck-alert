@@ -33,7 +33,7 @@ public class BaseSystemValidator {
         this.systemMessageUtility = systemMessageUtility;
     }
 
-    public boolean addSystemMessageIfHasError(String errorMessage, SystemMessageSeverity systemMessageSeverity, SystemMessageType messageType, boolean hasError) {
+    public boolean addSystemMessageForError(String errorMessage, SystemMessageSeverity systemMessageSeverity, SystemMessageType messageType, boolean hasError) {
         if (hasError) {
             getSystemMessageUtility().addSystemMessage(errorMessage, systemMessageSeverity, messageType);
             return true;

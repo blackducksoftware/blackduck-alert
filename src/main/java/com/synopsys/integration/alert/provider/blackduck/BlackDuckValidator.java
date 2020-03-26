@@ -58,7 +58,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
         getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            boolean missingUrl = addSystemMessageIfHasError(MISSING_BLACKDUCK_URL_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
+            boolean missingUrl = addSystemMessageForError(MISSING_BLACKDUCK_URL_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
                 blackDuckUrlOptional.isEmpty());
             if (missingUrl) {
                 logger.error("  -> {}", MISSING_BLACKDUCK_URL_ERROR);
@@ -71,7 +71,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
                 logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
                 URL blackDuckUrl = new URL(blackDuckUrlString);
 
-                boolean localHostError = addSystemMessageIfHasError(BLACKDUCK_LOCALHOST_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
+                boolean localHostError = addSystemMessageForError(BLACKDUCK_LOCALHOST_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
                     "localhost".equals(blackDuckUrl.getHost()));
                 if (localHostError) {
                     logger.warn("  -> {}", BLACKDUCK_LOCALHOST_ERROR);

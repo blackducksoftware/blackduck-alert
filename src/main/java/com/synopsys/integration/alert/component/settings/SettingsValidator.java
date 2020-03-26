@@ -51,13 +51,13 @@ public class SettingsValidator extends BaseSystemValidator {
         if (!encryptionUtility.isInitialized()) {
             logger.error("Encryption utilities: Not Initialized");
 
-            boolean encryptionError = addSystemMessageIfHasError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
+            boolean encryptionError = addSystemMessageForError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
                 encryptionUtility.isPasswordMissing());
             if (encryptionError) {
                 valid = false;
                 logger.error(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD);
             }
-            boolean saltError = addSystemMessageIfHasError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
+            boolean saltError = addSystemMessageForError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
                 encryptionUtility.isGlobalSaltMissing());
             if (saltError) {
                 valid = false;
