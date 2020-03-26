@@ -40,18 +40,12 @@ class Navigation extends Component {
 
     render() {
         const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/', 'Channels');
+        const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/', 'Providers');
         const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         const nav = (
             <Fragment>
-                <li className="navHeader">
-                    Providers
-                </li>
-                <li>
-                    <NavLink to="/alert/providers/blackduck" activeClassName="activeNav">
-                        Black Duck
-                    </NavLink>
-                </li>
+                {providers}
                 {channelGlobals}
                 <li className="navHeader">
                     Jobs

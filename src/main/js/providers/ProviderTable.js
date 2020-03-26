@@ -227,7 +227,7 @@ class ProviderTable extends Component {
         }, callback);
     }
 
-    checkJobPermissions(operation) {
+    checkPermissions(operation) {
         const { descriptors } = this.props;
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -275,9 +275,9 @@ class ProviderTable extends Component {
         const deleting = Object.is(updateStatus, 'DELETING');
         const inProgress = testInProgress || updating || deleting;
         const fetching = descriptorFetching || configFetching;
-        const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
-        const canTest = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.EXECUTE);
+        const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
+        const canTest = this.checkPermissions(DescriptorUtilities.OPERATIONS.EXECUTE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         return (

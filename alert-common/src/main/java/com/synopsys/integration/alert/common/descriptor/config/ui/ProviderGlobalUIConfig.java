@@ -75,28 +75,31 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
     }
 
     private Collection<String> validateDuplicateNames(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        List<String> errorList = List.of();
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
-            if (!configurations.isEmpty()) {
-                List<ConfigurationModel> modelsWithName = configurations.stream()
-                                                              .filter(configurationModel ->
-                                                                          configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                                                                              .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                                              .filter(configName -> configName.equals(fieldToValidate.getValue().orElse("")))
-                                                                              .isPresent())
-                                                              .collect(Collectors.toList());
-                if (modelsWithName.size() > 1) {
-                    return List.of(ERROR_DUPLICATE_PROVIDER_NAME);
-                } else if (modelsWithName.size() == 1) {
-                    boolean sameConfig = fieldModel.getId() != null && modelsWithName.get(0).getConfigurationId().equals(Long.valueOf(fieldModel.getId()));
-                    if (!sameConfig) {
-                        return List.of(ERROR_DUPLICATE_PROVIDER_NAME);
-                    }
+            if (configurations.isEmpty()) {
+                return List.of();
+            }
+
+            List<ConfigurationModel> modelsWithName = configurations.stream()
+                                                          .filter(configurationModel ->
+                                                                      configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                                                                          .flatMap(ConfigurationFieldModel::getFieldValue)
+                                                                          .filter(configName -> configName.equals(fieldToValidate.getValue().orElse("")))
+                                                                          .isPresent())
+                                                          .collect(Collectors.toList());
+            if (modelsWithName.size() > 1) {
+                errorList = List.of(ERROR_DUPLICATE_PROVIDER_NAME);
+            } else if (modelsWithName.size() == 1) {
+                boolean sameConfig = fieldModel.getId() != null && modelsWithName.get(0).getConfigurationId().equals(Long.valueOf(fieldModel.getId()));
+                if (!sameConfig) {
+                    errorList = List.of(ERROR_DUPLICATE_PROVIDER_NAME);
                 }
             }
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error reading provider configurations to detect duplicate names.", ex);
         }
-        return List.of();
+        return errorList;
     }
 }

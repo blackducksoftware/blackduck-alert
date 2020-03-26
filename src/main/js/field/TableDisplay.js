@@ -199,7 +199,6 @@ class TableDisplay extends Component {
     createEditModal() {
         const { currentRowSelected } = this.state;
         const { modalTitle, newConfigFields, inProgress, testButton, testButtonLabel, errorDialogMessage, actionMessage } = this.props;
-        const showModal = this.isShowModal();
         const testLabel = testButton ? testButtonLabel : null;
         const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
         return (
@@ -217,7 +216,7 @@ class TableDisplay extends Component {
                     handleSubmit={this.handleSubmit}
                     handleTest={this.handleTest}
                     testLabel={testLabel}
-                    show={showModal}
+                    show={this.isShowModal()}
                     title={modalTitle}
                     okLabel={'Save'}
                     performingAction={inProgress}
