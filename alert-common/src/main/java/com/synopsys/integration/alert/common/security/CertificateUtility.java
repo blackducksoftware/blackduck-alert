@@ -61,7 +61,7 @@ public class CertificateUtility {
 
     public void importCertificate(CustomCertificateModel customCertificate) throws AlertException {
         logger.debug("Importing certificate into trust store.");
-        validateCustomCertificate(customCertificate);
+        validateCustomCertificateHasValues(customCertificate);
         File trustStoreFile = getAndValidateTrustStoreFile();
         KeyStore trustStore = getAsKeyStore(trustStoreFile, getTrustStorePassword(), getTrustStoreType());
 
@@ -149,7 +149,7 @@ public class CertificateUtility {
         getAsJavaCertificate(customCertificateModel);
     }
 
-    private void validateCustomCertificate(CustomCertificateModel customCertificate) throws AlertException {
+    private void validateCustomCertificateHasValues(CustomCertificateModel customCertificate) throws AlertException {
         if (null == customCertificate) {
             throw new AlertException("The custom certificate cannot be null");
         }
