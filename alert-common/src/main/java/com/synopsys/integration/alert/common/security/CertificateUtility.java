@@ -145,6 +145,10 @@ public class CertificateUtility {
         }
     }
 
+    public void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {
+        getAsJavaCertificate(customCertificateModel);
+    }
+
     private void validateCustomCertificate(CustomCertificateModel customCertificate) throws AlertException {
         if (null == customCertificate) {
             throw new AlertException("The custom certificate cannot be null");

@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.web.certificates;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,15 +36,18 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 import com.synopsys.integration.alert.web.model.CertificateModel;
 import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions {
     private static final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
+    private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
     private CertificateUtility certificateUtility;
     private CustomCertificateAccessor certificateAccessor;
     private IntegrationEscapeUtil escapeUtil;
@@ -69,12 +74,14 @@ public class CertificateActions {
         if (null != certificateModel.getId()) {
             throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
         }
+        validateCertificateModel(certificateModel);
         String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
         logger.info("Importing certificate with alias {}", loggableAlias);
         return importCertificate(certificateModel);
     }
 
     public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
+        validateCertificateModel(certificateModel);
         Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
         String logableId = escapeUtil.replaceWithUnderscore(certificateModel.getId());
         String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
@@ -126,5 +133,39 @@ public class CertificateActions {
     private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
         Long id = StringUtils.isNotBlank(certificateModel.getId()) ? Long.valueOf(certificateModel.getId()) : null;
         return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent(), certificateModel.getLastUpdated());
+    }
+
+    private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
+        Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isBlank(certificateModel.getAlias())) {
+            fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty.");
+        }
+        CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
+        List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
+                                                                 .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
+                                                                 .collect(Collectors.toList());
+        if (duplicateCertificates.size() > 1) {
+            fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS);
+        } else if (duplicateCertificates.size() == 1) {
+            boolean sameConfig = convertedModel.getNullableId() != null
+                                     && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
+            if (!sameConfig) {
+                fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS);
+            }
+        }
+
+        if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
+            fieldErrors.put(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certification content cannot be empty.");
+        } else {
+            try {
+                certificateUtility.validateCertificateContent(convertedModel);
+            } catch (AlertException ex) {
+                fieldErrors.put(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage()));
+            }
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
     }
 }

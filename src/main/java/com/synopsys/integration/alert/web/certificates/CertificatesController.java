@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
@@ -97,6 +98,11 @@ public class CertificatesController extends BaseController {
         try {
             CertificateModel certificate = actions.createCertificate(certificateModel);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
+        } catch (AlertFieldException ex) {
+            String message = ex.getMessage();
+            logger.error("There was an issue importing the certificate: {}", message);
+            logger.debug(message, ex);
+            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue importing the certificate: {}", message);
@@ -116,6 +122,11 @@ public class CertificatesController extends BaseController {
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
             }
             return responseFactory.createNotFoundResponse("Certificate resource not found");
+        } catch (AlertFieldException ex) {
+            String message = ex.getMessage();
+            logger.error("There was an issue importing the certificate: {}", message);
+            logger.debug(message, ex);
+            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);
