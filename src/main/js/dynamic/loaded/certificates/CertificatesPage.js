@@ -20,10 +20,22 @@ class CertificatesPage extends Component {
         this.onDelete = this.onDelete.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
-            certificate: {}
+            certificate: {},
+            saveCallback: () => null,
+            deleteCallback: () => null
         };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.saveStatus === 'SAVING' && (this.props.saveStatus === 'SAVED' || this.props.saveStatus === 'ERROR')) {
+            this.state.saveCallback(true);
+        }
+        if (prevProps.inProgress && !prevProps.deleteSuccess && !this.props.inProgress && this.props.deleteSuccess) {
+            this.state.deleteCallback();
+        }
     }
 
     createColumns() {
@@ -50,8 +62,9 @@ class CertificatesPage extends Component {
         ];
     }
 
-    onConfigClose() {
+    onConfigClose(callback) {
         this.props.clearFieldErrors();
+        callback();
     }
 
     clearModalFieldState() {
@@ -77,19 +90,24 @@ class CertificatesPage extends Component {
         });
     }
 
-    onSave() {
+    onSave(callback) {
         const { certificate } = this.state;
         this.props.saveCertificate(certificate);
+        this.setState({
+            saveCallback: callback
+        });
         return true;
     }
 
-    onDelete(certificatesToDelete) {
+    onDelete(certificatesToDelete, callback) {
         if (certificatesToDelete) {
             certificatesToDelete.forEach(certificateId => {
                 this.props.deleteCertificate(certificateId);
             });
         }
-        this.retrieveData();
+        this.setState({
+            deleteCallback: callback
+        });
     }
 
     createModalFields() {
@@ -114,10 +132,17 @@ class CertificatesPage extends Component {
         );
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         this.setState({
             certificate: selectedRow
-        });
+        }, callback);
+    }
+
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null;
+        this.setState({
+            certificate: selectedRow
+        }, callback);
     }
 
     render() {
@@ -135,8 +160,9 @@ class CertificatesPage extends Component {
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onConfigCopy={this.onCopy}
+                        onEditState={this.onEdit}
                         refreshData={this.retrieveData}
-                        editState={this.onEdit}
                         data={certificates}
                         columns={this.createColumns()}
                         newButton={true}
@@ -162,14 +188,17 @@ CertificatesPage.propTypes = {
     clearFieldErrors: PropTypes.func.isRequired,
     certificateDeleteError: PropTypes.string,
     inProgress: PropTypes.bool,
+    deleteSuccess: PropTypes.bool,
     fetching: PropTypes.bool,
     fieldErrors: PropTypes.object,
     description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired
+    label: PropTypes.string.isRequired,
+    saveStatus: PropTypes.string
 };
 
 CertificatesPage.defaultProps = {
     inProgress: false,
+    deleteSuccess: false,
     message: '',
     autoRefresh: true,
     fetching: false,
@@ -184,7 +213,9 @@ const mapStateToProps = state => ({
     certificateDeleteError: state.certificates.certificateDeleteError,
     inProgress: state.certificates.inProgress,
     fetching: state.certificates.fetching,
-    fieldErrors: state.users.fieldErrors
+    fieldErrors: state.users.fieldErrors,
+    saveStatus: state.certificates.saveStatus,
+    deleteSuccess: state.certificates.deleteSuccess
 });
 
 const mapDispatchToProps = dispatch => ({

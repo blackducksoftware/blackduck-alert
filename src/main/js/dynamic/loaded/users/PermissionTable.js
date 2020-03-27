@@ -31,6 +31,7 @@ class PermissionTable extends Component {
         this.onDeletePermissions = this.onDeletePermissions.bind(this);
         this.onPermissionsClose = this.onPermissionsClose.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
             permissionsData: {},
@@ -152,17 +153,25 @@ class PermissionTable extends Component {
         }];
     }
 
-    onPermissionsClose() {
+    onPermissionsClose(callback) {
         this.setState({
             permissionsData: {}
-        });
+        }, callback);
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         const parsedPermissions = this.convertPermissionsColumn(selectedRow);
         this.setState({
             permissionsData: parsedPermissions
-        });
+        }, callback);
+    }
+
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null
+        const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+        this.setState({
+            permissionsData: parsedPermissions
+        }, callback);
     }
 
     createPermissionsModal() {
@@ -225,7 +234,7 @@ class PermissionTable extends Component {
         );
     }
 
-    async onSavePermissions() {
+    async onSavePermissions(callback) {
         await this.setState({
             saveInProgress: true
         });
@@ -260,12 +269,14 @@ class PermissionTable extends Component {
         await this.setState({
             saveInProgress: false
         });
+        callback(saved);
         return saved;
     }
 
-    onDeletePermissions(permissionsToDelete) {
+    onDeletePermissions(permissionsToDelete, callback) {
         if (permissionsToDelete) {
             this.props.deleteRole(permissionsToDelete);
+            callback();
         }
     }
 
@@ -286,8 +297,9 @@ class PermissionTable extends Component {
                     onConfigSave={this.onSavePermissions}
                     onConfigDelete={this.onDeletePermissions}
                     onConfigClose={this.onPermissionsClose}
+                    onEditState={this.onEdit}
+                    onConfigCopy={this.onCopy}
                     newConfigFields={this.createPermissionsModal}
-                    editState={this.onEdit}
                     columns={this.createPermissionsColumns()}
                     data={this.retrievePermissionsData()}
                     refreshData={() => null}

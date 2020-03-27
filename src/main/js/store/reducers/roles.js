@@ -19,7 +19,8 @@ const initialState = {
     data: [],
     roleFetchError: '',
     roleError: null,
-    fieldErrors: {}
+    fieldErrors: {},
+    saveStatus: ''
 };
 
 const roles = (state = initialState, action) => {
@@ -29,62 +30,72 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_DELETING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 roleFetchError: action.roleFetchError,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: action.data,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 data: [],
-                fetching: true
+                fetching: true,
+                saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                saveStatus: 'ERROR'
             });
         case USER_MANAGEMENT_ROLE_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: 'SAVED'
             });
         case USER_MANAGEMENT_ROLE_SAVING:
             return Object.assign({}, state, {
                 inProgress: true,
-                deleteSuccess: false
+                deleteSuccess: false,
+                saveStatus: 'SAVING'
             });
         case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
                 roleError: null,
-                fieldErrors: {}
+                fieldErrors: {},
+                saveStatus: ''
             });
         }
         case SERIALIZE:

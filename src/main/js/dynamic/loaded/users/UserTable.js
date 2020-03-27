@@ -26,10 +26,20 @@ class UserTable extends Component {
         this.retrieveRoles = this.retrieveRoles.bind(this);
         this.clearModalFieldState = this.clearModalFieldState.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 
         this.state = {
-            user: {}
+            user: {},
+            saveCallback: () => null
         };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.saveStatus === 'SAVING' && this.props.saveStatus === 'SAVED') {
+            this.state.saveCallback(true);
+        } else if (prevProps.saveStatus === 'SAVING' && this.props.saveStatus === 'ERROR') {
+            this.state.saveCallback(false);
+        }
     }
 
     createColumns() {
@@ -82,11 +92,15 @@ class UserTable extends Component {
         });
     }
 
-    onSave() {
+    onSave(callback) {
         const { user } = this.state;
         if (this.checkIfPasswordsMatch(user)) {
-            this.props.saveUser(user);
+            this.setState({
+                saveCallback: callback
+            }, () => this.props.saveUser(user));
             return true;
+        } else {
+            callback(false);
         }
         return false;
     }
@@ -109,20 +123,21 @@ class UserTable extends Component {
         return matching;
     }
 
-    onDelete(usersToDelete) {
+    onDelete(usersToDelete, callback) {
         if (usersToDelete) {
             usersToDelete.forEach(userId => {
                 this.props.deleteUser(userId);
             });
         }
-        this.retrieveData();
+        callback();
     }
 
-    onConfigClose() {
+    onConfigClose(callback) {
         this.props.clearFieldErrors();
         if (this.state.user && this.state.user[KEY_CONFIRM_PASSWORD_ERROR]) {
             delete this.state.user[KEY_CONFIRM_PASSWORD_ERROR];
         }
+        callback();
     }
 
     clearModalFieldState() {
@@ -143,10 +158,19 @@ class UserTable extends Component {
         });
     }
 
-    onEdit(selectedRow) {
+    onEdit(selectedRow, callback) {
         this.setState({
             user: selectedRow
         });
+        callback();
+    }
+
+    onCopy(selectedRow, callback) {
+        selectedRow.id = null;
+        this.setState({
+            user: selectedRow
+        });
+        callback();
     }
 
     createModalFields() {
@@ -231,8 +255,9 @@ class UserTable extends Component {
                         onConfigSave={this.onSave}
                         onConfigDelete={this.onDelete}
                         onConfigClose={this.onConfigClose}
+                        onEditState={this.onEdit}
+                        onConfigCopy={this.onCopy}
                         refreshData={this.retrieveData}
-                        editState={this.onEdit}
                         data={this.props.users}
                         columns={this.createColumns()}
                         newButton={canCreate}
@@ -268,7 +293,8 @@ UserTable.propTypes = {
     userDeleteError: PropTypes.string,
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
-    fetching: PropTypes.bool
+    fetching: PropTypes.bool,
+    saveStatus: PropTypes.string
 };
 
 const mapStateToProps = state => ({
@@ -277,7 +303,8 @@ const mapStateToProps = state => ({
     userDeleteError: state.users.userDeleteError,
     fieldErrors: state.users.fieldErrors,
     inProgress: state.users.inProgress,
-    fetching: state.users.fetching
+    fetching: state.users.fetching,
+    saveStatus: state.users.saveStatus
 });
 
 const mapDispatchToProps = dispatch => ({

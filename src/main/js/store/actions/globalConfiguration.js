@@ -1,4 +1,6 @@
 import {
+    CONFIG_ALL_FETCHED,
+    CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCHED,
@@ -36,6 +38,13 @@ function configFetched(config) {
         type: CONFIG_FETCHED,
         config
     };
+}
+
+function configAllFetched(config) {
+    return {
+        type: CONFIG_ALL_FETCHED,
+        config
+    }
 }
 
 function configRefreshed(config) {
@@ -113,6 +122,12 @@ function configDeleted() {
     };
 }
 
+function clearFieldErrors() {
+    return {
+        type: CONFIG_CLEAR_FIELD_ERRORS
+    };
+}
+
 function handleFailureResponse(dispatch, response) {
     response.json().then((data) => {
         switch (response.status) {
@@ -143,6 +158,27 @@ export function refreshConfig(id) {
                         dispatch(configRefreshed(body));
                     } else {
                         dispatch(configRefreshed({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
+            }
+        }).catch(console.error);
+    };
+}
+
+export function getAllConfigs(descriptorName) {
+    return (dispatch, getState) => {
+        dispatch(fetchingConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configAllFetched(body));
+                    } else {
+                        dispatch(configAllFetched({}));
                     }
                 });
             } else {
@@ -191,8 +227,6 @@ export function updateConfig(config) {
                     const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
                     dispatch(configUpdated(updatedConfig));
                     return newId;
-                }).then((data) => {
-                    dispatch(refreshConfig(data));
                 });
             } else {
                 handleFailureResponse(dispatch, response);
@@ -243,5 +277,11 @@ export function deleteConfig(id) {
                 handleFailureResponse(dispatch, response);
             }
         }).catch(console.error);
+    };
+}
+
+export function clearConfigFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

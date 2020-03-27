@@ -8,16 +8,22 @@ class PopUp extends Component {
         super(props);
 
         this.internalCancel = this.internalCancel.bind(this);
+        this.internalTest = this.internalTest.bind(this);
     }
 
     internalCancel() {
         this.props.onCancel();
     }
 
+    internalTest() {
+        this.props.handleTest();
+    }
+
     render() {
         const {
-            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction
+            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction, testLabel, handleTest, actionMessage
         } = this.props;
+        const includeTest = Boolean(testLabel) && Boolean(handleTest);
         return (
             <div>
                 <Modal size="lg" show={show} onHide={this.internalCancel}>
@@ -36,15 +42,23 @@ class PopUp extends Component {
                             <ConfigButtons
                                 cancelId="popup-cancel"
                                 submitId="popup-submit"
+                                testId="popup-test"
                                 includeCancel
+                                includeTest={includeTest}
                                 onCancelClick={() => {
                                     this.internalCancel();
+                                }}
+                                onTestClick={() => {
+                                    if (handleTest) {
+                                        this.internalTest();
+                                    }
                                 }}
                                 cancelLabel={cancelLabel}
                                 submitLabel={okLabel}
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
+                            <p name="actionMessage">{actionMessage}</p>
                         </form>
                     </Modal.Body>
                 </Modal>
@@ -57,11 +71,14 @@ PopUp.propTypes = {
     onCancel: PropTypes.func.isRequired,
     children: PropTypes.any.isRequired,
     handleSubmit: PropTypes.func,
+    handleTest: PropTypes.func,
     show: PropTypes.bool,
     title: PropTypes.string,
     cancelLabel: PropTypes.string,
     okLabel: PropTypes.string,
-    performingAction: PropTypes.bool
+    testLabel: PropTypes.string,
+    performingAction: PropTypes.bool,
+    actionMessage: PropTypes.string
 };
 
 PopUp.defaultProps = {
@@ -69,8 +86,11 @@ PopUp.defaultProps = {
     title: 'Pop up',
     cancelLabel: 'Cancel',
     okLabel: 'Ok',
+    testLabel: null,
     handleSubmit: (event) => true,
-    performingAction: false
+    handleTest: null,
+    performingAction: false,
+    actionMessage: null
 };
 
 export default PopUp;
