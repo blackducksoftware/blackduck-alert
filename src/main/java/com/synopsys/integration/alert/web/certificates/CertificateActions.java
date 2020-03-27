@@ -136,21 +136,22 @@ public class CertificateActions {
     }
 
     private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
+        CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
         Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isBlank(certificateModel.getAlias())) {
             fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty.");
-        }
-        CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
-        List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
-                                                                 .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
-                                                                 .collect(Collectors.toList());
-        if (duplicateCertificates.size() > 1) {
-            fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS);
-        } else if (duplicateCertificates.size() == 1) {
-            boolean sameConfig = convertedModel.getNullableId() != null
-                                     && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
-            if (!sameConfig) {
+        } else {
+            List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
+                                                                     .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
+                                                                     .collect(Collectors.toList());
+            if (duplicateCertificates.size() > 1) {
                 fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS);
+            } else if (duplicateCertificates.size() == 1) {
+                boolean sameConfig = convertedModel.getNullableId() != null
+                                         && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
+                if (!sameConfig) {
+                    fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS);
+                }
             }
         }
 
