@@ -198,8 +198,7 @@ class TableDisplay extends Component {
 
     createEditModal() {
         const { currentRowSelected } = this.state;
-        const { modalTitle, newConfigFields, inProgress, testButton, testButtonLabel, errorDialogMessage, actionMessage } = this.props;
-        const testLabel = testButton ? testButtonLabel : null;
+        const { modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage, actionMessage } = this.props;
         const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
         return (
             <div
@@ -214,11 +213,13 @@ class TableDisplay extends Component {
                         this.handleClose();
                     }}
                     handleSubmit={this.handleSubmit}
+                    includeSave={saveButton}
                     handleTest={this.handleTest}
-                    testLabel={testLabel}
+                    testLabel={testButtonLabel}
+                    includeTest={testButton}
                     show={this.isShowModal()}
                     title={modalTitle}
-                    okLabel={'Save'}
+                    okLabel="Save"
                     performingAction={inProgress}
                     actionMessage={popupActionMessage}
                 >
@@ -240,7 +241,7 @@ class TableDisplay extends Component {
 
     createInsertModal(onModalClose) {
         const { showConfiguration } = this.state;
-        const { modalTitle, newConfigFields, inProgress, testButton, errorDialogMessage, actionMessage, testButtonLabel } = this.props;
+        const { modalTitle, newConfigFields, inProgress, saveButton, testButton, errorDialogMessage, actionMessage, testButtonLabel } = this.props;
         const testLabel = testButton ? testButtonLabel : null;
         const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
         return (
@@ -259,11 +260,12 @@ class TableDisplay extends Component {
                     handleSubmit={(event) => {
                         this.handleInsertModalSubmit(event, onModalClose);
                     }}
+                    includeSave={saveButton}
                     handleTest={(event) => {
                         this.handleInsertModalTest(event, onModalClose);
                     }}
-
-                    testLabel={testLabel}
+                    includeTest={testButton}
+                    testLabel={testButtonLabel}
                     show={showConfiguration}
                     title={modalTitle}
                     okLabel="Save"
@@ -455,6 +457,7 @@ TableDisplay.propTypes = {
     autoRefresh: PropTypes.bool,
     newButton: PropTypes.bool,
     deleteButton: PropTypes.bool,
+    saveButton: PropTypes.bool,
     testButton: PropTypes.bool,
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
@@ -480,6 +483,7 @@ TableDisplay.defaultProps = {
     autoRefresh: true,
     newButton: true,
     deleteButton: true,
+    saveButton: true,
     testButton: false,
     inProgress: false,
     fetching: false,

@@ -2,7 +2,7 @@ import { TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL } from 'st
 import * as RequestUtilities from "../../util/RequestUtilities";
 import { verifyLoginByStatus } from "./session";
 
-const TASKS_API_URL = `/alert/api/tasks`;
+const TASKS_API_URL = `/alert/api/task`;
 
 function fetchingAllTasks() {
     return {

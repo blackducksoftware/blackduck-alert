@@ -83,6 +83,7 @@ class TaskManagement extends Component {
                     onEditState={this.onEdit}
                     newButton={false}
                     deleteButton={false}
+                    saveButton={false}
                     hasFieldErrors={false}
                     fetching={fetching}
                     enableEdit={false}
