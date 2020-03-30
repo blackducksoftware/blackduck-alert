@@ -13,10 +13,10 @@ jdk:
 notifications:
   email:
     recipients:
-      - akamen@blackducksoftware.com
-      - ekerwin@blackducksoftware.com
-      - psantos@blackducksoftware.com
-      - gkillough@blackducksoftware.com
+      - jrichard@synopsys.com
+      - psantos@synopsys.com
+      - gkillough@synopsys.com
+      - bmandel@synopsys.com
 
 script:
   - "./gradlew clean build sonarqube"
