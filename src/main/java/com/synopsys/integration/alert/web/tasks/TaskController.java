@@ -34,13 +34,12 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
-import com.synopsys.integration.alert.web.config.ConfigController;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 @RestController
 @RequestMapping(TaskController.TASK_BASE_PATH)
 public class TaskController extends BaseController {
-    public static final String TASK_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/task";
+    public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
