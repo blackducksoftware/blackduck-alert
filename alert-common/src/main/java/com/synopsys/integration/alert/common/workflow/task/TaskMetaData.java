@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
-import java.util.Map;
+import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -32,9 +32,9 @@ public class TaskMetaData extends AlertSerializableModel {
     private String type;
     private String fullyQualifiedType;
     private String nextRunTime;
-    private Map<String, String> properties;
+    private List<TaskMetaDataProperty> properties;
 
-    public TaskMetaData(String taskName, String type, String fullyQualifiedType, String nextRunTime, Map<String, String> properties) {
+    public TaskMetaData(String taskName, String type, String fullyQualifiedType, String nextRunTime, List<TaskMetaDataProperty> properties) {
         this.taskName = taskName;
         this.type = type;
         this.fullyQualifiedType = fullyQualifiedType;
@@ -58,7 +58,7 @@ public class TaskMetaData extends AlertSerializableModel {
         return nextRunTime;
     }
 
-    public Map<String, String> getProperties() {
+    public List<TaskMetaDataProperty> getProperties() {
         return properties;
     }
 }

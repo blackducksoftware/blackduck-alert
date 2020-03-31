@@ -59,22 +59,15 @@ class TaskManagement extends Component {
     createPropertyFields() {
         const { task } = this.state;
         const { properties } = task;
-        const hasProperties = properties && Object.keys(properties) && Object.keys(properties).length > 0;
-        let propertyFields = null;
-        if (hasProperties) {
-            propertyFields = [];
-            const propertyKeys = Object.keys(properties);
-            propertyKeys.forEach(key => {
-                let label = key;
-                if (key === 'provider') {
-                    label = 'Provider'
-                } else if (key === 'configurationName') {
-                    label = 'Configuration Name'
-                }
-                const field = <ReadOnlyField label={label} name={key} readOnly="true" value={properties[key]} />
-                propertyFields.push(field);
-            });
+        if (!properties) {
+            return null;
         }
+        const propertyFields = [];
+        properties.forEach(property => {
+            const field = <ReadOnlyField label={property.displayName} name={property.key} readOnly="true" value={property.value} />
+            propertyFields.push(field);
+        });
+
         return propertyFields;
     }
 
@@ -86,8 +79,8 @@ class TaskManagement extends Component {
         const propertyFields = this.createPropertyFields();
         return (
             <div>
-                <ReadOnlyField label="Name" name={nameKey} readOnly="true" value={task[nameKey]} />
-                <ReadOnlyField label="Full Name" name={fullyQualifiedNameKey} readOnly="true" value={task[fullyQualifiedNameKey]} />
+                <ReadOnlyField label="Type" name={nameKey} readOnly="true" value={task[nameKey]} />
+                <ReadOnlyField label="Full Type Name" name={fullyQualifiedNameKey} readOnly="true" value={task[fullyQualifiedNameKey]} />
                 <ReadOnlyField label="Next Run Time" name={nextRunTimeKey} readOnly="true" value={task[nextRunTimeKey]} />
                 {propertyFields}
             </div>
