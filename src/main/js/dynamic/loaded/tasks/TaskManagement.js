@@ -6,13 +6,13 @@ import TableDisplay from 'field/TableDisplay';
 import ReadOnlyField from 'field/ReadOnlyField';
 import { fetchTasks } from 'store/actions/tasks';
 
-
 class TaskManagement extends Component {
     constructor(props) {
         super(props);
         this.retrieveData = this.retrieveData.bind(this);
         this.clearModalFieldState = this.clearModalFieldState.bind(this);
         this.createModalFields = this.createModalFields.bind(this);
+        this.createPropertyFields = this.createPropertyFields.bind(this);
         this.onEdit = this.onEdit.bind(this);
         this.state = {
             task: {}
@@ -28,20 +28,8 @@ class TaskManagement extends Component {
                 hidden: true
             },
             {
-                header: 'name',
-                headerLabel: 'Name',
-                isKey: false,
-                hidden: false
-            },
-            {
-                header: 'providerName',
-                headerLabel: 'Provider',
-                isKey: false,
-                hidden: false
-            },
-            {
-                header: 'configurationName',
-                headerLabel: 'Configuration Name',
+                header: 'type',
+                headerLabel: 'Type',
                 isKey: false,
                 hidden: false
             },
@@ -50,8 +38,13 @@ class TaskManagement extends Component {
                 headerLabel: 'Next Run Time',
                 isKey: false,
                 hidden: false
+            },
+            {
+                header: 'searchableProperties',
+                headerLabel: 'Properties',
+                isKey: false,
+                hidden: true
             }
-
         ];
     }
 
@@ -63,20 +56,40 @@ class TaskManagement extends Component {
         }
     }
 
+    createPropertyFields() {
+        const { task } = this.state;
+        const { properties } = task;
+        const hasProperties = properties && Object.keys(properties) && Object.keys(properties).length > 0;
+        let propertyFields = null;
+        if (hasProperties) {
+            propertyFields = [];
+            const propertyKeys = Object.keys(properties);
+            propertyKeys.forEach(key => {
+                let label = key;
+                if (key === 'provider') {
+                    label = 'Provider'
+                } else if (key === 'configurationName') {
+                    label = 'Configuration Name'
+                }
+                const field = <ReadOnlyField label={label} name={key} readOnly="true" value={properties[key]} />
+                propertyFields.push(field);
+            });
+        }
+        return propertyFields;
+    }
+
     createModalFields() {
         const { task } = this.state;
-        const nameKey = 'name';
-        const fullyQualifiedNameKey = 'fullyQualifiedName';
-        const providerKey = 'providerName';
-        const configurationKey = 'configurationName';
+        const nameKey = 'type';
+        const fullyQualifiedNameKey = 'fullyQualifiedType';
         const nextRunTimeKey = 'nextRunTime';
+        const propertyFields = this.createPropertyFields();
         return (
             <div>
-                <ReadOnlyField label="Name" name="name" readOnly="true" value={task[nameKey]} />
-                <ReadOnlyField label="Full Name" name="fullName" readOnly="true" value={task[fullyQualifiedNameKey]} />
-                <ReadOnlyField label="Provider" name="provider" readOnly="true" value={task[providerKey]} />
-                <ReadOnlyField label="Configuration Name" name="configurationName" readOnly="true" value={task[configurationKey]} />
-                <ReadOnlyField label="Next Run Time" name="nextRunTime" readOnly="true" value={task[nextRunTimeKey]} />
+                <ReadOnlyField label="Name" name={nameKey} readOnly="true" value={task[nameKey]} />
+                <ReadOnlyField label="Full Name" name={fullyQualifiedNameKey} readOnly="true" value={task[fullyQualifiedNameKey]} />
+                <ReadOnlyField label="Next Run Time" name={nextRunTimeKey} readOnly="true" value={task[nextRunTimeKey]} />
+                {propertyFields}
             </div>
         );
     }
@@ -91,8 +104,18 @@ class TaskManagement extends Component {
         this.props.getTasks();
     }
 
+    createTaskData() {
+        const { tasks } = this.props;
+        return tasks.map(task => {
+            const searchableProperties = JSON.stringify(task.properties);
+            return Object.assign({}, task, {
+                searchableProperties: searchableProperties
+            });
+        });
+    }
+
     render() {
-        const { label, description, tasks, fetching } = this.props;
+        const { label, description, fetching } = this.props;
         return (
             <div>
                 <ConfigurationLabel
@@ -103,7 +126,7 @@ class TaskManagement extends Component {
                     modalTitle="Task Details"
                     clearModalFieldState={this.clearModalFieldState}
                     refreshData={this.retrieveData}
-                    data={tasks}
+                    data={this.createTaskData()}
                     columns={this.createColumns()}
                     onEditState={this.onEdit}
                     newButton={false}

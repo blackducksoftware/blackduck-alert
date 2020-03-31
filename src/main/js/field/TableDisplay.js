@@ -67,12 +67,14 @@ class TableDisplay extends Component {
         return this.props.columns.map(column => {
 
             const assignedDataFormate = column['dataFormat'] ? column['dataFormat'] : defaultDataFormat;
+            const searchable = column['searchable'] ? column['searchable'] : true;
             return (
                 <TableHeaderColumn
                     key={column.header}
                     dataField={column.header}
                     isKey={column.isKey}
                     hidden={column.hidden}
+                    searchable={searchable}
                     dataSort
                     columnClassName="tableCell"
                     tdStyle={{ whiteSpace: 'normal' }}
