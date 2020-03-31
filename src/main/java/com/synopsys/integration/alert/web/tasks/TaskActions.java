@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.web.model.TaskModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 
 @Component
 public class TaskActions {
@@ -42,11 +42,11 @@ public class TaskActions {
         this.taskManager = taskManager;
     }
 
-    public Collection<TaskModel> getTasks() {
+    public Collection<TaskMetaData> getTasks() {
         Collection<ScheduledTask> tasks = taskManager.getRunningTasks();
         return tasks.stream()
-                   .map(task -> new TaskModel(task.getTaskName(), task.getFormatedNextRunTime().orElse("")))
-                   .sorted(Comparator.comparing(TaskModel::getName))
+                   .map(ScheduledTask::createTaskMetaData)
+                   .sorted(Comparator.comparing(TaskMetaData::getName))
                    .collect(Collectors.toList());
     }
 }

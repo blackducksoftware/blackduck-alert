@@ -27,13 +27,16 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 
 public abstract class ProviderTask extends ScheduledTask {
     private ProviderProperties providerProperties;
+    private ProviderKey providerKey;
     private String taskName;
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);
+        this.providerKey = providerKey;
         this.providerProperties = providerProperties;
         this.taskName = computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
     }
@@ -48,6 +51,16 @@ public abstract class ProviderTask extends ScheduledTask {
     @Override
     public String getTaskName() {
         return taskName;
+    }
+
+    @Override
+    public TaskMetaData createTaskMetaData() {
+        String fullyQualifiedName = ScheduledTask.computeFullyQualifiedName(getClass());
+        String nextRunTime = getFormatedNextRunTime().orElse("");
+        String providerName = providerKey.getDisplayName();
+        Long configId = providerProperties.getConfigId();
+        String configName = providerProperties.getConfigName();
+        return new ProviderTaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, providerName, configId, configName);
     }
 
     protected ProviderProperties getProviderProperties() {

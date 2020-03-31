@@ -51,10 +51,14 @@ public abstract class ScheduledTask implements Runnable {
     private ScheduledFuture<?> future;
 
     public static String computeTaskName(Class<? extends ScheduledTask> clazz) {
+        return String.format("Task::Class[%s]", computeFullyQualifiedName(clazz));
+    }
+
+    public static String computeFullyQualifiedName(Class<? extends ScheduledTask> clazz) {
         String packageName = clazz.getPackageName();
         String simpleClassName = clazz.getSimpleName();
 
-        return String.format("Task::Class[%s.%s]", packageName, simpleClassName);
+        return String.format("%s.%s", packageName, simpleClassName);
     }
 
     public ScheduledTask(TaskScheduler taskScheduler) {
@@ -64,6 +68,10 @@ public abstract class ScheduledTask implements Runnable {
 
     public String getTaskName() {
         return taskName;
+    }
+
+    public TaskMetaData createTaskMetaData() {
+        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), computeFullyQualifiedName(getClass()), getFormatedNextRunTime().orElse(""));
     }
 
     @Override

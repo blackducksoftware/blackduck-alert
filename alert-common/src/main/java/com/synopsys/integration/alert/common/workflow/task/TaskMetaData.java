@@ -20,22 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.workflow.task;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class TaskModel extends AlertSerializableModel {
+public class TaskMetaData extends AlertSerializableModel {
     private static final long serialVersionUID = -3249768131233749231L;
+    private String taskName;
     private String name;
+    private String fullyQualifiedName;
     private String nextRunTime;
 
-    public TaskModel(String name, String nextRunTime) {
+    public TaskMetaData(String taskName, String name, String fullyQualifiedName, String nextRunTime) {
+        this.taskName = taskName;
         this.name = name;
+        this.fullyQualifiedName = fullyQualifiedName;
         this.nextRunTime = nextRunTime;
+    }
+
+    public String getTaskName() {
+        return taskName;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getFullyQualifiedName() {
+        return fullyQualifiedName;
     }
 
     public String getNextRunTime() {

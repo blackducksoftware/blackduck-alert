@@ -21,9 +21,27 @@ class TaskManagement extends Component {
     createColumns() {
         return [
             {
+                header: 'taskName',
+                headerLabel: 'Task Name',
+                isKey: true,
+                hidden: true
+            },
+            {
                 header: 'name',
                 headerLabel: 'Name',
-                isKey: true,
+                isKey: false,
+                hidden: false
+            },
+            {
+                header: 'providerName',
+                headerLabel: 'Provider',
+                isKey: false,
+                hidden: false
+            },
+            {
+                header: 'configurationName',
+                headerLabel: 'Configuration Name',
+                isKey: false,
                 hidden: false
             },
             {
@@ -47,10 +65,16 @@ class TaskManagement extends Component {
     createModalFields() {
         const { task } = this.state;
         const nameKey = 'name';
+        const fullyQualifiedNameKey = 'fullyQualifiedName';
+        const providerKey = 'providerName';
+        const configurationKey = 'configurationName';
         const nextRunTimeKey = 'nextRunTime';
         return (
             <div>
                 <ReadOnlyField label="Name" name="name" readOnly="true" value={task[nameKey]} />
+                <ReadOnlyField label="Full Name" name="fullName" readOnly="true" value={task[fullyQualifiedNameKey]} />
+                <ReadOnlyField label="Provider" name="provider" readOnly="true" value={task[providerKey]} />
+                <ReadOnlyField label="Configuration Name" name="configurationName" readOnly="true" value={task[configurationKey]} />
                 <ReadOnlyField label="Next Run Time" name="nextRunTime" readOnly="true" value={task[nextRunTimeKey]} />
             </div>
         );
@@ -75,7 +99,7 @@ class TaskManagement extends Component {
                     description={description} />
                 <TableDisplay
                     newConfigFields={this.createModalFields}
-                    modalTitle="Task"
+                    modalTitle="Task Details"
                     clearModalFieldState={this.clearModalFieldState}
                     refreshData={this.retrieveData}
                     data={tasks}
