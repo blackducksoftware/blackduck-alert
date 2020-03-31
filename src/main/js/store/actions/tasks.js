@@ -1,6 +1,6 @@
 import { TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL } from 'store/actions/types';
-import * as RequestUtilities from "../../util/RequestUtilities";
-import { verifyLoginByStatus } from "./session";
+import * as RequestUtilities from 'util/RequestUtilities';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const TASKS_API_URL = `/alert/api/task`;
 

@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import TableDisplay from "../../../field/TableDisplay";
-import { fetchTasks } from "../../../store/actions/tasks";
-import ReadOnlyField from "../../../field/ReadOnlyField";
+import TableDisplay from 'field/TableDisplay';
+import ReadOnlyField from 'field/ReadOnlyField';
+import { fetchTasks } from 'store/actions/tasks';
+
 
 class TaskManagement extends Component {
     constructor(props) {
