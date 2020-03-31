@@ -46,7 +46,7 @@ public class TaskActions {
         Collection<ScheduledTask> tasks = taskManager.getRunningTasks();
         return tasks.stream()
                    .map(ScheduledTask::createTaskMetaData)
-                   .sorted(Comparator.comparing(TaskMetaData::getName))
+                   .sorted(Comparator.comparing(TaskMetaData::getType))
                    .collect(Collectors.toList());
     }
 }

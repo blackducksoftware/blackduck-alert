@@ -26,6 +26,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
@@ -71,7 +72,7 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     public TaskMetaData createTaskMetaData() {
-        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), computeFullyQualifiedName(getClass()), getFormatedNextRunTime().orElse(""));
+        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), computeFullyQualifiedName(getClass()), getFormatedNextRunTime().orElse(""), Map.of());
     }
 
     @Override

@@ -22,35 +22,43 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
+import java.util.Map;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class TaskMetaData extends AlertSerializableModel {
     private static final long serialVersionUID = -3249768131233749231L;
     private String taskName;
-    private String name;
-    private String fullyQualifiedName;
+    private String type;
+    private String fullyQualifiedType;
     private String nextRunTime;
+    private Map<String, String> properties;
 
-    public TaskMetaData(String taskName, String name, String fullyQualifiedName, String nextRunTime) {
+    public TaskMetaData(String taskName, String type, String fullyQualifiedType, String nextRunTime, Map<String, String> properties) {
         this.taskName = taskName;
-        this.name = name;
-        this.fullyQualifiedName = fullyQualifiedName;
+        this.type = type;
+        this.fullyQualifiedType = fullyQualifiedType;
         this.nextRunTime = nextRunTime;
+        this.properties = properties;
     }
 
     public String getTaskName() {
         return taskName;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public String getFullyQualifiedName() {
-        return fullyQualifiedName;
+    public String getFullyQualifiedType() {
+        return fullyQualifiedType;
     }
 
     public String getNextRunTime() {
         return nextRunTime;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 }

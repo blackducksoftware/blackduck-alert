@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.provider.lifecycle;
 
+import java.util.Map;
+
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
@@ -58,9 +60,12 @@ public abstract class ProviderTask extends ScheduledTask {
         String fullyQualifiedName = ScheduledTask.computeFullyQualifiedName(getClass());
         String nextRunTime = getFormatedNextRunTime().orElse("");
         String providerName = providerKey.getDisplayName();
-        Long configId = providerProperties.getConfigId();
         String configName = providerProperties.getConfigName();
-        return new ProviderTaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, providerName, configId, configName);
+        Map<String, String> properties = Map.of("provider", providerName,
+            "configurationName", configName);
+
+        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, properties);
+
     }
 
     protected ProviderProperties getProviderProperties() {
