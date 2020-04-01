@@ -322,13 +322,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-compose/**", "docker-swarm/**", "kubernetes/**", "helm/**"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-compose/hub"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-compose/standalone"
+        include "docker-swarm/**", "kubernetes/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/hub"
@@ -347,8 +341,6 @@ task copyDeploymentFiles(type: Copy) {
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-compose/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-compose/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
