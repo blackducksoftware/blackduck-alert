@@ -48,7 +48,7 @@ public class AlertStartupInitializerTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
-        List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
+        List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey());
         List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         List<ProviderDescriptor> providerDescriptors = List.of();
         List<ComponentDescriptor> componentDescriptors = List.of();
@@ -62,10 +62,8 @@ public class AlertStartupInitializerTest {
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
-        Mockito.verify(baseDescriptorAccessor, Mockito.times(2)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
+        Mockito.verify(baseDescriptorAccessor, Mockito.times(3)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
         Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).getConfigurationByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
-        //Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
-
     }
 
     @Test
