@@ -233,6 +233,12 @@
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_users')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_tasks')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="OPERATIONS" value="4"/>
+        </insert>
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
             <column name="OPERATIONS">4</column>
@@ -316,6 +322,12 @@
             <column name="OPERATIONS">255</column>
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_tasks')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="OPERATIONS" value="4"/>
         </insert>
         <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
