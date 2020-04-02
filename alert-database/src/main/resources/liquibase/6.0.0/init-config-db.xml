@@ -173,6 +173,10 @@
             <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
             <column name="NAME">component_certificates</column>
         </insert>
+        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_tasks</column>
+        </insert>
     </changeSet>
     <!-- Initialize defined fields -->
     <changeSet author="gavink" id="2019-12-11-12-28-09-422">

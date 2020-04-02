@@ -12,6 +12,7 @@ import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
 import globalConfiguration from 'store/reducers/globalConfiguration';
 import roles from 'store/reducers/roles';
+import tasks from 'store/reducers/tasks';
 import users from 'store/reducers/users';
 
 
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
     refresh,
     routing,
     roles,
+    tasks,
     users
 });
 

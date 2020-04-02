@@ -22,18 +22,24 @@
  */
 package com.synopsys.integration.alert.common.provider.lifecycle;
 
+import java.util.List;
+
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaDataProperty;
 
 public abstract class ProviderTask extends ScheduledTask {
     private ProviderProperties providerProperties;
+    private ProviderKey providerKey;
     private String taskName;
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);
+        this.providerKey = providerKey;
         this.providerProperties = providerProperties;
         this.taskName = computeProviderTaskName(providerKey, getProviderProperties().getConfigId(), getClass());
     }
@@ -48,6 +54,20 @@ public abstract class ProviderTask extends ScheduledTask {
     @Override
     public String getTaskName() {
         return taskName;
+    }
+
+    @Override
+    public TaskMetaData createTaskMetaData() {
+        String fullyQualifiedName = ScheduledTask.computeFullyQualifiedName(getClass());
+        String nextRunTime = getFormatedNextRunTime().orElse("");
+        String providerName = providerKey.getDisplayName();
+        String configName = providerProperties.getConfigName();
+        TaskMetaDataProperty providerProperty = new TaskMetaDataProperty("provider", "Provider", providerName);
+        TaskMetaDataProperty configurationProperty = new TaskMetaDataProperty("configurationName", "Configuration Name", configName);
+        List<TaskMetaDataProperty> properties = List.of(providerProperty, configurationProperty);
+
+        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, properties);
+
     }
 
     protected ProviderProperties getProviderProperties() {

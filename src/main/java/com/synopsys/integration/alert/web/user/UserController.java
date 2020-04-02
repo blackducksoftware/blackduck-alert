@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.user;
 
-import java.util.function.BiFunction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
@@ -73,7 +70,7 @@ public class UserController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> getAllUsers() {
-        if (!hasPermission(authorizationManager::hasReadPermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(userActions.getUsers()));
@@ -81,7 +78,7 @@ public class UserController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserConfig userModel) {
-        if (!hasPermission(authorizationManager::hasCreatePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -99,7 +96,7 @@ public class UserController extends BaseController {
 
     @PutMapping(value = "/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserConfig userModel) {
-        if (!hasPermission(authorizationManager::hasWritePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -117,7 +114,7 @@ public class UserController extends BaseController {
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -126,9 +123,5 @@ public class UserController extends BaseController {
         } catch (AlertForbiddenOperationException ex) {
             return responseFactory.createForbiddenResponse(ex.getMessage());
         }
-    }
-
-    private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
-        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
 }
