@@ -22,11 +22,26 @@
  */
 package com.synopsys.integration.alert.workflow.startup.component;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.descriptor.accessor.DescriptorGlobalConfigUtility;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.component.authentication.AuthenticationGlobalConfigUtility;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 @Component
 @Order(11)
@@ -35,30 +50,41 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private static final String ENV_VAR_LDAP_DISABLE = "ALERT_LDAP_DISABLED";
     private static final String ENV_VAR_SAML_DISABLE = "ALERT_SAML_DISABLED";
     private static final String ENV_VAR_ADMIN_USER_PASSWORD_RESET = "ALERT_ADMIN_USER_PASSWORD_RESET";
+    private static final String DEFAULT_ADMIN_USERNAME = "sysadmin";
+    private static final String DEFAULT_ADMIN_PASSWORD = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
 
     private EnvironmentVariableUtility environmentVariableUtility;
+    private final DescriptorGlobalConfigUtility authenticationUtility;
+    private UserAccessor userAccessor;
 
     @Autowired
-    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility) {
+    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, AuthenticationGlobalConfigUtility autheticationUtility, UserAccessor userAccessor) {
         this.environmentVariableUtility = environmentVariableUtility;
+        this.authenticationUtility = autheticationUtility;
+        this.userAccessor = userAccessor;
     }
 
     @Override
     protected void initialize() {
-        boolean disableLdap = isEnvironmentVariableActivated(ENV_VAR_LDAP_DISABLE);
-        boolean disableSaml = isEnvironmentVariableActivated(ENV_VAR_SAML_DISABLE);
-        boolean resetDefaultPassword = isEnvironmentVariableActivated(ENV_VAR_ADMIN_USER_PASSWORD_RESET);
-        if (disableLdap) {
-            disableLdapAuthentication();
+        try {
+            FieldModel fieldModel = getFieldModel();
+            checkAndDisableLdapAuthentication(fieldModel);
+            checkAndDisableSamlAuthentication(fieldModel);
+            checkAndResetDefaultAdminPassword();
+            if (StringUtils.isBlank(fieldModel.getId())) {
+                authenticationUtility.save(fieldModel);
+            } else {
+                authenticationUtility.update(Long.valueOf(fieldModel.getId()), fieldModel);
+            }
+        } catch (AlertException | NumberFormatException ex) {
+            logger.error("Error performing configuration overrides.", ex);
         }
+    }
 
-        if (disableSaml) {
-            disableSamlAuthentication();
-        }
-
-        if (resetDefaultPassword) {
-            resetDefaultAdminPassword();
-        }
+    private FieldModel getFieldModel() throws AlertException {
+        Optional<FieldModel> settingsFieldModel = authenticationUtility.getFieldModel();
+        return settingsFieldModel
+                   .orElse(new FieldModel(authenticationUtility.getKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>()));
     }
 
     private boolean isEnvironmentVariableActivated(String environmentVariable) {
@@ -69,15 +95,29 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
         return activated;
     }
 
-    private void disableLdapAuthentication() {
-
+    private void checkAndDisableLdapAuthentication(FieldModel fieldModel) {
+        checkAndDisableBooleanField(fieldModel, ENV_VAR_LDAP_DISABLE, AuthenticationDescriptor.KEY_LDAP_ENABLED);
     }
 
-    private void disableSamlAuthentication() {
-
+    private void checkAndDisableSamlAuthentication(FieldModel fieldModel) {
+        checkAndDisableBooleanField(fieldModel, ENV_VAR_SAML_DISABLE, AuthenticationDescriptor.KEY_SAML_ENABLED);
     }
 
-    private void resetDefaultAdminPassword() {
+    private void checkAndDisableBooleanField(FieldModel fieldModel, String environmentVariable, String fieldKey) {
+        boolean disable = isEnvironmentVariableActivated(environmentVariable);
+        if (disable) {
+            FieldValueModel fieldValue = new FieldValueModel(List.of(String.valueOf(Boolean.FALSE)), false);
+            fieldModel.putField(fieldKey, fieldValue);
+        }
+    }
 
+    private void checkAndResetDefaultAdminPassword() throws AlertException {
+        boolean disable = isEnvironmentVariableActivated(ENV_VAR_ADMIN_USER_PASSWORD_RESET);
+        if (disable) {
+            UserModel userModel = userAccessor.getUser(DEFAULT_ADMIN_USERNAME)
+                                      .orElseThrow(() -> new AlertException("Default Sysadmin user not found."));
+            UserModel newModel = UserModel.existingUser(userModel.getId(), userModel.getName(), DEFAULT_ADMIN_PASSWORD, userModel.getEmailAddress(), userModel.getAuthenticationType(), userModel.getRoles(), userModel.isEnabled());
+            userAccessor.updateUser(newModel, true);
+        }
     }
 }

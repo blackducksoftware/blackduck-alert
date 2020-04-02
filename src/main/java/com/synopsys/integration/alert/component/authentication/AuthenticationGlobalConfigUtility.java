@@ -20,35 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.settings;
+package com.synopsys.integration.alert.component.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.DescriptorGlobalConfigUtility;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalApiAction;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
-public class DefaultSettingsUtility extends DescriptorGlobalConfigUtility implements SettingsUtility {
+public class AuthenticationGlobalConfigUtility extends DescriptorGlobalConfigUtility {
     @Autowired
-    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
-        ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        super(settingsDescriptorKey, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
-    }
-
-    @Override
-    public FieldModel saveSettings(FieldModel fieldModel) throws AlertException {
-        return super.save(fieldModel);
-    }
-
-    @Override
-    public FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException {
-        return super.update(id, fieldModel);
+    public AuthenticationGlobalConfigUtility(AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor,
+        AuthenticationApiAction apiAction, ConfigurationFieldModelConverter configurationFieldModelConverter) {
+        super(descriptorKey, configurationAccessor, apiAction, configurationFieldModelConverter);
     }
 }
