@@ -77,7 +77,7 @@ public class NotificationToDistributionEventConverter {
 
     private Map<String, ConfigurationFieldModel> getGlobalFields(DescriptorKey descriptorKey) {
         try {
-            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
             return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an error retrieving global config : {}", e.getMessage());

@@ -73,7 +73,7 @@ public class PasswordResetService {
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
-        ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
                                              .stream()
                                              .findFirst()
                                              .orElseThrow(() -> new AlertException("No global email configuration found"));

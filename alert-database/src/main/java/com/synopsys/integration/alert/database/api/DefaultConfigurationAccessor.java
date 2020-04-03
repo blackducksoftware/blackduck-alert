@@ -240,11 +240,11 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
             throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
         }
-        return getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
+        return getConfigurationsByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
         }

@@ -60,7 +60,7 @@ public class ProviderSchedulingManager {
         List<ProviderTask> initializedTasks = new ArrayList<>();
         for (Provider provider : providers) {
             try {
-                List<ConfigurationModel> providerConfigurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> providerConfigurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
                 List<ProviderTask> initializedTasksForProvider = initializeConfiguredProviders(provider, providerConfigurations);
                 initializedTasks.addAll(initializedTasksForProvider);
             } catch (AlertDatabaseConstraintException e) {

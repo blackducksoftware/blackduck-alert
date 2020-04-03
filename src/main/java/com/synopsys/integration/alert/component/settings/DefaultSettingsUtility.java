@@ -22,20 +22,16 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
-import java.util.Collection;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -44,73 +40,41 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 
 @Component
 public class DefaultSettingsUtility implements SettingsUtility {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ConfigurationAccessor configurationAccessor;
-    private final SettingsGlobalApiAction apiAction;
-    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
-    private DescriptorKey key;
-    private ConfigContextEnum context;
+    private DefaultDescriptorGlobalConfigUtility configUtility;
 
     @Autowired
     public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        this.key = settingsDescriptorKey;
-        this.context = ConfigContextEnum.GLOBAL;
-        this.configurationAccessor = configurationAccessor;
-        this.apiAction = settingsGlobalApiAction;
-        this.configurationFieldModelConverter = configurationFieldModelConverter;
+        this.configUtility = new DefaultDescriptorGlobalConfigUtility(settingsDescriptorKey, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
     }
 
     @Override
     public DescriptorKey getKey() {
-        return key;
+        return configUtility.getKey();
     }
 
     @Override
     public boolean doesConfigurationExist() {
-        try {
-            return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(key, context).isEmpty();
-        } catch (AlertException ex) {
-            logger.debug("Error reading configuration from database.", ex);
-            return false;
-        }
+        return configUtility.doesConfigurationExist();
     }
 
     @Override
     public Optional<ConfigurationModel> getConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
-                   .stream()
-                   .findFirst();
+        return configUtility.getConfiguration();
     }
 
     @Override
     public Optional<FieldModel> getFieldModel() throws AlertException {
-        Optional<ConfigurationModel> configurationModelOptional = getConfiguration();
-
-        if (configurationModelOptional.isPresent()) {
-            ConfigurationModel configurationModel = configurationModelOptional.get();
-            FieldModel fieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-            return Optional.ofNullable(apiAction.afterGetAction(fieldModel));
-        }
-
-        return Optional.empty();
+        return configUtility.getFieldModel();
     }
 
     @Override
     public FieldModel saveSettings(FieldModel fieldModel) throws AlertException {
-        FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
-        Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
-        ConfigurationModel configuration = configurationAccessor.createConfiguration(getKey(), ConfigContextEnum.GLOBAL, values);
-        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
-        return apiAction.afterSaveAction(convertedFieldModel);
+        return configUtility.save(fieldModel);
     }
 
     @Override
     public FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException {
-        FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
-        Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction).values();
-        ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, values);
-        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-        return apiAction.afterUpdateAction(convertedFieldModel);
+        return configUtility.update(id, fieldModel);
     }
 }

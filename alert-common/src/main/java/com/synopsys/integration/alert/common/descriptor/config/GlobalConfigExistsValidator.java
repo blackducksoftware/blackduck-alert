@@ -72,7 +72,7 @@ public class GlobalConfigExistsValidator {
 
         String descriptorDisplayName = optionalDescriptorKey.map(DescriptorKey::getDisplayName).orElse(descriptorName);
         try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             if (configurations.isEmpty()) {
                 return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
             }

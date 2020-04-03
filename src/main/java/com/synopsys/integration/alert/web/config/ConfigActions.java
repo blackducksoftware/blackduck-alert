@@ -75,7 +75,7 @@ public class ConfigActions {
         List<FieldModel> fields = new LinkedList<>();
         if (context != null && descriptorKey != null) {
             String contextName = context.name();
-            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, context);
+            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, context);
             List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (ConfigurationModel configurationModel : configurationModels) {

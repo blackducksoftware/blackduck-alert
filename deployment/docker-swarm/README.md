@@ -10,12 +10,8 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 - [Upgrading Alert](#upgrading-alert)
     - [Standalone Upgrade](#standalone-upgrade)
     - [Upgrade With Black Duck](#upgrade-with-black-duck)
-- [Certificates](#certificates)
-    - [Using Custom Certificates](#using-custom-certificates)
-    - [Using Custom Certificate Truststore](#using-custom-certificate-truststore)
 - [Environment Variables](#environment-variables) 
     - [Editing the Overrides File](#editing-the-overrides-file)
-    - [Environment Variable Overrides](#environment-variable-overrides)
     - [Alert Hostname Variable](#alert-hostname-variable)
     - [Alert Logging Level Variable](#alert-logging-level-variable)
     - [Email Channel Environment Variables](#email-channel-environment-variables)
@@ -49,9 +45,8 @@ This section will walk through the instructions to install Alert in a standalone
 
 1. Create ALERT_ENCRYPTION_PASSWORD secret.
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Manage certificates.
-4. Modify environment variables.
-5. Deploy the stack.
+3. Modify environment variables.
+4. Deploy the stack.
  
 #### Details 
 This section will walk through each step of the installation procedure.
@@ -115,17 +110,12 @@ This section will walk through each step of the installation procedure.
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
-##### 3. Manage Certificates.
-This is an optional step. Confirm if custom certificates or a certificate store need to be used.
-- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
-- Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
-
-#### 4. Modify environment variables.
+#### 3. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set any other optional environment variables as needed.
 
-##### 5. Deploy the stack.
+##### 4. Deploy the stack.
 - Execute the command:
     ```bash
     docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
@@ -139,10 +129,9 @@ This section will walk through the instructions to install Alert in a deployment
 Overview:
 1. Create ALERT_ENCRYPTION_PASSWORD secret.
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Create any optional secrets.
-4. Modify environment variables.
-5. Install Black Duck. Follow the documented installation procedure for Black Duck.
-6. Deploy the stack.
+3. Modify environment variables.
+4. Install Black Duck. Follow the documented installation procedure for Black Duck.
+5. Deploy the stack.
 
 #### Details 
 This section will walk through each step of the installation procedure.
@@ -210,23 +199,18 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
-##### 3. Manage certificates
-This is an optional step. Confirm if custom certificates or a certificate store need to be used.
-- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
-- Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
-
-#### 4. Modify environment variables.
+#### 3. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set any other optional environment variables as needed.
 
-##### 5. Install Black Duck.
+##### 4. Install Black Duck.
 - Follow the installation procedure for installing Black Duck. 
 
 Note: The NGinX container will not start correctly when it is waiting for the alert service to be available.  
 Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running. 
 
-##### 6. Deploy the stack.
+##### 5. Deploy the stack.
 - Execute the command to add Alert to the stack: 
     ```
     docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
@@ -256,143 +240,10 @@ The steps in the upgrade procedure are the same as the installation procedure af
 1. Run ```docker stack rm <STACK_NAME>``` replacing <STACK_NAME> with the name of the stack to be used in the deployment.
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
-## Certificates 
-This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or a certificate truststore must be used.
-
-### Using Custom Certificates 
-- Custom certificates for the Alert Web server to present to clients.
-
-    - Before custom certificates can be used for Alert the signed certificate and key must be available.
-
-        - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
-        ```bash
-        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>
-        ```
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-        - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.
-
-        - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.
-
-        ```bash
-        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>
-        ```
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-        - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.
-        
-    - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
-    ```yaml
-        alert:
-            secrets:
-                - WEBSERVER_CUSTOM_CERT_FILE
-                - WEBSERVER_CUSTOM_KEY_FILE
-    ```
-    - Uncomment the following secrets from the secrets section of the docker-compose.local-overrides.yml file.
-    ```yaml
-        secrets:
-            WEBSERVER_CUSTOM_CERT_FILE:
-                external: true
-                name: "<STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE"
-            WEBSERVER_CUSTOM_KEY_FILE:
-                external: true
-                name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    
-### Using Custom Certificate TrustStore
-- Custom java TrustStore file for the Alert server to communicate over SSL to external systems.
-
-    Must have a valid JKS trust store file that can be used as the TrustStore for Alert.  
-    If certificate errors arise, then this is the TrustStore where certificates will need to be imported to resolve those issues. 
-    
-    Only one of the following secrets needs to be created.  If both are created, then jssecacerts secret will take precedence and be used by Alert.
-
-    - Create the secret.  Only create one of the following secrets.
-        - jssecacerts - The java TrustStore file with any custom certificates imported.
-            ```bash
-            docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>
-            ```
-            - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-            - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
-    
-        or 
-    
-        - cacerts - The java TrustStore file with any custom certificates imported. 
-            ```bash
-            docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>
-            ```
-            - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-            - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.
-            
-    - Uncomment the following from the docker-compose.local-overrides.yml file from the secrets section near the bottom of the file.
-    ```yaml
-        secrets:
-            jssecacerts:
-                external: true
-                name: "<STACK_NAME>_jssecacerts"
-    ```
-    or 
-    ```yaml
-        secrets:
-            cacerts:
-                external: true
-                name: "<STACK_NAME>_cacerts"
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Uncomment the following from the docker-compose.local-overrides.yml file from the services alert section
-    ```yaml
-        secrets:
-            - source: jssecacerts
-              target: jssecacerts
-              mode: 0664
-    ```
-    or
-    ```yaml
-        secrets:
-            - source: cacerts
-              target: cacerts
-              mode: 0664
-    ```
-    Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.
-    
-    - Create a docker secret containing the password for the trust store.
-        ```bash
-        docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>
-        ```
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-        - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
-    
-    - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
-    - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-        ```yaml
-            alert:
-                secrets:
-                    - ALERT_TRUST_STORE_PASSWORD
-        ```
-    - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-        ```yaml
-            secrets:
-                ALERT_TRUST_STORE_PASSWORD:
-                  external: true
-                  name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
-                
-        ```
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    
-    
-### Insecure Trust of All Certificates
-WARNING: This is not a recommended option. Using this option makes your deployment less secure. Use at your own risk.
-Certificates SHOULD be correctly generated for the Alert server and a valid TrustStore SHOULD be provided to trust third party systems.
-
-This option allows the bypass of all certificate verification in the event that external certificates can not be imported into the Alert TrustStore, or certificate errors continue after importing the external certificates into the Alert TrustStore.
-
-To allow Alert to trust all certificates add the environment variable: 
-```bash
-ALERT_TRUST_CERT=true
-```
-Please see the section [Environment Variables](#environment-variables) to learn how to set the environment variables.
-
 ## Environment Variables
-Alert supports configuration of the application's components via environment variables.
+Alert supports initial configuration of the application's components via environment variables.  
+Environment variable values are only used if there is no configuration data for the corresponding component in the database.
+Please see the [Environment Variable Classifications](#environment-variable-classifications) to understand how environment variables pertain to Alert configuration data.
 Edit the ```docker-compose.local-overrides.yml``` file to include the environment variables.
 
 ### Editing the Overrides File
@@ -408,15 +259,6 @@ alert:
     environment:
         - ALERT_HOSTNAME=localhost
 ```
-
-### Environment Variable Overrides
-The environment variables will always take precedence and overwrite the values stored in the database if the following variable value is set to 'true'.
-```bash
-ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE=true
-```
-
-Please note the following with the override environment variable set. 
-If any other environment variable is set with no value or an empty string, then the corresponding value (if any) in the database will be removed.
 
 ### Alert Hostname Variable
 The ALERT_HOSTNAME environment variable must be specified in order for Alert to generate and use certificates correctly.
