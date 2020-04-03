@@ -393,14 +393,15 @@ then
   sleep 10
   exit 1;
 else
-    createCertificateStoreDirectory
-    if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
-    then
-    	echo "Custom webserver cert and key found"
-    	manageRootCertificate
-    else
-        manageSelfSignedServerCertificate
-    fi
+  validatePostgresDatabase
+  createCertificateStoreDirectory
+  if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
+  then
+    echo "Custom webserver cert and key found"
+    manageRootCertificate
+  else
+      manageSelfSignedServerCertificate
+  fi
   manageBlackduckSystemClientCertificate
   createTruststore
   trustRootCertificate
@@ -411,7 +412,6 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
-  validatePostgresDatabase
   postgresPrepare600Upgrade
   liquibaseChangelockReset
 
