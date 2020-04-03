@@ -34,7 +34,7 @@ $ helm install . --name <name> --namespace <namespace>
 $ kubectl create ns <namespace>
 ```
 #### Configure your Black Duck Instance
-Modify the values.yaml file or pass in values to `helm intsall` with --set.  
+Modify the values.yaml file or pass in values to `helm install` with --set.  
 
 #### Install the Black Duck Chart
 ```
