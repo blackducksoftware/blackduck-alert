@@ -57,7 +57,7 @@ public class AlertIntegrationTestConfiguration {
         blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL).stream().findFirst()
+        ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL).stream().findFirst()
                                                         .orElse(
 
                                                             configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))

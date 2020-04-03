@@ -114,7 +114,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
             for (ProviderPhoneHomeHandler handler : providerHandlers) {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
                     phoneHomeBuilder.setArtifactId(ARTIFACT_ID);

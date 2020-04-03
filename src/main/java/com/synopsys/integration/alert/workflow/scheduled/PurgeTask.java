@@ -149,7 +149,7 @@ public class PurgeTask extends StartupScheduledTask {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
+            Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
                                                      .map(SchedulingConfiguration::getDataFrequencyDays)

@@ -107,7 +107,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorKey, ConfigContextEnum.GLOBAL).stream()
                                                                   .sorted(Comparator.comparing(DefinedFieldModel::getKey))
                                                                   .collect(Collectors.toList());
-                List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
 
                 Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
                 foundConfigurationModels.forEach(config -> existingConfiguredFields.putAll(config.getCopyOfKeyToFieldMap()));

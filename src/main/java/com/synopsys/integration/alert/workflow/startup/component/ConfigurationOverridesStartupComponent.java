@@ -33,15 +33,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.DescriptorGlobalConfigUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.component.authentication.AuthenticationGlobalConfigUtility;
+import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 @Order(11)
@@ -54,13 +57,14 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private static final String DEFAULT_ADMIN_PASSWORD = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
 
     private EnvironmentVariableUtility environmentVariableUtility;
-    private final DescriptorGlobalConfigUtility authenticationUtility;
+    private final DefaultDescriptorGlobalConfigUtility configUtility;
     private UserAccessor userAccessor;
 
     @Autowired
-    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, AuthenticationGlobalConfigUtility autheticationUtility, UserAccessor userAccessor) {
+    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, UserAccessor userAccessor, AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor,
+        AuthenticationApiAction apiAction, ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.environmentVariableUtility = environmentVariableUtility;
-        this.authenticationUtility = autheticationUtility;
+        this.configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, configurationFieldModelConverter);
         this.userAccessor = userAccessor;
     }
 
@@ -72,9 +76,9 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
             checkAndDisableSamlAuthentication(fieldModel);
             checkAndResetDefaultAdminPassword();
             if (StringUtils.isBlank(fieldModel.getId())) {
-                authenticationUtility.save(fieldModel);
+                configUtility.save(fieldModel);
             } else {
-                authenticationUtility.update(Long.valueOf(fieldModel.getId()), fieldModel);
+                configUtility.update(Long.valueOf(fieldModel.getId()), fieldModel);
             }
         } catch (AlertException | NumberFormatException ex) {
             logger.error("Error performing configuration overrides.", ex);
@@ -82,17 +86,9 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     }
 
     private FieldModel getFieldModel() throws AlertException {
-        Optional<FieldModel> settingsFieldModel = authenticationUtility.getFieldModel();
+        Optional<FieldModel> settingsFieldModel = configUtility.getFieldModel();
         return settingsFieldModel
-                   .orElse(new FieldModel(authenticationUtility.getKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>()));
-    }
-
-    private boolean isEnvironmentVariableActivated(String environmentVariable) {
-        boolean activated = environmentVariableUtility.getEnvironmentValue(environmentVariable)
-                                .map(Boolean::valueOf)
-                                .orElse(false);
-        logger.info("{} = {}", environmentVariable, activated);
-        return activated;
+                   .orElse(new FieldModel(configUtility.getKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>()));
     }
 
     private void checkAndDisableLdapAuthentication(FieldModel fieldModel) {
@@ -106,6 +102,7 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private void checkAndDisableBooleanField(FieldModel fieldModel, String environmentVariable, String fieldKey) {
         boolean disable = isEnvironmentVariableActivated(environmentVariable);
         if (disable) {
+            logger.info("Disabling field: {}", fieldKey);
             FieldValueModel fieldValue = new FieldValueModel(List.of(String.valueOf(Boolean.FALSE)), false);
             fieldModel.putField(fieldKey, fieldValue);
         }
@@ -114,10 +111,19 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private void checkAndResetDefaultAdminPassword() throws AlertException {
         boolean disable = isEnvironmentVariableActivated(ENV_VAR_ADMIN_USER_PASSWORD_RESET);
         if (disable) {
+            logger.info("Resetting default admin password.");
             UserModel userModel = userAccessor.getUser(DEFAULT_ADMIN_USERNAME)
                                       .orElseThrow(() -> new AlertException("Default Sysadmin user not found."));
             UserModel newModel = UserModel.existingUser(userModel.getId(), userModel.getName(), DEFAULT_ADMIN_PASSWORD, userModel.getEmailAddress(), userModel.getAuthenticationType(), userModel.getRoles(), userModel.isEnabled());
             userAccessor.updateUser(newModel, true);
         }
+    }
+
+    private boolean isEnvironmentVariableActivated(String environmentVariable) {
+        boolean activated = environmentVariableUtility.getEnvironmentValue(environmentVariable)
+                                .map(Boolean::valueOf)
+                                .orElse(false);
+        logger.info("{} = {}", environmentVariable, activated);
+        return activated;
     }
 }

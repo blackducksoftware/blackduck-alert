@@ -279,7 +279,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testProjectOwner() throws Exception {
         // update the distribution jobs configuration and run the send test again
         // set the project owner field to false
-        List<ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorKeyAndContext(getDescriptor().getDescriptorKey(), ConfigContextEnum.DISTRIBUTION);
+        List<ConfigurationModel> model = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(getDescriptor().getDescriptorKey(), ConfigContextEnum.DISTRIBUTION);
         for (ConfigurationModel configurationModel : model) {
             Long configId = configurationModel.getConfigurationId();
             List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();

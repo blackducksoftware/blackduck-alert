@@ -119,7 +119,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
         boolean accessTokenSet = fieldAccessToken.isSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
-                return configurationAccessor.getConfigurationByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
+                return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
                            .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))

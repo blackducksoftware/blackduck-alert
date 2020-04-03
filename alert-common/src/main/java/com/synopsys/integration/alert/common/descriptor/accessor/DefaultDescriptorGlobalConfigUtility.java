@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public class DescriptorGlobalConfigUtility {
+public class DefaultDescriptorGlobalConfigUtility {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConfigurationAccessor configurationAccessor;
     private final ApiAction apiAction;
@@ -46,7 +46,7 @@ public class DescriptorGlobalConfigUtility {
     private DescriptorKey key;
     private ConfigContextEnum context;
 
-    public DescriptorGlobalConfigUtility(DescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor, ApiAction apiAction,
+    public DefaultDescriptorGlobalConfigUtility(DescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor, ApiAction apiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.key = descriptorKey;
         this.context = ConfigContextEnum.GLOBAL;
@@ -61,7 +61,7 @@ public class DescriptorGlobalConfigUtility {
 
     public boolean doesConfigurationExist() {
         try {
-            return !configurationAccessor.getConfigurationByDescriptorKeyAndContext(key, context).isEmpty();
+            return !configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context).isEmpty();
         } catch (AlertException ex) {
             logger.debug("Error reading configuration from database.", ex);
             return false;
@@ -69,7 +69,7 @@ public class DescriptorGlobalConfigUtility {
     }
 
     public Optional<ConfigurationModel> getConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationByDescriptorKeyAndContext(getKey(), ConfigContextEnum.GLOBAL)
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context)
                    .stream()
                    .findFirst();
     }
@@ -89,7 +89,7 @@ public class DescriptorGlobalConfigUtility {
     public FieldModel save(FieldModel fieldModel) throws AlertException {
         FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
-        ConfigurationModel configuration = configurationAccessor.createConfiguration(getKey(), ConfigContextEnum.GLOBAL, values);
+        ConfigurationModel configuration = configurationAccessor.createConfiguration(key, context, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
         return apiAction.afterSaveAction(convertedFieldModel);
     }
