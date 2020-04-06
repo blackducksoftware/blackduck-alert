@@ -101,6 +101,15 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_HEADER_ROLE_MAPPING = "User Role Mapping";
     private static final String AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
+    private static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";
+    private static final String TEST_FIELD_KEY_PASSWORD = "test.field.user.password";
+
+    private static final String TEST_FIELD_LABEL_USERNAME = "User Name";
+    private static final String TEST_FIELD_LABEL_PASSWORD = "Password";
+
+    private static final String TEST_FIELD_DESCRIPTION_USERNAME = "The user name to test authentication.";
+    private static final String TEST_FIELD_DESCRIPTION_PASSWORD = "The password to test authentication.";
+
     private final EncryptionSettingsValidator encryptionValidator;
     private final FilePersistenceUtil filePersistenceUtil;
 
@@ -117,25 +126,9 @@ public class AuthenticationUIConfig extends UIConfig {
         ldapPanelFields.stream().forEach(field -> field.applyPanel(AUTHENTICATION_HEADER_LDAP).applyHeader(AUTHENTICATION_HEADER_LDAP));
         List<ConfigField> samlPanelFields = createSAMLPanel();
         samlPanelFields.stream().forEach(field -> field.applyPanel(AUTHENTICATION_HEADER_SAML).applyHeader(AUTHENTICATION_HEADER_SAML));
-        List<ConfigField> userManagement = createUserManagementPanel();
-        userManagement.stream().forEach(field -> field.applyPanel(AUTHENTICATION_PANEL_USER_MANAGEMENT));
 
-        List<List<ConfigField>> fieldLists = List.of(ldapPanelFields, samlPanelFields, userManagement);
+        List<List<ConfigField>> fieldLists = List.of(ldapPanelFields, samlPanelFields);
         return fieldLists.stream().flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    private List<ConfigField> createUserManagementPanel() {
-        ConfigField adminRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN, LABEL_USER_MANAGEMENT_ROLE_MAPPING_ADMIN, AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION)
-                                           .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
-        ConfigField jobManagerRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_JOB_MANAGER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER,
-            AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION)
-                                                .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
-        ConfigField userRoleMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_USER, LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER, AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION)
-                                          .applyHeader(AUTHENTICATION_HEADER_ROLE_MAPPING);
-        ConfigField samlAttributeMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
-                                               .applyHeader(AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML);
-
-        return List.of(adminRoleMapping, jobManagerRoleMapping, userRoleMapping, samlAttributeMapping);
     }
 
     private List<ConfigField> createLDAPPanel() {
@@ -186,7 +179,20 @@ public class AuthenticationUIConfig extends UIConfig {
                                       .applyRequiredRelatedField(samlEntityId.getKey())
                                       .applyRequiredRelatedField(samlEntityBaseURL.getKey())
                                       .applyDisallowedRelatedField(AuthenticationDescriptor.KEY_LDAP_ENABLED);
-        return List.of(samlEnabled, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL);
+
+        ConfigField samlAttributeMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
+                                               .applyHeader(AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML);
+        return List.of(samlEnabled, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL, samlAttributeMapping);
+    }
+
+    @Override
+    public List<ConfigField> createTestFields() {
+
+        ConfigField userName = new TextInputConfigField(TEST_FIELD_KEY_USERNAME, TEST_FIELD_LABEL_USERNAME, TEST_FIELD_DESCRIPTION_USERNAME)
+                                   .applyHeader(AUTHENTICATION_HEADER_LDAP);
+        ConfigField password = new PasswordConfigField(TEST_FIELD_KEY_PASSWORD, TEST_FIELD_LABEL_PASSWORD, TEST_FIELD_DESCRIPTION_PASSWORD, encryptionValidator)
+                                   .applyHeader(AUTHENTICATION_HEADER_LDAP);
+        return List.of(userName, password);
     }
 
     private Collection<String> validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {

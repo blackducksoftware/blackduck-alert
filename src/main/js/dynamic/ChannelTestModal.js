@@ -2,13 +2,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import TextInput from 'field/input/TextInput';
+import FieldsPanel from 'field/FieldsPanel';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as FieldMapping from "../util/fieldMapping";
 
 class ChannelTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            destination: ''
+            destination: '',
+            testFieldModel: {}
         };
+        const { fieldModel, testFields } = this.props;
+        if (testFields) {
+            const testFieldKeys = FieldMapping.retrieveKeys(testFields);
+            const testFieldModel = FieldModelUtilities.createEmptyFieldModel(testFieldKeys, fieldModel.context, fieldModel.descriptorName);
+            this.state = {
+                destination: '',
+                testFieldModel
+            };
+        }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSendTestMessage = this.handleSendTestMessage.bind(this);
@@ -24,9 +37,11 @@ class ChannelTestModal extends Component {
     handleSendTestMessage(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { destination } = this.state;
+        const { destination, testFieldModel } = this.state;
         const { fieldModel } = this.props;
-        this.props.sendTestMessage(fieldModel, destination);
+        const combinedModel = FieldModelUtilities.combineFieldModels(fieldModel, testFieldModel);
+        debugger;
+        this.props.sendTestMessage(combinedModel, destination);
         this.handleHide();
     }
 
@@ -38,20 +53,30 @@ class ChannelTestModal extends Component {
     }
 
     render() {
-        //TODO FIELD PANEL FOR THE body
+        const { destinationName, showTestModal, testFields } = this.props;
+        const destinationContent = (<TextInput
+            id="destinationName"
+            label={destinationName}
+            name="destinationName"
+            value={this.state.destination}
+            onChange={this.handleChange}
+        />);
+        const bodyContent = !testFields || testFields.length <= 0 ? destinationContent : (
+            <FieldsPanel descriptorFields={testFields}
+                         self={this}
+                         fieldErrors={null}
+                         stateName='testFieldModel'
+                         currentConfig={this.state.testFieldModel}
+            />
+        )
+
         return (
-            <Modal show={this.props.showTestModal} onHide={this.handleHide}>
+            <Modal show={showTestModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <TextInput
-                        id="destinationName"
-                        label={this.props.destinationName}
-                        name="destinationName"
-                        value={this.state.destination}
-                        onChange={this.handleChange}
-                    />
+                    {bodyContent}
                 </Modal.Body>
                 <Modal.Footer>
                     <button
@@ -69,16 +94,20 @@ class ChannelTestModal extends Component {
     }
 }
 
-ChannelTestModal.propTypes = {
+ChannelTestModal
+    .propTypes = {
     showTestModal: PropTypes.bool,
     sendTestMessage: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
     destinationName: PropTypes.string.isRequired,
-    fieldModel: PropTypes.object.isRequired
+    fieldModel: PropTypes.object.isRequired,
+    testFields: PropTypes.arrayOf(PropTypes.object)
 };
 
-ChannelTestModal.defaultProps = {
-    showTestModal: false
+ChannelTestModal
+    .defaultProps = {
+    showTestModal: false,
+    testFields: null
 };
 
 export default ChannelTestModal;

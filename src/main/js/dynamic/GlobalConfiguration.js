@@ -53,8 +53,8 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFieldLabel } = this.state.currentDescriptor;
-        if (testFieldLabel) {
+        const { testFieldLabel, testFields } = this.state.currentDescriptor;
+        if (testFieldLabel || (testFields && testFields.length > 0)) {
             this.setState({
                 showTest: true,
                 destinationName: testFieldLabel
@@ -103,7 +103,8 @@ class GlobalConfiguration extends React.Component {
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
-        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && testFields && testFields.length > 0;
+        const includeTestButton = (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT) || testFields && testFields.length > 0;
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && includeTestButton;
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const displayDelete = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const body = (!Array.isArray(fields) || !fields.length) ?
@@ -136,6 +137,7 @@ class GlobalConfiguration extends React.Component {
                         handleCancel={this.handleTestCancel}
                         destinationName={this.state.destinationName}
                         fieldModel={currentConfig}
+                        testFields={testFields}
                     />
                 </form>
             );

@@ -22,20 +22,22 @@
  */
 package com.synopsys.integration.alert.component.authentication.actions;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class AuthenticationConfigurationAction extends ConfigurationAction {
+public class AuthenticationTestAction extends TestAction {
+    private Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
 
-    @Autowired
-    protected AuthenticationConfigurationAction(AuthenticationDescriptorKey descriptorKey, AuthenticationApiAction authenticationApiAction, AuthenticationTestAction authenticationTestAction) {
-        super(descriptorKey);
-        addGlobalApiAction(authenticationApiAction);
-        addGlobalTestAction(authenticationTestAction);
-
+    @Override
+    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+        logger.info("Testing authentication.");
+        return null;
     }
 }
