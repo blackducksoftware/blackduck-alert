@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class DescriptorMetadata extends AlertSerializableModel {
+    private static final long serialVersionUID = -6213193510077419010L;
     private final String label;
     private final String urlName;
     private final String name;
@@ -45,9 +46,10 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private String testFieldLabel;
     private Set<AccessOperation> operations;
     private boolean readOnly;
+    private List<ConfigField> testFields;
 
     public DescriptorMetadata(DescriptorKey descriptorKey, String label, String urlName, String description, DescriptorType type, ConfigContextEnum context,
-        boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, String testFieldLabel) {
+        boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, String testFieldLabel, List<ConfigField> testFields) {
         this.label = label;
         this.urlName = urlName;
         this.name = descriptorKey.getUniversalKey();
@@ -59,6 +61,7 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.fields = fields;
         this.testFieldLabel = testFieldLabel;
         this.operations = Set.of();
+        this.testFields = testFields;
     }
 
     public String getLabel() {
@@ -125,4 +128,11 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.readOnly = readOnly;
     }
 
+    public List<ConfigField> getTestFields() {
+        return testFields;
+    }
+
+    public void setTestFields(List<ConfigField> testFields) {
+        this.testFields = testFields;
+    }
 }

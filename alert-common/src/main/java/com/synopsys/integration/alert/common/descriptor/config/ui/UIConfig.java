@@ -48,6 +48,10 @@ public abstract class UIConfig extends Stringable {
 
     public abstract List<ConfigField> createFields();
 
+    public List<ConfigField> createTestFields() {
+        return List.of();
+    }
+
     public String createTestLabel() {
         return "";
     }

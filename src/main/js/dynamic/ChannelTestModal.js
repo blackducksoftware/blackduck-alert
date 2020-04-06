@@ -38,6 +38,7 @@ class ChannelTestModal extends Component {
     }
 
     render() {
+        //TODO FIELD PANEL FOR THE body
         return (
             <Modal show={this.props.showTestModal} onHide={this.handleHide}>
                 <Modal.Header closeButton>
