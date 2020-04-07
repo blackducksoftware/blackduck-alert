@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -134,43 +135,47 @@ public class DefaultAuditUtilityTest {
     @Test
     public void getPageOfAuditEntriesTest() {
         Integer pageNumber = 0;
-        int pageSize = 1;
-        String searchTerm = "testSearchTerm";
-        String sortField = "testSortField";
-        String sortOrder = "testSortOrder";
+        int pageSize = 2;
+        String searchTerm = null;
+        String sortField = "lastSent";
+        String sortOrder = "ASC";
         Boolean onlyShowSentNotifications = Boolean.TRUE;
+        String overallStatus = "overallStatusString";
+        String lastSent = DateUtils.createCurrentDateString(DateUtils.AUDIT_DATE_FORMAT);
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
 
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
         Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.empty());
-
-        PageRequest pageRequest = Mockito.mock(PageRequest.class);
         Mockito.when(notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder)).thenReturn(pageRequest);
-        String content = "contentString";
 
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", content, new Date(), new Date());
+        //At least two AlertNotificationModel are required for the comparator
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", new Date(), new Date());
+        AlertNotificationModel alertNotificationModel2 = new AlertNotificationModel(2L, 2L, "provider-test2", "providerConfigName-test2", "notificationType-test2", "{content: \"content is here2..\"}",
+            new Date(System.currentTimeMillis() - 15000), new Date(System.currentTimeMillis() - 10000));
+
         Pageable auditPageable = Mockito.mock(Pageable.class);
         Mockito.when(auditPageable.getOffset()).thenReturn(pageNumber.longValue());
         Mockito.when(auditPageable.getPageSize()).thenReturn(pageSize);
-        Page<AlertNotificationModel> auditPage = new PageImpl<>(List.of(alertNotificationModel), auditPageable, 1);
-        Mockito.when(notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications)).thenReturn(auditPage);
+        Page<AlertNotificationModel> auditPage = new PageImpl<>(List.of(alertNotificationModel, alertNotificationModel2), auditPageable, 1);
+        Mockito.when(notificationManager.findAll(pageRequest, onlyShowSentNotifications)).thenReturn(auditPage);
 
-        NotificationConfig notificationConfig = new NotificationConfig("3", "createdAtString", "providerString", 2L, "providerConfigNameString", "providerCreationTimeString", "notificationTypeString", content);
-        String overallStatus = "overallStatusString";
-        String lastSent = "lastSentString";
+        NotificationConfig notificationConfig = new NotificationConfig("3", "createdAtString", "providerString", 2L, "providerConfigNameString", "providerCreationTimeString", "notificationTypeString", "content-test");
         AuditEntryModel auditEntryModel = new AuditEntryModel("2", notificationConfig, List.of(), overallStatus, lastSent);
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter = (AlertNotificationModel notificationModel) -> auditEntryModel;
 
-        //Starting Test
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
         AlertPagedModel<AuditEntryModel> alertPagedModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, notificationToAuditEntryConverter);
 
         assertEquals(1, alertPagedModel.getTotalPages());
         assertEquals(pageNumber.intValue(), alertPagedModel.getCurrentPage());
         assertEquals(pageSize, alertPagedModel.getPageSize());
-        assertEquals(1, alertPagedModel.getContent().size());
+        assertEquals(2, alertPagedModel.getContent().size());
+        assertEquals(lastSent, alertPagedModel.getContent().get(0).getLastSent());
+        assertEquals(lastSent, alertPagedModel.getContent().get(1).getLastSent());
 
         AuditEntryModel auditContentTest = alertPagedModel.getContent().stream().findFirst().orElse(null);
 
@@ -233,9 +238,6 @@ public class DefaultAuditUtilityTest {
         assertEquals(timeLastSent.toString(), testAuditEntryModel.getLastSent());
     }
 
-    //TODO: We should take a look at the tests below and see if we want to replace them with new tests.
-
-    //TODO: Remove this test later
     @Test
     public void createAuditEntryTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -260,7 +262,6 @@ public class DefaultAuditUtilityTest {
         Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
-    //TODO: Remove this test later
     @Test
     public void createAuditEntryNullEntryIdTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -281,14 +282,12 @@ public class DefaultAuditUtilityTest {
         Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
-    //TODO: Remove this test later
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntrySuccess(Collections.singletonList(1L));
     }
 
-    //TODO: Remove this test later
     @Test
     public void setAuditEntrySuccessTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -304,14 +303,12 @@ public class DefaultAuditUtilityTest {
         assertEquals(AuditEntryStatus.SUCCESS.toString(), entity.getStatus());
     }
 
-    //TODO: Remove this test later
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
         auditUtility.setAuditEntryFailure(Collections.singletonList(1L), null, null);
     }
 
-    //TODO: Remove this test later
     @Test
     public void setAuditEntryFailureTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
@@ -327,7 +324,6 @@ public class DefaultAuditUtilityTest {
         assertEquals("error", entity.getErrorMessage());
     }
 
-    //TODO:  (May want to keep the helper method)
     public ProviderMessageContent createMessageContent() throws AlertException {
         LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
         LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
@@ -377,7 +373,6 @@ public class DefaultAuditUtilityTest {
                    .build();
     }
 
-    //TODO:  (May want to keep the helper method)
     private void mockAuditRepositorySave(AuditEntryRepository auditEntryRepository, AuditEntryEntity savedAuditEntryEntity) {
         Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).then(invocation -> {
             AuditEntryEntity originalEntity = invocation.getArgument(0);
