@@ -153,7 +153,7 @@ public class ConfigActions {
             FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             TestAction testAction = testActionOptional.get();
-            testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
+            testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldAccessor);
             return "Successfully sent test message.";
         }
         String descriptorName = restModel.getDescriptorName();

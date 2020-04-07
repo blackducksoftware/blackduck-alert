@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -137,6 +138,7 @@ public class EmailGlobalUIConfig extends UIConfig {
     private static final String ADVANCED_PANEL = "Advanced";
 
     private static final String TEST_LABEL_ADDRESS = "Email address";
+    private static final String TEST_EMAIL_DESCRIPTION = "The email address to send a message to.";
 
     private final EncryptionSettingsValidator encryptionValidator;
 
@@ -218,8 +220,8 @@ public class EmailGlobalUIConfig extends UIConfig {
     }
 
     @Override
-    public String createTestLabel() {
-        return TEST_LABEL_ADDRESS;
+    public List<ConfigField> createTestFields() {
+        ConfigField emailAddress = new TextInputConfigField(TestAction.KEY_DESTINATION_NAME, TEST_LABEL_ADDRESS, TEST_EMAIL_DESCRIPTION);
+        return List.of(emailAddress);
     }
-
 }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -36,7 +37,7 @@ public class AuthenticationTestAction extends TestAction {
     private Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
 
     @Override
-    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         logger.info("Testing authentication.");
         return null;
     }

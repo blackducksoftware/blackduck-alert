@@ -93,45 +93,45 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         }
     }
 
-    public Map<String, FieldValueModel> createFieldModelMap(final List<ConfigurationFieldModel> configFieldModels) {
-        final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
-        for (final ConfigurationFieldModel model : configFieldModels) {
-            final String key = model.getFieldKey();
+    public Map<String, FieldValueModel> createFieldModelMap(List<ConfigurationFieldModel> configFieldModels) {
+        Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
+        for (ConfigurationFieldModel model : configFieldModels) {
+            String key = model.getFieldKey();
             Collection<String> values = List.of();
             if (!model.isSensitive()) {
                 values = model.getFieldValues();
             }
-            final FieldValueModel fieldValueModel = new FieldValueModel(values, model.isSet());
+            FieldValueModel fieldValueModel = new FieldValueModel(values, model.isSet());
             fieldModelMap.put(key, fieldValueModel);
         }
         return fieldModelMap;
     }
 
-    public FieldModel createValidFieldModel(final ConfigurationModel configurationModel, final ConfigContextEnum context) {
-        final Map<String, FieldValueModel> fieldValueMap = createFieldModelMap(configurationModel.getCopyOfFieldList());
+    public FieldModel createValidFieldModel(ConfigurationModel configurationModel, ConfigContextEnum context) {
+        Map<String, FieldValueModel> fieldValueMap = createFieldModelMap(configurationModel.getCopyOfFieldList());
         if (ConfigContextEnum.DISTRIBUTION == context) {
             global_config.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
         }
-        final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), destinationName, context.name(), fieldValueMap);
+        FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), destinationName, context.name(), fieldValueMap);
         return model;
     }
 
-    public FieldAccessor createValidFieldAccessor(final ConfigurationModel configurationModel) {
-        final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+    public FieldAccessor createValidFieldAccessor(ConfigurationModel configurationModel) {
+        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(configurationModel.getCopyOfKeyToFieldMap());
         global_config.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         return fieldAccessor;
 
     }
 
     public FieldModel createInvalidDistributionFieldModel() {
-        final Map<String, String> invalidValuesMap = new HashMap<>();
+        Map<String, String> invalidValuesMap = new HashMap<>();
         invalidValuesMap.putAll(createInvalidCommonDistributionFieldMap());
         invalidValuesMap.putAll(createInvalidDistributionFieldMap());
 
-        final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
+        Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
+        FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         return model;
     }
 
@@ -143,27 +143,34 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     }
 
     public Map<String, String> createInvalidCommonDistributionFieldMap() {
-        final Map<String, String> invalidValuesMap = Map.of(ChannelDistributionUIConfig.KEY_NAME, "", ChannelDistributionUIConfig.KEY_FREQUENCY, "", ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "",
+        Map<String, String> invalidValuesMap = Map.of(ChannelDistributionUIConfig.KEY_NAME, "", ChannelDistributionUIConfig.KEY_FREQUENCY, "", ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "",
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "");
         return invalidValuesMap;
     }
 
     public FieldModel createInvalidGlobalFieldModel() {
-        final Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
-        final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        final FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
+        Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
+        Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
+        FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
         return model;
     }
 
-    public Map<String, FieldValueModel> createFieldValueModelMap(final Map<String, String> fieldValueMap) {
-        final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
-        for (final Map.Entry<String, String> fieldValue : fieldValueMap.entrySet()) {
-            final String key = fieldValue.getKey();
-            final String value = fieldValue.getValue();
-            final FieldValueModel fieldValueModel = new FieldValueModel(List.of(value), StringUtils.isNotBlank(value));
+    public Map<String, FieldValueModel> createFieldValueModelMap(Map<String, String> fieldValueMap) {
+        Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
+        for (Map.Entry<String, String> fieldValue : fieldValueMap.entrySet()) {
+            String key = fieldValue.getKey();
+            String value = fieldValue.getValue();
+            FieldValueModel fieldValueModel = new FieldValueModel(List.of(value), StringUtils.isNotBlank(value));
             fieldModelMap.put(key, fieldValueModel);
         }
         return fieldModelMap;
+    }
+
+    public FieldModel createFieldModel(String descriptorName, String emailAddress) {
+        String context = ConfigContextEnum.DISTRIBUTION.name();
+        Map<String, FieldValueModel> keyToValues = new HashMap<>();
+        keyToValues.put(TestAction.KEY_DESTINATION_NAME, new FieldValueModel(List.of(emailAddress), false));
+        return new FieldModel(descriptorName, context, keyToValues);
     }
 
     public abstract DistributionEvent createChannelEvent() throws AlertException;
@@ -178,7 +185,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     public abstract boolean assertDistributionFields(Set<DefinedFieldModel> distributionFields);
 
-    public abstract String createTestConfigDestination();
+    public abstract FieldModel createTestConfigDestination();
 
     public abstract Map<String, String> createInvalidGlobalFieldMap();
 
@@ -190,7 +197,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     public abstract TestAction getTestAction();
 
-    private Map<String, ConfigField> createFieldMap(final ConfigContextEnum context) {
+    private Map<String, ConfigField> createFieldMap(ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
                    .map(uiConfig -> DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey))
                    .orElse(Map.of());
@@ -198,13 +205,13 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
-        final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
+        FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
 
-        final String destination = createTestConfigDestination();
+        FieldModel fieldModel = createTestConfigDestination();
         try {
-            final TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), destination, fieldAccessor);
-        } catch (final IntegrationException e) {
+            TestAction descriptorActionApi = getTestAction();
+            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), fieldModel, fieldAccessor);
+        } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -212,12 +219,12 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalConfig() {
-        final ConfigurationModel configurationModel = global_config.orElse(null);
-        final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
+        ConfigurationModel configurationModel = global_config.orElse(null);
+        FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {
-            final TestAction descriptorActionApi = getTestAction();
+            TestAction descriptorActionApi = getTestAction();
             descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldAccessor);
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -225,7 +232,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testCreateChannelEvent() throws Exception {
-        final DistributionEvent channelEvent = createChannelEvent();
+        DistributionEvent channelEvent = createChannelEvent();
         assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
         assertEquals(destinationName, channelEvent.getDestination());
@@ -233,22 +240,22 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionValidate() {
-        final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        final FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
+        FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
+        FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testDistributionValidateWithFieldErrors() {
-        final FieldModel restModel = createInvalidDistributionFieldModel();
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldModel restModel = createInvalidDistributionFieldModel();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
 
         if (restModel.getKeyToValues().size() > 0) {
@@ -258,10 +265,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalValidate() {
-        final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         List<String> errors = fieldErrors.entrySet()
                                   .stream()
@@ -273,10 +280,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     @Test
     public void testGlobalValidateWithFieldErrors() {
         // descriptor has a global configuration therefore continue testing
-        final FieldModel restModel = createInvalidGlobalFieldModel();
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-        final FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldModel restModel = createInvalidGlobalFieldModel();
+        HashMap<String, String> fieldErrors = new HashMap<>();
+        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
+        FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }

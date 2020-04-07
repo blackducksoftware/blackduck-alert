@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConf
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -119,7 +121,7 @@ public class EmailGlobalTestActionTest {
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        emailGlobalTestAction.testConfig(null, null, fieldAccessor);
+        emailGlobalTestAction.testConfig(null, createFieldModel(null), fieldAccessor);
 
         ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -141,7 +143,7 @@ public class EmailGlobalTestActionTest {
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
         try {
-            emailGlobalTestAction.testConfig(null, "fake", fieldAccessor);
+            emailGlobalTestAction.testConfig(null, createFieldModel("fake"), fieldAccessor);
             fail("Should have thrown exception");
         } catch (AlertException e) {
             assertTrue(e.getMessage().contains("fake is not a valid email address."));
@@ -156,7 +158,7 @@ public class EmailGlobalTestActionTest {
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
         FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
 
-        emailGlobalTestAction.testConfig(null, "fake@synopsys.com", fieldAccessor);
+        emailGlobalTestAction.testConfig(null, createFieldModel("fake@synopsys.com"), fieldAccessor);
 
         ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -199,8 +201,21 @@ public class EmailGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        emailGlobalTestAction.testConfig(null, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT), fieldAccessor);
+        emailGlobalTestAction.testConfig(null, createFieldModel(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), fieldAccessor);
 
+    }
+
+    private FieldModel createFieldModel(String emailAddress) {
+        List<String> addresses = List.of();
+        if (null != emailAddress) {
+            addresses = List.of(emailAddress);
+        }
+
+        String descriptorName = new EmailChannelKey().getUniversalKey();
+        String context = ConfigContextEnum.GLOBAL.name();
+        Map<String, FieldValueModel> keyToValues = new HashMap<>();
+        keyToValues.put(TestAction.KEY_DESTINATION_NAME, new FieldValueModel(addresses, false));
+        return new FieldModel(descriptorName, context, keyToValues);
     }
 
     private void fillMapBlanks(Map<String, FieldValueModel> fields) {

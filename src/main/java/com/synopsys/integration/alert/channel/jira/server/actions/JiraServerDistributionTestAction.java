@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuild
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
 import com.synopsys.integration.issuetracker.common.exception.IssueTrackerFieldException;
@@ -56,11 +57,11 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
     }
 
     @Override
-    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
-        IssueTrackerContext context = contextBuilder.build(fieldAccessor);
+        IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
         JiraServerService jiraService = new JiraServerService(gson);
-        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(fieldAccessor, jiraMessageParser);
+        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson, issueCreator);
         try {
             IssueTrackerResponse result = testAction.testConfig(context);

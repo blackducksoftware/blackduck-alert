@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTes
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
@@ -44,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
@@ -250,8 +252,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public String createTestConfigDestination() {
-        return "noreply@blackducksoftware.com";
+    public FieldModel createTestConfigDestination() {
+        return createFieldModel(new SlackChannelKey().getUniversalKey(), "noreply@blackducksoftware.com");
     }
 
     @Override
