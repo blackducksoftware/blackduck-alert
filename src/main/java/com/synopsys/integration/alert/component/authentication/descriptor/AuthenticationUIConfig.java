@@ -101,8 +101,8 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_HEADER_ROLE_MAPPING = "User Role Mapping";
     private static final String AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
-    private static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";
-    private static final String TEST_FIELD_KEY_PASSWORD = "test.field.user.password";
+    public static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";
+    public static final String TEST_FIELD_KEY_PASSWORD = "test.field.user.password";
 
     private static final String TEST_FIELD_LABEL_USERNAME = "User Name";
     private static final String TEST_FIELD_LABEL_PASSWORD = "Password";

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -94,7 +95,7 @@ public class LdapManagerTest {
 
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
 
-        ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
+        FieldAccessor updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(DEFAULT_ENABLED, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_SERVER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
@@ -131,8 +132,8 @@ public class LdapManagerTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
-        ldapManager.updateContext();
-        ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
+        ldapManager.getAuthenticationProvider();
+        FieldAccessor updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
@@ -145,8 +146,8 @@ public class LdapManagerTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
-        ldapManager.updateContext();
-        ConfigurationModel updatedProperties = ldapManager.getCurrentConfiguration();
+        ldapManager.getAuthenticationProvider();
+        FieldAccessor updatedProperties = ldapManager.getCurrentConfiguration();
         assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
@@ -174,7 +175,7 @@ public class LdapManagerTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
-            ldapManager.updateContext();
+            ldapManager.getAuthenticationProvider();
             fail();
         } catch (AlertConfigurationException ex) {
             // exception occurred
@@ -197,7 +198,7 @@ public class LdapManagerTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         try {
-            ldapManager.updateContext();
+            ldapManager.getAuthenticationProvider();
             fail();
         } catch (AlertConfigurationException ex) {
             // exception occurred

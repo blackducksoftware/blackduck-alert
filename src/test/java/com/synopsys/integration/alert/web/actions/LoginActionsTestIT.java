@@ -58,7 +58,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() throws Exception {
-        ldapManager.updateContext();
+        ldapManager.getAuthenticationProvider();
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
