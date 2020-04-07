@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.web.security.authentication;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
+    private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private List<AuthenticationPerformer> authenticationPerformers;
 
     @Autowired
@@ -47,12 +50,19 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
             throw new IllegalArgumentException("Only UsernamePasswordAuthenticationToken is supported, " + authentication.getClass() + " was attempted");
         }
 
-        return authenticationPerformers
-                   .stream()
-                   .map(authPerformer -> authPerformer.performAuthentication(authentication))
-                   .flatMap(Optional::stream)
-                   .findAny()
-                   .orElse(authentication);
+        for (AuthenticationPerformer authenticationPerformer : authenticationPerformers) {
+            try {
+                Optional<Authentication> completedAuthentication = authenticationPerformer.performAuthentication(authentication);
+                if (completedAuthentication.isPresent() && completedAuthentication.get().isAuthenticated()) {
+                    return completedAuthentication.get();
+                }
+            } catch (Exception ex) {
+                logger.info("Error with with authentication type {} - cause: {}", authenticationPerformer.getAuthenticationType(), ex.getMessage());
+                logger.error("Error details: ", ex);
+            }
+        }
+
+        return authentication;
     }
 
     @Override
