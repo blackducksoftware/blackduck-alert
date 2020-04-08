@@ -42,6 +42,8 @@ import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
@@ -52,14 +54,32 @@ public class SAMLManager {
     private final MetadataManager metadataManager;
     private final MetadataGenerator metadataGenerator;
     private final FilePersistenceUtil filePersistenceUtil;
+    private final SAMLContext samlContext;
 
     public SAMLManager(ParserPool parserPool, ExtendedMetadata extendedMetadata, MetadataManager metadataManager, MetadataGenerator metadataGenerator,
-        FilePersistenceUtil filePersistenceUtil) {
+        FilePersistenceUtil filePersistenceUtil, SAMLContext samlContext) {
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
         this.metadataManager = metadataManager;
         this.metadataGenerator = metadataGenerator;
         this.filePersistenceUtil = filePersistenceUtil;
+        this.samlContext = samlContext;
+    }
+
+    public void initializeConfiguration() {
+        logger.info("Initializing SAML identity provider with database configuration.");
+        try {
+            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
+            String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
+            String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+            String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
+            updateSAMLConfiguration(samlEnabled, metadataURL, entityId, entityBaseUrl);
+        } catch (AlertConfigurationException e) {
+            logger.warn(String.format("Cannot initialize the SAML identity provider. %s", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error initializing the SAML identity provider.", e);
+        }
     }
 
     public void updateSAMLConfiguration(boolean samlEnabled, String metadataURL, String entityId, String entityBaseUrl) {
@@ -88,8 +108,8 @@ public class SAMLManager {
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
-        Optional<MetadataProvider> httpProvider = createHttpProvider(metadataURL);
-        Optional<MetadataProvider> fileProvider = createFileProvider();
+        Optional<ExtendedMetadataDelegate> httpProvider = createHttpProvider(metadataURL);
+        Optional<ExtendedMetadataDelegate> fileProvider = createFileProvider();
         List<MetadataProvider> providers = List.of(httpProvider, fileProvider).stream()
                                                .flatMap(Optional::stream)
                                                .collect(Collectors.toList());
@@ -97,7 +117,7 @@ public class SAMLManager {
         metadataManager.afterPropertiesSet();
     }
 
-    private Optional<MetadataProvider> createHttpProvider(String metadataUrl) throws MetadataProviderException {
+    public Optional<ExtendedMetadataDelegate> createHttpProvider(String metadataUrl) throws MetadataProviderException {
         if (StringUtils.isBlank(metadataUrl)) {
             return Optional.empty();
         }
@@ -110,7 +130,7 @@ public class SAMLManager {
         return Optional.of(createDelegate(provider));
     }
 
-    private Optional<MetadataProvider> createFileProvider() throws MetadataProviderException {
+    public Optional<ExtendedMetadataDelegate> createFileProvider() throws MetadataProviderException {
         Timer backgroundTaskTimer = new Timer(true);
         if (!filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
             return Optional.empty();

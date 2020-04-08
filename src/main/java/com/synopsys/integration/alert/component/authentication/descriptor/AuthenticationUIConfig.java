@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
@@ -107,8 +108,12 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String TEST_FIELD_LABEL_USERNAME = "User Name";
     private static final String TEST_FIELD_LABEL_PASSWORD = "Password";
 
-    private static final String TEST_FIELD_DESCRIPTION_USERNAME = "The user name to test authentication.";
-    private static final String TEST_FIELD_DESCRIPTION_PASSWORD = "The password to test authentication.";
+    private static final String TEST_FIELD_DESCRIPTION_USERNAME = "The user name to test LDAP authentication; if LDAP authentication is enabled.";
+    private static final String TEST_FIELD_DESCRIPTION_PASSWORD = "The password to test LDAP authentication; if LDAP authentication is enabled.";
+
+    private static final String TEST_FIELD_KEY_SAML_INFORMATION = "test.field.saml.no.input";
+    private static final String TEST_FIELD_LABEL_SAML = "No Input Required";
+    private static final String TEST_FIELD_DESCRIPTION_SAML = "No input required here. SAML metadata fields will be tested by the server.";
 
     private final EncryptionSettingsValidator encryptionValidator;
     private final FilePersistenceUtil filePersistenceUtil;
@@ -186,13 +191,20 @@ public class AuthenticationUIConfig extends UIConfig {
     }
 
     @Override
+    public String createTestLabel() {
+        return "Test Configuration";
+    }
+
+    @Override
     public List<ConfigField> createTestFields() {
 
         ConfigField userName = new TextInputConfigField(TEST_FIELD_KEY_USERNAME, TEST_FIELD_LABEL_USERNAME, TEST_FIELD_DESCRIPTION_USERNAME)
-                                   .applyHeader(AUTHENTICATION_HEADER_LDAP);
+                                   .applyPanel(AUTHENTICATION_HEADER_LDAP);
         ConfigField password = new PasswordConfigField(TEST_FIELD_KEY_PASSWORD, TEST_FIELD_LABEL_PASSWORD, TEST_FIELD_DESCRIPTION_PASSWORD, encryptionValidator)
-                                   .applyHeader(AUTHENTICATION_HEADER_LDAP);
-        return List.of(userName, password);
+                                   .applyPanel(AUTHENTICATION_HEADER_LDAP);
+        ConfigField samlInfo = new ReadOnlyConfigField(TEST_FIELD_KEY_SAML_INFORMATION, TEST_FIELD_LABEL_SAML, TEST_FIELD_DESCRIPTION_SAML)
+                                   .applyPanel(AUTHENTICATION_HEADER_SAML);
+        return List.of(userName, password, samlInfo);
     }
 
     private Collection<String> validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {

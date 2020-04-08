@@ -256,7 +256,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLManager samlManager() throws MetadataProviderException {
-        return new SAMLManager(parserPool(), extendedMetadata(), metadata(), metadataGenerator(), filePersistenceUtil);
+        return new SAMLManager(parserPool(), extendedMetadata(), metadata(), metadataGenerator(), filePersistenceUtil, samlContext());
     }
 
     @Bean
