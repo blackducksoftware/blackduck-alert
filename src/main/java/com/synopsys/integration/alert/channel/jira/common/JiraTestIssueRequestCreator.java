@@ -77,14 +77,12 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
 
             switch (operation) {
                 case RESOLVE: {
-                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-                    return IssueResolutionRequest.of(issueSearchProperties, contentModel);
+                    return createResolveIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
                 }
                 case OPEN:
                 case UPDATE:
                 default: {
-                    IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-                    return IssueCreationRequest.of(issueSearchProperties, contentModel);
+                    return createCreateOrUpdateIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
                 }
             }
 
@@ -93,6 +91,18 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
         }
 
         return null;
+    }
+
+    private IssueResolutionRequest createResolveIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+        IssueSearchProperties issueSearchProperties) {
+        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        return IssueResolutionRequest.of(issueSearchProperties, contentModel);
+    }
+
+    private IssueCreationRequest createCreateOrUpdateIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+        IssueSearchProperties issueSearchProperties) {
+        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        return IssueCreationRequest.of(issueSearchProperties, contentModel);
     }
 
     private ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {

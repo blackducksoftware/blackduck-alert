@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.jira.cloud.web;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
             String username = jiraProperties.getUsername();
             String accessToken = jiraProperties.getAccessToken();
             Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
-            if (response.isStatusCodeError()) {
+            if (BooleanUtils.isTrue(response.isStatusCodeError())) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
