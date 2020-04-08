@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -47,7 +48,7 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     public void startTask() {
         checkTaskEnabled();
         String taskName = getTaskName();
-        if (!getEnabled()) {
+        if (BooleanUtils.isFalse(getEnabled())) {
             logger.info("{} is disabled and will not be scheduled to run.", taskName);
             return;
         }

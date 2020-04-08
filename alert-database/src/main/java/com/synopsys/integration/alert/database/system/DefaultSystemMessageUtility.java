@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -102,8 +103,8 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Transactional
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
         List<SystemMessage> convertedMessages = messagesToDelete.stream()
-                                                          .map(this::convertToSystemMessage)
-                                                          .filter(message -> message != null).collect(Collectors.toList());
+                                                    .map(this::convertToSystemMessage)
+                                                    .filter(Objects::nonNull).collect(Collectors.toList());
         systemMessageRepository.deleteAll(convertedMessages);
     }
 

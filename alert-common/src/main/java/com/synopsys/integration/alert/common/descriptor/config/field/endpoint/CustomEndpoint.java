@@ -35,6 +35,9 @@ public abstract class CustomEndpoint<R> {
         customEndpointManager.registerFunction(fieldKey, this::createResponse);
     }
 
+    /**
+     * @param fieldModel This FieldModel may be use for further computation in overriding classes
+     */
     protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
         return Optional.empty();
     }

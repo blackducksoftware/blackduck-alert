@@ -85,6 +85,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                            .collect(Collectors.toList());
             }
         } catch (AlertDatabaseConstraintException ignored) {
+            // ignoring this exception
         }
         return List.of();
     }
@@ -144,6 +145,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                 return getUsersByProviderConfigId(optionalProviderConfigId.get());
             }
         } catch (AlertDatabaseConstraintException ignored) {
+            // ignoring this exception
         }
         return List.of();
     }

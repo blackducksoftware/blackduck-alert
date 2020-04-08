@@ -23,6 +23,10 @@
 package com.synopsys.integration.alert.common.util;
 
 public class BitwiseUtil {
+    private BitwiseUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static int shiftBitLeft(int bitShifts) {
         return 1 << bitShifts;
     }

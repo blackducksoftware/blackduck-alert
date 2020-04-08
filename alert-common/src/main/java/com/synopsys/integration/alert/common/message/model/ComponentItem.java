@@ -140,7 +140,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return getCollapseOnCategory();
     }
 
-    public LinkedHashSet<LinkableItem> getComponentAttributes() {
+    public Set<LinkableItem> getComponentAttributes() {
         return componentAttributes;
     }
 
@@ -242,12 +242,12 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return new ComponentItem(category, operation, componentPriority, component, subComponent, categoryItem, subCategoryItem, collapseOnCategory, componentAttributes, notificationIds);
         }
 
-        public Builder applyCategory(final String category) {
+        public Builder applyCategory(String category) {
             this.category = category;
             return this;
         }
 
-        public Builder applyOperation(final ItemOperation operation) {
+        public Builder applyOperation(ItemOperation operation) {
             this.operation = operation;
             return this;
         }

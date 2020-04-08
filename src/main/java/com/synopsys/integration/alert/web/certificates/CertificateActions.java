@@ -100,6 +100,7 @@ public class CertificateActions {
             certificateUtility.importCertificate(storedCertificate);
             return convertFromDatabaseModel(storedCertificate);
         } catch (AlertException importException) {
+            logger.debug("Error importing certificate.", importException);
             deleteByAlias(certificateToStore);
             throw importException;
         }
@@ -120,7 +121,7 @@ public class CertificateActions {
             certificateAccessor.deleteCertificate(certificateModel.getAlias());
             certificateUtility.removeCertificate(certificateModel.getAlias());
         } catch (AlertException deleteEx) {
-            logger.error("Error deleting certificate with alias {}", certificateModel.getAlias());
+            logger.error("Error deleting certificate with alias {}. Error: ", certificateModel.getAlias(), deleteEx.getMessage());
             logger.debug("Caused by: ", deleteEx);
         }
     }

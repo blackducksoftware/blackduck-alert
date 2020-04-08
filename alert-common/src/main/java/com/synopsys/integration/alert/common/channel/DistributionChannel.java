@@ -64,7 +64,7 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
             auditUtility.setAuditEntrySuccess(event.getAuditIds());
         } catch (IntegrationRestException irex) {
             auditUtility.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
-            logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
+            logger.error(String.format("%s : %s", irex.getHttpStatusCode(), irex.getHttpStatusMessage()), irex);
             throw new AlertException(irex.getMessage(), irex);
         } catch (Exception e) {
             auditUtility.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);

@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +38,6 @@ import com.synopsys.integration.alert.web.controller.BaseController;
 @RequestMapping(TaskController.TASK_BASE_PATH)
 public class TaskController extends BaseController {
     public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
-    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
