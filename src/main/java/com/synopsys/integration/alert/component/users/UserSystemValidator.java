@@ -52,7 +52,7 @@ public class UserSystemValidator extends BaseSystemValidator {
     }
 
     public void validateDefaultAdminUser(Long userId) {
-        if (userId != UserAccessor.DEFAULT_ADMIN_USER_ID) {
+        if (!userId.equals(UserAccessor.DEFAULT_ADMIN_USER_ID)) {
             return;
         }
         validateDefaultAdminUser();

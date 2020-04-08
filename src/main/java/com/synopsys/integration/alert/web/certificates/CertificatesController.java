@@ -51,6 +51,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 @RequestMapping(CertificatesController.API_BASE_URL)
 public class CertificatesController extends BaseController {
     public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
+    private static final String CERTIFICATE_IMPORT_ERROR_FORMAT = "There was an issue importing the certificate: {}";
     private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
     private DescriptorKey descriptorKey;
@@ -98,12 +99,12 @@ public class CertificatesController extends BaseController {
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
         } catch (AlertFieldException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue importing the certificate: {}", message);
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
             return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue importing the certificate: {}", message);
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
         }
@@ -122,7 +123,7 @@ public class CertificatesController extends BaseController {
             return responseFactory.createNotFoundResponse("Certificate resource not found");
         } catch (AlertFieldException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue importing the certificate: {}", message);
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
             return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
