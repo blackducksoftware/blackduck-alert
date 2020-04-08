@@ -40,7 +40,9 @@ class ChannelTestModal extends Component {
         const { destination, testFieldModel } = this.state;
         const { fieldModel } = this.props;
         const combinedModel = FieldModelUtilities.combineFieldModels(fieldModel, testFieldModel);
-        debugger;
+        if (fieldModel && fieldModel.id) {
+            combinedModel.id = fieldModel.id;
+        }
         this.props.sendTestMessage(combinedModel, destination);
         this.handleHide();
     }

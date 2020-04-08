@@ -164,7 +164,7 @@ class ProviderTable extends Component {
     onTest(callback) {
         const { providerConfig } = this.state;
         const configToUpdate = this.combineModelWithDefaults(providerConfig);
-        this.props.testConfig(configToUpdate, '');
+        this.props.testConfig(configToUpdate);
         callback(true);
         return true;
     }
@@ -355,7 +355,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getAllConfigs: descriptorName => dispatch(getAllConfigs(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
+    testConfig: (config) => dispatch(testConfig(config)),
     deleteConfig: id => dispatch(deleteConfig(id)),
     clearFieldErrors: () => dispatch(clearConfigFieldErrors())
 });

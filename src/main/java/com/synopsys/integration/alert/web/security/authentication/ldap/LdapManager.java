@@ -89,9 +89,10 @@ public class LdapManager {
         return new FieldAccessor(configModel.getCopyOfKeyToFieldMap());
     }
 
-    public LdapAuthenticationProvider getAuthenticationProvider() throws AlertConfigurationException {
+    public Optional<LdapAuthenticationProvider> getAuthenticationProvider() throws AlertConfigurationException {
         try {
-            return createAuthProvider(getCurrentConfiguration()).orElseThrow(() -> new AlertConfigurationException("Error creating LDAP Context Source"));
+            FieldAccessor fieldAccessor = getCurrentConfiguration();
+            return createAuthProvider(fieldAccessor);
         } catch (IllegalArgumentException | AlertDatabaseConstraintException ex) {
             throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
         }

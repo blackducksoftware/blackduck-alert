@@ -61,7 +61,7 @@ class GlobalConfiguration extends React.Component {
             });
         } else {
             const fieldModel = this.state.currentConfig;
-            this.props.testConfig(fieldModel, '');
+            this.props.testConfig(fieldModel);
         }
     }
 
@@ -193,7 +193,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: descriptorName => dispatch(getConfig(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
+    testConfig: (config) => dispatch(testConfig(config)),
     deleteConfig: id => dispatch(deleteConfig(id))
 });
 
