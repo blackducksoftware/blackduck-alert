@@ -91,15 +91,6 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
-    public void testGetInitialSystemSetupDescriptor() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_INITIAL_DESCRIPTOR)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-    @Test
     public void testGetLatestMessagesHandling() {
         final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);

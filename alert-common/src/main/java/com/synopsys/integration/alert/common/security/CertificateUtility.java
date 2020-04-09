@@ -72,14 +72,14 @@ public class CertificateUtility {
                 trustStore.store(stream, getTrustStorePassword());
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new AlertException("There was a problem storing the certificate", e);
+            throw new AlertException("There was a problem storing the certificate.", e);
         }
     }
 
     public void removeCertificate(CustomCertificateModel customCertificate) throws AlertException {
         logger.debug("Removing certificate from trust store.");
         if (null == customCertificate) {
-            throw new AlertException("The alias could not be determined from the custom certificate because it was null");
+            throw new AlertException("The alias could not be determined from the custom certificate because it was null.");
         }
         removeCertificate(customCertificate.getAlias());
     }
@@ -99,7 +99,7 @@ public class CertificateUtility {
                 }
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new AlertException("There was a problem removing the certificate", e);
+            throw new AlertException("There was a problem removing the certificate.", e);
         }
     }
 
@@ -109,7 +109,7 @@ public class CertificateUtility {
         try {
             return KeyStore.Builder.newInstance(keyStoreType, null, keyStore, protection).getKeyStore();
         } catch (KeyStoreException e) {
-            throw new AlertException("There was a problem accessing the trust store", e);
+            throw new AlertException("There was a problem accessing the trust store.", e);
         }
     }
 
@@ -138,7 +138,7 @@ public class CertificateUtility {
             return trustStoreFile;
 
         } else {
-            throw new AlertConfigurationException("No trust store file has been provided");
+            throw new AlertConfigurationException("No trust store file has been provided.");
         }
     }
 
@@ -148,15 +148,15 @@ public class CertificateUtility {
 
     private void validateCustomCertificateHasValues(CustomCertificateModel customCertificate) throws AlertException {
         if (null == customCertificate) {
-            throw new AlertException("The custom certificate cannot be null");
+            throw new AlertException("The custom certificate cannot be null.");
         }
 
         if (StringUtils.isBlank(customCertificate.getAlias())) {
-            throw new AlertException("The alias cannot be blank");
+            throw new AlertException("The alias cannot be blank.");
         }
 
         if (StringUtils.isBlank(customCertificate.getCertificateContent())) {
-            throw new AlertException("The certificate content cannot be blank");
+            throw new AlertException("The certificate content cannot be blank.");
         }
     }
 
@@ -169,8 +169,7 @@ public class CertificateUtility {
                 return certFactory.generateCertificate(certInputStream);
             }
         } catch (CertificateException | IOException e) {
-            logger.debug("Error getting Java certificate.", e);
-            throw new AlertException("The custom certificate could not be read", e);
+            throw new AlertException("The custom certificate could not be read.", e);
         }
     }
 

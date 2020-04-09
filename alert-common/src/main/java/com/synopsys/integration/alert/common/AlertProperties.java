@@ -133,8 +133,8 @@ public class AlertProperties {
         return alertEmailAttachmentsDir;
     }
 
-    public Boolean getH2ConsoleEnabled() {
-        return h2ConsoleEnabled;
+    public boolean getH2ConsoleEnabled() {
+        return BooleanUtils.isTrue(h2ConsoleEnabled);
     }
 
     public boolean getSslEnabled() {

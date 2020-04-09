@@ -48,13 +48,13 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 @Component
 public class UserManagementAuthoritiesPopulator {
     private static final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
-    private AuthenticationDescriptorKey AuthenticationDescriptorKey;
+    private AuthenticationDescriptorKey authenticationDescriptorKey;
     private ConfigurationAccessor configurationAccessor;
     private UserAccessor userAccessor;
 
     @Autowired
-    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserAccessor userAccessor) {
-        this.AuthenticationDescriptorKey = AuthenticationDescriptorKey;
+    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserAccessor userAccessor) {
+        this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
         this.userAccessor = userAccessor;
     }
@@ -89,7 +89,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private Set<String> getRolesFromDatabase(String userName, boolean appendRolePrefix) {
-        Function<String, String> function = appendRolePrefix ? (roleName) -> UserModel.ROLE_PREFIX + roleName : Function.identity();
+        Function<String, String> function = appendRolePrefix ? roleName -> UserModel.ROLE_PREFIX + roleName : Function.identity();
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         Set<String> roleNames = userModel.map(UserModel::getRoleNames).orElse(Set.of());
         Set<String> newRoleNames = new LinkedHashSet<>(roleNames.size());
@@ -100,7 +100,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorKey(AuthenticationDescriptorKey)
+        return configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));

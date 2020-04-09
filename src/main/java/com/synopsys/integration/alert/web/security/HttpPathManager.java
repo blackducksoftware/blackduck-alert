@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.web.security;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,11 +98,9 @@ public class HttpPathManager {
         samlAllowedPaths = createSamlDefaultAllowedPaths();
     }
 
-    private List<String> createDefaultPaths(final String[] paths) {
-        final List<String> list = new LinkedList<>();
-        for (final String path : paths) {
-            list.add(path);
-        }
+    private List<String> createDefaultPaths(String[] paths) {
+        List<String> list = new LinkedList<>();
+        Collections.addAll(list, paths);
         return list;
     }
 
@@ -111,21 +110,21 @@ public class HttpPathManager {
 
     private List<String> createSamlDefaultAllowedPaths() { return createDefaultPaths(DEFAULT_SAML_PATHS);}
 
-    public void addAllowedPath(final String path) {
+    public void addAllowedPath(String path) {
         allowedPaths.add(path);
     }
 
-    public void addSamlAllowedPath(final String path) {
+    public void addSamlAllowedPath(String path) {
         samlAllowedPaths.add(path);
     }
 
     public String[] getAllowedPaths() {
-        final String[] allowedPathArray = new String[allowedPaths.size()];
+        String[] allowedPathArray = new String[allowedPaths.size()];
         return allowedPaths.toArray(allowedPathArray);
     }
 
     public String[] getSamlAllowedPaths() {
-        final String[] allowedPathArray = new String[samlAllowedPaths.size()];
+        String[] allowedPathArray = new String[samlAllowedPaths.size()];
         return samlAllowedPaths.toArray(allowedPathArray);
     }
 }

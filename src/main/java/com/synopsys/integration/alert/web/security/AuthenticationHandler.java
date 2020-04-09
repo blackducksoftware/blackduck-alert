@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.security;
 
-import java.io.IOException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -185,7 +184,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             Security.addProvider(bouncycastle);
             logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
 
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
         }
@@ -212,17 +211,17 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     private RequestMatcher[] createCsrfIgnoreMatchers() {
-        RequestMatcher[] matchers = {
-            new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
-        };
-        return matchers;
+        return createRequestMatcherArray();
     }
 
     private RequestMatcher[] createAllowedPathMatchers() {
-        RequestMatcher[] matchers = {
+        return createRequestMatcherArray();
+    }
+
+    private RequestMatcher[] createRequestMatcherArray() {
+        return new RequestMatcher[] {
             new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
-        return matchers;
     }
 
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
@@ -419,7 +418,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public HttpClient httpClient() throws IOException {
+    public HttpClient httpClient() {
         return new HttpClient(multiThreadedHttpConnectionManager());
     }
 
