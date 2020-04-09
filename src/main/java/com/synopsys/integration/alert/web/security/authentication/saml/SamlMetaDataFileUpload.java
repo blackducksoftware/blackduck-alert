@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 
 @Component
 public class SamlMetaDataFileUpload {
-    private final static Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
+    private static final Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
 
     @Autowired
     public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, AuthenticationDescriptorKey descriptorKey) throws AlertException {
@@ -76,17 +76,17 @@ public class SamlMetaDataFileUpload {
     private class XMLErrorHandler implements ErrorHandler {
 
         @Override
-        public void warning(final SAXParseException exception) throws SAXException {
+        public void warning(SAXParseException exception) throws SAXException {
             logger.warn("File upload exception warning:", exception);
         }
 
         @Override
-        public void error(final SAXParseException exception) throws SAXException {
+        public void error(SAXParseException exception) throws SAXException {
             logger.error("File upload exception error:", exception);
         }
 
         @Override
-        public void fatalError(final SAXParseException exception) throws SAXException {
+        public void fatalError(SAXParseException exception) throws SAXException {
             logger.error("File upload exception fatal error:", exception);
         }
     }

@@ -108,7 +108,7 @@ public class UpdateEmailService {
                 logger.debug("Problem sending version update email.", e);
             }
         } else {
-            logger.debug("No email address configured for user: " + username);
+            logger.debug("No email address configured for user: {}", username);
         }
     }
 

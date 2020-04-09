@@ -28,9 +28,9 @@ public class UpdateModel {
     private final String dockerTagVersion;
     private final String dockerTagUpdatedDate;
     private final String repositoryUrl;
-    private final Boolean isUpdatable;
+    private final boolean isUpdatable;
 
-    public UpdateModel(final String currentVersion, final String currentCreatedDate, final String dockerTagVersion, final String dockerTagUpdatedDate, final String repositoryUrl, final Boolean isUpdatable) {
+    public UpdateModel(String currentVersion, String currentCreatedDate, String dockerTagVersion, String dockerTagUpdatedDate, String repositoryUrl, boolean isUpdatable) {
         this.currentVersion = currentVersion;
         this.currentCreatedDate = currentCreatedDate;
         this.dockerTagVersion = dockerTagVersion;
@@ -59,7 +59,7 @@ public class UpdateModel {
         return repositoryUrl;
     }
 
-    public Boolean getUpdatable() {
+    public boolean getUpdatable() {
         return isUpdatable;
     }
 }

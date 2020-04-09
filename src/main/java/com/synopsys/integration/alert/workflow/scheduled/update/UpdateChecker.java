@@ -89,8 +89,8 @@ public class UpdateChecker {
 
         // latestAvailableVersion will not be present if Alert can not reach Docker Hub and DockerTagRetriever will log a warning
         // if latestAvailableVersion is empty, use the Alert version and date so we report no update available
-        String latestVersion = latestAvailableVersion.map(self -> self.getVersionName()).orElse(currentVersion);
-        String latestDate = latestAvailableVersion.map(self -> self.getDate()).orElse(alertCreated);
+        String latestVersion = latestAvailableVersion.map(VersionDateModel::getVersionName).orElse(currentVersion);
+        String latestDate = latestAvailableVersion.map(VersionDateModel::getDate).orElse(alertCreated);
         return getUpdateModel(currentVersion, alertCreated, latestVersion, latestDate, repositoryUrl);
     }
 
