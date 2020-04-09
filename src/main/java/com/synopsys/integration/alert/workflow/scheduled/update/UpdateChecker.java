@@ -195,10 +195,13 @@ public class UpdateChecker {
 
     private String getVersionToken(String versionToken) {
         String resultToken = versionToken;
-        if (versionToken.contains(QA_BUILD)) {
-            resultToken = versionToken.substring(0, versionToken.indexOf(QA_BUILD));
-        } else if (versionToken.contains(SNAPSHOT)) {
-            resultToken = versionToken.substring(0, versionToken.indexOf(SNAPSHOT));
+        // currently we get -SIGQA1-SNAPSHOT so we need to look for SIGQA first.
+        int indexOfQABuild = versionToken.indexOf(QA_BUILD);
+        int indexOfSnapshot = versionToken.indexOf(SNAPSHOT);
+        if (indexOfQABuild > 0) {
+            resultToken = versionToken.substring(0, indexOfQABuild);
+        } else if (indexOfSnapshot > 0) {
+            resultToken = versionToken.substring(0, indexOfSnapshot);
         }
 
         return resultToken;
