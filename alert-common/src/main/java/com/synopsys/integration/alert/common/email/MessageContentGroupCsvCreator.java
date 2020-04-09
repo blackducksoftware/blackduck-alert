@@ -50,7 +50,7 @@ public class MessageContentGroupCsvCreator {
         List<ProviderMessageContent> contents = messageContentGroup.getSubContent();
 
         StringBuilder csvBuilder = new StringBuilder();
-        List<String> columnNames = createColumnNames(commonProvider, commonTopic, contents);
+        List<String> columnNames = createColumnNames(commonTopic, contents);
         appendLine(csvBuilder, columnNames);
 
         List<List<String>> rowValues = createRowValues(commonProvider, commonTopic, contents);
@@ -62,7 +62,7 @@ public class MessageContentGroupCsvCreator {
     }
 
     // Provider | Provider Config Name | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Additional Attributes | Item URL
-    private List<String> createColumnNames(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
+    private List<String> createColumnNames(LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<String> columnNames = new ArrayList<>();
         columnNames.add("Provider");
         columnNames.add("Provider Config");

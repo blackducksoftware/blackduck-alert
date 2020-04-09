@@ -199,10 +199,8 @@ public class AuthenticationUIConfig extends UIConfig {
         boolean samlEnabled = samlEnabledField.flatMap(FieldValueModel::getValue)
                                   .map(Boolean::valueOf)
                                   .orElse(false);
-        if (samlEnabled) {
-            if (!fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-                return List.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
-            }
+        if (samlEnabled && !fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
+            return List.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
         return List.of();
     }

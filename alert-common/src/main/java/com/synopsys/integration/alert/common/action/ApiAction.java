@@ -27,29 +27,50 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class ApiAction {
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel beforeSaveAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel beforeUpdateAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel beforeDeleteAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public void afterDeleteAction(FieldModel fieldModel) throws AlertException {
     }
 
+    /**
+     * @throws AlertException Overriding classes may throw this exception
+     */
     public FieldModel afterGetAction(FieldModel fieldModel) throws AlertException {
         return fieldModel;
     }

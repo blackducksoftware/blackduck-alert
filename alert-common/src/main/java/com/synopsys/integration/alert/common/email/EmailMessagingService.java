@@ -110,7 +110,6 @@ public class EmailMessagingService {
             sendMessages(emailProperties, session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
-            logger.error(errorMessage, ex);
             throw new AlertException(errorMessage, ex);
         }
     }
@@ -156,7 +155,7 @@ public class EmailMessagingService {
             try {
                 fromAddress.validate();
             } catch (AddressException e) {
-                logger.warn("Invalid 'from' address specified: " + fromString);
+                logger.warn("Invalid 'from' address specified: {}", fromString);
                 throw new AlertException(String.format("'%s' is not a valid email address: %s", fromString, e.getMessage()));
             }
         }

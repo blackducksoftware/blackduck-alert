@@ -19,7 +19,7 @@ public class TestAlertProperties extends AlertProperties {
     private String alertProxyPort;
     private String alertProxyUsername;
     private String alertProxyPassword;
-    private Boolean sslEnabled = false;
+    private boolean sslEnabled = false;
     private String encryptionPassword;
     private String encryptionSalt;
 
@@ -38,7 +38,7 @@ public class TestAlertProperties extends AlertProperties {
         return alertConfigHome;
     }
 
-    public void setAlertConfigHome(final String alertConfigHome) {
+    public void setAlertConfigHome(String alertConfigHome) {
         this.alertConfigHome = alertConfigHome;
     }
 
@@ -47,7 +47,7 @@ public class TestAlertProperties extends AlertProperties {
         return alertTemplatesDir;
     }
 
-    public void setAlertTemplatesDir(final String alertTemplatesDir) {
+    public void setAlertTemplatesDir(String alertTemplatesDir) {
         this.alertTemplatesDir = alertTemplatesDir;
     }
 
@@ -56,7 +56,7 @@ public class TestAlertProperties extends AlertProperties {
         return alertImagesDir;
     }
 
-    public void setAlertImagesDir(final String alertImagesDir) {
+    public void setAlertImagesDir(String alertImagesDir) {
         this.alertImagesDir = alertImagesDir;
     }
 
@@ -65,16 +65,16 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.ofNullable(alertTrustCertificate);
     }
 
-    public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
+    public void setAlertTrustCertificate(Boolean alertTrustCertificate) {
         this.alertTrustCertificate = alertTrustCertificate;
     }
 
     @Override
-    public Boolean getSslEnabled() {
+    public boolean getSslEnabled() {
         return this.sslEnabled;
     }
 
-    public void setSslEnabled(final Boolean sslEnabled) {
+    public void setSslEnabled(boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
     }
 
@@ -83,7 +83,7 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.of(encryptionSalt);
     }
 
-    public void setEncryptionPassword(final String encryptionPassword) {
+    public void setEncryptionPassword(String encryptionPassword) {
         this.encryptionPassword = encryptionPassword;
     }
 
@@ -92,7 +92,7 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.of(encryptionPassword);
     }
 
-    public void setEncryptionSalt(final String encryptionSalt) {
+    public void setEncryptionSalt(String encryptionSalt) {
         this.encryptionSalt = encryptionSalt;
     }
 
@@ -101,7 +101,7 @@ public class TestAlertProperties extends AlertProperties {
         return this.alertSecretsDir;
     }
 
-    public void setAlertSecretsDir(final String alertSecretsDir) {
+    public void setAlertSecretsDir(String alertSecretsDir) {
         this.alertSecretsDir = alertSecretsDir;
     }
 }

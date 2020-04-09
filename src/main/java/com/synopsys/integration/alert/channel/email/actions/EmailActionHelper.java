@@ -59,9 +59,9 @@ public class EmailActionHelper {
             emailAddresses.add(destination);
         }
 
-        Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         String providerConfigName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
-        Boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
+        boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
         if (StringUtils.isNotBlank(providerConfigName) && !onlyAdditionalEmails) {
             Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerConfigName);
@@ -84,7 +84,7 @@ public class EmailActionHelper {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, Boolean filterByProject, String providerConfigName) {
+    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, boolean filterByProject, String providerConfigName) {
         List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
         if (filterByProject) {
             Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);

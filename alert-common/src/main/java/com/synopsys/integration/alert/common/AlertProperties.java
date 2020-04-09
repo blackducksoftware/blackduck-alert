@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -136,8 +137,8 @@ public class AlertProperties {
         return h2ConsoleEnabled;
     }
 
-    public Boolean getSslEnabled() {
-        return sslEnabled;
+    public boolean getSslEnabled() {
+        return BooleanUtils.isTrue(sslEnabled);
     }
 
     public Optional<Boolean> getAlertTrustCertificate() {
