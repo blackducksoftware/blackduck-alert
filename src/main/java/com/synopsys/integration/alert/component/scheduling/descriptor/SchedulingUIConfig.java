@@ -27,22 +27,18 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.CountdownConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
-    private static final String LABEL_BLACKDUCK_NEXT_RUN = "Collecting Black Duck Data In";
     private static final String LABEL_DAILY_DIGEST_HOUR_OF_DAY = "Daily Digest Hour Of Day";
     private static final String LABEL_DAILY_PROCESSOR_NEXT_RUN = "Daily Digest Cron Next Run";
     private static final String LABEL_PURGE_DATA_FREQUENCY_IN_DAYS = "Purge Data Frequency In Days";
     private static final String LABEL_PURGE_DATA_NEXT_RUN = "Purge Cron Next Run";
 
-    private static final String ACCUMULATOR_NEXT_RUN_DESCRIPTION = "By default, Black Duck collects data every 60 seconds. This value indicates the number of seconds until the next time Black Duck pulls data.";
     private static final String SCHEDULING_DIGEST_HOUR_DESCRIPTION = "Select the hour of the day to run the daily digest distribution jobs.";
     private static final String DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION = "This is the next time daily digest distribution jobs will run.";
     private static final String SCHEDULING_PURGE_FREQUENCY_DESCRIPTION = "Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted.";
@@ -54,13 +50,11 @@ public class SchedulingUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        Long countdownMax = ScheduledTask.EVERY_MINUTE_SECONDS;
-        ConfigField blackDuckNextRun = new CountdownConfigField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, LABEL_BLACKDUCK_NEXT_RUN, ACCUMULATOR_NEXT_RUN_DESCRIPTION, countdownMax);
         ConfigField digestHour = new SelectConfigField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, LABEL_DAILY_DIGEST_HOUR_OF_DAY, SCHEDULING_DIGEST_HOUR_DESCRIPTION, createDigestHours()).applyRequired(true);
         ConfigField digestHourNextRun = new ReadOnlyConfigField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, LABEL_DAILY_PROCESSOR_NEXT_RUN, DAILY_PROCESSOR_NEXT_RUN_DESCRIPTION);
         ConfigField purgeFrequency = new SelectConfigField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, LABEL_PURGE_DATA_FREQUENCY_IN_DAYS, SCHEDULING_PURGE_FREQUENCY_DESCRIPTION, createPurgeFrequency()).applyRequired(true);
         ConfigField purgeNextRun = new ReadOnlyConfigField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, LABEL_PURGE_DATA_NEXT_RUN, PURGE_DATA_NEXT_RUN_DESCRIPTION);
-        return List.of(blackDuckNextRun, digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
+        return List.of(digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
     }
 
     private List<LabelValueSelectOption> createDigestHours() {
