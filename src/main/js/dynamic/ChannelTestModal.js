@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import FieldsPanel from 'field/FieldsPanel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as FieldMapping from "../util/fieldMapping";
+import * as FieldMapping from 'util/fieldMapping';
 
 class ChannelTestModal extends Component {
     constructor(props) {
@@ -40,7 +40,7 @@ class ChannelTestModal extends Component {
         if (fieldModel && fieldModel.id) {
             combinedModel.id = fieldModel.id;
         }
-        this.props.sendTestMessage(combinedModel, destination);
+        this.props.sendTestMessage(combinedModel);
         this.handleHide();
     }
 

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +90,7 @@ public class AuthenticationTestAction extends TestAction {
             if (!authentication.isAuthenticated()) {
                 errorsMap.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage);
             }
+            authentication.setAuthenticated(false);
         }
 
         if (!errorsMap.isEmpty()) {
@@ -111,11 +111,9 @@ public class AuthenticationTestAction extends TestAction {
                 if (provider.isPresent()) {
                     provider.get().initialize();
                 }
-            } catch (MetadataProviderException ex) {
+            } catch (Exception ex) {
                 logger.error("Testing SAML Metadata URL error: ", ex);
                 errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_URL, ex.getMessage());
-            } catch (Exception ex) {
-                logger.error("Unexpected error testing SAML:", ex);
             }
         }
 
@@ -126,11 +124,9 @@ public class AuthenticationTestAction extends TestAction {
                 if (provider.isPresent()) {
                     provider.get().initialize();
                 }
-            } catch (MetadataProviderException ex) {
+            } catch (Exception ex) {
                 logger.error("Testing SAML Metadata File error: ", ex);
                 errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ex.getMessage());
-            } catch (Exception ex) {
-                logger.error("Unexpected error testing SAML:", ex);
             }
         }
         samlManager.initializeConfiguration();

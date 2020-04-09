@@ -52,8 +52,9 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
 
         for (AuthenticationPerformer authenticationPerformer : authenticationPerformers) {
             try {
-                Optional<Authentication> completedAuthentication = authenticationPerformer.performAuthentication(authentication);
-                if (completedAuthentication.isPresent() && completedAuthentication.get().isAuthenticated()) {
+                Optional<Authentication> completedAuthentication = authenticationPerformer.performAuthentication(authentication)
+                                                                       .filter(Authentication::isAuthenticated);
+                if (completedAuthentication.isPresent()) {
                     return completedAuthentication.get();
                 }
             } catch (Exception ex) {

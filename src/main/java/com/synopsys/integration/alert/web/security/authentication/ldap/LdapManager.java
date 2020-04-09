@@ -93,7 +93,7 @@ public class LdapManager {
         try {
             FieldAccessor fieldAccessor = getCurrentConfiguration();
             return createAuthProvider(fieldAccessor);
-        } catch (IllegalArgumentException | AlertDatabaseConstraintException ex) {
+        } catch (AlertDatabaseConstraintException ex) {
             throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
         }
     }

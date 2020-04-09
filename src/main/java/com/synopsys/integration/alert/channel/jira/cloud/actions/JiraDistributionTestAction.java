@@ -57,11 +57,11 @@ public class JiraDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValuesr) throws IntegrationException {
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
-        IssueTrackerContext context = contextBuilder.build(registeredFieldValuesr);
+        IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
         JiraCloudService jiraService = new JiraCloudService(gson);
-        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValuesr, jiraMessageParser);
+        JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraService, gson, issueCreator);
 
         try {
