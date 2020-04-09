@@ -121,7 +121,7 @@ public class CertificateActions {
             certificateAccessor.deleteCertificate(certificateModel.getAlias());
             certificateUtility.removeCertificate(certificateModel.getAlias());
         } catch (AlertException deleteEx) {
-            logger.error("Error deleting certificate with alias {}. Error: ", certificateModel.getAlias(), deleteEx.getMessage());
+            logger.error("Error deleting certificate with alias {}. Error: {}", certificateModel.getAlias(), deleteEx.getMessage());
             logger.debug("Caused by: ", deleteEx);
         }
     }
