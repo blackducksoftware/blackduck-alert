@@ -176,7 +176,7 @@ public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<Ru
                     policySeverity, true, notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
             } catch (IntegrationException e) {
-                logger.debug("Could not get the project/version. Skipping vulnerability info for this policy: {}. Exception: {}", policyNameItem, e);
+                logger.debug(String.format("Could not get the project/version. Skipping vulnerability info for this policy: %s. Exception: %s", policyNameItem, e.getMessage()), e);
             }
         }
         return vulnerabilityPolicyItems;
