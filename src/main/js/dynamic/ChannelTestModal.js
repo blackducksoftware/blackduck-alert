@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import TextInput from 'field/input/TextInput';
 import FieldsPanel from 'field/FieldsPanel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as FieldMapping from "../util/fieldMapping";
@@ -10,7 +9,6 @@ class ChannelTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            destination: '',
             testFieldModel: {}
         };
         const { fieldModel, testFields } = this.props;
@@ -18,7 +16,6 @@ class ChannelTestModal extends Component {
             const testFieldKeys = FieldMapping.retrieveKeys(testFields);
             const testFieldModel = FieldModelUtilities.createEmptyFieldModel(testFieldKeys, fieldModel.context, fieldModel.descriptorName);
             this.state = {
-                destination: '',
                 testFieldModel
             };
         }
@@ -49,28 +46,13 @@ class ChannelTestModal extends Component {
 
     handleHide() {
         this.setState({
-            destination: ''
+            testFieldModel: {}
         });
         this.props.handleCancel();
     }
 
     render() {
-        const { destinationName, showTestModal, testFields } = this.props;
-        const destinationContent = (<TextInput
-            id="destinationName"
-            label={destinationName}
-            name="destinationName"
-            value={this.state.destination}
-            onChange={this.handleChange}
-        />);
-        const bodyContent = !testFields || testFields.length <= 0 ? destinationContent : (
-            <FieldsPanel descriptorFields={testFields}
-                         self={this}
-                         fieldErrors={null}
-                         stateName='testFieldModel'
-                         currentConfig={this.state.testFieldModel}
-            />
-        )
+        const { showTestModal, testFields } = this.props;
 
         return (
             <Modal show={showTestModal} onHide={this.handleHide}>
@@ -78,7 +60,12 @@ class ChannelTestModal extends Component {
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {bodyContent}
+                    <FieldsPanel descriptorFields={testFields}
+                                 self={this}
+                                 fieldErrors={null}
+                                 stateName='testFieldModel'
+                                 currentConfig={this.state.testFieldModel}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <button
@@ -101,7 +88,6 @@ ChannelTestModal
     showTestModal: PropTypes.bool,
     sendTestMessage: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
-    destinationName: PropTypes.string.isRequired,
     fieldModel: PropTypes.object.isRequired,
     testFields: PropTypes.arrayOf(PropTypes.object)
 };

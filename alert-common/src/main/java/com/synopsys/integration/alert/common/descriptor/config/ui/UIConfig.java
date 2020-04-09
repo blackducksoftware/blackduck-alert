@@ -52,10 +52,6 @@ public abstract class UIConfig extends Stringable {
         return List.of();
     }
 
-    public String createTestLabel() {
-        return "";
-    }
-
     public String getLabel() {
         return label;
     }

@@ -191,11 +191,6 @@ public class AuthenticationUIConfig extends UIConfig {
     }
 
     @Override
-    public String createTestLabel() {
-        return "Test Configuration";
-    }
-
-    @Override
     public List<ConfigField> createTestFields() {
 
         ConfigField userName = new TextInputConfigField(TEST_FIELD_KEY_USERNAME, TEST_FIELD_LABEL_USERNAME, TEST_FIELD_DESCRIPTION_USERNAME)

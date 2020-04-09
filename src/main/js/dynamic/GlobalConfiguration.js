@@ -28,8 +28,7 @@ class GlobalConfiguration extends React.Component {
             currentConfig: fieldModel,
             currentDescriptor: this.props.descriptor,
             currentFields: fields,
-            showTest: false,
-            destinationName: ''
+            showTest: false
         };
     }
 
@@ -53,11 +52,10 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFieldLabel, testFields } = this.state.currentDescriptor;
-        if (testFieldLabel || (testFields && testFields.length > 0)) {
+        const { testFields } = this.state.currentDescriptor;
+        if (testFields && testFields.length > 0) {
             this.setState({
-                showTest: true,
-                destinationName: testFieldLabel
+                showTest: true
             });
         } else {
             const fieldModel = this.state.currentConfig;
@@ -135,7 +133,6 @@ class GlobalConfiguration extends React.Component {
                         sendTestMessage={this.props.testConfig}
                         showTestModal={this.state.showTest}
                         handleCancel={this.handleTestCancel}
-                        destinationName={this.state.destinationName}
                         fieldModel={currentConfig}
                         testFields={testFields}
                     />

@@ -43,13 +43,12 @@ public class DescriptorMetadata extends AlertSerializableModel {
     private final boolean automaticallyGenerateUI;
     private final String componentNamespace;
     private List<ConfigField> fields;
-    private String testFieldLabel;
     private Set<AccessOperation> operations;
     private boolean readOnly;
     private List<ConfigField> testFields;
 
     public DescriptorMetadata(DescriptorKey descriptorKey, String label, String urlName, String description, DescriptorType type, ConfigContextEnum context,
-        boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, String testFieldLabel, List<ConfigField> testFields) {
+        boolean automaticallyGenerateUI, String componentNamespace, List<ConfigField> fields, List<ConfigField> testFields) {
         this.label = label;
         this.urlName = urlName;
         this.name = descriptorKey.getUniversalKey();
@@ -59,7 +58,6 @@ public class DescriptorMetadata extends AlertSerializableModel {
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.componentNamespace = componentNamespace;
         this.fields = fields;
-        this.testFieldLabel = testFieldLabel;
         this.operations = Set.of();
         this.testFields = testFields;
     }
@@ -102,14 +100,6 @@ public class DescriptorMetadata extends AlertSerializableModel {
 
     public void setFields(List<ConfigField> fields) {
         this.fields = fields;
-    }
-
-    public String getTestFieldLabel() {
-        return testFieldLabel;
-    }
-
-    public void setTestFieldLabel(String testFieldLabel) {
-        this.testFieldLabel = testFieldLabel;
     }
 
     public Set<AccessOperation> getOperations() {
