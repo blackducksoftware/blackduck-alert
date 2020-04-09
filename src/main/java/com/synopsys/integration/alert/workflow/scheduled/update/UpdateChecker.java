@@ -195,10 +195,10 @@ public class UpdateChecker {
 
     private String getVersionToken(String versionToken) {
         String resultToken = versionToken;
-        if (versionToken.contains(SNAPSHOT)) {
-            resultToken = versionToken.substring(0, versionToken.indexOf(SNAPSHOT));
-        } else if (versionToken.contains(QA_BUILD)) {
+        if (versionToken.contains(QA_BUILD)) {
             resultToken = versionToken.substring(0, versionToken.indexOf(QA_BUILD));
+        } else if (versionToken.contains(SNAPSHOT)) {
+            resultToken = versionToken.substring(0, versionToken.indexOf(SNAPSHOT));
         }
 
         return resultToken;
