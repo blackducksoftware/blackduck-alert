@@ -100,7 +100,6 @@ public class CertificateActions {
             certificateUtility.importCertificate(storedCertificate);
             return convertFromDatabaseModel(storedCertificate);
         } catch (AlertException importException) {
-            logger.debug("Error importing certificate.", importException);
             deleteByAlias(certificateToStore);
             throw importException;
         }
@@ -162,6 +161,7 @@ public class CertificateActions {
             try {
                 certificateUtility.validateCertificateContent(convertedModel);
             } catch (AlertException ex) {
+                logger.error(ex.getMessage(), ex);
                 fieldErrors.put(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage()));
             }
         }

@@ -76,14 +76,12 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
             IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
 
             switch (operation) {
-                case RESOLVE: {
+                case RESOLVE:
                     return createResolveIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
-                }
                 case OPEN:
                 case UPDATE:
-                default: {
+                default:
                     return createCreateOrUpdateIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
-                }
             }
 
         } catch (AlertException ex) {
@@ -93,6 +91,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
         return null;
     }
 
+    // TODO simplify the following 2 methods
     private IssueTrackerRequest createResolveIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
         IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);

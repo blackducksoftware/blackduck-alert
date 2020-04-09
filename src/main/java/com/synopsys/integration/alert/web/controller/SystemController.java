@@ -83,10 +83,4 @@ public class SystemController extends BaseController {
         }
     }
 
-    @GetMapping(value = "/system/setup/descriptor")
-    @Deprecated
-    public ResponseEntity<String> getInitialSystemSetupDescriptor() {
-        return responseFactory.createNotFoundResponse(NO_RESOURCE_FOUND);
-    }
-
 }

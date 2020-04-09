@@ -59,8 +59,8 @@ public class LdapManager {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
 
     @Autowired
-    public LdapManager(AuthenticationDescriptorKey AuthenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserManagementAuthoritiesPopulator authoritiesPopulator) {
-        this.authenticationDescriptorKey = AuthenticationDescriptorKey;
+    public LdapManager(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserManagementAuthoritiesPopulator authoritiesPopulator) {
+        this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
         this.authoritiesPopulator = authoritiesPopulator;
     }
