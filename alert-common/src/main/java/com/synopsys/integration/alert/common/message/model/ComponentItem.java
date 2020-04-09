@@ -140,7 +140,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return getCollapseOnCategory();
     }
 
-    public Set<LinkableItem> getComponentAttributes() {
+    public LinkedHashSet<LinkableItem> getComponentAttributes() {
         return componentAttributes;
     }
 

@@ -104,7 +104,8 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
         List<SystemMessage> convertedMessages = messagesToDelete.stream()
                                                     .map(this::convertToSystemMessage)
-                                                    .filter(Objects::nonNull).collect(Collectors.toList());
+                                                    .filter(Objects::nonNull)
+                                                    .collect(Collectors.toList());
         systemMessageRepository.deleteAll(convertedMessages);
     }
 
