@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.ldap;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +61,10 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
         if (ldapManager.isLdapEnabled()) {
             logger.info("LDAP authentication enabled");
             try {
-                LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
-                result = authenticationProvider.authenticate(pendingAuthentication);
+                Optional<LdapAuthenticationProvider> authenticationProvider = ldapManager.getAuthenticationProvider();
+                if (authenticationProvider.isPresent()) {
+                    result = authenticationProvider.get().authenticate(pendingAuthentication);
+                }
             } catch (AlertConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
             } catch (Exception ex) {

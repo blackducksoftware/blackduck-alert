@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -57,8 +58,9 @@ public class EmailGlobalTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
+        String destination = fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse("");
         if (StringUtils.isNotBlank(destination)) {
             try {
                 InternetAddress emailAddr = new InternetAddress(destination);
@@ -68,7 +70,7 @@ public class EmailGlobalTestAction extends TestAction {
             }
             emailAddresses = Set.of(destination);
         }
-        EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        EmailProperties emailProperties = new EmailProperties(registeredFieldValues);
         ComponentItem.Builder componentBuilder = new ComponentItem.Builder()
                                                      .applyCategory("Test")
                                                      .applyOperation(ItemOperation.ADD)
@@ -83,7 +85,7 @@ public class EmailGlobalTestAction extends TestAction {
 
         ProviderMessageContent messageContent = builder.build();
 
-        EmailAttachmentFormat attachmentFormat = fieldAccessor.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
+        EmailAttachmentFormat attachmentFormat = registeredFieldValues.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
                                                      .map(EmailAttachmentFormat::getValueSafely)
                                                      .orElse(EmailAttachmentFormat.NONE);
         emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "", attachmentFormat, MessageContentGroup.singleton(messageContent));

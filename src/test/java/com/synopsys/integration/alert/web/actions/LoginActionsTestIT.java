@@ -13,7 +13,6 @@ package com.synopsys.integration.alert.web.actions;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -58,7 +56,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() throws Exception {
-        ldapManager.updateContext();
+        ldapManager.getAuthenticationProvider();
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
@@ -77,12 +75,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         LoginActions loginActions = new LoginActions(authenticationProvider);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
-        try {
-            loginActions.authenticateUser(badRestModel.createRestModel());
-            fail();
-        } catch (BadCredentialsException ex) {
-
-        }
+        boolean authenticated = loginActions.authenticateUser(badRestModel.createRestModel());
+        assertFalse(authenticated);
     }
 
     @Test
@@ -112,7 +106,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
         Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
-        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(ldapAuthenticationProvider);
+        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
         LoginActions loginActions = new LoginActions(authenticationProvider);
         boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());

@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraGlobalTestAction extends TestAction {
@@ -36,13 +37,13 @@ public abstract class JiraGlobalTestAction extends TestAction {
     protected abstract String getChannelDisplayName();
 
     @Override
-    public MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         try {
-            if (isUserMissing(fieldAccessor)) {
+            if (isUserMissing(registeredFieldValues)) {
                 throw new AlertException("User did not match any known users.");
             }
 
-            if (isAppMissing(fieldAccessor)) {
+            if (isAppMissing(registeredFieldValues)) {
                 throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
             }
         } catch (IntegrationException e) {

@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
@@ -58,12 +59,12 @@ public class BlackDuckGlobalTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        String apiToken = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
-        String url = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
-        String timeout = fieldAccessor.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        String apiToken = registeredFieldValues.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        String url = registeredFieldValues.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        String timeout = registeredFieldValues.getStringOrEmpty(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         Long parsedConfigurationId = ProviderProperties.UNKNOWN_CONFIG_ID;
 
         if (StringUtils.isNotBlank(configId)) {
@@ -74,7 +75,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
             }
         }
 
-        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(parsedConfigurationId, fieldAccessor);
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(parsedConfigurationId, registeredFieldValues);
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);

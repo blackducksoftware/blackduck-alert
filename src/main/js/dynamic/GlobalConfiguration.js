@@ -28,8 +28,7 @@ class GlobalConfiguration extends React.Component {
             currentConfig: fieldModel,
             currentDescriptor: this.props.descriptor,
             currentFields: fields,
-            showTest: false,
-            destinationName: ''
+            showTest: false
         };
     }
 
@@ -53,15 +52,14 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFieldLabel } = this.state.currentDescriptor;
-        if (testFieldLabel) {
+        const { testFields } = this.state.currentDescriptor;
+        if (testFields && testFields.length > 0) {
             this.setState({
-                showTest: true,
-                destinationName: testFieldLabel
+                showTest: true
             });
         } else {
             const fieldModel = this.state.currentConfig;
-            this.props.testConfig(fieldModel, '');
+            this.props.testConfig(fieldModel);
         }
     }
 
@@ -98,12 +96,13 @@ class GlobalConfiguration extends React.Component {
 
     render() {
         const {
-            label, description, fields, type
+            label, description, fields, type, testFields
         } = this.state.currentDescriptor;
         const { errorMessage, actionMessage } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
-        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
+        const includeTestButton = (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT) || testFields && testFields.length > 0;
+        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && includeTestButton;
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const displayDelete = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const body = (!Array.isArray(fields) || !fields.length) ?
@@ -134,8 +133,8 @@ class GlobalConfiguration extends React.Component {
                         sendTestMessage={this.props.testConfig}
                         showTestModal={this.state.showTest}
                         handleCancel={this.handleTestCancel}
-                        destinationName={this.state.destinationName}
                         fieldModel={currentConfig}
+                        testFields={testFields}
                     />
                 </form>
             );
@@ -191,7 +190,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: descriptorName => dispatch(getConfig(descriptorName)),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: (config, destination) => dispatch(testConfig(config, destination)),
+    testConfig: (config) => dispatch(testConfig(config)),
     deleteConfig: id => dispatch(deleteConfig(id))
 });
 

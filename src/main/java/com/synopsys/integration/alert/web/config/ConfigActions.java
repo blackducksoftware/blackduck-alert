@@ -146,18 +146,17 @@ public class ConfigActions {
         return "Valid";
     }
 
-    public String testConfig(FieldModel restModel, String destination) throws IntegrationException {
+    public String testConfig(FieldModel restModel) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
             FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             TestAction testAction = testActionOptional.get();
-            testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
+            testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldAccessor);
             return "Successfully sent test message.";
         }
         String descriptorName = restModel.getDescriptorName();
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
-
 }

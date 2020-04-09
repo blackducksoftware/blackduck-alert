@@ -31,14 +31,14 @@ public class SAMLStartupComponentTest {
         Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("entityId");
         Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
 
-        final SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil);
-        final SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
         startupComponent.initializeComponent();
 
         Mockito.verify(metadataGenerator).setEntityId(Mockito.anyString());
         Mockito.verify(metadataGenerator).setEntityBaseURL(Mockito.anyString());
-        Mockito.verify(metadataManager).setProviders(Mockito.anyList());
-        Mockito.verify(metadataManager).afterPropertiesSet();
+        Mockito.verify(metadataManager, Mockito.times(2)).setProviders(Mockito.anyList());
+        Mockito.verify(metadataManager, Mockito.times(2)).afterPropertiesSet();
     }
 
     @Test
@@ -51,8 +51,8 @@ public class SAMLStartupComponentTest {
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
         Mockito.when(context.getCurrentConfiguration()).thenThrow(new AlertDatabaseConstraintException("Test exception"));
 
-        final SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil);
-        final SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
         startupComponent.initializeComponent();
 
         Mockito.verify(metadataGenerator, Mockito.times(0)).setEntityId(Mockito.anyString());
