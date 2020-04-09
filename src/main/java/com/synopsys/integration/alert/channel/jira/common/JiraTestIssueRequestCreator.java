@@ -93,13 +93,13 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
         return null;
     }
 
-    private IssueResolutionRequest createResolveIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+    private IssueTrackerRequest createResolveIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
         IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
         return IssueResolutionRequest.of(issueSearchProperties, contentModel);
     }
 
-    private IssueCreationRequest createCreateOrUpdateIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+    private IssueTrackerRequest createCreateOrUpdateIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
         IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
         return IssueCreationRequest.of(issueSearchProperties, contentModel);
