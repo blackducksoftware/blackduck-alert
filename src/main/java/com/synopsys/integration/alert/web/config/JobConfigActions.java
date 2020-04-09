@@ -243,7 +243,7 @@ public class JobConfigActions {
     }
 
     // TODO abstract duplicate functionality
-    public String testJob(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
+    public String testJob(JobFieldModel jobFieldModel) throws IntegrationException {
         validateJob(jobFieldModel);
         Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);

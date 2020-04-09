@@ -91,15 +91,10 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_SAML_ENTITY_BASE_URL_DESCRIPTION = "This should be the URL of the Alert system.";
     private static final String AUTHENTICATION_SAML_METADATA_FILE_DESCRIPTION = "The file to upload to the server containing the Metadata from the external Identity Provider.";
 
-    private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_ADMIN_DESCRIPTION = "The role name to map to the Admin role of Alert.";
-    private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER_DESCRIPTION = "The role name to map to the Job Manager role of Alert.";
-    private static final String AUTHENTICATION_USER_MANAGEMENT_ROLE_MAPPING_USER_DESCRIPTION = "The role name to map to a User role of Alert.";
     private static final String AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION = "The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above.";
 
     private static final String AUTHENTICATION_HEADER_LDAP = "LDAP Configuration";
     private static final String AUTHENTICATION_HEADER_SAML = "SAML Configuration";
-    private static final String AUTHENTICATION_PANEL_USER_MANAGEMENT = "User Management";
-    private static final String AUTHENTICATION_HEADER_ROLE_MAPPING = "User Role Mapping";
     private static final String AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML = "SAML";
 
     public static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";

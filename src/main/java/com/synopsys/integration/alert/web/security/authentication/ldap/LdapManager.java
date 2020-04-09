@@ -100,7 +100,8 @@ public class LdapManager {
 
     public Optional<LdapAuthenticationProvider> createAuthProvider(FieldAccessor configuration) throws AlertConfigurationException {
         try {
-            if (!configuration.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED)) {
+            boolean enabled = configuration.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
+            if (!enabled) {
                 return Optional.empty();
             }
             LdapContextSource ldapContextSource = new LdapContextSource();

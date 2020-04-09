@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -290,8 +289,8 @@ public class JobConfigController extends BaseController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testConfig(@RequestBody JobFieldModel restModel, @RequestParam(required = false) String destination) {
-        return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel, destination));
+    public ResponseEntity<String> testConfig(@RequestBody JobFieldModel restModel) {
+        return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel));
     }
 
     private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {

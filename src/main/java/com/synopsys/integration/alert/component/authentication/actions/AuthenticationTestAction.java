@@ -37,44 +37,39 @@ import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationUIConfig;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AuthenticationTestAction extends TestAction {
     private Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
-    private DescriptorKey descriptorKey;
     private LdapManager ldapManager;
     private SAMLManager samlManager;
-    private SAMLContext samlContext;
 
     @Autowired
-    public AuthenticationTestAction(AuthenticationDescriptorKey descriptorKey, LdapManager ldapManager, SAMLManager samlManager, SAMLContext samlContext) {
-        this.descriptorKey = descriptorKey;
+    public AuthenticationTestAction(LdapManager ldapManager, SAMLManager samlManager) {
         this.ldapManager = ldapManager;
         this.samlManager = samlManager;
-        this.samlContext = samlContext;
     }
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         logger.info("Testing authentication.");
-        if (registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED)) {
+        boolean ldapEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
+        boolean samlEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED);
+        if (ldapEnabled) {
             performLdapTest(fieldModel, registeredFieldValues);
         }
 
-        if (registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED)) {
+        if (samlEnabled) {
             performSAMLTest(registeredFieldValues);
         }
 
