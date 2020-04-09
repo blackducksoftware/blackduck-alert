@@ -31,11 +31,16 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "authentication_type")
 public class AuthenticationTypeEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -2308934073112918860L;
     @Column(name = "name")
-    public String name;
+    private String name;
 
     public AuthenticationTypeEntity() {
         // JPA requires default constructor definitions
+    }
+
+    public AuthenticationTypeEntity(String name) {
+        this.name = name;
     }
 
     public String getName() {
