@@ -28,9 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
 
@@ -38,30 +35,16 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManag
 @Order(70)
 public class SAMLStartupComponent extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(SAMLStartupComponent.class);
-    private final SAMLContext samlContext;
     private final SAMLManager samlManager;
 
     @Autowired
     public SAMLStartupComponent(SAMLContext samlContext, SAMLManager samlManager) {
-        this.samlContext = samlContext;
         this.samlManager = samlManager;
     }
 
     @Override
     protected void initialize() {
-        try {
-            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
-            boolean samlEnabled = samlContext.isSAMLEnabled(currentConfiguration);
-            String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-            String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-            String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
-            if (samlEnabled) {
-                samlManager.setupMetadataManager(metadataURL, entityId, entityBaseUrl);
-            }
-        } catch (AlertConfigurationException e) {
-            logger.warn(String.format("Cannot start the SAML identity provider. %s", e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Error adding the SAML identity provider.", e);
-        }
+        logger.info("SAML startup initialization running.");
+        samlManager.initializeConfiguration();
     }
 }
