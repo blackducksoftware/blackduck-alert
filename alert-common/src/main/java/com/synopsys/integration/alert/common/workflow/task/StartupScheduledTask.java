@@ -30,7 +30,7 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(StartupScheduledTask.class);
 
     private final TaskManager taskManager;
-    private Boolean enabled;
+    private boolean enabled;
 
     public StartupScheduledTask(TaskScheduler taskScheduler, TaskManager taskManager) {
         super(taskScheduler);
@@ -62,11 +62,11 @@ public abstract class StartupScheduledTask extends ScheduledTask {
 
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

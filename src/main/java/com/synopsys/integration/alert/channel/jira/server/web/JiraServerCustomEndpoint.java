@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.jira.server.web;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCustomEndpoint;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
@@ -55,7 +55,7 @@ import com.synopsys.integration.rest.request.Response;
 
 @Component
 public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
-    private static final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
+    private static final Logger logger = LoggerFactory.getLogger(JiraServerCustomEndpoint.class);
 
     private final JiraServerChannelKey jiraChannelKey;
     private final ResponseFactory responseFactory;
@@ -80,7 +80,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
             String username = jiraProperties.getUsername();
             String password = jiraProperties.getPassword();
             Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
-            if (response.isStatusCodeError()) {
+            if (BooleanUtils.isTrue(response.isStatusCodeError())) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira server responded with error code: " + response.getStatusCode()));
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);

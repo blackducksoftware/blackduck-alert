@@ -72,7 +72,6 @@ public class CertificateUtility {
                 trustStore.store(stream, getTrustStorePassword());
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            logger.debug("Error importing certificate.", e);
             throw new AlertException("There was a problem storing the certificate", e);
         }
     }
@@ -100,7 +99,6 @@ public class CertificateUtility {
                 }
             }
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            logger.debug("Error removing certificate.", e);
             throw new AlertException("There was a problem removing the certificate", e);
         }
     }
@@ -111,7 +109,6 @@ public class CertificateUtility {
         try {
             return KeyStore.Builder.newInstance(keyStoreType, null, keyStore, protection).getKeyStore();
         } catch (KeyStoreException e) {
-            logger.debug("Error getting keystore.", e);
             throw new AlertException("There was a problem accessing the trust store", e);
         }
     }

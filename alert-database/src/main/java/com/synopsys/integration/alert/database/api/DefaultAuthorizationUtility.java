@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -117,7 +118,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
-            if (Boolean.FALSE.equals(roleEntity.getCustom())) {
+            if (BooleanUtils.isFalse(roleEntity.getCustom())) {
                 throw new AlertDatabaseConstraintException("Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
             }
             RoleEntity updatedEntity = new RoleEntity(roleName, true);
@@ -139,7 +140,7 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
-            if (Boolean.FALSE.equals(roleEntity.getCustom())) {
+            if (BooleanUtils.isFalse(roleEntity.getCustom())) {
                 throw new AlertForbiddenOperationException("Cannot delete the role '" + roleId + "' because it is not a custom role.");
             }
             // Deletion cascades to permissions
@@ -174,10 +175,6 @@ public class DefaultAuthorizationUtility implements AuthorizationUtility {
     public PermissionMatrixModel readPermissionsForRole(Long roleId) {
         List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
         return this.createModelFromPermission(permissions);
-    }
-
-    private Optional<String> getRoleName(Long roleId) {
-        return roleRepository.findById(roleId).map(RoleEntity::getRoleName);
     }
 
     private RoleEntity createRole(String roleName, Boolean custom) throws AlertDatabaseConstraintException {

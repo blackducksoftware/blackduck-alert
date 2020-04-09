@@ -49,9 +49,9 @@ public abstract class MessageContentProcessor {
         Map<ContentKey, MessageContentGroup> messageGroups = new LinkedHashMap<>();
         messages.stream()
             .filter(this::filterEmptyContent)
-            .forEach(message -> {
-                messageGroups.computeIfAbsent(message.getContentKey(), ignored -> new MessageContentGroup()).add(message);
-            });
+            .forEach(message ->
+                         messageGroups.computeIfAbsent(message.getContentKey(), ignored -> new MessageContentGroup()).add(message)
+            );
 
         return new ArrayList<>(messageGroups.values());
     }

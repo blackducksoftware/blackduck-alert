@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.email.template;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -69,16 +70,15 @@ public class EmailAttachmentFileCreator {
         return Optional.empty();
     }
 
-    public boolean cleanUpAttachmentFile(File attachmentFile) {
+    public void cleanUpAttachmentFile(File attachmentFile) {
         if (null != attachmentFile && attachmentFile.exists()) {
             try {
-                return attachmentFile.delete();
-            } catch (SecurityException e) {
-                logger.warn("Could not clean up file: " + attachmentFile.getName());
+                Files.delete(attachmentFile.toPath());
+            } catch (SecurityException | IOException e) {
+                logger.warn("Could not clean up file: {}", attachmentFile.getName());
                 logger.debug("Attachment clean up failure", e);
             }
         }
-        return false;
     }
 
     private File createFormattedFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContentGroup, File writeDir) throws IOException {

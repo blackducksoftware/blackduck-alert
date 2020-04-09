@@ -32,6 +32,10 @@ import com.synopsys.integration.issuetracker.common.message.IssueSearchPropertie
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {
+    private JiraIssuePropertiesUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
         Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
         String category = componentItem != null ? componentItem.getCategory() : null;

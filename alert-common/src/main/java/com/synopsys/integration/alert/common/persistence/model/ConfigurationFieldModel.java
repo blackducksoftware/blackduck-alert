@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -37,15 +38,15 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
     private final Boolean isSensitive;
     private Collection<String> fieldValues;
 
-    public static final ConfigurationFieldModel create(final String fieldKey) {
+    public static final ConfigurationFieldModel create(String fieldKey) {
         return new ConfigurationFieldModel(fieldKey, Boolean.FALSE);
     }
 
-    public static final ConfigurationFieldModel createSensitive(final String fieldKey) {
+    public static final ConfigurationFieldModel createSensitive(String fieldKey) {
         return new ConfigurationFieldModel(fieldKey, Boolean.TRUE);
     }
 
-    private ConfigurationFieldModel(final String fieldKey, final Boolean isSensitive) {
+    private ConfigurationFieldModel(String fieldKey, Boolean isSensitive) {
         this.fieldKey = fieldKey;
         this.isSensitive = isSensitive;
         fieldValues = null;
@@ -56,10 +57,10 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
     }
 
     public boolean isSensitive() {
-        return isSensitive.booleanValue();
+        return BooleanUtils.isTrue(isSensitive);
     }
 
-    public void setFieldValue(final String value) {
+    public void setFieldValue(String value) {
         if (StringUtils.isNotBlank(value)) {
             fieldValues = Collections.singleton(value);
         } else {
@@ -67,7 +68,7 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
         }
     }
 
-    public void setFieldValues(final Collection<String> values) {
+    public void setFieldValues(Collection<String> values) {
         fieldValues = values;
     }
 
@@ -95,7 +96,7 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
     }
 
     @Override
-    public boolean equals(final Object that) {
+    public boolean equals(Object that) {
         return EqualsBuilder.reflectionEquals(this, that, "fieldValues");
     }
 }

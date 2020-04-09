@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.common.channel.message;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +41,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.datastructure.SetMap;
 
 public abstract class ChannelMessageParser {
+    private static final String LIST_ITEM_PREFIX = "- ";
+
     public String createMessage(MessageContentGroup messageContentGroup) {
         List<String> messagePieces = createMessagePieces(messageContentGroup);
         return String.join("", messagePieces);
@@ -68,7 +69,7 @@ public abstract class ChannelMessageParser {
             messagePieces.addAll(componentItems);
         }
 
-        String footer = createFooter(messageContentGroup);
+        String footer = createFooter();
         if (StringUtils.isNotBlank(footer)) {
             messagePieces.add(footer + getLineSeparator());
         }
@@ -77,8 +78,7 @@ public abstract class ChannelMessageParser {
 
     public String createHeader(MessageContentGroup messageContentGroup) {
         String messageHeader = String.format("Begin %s Content", messageContentGroup.getCommonProvider().getValue());
-        String headerSeparator = createMessageSeparator(messageHeader);
-        return headerSeparator;
+        return createMessageSeparator(messageHeader);
     }
 
     public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
@@ -121,9 +121,8 @@ public abstract class ChannelMessageParser {
         return messagePieces;
     }
 
-    public String createFooter(MessageContentGroup messageContentGroup) {
-        String footerSeparator = createMessageSeparator("End Content");
-        return footerSeparator;
+    public String createFooter() {
+        return createMessageSeparator("End Content");
     }
 
     protected abstract String encodeString(String txt);
@@ -133,10 +132,6 @@ public abstract class ChannelMessageParser {
     protected abstract String createLink(String txt, String url);
 
     protected abstract String getLineSeparator();
-
-    protected String getListItemPrefix() {
-        return "- ";
-    }
 
     protected String getSectionSeparator() {
         return "- - - - - - - - - - - - - - - - - - - -";
@@ -189,7 +184,7 @@ public abstract class ChannelMessageParser {
         SetMap<String, LinkableItem> attributesMap = componentItems
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
-                                                         .flatMap(LinkedHashSet::stream)
+                                                         .flatMap(Set::stream)
                                                          .collect(SetMap::createLinked, (map, item) -> map.add(item.getName(), item), SetMap::combine);
         List<String> attributeStrings = new LinkedList<>();
         for (Set<LinkableItem> similarAttributes : attributesMap.values()) {
@@ -199,14 +194,14 @@ public abstract class ChannelMessageParser {
                 if (attribute.isCollapsible()) {
                     List<String> valuePieces = createLinkableItemValuesPieces(similarAttributes);
                     String valueString = String.join("", valuePieces);
-                    String similarAttributesString = String.format("%s%s: %s", getListItemPrefix(), attribute.getName(), valueString);
+                    String similarAttributesString = String.format("%s%s: %s", LIST_ITEM_PREFIX, attribute.getName(), valueString);
                     attributeStrings.add(similarAttributesString);
                     attributeStrings.add(getLineSeparator());
                 } else {
                     similarAttributes
                         .stream()
                         .map(this::createLinkableItemString)
-                        .map(str -> getListItemPrefix() + str + getLineSeparator())
+                        .map(str -> LIST_ITEM_PREFIX + str + getLineSeparator())
                         .forEach(attributeStrings::add);
                 }
             }
