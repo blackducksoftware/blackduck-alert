@@ -57,8 +57,8 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                     return completedAuthentication.get();
                 }
             } catch (Exception ex) {
-                logger.info("Error with with authentication type {} - cause: {}", authenticationPerformer.getAuthenticationType(), ex.getMessage());
-                logger.error("Error details: ", ex);
+                String authTypeError = String.format("Error with with authentication type %s - cause: ", authenticationPerformer.getAuthenticationType());
+                logger.error(authTypeError, ex);
             }
         }
 
