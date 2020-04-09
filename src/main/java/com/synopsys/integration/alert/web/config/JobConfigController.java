@@ -290,7 +290,7 @@ public class JobConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody JobFieldModel restModel) {
-        return sendCustomMessage(restModel, (JobFieldModel jobModel) -> jobConfigActions.testJob(jobModel));
+        return sendCustomMessage(restModel, jobConfigActions::testJob);
     }
 
     private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {

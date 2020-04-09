@@ -66,9 +66,6 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String LABEL_SAML_ENTITY_BASE_URL = "Entity Base URL";
     private static final String LABEL_SAML_METADATA_FILE = "Identity Provider Metadata File";
     private static final String LABEL_SAML_METADATA_FILE_UPLOAD = "Upload";
-    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_ADMIN = "Admin User Role Name";
-    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_JOB_MANAGER = "Job Manager Role Name";
-    private static final String LABEL_USER_MANAGEMENT_ROLE_MAPPING_USER = "User Role Name";
     private static final String LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING = "SAML Role Attribute Mapping";
 
     private static final String AUTHENTICATION_LDAP_ENABLED_DESCRIPTION = "If true, Alert with attempt to authenticate using the LDAP configuration.";
