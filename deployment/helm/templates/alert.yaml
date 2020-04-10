@@ -4,7 +4,7 @@ metadata:
   labels:
     app: alert
     name: {{ .Release.Name }} 
-  name: {{ .Release.Name }}-alert
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   {{- if eq .Values.status "Running" }} 
@@ -26,7 +26,7 @@ spec:
       annotations:
         checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
         checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
-      name: {{ .Release.Name }}-alert
+      name: {{ .Release.Name }}
     spec:
       containers:
       - env:
@@ -34,9 +34,9 @@ spec:
           value: /tmp/secrets
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-alert-environs
+            name: {{ .Release.Name }}-environs
         - secretRef:
-            name: {{ .Release.Name }}-alert-environs-secret
+            name: {{ .Release.Name }}-environs-secret
         {{- if .Values.alert.registry }}
         image: {{ .Values.alert.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
         {{- else }}
@@ -117,7 +117,7 @@ metadata:
   labels:
     app: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
@@ -138,7 +138,7 @@ metadata:
   labels:
     app: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-pvc
+  name: {{ .Release.Name }}-pvc
   namespace: {{ .Release.Namespace }}
 spec:
   {{ if .Values.storageClassName -}}
@@ -162,7 +162,7 @@ metadata:
   labels:
     app: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-exposed
+  name: {{ .Release.Name }}-exposed
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
