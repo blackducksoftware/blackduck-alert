@@ -130,8 +130,6 @@ distributions {
             from('alert-database/src/main/resources/scripts/export_h2_tables.sql') { into 'upgradeResources' }
             from('alert-database/src/main/resources/scripts/import_postgres_tables.sql') { into 'upgradeResources' }
             from('src/main/resources/images/') { into 'images/' }
-            from('src/main/resources/templates/email') { into 'templates/email' }
-            from('src/main/resources/templates/msteams') { into 'templates/msteams' }
             mkdir 'email/attachments'
         }
     }
@@ -223,7 +221,6 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
-                                "--alert.templates.dir=${project.buildDir}/resources/main/templates",
                                 "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]
     def commandArray = []
     commandArray.add('java')

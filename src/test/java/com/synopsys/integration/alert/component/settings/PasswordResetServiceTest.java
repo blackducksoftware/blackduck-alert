@@ -153,7 +153,6 @@ public class PasswordResetServiceTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("invalid dir");
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
         PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
@@ -164,7 +163,6 @@ public class PasswordResetServiceTest {
             // PASS
         }
 
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn(null);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");

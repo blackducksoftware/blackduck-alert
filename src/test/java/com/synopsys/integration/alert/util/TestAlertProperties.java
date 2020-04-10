@@ -8,10 +8,8 @@ public class TestAlertProperties extends AlertProperties {
     public static final String PROPERTY_USER_DIR = "user.dir";
     public static final String RESOURCES_PATH = "/src/main/resources";
     public static final String IMAGES_PATH = RESOURCES_PATH + "/images/";
-    public static final String TEMPLATES_PATH = RESOURCES_PATH + "/templates/";
 
     private String alertConfigHome;
-    private String alertTemplatesDir;
     private String alertImagesDir;
     private String alertSecretsDir;
     private Boolean alertTrustCertificate;
@@ -26,7 +24,6 @@ public class TestAlertProperties extends AlertProperties {
     public TestAlertProperties() {
         String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
         alertImagesDir = userDirectory + IMAGES_PATH;
-        alertTemplatesDir = userDirectory + TEMPLATES_PATH;
 
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";
@@ -40,15 +37,6 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setAlertConfigHome(String alertConfigHome) {
         this.alertConfigHome = alertConfigHome;
-    }
-
-    @Override
-    public String getAlertTemplatesDir() {
-        return alertTemplatesDir;
-    }
-
-    public void setAlertTemplatesDir(String alertTemplatesDir) {
-        this.alertTemplatesDir = alertTemplatesDir;
     }
 
     @Override
