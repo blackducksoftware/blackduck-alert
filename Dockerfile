@@ -32,7 +32,7 @@ RUN set -e \
     		openssl \
     		bash \
     		zip \
-    		postgresql-client \
+    		postgresql-client
 
 RUN mkdir -p -m 774 $CERTIFICATE_MANAGER_DIR
 RUN mkdir -p -m 774 $SECURITY_DIR
