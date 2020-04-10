@@ -7,6 +7,7 @@ ENV POSTGRES_PASSWORD blackduck
 ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
 
 RUN mkdir -p -m 774 $DOCKER_ENTRYPPOINT_INITD_DIR
+RUN mkdir -p -m 774 /opt/blackduck/alert/alert-config/data/postgres/alertdb
 
 COPY ./src/main/resources/scripts/init_alert_db.sql $DOCKER_ENTRYPPOINT_INITD_DIR/init_alert_db.sql
 COPY ./src/main/resources/scripts/alertdb-healthcheck.sh /usr/local/bin/alertdb-healthcheck.sh
