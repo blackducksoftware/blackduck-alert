@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_LABEL = "Scheduling";
     public static final String SCHEDULING_URL = "scheduling";
-    public static final String SCHEDULING_DESCRIPTION = "This page shows when system scheduled tasks will run next, as well as, allow you to configure the frequency of the system tasks.";
+    public static final String SCHEDULING_DESCRIPTION = "This page shows when system scheduled tasks will run next, as well as allow you to configure the frequency of the system tasks.";
 
     public static final String KEY_DAILY_PROCESSOR_HOUR_OF_DAY = "scheduling.daily.processor.hour";
     public static final String KEY_DAILY_PROCESSOR_NEXT_RUN = "scheduling.daily.processor.next.run";
