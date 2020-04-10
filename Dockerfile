@@ -33,6 +33,8 @@ RUN set -e \
     		bash \
     		zip \
     		postgresql-client \
+    && addgroup -S alert \
+    && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D -H alert
 
 RUN mkdir -p -m 774 $CERTIFICATE_MANAGER_DIR
 RUN mkdir -p -m 774 $SECURITY_DIR
