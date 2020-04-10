@@ -512,10 +512,6 @@
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">scheduling.accumulator.next.run</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">scheduling.daily.processor.hour</column>
             <column name="SENSITIVE">false</column>
         </insert>
@@ -1044,10 +1040,6 @@
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.startup.environment.variable.override')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
@@ -1653,10 +1645,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.role.attribute')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
