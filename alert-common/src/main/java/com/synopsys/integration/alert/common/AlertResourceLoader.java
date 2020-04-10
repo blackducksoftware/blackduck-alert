@@ -40,7 +40,7 @@ public class AlertResourceLoader {
     private final AlertProperties alertProperties;
 
     @Autowired
-    public AlertResourceLoader(final AlertProperties alertProperties) {
+    public AlertResourceLoader(AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
 
@@ -55,10 +55,6 @@ public class AlertResourceLoader {
 
     public Resource getResource(String path) {
         return new ClassPathResource(path);
-    }
-
-    public String getTemplatePath(String channelDirectory) throws AlertException {
-        return getPath(alertProperties.getAlertTemplatesDir(), channelDirectory);
     }
 
     public String getImagePath(String channelDirectory) throws AlertException {

@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -84,8 +85,8 @@ public class EmailMessagingService {
 
             Map<String, Object> model = emailTarget.getModel();
             Session session = createMailSession(emailProperties);
-            String emailPath = freemarkerTemplatingService.getTemplatePath("email");
-            Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(emailPath);
+            TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
+            Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
             String html = freemarkerTemplatingService.resolveTemplate(model, emailTemplate);
 
