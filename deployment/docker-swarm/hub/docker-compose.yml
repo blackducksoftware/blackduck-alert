@@ -4,14 +4,12 @@ services:
     image: blackducksoftware/alert-database:1.0.0
     ports: ['5432']
     hostname: alertdb
-    volumes: ['alert-db-volume:/var/lib/postgresql/data']
+    volumes: ['alert-db-postgres-volume:/var/lib/postgresql/data', 'alert-db-volume:/opt/blackduck/alert/alert-config/data']
     healthcheck:
       test: [CMD, /usr/local/bin/alertdb-healthcheck.sh]
       interval: 30s
       timeout: 10s
       retries: 5
-    environment:
-      PGDATA: /var/lib/postgresql/data/postgres/alertdb
     deploy:
       mode: replicated
       restart_policy: {condition: on-failure, delay: 5s, window: 60s}
@@ -37,4 +35,4 @@ services:
       resources:
         limits: {memory: 2560M}
         reservations: {memory: 2560M}
-volumes: {alert-db-volume: null}
+volumes: {alert-db-volume: null, alert-db-postgres-volume: null}
