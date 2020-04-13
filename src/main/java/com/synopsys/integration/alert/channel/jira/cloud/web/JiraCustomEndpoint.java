@@ -50,7 +50,7 @@ import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraCustomEndpoint extends ButtonCustomEndpoint {

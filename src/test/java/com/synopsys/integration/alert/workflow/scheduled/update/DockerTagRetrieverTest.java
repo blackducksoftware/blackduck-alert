@@ -23,7 +23,7 @@ import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 public class DockerTagRetrieverTest {
     private static final int TAGS_COUNT = 2;
@@ -32,13 +32,13 @@ public class DockerTagRetrieverTest {
 
     @Test
     public void getTagsModelTest() throws IntegrationException {
-        final IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
+        IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
 
-        final Response mockResponse = createMockResponse();
+        Response mockResponse = createMockResponse();
         Mockito.when(intHttpClient.execute(Mockito.any(Request.class))).thenReturn(mockResponse);
 
-        final DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
-        final DockerTagsResponseModel tagsModel = dockerTagRetriever.getTagsModel();
+        DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
+        DockerTagsResponseModel tagsModel = dockerTagRetriever.getTagsModel();
         assertEquals(TAGS_COUNT, tagsModel.getCount());
         assertEquals(TAGS_COUNT, tagsModel.getResults().size());
     }
@@ -49,35 +49,35 @@ public class DockerTagRetrieverTest {
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
     public void getTagsModelTestIT() {
-        final IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
-        final IntHttpClient intHttpClient = new IntHttpClient(intLogger, 10, true, ProxyInfo.NO_PROXY_INFO);
+        IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
+        IntHttpClient intHttpClient = new IntHttpClient(intLogger, 10, true, ProxyInfo.NO_PROXY_INFO);
 
-        final Request testRequest = new Request.Builder("https://google.com").build();
-        try (final Response googleResponse = intHttpClient.execute(testRequest)) {
+        Request testRequest = new Request.Builder("https://google.com").build();
+        try (Response googleResponse = intHttpClient.execute(testRequest)) {
             googleResponse.throwExceptionForError();
-        } catch (final IntegrationException | IOException e) {
+        } catch (IntegrationException | IOException e) {
             assumeTrue(null == e, "Could not connect. Skipping this test...");
         }
 
-        final DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
-        final DockerTagsResponseModel tagsModel = dockerTagRetriever.getTagsModel();
+        DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
+        DockerTagsResponseModel tagsModel = dockerTagRetriever.getTagsModel();
         assertFalse(tagsModel.isEmpty(), "Expected tags from the docker repo to exist");
     }
 
     private Response createMockResponse() throws IntegrationException {
-        final Response mockResponse = Mockito.mock(Response.class);
+        Response mockResponse = Mockito.mock(Response.class);
 
-        final List<DockerTagModel> tagModels = List.of(createDockerTagModel("1.0.0"), createDockerTagModel("1.0.1"));
-        final DockerTagsResponseModel mockDockerTagsResponseModel = new DockerTagsResponseModel(TAGS_COUNT, null, null, tagModels);
+        List<DockerTagModel> tagModels = List.of(createDockerTagModel("1.0.0"), createDockerTagModel("1.0.1"));
+        DockerTagsResponseModel mockDockerTagsResponseModel = new DockerTagsResponseModel(TAGS_COUNT, null, null, tagModels);
 
-        final String jsonString = gson.toJson(mockDockerTagsResponseModel);
+        String jsonString = gson.toJson(mockDockerTagsResponseModel);
         Mockito.when(mockResponse.getContentString()).thenReturn(jsonString);
         Mockito.doNothing().when(mockResponse).throwExceptionForError();
 
         return mockResponse;
     }
 
-    private DockerTagModel createDockerTagModel(final String tagName) {
+    private DockerTagModel createDockerTagModel(String tagName) {
         return new DockerTagModel(tagName, 1L, List.of(), 1L, 1L, 1L, 1L, "<date>", true);
     }
 
