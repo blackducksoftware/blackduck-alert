@@ -5,7 +5,7 @@ ENV POSTGRES_USER sa
 ENV POSTGRES_PASSWORD blackduck
 
 ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
-ENV ALERT_DB_DIR /opt/blackduck/alert/alert-config/data/postgres/alertdb
+ENV ALERT_DB_DIR /var/lib/postgresql/data/postgres/alertdb
 
 RUN mkdir -p -m 774 $ALERT_DB_DIR
 RUN mkdir -p -m 774 $DOCKER_ENTRYPPOINT_INITD_DIR
