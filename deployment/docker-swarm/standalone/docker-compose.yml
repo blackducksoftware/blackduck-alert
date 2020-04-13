@@ -37,7 +37,6 @@ services:
     image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
     env_file: [blackduck-alert.env]
-    user: alert:root
     healthcheck:
       test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about',
              /opt/blackduck/alert/security/root.crt, /opt/blackduck/alert/security/blackduck_system.crt,
