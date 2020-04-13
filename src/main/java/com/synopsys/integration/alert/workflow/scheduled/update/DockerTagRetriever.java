@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTags
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 public class DockerTagRetriever {
     public static final String ALERT_DOCKER_REGISTRY_URL = "https://hub.docker.com";
@@ -57,7 +57,7 @@ public class DockerTagRetriever {
     }
 
     public DockerTagsResponseModel getTagsModel() {
-        final String tagsUrl = String.format("%s/v2/repositories/%s/%s/tags", ALERT_DOCKER_REGISTRY_URL, ALERT_ORGANIZATION_NAME, ALERT_REPOSITORY_NAME);
+        String tagsUrl = String.format("%s/v2/repositories/%s/%s/tags", ALERT_DOCKER_REGISTRY_URL, ALERT_ORGANIZATION_NAME, ALERT_REPOSITORY_NAME);
         return getTagResponseModel(tagsUrl);
     }
 

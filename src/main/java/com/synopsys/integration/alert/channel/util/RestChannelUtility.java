@@ -38,7 +38,7 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class RestChannelUtility {
@@ -46,37 +46,37 @@ public class RestChannelUtility {
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public RestChannelUtility(final ChannelRestConnectionFactory channelRestConnectionFactory) {
+    public RestChannelUtility(ChannelRestConnectionFactory channelRestConnectionFactory) {
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
-    public void sendSingleMessage(Request request, final String eventDestination) throws IntegrationException {
+    public void sendSingleMessage(Request request, String eventDestination) throws IntegrationException {
         sendMessage(List.of(request), eventDestination);
     }
 
-    public void sendMessage(final List<Request> requests, final String eventDestination) throws IntegrationException {
+    public void sendMessage(List<Request> requests, String eventDestination) throws IntegrationException {
         try {
-            final IntHttpClient intHttpClient = getIntHttpClient();
-            for (final Request request : requests) {
+            IntHttpClient intHttpClient = getIntHttpClient();
+            for (Request request : requests) {
                 sendMessageRequest(intHttpClient, request, eventDestination);
             }
-        } catch (final AlertException alertException) {
+        } catch (AlertException alertException) {
             throw alertException;
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             throw new AlertException(ex);
         }
     }
 
-    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
+    public Request createPostMessageRequest(String url, Map<String, String> headers, String jsonString) {
         return createPostMessageRequest(url, headers, null, jsonString);
     }
 
-    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters) {
+    public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters) {
         return createPostMessageRequest(url, headers, queryParameters, null);
     }
 
-    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters, final String jsonString) {
-        final Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST).uri(url).additionalHeaders(headers);
+    public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters, String jsonString) {
+        Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST).uri(url).additionalHeaders(headers);
         if (queryParameters != null && !queryParameters.isEmpty()) {
             requestBuilder.queryParameters(queryParameters);
         }
@@ -86,22 +86,22 @@ public class RestChannelUtility {
         return requestBuilder.build();
     }
 
-    public void sendMessageRequest(final IntHttpClient intHttpClient, final Request request, final String messageType) throws IntegrationException {
+    public void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
-        try (final Response response = sendGenericRequest(intHttpClient, request)) {
+        try (Response response = sendGenericRequest(intHttpClient, request)) {
             if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
                 logger.info("Successfully sent a {} message!", messageType);
             } else {
                 throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error sending request", e);
             throw new AlertException(e.getMessage(), e);
         }
     }
 
-    public Response sendGenericRequest(final IntHttpClient intHttpClient, final Request request) throws IntegrationException {
-        final Response response = intHttpClient.execute(request);
+    public Response sendGenericRequest(IntHttpClient intHttpClient, Request request) throws IntegrationException {
+        Response response = intHttpClient.execute(request);
         logger.trace("Response: {}", response);
         return response;
     }
