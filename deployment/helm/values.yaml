@@ -36,7 +36,7 @@ cfssl:
   affinity: {}
 
 # Storage configurations
-enablePersistentStorage: false
+enablePersistentStorage: true
 persistentVolumeClaimName: ""
 pvcSize: "5G"
 storageClassName: ""
