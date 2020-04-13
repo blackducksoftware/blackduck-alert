@@ -1,11 +1,13 @@
-FROM postgres:11.6-alpine
+FROM postgres:11.7-alpine
 
 ENV POSTGRES_DB alertdb
 ENV POSTGRES_USER sa
 ENV POSTGRES_PASSWORD blackduck
 
 ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
+ENV ALERT_DB_DIR /opt/blackduck/alert/alert-config/data/postgres/alertdb
 
+RUN mkdir -p -m 774 $ALERT_DB_DIR
 RUN mkdir -p -m 774 $DOCKER_ENTRYPPOINT_INITD_DIR
 
 COPY ./src/main/resources/scripts/init_alert_db.sql $DOCKER_ENTRYPPOINT_INITD_DIR/init_alert_db.sql
