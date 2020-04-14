@@ -51,7 +51,7 @@ import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
