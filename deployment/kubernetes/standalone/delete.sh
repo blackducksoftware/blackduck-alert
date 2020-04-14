@@ -10,6 +10,8 @@ fi
 kubectl -n $NAMESPACE delete configmap blackduck-alert-config
 kubectl -n $NAMESPACE delete deployment alert
 kubectl -n $NAMESPACE delete service alert
+kubectl -n $NAMESPACE delete deployment alertdb
+kubectl -n $NAMESPACE delete service alertdb
 kubectl -n $NAMESPACE delete deployment cfssl
 kubectl -n $NAMESPACE delete service cfssl
 kubectl delete namespace $NAMESPACE

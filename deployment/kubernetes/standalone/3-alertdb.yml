@@ -4,61 +4,65 @@ items:
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
-      name: cfssl
+      name: alertdb
     spec:
       selector:
         matchLabels:
-          app: cfssl
-          tier: cfssl
+          app: alertdb
+          tier: alertdb
       replicas: 1
       template:
         metadata:
-          name: cfssl
+          name: alertdb
           labels:
-            app: cfssl
-            tier: cfssl
+            app: alertdb
+            tier: alertdb
         spec:
           volumes:
+            # NOTE: replace the emptyDir volume with a persistent volume or all the data will be lost when the pod is destroyed.
             - emptyDir: {}
-              name: dir-cfssl
+              name: dir-alert
+            - emptyDir: {}
+              name: dir-alert-postgres
           containers:
-            - image: blackducksoftware/blackduck-cfssl:1.0.1
+            - image: blackducksoftware/alert-database:1.0.0
+              name: alertdb
               livenessProbe:
                 exec:
                   command:
-                    - /usr/local/bin/docker-healthcheck.sh
-                    - http://localhost:8888/api/v1/cfssl/scaninfo
+                    - /usr/local/bin/alertdb-healthcheck.sh
                 initialDelaySeconds: 240
                 timeoutSeconds: 10
                 periodSeconds: 30
-                failureThreshold: 10
+                failureThreshold: 5
               imagePullPolicy: Always
               resources:
                 requests:
                   memory: 640M
                 limits:
                   memory: 640M
-              name: hub-cfssl
               envFrom:
                 - configMapRef:
                     name: blackduck-alert-config
               volumeMounts:
-                - mountPath: /etc/cfssl
-                  name: dir-cfssl
+                - mountPath: /opt/blackduck/alert/alert-config
+                  name: dir-alert
+                - mountPath: /var/lib/postgresql/data
+                  name: dir-alert-postgres
               ports:
-                - containerPort: 8888
+                - containerPort: 5432
                   protocol: TCP
   - apiVersion: v1
     kind: Service
     metadata:
-      name: cfssl
+      name: alertdb
     spec:
       ports:
-        - name: 8888-tcp
+        - name: 5432-postgres
           protocol: TCP
-          port: 8888
-          targetPort: 8888
+          port: 5432
+          targetPort: 5432
       selector:
-        app: cfssl
+        app: alertdb
     status:
       loadBalancer: {}
