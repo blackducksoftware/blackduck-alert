@@ -1,5 +1,11 @@
 version: '3.6'
 services:
+#  alertdb:
+#    # uncomment this section if custom user and password is in use for the alert database
+#    secrets:
+#      - ALERT_DB_USERNAME
+#      - ALERT_DB_PASSWORD
+#
 #  alert:
 #    # uncomment environment to set environment variables for the alert service.
 #    environment:
@@ -111,20 +117,14 @@ services:
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_NOOP_STRICT=
 #    # uncomment the secrets section to use secrets.
 #    # Please uncomment the secrets in use; both the required and the optional secrets.
-#    # Note: choose one jssecacerts or cacerts secret not both.
 #    secrets:
 #      - ALERT_ENCRYPTION_PASSWORD
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
-#     # -- Custom Certificate Usage
-#      - source: jssecacerts
-#        target: jssecacerts
-#        mode: 0664
-#      - source: cacerts
-#        target: cacerts
-#        mode: 0664
 #      - ALERT_TRUST_STORE_PASSWORD
+#      - ALERT_DB_USERNAME
+#      - ALERT_DB_PASSWORD
 #
 # uncomment the secrets in use; both the required and the optional secrets.
 #secrets:
@@ -149,3 +149,9 @@ services:
 #  ALERT_TRUST_STORE_PASSWORD:
 #    external: true
 #    name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
+#  ALERT_DB_USERNAME:
+#    external:true
+#    name: "<STACK_NAME>_ALERT_DB_USERNAME"
+#  ALERT_DB_PASSWORD
+#    external:true
+#    name: "<STACK_NAME>_ALERT_DB_PASSWORD"

@@ -25,6 +25,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    environment:
+      POSTGRES_USER: ${ALERT_DB_USERNAME:-sa}
+      POSTGRES_PASSWORD: ${ALERT_DB_PASSWORD:-blackduck}
     deploy:
       mode: replicated
       restart_policy: {condition: on-failure, delay: 5s, window: 60s}
