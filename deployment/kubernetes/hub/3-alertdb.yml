@@ -20,6 +20,9 @@ items:
         spec:
           volumes:
             # NOTE: replace the emptyDir volume with a persistent volume or all the data will be lost when the pod is destroyed.
+            # dir-alert should be the persistent volume used by the alert service.  This will allow upgrades from previous versions
+            # to the current version.
+            # dir-alert-postgres should be the persistent volume for the alertdb service and will contain the postgres database data.
             - emptyDir: {}
               name: dir-alert
             - emptyDir: {}
