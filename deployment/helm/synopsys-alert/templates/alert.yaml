@@ -103,7 +103,7 @@ spec:
       {{- if .Values.enablePersistentStorage }}
       - name: dir-alert
         persistentVolumeClaim:
-          claimName: {{if .Values.persistentVolumeClaimName}} {{.Values.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-pvc {{end}}
+          claimName: {{if .Values.alert.persistentVolumeClaimName}} {{.Values.alert.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-pvc {{end}}
       {{- else }}
       - emptyDir: {}
         name: dir-alert
@@ -144,7 +144,7 @@ spec:
   type: ClusterIP
 ---
 
-{{- if and .Values.enablePersistentStorage (not .Values.persistentVolumeClaimName) }}
+{{- if and .Values.enablePersistentStorage (not .Values.alert.persistentVolumeClaimName) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -155,17 +155,19 @@ metadata:
   name: {{ .Release.Name }}-pvc
   namespace: {{ .Release.Namespace }}
 spec:
-  {{ if .Values.storageClassName -}}
-  storageClassName: {{ .Values.storageClassName }}
-  {{ end -}}
-  {{ if .Values.volumeName -}}
-  volumeName: {{ .Values.volumeName }}
+  {{- if .Values.alert.storageClass }}
+  storageClassName: {{ .Values.alert.storageClass }}
+  {{- else if .Values.storageClass }}
+  storageClassName: {{ .Values.storageClass }}
+  {{- end}}
+  {{ if .Values.alert.volumeName -}}
+  volumeName: {{ .Values.alert.volumeName }}
   {{ end -}}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.pvcSize }}
+      storage: {{ .Values.alert.claimSize }}
 ---
 {{- end }}
 

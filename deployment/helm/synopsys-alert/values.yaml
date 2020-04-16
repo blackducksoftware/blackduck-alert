@@ -4,6 +4,10 @@
 
 registry: "docker.io/blackducksoftware"
 
+# Storage configurations
+enablePersistentStorage: true
+storageClass: # it will apply to all PVC's storage class but it can be override at container level
+
 # alert - configurations for the Alert Pod
 alert:
   imageTag: VERSION_TOKEN
@@ -14,17 +18,19 @@ alert:
       memory: "2560Mi"
     requests:
       memory: "2560Mi"
+  persistentVolumeClaimName: ""
+  claimSize: "5G"
+  storageClass: ""
+  volumeName: ""
   nodeSelector: {}
   tolerations: []
   affinity: {}
   securityContext: {}
   podSecurityContext: {}
-    
-# Set if Alert will be deployed with a Black Duck instance
-deployAlertWithBlackDuck: false
 
 # enableStandalone deploys a cfssl instance with Alert
 enableStandalone: true
+# cfssl - configurations for the cfssl Pod
 cfssl:
   imageTag: 1.0.0
   registry: "" # override the docker registry at container level
@@ -38,13 +44,6 @@ cfssl:
   affinity: {}
   securityContext: {}
   podSecurityContext: {}
-
-# Storage configurations
-enablePersistentStorage: true
-persistentVolumeClaimName: ""
-pvcSize: "5G"
-storageClassName: ""
-volumeName: ""
 
 # image pull secret to download images (mostly applicable for air gapped customers)
 imagePullSecrets: [] # array of strings delimited by comma
@@ -77,3 +76,6 @@ setEncryptionSecretData: false
 # Alert's certificate information
 webserverCustomCertificatesSecretName: "" # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=WEBSERVER_CUSTOM_CERT_FILE=tls.crt --from-file=WEBSERVER_CUSTOM_KEY_FILE=tls.key
 javaKeystoreSecretName: ""                # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=cacerts  
+
+# Set if Alert will be deployed with a Black Duck instance
+deployAlertWithBlackDuck: false
