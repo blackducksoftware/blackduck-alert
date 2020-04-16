@@ -111,26 +111,6 @@ spec:
       {{- end }}
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: alert
-    name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert
-  namespace: {{ .Release.Namespace }}
-spec:
-  ports:
-    - name: port-{{ .Values.alert.port }}
-      port: {{ .Values.alert.port }}
-      protocol: TCP
-      targetPort: {{ .Values.alert.port }}
-  selector:
-    app: alert
-    name: {{ .Release.Name }}
-  type: ClusterIP
----
-
 {{- if and .Values.enablePersistentStorage (not .Values.persistentVolumeClaimName) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -155,7 +135,46 @@ spec:
 ---
 {{- end }}
 
-{{ if .Values.exposeui -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-{{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
+      protocol: TCP
+      targetPort: {{ .Values.alert.port }}
+  selector:
+    app: alert
+    name: {{ .Release.Name }}
+  type: ClusterIP
+---
+
+{{ if and .Values.exposeui (eq .Values.exposedServiceType "OpenShift" ) -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: alert
+    component: route
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert
+  namespace: {{ .Release.Namespace }}
+spec:
+  port:
+    targetPort: port-{{ .Values.alert.port }}
+  tls:
+    termination: passthrough
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-alert
+  wildcardPolicy: None
+{{ else if .Values.exposeui }}
 apiVersion: v1
 kind: Service
 metadata:

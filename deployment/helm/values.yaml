@@ -50,7 +50,7 @@ status: Running
 
 # Expose Alert's User Interface
 exposeui: true
-exposedServiceType: NodePort # ClusterIP | NodePort | LoadBalancer
+exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
 
 # environs is a map of *additional* environs to add to the Alert's ConfigMap
 # The follwing environs are already set in the ConfigMap
