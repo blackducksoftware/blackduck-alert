@@ -1,5 +1,5 @@
 # alert-helm [alpha]
-Helm Charts for Alert
+Helm Charts for Synopsys Alert
 
 **Alpha Release**  
 * This helm chart is in early testing and is not fully supported.  

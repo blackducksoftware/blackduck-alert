@@ -3,8 +3,9 @@ kind: Deployment
 metadata:
   labels:
     app: alert
+    component: alert
     name: {{ .Release.Name }} 
-  name: {{ .Release.Name }}-alert
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   {{- if eq .Values.status "Running" }} 
@@ -15,6 +16,7 @@ spec:
   selector:
     matchLabels:
       app: alert
+      component: alert
       name: {{ .Release.Name }}
   strategy:
     type: Recreate
@@ -22,11 +24,12 @@ spec:
     metadata:
       labels:
         app: alert
+        component: alert
         name: {{ .Release.Name }}
       annotations:
         checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
         checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
-      name: {{ .Release.Name }}-alert
+      name: {{ .Release.Name }}
     spec:
       containers:
       - env:
@@ -34,9 +37,9 @@ spec:
           value: /tmp/secrets
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-alert-environs
+            name: {{ .Release.Name }}-environs
         - secretRef:
-            name: {{ .Release.Name }}-alert-environs-secret
+            name: {{ .Release.Name }}-environs-secret
         {{- if .Values.alert.registry }}
         image: {{ .Values.alert.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
         {{- else }}
@@ -92,7 +95,7 @@ spec:
       {{- if .Values.enablePersistentStorage }}
       - name: dir-alert
         persistentVolumeClaim:
-          claimName: {{if .Values.persistentVolumeClaimName}} {{.Values.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-alert-pvc {{end}}
+          claimName: {{if .Values.persistentVolumeClaimName}} {{.Values.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-pvc {{end}}
       {{- else }}
       - emptyDir: {}
         name: dir-alert
@@ -116,8 +119,9 @@ kind: Service
 metadata:
   labels:
     app: alert
+    component: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
@@ -127,6 +131,7 @@ spec:
       targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
+    component: alert
     name: {{ .Release.Name }}
   type: ClusterIP
 ---
@@ -137,8 +142,9 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     app: alert
+    component: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-pvc
+  name: {{ .Release.Name }}-pvc
   namespace: {{ .Release.Namespace }}
 spec:
   {{ if .Values.storageClassName -}}
@@ -155,14 +161,34 @@ spec:
 ---
 {{- end }}
 
-{{ if .Values.exposeui -}}
+{{ if and .Values.exposeui (eq .Values.exposedServiceType "OpenShift" ) -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: alert
+    component: route
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  port:
+    targetPort: port-{{ .Values.alert.port }}
+  tls:
+    termination: passthrough
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
+  wildcardPolicy: None
+{{ else if .Values.exposeui }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: alert
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-exposed
+    component: alert
+  name: {{ .Release.Name }}-exposed
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
@@ -172,6 +198,7 @@ spec:
       targetPort: {{ .Values.alert.port }}
   selector:
     app: alert
+    component: alert
     name: {{ .Release.Name }}
   type: {{ .Values.exposedServiceType }}
 ---
