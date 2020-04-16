@@ -150,8 +150,8 @@ services:
 #    external: true
 #    name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
 #  ALERT_DB_USERNAME:
-#    external:true
+#    external: true
 #    name: "<STACK_NAME>_ALERT_DB_USERNAME"
-#  ALERT_DB_PASSWORD
-#    external:true
+#  ALERT_DB_PASSWORD:
+#    external: true
 #    name: "<STACK_NAME>_ALERT_DB_PASSWORD"
