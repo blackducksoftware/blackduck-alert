@@ -55,6 +55,10 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.cfssl.resources | nindent 12 }}
+          {{- with .Values.cfssl.securityContext }}
+          securityContext:
+{{ toYaml . | indent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /etc/cfssl
               name: dir-cfssl
@@ -71,6 +75,10 @@ spec:
       {{- with .Values.cfssl.tolerations }}
       tolerations:
       {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.cfssl.podSecurityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
       {{- end }}
       volumes:
         - emptyDir: {}

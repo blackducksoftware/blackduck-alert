@@ -17,7 +17,9 @@ alert:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
+  securityContext: {}
+  podSecurityContext: {}
+    
 # Set if Alert will be deployed with a Black Duck instance
 deployAlertWithBlackDuck: false
 
@@ -34,6 +36,8 @@ cfssl:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  securityContext: {}
+  podSecurityContext: {}
 
 # Storage configurations
 enablePersistentStorage: true

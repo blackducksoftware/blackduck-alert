@@ -61,6 +61,10 @@ spec:
             protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
+        {{- with .Values.alert.securityContext }}
+        securityContext:
+{{ toYaml . | indent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
@@ -90,6 +94,10 @@ spec:
       {{- with .Values.alert.tolerations }}
       tolerations:
       {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.alert.podSecurityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
       {{- end }}
       volumes:
       {{- if .Values.enablePersistentStorage }}
