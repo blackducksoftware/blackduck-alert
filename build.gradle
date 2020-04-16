@@ -216,8 +216,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                '--spring.datasource.url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
-                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.datasource.url=jdbc:tc:postgresql:11.7:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.7:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
@@ -340,8 +340,8 @@ task copyDeploymentFiles(type: Copy) {
     doLast {
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/README.md", token: "VERSION_TOKEN", value: "${project.version}")

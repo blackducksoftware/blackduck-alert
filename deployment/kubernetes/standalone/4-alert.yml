@@ -23,34 +23,6 @@ items:
             - emptyDir: {}
               name: dir-alert
           containers:
-            - image: blackducksoftware/alert-database:1.0.0
-              name: alertdb
-              livenessProbe:
-                exec:
-                  command:
-                    - /usr/local/bin/alertdb-healthcheck.sh
-                initialDelaySeconds: 240
-                timeoutSeconds: 10
-                periodSeconds: 30
-                failureThreshold: 5
-              imagePullPolicy: Always
-              resources:
-                requests:
-                  memory: 640M
-                limits:
-                  memory: 640M
-              envFrom:
-                - configMapRef:
-                    name: blackduck-alert-config
-              env:
-                - name: PGDATA
-                  value: /opt/blackduck/alert/alert-config/data/postgres/alertdb
-              volumeMounts:
-                - mountPath: /opt/blackduck/alert/alert-config
-                  name: dir-alert
-              ports:
-                - containerPort: 5432
-                  protocol: TCP
             - image: blackducksoftware/blackduck-alert:VERSION_TOKEN
               name: alert
               livenessProbe:
@@ -73,8 +45,6 @@ items:
                   memory: 2560M
               envFrom:
                 - configMapRef:
-                    name: hub-config
-                - configMapRef:
                     name: blackduck-alert-config
               volumeMounts:
                 - mountPath: /opt/blackduck/alert/alert-config
@@ -94,5 +64,6 @@ items:
           targetPort: 8443
       selector:
         app: alert
+      type: LoadBalancer
     status:
       loadBalancer: {}
