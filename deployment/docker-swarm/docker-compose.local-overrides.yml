@@ -1,10 +1,16 @@
 version: '3.6'
 services:
-#  alertdb:
-#    # uncomment this section if custom user and password is in use for the alert database
+  alertdb:
+    # Comment or remove the environment section if secrets are used to store database credentials.
+    environment:
+      - POSTGRES_USER=sa
+      - POSTGRES_PASSWORD=blackduck
+#    # uncomment this section if the custom user and password are stored in docker secrets.
 #    secrets:
-#      - ALERT_DB_USERNAME
-#      - ALERT_DB_PASSWORD
+#      - source: ALERT_DB_USERNAME
+#        target: POSTGRES_USER_FILE
+#      - source: ALERT_DB_PASSWORD
+#        target: POSTGRES_PASSWORD_FILE
 #
 #  alert:
 #    # uncomment environment to set environment variables for the alert service.
