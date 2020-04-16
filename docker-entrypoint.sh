@@ -43,12 +43,16 @@ if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
 then
   echo "Alert Database user secret set; using value from secret."
   alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
+  export ALERT_DB_USERNAME=$alertDatabaseUser;
+  echo "Alert Database user variable set to secret value."
 fi
 
 if [ -e $dockerSecretDir/ALERT_DB_PASSWORD ];
 then
   echo "Alert Database password secret set; using value from secret."
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
+  export ALERT_DB_PASSWORD=$alertDatabasePassword;
+  echo "Alert Database password variable set to secret value."
 fi
 
 alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=$alertDatabaseUser password=$alertDatabasePassword"
