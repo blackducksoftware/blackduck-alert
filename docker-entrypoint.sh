@@ -6,7 +6,8 @@ alertHome=/opt/blackduck/alert
 alertConfigHome=${alertHome}/alert-config
 alertDataDir=${alertConfigHome}/data
 alertDatabaseDir=${alertDataDir}/alertdb
-alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=sa password=blackduck"
+alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
+alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -37,6 +38,20 @@ then
   echo "Key Store secret set; using value from secret."
   keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
 fi
+
+if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
+then
+  echo "Alert Database user secret set; using value from secret."
+  alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
+fi
+
+if [ -e $dockerSecretDir/ALERT_DB_PASSWORD ];
+then
+  echo "Alert Database password secret set; using value from secret."
+  alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
+fi
+
+alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=$alertDatabaseUser password=$alertDatabasePassword"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
@@ -313,7 +328,7 @@ liquibaseChangelockReset() {
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres databases: "
-    LIST_DB_OUTPUT=`psql "host=alertdb port=5432 dbname=postgres user=sa password=blackduck" -c '\l'`;
+    LIST_DB_OUTPUT=`psql ${alertDatabaseConfig} -c '\l'`;
     echo "${LIST_DB_OUTPUT}"
     if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
     then
