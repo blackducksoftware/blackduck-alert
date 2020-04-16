@@ -79,3 +79,5 @@ javaKeystoreSecretName: ""                # kubectl create secret generic <name>
 
 # Set if Alert will be deployed with a Black Duck instance
 deployAlertWithBlackDuck: false
+blackDuckName: ""       # If true, you must provide the ReleaseName of the Black Duck instance
+blackDuckNamespace: ""  # If true, you must provide the Namspace of the Black Duck instance
