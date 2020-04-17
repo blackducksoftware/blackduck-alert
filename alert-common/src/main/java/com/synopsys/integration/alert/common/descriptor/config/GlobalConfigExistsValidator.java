@@ -70,13 +70,19 @@ public class GlobalConfigExistsValidator {
             return Optional.empty();
         }
 
-        String descriptorDisplayName = optionalDescriptorKey.map(DescriptorKey::getDisplayName).orElse(descriptorName);
+        String descriptorDisplayName = optionalDescriptorKey
+                                           .map(DescriptorKey::getDisplayName)
+                                           .orElse(descriptorName);
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             if (configurations.isEmpty()) {
                 return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
             } else {
-                boolean configurationsAreEmpty = configurations.stream().filter(configuration -> configuration.getCopyOfFieldList().size() > 0).findFirst().isEmpty();
+                boolean configurationsAreEmpty = configurations
+                                                     .stream()
+                                                     .filter(configuration -> configuration.getCopyOfFieldList().size() > 0)
+                                                     .findFirst()
+                                                     .isEmpty();
                 if (configurationsAreEmpty) {
                     return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
                 }
