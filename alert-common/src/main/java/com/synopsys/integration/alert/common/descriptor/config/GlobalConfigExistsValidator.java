@@ -87,7 +87,7 @@ public class GlobalConfigExistsValidator {
         }
         return Optional.empty();
     }
-    
+
     /**
      * Determines if the descriptor's Global UI Config has fields.
      */
