@@ -11,7 +11,7 @@
                     into result
                     from ALERT.DESCRIPTOR_CONFIGS
                     where DESCRIPTOR_ID = GET_DESCRIPTOR_ID($1)
-                    and GET_CONTEXT_ID('GLOBAL')
+                    and CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')
                     LIMIT 1;
                     RETURN result;
                 END;
