@@ -220,6 +220,11 @@ public class EmailGlobalUIConfig extends UIConfig {
     }
 
     @Override
+    public boolean hasFields() {
+        return true;
+    }
+
+    @Override
     public List<ConfigField> createTestFields() {
         ConfigField emailAddress = new TextInputConfigField(TestAction.KEY_DESTINATION_NAME, TEST_LABEL_ADDRESS, TEST_EMAIL_DESCRIPTION);
         return List.of(emailAddress);

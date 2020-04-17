@@ -68,4 +68,9 @@ public class JiraServerGlobalUIConfig extends UIConfig {
         return List.of(serverUrlField, jiraUserName, jiraPassword, jiraConfigurePlugin);
     }
 
+    @Override
+    public boolean hasFields() {
+        return true;
+    }
+
 }

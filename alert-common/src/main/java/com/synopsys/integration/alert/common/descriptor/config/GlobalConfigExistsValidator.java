@@ -75,6 +75,11 @@ public class GlobalConfigExistsValidator {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             if (configurations.isEmpty()) {
                 return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
+            } else {
+                boolean configurationsAreEmpty = configurations.stream().filter(configuration -> configuration.getCopyOfFieldList().size() > 0).findFirst().isEmpty();
+                if (configurationsAreEmpty) {
+                    return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
+                }
             }
         } catch (AlertDatabaseConstraintException ex) {
             logger.error(String.format("Error validating configuration for %s.", descriptorName), ex);
@@ -82,17 +87,15 @@ public class GlobalConfigExistsValidator {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Determines if the descriptor's Global UI Config has fields.
      */
     private boolean hasGlobalConfig(Descriptor descriptor) {
         return descriptor
                    .getUIConfig(ConfigContextEnum.GLOBAL)
-                   .map(UIConfig::createFields)
-                   .map(List::size)
-                   .filter(size -> size > 0)
-                   .isPresent();
+                   .map(UIConfig::hasFields)
+                   .orElse(false);
     }
 
 }

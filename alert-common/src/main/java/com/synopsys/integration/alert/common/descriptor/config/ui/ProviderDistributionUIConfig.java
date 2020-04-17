@@ -114,6 +114,11 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
 
+    @Override
+    public boolean hasFields() {
+        return true;
+    }
+
     public abstract List<ConfigField> createProviderDistributionFields();
 
     private LabelValueSelectOption convertToLabelValueOption(ProviderNotificationType providerContentType) {

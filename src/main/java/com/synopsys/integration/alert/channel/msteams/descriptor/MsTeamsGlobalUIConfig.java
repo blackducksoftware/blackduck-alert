@@ -39,4 +39,9 @@ public class MsTeamsGlobalUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         return List.of();
     }
+
+    @Override
+    public boolean hasFields() {
+        return false;
+    }
 }

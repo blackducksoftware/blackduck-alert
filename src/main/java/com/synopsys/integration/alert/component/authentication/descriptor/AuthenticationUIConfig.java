@@ -128,6 +128,11 @@ public class AuthenticationUIConfig extends UIConfig {
         return fieldLists.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
+    @Override
+    public boolean hasFields() {
+        return true;
+    }
+
     private List<ConfigField> createLDAPPanel() {
         ConfigField ldapServer = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_SERVER, LABEL_LDAP_SERVER, AUTHENTICATION_LDAP_SERVER_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);
         ConfigField ldapManagerDn = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, LABEL_LDAP_MANAGER_DN, AUTHENTICATION_LDAP_MANAGER_DN_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_LDAP);

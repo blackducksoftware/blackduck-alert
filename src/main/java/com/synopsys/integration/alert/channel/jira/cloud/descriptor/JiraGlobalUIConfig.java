@@ -70,4 +70,9 @@ public class JiraGlobalUIConfig extends UIConfig {
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);
     }
 
+    @Override
+    public boolean hasFields() {
+        return true;
+    }
+
 }
