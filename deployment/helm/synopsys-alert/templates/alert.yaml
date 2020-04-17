@@ -182,6 +182,7 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
+  host: ""
   port:
     targetPort: port-{{ .Values.alert.port }}
   tls:
@@ -189,7 +190,11 @@ spec:
   to:
     kind: Service
     name: {{ .Release.Name }}
+    weight: 100
   wildcardPolicy: None
+status:
+  ingress:
+    - host: ""
 {{ else if .Values.exposeui }}
 apiVersion: v1
 kind: Service
