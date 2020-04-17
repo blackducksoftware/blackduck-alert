@@ -8,10 +8,28 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="raw_notification_content">
-            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
+            <column name="provider_config_id" type="BIGINT" value="-1">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+    </changeSet>
+    <!-- https://liquibase.jira.com/browse/CORE-3028
+         The previous changeset won't run because the addition of the table with valueComputed results in a
+         ALTER TABLE ADD COLUMN 'provider_config_id' BIGINT NOT NULL statement to get executed.  This fails
+         because the column has a default value of NULL but the constraint doesn't allow that.
+         Use the value attribute in the previous changeset adding the provider_config_id column to set a non null value.
+         Then update the column with the computed value for the provider id.
+    -->
+    <changeSet id="2020-04-17-14-14-03-123" author="psantos">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from alert.raw_notification_content where provider_config_id = -1</sqlCheck>
+            </not>
+        </preConditions>
+        <update schemaName="alert" tableName="raw_notification_content">
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')"/>
+            <where>provider_config_id = -1</where>
+        </update>
     </changeSet>
     <changeSet author="gavink" id="2020-02-11-09-21-42-238">
         <preConditions>
