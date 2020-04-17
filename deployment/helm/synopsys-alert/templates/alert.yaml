@@ -183,7 +183,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   host: ""
-  path: "/alert"
   port:
     targetPort: port-{{ .Values.alert.port }}
   tls:
