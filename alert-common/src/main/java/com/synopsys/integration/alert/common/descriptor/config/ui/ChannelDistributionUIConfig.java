@@ -86,11 +86,6 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }
 
-    @Override
-    public boolean hasFields() {
-        return true;
-    }
-
     public abstract List<ConfigField> createChannelDistributionFields();
 
     public ChannelKey getChannelKey() {

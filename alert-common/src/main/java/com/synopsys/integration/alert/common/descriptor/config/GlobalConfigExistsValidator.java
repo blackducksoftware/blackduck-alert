@@ -75,17 +75,13 @@ public class GlobalConfigExistsValidator {
                                            .orElse(descriptorName);
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-            if (configurations.isEmpty()) {
+            boolean configurationsAreEmpty = configurations
+                                                 .stream()
+                                                 .filter(configuration -> configuration.getCopyOfFieldList().size() > 0)
+                                                 .findFirst()
+                                                 .isEmpty();
+            if (configurationsAreEmpty) {
                 return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
-            } else {
-                boolean configurationsAreEmpty = configurations
-                                                     .stream()
-                                                     .filter(configuration -> configuration.getCopyOfFieldList().size() > 0)
-                                                     .findFirst()
-                                                     .isEmpty();
-                if (configurationsAreEmpty) {
-                    return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
-                }
             }
         } catch (AlertDatabaseConstraintException ex) {
             logger.error(String.format("Error validating configuration for %s.", descriptorName), ex);

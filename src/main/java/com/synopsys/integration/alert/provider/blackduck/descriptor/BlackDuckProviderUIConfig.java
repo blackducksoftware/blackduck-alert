@@ -72,11 +72,6 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
     }
 
-    @Override
-    public boolean hasFields() {
-        return true;
-    }
-
     private Collection<String> validateAPIToken(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         String apiKey = fieldToValidate.getValue().orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {

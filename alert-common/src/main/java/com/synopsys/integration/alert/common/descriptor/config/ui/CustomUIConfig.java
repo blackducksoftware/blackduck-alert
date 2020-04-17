@@ -42,8 +42,4 @@ public abstract class CustomUIConfig extends UIConfig {
         return List.of();
     }
 
-    @Override
-    public boolean hasFields() {
-        return false;
-    }
 }

@@ -40,8 +40,4 @@ public class MsTeamsGlobalUIConfig extends UIConfig {
         return List.of();
     }
 
-    @Override
-    public boolean hasFields() {
-        return false;
-    }
 }

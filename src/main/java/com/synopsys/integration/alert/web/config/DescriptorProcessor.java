@@ -117,7 +117,7 @@ public class DescriptorProcessor {
         if (optionalDescriptor.isPresent()) {
             Descriptor descriptor = optionalDescriptor.get();
             Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
-            fieldsToReturn.addAll(uiConfig.map(UIConfig::createFields).orElse(List.of()));
+            fieldsToReturn.addAll(uiConfig.map(UIConfig::getFields).orElse(List.of()));
         }
         return fieldsToReturn;
     }

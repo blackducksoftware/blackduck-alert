@@ -234,10 +234,6 @@ public class DescriptorControllerTest {
                     return List.of();
                 }
 
-                @Override
-                public boolean hasFields() {
-                    return false;
-                }
             });
         }
 

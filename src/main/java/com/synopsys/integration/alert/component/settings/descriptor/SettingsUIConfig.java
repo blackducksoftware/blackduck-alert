@@ -83,11 +83,6 @@ public class SettingsUIConfig extends UIConfig {
         return fieldLists.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    @Override
-    public boolean hasFields() {
-        return true;
-    }
-
     private List<ConfigField> createDefaultSettingsPanel() {
         ConfigField encryptionPassword = new PasswordConfigField(SettingsDescriptor.KEY_ENCRYPTION_PWD, LABEL_ENCRYPTION_PASSWORD, SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION, encryptionFieldValidator)
                                              .applyRequired(true)

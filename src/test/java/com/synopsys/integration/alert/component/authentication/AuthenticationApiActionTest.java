@@ -40,7 +40,7 @@ public class AuthenticationApiActionTest {
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
         HashMap<String, String> fieldErrors = new HashMap<>();
-        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.createFields(), ConfigField::getKey);
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());

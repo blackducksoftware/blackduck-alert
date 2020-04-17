@@ -57,11 +57,6 @@ public class SchedulingUIConfig extends UIConfig {
         return List.of(digestHour, digestHourNextRun, purgeFrequency, purgeNextRun);
     }
 
-    @Override
-    public boolean hasFields() {
-        return true;
-    }
-
     private List<LabelValueSelectOption> createDigestHours() {
         return List.of(
             new LabelValueSelectOption("12 am", "0"),

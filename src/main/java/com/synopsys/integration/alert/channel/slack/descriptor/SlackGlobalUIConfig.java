@@ -40,8 +40,4 @@ public class SlackGlobalUIConfig extends UIConfig {
         return List.of();
     }
 
-    @Override
-    public boolean hasFields() {
-        return false;
-    }
 }

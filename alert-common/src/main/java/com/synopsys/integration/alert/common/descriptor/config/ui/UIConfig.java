@@ -34,21 +34,29 @@ public abstract class UIConfig extends Stringable {
     private final String description;
     private final String urlName;
     private final String componentNamespace;
+    private final List<ConfigField> configFields;
 
     protected UIConfig(String label, String description, String urlName, String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
         this.componentNamespace = componentNamespace;
+        this.configFields = createFields();
     }
 
     public UIConfig(String label, String description, String urlName) {
         this(label, description, urlName, "");
     }
 
-    public abstract List<ConfigField> createFields();
+    protected abstract List<ConfigField> createFields();
 
-    public abstract boolean hasFields();
+    public List<ConfigField> getFields() {
+        return configFields;
+    }
+
+    public final boolean hasFields() {
+        return null != configFields && !configFields.isEmpty();
+    }
 
     public List<ConfigField> createTestFields() {
         return List.of();
