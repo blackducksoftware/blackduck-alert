@@ -49,7 +49,7 @@ public abstract class UIConfig extends Stringable {
 
     protected abstract List<ConfigField> createFields();
 
-    public void setConfigFields(List<ConfigField> configFields) {
+    protected void setConfigFields(List<ConfigField> configFields) {
         this.configFields = configFields;
     }
 
