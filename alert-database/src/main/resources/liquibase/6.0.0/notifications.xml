@@ -8,9 +8,7 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="raw_notification_content">
-            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
-                <constraints nullable="false"/>
-            </column>
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')"/>
         </addColumn>
     </changeSet>
     <changeSet author="gavink" id="2020-02-11-09-21-42-238">
