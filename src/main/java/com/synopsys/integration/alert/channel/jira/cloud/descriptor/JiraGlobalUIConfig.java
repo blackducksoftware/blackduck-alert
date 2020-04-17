@@ -55,6 +55,7 @@ public class JiraGlobalUIConfig extends UIConfig {
     public JiraGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL);
         this.encryptionValidator = encryptionValidator;
+        setConfigFields(createFields());
     }
 
     @Override

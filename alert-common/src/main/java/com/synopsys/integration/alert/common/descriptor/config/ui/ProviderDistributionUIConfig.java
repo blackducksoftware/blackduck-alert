@@ -72,6 +72,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     public ProviderDistributionUIConfig(String label, String urlName, ProviderContent providerContent) {
         super(label, label + " provider distribution setup.", urlName);
         this.providerContent = providerContent;
+        setConfigFields(createFields());
     }
 
     @Override

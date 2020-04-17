@@ -72,6 +72,7 @@ public class SettingsUIConfig extends UIConfig {
         super(SettingsDescriptor.SETTINGS_LABEL, SettingsDescriptor.SETTINGS_DESCRIPTION, SettingsDescriptor.SETTINGS_URL);
         this.encryptionConfigValidator = new EncryptionFieldsSetValidator();
         this.encryptionFieldValidator = new EncryptionFieldValidator();
+        setConfigFields(createFields());
     }
 
     @Override

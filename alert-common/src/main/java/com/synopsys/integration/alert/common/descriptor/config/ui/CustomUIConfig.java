@@ -35,6 +35,7 @@ public abstract class CustomUIConfig extends UIConfig {
 
     public CustomUIConfig(String label, String description, String urlName, String componentPath) {
         super(label, description, urlName, componentPath);
+        setConfigFields(createFields());
     }
 
     @Override

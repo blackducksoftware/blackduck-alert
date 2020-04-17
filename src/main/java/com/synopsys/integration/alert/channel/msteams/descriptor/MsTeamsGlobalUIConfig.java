@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class MsTeamsGlobalUIConfig extends UIConfig {
     public MsTeamsGlobalUIConfig() {
         super(MsTeamsDescriptor.MSTEAMS_LABEL, MsTeamsDescriptor.MSTEAMS_DESCRIPTION, MsTeamsDescriptor.MSTEAMS_URL);
+        setConfigFields(createFields());
     }
 
     @Override

@@ -46,6 +46,7 @@ public class SchedulingUIConfig extends UIConfig {
 
     public SchedulingUIConfig() {
         super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_DESCRIPTION, SchedulingDescriptor.SCHEDULING_URL);
+        setConfigFields(createFields());
     }
 
     @Override

@@ -62,6 +62,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName) {
         super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
+        setConfigFields(createFields());
     }
 
     @Override

@@ -34,14 +34,13 @@ public abstract class UIConfig extends Stringable {
     private final String description;
     private final String urlName;
     private final String componentNamespace;
-    private final List<ConfigField> configFields;
+    private List<ConfigField> configFields = List.of();
 
     protected UIConfig(String label, String description, String urlName, String componentNamespace) {
         this.label = label;
         this.description = description;
         this.urlName = urlName;
         this.componentNamespace = componentNamespace;
-        this.configFields = createFields();
     }
 
     public UIConfig(String label, String description, String urlName) {
@@ -49,6 +48,10 @@ public abstract class UIConfig extends Stringable {
     }
 
     protected abstract List<ConfigField> createFields();
+
+    public void setConfigFields(List<ConfigField> configFields) {
+        this.configFields = configFields;
+    }
 
     public List<ConfigField> getFields() {
         return configFields;

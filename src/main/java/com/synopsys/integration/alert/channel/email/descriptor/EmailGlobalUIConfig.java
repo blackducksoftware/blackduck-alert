@@ -146,6 +146,7 @@ public class EmailGlobalUIConfig extends UIConfig {
     public EmailGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_DESCRIPTION, EmailDescriptor.EMAIL_URL);
         this.encryptionValidator = encryptionValidator;
+        setConfigFields(createFields());
     }
 
     @Override
