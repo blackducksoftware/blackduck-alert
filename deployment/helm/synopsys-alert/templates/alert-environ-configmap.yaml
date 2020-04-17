@@ -10,8 +10,8 @@ data:
   ALERT_SERVER_PORT: "8443"
   {{- if .Values.enableStandalone }}
   HUB_CFSSL_HOST: {{ .Release.Name }}-cfssl
-  {{- end }}
-  {{- end }}
+  {{- end -}}
+  {{- end -}}
   {{- if .Values.environs }}
   {{- include "alert.environs" . | nindent 2 }}
   {{- end }}
