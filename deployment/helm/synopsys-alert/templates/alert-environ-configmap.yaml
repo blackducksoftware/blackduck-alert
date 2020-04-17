@@ -3,17 +3,17 @@ kind: ConfigMap
 data:
   {{- if .Values.deployAlertWithBlackDuck }}
   ALERT_HOSTNAME: localhost
-  HUB_WEBAPP_HOST: {{ .Release.Name }}-blackduck-webapp.{{ .Release.Namespace }}.svc
-  HUB_CFSSL_HOST: {{ .Release.Name }}-blackduck-cfssl
+  HUB_WEBAPP_HOST: {{ required "must --set blackDuckName" .Values.blackDuckName }}-blackduck-webapp.{{ required "must --set blackDuckNamespace" .Values.blackDuckNamespace }}.svc
+  HUB_CFSSL_HOST: {{ .Values.blackDuckName }}-blackduck-cfssl.{{ .Values.blackDuckNamespace }}.svc
   {{- else }}
   ALERT_HOSTNAME: localhost
   ALERT_SERVER_PORT: "8443"
   {{- if .Values.enableStandalone }}
   HUB_CFSSL_HOST: {{ .Release.Name }}-cfssl
-  {{- end }}
-  {{- end }}
+  {{- end -}}
+  {{- end -}}
   {{- if .Values.environs }}
-  {{- .Values.environs | toYaml | nindent 2 | trimSuffix "\n" }}
+  {{- include "alert.environs" . | nindent 2 }}
   {{- end }}
 metadata:
   labels:
