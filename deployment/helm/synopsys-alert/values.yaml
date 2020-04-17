@@ -1,0 +1,83 @@
+# Values for Alert.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+registry: "docker.io/blackducksoftware"
+
+# Storage configurations
+enablePersistentStorage: true
+storageClass: # it will apply to all PVC's storage class but it can be override at container level
+
+# alert - configurations for the Alert Pod
+alert:
+  imageTag: VERSION_TOKEN
+  registry: "" # override the docker registry at container level
+  port: 8443
+  resources:
+    limits:
+      memory: "2560Mi"
+    requests:
+      memory: "2560Mi"
+  persistentVolumeClaimName: ""
+  claimSize: "5G"
+  storageClass: ""
+  volumeName: ""
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  securityContext: {}
+  podSecurityContext: {}
+
+# enableStandalone deploys a cfssl instance with Alert
+enableStandalone: true
+# cfssl - configurations for the cfssl Pod
+cfssl:
+  imageTag: 1.0.0
+  registry: "" # override the docker registry at container level
+  resources:
+    limits:
+      memory: "640Mi"
+    requests:
+      memory: "640Mi"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  securityContext: {}
+  podSecurityContext: {}
+
+# image pull secret to download images (mostly applicable for air gapped customers)
+imagePullSecrets: [] # array of strings delimited by comma
+
+# Used to start or stop the alert instance. Set to "Running" to start, or "Stopped" to stop
+status: Running
+
+# Expose Alert's User Interface
+exposeui: true
+exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
+
+# environs is a map of *additional* environs to add to the Alert's ConfigMap
+# The follwing environs are already set in the ConfigMap
+# at /templates/alert-environ-resources.yaml (go there to set them):
+#   HUB_WEBAPP_HOST
+#   HUB_CFSSL_HOST
+#   ALERT_SERVER_PORT
+# if you are setting the value using set flag in helm command, do --set environs.* = ""; i.e.: --set environs.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+environs: {}
+
+# secretEnvirons is a map of environs to add to the Alert's Secret
+# if you are setting the value using set flag in helm command, do --set secretEnvirons.* = ""; i.e.: --set secretEnvirons.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+secretEnvirons: {}
+
+# If true, requires the user to set...
+#   the value alertEncryptionPassword or the secretEnviron ALERT_ENCRYPTION_PASSWORD
+#   the value alertEncryptionGlobalSalt or the secretEnviron ALERT_ENCRYPTION_GLOBAL_SALT
+setEncryptionSecretData: false
+
+# Alert's certificate information
+webserverCustomCertificatesSecretName: "" # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=WEBSERVER_CUSTOM_CERT_FILE=tls.crt --from-file=WEBSERVER_CUSTOM_KEY_FILE=tls.key
+javaKeystoreSecretName: ""                # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=cacerts  
+
+# Set if Alert will be deployed with a Black Duck instance
+deployAlertWithBlackDuck: false
+blackDuckName: ""       # If true, you must provide the ReleaseName of the Black Duck instance
+blackDuckNamespace: ""  # If true, you must provide the Namspace of the Black Duck instance

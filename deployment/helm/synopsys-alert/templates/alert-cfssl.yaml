@@ -4,14 +4,20 @@ kind: Deployment
 metadata:
   labels:
     app: alert
+    component: cfssl
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-cfssl
+  name: {{ .Release.Name }}-cfssl
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  {{- if eq .Values.status "Running" }} 
+  replicas: 1 
+  {{- else }} 
+  replicas: 0 
+  {{- end }}
   selector:
     matchLabels:
       app: alert
+      component: cfssl
       name: {{ .Release.Name }}
   strategy:
     type: Recreate
@@ -19,16 +25,21 @@ spec:
     metadata:
       labels:
         app: alert
+        component: cfssl
         name: {{ .Release.Name }}
       annotations:
         checksum/alert-environ-resources: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
-      name: {{ .Release.Name }}-alert-cfssl
+      name: {{ .Release.Name }}-cfssl
     spec:
       containers:
         - envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-alert-environs
-          image: {{ .Values.cfssl.image }}
+                name: {{ .Release.Name }}-environs
+          {{- if .Values.cfssl.registry }}
+          image: {{ .Values.cfssl.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }}
+          {{- else }}
+          image: {{ .Values.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }} 
+          {{- end }}
           livenessProbe:
             exec:
               command:
@@ -43,14 +54,16 @@ spec:
             - containerPort: 8888
               protocol: TCP
           resources:
-            limits:
-              memory: {{ .Values.cfssl.limitMemory }}
-            requests:
-              memory: {{ .Values.cfssl.requestMemory }}
+            {{- toYaml .Values.cfssl.resources | nindent 12 }}
+          {{- with .Values.cfssl.securityContext }}
+          securityContext:
+{{ toYaml . | indent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /etc/cfssl
               name: dir-cfssl
       dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.cfssl.nodeSelector }}
       nodeSelector:
       {{ toYaml . | indent 2 }}
@@ -63,6 +76,10 @@ spec:
       tolerations:
       {{ toYaml . | indent 2 }}
       {{- end }}
+      {{- with .Values.cfssl.podSecurityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
+      {{- end }}
       volumes:
         - emptyDir: {}
           name: dir-cfssl
@@ -73,8 +90,9 @@ kind: Service
 metadata:
   labels:
     app: alert
+    component: cfssl
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-alert-cfssl
+  name: {{ .Release.Name }}-cfssl
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
@@ -84,6 +102,7 @@ spec:
       targetPort: 8888
   selector:
     app: alert
+    component: cfssl
     name: {{ .Release.Name }}
   type: ClusterIP
 ---
