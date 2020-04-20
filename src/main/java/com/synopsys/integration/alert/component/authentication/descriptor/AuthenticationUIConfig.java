@@ -115,7 +115,6 @@ public class AuthenticationUIConfig extends UIConfig {
         super(AuthenticationDescriptor.AUTHENTICATION_LABEL, AuthenticationDescriptor.AUTHENTICATION_DESCRIPTION, AuthenticationDescriptor.AUTHENTICATION_URL);
         this.filePersistenceUtil = filePersistenceUtil;
         this.encryptionValidator = encryptionValidator;
-        setConfigFields(createFields());
     }
 
     @Override

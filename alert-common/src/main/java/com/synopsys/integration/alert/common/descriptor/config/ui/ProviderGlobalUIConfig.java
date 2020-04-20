@@ -53,7 +53,6 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         super(label, description, urlName);
         this.providerKey = providerKey;
         this.configurationAccessor = configurationAccessor;
-        setConfigFields(createFields());
     }
 
     @Override

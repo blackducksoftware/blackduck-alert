@@ -51,6 +51,7 @@ public class SchedulingGlobalApiActionTest {
     public void validateConfigWithNoErrorsTest() {
         Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
+        schedulingUIConfig.setConfigFields();
 
         FIELD_HOUR_OF_DAY.setValue("1");
         FIELD_PURGE_FREQUENCY.setValue("1");
@@ -65,6 +66,7 @@ public class SchedulingGlobalApiActionTest {
     public void validateConfigHasErrorWhenEmptyStringTest() {
         Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
+        schedulingUIConfig.setConfigFields();
 
         FIELD_HOUR_OF_DAY.setValue("");
         FIELD_PURGE_FREQUENCY.setValue("");
@@ -79,6 +81,7 @@ public class SchedulingGlobalApiActionTest {
     public void validateConfigHasErrorWhenValuesNotNumericTest() {
         Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
+        schedulingUIConfig.setConfigFields();
 
         FIELD_HOUR_OF_DAY.setValue("not a number");
         FIELD_PURGE_FREQUENCY.setValue("not a number");
@@ -98,6 +101,7 @@ public class SchedulingGlobalApiActionTest {
     public void validateConfigHasErrorWhenHourOutOfRangeTest() {
         Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
+        schedulingUIConfig.setConfigFields();
 
         FIELD_HOUR_OF_DAY.setValue("-1");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
@@ -119,6 +123,7 @@ public class SchedulingGlobalApiActionTest {
     public void validateConfigHasErrorWhenPurgeFrequencyOutOfRangeTest() {
         Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
+        schedulingUIConfig.setConfigFields();
 
         FIELD_PURGE_FREQUENCY.setValue("0");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);

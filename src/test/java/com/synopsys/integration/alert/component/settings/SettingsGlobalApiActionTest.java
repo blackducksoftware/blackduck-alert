@@ -33,6 +33,7 @@ public class SettingsGlobalApiActionTest {
     @BeforeEach
     public void initialize() {
         settingsUIConfig = new SettingsUIConfig();
+        settingsUIConfig.setConfigFields();
     }
 
     @Test

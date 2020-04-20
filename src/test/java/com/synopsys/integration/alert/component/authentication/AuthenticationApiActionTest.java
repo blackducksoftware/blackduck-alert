@@ -33,6 +33,7 @@ public class AuthenticationApiActionTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         AuthenticationUIConfig authenticationUIConfig = new AuthenticationUIConfig(filePersistenceUtil, encryptionValidator);
+        authenticationUIConfig.setConfigFields();
         AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
         FieldModel fieldModel = new FieldModel(authenticationDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
