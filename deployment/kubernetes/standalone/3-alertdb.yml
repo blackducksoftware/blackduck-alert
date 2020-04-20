@@ -28,7 +28,7 @@ items:
             - emptyDir: {}
               name: dir-alert-postgres
           containers:
-            - image: blackducksoftware/alert-database:1.0.0
+            - image: blackducksoftware/alert-database:1.0.1
               name: alertdb
               livenessProbe:
                 exec:
