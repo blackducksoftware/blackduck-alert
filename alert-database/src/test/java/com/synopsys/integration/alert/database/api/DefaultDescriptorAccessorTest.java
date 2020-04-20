@@ -1,0 +1,289 @@
+package com.synopsys.integration.alert.database.api;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+
+public class DefaultDescriptorAccessorTest {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
+
+    @Test
+    public void getRegisteredDescriptorsTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final DescriptorType descriptorType = DescriptorType.CHANNEL;
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity(descriptorType.name());
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        Mockito.when(registeredDescriptorRepository.findAll()).thenReturn(List.of(registeredDescriptorEntity));
+        Mockito.when(descriptorTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
+        List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptors();
+
+        assertEquals(1, registeredDescriptorModelList.size());
+        assertEquals(name, registeredDescriptorModelList.get(0).getName());
+        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+    }
+
+    @Test
+    public void getRegisteredDescriptorByKeyTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final DescriptorType descriptorType = DescriptorType.CHANNEL;
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorKey descriptorKey = createDescriptorKey("descriptorKey-test");
+        DescriptorKey emptyDescriptorKey = createDescriptorKey("bad-key");
+        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity(descriptorType.name());
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        Mockito.when(registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(registeredDescriptorRepository.findFirstByName(emptyDescriptorKey.getUniversalKey())).thenReturn(Optional.empty());
+        Mockito.when(descriptorTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModelEmpty = descriptorAccessor.getRegisteredDescriptorByKey(emptyDescriptorKey);
+
+        assertTrue(registeredDescriptorModel.isPresent());
+        assertFalse(registeredDescriptorModelEmpty.isPresent());
+        assertEquals(name, registeredDescriptorModel.get().getName());
+        assertEquals(descriptorType, registeredDescriptorModel.get().getType());
+    }
+
+    @Test
+    public void descriptorKeyFailureTest() throws Exception {
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(null, null, null, null);
+        DescriptorKey descriptorKey = createDescriptorKey("");
+
+        try {
+            descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey);
+            fail();
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    public void getRegisteredDescriptorsByTypeTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final DescriptorType descriptorType = DescriptorType.CHANNEL;
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity(descriptorType.name());
+        descriptorTypeEntity.setId(1L);
+
+        Mockito.when(descriptorTypeRepository.findFirstByType(descriptorType.name())).thenReturn(Optional.of(descriptorTypeEntity));
+        Mockito.when(registeredDescriptorRepository.findByTypeId(Mockito.any())).thenReturn(List.of(registeredDescriptorEntity));
+        Mockito.when(descriptorTypeRepository.findById(registeredDescriptorEntity.getTypeId())).thenReturn(Optional.of(descriptorTypeEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
+        List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
+
+        assertEquals(1, registeredDescriptorModelList.size());
+        assertEquals(name, registeredDescriptorModelList.get(0).getName());
+        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+    }
+
+    @Test
+    public void getRegisteredDescriptorsByTypeMissingDescriptorTypeTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final DescriptorType descriptorType = DescriptorType.CHANNEL;
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity(descriptorType.name());
+        descriptorTypeEntity.setId(1L);
+
+        Mockito.when(descriptorTypeRepository.findFirstByType(descriptorType.name())).thenReturn(Optional.empty());
+        Mockito.when(descriptorTypeRepository.save(Mockito.any())).thenReturn(descriptorTypeEntity);
+        Mockito.when(registeredDescriptorRepository.findByTypeId(Mockito.any())).thenReturn(List.of(registeredDescriptorEntity));
+        Mockito.when(descriptorTypeRepository.findById(registeredDescriptorEntity.getTypeId())).thenReturn(Optional.of(descriptorTypeEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
+        List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
+
+        assertEquals(1, registeredDescriptorModelList.size());
+        assertEquals(name, registeredDescriptorModelList.get(0).getName());
+        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+    }
+
+    @Test
+    public void descriptorTypeFailureTest() throws Exception {
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(null, null, null, null);
+        DescriptorType descriptorType = null;
+
+        try {
+            descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
+            fail();
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    public void getRegisteredDescriptorByIdTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final DescriptorType descriptorType = DescriptorType.CHANNEL;
+        final Long descriptorId = 2L;
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity(descriptorType.name());
+        descriptorTypeEntity.setId(2L);
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        Mockito.when(registeredDescriptorRepository.findById(descriptorId)).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(descriptorTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorById(descriptorId);
+
+        assertTrue(registeredDescriptorModel.isPresent());
+        assertEquals(typeId, registeredDescriptorModel.get().getId());
+        assertEquals(name, registeredDescriptorModel.get().getName());
+        assertEquals(descriptorType, registeredDescriptorModel.get().getType());
+    }
+
+    @Test
+    public void getFieldsForDescriptorTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
+        final ConfigContextEnum invalidConfigContextEnum = ConfigContextEnum.DISTRIBUTION;
+        final String definedFieldsKey = "defined-field-key-test";
+        Boolean isSensitive = Boolean.TRUE;
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        DescriptorKey descriptorKey = createDescriptorKey("descriptorKey-test");
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
+        configContextEntity.setId(3L);
+        DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(definedFieldsKey, isSensitive);
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DefinedFieldRepository definedFieldRepository = Mockito.mock(DefinedFieldRepository.class);
+        ConfigContextRepository configContextRepository = Mockito.mock(ConfigContextRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        Mockito.when(registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(configContextRepository.findFirstByContext(configContextEnum.name())).thenReturn(Optional.of(configContextEntity));
+        //Used to test the optional expression
+        Mockito.when(configContextRepository.findFirstByContext(invalidConfigContextEnum.name())).thenReturn(Optional.empty());
+        Mockito.when(configContextRepository.save(Mockito.any())).thenReturn(configContextEntity);
+        Mockito.when(definedFieldRepository.findByDescriptorIdAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(definedFieldEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, definedFieldRepository, configContextRepository, descriptorTypeRepository);
+        List<DefinedFieldModel> definedFieldModelList = descriptorAccessor.getFieldsForDescriptor(descriptorKey, configContextEnum);
+        List<DefinedFieldModel> emptyConfigContextDefinedFieldModelList = descriptorAccessor.getFieldsForDescriptor(descriptorKey, invalidConfigContextEnum);
+
+        assertEquals(1, definedFieldModelList.size());
+        assertEquals(definedFieldsKey, definedFieldModelList.get(0).getKey());
+        assertEquals(isSensitive, definedFieldModelList.get(0).getSensitive());
+        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModelList.get(0).getContexts());
+        assertEquals(configContextEnum, configContextList.get(0));
+
+        assertEquals(1, emptyConfigContextDefinedFieldModelList.size());
+        assertEquals(definedFieldsKey, emptyConfigContextDefinedFieldModelList.get(0).getKey());
+        assertEquals(isSensitive, emptyConfigContextDefinedFieldModelList.get(0).getSensitive());
+        List<ConfigContextEnum> configContextList2 = new ArrayList<>(emptyConfigContextDefinedFieldModelList.get(0).getContexts());
+        assertEquals(invalidConfigContextEnum, configContextList2.get(0));
+    }
+
+    @Test
+    public void getFieldsForDescriptorByIdTest() throws Exception {
+        final String name = "name-test";
+        final Long typeId = 1L;
+        final ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
+        final String definedFieldsKey = "defined-field-key-test";
+        Boolean isSensitive = Boolean.TRUE;
+        final Long descriptorId = 1L;
+
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(name, typeId);
+        registeredDescriptorEntity.setId(1L);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
+        configContextEntity.setId(3L);
+        DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(definedFieldsKey, isSensitive);
+
+        RegisteredDescriptorRepository registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        DefinedFieldRepository definedFieldRepository = Mockito.mock(DefinedFieldRepository.class);
+        ConfigContextRepository configContextRepository = Mockito.mock(ConfigContextRepository.class);
+        DescriptorTypeRepository descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
+
+        Mockito.when(registeredDescriptorRepository.findById(descriptorId)).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(configContextRepository.findFirstByContext(configContextEnum.name())).thenReturn(Optional.of(configContextEntity));
+        Mockito.when(definedFieldRepository.findByDescriptorIdAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(definedFieldEntity));
+
+        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, definedFieldRepository, configContextRepository, descriptorTypeRepository);
+        List<DefinedFieldModel> definedFieldModelList = descriptorAccessor.getFieldsForDescriptorById(descriptorId, configContextEnum);
+
+        assertEquals(1, definedFieldModelList.size());
+        assertEquals(definedFieldsKey, definedFieldModelList.get(0).getKey());
+        assertEquals(isSensitive, definedFieldModelList.get(0).getSensitive());
+        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModelList.get(0).getContexts());
+        assertEquals(configContextEnum, configContextList.get(0));
+    }
+
+    private DescriptorKey createDescriptorKey(String key) {
+        DescriptorKey testDescriptorKey = new DescriptorKey() {
+            private static final long serialVersionUID = 690470018987365698L;
+
+            @Override
+            public String getUniversalKey() {
+                return key;
+            }
+
+            @Override
+            public String getDisplayName() {
+                return key;
+            }
+        };
+        return testDescriptorKey;
+    }
+}
