@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     @Override
     public void checkTaskEnabled() {
-        if (skipPhoneHome) {
+        if (getSkipPhoneHome()) {
             logger.info("Will not schedule the task {}. {} is TRUE. ", getTaskName(), PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE);
             setEnabled(false);
         } else {
@@ -114,7 +115,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
             for (ProviderPhoneHomeHandler handler : providerHandlers) {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
                     phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
@@ -123,7 +124,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
                     PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
                     PhoneHomeRequestBody requestBody = handler.populatePhoneHomeData(configuration, phoneHomeBuilder).build();
                     PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(requestBody, System.getenv());
-                    Boolean taskSucceeded = phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+                    boolean taskSucceeded = BooleanUtils.isTrue(phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT));
                     if (!taskSucceeded) {
                         logger.debug("Phone home task timed out and did not send any results.");
                     }
@@ -177,7 +178,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return createdDistributions.entrySet().stream().map(entry -> entry.getKey() + "(" + entry.getValue() + ")").collect(Collectors.toSet());
     }
 
-    private Boolean hasAuditSuccess(UUID jobId) {
+    private boolean hasAuditSuccess(UUID jobId) {
         return auditUtility.findFirstByJobId(jobId)
                    .map(AuditJobStatusModel::getStatus)
                    .stream()
@@ -187,6 +188,10 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private void updateMetaDataCount(Map<String, Integer> createdDistributions, String name) {
         Integer channelCount = createdDistributions.getOrDefault(name, 0) + 1;
         createdDistributions.put(name, channelCount);
+    }
+
+    public boolean getSkipPhoneHome() {
+        return BooleanUtils.isTrue(skipPhoneHome);
     }
 
 }

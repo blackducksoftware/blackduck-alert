@@ -74,23 +74,23 @@ public abstract class Descriptor extends Stringable {
         return type;
     }
 
-    public void addGlobalUiConfig(final UIConfig uiConfig) {
+    public void addGlobalUiConfig(UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
     }
 
-    public void addDistributionUiConfig(final UIConfig uiConfig) {
+    public void addDistributionUiConfig(UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
     }
 
-    public Optional<UIConfig> getUIConfig(final ConfigContextEnum actionApiType) {
+    public Optional<UIConfig> getUIConfig(ConfigContextEnum actionApiType) {
         return Optional.ofNullable(uiConfigs.get(actionApiType));
     }
 
-    public Optional<DescriptorMetadata> createMetaData(final ConfigContextEnum context) {
+    public Optional<DescriptorMetadata> createMetaData(ConfigContextEnum context) {
         return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
     }
 
-    public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
+    public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
         return getUIConfig(context)
                    .map(UIConfig::createFields)
                    .orElse(List.of())
@@ -107,17 +107,17 @@ public abstract class Descriptor extends Stringable {
         return uiConfigs.size() > 0;
     }
 
-    public boolean hasUIConfigForType(final ConfigContextEnum actionApiType) {
+    public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
         return uiConfigs.containsKey(actionApiType);
     }
 
-    private DescriptorMetadata createMetaData(final UIConfig uiConfig, final ConfigContextEnum context) {
-        final String label = uiConfig.getLabel();
-        final String urlName = uiConfig.getUrlName();
-        final String description = uiConfig.getDescription();
-        final boolean autoGenerateUI = uiConfig.autoGenerateUI();
-        final String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestLabel());
+    private DescriptorMetadata createMetaData(UIConfig uiConfig, ConfigContextEnum context) {
+        String label = uiConfig.getLabel();
+        String urlName = uiConfig.getUrlName();
+        String description = uiConfig.getDescription();
+        boolean autoGenerateUI = uiConfig.autoGenerateUI();
+        String componentNamespace = uiConfig.getComponentNamespace();
+        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestFields());
     }
 
 }

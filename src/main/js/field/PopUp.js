@@ -21,9 +21,8 @@ class PopUp extends Component {
 
     render() {
         const {
-            children, show, title, cancelLabel, okLabel, handleSubmit, performingAction, testLabel, handleTest, actionMessage
+            children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage
         } = this.props;
-        const includeTest = Boolean(testLabel) && Boolean(handleTest);
         return (
             <div>
                 <Modal size="lg" show={show} onHide={this.internalCancel}>
@@ -44,6 +43,7 @@ class PopUp extends Component {
                                 submitId="popup-submit"
                                 testId="popup-test"
                                 includeCancel
+                                includeSave={includeSave}
                                 includeTest={includeTest}
                                 onCancelClick={() => {
                                     this.internalCancel();
@@ -78,7 +78,9 @@ PopUp.propTypes = {
     okLabel: PropTypes.string,
     testLabel: PropTypes.string,
     performingAction: PropTypes.bool,
-    actionMessage: PropTypes.string
+    actionMessage: PropTypes.string,
+    includeSave: PropTypes.bool,
+    includeTest: PropTypes.bool
 };
 
 PopUp.defaultProps = {
@@ -90,7 +92,9 @@ PopUp.defaultProps = {
     handleSubmit: (event) => true,
     handleTest: null,
     performingAction: false,
-    actionMessage: null
+    actionMessage: null,
+    includeSave: true,
+    includeTest: false
 };
 
 export default PopUp;

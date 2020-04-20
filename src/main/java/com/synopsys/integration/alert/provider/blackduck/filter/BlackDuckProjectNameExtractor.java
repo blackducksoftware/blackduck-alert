@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
@@ -81,7 +81,7 @@ public class BlackDuckProjectNameExtractor {
             BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
             String bomComponentUri = notificationView.getContent().getBomComponent();
             try {
-                VersionBomComponentView bomComponentView = blackDuckService.getResponse(bomComponentUri, VersionBomComponentView.class);
+                ProjectVersionComponentView bomComponentView = blackDuckService.getResponse(bomComponentUri, ProjectVersionComponentView.class);
                 return getProjectName(blackDuckService, bomComponentView)
                            .stream()
                            .collect(Collectors.toSet());
@@ -126,7 +126,7 @@ public class BlackDuckProjectNameExtractor {
                    .collect(Collectors.toSet());
     }
 
-    private Optional<String> getProjectName(BlackDuckService blackDuckService, VersionBomComponentView versionBomComponent) {
+    private Optional<String> getProjectName(BlackDuckService blackDuckService, ProjectVersionComponentView versionBomComponent) {
         try {
             Optional<String> versionBomComponentHref = versionBomComponent.getHref();
             if (versionBomComponentHref.isPresent()) {

@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.web.certificates;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
@@ -52,6 +51,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 @RequestMapping(CertificatesController.API_BASE_URL)
 public class CertificatesController extends BaseController {
     public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
+    private static final String CERTIFICATE_IMPORT_ERROR_FORMAT = "There was an issue importing the certificate: {}";
     private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
     private DescriptorKey descriptorKey;
@@ -71,7 +71,7 @@ public class CertificatesController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> readCertificates() {
-        if (!hasPermission(authorizationManager::hasReadPermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(actions.readCertificates()));
@@ -79,7 +79,7 @@ public class CertificatesController extends BaseController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> readCertificate(@PathVariable Long id) {
-        if (!hasPermission(authorizationManager::hasReadPermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         Optional<CertificateModel> certificate = actions.readCertificate(id);
@@ -91,15 +91,20 @@ public class CertificatesController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> importCertificate(@RequestBody CertificateModel certificateModel) {
-        if (!hasPermission(authorizationManager::hasCreatePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
             CertificateModel certificate = actions.createCertificate(certificateModel);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
+        } catch (AlertFieldException ex) {
+            String message = ex.getMessage();
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
+            logger.debug(message, ex);
+            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue importing the certificate: {}", message);
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
         }
@@ -107,7 +112,7 @@ public class CertificatesController extends BaseController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<String> updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
-        if (!hasPermission(authorizationManager::hasWritePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -116,6 +121,11 @@ public class CertificatesController extends BaseController {
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
             }
             return responseFactory.createNotFoundResponse("Certificate resource not found");
+        } catch (AlertFieldException ex) {
+            String message = ex.getMessage();
+            logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
+            logger.debug(message, ex);
+            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);
@@ -126,7 +136,7 @@ public class CertificatesController extends BaseController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteCertificate(@PathVariable Long id) {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -138,9 +148,5 @@ public class CertificatesController extends BaseController {
             logger.debug(message, ex);
             return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue deleting the certificate. %s", message));
         }
-    }
-
-    private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
-        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
 }

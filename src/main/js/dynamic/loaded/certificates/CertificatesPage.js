@@ -146,7 +146,8 @@ class CertificatesPage extends Component {
     }
 
     render() {
-        const { fetching, inProgress, certificates, certificateDeleteError, label, description } = this.props;
+        const { fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors } = this.props;
+        const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         return (
             <div>
                 <div>
@@ -167,7 +168,7 @@ class CertificatesPage extends Component {
                         columns={this.createColumns()}
                         newButton={true}
                         deleteButton={true}
-                        hasFieldErrors={false}
+                        hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={certificateDeleteError}
                         inProgress={inProgress}
                         fetching={fetching}
@@ -213,7 +214,7 @@ const mapStateToProps = state => ({
     certificateDeleteError: state.certificates.certificateDeleteError,
     inProgress: state.certificates.inProgress,
     fetching: state.certificates.fetching,
-    fieldErrors: state.users.fieldErrors,
+    fieldErrors: state.certificates.fieldErrors,
     saveStatus: state.certificates.saveStatus,
     deleteSuccess: state.certificates.deleteSuccess
 });

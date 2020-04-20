@@ -88,7 +88,7 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                ConfigurationModel emailConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
                                                      .stream()
                                                      .findFirst()
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
@@ -108,7 +108,7 @@ public class UpdateEmailService {
                 logger.debug("Problem sending version update email.", e);
             }
         } else {
-            logger.debug("No email address configured for user: " + username);
+            logger.debug("No email address configured for user: {}", username);
         }
     }
 

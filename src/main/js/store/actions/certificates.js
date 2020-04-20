@@ -9,11 +9,10 @@ import {
     CERTIFICATES_SAVE_ERROR,
     CERTIFICATES_SAVED,
     CERTIFICATES_SAVING
-} from "store/actions/types";
+} from 'store/actions/types';
 
 import * as RequestUtilities from 'util/RequestUtilities'
 import { verifyLoginByStatus } from 'store/actions/session';
-import { fetchUsers } from 'store/actions/users';
 
 const CERTIFICATES_API_URL = `/alert/api/certificates`;
 
@@ -166,7 +165,6 @@ export function saveCertificate(certificate) {
                 });
             }
         })
-        .then(() => dispatch(fetchUsers()))
         .catch(console.error);
     };
 }
@@ -198,7 +196,6 @@ export function deleteCertificate(certificateId) {
                 });
             }
         })
-        .then(() => dispatch(fetchUsers()))
         .catch(console.error);
     };
 }

@@ -26,9 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -42,9 +44,10 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     @Override
-    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
-        FieldAccessor updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(fieldAccessor, destination);
-        return super.testConfig(jobId, destination, updatedFieldAccessor);
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+        String destination = fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse("");
+        FieldAccessor updatedFieldAccessor = emailActionHelper.createUpdatedFieldAccessor(registeredFieldValues, destination);
+        return super.testConfig(jobId, fieldModel, updatedFieldAccessor);
     }
 
 }

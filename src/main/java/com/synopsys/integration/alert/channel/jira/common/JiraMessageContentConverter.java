@@ -67,7 +67,7 @@ public class JiraMessageContentConverter {
         return issues;
     }
 
-    protected List<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) throws IntegrationException {
+    protected List<IssueTrackerRequest> updateIssueByTopLevelAction(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ItemOperation action) {
         if (ItemOperation.DELETE == action) {
             logger.debug("Attempting to resolve issues in the project {} for Provider: {}, Provider Project: {}[{}].", issueConfig.getProjectKey(), providerName, topic.getValue(), nullableSubTopic);
             String trackingKey = createAdditionalTrackingKey(null);
@@ -81,7 +81,7 @@ public class JiraMessageContentConverter {
         return List.of();
     }
 
-    protected List<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(IssueConfig issueConfig, String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic,
+    protected List<IssueTrackerRequest> createOrUpdateIssuesByComponentGroup(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic,
         SetMap<String, ComponentItem> groupedComponentItems)
         throws IntegrationException {
         List<IssueTrackerRequest> issues = new LinkedList<>();
@@ -133,7 +133,7 @@ public class JiraMessageContentConverter {
         if (messageContent.isTopLevelActionOnly()) {
             requests = updateIssueByTopLevelAction(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.getAction().orElse(ItemOperation.INFO));
         } else {
-            requests = createOrUpdateIssuesByComponentGroup(issueConfig, providerName, providerUrl, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
+            requests = createOrUpdateIssuesByComponentGroup(providerName, providerUrl, topic, nullableSubTopic, messageContent.groupRelatedComponentItems());
         }
         return requests;
     }

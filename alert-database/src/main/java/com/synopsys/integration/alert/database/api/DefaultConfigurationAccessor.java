@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -240,11 +241,11 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
             throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
         }
-        return getConfigurationByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
+        return getConfigurationsByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
     }
 
     @Override
@@ -285,7 +286,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
         if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
         }
@@ -430,7 +431,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                                                         .findById(fieldValueEntity.getFieldId())
                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
             String fieldKey = definedFieldEntity.getKey();
-            ConfigurationFieldModel fieldModel = definedFieldEntity.getSensitive() ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
+            ConfigurationFieldModel fieldModel = BooleanUtils.isTrue(definedFieldEntity.getSensitive()) ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
             String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
             fieldModel.setFieldValue(decryptedValue);
             newModel.put(fieldModel);
@@ -491,14 +492,14 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
     }
 
-    private String encrypt(String value, Boolean shouldEncrypt) {
+    private String encrypt(String value, boolean shouldEncrypt) {
         if (shouldEncrypt && value != null) {
             return encryptionUtility.encrypt(value);
         }
         return value;
     }
 
-    private String decrypt(String value, Boolean shouldDecrypt) {
+    private String decrypt(String value, boolean shouldDecrypt) {
         if (shouldDecrypt && value != null) {
             return encryptionUtility.decrypt(value);
         }

@@ -40,11 +40,14 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
 @Component
 public class PKIXErrorResponseFactory {
-    private final Logger logger = LoggerFactory.getLogger(PKIXErrorResponseFactory.class);
-    private final String BLACKDUCK_GITHUB_DEPLOYMENT_URL = "https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment";
-    private final String ALERT_DEPLOYMENT_DOCKER_SWARM = "docker-swarm";
-    private final String ALERT_DEPLOYMENT_DOCKER_COMPOSE = "docker-compose";
-    private final String ALERT_DEPLOYMENT_KUBERNETES = "kubernetes";
+    private static final Logger logger = LoggerFactory.getLogger(PKIXErrorResponseFactory.class);
+    private static final String BLACKDUCK_GITHUB_DEPLOYMENT_URL = "https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment";
+    private static final String ALERT_DEPLOYMENT_DOCKER_SWARM = "docker-swarm";
+    private static final String ALERT_DEPLOYMENT_DOCKER_COMPOSE = "docker-compose";
+    private static final String ALERT_DEPLOYMENT_KUBERNETES = "kubernetes";
+
+    private static final String PKIX_HEADER = "There were issues with your Certificates.";
+    private static final String PKIX_TITLE = "To resolve this issue, use the appropriate link below to properly install your certificates and then restart Alert.";
 
     private Gson gson;
     private ResponseFactory responseFactory;
@@ -58,7 +61,7 @@ public class PKIXErrorResponseFactory {
     public Optional<ResponseEntity<String>> createSSLExceptionResponse(String id, Exception e) {
         if (isPKIXError(e)) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
-            Map<String, Object> pkixErrorBody = Map.of("header", createHeader(), "title", createTitle(), "info", createInfo());
+            Map<String, Object> pkixErrorBody = Map.of("header", PKIX_HEADER, "title", PKIX_TITLE, "info", createInfo());
             String pkixError = gson.toJson(pkixErrorBody);
             ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(id, pkixError);
             responseBodyBuilder.put("isDetailed", true);
@@ -79,14 +82,6 @@ public class PKIXErrorResponseFactory {
         }
 
         return false;
-    }
-
-    private String createHeader() {
-        return "There were issues with your Certificates.";
-    }
-
-    private String createTitle() {
-        return "To resolve this issue, use the appropriate link below to properly install your certificates and then restart Alert.";
     }
 
     private List<String> createInfo() {

@@ -30,7 +30,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '6.0.0-SNAPSHOT'
+version = '6.0.0-SIGQA3-SNAPSHOT'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.synopsys.integration.solution'
@@ -130,8 +130,6 @@ distributions {
             from('alert-database/src/main/resources/scripts/export_h2_tables.sql') { into 'upgradeResources' }
             from('alert-database/src/main/resources/scripts/import_postgres_tables.sql') { into 'upgradeResources' }
             from('src/main/resources/images/') { into 'images/' }
-            from('src/main/resources/templates/email') { into 'templates/email' }
-            from('src/main/resources/templates/msteams') { into 'templates/msteams' }
             mkdir 'email/attachments'
         }
     }
@@ -218,12 +216,11 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                '--spring.datasource.url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
-                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.6:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.datasource.url=jdbc:tc:postgresql:11.7:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:11.7:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
-                                "--alert.templates.dir=${project.buildDir}/resources/main/templates",
                                 "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]
     def commandArray = []
     commandArray.add('java')
@@ -322,13 +319,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-compose/**", "docker-swarm/**", "kubernetes/**", "helm/**"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-compose/hub"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-compose/standalone"
+        include "docker-swarm/**", "kubernetes/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/hub"
@@ -347,14 +338,13 @@ task copyDeploymentFiles(type: Copy) {
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-compose/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-compose/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/README.md", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
 

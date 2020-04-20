@@ -173,6 +173,10 @@
             <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
             <column name="NAME">component_certificates</column>
         </insert>
+        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_tasks</column>
+        </insert>
     </changeSet>
     <!-- Initialize defined fields -->
     <changeSet author="gavink" id="2019-12-11-12-28-09-422">
@@ -505,10 +509,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">settings.ldap.group.role.attribute</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">scheduling.accumulator.next.run</column>
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
@@ -1043,10 +1043,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.daily.processor.hour')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
@@ -1170,79 +1166,79 @@
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.server')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.dn')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.manager.password')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.authentication.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.referral')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.base')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.search.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.dn.patterns')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.user.attributes')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.base')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.search.filter')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.role.attribute')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.enabled')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.force.auth')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.id')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.entity.base.url')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.metadata.file')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
@@ -1258,7 +1254,7 @@
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.role.mapping.name.user')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.role.attribute.mapping.name')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
@@ -1649,10 +1645,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.ldap.group.role.attribute')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.accumulator.next.run')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">

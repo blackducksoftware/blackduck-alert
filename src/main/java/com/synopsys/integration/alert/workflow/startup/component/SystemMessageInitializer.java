@@ -78,7 +78,7 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("Validating configured providers: ");
         for (Provider provider : providers) {
             try {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     valid = valid && provider.validate(configuration);
                 }

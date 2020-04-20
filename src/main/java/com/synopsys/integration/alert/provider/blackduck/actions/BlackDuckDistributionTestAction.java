@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -49,10 +50,10 @@ public class BlackDuckDistributionTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String configId, String description, FieldAccessor fieldAccessor) throws IntegrationException {
-        Optional<String> optionalProviderConfigName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+        Optional<String> optionalProviderConfigName = registeredFieldValues.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (optionalProviderConfigName.isPresent()) {
-            Optional<String> projectNamePattern = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            Optional<String> projectNamePattern = registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (projectNamePattern.isPresent()) {
                 validatePatternMatchesProject(optionalProviderConfigName.get(), projectNamePattern.get());
             }

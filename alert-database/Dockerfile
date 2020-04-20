@@ -1,8 +1,6 @@
-FROM postgres:11.6-alpine
+FROM postgres:11.7-alpine
 
 ENV POSTGRES_DB alertdb
-ENV POSTGRES_USER sa
-ENV POSTGRES_PASSWORD blackduck
 
 ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
 

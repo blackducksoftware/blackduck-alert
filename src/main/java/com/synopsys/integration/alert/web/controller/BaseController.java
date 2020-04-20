@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import java.util.function.BiFunction;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -50,5 +54,9 @@ public abstract class BaseController {
             message += " : " + integrationRestException.getHttpStatusMessage();
         }
         return responseFactory.createMessageResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), id, message);
+    }
+
+    public boolean hasGlobalPermission(BiFunction<String, String, Boolean> permissionChecker, DescriptorKey descriptorKey) {
+        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
 }

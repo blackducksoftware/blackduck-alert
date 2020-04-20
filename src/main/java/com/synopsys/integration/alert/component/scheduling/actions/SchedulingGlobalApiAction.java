@@ -67,23 +67,6 @@ public class SchedulingGlobalApiAction extends ApiAction {
 
     @Override
     public FieldModel afterGetAction(FieldModel fieldModel) {
-        // 2/24/2020 ps: removing the provider specific lookup because the next run time should be shown with the provider data.
-        //        Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
-        //        String blackDuckGlobalConfigName = keyToValues.get(ProviderGlobalUIConfig.KEY_PROVIDER_CONFIG_NAME)
-        //                                               .getValue()
-        //                                               .orElseThrow();
-        // FIXME do this dynamically:
-        //        try {
-        //            Optional<ConfigurationModel> configurationModel = configurationAccessor.getProviderConfigurationByName(blackDuckGlobalConfigName);
-        //            Long configId = configurationModel.map(ConfigurationModel::getConfigurationId).orElse(ProviderProperties.UNKNOWN_CONFIG_ID);
-        //            String accumulatorTaskName = ProviderTask.computeProviderTaskName(blackDuckProviderKey, configId, BlackDuckAccumulator.class);
-        //            String blackDuckNextRun = taskManager.getDifferenceToNextRun(accumulatorTaskName, TimeUnit.SECONDS).map(String::valueOf).orElse("");
-        //            fieldModel.putField(SchedulingDescriptor.KEY_BLACKDUCK_NEXT_RUN, new FieldValueModel(List.of(blackDuckNextRun), true));
-        //        } catch (AlertDatabaseConstraintException ex) {
-        //            logger.error("Error finding provider configuration to provide updated task information.", ex);
-        //        }
-        // end of block to clean up
-
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(DailyTask.class)).orElse("")), true));
         String processFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(String.valueOf(DailyTask.DEFAULT_HOUR_OF_DAY));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of(processFrequency), true));

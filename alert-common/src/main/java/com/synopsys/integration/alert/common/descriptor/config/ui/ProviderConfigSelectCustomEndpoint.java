@@ -61,7 +61,7 @@ public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         if (descriptorKey.isPresent()) {
-            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
             return configurationModels.stream()
                        .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                        .map(FieldAccessor::new)

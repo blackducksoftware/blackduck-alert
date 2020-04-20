@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -47,7 +48,7 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String jobId, String destination, FieldAccessor fieldAccessor) throws IntegrationException {
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor fieldAccessor) throws IntegrationException {
         DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
         return distributionChannel.sendMessage(event);
     }

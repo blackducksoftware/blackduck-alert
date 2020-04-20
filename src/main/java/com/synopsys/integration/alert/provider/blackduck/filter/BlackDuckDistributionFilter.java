@@ -53,7 +53,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
         }
 
         FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-        Boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         if (filterByProject) {
             Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             String nullablePattern = fieldAccessor.getStringOrNull(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
@@ -70,9 +70,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
     private boolean doProjectsFromNotificationMatchConfiguredProjects(AlertNotificationModel notification, Collection<String> configuredProjects, @Nullable String nullablePattern) {
         Collection<String> notificationProjectNames = blackDuckProjectNameExtractor.getProjectNames(getCache(), notification);
         for (String notificationProjectName : notificationProjectNames) {
-            if (configuredProjects.contains(notificationProjectName)) {
-                return true;
-            } else if (null != nullablePattern && notificationProjectName.matches(nullablePattern)) {
+            if (configuredProjects.contains(notificationProjectName) || (null != nullablePattern && notificationProjectName.matches(nullablePattern))) {
                 return true;
             }
         }

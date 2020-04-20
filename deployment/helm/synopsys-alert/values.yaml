@@ -4,6 +4,10 @@
 
 registry: "docker.io/blackducksoftware"
 
+# Storage configurations
+enablePersistentStorage: true
+storageClass: # it will apply to all PVC's storage class but it can be override at container level
+
 # alert - configurations for the Alert Pod
 alert:
   imageTag: VERSION_TOKEN
@@ -14,15 +18,19 @@ alert:
       memory: "2560Mi"
     requests:
       memory: "2560Mi"
+  persistentVolumeClaimName: ""
+  claimSize: "5G"
+  storageClass: ""
+  volumeName: ""
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
-# Set if Alert will be deployed with a Black Duck instance
-deployAlertWithBlackDuck: false
+  securityContext: {}
+  podSecurityContext: {}
 
 # enableStandalone deploys a cfssl instance with Alert
 enableStandalone: true
+# cfssl - configurations for the cfssl Pod
 cfssl:
   imageTag: 1.0.0
   registry: "" # override the docker registry at container level
@@ -34,26 +42,18 @@ cfssl:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  securityContext: {}
+  podSecurityContext: {}
 
-# Storage configurations
-enablePersistentStorage: false
-persistentVolumeClaimName: ""
-pvcSize: "5G"
-storageClassName: ""
-volumeName: ""
-
-# image pull secret to download the images (mostly applicable for air gapped customers)
-# Format: a list of objects (key: value). Example:
-# imagePullSecrets
-# - name: registryName
-imagePullSecrets: []
+# image pull secret to download images (mostly applicable for air gapped customers)
+imagePullSecrets: [] # array of strings delimited by comma
 
 # Used to start or stop the alert instance. Set to "Running" to start, or "Stopped" to stop
 status: Running
 
 # Expose Alert's User Interface
 exposeui: true
-exposedServiceType: NodePort # ClusterIP | NodePort | LoadBalancer
+exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
 
 # environs is a map of *additional* environs to add to the Alert's ConfigMap
 # The follwing environs are already set in the ConfigMap
@@ -76,3 +76,8 @@ setEncryptionSecretData: false
 # Alert's certificate information
 webserverCustomCertificatesSecretName: "" # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=WEBSERVER_CUSTOM_CERT_FILE=tls.crt --from-file=WEBSERVER_CUSTOM_KEY_FILE=tls.key
 javaKeystoreSecretName: ""                # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=cacerts  
+
+# Set if Alert will be deployed with a Black Duck instance
+deployAlertWithBlackDuck: false
+blackDuckName: ""       # If true, you must provide the ReleaseName of the Black Duck instance
+blackDuckNamespace: ""  # If true, you must provide the Namspace of the Black Duck instance

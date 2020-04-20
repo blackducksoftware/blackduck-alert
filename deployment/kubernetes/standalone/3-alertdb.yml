@@ -1,0 +1,71 @@
+kind: List
+apiVersion: v1
+items:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: alertdb
+    spec:
+      selector:
+        matchLabels:
+          app: alertdb
+          tier: alertdb
+      replicas: 1
+      template:
+        metadata:
+          name: alertdb
+          labels:
+            app: alertdb
+            tier: alertdb
+        spec:
+          volumes:
+            # NOTE: replace the emptyDir volume with a persistent volume or all the data will be lost when the pod is destroyed.
+            # dir-alert should be the persistent volume used by the alert service.  This will allow upgrades from previous versions
+            # to the current version.
+            # dir-alert-postgres should be the persistent volume for the alertdb service and will contain the postgres database data.
+            - emptyDir: {}
+              name: dir-alert
+            - emptyDir: {}
+              name: dir-alert-postgres
+          containers:
+            - image: blackducksoftware/alert-database:1.0.1
+              name: alertdb
+              livenessProbe:
+                exec:
+                  command:
+                    - /usr/local/bin/alertdb-healthcheck.sh
+                initialDelaySeconds: 240
+                timeoutSeconds: 10
+                periodSeconds: 30
+                failureThreshold: 5
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  memory: 640M
+                limits:
+                  memory: 640M
+              envFrom:
+                - configMapRef:
+                    name: blackduck-alert-config
+              volumeMounts:
+                - mountPath: /opt/blackduck/alert/alert-config
+                  name: dir-alert
+                - mountPath: /var/lib/postgresql/data
+                  name: dir-alert-postgres
+              ports:
+                - containerPort: 5432
+                  protocol: TCP
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: alertdb
+    spec:
+      ports:
+        - name: 5432-postgres
+          protocol: TCP
+          port: 5432
+          targetPort: 5432
+      selector:
+        app: alertdb
+    status:
+      loadBalancer: {}

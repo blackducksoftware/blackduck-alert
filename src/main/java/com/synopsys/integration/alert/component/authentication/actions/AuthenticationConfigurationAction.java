@@ -32,8 +32,10 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 public class AuthenticationConfigurationAction extends ConfigurationAction {
 
     @Autowired
-    protected AuthenticationConfigurationAction(final AuthenticationDescriptorKey descriptorKey, AuthenticationApiAction authenticationApiAction) {
+    protected AuthenticationConfigurationAction(AuthenticationDescriptorKey descriptorKey, AuthenticationApiAction authenticationApiAction, AuthenticationTestAction authenticationTestAction) {
         super(descriptorKey);
         addGlobalApiAction(authenticationApiAction);
+        addGlobalTestAction(authenticationTestAction);
+
     }
 }

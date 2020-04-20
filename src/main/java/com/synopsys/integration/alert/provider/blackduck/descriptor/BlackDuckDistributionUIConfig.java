@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
-    private final String LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "Policy Notification Type Filter";
-    private final String LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "Vulnerability Notification Type Filter";
+    private static final String LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "Policy Notification Type Filter";
+    private static final String LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "Vulnerability Notification Type Filter";
 
-    private final String DESCRIPTION_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply).";
-    private final String DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply).";
+    private static final String DESCRIPTION_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply).";
+    private static final String DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply).";
 
-    private final String PANEL_NOTIFICATION_FILTERING = "Black Duck Notification Filtering";
+    private static final String PANEL_NOTIFICATION_FILTERING = "Black Duck Notification Filtering";
 
     @Autowired
     public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent) {

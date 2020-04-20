@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class BlackDuckResponseCache {
     public <T extends BlackDuckResponse> Optional<T> getItem(Class<T> responseClass, String url) {
         try {
             Future<Optional<T>> optionalProjectVersionFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
-            if (bucket.hasAnyErrors()) {
+            if (BooleanUtils.isTrue(bucket.hasAnyErrors())) {
                 Optional<Exception> error = bucket.getError(url);
                 error.ifPresent(exception -> logger.error(String.format("There was a problem retrieving the link '%s'.", url), exception));
             }

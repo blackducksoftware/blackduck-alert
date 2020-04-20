@@ -8,10 +8,8 @@ public class TestAlertProperties extends AlertProperties {
     public static final String PROPERTY_USER_DIR = "user.dir";
     public static final String RESOURCES_PATH = "/src/main/resources";
     public static final String IMAGES_PATH = RESOURCES_PATH + "/images/";
-    public static final String TEMPLATES_PATH = RESOURCES_PATH + "/templates/";
 
     private String alertConfigHome;
-    private String alertTemplatesDir;
     private String alertImagesDir;
     private String alertSecretsDir;
     private Boolean alertTrustCertificate;
@@ -19,14 +17,13 @@ public class TestAlertProperties extends AlertProperties {
     private String alertProxyPort;
     private String alertProxyUsername;
     private String alertProxyPassword;
-    private Boolean sslEnabled = false;
+    private boolean sslEnabled = false;
     private String encryptionPassword;
     private String encryptionSalt;
 
     public TestAlertProperties() {
         String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
         alertImagesDir = userDirectory + IMAGES_PATH;
-        alertTemplatesDir = userDirectory + TEMPLATES_PATH;
 
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";
@@ -38,17 +35,8 @@ public class TestAlertProperties extends AlertProperties {
         return alertConfigHome;
     }
 
-    public void setAlertConfigHome(final String alertConfigHome) {
+    public void setAlertConfigHome(String alertConfigHome) {
         this.alertConfigHome = alertConfigHome;
-    }
-
-    @Override
-    public String getAlertTemplatesDir() {
-        return alertTemplatesDir;
-    }
-
-    public void setAlertTemplatesDir(final String alertTemplatesDir) {
-        this.alertTemplatesDir = alertTemplatesDir;
     }
 
     @Override
@@ -56,7 +44,7 @@ public class TestAlertProperties extends AlertProperties {
         return alertImagesDir;
     }
 
-    public void setAlertImagesDir(final String alertImagesDir) {
+    public void setAlertImagesDir(String alertImagesDir) {
         this.alertImagesDir = alertImagesDir;
     }
 
@@ -65,16 +53,16 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.ofNullable(alertTrustCertificate);
     }
 
-    public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
+    public void setAlertTrustCertificate(Boolean alertTrustCertificate) {
         this.alertTrustCertificate = alertTrustCertificate;
     }
 
     @Override
-    public Boolean getSslEnabled() {
+    public boolean getSslEnabled() {
         return this.sslEnabled;
     }
 
-    public void setSslEnabled(final Boolean sslEnabled) {
+    public void setSslEnabled(boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
     }
 
@@ -83,7 +71,7 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.of(encryptionSalt);
     }
 
-    public void setEncryptionPassword(final String encryptionPassword) {
+    public void setEncryptionPassword(String encryptionPassword) {
         this.encryptionPassword = encryptionPassword;
     }
 
@@ -92,7 +80,7 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.of(encryptionPassword);
     }
 
-    public void setEncryptionSalt(final String encryptionSalt) {
+    public void setEncryptionSalt(String encryptionSalt) {
         this.encryptionSalt = encryptionSalt;
     }
 
@@ -101,7 +89,7 @@ public class TestAlertProperties extends AlertProperties {
         return this.alertSecretsDir;
     }
 
-    public void setAlertSecretsDir(final String alertSecretsDir) {
+    public void setAlertSecretsDir(String alertSecretsDir) {
         this.alertSecretsDir = alertSecretsDir;
     }
 }

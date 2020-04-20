@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,7 +55,6 @@ import com.synopsys.integration.alert.web.model.RolePermissionModel;
 @Component
 @Transactional
 public class RoleActions {
-    private static final Logger logger = LoggerFactory.getLogger(RoleActions.class);
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final AuthorizationUtility authorizationUtility;
     private final AuthorizationManager authorizationManager;

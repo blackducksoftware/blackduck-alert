@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 
 public class SAMLContext implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+    private static final long serialVersionUID = 4696749244318473215L;
     private AuthenticationDescriptorKey descriptorKey;
     private transient ConfigurationAccessor configurationAccessor;
 
@@ -49,14 +50,14 @@ public class SAMLContext implements Serializable {
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {
         try {
-            Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
+            Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
                                                           .stream()
                                                           .findFirst();
             return isSAMLEnabled(samlConfig);

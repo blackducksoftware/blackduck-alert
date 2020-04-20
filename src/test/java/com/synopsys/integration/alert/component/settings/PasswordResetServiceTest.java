@@ -78,7 +78,7 @@ public class PasswordResetServiceTest {
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
         ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
+        Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
         PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
@@ -118,7 +118,7 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
@@ -150,10 +150,9 @@ public class PasswordResetServiceTest {
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
 
         ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
+        Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("invalid dir");
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
         PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
@@ -164,7 +163,6 @@ public class PasswordResetServiceTest {
             // PASS
         }
 
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn(null);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");

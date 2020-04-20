@@ -67,7 +67,7 @@ public class FieldAccessor extends AlertSerializableModel {
         return value.map(Boolean::parseBoolean);
     }
 
-    public Boolean getBooleanOrFalse(String key) {
+    public boolean getBooleanOrFalse(String key) {
         return getBoolean(key).orElse(Boolean.FALSE);
     }
 

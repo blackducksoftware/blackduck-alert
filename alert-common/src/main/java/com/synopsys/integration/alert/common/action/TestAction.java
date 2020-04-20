@@ -29,13 +29,15 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class TestAction {
     public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
     public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
+    public static final String KEY_DESTINATION_NAME = "test.field.destination.name";
 
-    public abstract MessageResult testConfig(String configId, String destination, FieldAccessor fieldAccessor) throws IntegrationException;
+    public abstract MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException;
 
     public ProviderMessageContent createTestNotificationContent(FieldAccessor fieldAccessor, ItemOperation operation, String messageId) throws AlertException {
         String customTopic = fieldAccessor.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");

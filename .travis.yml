@@ -13,13 +13,13 @@ jdk:
 notifications:
   email:
     recipients:
-      - akamen@blackducksoftware.com
-      - ekerwin@blackducksoftware.com
-      - psantos@blackducksoftware.com
-      - gkillough@blackducksoftware.com
+      - jrichard@synopsys.com
+      - psantos@synopsys.com
+      - gkillough@synopsys.com
+      - bmandel@synopsys.com
 
 script:
-  - "./gradlew clean build sonarqube"
+  - "./gradlew clean build jacocoTestReport sonarqube"
 
 env:
   - DETECT_GRADLE_INCLUDED_CONFIGURATIONS="compile" JAVA_OPTS="-Xmx2048m"

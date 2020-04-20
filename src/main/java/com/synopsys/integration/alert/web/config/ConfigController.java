@@ -233,7 +233,7 @@ public class ConfigController extends BaseController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) FieldModel restModel, @RequestParam(required = false) String destination) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = true) FieldModel restModel) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -242,7 +242,7 @@ public class ConfigController extends BaseController {
         }
         String id = restModel.getId();
         try {
-            String responseMessage = configActions.testConfig(restModel, destination);
+            String responseMessage = configActions.testConfig(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (IntegrationRestException e) {
             return createResponseFromIntegrationRestException(responseFactory, e, id);

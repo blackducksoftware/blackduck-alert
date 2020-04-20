@@ -89,8 +89,8 @@ public class UpdateChecker {
 
         // latestAvailableVersion will not be present if Alert can not reach Docker Hub and DockerTagRetriever will log a warning
         // if latestAvailableVersion is empty, use the Alert version and date so we report no update available
-        String latestVersion = latestAvailableVersion.map(self -> self.getVersionName()).orElse(currentVersion);
-        String latestDate = latestAvailableVersion.map(self -> self.getDate()).orElse(alertCreated);
+        String latestVersion = latestAvailableVersion.map(VersionDateModel::getVersionName).orElse(currentVersion);
+        String latestDate = latestAvailableVersion.map(VersionDateModel::getDate).orElse(alertCreated);
         return getUpdateModel(currentVersion, alertCreated, latestVersion, latestDate, repositoryUrl);
     }
 
@@ -195,10 +195,13 @@ public class UpdateChecker {
 
     private String getVersionToken(String versionToken) {
         String resultToken = versionToken;
-        if (versionToken.contains(SNAPSHOT)) {
-            resultToken = versionToken.substring(0, versionToken.indexOf(SNAPSHOT));
-        } else if (versionToken.contains(QA_BUILD)) {
-            resultToken = versionToken.substring(0, versionToken.indexOf(QA_BUILD));
+        // currently we get -SIGQA1-SNAPSHOT so we need to look for SIGQA first.
+        int indexOfQABuild = versionToken.indexOf(QA_BUILD);
+        int indexOfSnapshot = versionToken.indexOf(SNAPSHOT);
+        if (indexOfQABuild > 0) {
+            resultToken = versionToken.substring(0, indexOfQABuild);
+        } else if (indexOfSnapshot > 0) {
+            resultToken = versionToken.substring(0, indexOfSnapshot);
         }
 
         return resultToken;

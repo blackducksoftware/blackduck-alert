@@ -91,6 +91,10 @@ public class TaskManager {
         return scheduledTaskMap.keySet();
     }
 
+    public Collection<ScheduledTask> getRunningTasks() {
+        return scheduledTaskMap.values();
+    }
+
     /**
      * @param classOrSuperclass A class object that a ScheduledTask may be assignable to
      * @param <T>               A class that extends ScheduledTask

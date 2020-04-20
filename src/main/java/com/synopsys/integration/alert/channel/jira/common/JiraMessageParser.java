@@ -40,6 +40,9 @@ import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {
+    private static final int TITLE_SIZE_LIMIT = 255;
+    private static final int MESSAGE_SIZE_LIMIT = 30000;
+
     public IssueContentModel createIssueContentModel(String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
         ComponentItem arbitraryItem) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
@@ -79,7 +82,7 @@ public class JiraMessageParser extends ChannelMessageParser {
             String attributesString = String.join("", attributesPieces);
             text.add(attributesString);
         }
-        MessageSplitter splitter = new MessageSplitter(getMessageSizeLimit(), getLineSeparator());
+        MessageSplitter splitter = new MessageSplitter(MESSAGE_SIZE_LIMIT, getLineSeparator());
         return splitter.splitMessages(text, true);
     }
 
@@ -107,7 +110,7 @@ public class JiraMessageParser extends ChannelMessageParser {
             }
         }
 
-        return StringUtils.abbreviate(title.toString(), getTitleSizeLimit());
+        return StringUtils.abbreviate(title.toString(), TITLE_SIZE_LIMIT);
     }
 
     private String createAdditionalDescriptionInfoOrAddToAdditionalComments(int initialDescriptionLength, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
@@ -118,9 +121,9 @@ public class JiraMessageParser extends ChannelMessageParser {
         List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(componentItems);
         for (String descriptionItem : componentItemMessagePieces) {
             int itemLength = descriptionItem.length();
-            if (currentLength >= getMessageSizeLimit()) {
+            if (currentLength >= MESSAGE_SIZE_LIMIT) {
                 tempAdditionalComments.add(descriptionItem);
-            } else if (itemLength + currentLength >= getMessageSizeLimit()) {
+            } else if (itemLength + currentLength >= MESSAGE_SIZE_LIMIT) {
                 tempAdditionalComments.add(descriptionItem);
                 currentLength = currentLength + descriptionItem.length();
             } else {
@@ -129,7 +132,7 @@ public class JiraMessageParser extends ChannelMessageParser {
             }
         }
 
-        MessageSplitter splitter = new MessageSplitter(getMessageSizeLimit(), getLineSeparator());
+        MessageSplitter splitter = new MessageSplitter(MESSAGE_SIZE_LIMIT, getLineSeparator());
         additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, false));
 
         return additionalDescriptionInfo.toString();
@@ -163,14 +166,6 @@ public class JiraMessageParser extends ChannelMessageParser {
     @Override
     protected String getSectionSeparator() {
         return "";
-    }
-
-    protected int getTitleSizeLimit() {
-        return 255;
-    }
-
-    protected int getMessageSizeLimit() {
-        return 30000;
     }
 
 }

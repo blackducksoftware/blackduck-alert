@@ -75,7 +75,7 @@ public class ConfigActions {
         List<FieldModel> fields = new LinkedList<>();
         if (context != null && descriptorKey != null) {
             String contextName = context.name();
-            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorKeyAndContext(descriptorKey, context);
+            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, context);
             List<FieldModel> fieldModelList = new LinkedList<>();
             if (null != configurationModels) {
                 for (ConfigurationModel configurationModel : configurationModels) {
@@ -146,18 +146,17 @@ public class ConfigActions {
         return "Valid";
     }
 
-    public String testConfig(FieldModel restModel, String destination) throws IntegrationException {
+    public String testConfig(FieldModel restModel) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
             FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);
             FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
             TestAction testAction = testActionOptional.get();
-            testAction.testConfig(upToDateFieldModel.getId(), destination, fieldAccessor);
+            testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldAccessor);
             return "Successfully sent test message.";
         }
         String descriptorName = restModel.getDescriptorName();
         throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
     }
-
 }

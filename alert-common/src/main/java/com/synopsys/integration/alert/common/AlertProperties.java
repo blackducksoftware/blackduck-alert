@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -34,13 +35,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 public class AlertProperties {
     @Value("${alert.config.home:}")
     private String alertConfigHome;
-
-    /**
-     * @deprecated in 5.1.0
-     */
-    @Deprecated
-    @Value("${alert.templates.dir:}")
-    private String alertTemplatesDir;
 
     @Value("${alert.images.dir:}")
     private String alertImagesDir;
@@ -104,14 +98,6 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertConfigHome);
     }
 
-    /**
-     * @deprecated in 5.1.0
-     */
-    @Deprecated
-    public String getAlertTemplatesDir() {
-        return StringUtils.trimToNull(alertTemplatesDir);
-    }
-
     public String getAlertImagesDir() {
         return StringUtils.trimToNull(alertImagesDir);
     }
@@ -132,12 +118,12 @@ public class AlertProperties {
         return alertEmailAttachmentsDir;
     }
 
-    public Boolean getH2ConsoleEnabled() {
-        return h2ConsoleEnabled;
+    public boolean getH2ConsoleEnabled() {
+        return BooleanUtils.isTrue(h2ConsoleEnabled);
     }
 
-    public Boolean getSslEnabled() {
-        return sslEnabled;
+    public boolean getSslEnabled() {
+        return BooleanUtils.isTrue(sslEnabled);
     }
 
     public Optional<Boolean> getAlertTrustCertificate() {

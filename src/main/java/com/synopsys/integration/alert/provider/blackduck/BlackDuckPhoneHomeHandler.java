@@ -86,6 +86,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
                 blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.Builder.UNKNOWN_ID);
             }
         } catch (IntegrationException ignored) {
+            // ignoring this exception
         }
 
         // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration

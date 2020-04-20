@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.jira.cloud.web;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraCustomEndpoint extends ButtonCustomEndpoint {
@@ -79,7 +80,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
             String username = jiraProperties.getUsername();
             String accessToken = jiraProperties.getAccessToken();
             Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
-            if (response.isStatusCodeError()) {
+            if (BooleanUtils.isTrue(response.isStatusCodeError())) {
                 return Optional.of(responseFactory.createBadRequestResponse("", "The Jira Cloud server responded with error code: " + response.getStatusCode()));
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
@@ -118,7 +119,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
         boolean accessTokenSet = fieldAccessToken.isSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
-                return configurationAccessor.getConfigurationByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
+                return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
                            .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))

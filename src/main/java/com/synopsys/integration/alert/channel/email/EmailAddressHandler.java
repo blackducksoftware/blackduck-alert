@@ -93,7 +93,7 @@ public class EmailAddressHandler {
         return new FieldAccessor(fieldMap);
     }
 
-    public Set<String> getEmailAddressesForProject(ProviderProject project, Boolean projectOwnerOnly) {
+    public Set<String> getEmailAddressesForProject(ProviderProject project, boolean projectOwnerOnly) {
         Set<String> emailAddresses;
         if (projectOwnerOnly) {
             String projectOwnerEmail = project.getProjectOwnerEmail();
@@ -143,7 +143,7 @@ public class EmailAddressHandler {
                                   .map(ProviderMessageContent::getSubTopic)
                                   .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
-            Boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects;
             if (filterByProject) {
                 Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);

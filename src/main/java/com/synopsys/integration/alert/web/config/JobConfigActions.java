@@ -243,7 +243,7 @@ public class JobConfigActions {
     }
 
     // TODO abstract duplicate functionality
-    public String testJob(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
+    public String testJob(JobFieldModel jobFieldModel) throws IntegrationException {
         validateJob(jobFieldModel);
         Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
@@ -262,8 +262,8 @@ public class JobConfigActions {
                 FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 String jobId = channelFieldModel.getId();
 
-                testProviderConfig(fieldAccessor, jobId, destination);
-                MessageResult testResult = testAction.testConfig(jobId, destination, fieldAccessor);
+                testProviderConfig(fieldAccessor, jobId, channelFieldModel);
+                MessageResult testResult = testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
                 return testResult.getStatusMessage();
             } else {
                 String descriptorName = channelFieldModel.getDescriptorName();
@@ -296,7 +296,7 @@ public class JobConfigActions {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
         fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
-        Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+        Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
         configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
@@ -306,11 +306,11 @@ public class JobConfigActions {
         return fields;
     }
 
-    private void testProviderConfig(FieldAccessor fieldAccessor, String jobId, String destination) throws IntegrationException {
+    private void testProviderConfig(FieldAccessor fieldAccessor, String jobId, FieldModel fieldModel) throws IntegrationException {
         Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                       .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
-            providerTestAction.get().testConfig(jobId, destination, fieldAccessor);
+            providerTestAction.get().testConfig(jobId, fieldModel, fieldAccessor);
         }
     }
 

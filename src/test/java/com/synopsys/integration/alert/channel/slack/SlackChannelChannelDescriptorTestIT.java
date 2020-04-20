@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -136,8 +137,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public String createTestConfigDestination() {
-        return "";
+    public FieldModel createTestConfigDestination() {
+        return createFieldModel(new SlackChannelKey().getUniversalKey(), "");
     }
 
     @Override

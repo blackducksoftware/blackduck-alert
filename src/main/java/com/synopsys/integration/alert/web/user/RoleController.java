@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.user;
 
-import java.util.function.BiFunction;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -70,7 +67,7 @@ public class RoleController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> getRoles() {
-        if (!hasPermission(authorizationManager::hasReadPermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
@@ -78,7 +75,7 @@ public class RoleController extends BaseController {
 
     @PutMapping(value = "/{roleId}")
     public ResponseEntity<String> updateRole(@PathVariable Long roleId, @RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasPermission(authorizationManager::hasWritePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
 
@@ -95,7 +92,7 @@ public class RoleController extends BaseController {
 
     @PostMapping
     public ResponseEntity<String> createRole(@RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasPermission(authorizationManager::hasCreatePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -113,7 +110,7 @@ public class RoleController extends BaseController {
 
     @DeleteMapping(value = "/{roleId}")
     public ResponseEntity<String> deleteRole(@PathVariable Long roleId) {
-        if (!hasPermission(authorizationManager::hasDeletePermission)) {
+        if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
             return responseFactory.createForbiddenResponse();
         }
         try {
@@ -122,9 +119,5 @@ public class RoleController extends BaseController {
             return responseFactory.createForbiddenResponse(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
         }
         return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
-    }
-
-    private boolean hasPermission(BiFunction<String, String, Boolean> permissionChecker) {
-        return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
 }

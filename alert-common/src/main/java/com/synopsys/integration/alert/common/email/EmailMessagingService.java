@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -84,8 +85,8 @@ public class EmailMessagingService {
 
             Map<String, Object> model = emailTarget.getModel();
             Session session = createMailSession(emailProperties);
-            String emailPath = freemarkerTemplatingService.getTemplatePath("email");
-            Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(emailPath);
+            TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
+            Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
             String html = freemarkerTemplatingService.resolveTemplate(model, emailTemplate);
 
@@ -110,7 +111,6 @@ public class EmailMessagingService {
             sendMessages(emailProperties, session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
-            logger.error(errorMessage, ex);
             throw new AlertException(errorMessage, ex);
         }
     }
@@ -156,7 +156,7 @@ public class EmailMessagingService {
             try {
                 fromAddress.validate();
             } catch (AddressException e) {
-                logger.warn("Invalid 'from' address specified: " + fromString);
+                logger.warn("Invalid 'from' address specified: {}", fromString);
                 throw new AlertException(String.format("'%s' is not a valid email address: %s", fromString, e.getMessage()));
             }
         }

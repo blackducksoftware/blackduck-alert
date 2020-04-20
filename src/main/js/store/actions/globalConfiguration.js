@@ -236,11 +236,11 @@ export function updateConfig(config) {
 }
 
 
-export function testConfig(config, destination) {
+export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, destination);
+        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         request.then((response) => {
             if (response.ok) {
                 dispatch(testSuccess());

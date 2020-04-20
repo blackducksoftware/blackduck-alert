@@ -221,7 +221,8 @@ public class DefaultNotificationManager implements NotificationManager {
                                          .flatMap(ConfigurationFieldModel::getFieldValue)
                                          .orElse(providerConfigName);
             } catch (AlertDatabaseConstraintException e) {
-                logger.warn("Failed to retrieve provider config name for audit notification: " + e.getMessage());
+                logger.warn("Failed to retrieve provider config name for audit notification: {}", e.getMessage());
+                logger.debug(e.getMessage(), e);
             }
         }
         return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime());

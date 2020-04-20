@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;
-    private final Map<ConfigContextEnum, ApiAction> apiActionMap = new HashMap<>();
-    private final Map<ConfigContextEnum, TestAction> testActionMap = new HashMap<>();
+    private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap(ConfigContextEnum.class);
+    private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap(ConfigContextEnum.class);
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;
