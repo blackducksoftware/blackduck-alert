@@ -8,10 +8,16 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="raw_notification_content">
-            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')">
-                <constraints nullable="false"/>
-            </column>
+            <column name="provider_config_id" type="BIGINT" valueComputed="GET_PROVIDER_CONFIG_ID('provider_blackduck')"/>
         </addColumn>
+    </changeSet>
+    <changeSet author="psantos" id="2020-04-20-06-44-21-289">
+        <addNotNullConstraint
+                schemaName="alert"
+                tableName="raw_notification_content"
+                columnName="provider_config_id"
+                columnDataType="BIGINT"
+        />
     </changeSet>
     <changeSet author="gavink" id="2020-02-11-09-21-42-238">
         <preConditions>
