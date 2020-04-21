@@ -56,6 +56,9 @@ public class BlackDuckResponseCache {
     }
 
     public <T extends BlackDuckResponse> Optional<T> getItem(Class<T> responseClass, String url) {
+        if (null == responseClass || StringUtils.isBlank(url)) {
+            return Optional.empty();
+        }
         try {
             Future<Optional<T>> optionalProjectVersionFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
             if (bucket.hasAnyErrors()) {
@@ -111,8 +114,12 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    public String getSeverity(String vulnerabilityUrl) throws NullPointerException {
+    public String getSeverity(String vulnerabilityUrl) {
         String severity = "UNKNOWN";
+        if (StringUtils.isBlank(vulnerabilityUrl)) {
+            logger.debug("Could not get the vulnerability severity. The vulnerability URL was 'null'.");
+            return severity;
+        }
         ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severityType = null;
         try {
             Optional<VulnerabilityView> vulnerabilityView = getItem(VulnerabilityView.class, vulnerabilityUrl);
