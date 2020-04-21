@@ -138,13 +138,19 @@ public class PolicyCommonBuilder {
             // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
             String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
             String vulnerabilityUrl = null;
+            String severity = BlackDuckResponseCache.UNKNOWN_SEVERITY;
             if (vulnerabilityViews.containsKey(vulnerabilityId)) {
                 vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
+                severity = blackDuckResponseCache.getSeverity(vulnerabilityUrl);
+            }
+            if (BlackDuckResponseCache.UNKNOWN_SEVERITY.equals(severity) && null != vulnerabilityView.getSeverity()) {
+                severity = vulnerabilityView.getSeverity().toString();
             }
 
             LinkableItem vulnerabilityIdItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
-            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, blackDuckResponseCache.getSeverity(vulnerabilityUrl));
+
+            LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, severity);
 
             severityToVulns.add(severityItem, vulnerabilityIdItem);
         }

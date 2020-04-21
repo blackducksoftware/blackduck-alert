@@ -44,6 +44,7 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 
 public class BlackDuckResponseCache {
+    public final static String UNKNOWN_SEVERITY = "UNKNOWN";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckResponseCache.class);
     private BlackDuckBucketService blackDuckBucketService;
     private BlackDuckBucket bucket;
@@ -115,7 +116,7 @@ public class BlackDuckResponseCache {
     }
 
     public String getSeverity(String vulnerabilityUrl) {
-        String severity = "UNKNOWN";
+        String severity = UNKNOWN_SEVERITY;
         if (StringUtils.isBlank(vulnerabilityUrl)) {
             logger.debug("Could not get the vulnerability severity. The vulnerability URL was 'null'.");
             return severity;
