@@ -15,7 +15,11 @@ import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 public class MockSystemStatusRepository implements SystemStatusRepository {
 
     //Only methods that are used by a test are currently implemented, all others are left default.
-    SystemStatus systemStatus = new SystemStatus(Boolean.FALSE, new Date());
+    private SystemStatus systemStatus;
+
+    public MockSystemStatusRepository(Boolean startingStatus) {
+        this.systemStatus = new SystemStatus(startingStatus, new Date());
+    }
 
     @Override
     public List<SystemStatus> findAll() {

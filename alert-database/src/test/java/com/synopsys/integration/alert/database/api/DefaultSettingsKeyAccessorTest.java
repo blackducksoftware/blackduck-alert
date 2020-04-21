@@ -36,10 +36,13 @@ public class DefaultSettingsKeyAccessorTest {
 
         List<SettingsKeyModel> settingsKeyModelList = settingsKeyAccessor.getSettingsKeys();
 
-        assertEquals(key, settingsKeyModelList.get(0).getKey());
-        assertEquals(value1, settingsKeyModelList.get(0).getValue());
-        assertEquals(key2, settingsKeyModelList.get(1).getKey());
-        assertEquals(value2, settingsKeyModelList.get(1).getValue());
+        assertEquals(2, settingsKeyModelList.size());
+        SettingsKeyModel settingsKeyModel1 = settingsKeyModelList.get(0);
+        SettingsKeyModel settingsKeyModel2 = settingsKeyModelList.get(1);
+        assertEquals(key, settingsKeyModel1.getKey());
+        assertEquals(value1, settingsKeyModel1.getValue());
+        assertEquals(key2, settingsKeyModel2.getKey());
+        assertEquals(value2, settingsKeyModel2.getValue());
     }
 
     @Test
@@ -54,13 +57,14 @@ public class DefaultSettingsKeyAccessorTest {
         settingsKeyRepository.save(settingsKeyEntity);
 
         DefaultSettingsKeyAccessor settingsKeyAccessor = new DefaultSettingsKeyAccessor(settingsKeyRepository);
-        Optional<SettingsKeyModel> settingsKeyModel = settingsKeyAccessor.getSettingsKeyByKey("key1");
-        Optional<SettingsKeyModel> settingsKeyModelNull = settingsKeyAccessor.getSettingsKeyByKey("-1");
+        Optional<SettingsKeyModel> settingsKeyModelOptional = settingsKeyAccessor.getSettingsKeyByKey("key1");
+        Optional<SettingsKeyModel> settingsKeyModelOptionalNull = settingsKeyAccessor.getSettingsKeyByKey("-1");
 
-        assertTrue(settingsKeyModel.isPresent());
-        assertFalse(settingsKeyModelNull.isPresent());
-        assertEquals(key, settingsKeyModel.get().getKey());
-        assertEquals(value1, settingsKeyModel.get().getValue());
+        assertTrue(settingsKeyModelOptional.isPresent());
+        assertFalse(settingsKeyModelOptionalNull.isPresent());
+        SettingsKeyModel settingsKeyModel = settingsKeyModelOptional.get();
+        assertEquals(key, settingsKeyModel.getKey());
+        assertEquals(value1, settingsKeyModel.getValue());
     }
 
     @Test

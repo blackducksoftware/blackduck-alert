@@ -25,9 +25,11 @@ public class DefaultAuthenticationTypeAccessorTest {
         Mockito.when(authenticationTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(authenticationTypeEntity));
 
         Optional<AuthenticationTypeDetails> testAuthenticationTypeDetails = authenticationTypeAccessor.getAuthenticationTypeDetails(AuthenticationType.DATABASE);
+
         assertTrue(testAuthenticationTypeDetails.isPresent());
-        assertEquals(authenticationTypeEntity.getName(), testAuthenticationTypeDetails.get().getName());
-        assertEquals(authenticationTypeEntity.getId(), testAuthenticationTypeDetails.get().getId());
+        AuthenticationTypeDetails authenticationTypeDetails = testAuthenticationTypeDetails.get();
+        assertEquals(authenticationTypeEntity.getName(), authenticationTypeDetails.getName());
+        assertEquals(authenticationTypeEntity.getId(), authenticationTypeDetails.getId());
     }
 
     @Test

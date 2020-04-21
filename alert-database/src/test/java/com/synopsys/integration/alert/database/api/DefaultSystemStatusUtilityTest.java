@@ -31,7 +31,7 @@ public class DefaultSystemStatusUtilityTest {
 
     @Test
     public void setSystemInitializedTest() {
-        SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository();
+        SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository(Boolean.FALSE);
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
         systemStatusUtility.setSystemInitialized(Boolean.TRUE);
 
@@ -41,7 +41,7 @@ public class DefaultSystemStatusUtilityTest {
 
     @Test
     public void startupOccurred() {
-        SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository();
+        SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository(Boolean.FALSE);
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
         systemStatusUtility.startupOccurred();
 

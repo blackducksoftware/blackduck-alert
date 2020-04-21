@@ -16,8 +16,8 @@ import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;
 
 public class MockSettingsKeyRepository implements SettingsKeyRepository {
 
-    Map<String, SettingsKeyEntity> settingsKeyEntities = new HashMap<>();
-    Map<Long, SettingsKeyEntity> settingsKeyEntitiesById = new HashMap<>();
+    private Map<String, SettingsKeyEntity> settingsKeyEntities = new HashMap<>();
+    private Map<Long, SettingsKeyEntity> settingsKeyEntitiesById = new HashMap<>();
 
     @Override
     public Optional<SettingsKeyEntity> findByKey(String key) {

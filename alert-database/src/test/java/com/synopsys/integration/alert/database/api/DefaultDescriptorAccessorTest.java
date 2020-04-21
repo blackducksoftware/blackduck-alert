@@ -52,8 +52,9 @@ public class DefaultDescriptorAccessorTest {
         List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptors();
 
         assertEquals(1, registeredDescriptorModelList.size());
-        assertEquals(name, registeredDescriptorModelList.get(0).getName());
-        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+        RegisteredDescriptorModel registeredDescriptorModel = registeredDescriptorModelList.get(0);
+        assertEquals(name, registeredDescriptorModel.getName());
+        assertEquals(descriptorType, registeredDescriptorModel.getType());
     }
 
     @Test
@@ -76,13 +77,14 @@ public class DefaultDescriptorAccessorTest {
         Mockito.when(descriptorTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
 
         DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
-        Optional<RegisteredDescriptorModel> registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey);
-        Optional<RegisteredDescriptorModel> registeredDescriptorModelEmpty = descriptorAccessor.getRegisteredDescriptorByKey(emptyDescriptorKey);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModelOptional = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModelOptionalEmpty = descriptorAccessor.getRegisteredDescriptorByKey(emptyDescriptorKey);
 
-        assertTrue(registeredDescriptorModel.isPresent());
-        assertFalse(registeredDescriptorModelEmpty.isPresent());
-        assertEquals(name, registeredDescriptorModel.get().getName());
-        assertEquals(descriptorType, registeredDescriptorModel.get().getType());
+        assertTrue(registeredDescriptorModelOptional.isPresent());
+        RegisteredDescriptorModel registeredDescriptorModel = registeredDescriptorModelOptional.get();
+        assertFalse(registeredDescriptorModelOptionalEmpty.isPresent());
+        assertEquals(name, registeredDescriptorModel.getName());
+        assertEquals(descriptorType, registeredDescriptorModel.getType());
     }
 
     @Test
@@ -120,8 +122,9 @@ public class DefaultDescriptorAccessorTest {
         List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
 
         assertEquals(1, registeredDescriptorModelList.size());
-        assertEquals(name, registeredDescriptorModelList.get(0).getName());
-        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+        RegisteredDescriptorModel registeredDescriptorModel = registeredDescriptorModelList.get(0);
+        assertEquals(name, registeredDescriptorModel.getName());
+        assertEquals(descriptorType, registeredDescriptorModel.getType());
     }
 
     @Test
@@ -147,8 +150,9 @@ public class DefaultDescriptorAccessorTest {
         List<RegisteredDescriptorModel> registeredDescriptorModelList = descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
 
         assertEquals(1, registeredDescriptorModelList.size());
-        assertEquals(name, registeredDescriptorModelList.get(0).getName());
-        assertEquals(descriptorType, registeredDescriptorModelList.get(0).getType());
+        RegisteredDescriptorModel registeredDescriptorModel = registeredDescriptorModelList.get(0);
+        assertEquals(name, registeredDescriptorModel.getName());
+        assertEquals(descriptorType, registeredDescriptorModel.getType());
     }
 
     @Test
@@ -183,12 +187,13 @@ public class DefaultDescriptorAccessorTest {
         Mockito.when(descriptorTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
 
         DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(registeredDescriptorRepository, null, null, descriptorTypeRepository);
-        Optional<RegisteredDescriptorModel> registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorById(descriptorId);
+        Optional<RegisteredDescriptorModel> registeredDescriptorModelOptional = descriptorAccessor.getRegisteredDescriptorById(descriptorId);
 
-        assertTrue(registeredDescriptorModel.isPresent());
-        assertEquals(typeId, registeredDescriptorModel.get().getId());
-        assertEquals(name, registeredDescriptorModel.get().getName());
-        assertEquals(descriptorType, registeredDescriptorModel.get().getType());
+        assertTrue(registeredDescriptorModelOptional.isPresent());
+        RegisteredDescriptorModel registeredDescriptorModel = registeredDescriptorModelOptional.get();
+        assertEquals(typeId, registeredDescriptorModel.getId());
+        assertEquals(name, registeredDescriptorModel.getName());
+        assertEquals(descriptorType, registeredDescriptorModel.getType());
     }
 
     @Test
@@ -224,15 +229,17 @@ public class DefaultDescriptorAccessorTest {
         List<DefinedFieldModel> emptyConfigContextDefinedFieldModelList = descriptorAccessor.getFieldsForDescriptor(descriptorKey, invalidConfigContextEnum);
 
         assertEquals(1, definedFieldModelList.size());
-        assertEquals(definedFieldsKey, definedFieldModelList.get(0).getKey());
-        assertEquals(isSensitive, definedFieldModelList.get(0).getSensitive());
-        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModelList.get(0).getContexts());
+        DefinedFieldModel definedFieldModel = definedFieldModelList.get(0);
+        assertEquals(definedFieldsKey, definedFieldModel.getKey());
+        assertEquals(isSensitive, definedFieldModel.getSensitive());
+        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModel.getContexts());
         assertEquals(configContextEnum, configContextList.get(0));
 
         assertEquals(1, emptyConfigContextDefinedFieldModelList.size());
-        assertEquals(definedFieldsKey, emptyConfigContextDefinedFieldModelList.get(0).getKey());
-        assertEquals(isSensitive, emptyConfigContextDefinedFieldModelList.get(0).getSensitive());
-        List<ConfigContextEnum> configContextList2 = new ArrayList<>(emptyConfigContextDefinedFieldModelList.get(0).getContexts());
+        DefinedFieldModel emptyConfigContextDefinedFieldModel = emptyConfigContextDefinedFieldModelList.get(0);
+        assertEquals(definedFieldsKey, emptyConfigContextDefinedFieldModel.getKey());
+        assertEquals(isSensitive, emptyConfigContextDefinedFieldModel.getSensitive());
+        List<ConfigContextEnum> configContextList2 = new ArrayList<>(emptyConfigContextDefinedFieldModel.getContexts());
         assertEquals(invalidConfigContextEnum, configContextList2.get(0));
     }
 
@@ -264,9 +271,10 @@ public class DefaultDescriptorAccessorTest {
         List<DefinedFieldModel> definedFieldModelList = descriptorAccessor.getFieldsForDescriptorById(descriptorId, configContextEnum);
 
         assertEquals(1, definedFieldModelList.size());
-        assertEquals(definedFieldsKey, definedFieldModelList.get(0).getKey());
-        assertEquals(isSensitive, definedFieldModelList.get(0).getSensitive());
-        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModelList.get(0).getContexts());
+        DefinedFieldModel definedFieldModel = definedFieldModelList.get(0);
+        assertEquals(definedFieldsKey, definedFieldModel.getKey());
+        assertEquals(isSensitive, definedFieldModel.getSensitive());
+        List<ConfigContextEnum> configContextList = new ArrayList<>(definedFieldModel.getContexts());
         assertEquals(configContextEnum, configContextList.get(0));
     }
 
