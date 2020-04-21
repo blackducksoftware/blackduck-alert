@@ -32,10 +32,14 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Table(schema = "alert", name = "authentication_type")
 public class AuthenticationTypeEntity extends DatabaseEntity {
     @Column(name = "name")
-    public String name;
+    private String name;
 
     public AuthenticationTypeEntity() {
         // JPA requires default constructor definitions
+    }
+
+    public AuthenticationTypeEntity(String name) {
+        this.name = name;
     }
 
     public String getName() {
