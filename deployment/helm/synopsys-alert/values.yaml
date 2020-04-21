@@ -16,10 +16,8 @@ alert:
   resources:
     limits:
       memory: "2560Mi"
-    requests:
-      memory: "2560Mi"
   persistentVolumeClaimName: ""
-  claimSize: "5G"
+  claimSize: "5Gi"
   storageClass: ""
   volumeName: ""
   nodeSelector: {}
@@ -36,8 +34,6 @@ cfssl:
   registry: "" # override the docker registry at container level
   resources:
     limits:
-      memory: "640Mi"
-    requests:
       memory: "640Mi"
   nodeSelector: {}
   tolerations: []
