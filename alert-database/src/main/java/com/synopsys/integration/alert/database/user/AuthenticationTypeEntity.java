@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "authentication_type")
 public class AuthenticationTypeEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -2308934073112918860L;
     @Column(name = "name")
     private String name;
 
