@@ -77,7 +77,7 @@ public class GlobalConfigExistsValidator {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
             boolean configurationsAreEmpty = configurations
                                                  .stream()
-                                                 .filter(configuration -> configuration.getCopyOfFieldList().size() > 0)
+                                                 .filter(configuration -> !configuration.getCopyOfFieldList().isEmpty())
                                                  .findFirst()
                                                  .isEmpty();
             if (configurationsAreEmpty) {
