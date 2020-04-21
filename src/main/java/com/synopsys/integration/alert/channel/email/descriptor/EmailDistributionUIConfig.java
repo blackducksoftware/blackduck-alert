@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -69,7 +70,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
                                                    .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
                                                    .applySearchable(true)
-                                                   .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+                                                   .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                   .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
                                                        .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
                                                        .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);

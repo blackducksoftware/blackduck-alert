@@ -35,10 +35,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -58,14 +61,15 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-
     protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory,
-        Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter) throws AlertException {
+        Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter, ConfigurationAccessor configurationAccessor) throws AlertException {
         super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager, responseFactory, gson);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -98,11 +102,10 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
     }
 
     private List<NotificationFilterModel> retrieveBlackDuckPolicyOptions(FieldModel fieldModel) throws IntegrationException {
-        FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
-        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(Long.valueOf(fieldModel.getId()), fieldAccessor);
-        Optional<BlackDuckHttpClient> blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
-        if (blackDuckHttpClient.isPresent()) {
-            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+        Optional<BlackDuckProperties> blackDuckProperties = createProviderFieldAccessor(fieldModel);
+        Optional<BlackDuckHttpClient> blackDuckHttpClient = blackDuckProperties.flatMap(this::createHttpClient);
+        if (blackDuckProperties.isPresent() && blackDuckHttpClient.isPresent()) {
+            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.get().createBlackDuckServicesFactory(blackDuckHttpClient.get(), new Slf4jIntLogger(logger));
             PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
             return policyRuleService.getAllPolicyRules()
                        .stream()
@@ -111,6 +114,30 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
         }
 
         return List.of();
+    }
+
+    private Optional<BlackDuckHttpClient> createHttpClient(BlackDuckProperties blackDuckProperties) {
+        try {
+            return blackDuckProperties.createBlackDuckHttpClient(logger);
+        } catch (IntegrationException ex) {
+            logger.error("Error creating Black Duck http client", ex);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<BlackDuckProperties> createProviderFieldAccessor(FieldModel fieldModel) throws IntegrationException {
+        FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
+        Optional<ConfigurationModel> configurationModel = configurationAccessor.getProviderConfigurationByName(fieldAccessor.getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME));
+        Optional<FieldAccessor> providerFieldAccessor = configurationModel
+                                                            .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                                                            .map(FieldAccessor::new);
+
+        if (configurationModel.isPresent() && providerFieldAccessor.isPresent()) {
+            ConfigurationModel configModel = configurationModel.get();
+            return Optional.of(blackDuckPropertiesFactory.createProperties(configModel.getConfigurationId(), providerFieldAccessor.get()));
+        }
+
+        return Optional.empty();
     }
 
 }
