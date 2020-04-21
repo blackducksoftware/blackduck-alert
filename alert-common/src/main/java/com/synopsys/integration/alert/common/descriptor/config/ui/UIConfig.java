@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -34,6 +36,7 @@ public abstract class UIConfig extends Stringable {
     private final String description;
     private final String urlName;
     private final String componentNamespace;
+    private List<ConfigField> configFields = List.of();
 
     protected UIConfig(String label, String description, String urlName, String componentNamespace) {
         this.label = label;
@@ -46,7 +49,20 @@ public abstract class UIConfig extends Stringable {
         this(label, description, urlName, "");
     }
 
-    public abstract List<ConfigField> createFields();
+    @PostConstruct
+    public void setConfigFields() {
+        configFields = createFields();
+    }
+
+    protected abstract List<ConfigField> createFields();
+
+    public List<ConfigField> getFields() {
+        return configFields;
+    }
+
+    public final boolean hasFields() {
+        return null != configFields && !configFields.isEmpty();
+    }
 
     public List<ConfigField> createTestFields() {
         return List.of();

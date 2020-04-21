@@ -56,11 +56,12 @@ public class EmailGlobalTestActionTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        uiConfig.setConfigFields();
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, String> fieldErrors = new HashMap<>();
 
-        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
@@ -73,6 +74,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        uiConfig.setConfigFields();
         Map<String, FieldValueModel> fields = new HashMap<>();
         fillMapBlanks(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "notInt");
@@ -81,7 +83,7 @@ public class EmailGlobalTestActionTest {
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, String> fieldErrors = new HashMap<>();
-        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
@@ -95,6 +97,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
+        uiConfig.setConfigFields();
         Map<String, FieldValueModel> fields = new HashMap<>();
         fillMap(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "10");
@@ -104,7 +107,7 @@ public class EmailGlobalTestActionTest {
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, String> fieldErrors = new HashMap<>();
 
-        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey);
+        Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));

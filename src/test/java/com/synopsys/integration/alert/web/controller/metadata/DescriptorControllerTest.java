@@ -233,6 +233,7 @@ public class DescriptorControllerTest {
                 public List<ConfigField> createFields() {
                     return List.of();
                 }
+
             });
         }
 

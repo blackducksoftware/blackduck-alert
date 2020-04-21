@@ -15,8 +15,9 @@ public class ChannelDistributionUIConfigTest {
     public void createCommonConfigFieldsTest() {
         SlackChannelKey slackChannelKey = new SlackChannelKey();
         ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(slackChannelKey);
+        channelDistributionUIConfig.setConfigFields();
 
-        List<ConfigField> commonConfigFields = channelDistributionUIConfig.createFields();
+        List<ConfigField> commonConfigFields = channelDistributionUIConfig.getFields();
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_NAME);
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_PROVIDER_NAME);

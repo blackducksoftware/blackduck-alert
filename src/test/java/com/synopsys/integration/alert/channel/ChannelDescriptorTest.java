@@ -199,7 +199,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     private Map<String, ConfigField> createFieldMap(ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
-                   .map(uiConfig -> DataStructureUtils.mapToValues(uiConfig.createFields(), ConfigField::getKey))
+                   .map(uiConfig -> DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey))
                    .orElse(Map.of());
     }
 

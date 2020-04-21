@@ -70,10 +70,17 @@ public class GlobalConfigExistsValidator {
             return Optional.empty();
         }
 
-        String descriptorDisplayName = optionalDescriptorKey.map(DescriptorKey::getDisplayName).orElse(descriptorName);
+        String descriptorDisplayName = optionalDescriptorKey
+                                           .map(DescriptorKey::getDisplayName)
+                                           .orElse(descriptorName);
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-            if (configurations.isEmpty()) {
+            boolean configurationsAreEmpty = configurations
+                                                 .stream()
+                                                 .filter(configuration -> configuration.getCopyOfFieldList().size() > 0)
+                                                 .findFirst()
+                                                 .isEmpty();
+            if (configurationsAreEmpty) {
                 return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
             }
         } catch (AlertDatabaseConstraintException ex) {
@@ -89,10 +96,8 @@ public class GlobalConfigExistsValidator {
     private boolean hasGlobalConfig(Descriptor descriptor) {
         return descriptor
                    .getUIConfig(ConfigContextEnum.GLOBAL)
-                   .map(UIConfig::createFields)
-                   .map(List::size)
-                   .filter(size -> size > 0)
-                   .isPresent();
+                   .map(UIConfig::hasFields)
+                   .orElse(false);
     }
 
 }

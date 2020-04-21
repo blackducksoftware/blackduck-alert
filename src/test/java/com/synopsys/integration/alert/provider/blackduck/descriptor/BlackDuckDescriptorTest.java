@@ -23,7 +23,9 @@ public class BlackDuckDescriptorTest {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent);
+        blackDuckDistributionUIConfig.setConfigFields();
         BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig(blackDuckProviderKey, encryptionValidator, configurationAccessor);
+        blackDuckProviderUIConfig.setConfigFields();
         BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(5, fields.size());

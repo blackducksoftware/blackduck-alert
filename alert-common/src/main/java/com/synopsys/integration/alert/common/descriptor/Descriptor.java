@@ -92,7 +92,7 @@ public abstract class Descriptor extends Stringable {
 
     public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
         return getUIConfig(context)
-                   .map(UIConfig::createFields)
+                   .map(UIConfig::getFields)
                    .orElse(List.of())
                    .stream()
                    .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
@@ -117,7 +117,7 @@ public abstract class Descriptor extends Stringable {
         String description = uiConfig.getDescription();
         boolean autoGenerateUI = uiConfig.autoGenerateUI();
         String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.createFields(), uiConfig.createTestFields());
+        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.getFields(), uiConfig.createTestFields());
     }
 
 }
