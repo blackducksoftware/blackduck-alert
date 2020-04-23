@@ -340,7 +340,6 @@ validatePostgresConnection() {
     if  echo ${LIST_DB_OUTPUT};
     then
       echo "Alert postgres database connection valid."
-      exit 0
     else
       echo "Alert postgres connection cannot be made."
       sleep 10
