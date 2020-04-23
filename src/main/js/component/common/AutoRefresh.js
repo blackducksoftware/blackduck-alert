@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { connect } from 'react-redux';
-import { updateRefresh } from '../../store/actions/refresh';
+import { updateRefresh } from 'store/actions/refresh';
 
 class AutoRefresh extends Component {
     constructor(props) {

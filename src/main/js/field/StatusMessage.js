@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
 import FadeField from 'field/FadeField';
-import MessageFormatter from "field/MessageFormatter";
+import MessageFormatter from 'field/MessageFormatter';
 
 class StatusMessage extends Component {
     constructor(props) {
