@@ -331,13 +331,50 @@ liquibaseChangelockReset() {
   releaseLocks
   echo "End releasing liquibase changeloglock."
 }
+validatePostgresConnection() {
+  # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking for postgres connectivity: "
+    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
+    echo "${LIST_DB_OUTPUT}"
+    if  echo ${LIST_DB_OUTPUT};
+    then
+      echo "Alert postgres database connection valid."
+      exit 0;
+    else
+      echo "Alert postgres connection cannot be made."
+      sleep 10;
+      exit 1;
+    fi
+}
+
+createPostgresDatabase() {
+  # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking if $ALERT_DB_NAME exists: "
+    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
+    echo "${LIST_DB_OUTPUT}"
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$ALERT_DB_NAME";
+    then
+        echo "Alert postgres database exists."
+        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
+        then
+            echo "Alert postgres database tables have been successfully created."
+        else
+            echo "Alert postgres database tables have not been created. Creating $ALERT_DB_NAME database"
+            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
+        fi
+    else
+        echo "Alert postgres database does not exist. Create $ALERT_DB_NAME database."
+        psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
+    fi
+}
+
 
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres databases: "
     LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
     echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$ALERT_DB_NAME";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
@@ -415,7 +452,7 @@ then
   sleep 10
   exit 1;
 else
-  validatePostgresDatabase
+  validatePostgresConnection
   createCertificateStoreDirectory
   if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
   then
@@ -434,6 +471,8 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
+  createPostgresDatabase
+  validatePostgresDatabase
   postgresPrepare600Upgrade
   liquibaseChangelockReset
 

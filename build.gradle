@@ -129,6 +129,7 @@ distributions {
             from('alert-database/src/main/resources/liquibase/release-locks-changelog.xml') { into 'upgradeResources' }
             from('alert-database/src/main/resources/scripts/export_h2_tables.sql') { into 'upgradeResources' }
             from('alert-database/src/main/resources/scripts/import_postgres_tables.sql') { into 'upgradeResources' }
+            from('alert-database/src/main/resources/scripts/init_alert_db.sql') { into 'upgradeResources' }
             from('src/main/resources/images/') { into 'images/' }
             mkdir 'email/attachments'
         }
