@@ -13,8 +13,8 @@ data:
   ALERT_ENCRYPTION_GLOBAL_SALT: ""
 
   # -- if Secrets will be used for the credentials then these should be removed from the config map.
-  POSTGRES_USER:sa
-  POSTGRES_PASSWORD:blackduck
+  POSTGRES_USER: "sa"
+  POSTGRES_PASSWORD: "blackduck"
 
   # -- ALERT RESET VARIABLES
   #ALERT_LDAP_DISABLED:false

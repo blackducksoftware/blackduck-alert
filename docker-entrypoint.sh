@@ -6,6 +6,9 @@ alertHome=/opt/blackduck/alert
 alertConfigHome=${alertHome}/alert-config
 alertDataDir=${alertConfigHome}/data
 alertDatabaseDir=${alertDataDir}/alertdb
+alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
+alertDatabasePort="${ALERT_DB_PORT:-5432}"
+alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
 alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
@@ -55,7 +58,7 @@ then
   echo "Alert Database password variable set to secret value."
 fi
 
-alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=$alertDatabaseUser password=$alertDatabasePassword"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
