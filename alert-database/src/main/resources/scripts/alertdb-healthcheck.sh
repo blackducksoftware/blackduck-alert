@@ -2,7 +2,7 @@
 dockerSecretDir=/run/secrets
 alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
 alertDatabasePort="${ALERT_DB_PORT:-5432}"
-alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
+alertDatabaseName="${POSTGRES_DB:-alertdb}"
 alertDatabaseUser="$POSTGRES_USER"
 alertDatabasePassword="$POSTGRES_PASSWORD"
 

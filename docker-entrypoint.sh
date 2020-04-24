@@ -335,9 +335,7 @@ liquibaseChangelockReset() {
 validatePostgresConnection() {
   # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres connectivity: "
-    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
-    echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT};
+    if psql "${alertDatabaseConfig}" -c '\l';
     then
       echo "Alert postgres database connection valid."
     else
