@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -83,6 +84,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
             }
 
             List<ConfigurationModel> modelsWithName = configurations.stream()
+                                                          .filter(configurationModel -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
                                                           .filter(configurationModel ->
                                                                       configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                                                                           .flatMap(ConfigurationFieldModel::getFieldValue)
