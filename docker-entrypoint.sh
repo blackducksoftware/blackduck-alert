@@ -349,21 +349,21 @@ validatePostgresConnection() {
 
 createPostgresDatabase() {
   # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking if $ALERT_DB_NAME exists: "
+    echo "Checking if $alertDatabaseName exists: "
     LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
     echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q "$ALERT_DB_NAME";
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
         then
             echo "Alert postgres database tables have been successfully created."
         else
-            echo "Alert postgres database tables have not been created. Creating database tables for database: $ALERT_DB_NAME "
+            echo "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
         fi
     else
-        echo "Alert postgres database does not exist. Please create the database: $ALERT_DB_NAME"
+        echo "Alert postgres database does not exist. Please create the database: $alertDatabaseName"
         sleep 10
         exit 1
     fi
@@ -374,7 +374,7 @@ validatePostgresDatabase() {
     echo "Checking for postgres databases: "
     LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
     echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q "$ALERT_DB_NAME";
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
