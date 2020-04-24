@@ -1,11 +1,11 @@
 version: '3.6'
 services:
-  alertdb:
-    #    # Comment or remove the POSTGRES_USER.
-    environment:
-      - POSTGRES_USER=sa
-      - POSTGRES_PASSWORD=blackduck
-      - POSTGRES_DB=alertdb
+#  alertdb:
+#    # Comment or remove the POSTGRES_USER.
+#    environment:
+#      - POSTGRES_USER=sa
+#      - POSTGRES_PASSWORD=blackduck
+#      - POSTGRES_DB=alertdb
 #    # uncomment the variables that end in _FILE if secrets are being used.
 #      - POSTGRES_USER_FILE=/run/secrets/ALERT_DB_USERNAME
 #      - POSTGRES_PASSWORD_FILE=/run/secrets/ALERT_DB_PASSWORD
