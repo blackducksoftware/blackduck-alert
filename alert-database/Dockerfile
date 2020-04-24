@@ -1,7 +1,4 @@
 FROM postgres:12.2-alpine
-ENV POSTGRES_USER=sa
-ENV POSTGRES_PASSWORD=blackduck
-ENV POSTGRES_DB=alertdb
 
 ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
 
