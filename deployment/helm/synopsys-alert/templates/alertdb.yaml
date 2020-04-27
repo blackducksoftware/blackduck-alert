@@ -1,0 +1,171 @@
+{{- if not .Values.alertdb.isExternal }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    component: alertdb
+  name: {{ .Release.Name }}-alert-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-5432
+      port: {{ .Values.alertdb.port }}
+      protocol: TCP
+      targetPort: {{ .Values.alertdb.port }}
+  selector:
+    app: alert
+    component: alertdb
+  type: ClusterIP
+{{- if and .Values.enablePersistentStorage (not .Values.alertdb.persistentVolumeClaimName) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: alert
+    component: alertdb
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-alert-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if .Values.alertdb.storageClass }}
+  storageClassName: {{ .Values.alertdb.storageClass }}
+  {{- else if .Values.storageClass }}
+  storageClassName: {{ .Values.storageClass }}
+  {{- end}}
+  {{ if .Values.alert.volumeName -}}
+  volumeName: {{ .Values.alertdb.volumeName }}
+  {{ end -}}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.alertdb.claimSize }}
+{{- end }}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alert
+    component: alertdb
+  name: {{ .Release.Name }}-alert-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if eq .Values.status "Running" }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
+  {{- end }}
+  selector:
+    matchLabels:
+      app: alert
+      component: alertdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alert
+        component: alertdb
+      annotations:
+        checksum/alertdb-config: {{ include (print $.Template.BasePath "/alertdb-config.yaml") . | sha256sum }}
+      name: {{ .Release.Name }}-alert-postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRESQL_MAX_CONNECTIONS
+          value: "300"
+        - name: POSTGRESQL_SHARED_BUFFERS
+          value: 1024MB
+        - name: POSTGRESQL_USER
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_USERNAME
+              name: {{ .Release.Name }}-alert-db-config
+        - name: POSTGRESQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_NAME
+              name: {{ .Release.Name }}-alert-db-config
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ALERT_POSTGRES_USER_PASSWORD_FILE
+              name: {{ .Release.Name }}-alert-db-creds
+        envFrom:
+        - configMapRef:
+          name: {{ .Release.Name }}-alert-db-config
+        {{- if .Values.alertdb.registry }}
+        image: {{ .Values.alertdb.registry }}/postgresql-12-centos7:1
+        {{- else }}
+        image: {{ .Values.registry }}/postgresql-12-centos7:1
+        {{- end}}
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - sh
+                - -c
+                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql12/root/usr/lib64 /opt/rh/rh-postgresql12/root/usr/bin/pg_ctl -D /var/lib/pgsql/data/userdata -l logfile stop
+        name: {{ .Release.Name }}-alert-postgres
+        ports:
+        - containerPort: {{ .Values.alertdb.port }}
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - /opt/rh/rh-postgresql12/root/usr/bin/pg_isready -h localhost
+          failureThreshold: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          {{- toYaml .Values.alertdb.resources | nindent 12 }}
+          {{- with .Values.alertdb.securityContext }}
+        securityContext:
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        volumeMounts:
+        - mountPath: /var/lib/pgsql/data
+          name: alert-postgres-data-volume
+      dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
+      {{- with .Values.alertdb.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.alertdb.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.alertdb.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+     {{- end }}
+      {{- with .Values.alertdb.podSecurityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-alert-service-account
+      restartPolicy: Always
+      volumes:
+      {{- include "postgresPersistentStorage" . | nindent 6 }}
+{{- end -}}
+
+{{- define "postgresPersistentStorage" -}}
+{{- if .Values.enablePersistentStorage -}}
+- name: alert-postgres-data-volume
+  persistentVolumeClaim:
+    claimName: {{if .Values.alertdb.persistentVolumeClaimName}} {{.Values.alertdb.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-alert-postgres {{end}}
+{{- else -}}
+- emptyDir: {}
+  name: alert-postgres-data-volume
+{{- end -}}
+{{- end -}}
