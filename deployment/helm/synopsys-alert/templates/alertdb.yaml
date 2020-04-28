@@ -96,10 +96,10 @@ spec:
               key: ALERT_DB_HOST
               name: {{ .Release.Name }}-alert-db-config
         - name: ALERT_DB_PORT
-        valueFrom:
-          configMapKeyRef:
-            key: ALERT_DB_PORT
-            name: {{ .Release.Name }}-alert-db-config
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_PORT
+              name: {{ .Release.Name }}-alert-db-config
         - name: POSTGRESQL_PASSWORD
           valueFrom:
             secretKeyRef:
