@@ -95,9 +95,6 @@ spec:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-alert-db-creds
-        envFrom:
-        - configMapRef:
-          name: {{ .Release.Name }}-alert-db-config
         {{- if .Values.alertdb.registry }}
         image: {{ .Values.alertdb.registry }}/postgresql-12-centos7:1
         {{- else }}
