@@ -146,16 +146,16 @@ spec:
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.alertdb.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+      {{ toYaml . | indent 2 }}
       {{- end }}
       {{- with .Values.alertdb.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+      {{ toYaml . | indent 2 }}
       {{- end }}
       {{- with .Values.alertdb.tolerations }}
       tolerations:
-{{ toYaml . | indent 6 }}
-     {{- end }}
+      {{ toYaml . | indent 2 }}
+      {{- end }}
       {{- with .Values.alertdb.podSecurityContext }}
       securityContext:
 {{ toYaml . | indent 8 }}
