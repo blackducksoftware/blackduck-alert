@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.workflow.startup.component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -63,22 +64,24 @@ public class LastSearchDataMigration extends StartupComponent {
     @Override
     protected void initialize() {
         logger.info("Checking if last search text file data should be migrated.");
-        if(filePersistenceUtil.exists(LAST_SEARCH_FILE)) {
+        if (filePersistenceUtil.exists(LAST_SEARCH_FILE)) {
             logger.info("Last search text file exists; attempt migration to task properties.");
             try {
-                Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL).stream()
-                    .findFirst();
-                if(configuration.isPresent()) {
+                List<ConfigurationModel> configurationmodels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL);
+                if (configurationmodels.size() == 1) {
                     logger.info("Configuration found. Creating property data.");
-                    Long configId = configuration.get().getConfigurationId();
+                    Long configId = configurationmodels.get(0).getConfigurationId();
                     String taskName = String.format("Task::Class[com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:%s]", configId);
                     String propertyValue = filePersistenceUtil.readFromFile(LAST_SEARCH_FILE);
-                    providerTaskPropertiesAccessor.setTaskProperty(configId,taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE,propertyValue);
+                    Optional<String> currentPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
+                    if (currentPropertyValue.isEmpty()) {
+                        providerTaskPropertiesAccessor.setTaskProperty(configId, taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, propertyValue);
+                    }
                     filePersistenceUtil.delete(LAST_SEARCH_FILE);
                 }
             } catch (IOException ex) {
                 logger.error("Error with last search text file.", ex);
-            } catch(AlertDatabaseConstraintException ex) {
+            } catch (AlertDatabaseConstraintException ex) {
                 logger.error("Error writing provider property for default provider configuration.", ex);
             }
         } else {
