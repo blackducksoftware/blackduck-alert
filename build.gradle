@@ -30,7 +30,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '6.0.0-SIGQA3-DBTEST-SNAPSHOT'
+version = '6.0.0-SIGQA4-SNAPSHOT'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.synopsys.integration.solution'
@@ -320,21 +320,13 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-swarm/**", "kubernetes/**", "helm/**"
+        include "docker-swarm/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/hub"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/standalone"
-    }
-    from('deployment/cm-alert.yml') {
-        into "kubernetes/standalone"
-        rename('cm-alert.yml', '1-cm-alert.yml')
-    }
-    from('deployment/cm-alert.yml') {
-        into "kubernetes/hub"
-        rename('cm-alert.yml', '2-cm-alert.yml')
     }
     into "${project.buildDir}/deployment"
 
@@ -343,8 +335,6 @@ task copyDeploymentFiles(type: Copy) {
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose-externaldb.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose-externaldb.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/4-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "VERSION_TOKEN", value: "${project.version}")
