@@ -140,7 +140,7 @@ spec:
 {{ toYaml . | indent 10 }}
         {{- end }}
         volumeMounts:
-        - mountPath: /var/lib/pgsql/data
+        - mountPath: /var/lib/postgresql/data
           name: alert-postgres-data-volume
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
