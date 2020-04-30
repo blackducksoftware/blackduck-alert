@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "6.0.0-SIGQA3-SNAPSHOT",
+    "version": "6.0.0-SIGQA4-SNAPSHOT",
     "description": "Alert npm project",
     "keywords": [
         "blackduck",
@@ -21,7 +21,7 @@
         "enzyme": "^3.7.0",
         "history": "^4.7.2",
         "i": "^0.3.6",
-        "npm": "^6.13.4",
+        "npm": "^6.13.7",
         "prop-types": "^15.6.2",
         "react": "^16.6.0",
         "react-bootstrap": "^1.0.0-beta.9",

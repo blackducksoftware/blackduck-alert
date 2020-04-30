@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
+import MessageFormatter from 'field/MessageFormatter';
 
 class PopUp extends Component {
     constructor(props) {
@@ -58,7 +59,7 @@ class PopUp extends Component {
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
-                            <p name="actionMessage">{actionMessage}</p>
+                            <MessageFormatter name="actionMessage" message={actionMessage} />
                         </form>
                     </Modal.Body>
                 </Modal>
