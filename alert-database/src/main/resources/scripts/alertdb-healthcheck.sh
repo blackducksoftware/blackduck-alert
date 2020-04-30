@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 dockerSecretDir=/run/secrets
+alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
+alertDatabasePort="${ALERT_DB_PORT:-5432}"
+alertDatabaseName="${POSTGRES_DB:-alertdb}"
 alertDatabaseUser="$POSTGRES_USER"
 alertDatabasePassword="$POSTGRES_PASSWORD"
 
@@ -13,9 +16,9 @@ then
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
 fi
 
-alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=$alertDatabaseUser password=$alertDatabasePassword"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
-if psql "${alertDatabaseConfig}" -c '\l' |grep -q 'alertdb';
+if psql "${alertDatabaseConfig}" -c '\l' |grep -q "$alertDatabaseName";
 then
     exit 0
 else

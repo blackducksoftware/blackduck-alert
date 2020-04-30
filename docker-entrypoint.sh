@@ -6,6 +6,9 @@ alertHome=/opt/blackduck/alert
 alertConfigHome=${alertHome}/alert-config
 alertDataDir=${alertConfigHome}/data
 alertDatabaseDir=${alertDataDir}/alertdb
+alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
+alertDatabasePort="${ALERT_DB_PORT:-5432}"
+alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
 alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
@@ -55,7 +58,7 @@ then
   echo "Alert Database password variable set to secret value."
 fi
 
-alertDatabaseConfig="host=alertdb port=5432 dbname=alertdb user=$alertDatabaseUser password=$alertDatabasePassword"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
@@ -329,12 +332,49 @@ liquibaseChangelockReset() {
   echo "End releasing liquibase changeloglock."
 }
 
+validatePostgresConnection() {
+  # Since the database is now external to the alert container verify we can connect to the database before starting.
+  # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking for postgres connectivity: "
+    if psql "${alertDatabaseConfig}" -c '\l';
+    then
+      echo "Alert postgres database connection valid."
+    else
+      echo "Alert postgres connection cannot be made."
+      sleep 10
+      exit 1
+    fi
+}
+
+createPostgresDatabase() {
+  # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
+  # https://stackoverflow.com/a/58784528/6921621
+    echo "Checking if $alertDatabaseName exists: "
+    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
+    echo "${LIST_DB_OUTPUT}"
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
+    then
+        echo "Alert postgres database exists."
+        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
+        then
+            echo "Alert postgres database tables have been successfully created."
+        else
+            echo "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
+            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
+        fi
+    else
+        echo "Alert postgres database does not exist. Please create the database: $alertDatabaseName"
+        sleep 10
+        exit 1
+    fi
+}
+
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres databases: "
     LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
     echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q 'alertdb';
+    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
@@ -412,7 +452,7 @@ then
   sleep 10
   exit 1;
 else
-  validatePostgresDatabase
+  validatePostgresConnection
   createCertificateStoreDirectory
   if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
   then
@@ -431,6 +471,8 @@ else
   importDockerHubServerCertificate
   createDataBackUp
   liquibaseChangelockReset
+  createPostgresDatabase
+  validatePostgresDatabase
   postgresPrepare600Upgrade
   liquibaseChangelockReset
 

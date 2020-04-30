@@ -4,14 +4,14 @@ metadata:
   labels:
     app: alert
     component: alert
-    name: {{ .Release.Name }} 
+    name: {{ .Release.Name }}
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  {{- if eq .Values.status "Running" }} 
-  replicas: 1 
-  {{- else }} 
-  replicas: 0 
+  {{- if eq .Values.status "Running" }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
   {{- end }}
   selector:
     matchLabels:
@@ -29,13 +29,21 @@ spec:
       annotations:
         checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
         checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
+        checksum/postgres-config: {{ include (print $.Template.BasePath "/postgres-config.yaml") . | sha256sum }}
       name: {{ .Release.Name }}
     spec:
       containers:
       - env:
         - name: RUN_SECRETS_DIR
           value: /tmp/secrets
+        - name: ALERT_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ALERT_POSTGRES_USER_PASSWORD_FILE
+              name: {{ .Release.Name }}-db-creds
         envFrom:
+        - configMapRef:
+            name: {{ .Release.Name}}-db-config
         - configMapRef:
             name: {{ .Release.Name }}-environs
         - secretRef:
@@ -43,7 +51,7 @@ spec:
         {{- if .Values.alert.registry }}
         image: {{ .Values.alert.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
         {{- else }}
-        image: {{ .Values.registry }}/blackduck-alert:{{ .Values.alert.imageTag }} 
+        image: {{ .Values.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
         {{- end }}
         imagePullPolicy: Always
         livenessProbe:

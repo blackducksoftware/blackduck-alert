@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+data:
+  {{- if not .Values.postgres.isExternal }}
+  ALERT_DB_HOST: {{ .Release.Name }}-postgres
+  {{- else }}
+  ALERT_DB_HOST: {{ required "must provide --set postgres.host=\"\"" .Values.postgres.host }}
+  {{- end }}
+  ALERT_DB_PORT: {{ .Values.postgres.port | quote }}
+  ALERT_DB_USERNAME: {{ .Values.postgres.userUserName }}
+  ALERT_DB_NAME: {{ .Values.postgres.databaseName }}
+kind: ConfigMap
+metadata:
+  labels:
+    app: alert
+    component: postgres
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-db-config
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+data:
+  ALERT_POSTGRES_USER_PASSWORD_FILE: {{ .Values.postgres.userPassword | b64enc }}
+kind: Secret
+metadata:
+  labels:
+    app: alert
+    component: postgres
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-db-creds
+  namespace: {{ .Release.Namespace }}
+type: Opaque
