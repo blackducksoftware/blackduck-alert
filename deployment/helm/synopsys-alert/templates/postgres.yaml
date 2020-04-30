@@ -74,7 +74,7 @@ spec:
         component: postgres
         name: {{ .Release.Name }}
       annotations:
-        checksum/alertdb-config: {{ include (print $.Template.BasePath "/alertdb-config.yaml") . | sha256sum }}
+        checksum/postgres-config: {{ include (print $.Template.BasePath "/postgres-config.yaml") . | sha256sum }}
       name: {{ .Release.Name }}-postgres
     spec:
       containers:
