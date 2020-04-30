@@ -45,7 +45,7 @@ cfssl:
 postgres:
   registry: "docker.io/centos" # override the docker registry at container level
   isExternal: true # false for running Postgres as a container and true for using External Postgres database
-  host: "localhost" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
+  host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
   # NOTE: do not change usernames when using postgres as a container; only configure if using external database
   userUserName: sa
