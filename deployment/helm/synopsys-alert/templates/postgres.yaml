@@ -145,28 +145,28 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: alert-postgres-data-volume
-        dnsPolicy: ClusterFirst
-        {{- include "alert.imagePullSecrets" . | nindent 6 -}}
-        {{- with .Values.postgres.nodeSelector }}
-        nodeSelector:
-        {{ toYaml . | indent 2 }}
-        {{- end }}
-        {{- with .Values.postgres.affinity }}
-        affinity:
-        {{ toYaml . | indent 2 }}
-        {{- end }}
-        {{- with .Values.postgres.tolerations }}
-        tolerations:
-        {{ toYaml . | indent 2 }}
-        {{- end }}
-        {{- with .Values.postgres.podSecurityContext }}
-        securityContext:
+      dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
+      {{- with .Values.postgres.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.affinity }}
+      affinity:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.tolerations }}
+      tolerations:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.podSecurityContext }}
+      securityContext:
 {{ toYaml . | indent 8 }}
-        {{- end }}
-        serviceAccountName: {{ .Release.Name }}-service-account
-        restartPolicy: Always
-        volumes:
-        {{- include "postgresPersistentStorage" . | nindent 6 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-service-account
+      restartPolicy: Always
+      volumes:
+      {{- include "postgresPersistentStorage" . | nindent 6 }}
 {{- end -}}
 
 {{- define "postgresPersistentStorage" -}}
