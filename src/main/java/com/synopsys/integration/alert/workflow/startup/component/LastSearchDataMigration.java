@@ -42,6 +42,8 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumula
 
 @Component
 @Order(55)
+@Deprecated(since = "6.0.0")
+//TODO Remove this class in 8.0.0
 public class LastSearchDataMigration extends StartupComponent {
     private static final Logger logger = LoggerFactory.getLogger(LastSearchDataMigration.class);
     private static final String LAST_SEARCH_FILE = "blackduck-accumulator-task-last-search.txt";
@@ -49,13 +51,13 @@ public class LastSearchDataMigration extends StartupComponent {
     // Because pg_stat_file requires admin privileges to run, we have to migrate the last search file data in code.
     // We don't have admin privileges to postgres when alert starts.
 
-    private BlackDuckProviderKey providerKey;
+    private BlackDuckProviderKey blackDuckProviderKey;
     private ConfigurationAccessor configurationAccessor;
     private FilePersistenceUtil filePersistenceUtil;
     private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
     public LastSearchDataMigration(BlackDuckProviderKey providerKey, ConfigurationAccessor configurationAccessor, FilePersistenceUtil filePersistenceUtil, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
-        this.providerKey = providerKey;
+        this.blackDuckProviderKey = providerKey;
         this.configurationAccessor = configurationAccessor;
         this.filePersistenceUtil = filePersistenceUtil;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
@@ -67,7 +69,7 @@ public class LastSearchDataMigration extends StartupComponent {
         if (filePersistenceUtil.exists(LAST_SEARCH_FILE)) {
             logger.info("Last search text file exists; attempt migration to task properties.");
             try {
-                List<ConfigurationModel> configurationmodels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(providerKey, ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurationmodels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL);
                 if (configurationmodels.size() == 1) {
                     logger.info("Configuration found. Creating property data.");
                     Long configId = configurationmodels.get(0).getConfigurationId();

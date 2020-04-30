@@ -333,6 +333,7 @@ liquibaseChangelockReset() {
 }
 
 validatePostgresConnection() {
+  # Since the database is now external to the alert container verify we can connect to the database before starting.
   # https://stackoverflow.com/a/58784528/6921621
     echo "Checking for postgres connectivity: "
     if psql "${alertDatabaseConfig}" -c '\l';
@@ -346,6 +347,7 @@ validatePostgresConnection() {
 }
 
 createPostgresDatabase() {
+  # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
   # https://stackoverflow.com/a/58784528/6921621
     echo "Checking if $alertDatabaseName exists: "
     LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;

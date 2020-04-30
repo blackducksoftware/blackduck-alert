@@ -41,18 +41,18 @@ cfssl:
   securityContext: {}
   podSecurityContext: {}
 
-# alertdb - configurations for the alertdb Pod
-alertdb:
+# postgres - configurations for the postgres Pod
+postgres:
   registry: "docker.io/centos" # override the docker registry at container level
   isExternal: true # false for running Postgres as a container and true for using External Postgres database
-  host: "localhost" # required only for external postgres, for postgres as a container, it will point to <name>-alert-postgres
+  host: "localhost" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
   # NOTE: do not change usernames when using postgres as a container; only configure if using external database
   userUserName: sa
   userPassword: blackduck
   databaseName: alertdb
   # pvc related parameters for postgres container
-  persistentVolumeClaimName: {} # set if you want to create your own PVC (used for migration)
+  persistentVolumeClaimName: "" # set if you want to create your own PVC (used for migration)
   claimSize: "5Gi" # PVC claim size
   storageClass: "" # PVC storage class name
   volumeName: "" # existing persistent volume name backing the PVC
@@ -94,9 +94,10 @@ setEncryptionSecretData: false
 
 # Alert's certificate information
 webserverCustomCertificatesSecretName: "" # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=WEBSERVER_CUSTOM_CERT_FILE=tls.crt --from-file=WEBSERVER_CUSTOM_KEY_FILE=tls.key
+# Note: This secret is still available but not recommended.  Certificates can be imported directly via the user interface.
 javaKeystoreSecretName: ""                # kubectl create secret generic <name>-alert-certificate -n <namespace> --from-file=cacerts
 
 # Set if Alert will be deployed with a Black Duck instance
 deployAlertWithBlackDuck: false
 blackDuckName: ""       # If true, you must provide the ReleaseName of the Black Duck instance
-blackDuckNamespace: ""  # If true, you must provide the Namspace of the Black Duck instance
+blackDuckNamespace: ""  # If true, you must provide the Namespace of the Black Duck instance
