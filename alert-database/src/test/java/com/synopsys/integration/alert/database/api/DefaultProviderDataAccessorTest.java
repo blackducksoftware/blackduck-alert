@@ -35,6 +35,8 @@ public class DefaultProviderDataAccessorTest {
     private final String KEY_PROVIDER_CONFIG_NAME = ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME;
     private final String fieldValue = "test-channel.common.name-value";
 
+    ProviderProject expectedProviderProject = new ProviderProject(name, description, href, projectOwnerEmail);
+
     @Test
     public void getProjectsByProviderConfigNameTest() throws Exception {
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -51,10 +53,7 @@ public class DefaultProviderDataAccessorTest {
 
         assertEquals(1, providerProjectList.size());
         ProviderProject providerProject = providerProjectList.get(0);
-        assertEquals(name, providerProject.getName());
-        assertEquals(description, providerProject.getDescription());
-        assertEquals(href, providerProject.getHref());
-        assertEquals(projectOwnerEmail, providerProject.getProjectOwnerEmail());
+        testProviderProject(expectedProviderProject, providerProject);
     }
 
     @Test
@@ -67,7 +66,7 @@ public class DefaultProviderDataAccessorTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationAccessor);
         List<ProviderProject> providerProjectList = providerDataAccessor.getProjectsByProviderConfigName("test-providerConfigName");
 
-        assertEquals(0, providerProjectList.size());
+        assertTrue(providerProjectList.isEmpty());
     }
 
     @Test
@@ -84,10 +83,7 @@ public class DefaultProviderDataAccessorTest {
 
         assertEquals(1, providerProjectList.size());
         ProviderProject providerProject = providerProjectList.get(0);
-        assertEquals(name, providerProject.getName());
-        assertEquals(description, providerProject.getDescription());
-        assertEquals(href, providerProject.getHref());
-        assertEquals(projectOwnerEmail, providerProject.getProjectOwnerEmail());
+        testProviderProject(expectedProviderProject, providerProject);
     }
 
     @Test
@@ -107,7 +103,7 @@ public class DefaultProviderDataAccessorTest {
         ProviderProjectEntity providerProjectEntity = new ProviderProjectEntity(name, description, href, projectOwnerEmail, 1L);
         providerProjectEntity.setId(1L);
         ProviderUserProjectRelation providerUserProjectRelation = new ProviderUserProjectRelation(2L, 1L);
-        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, Boolean.TRUE, 1L);
+        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, true, 1L);
 
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
         ProviderUserProjectRelationRepository providerUserProjectRelationRepository = Mockito.mock(ProviderUserProjectRelationRepository.class);
@@ -133,14 +129,12 @@ public class DefaultProviderDataAccessorTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, null);
         Set<String> emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref("test-href");
 
-        assertEquals(0, emailAddresses.size());
+        assertTrue(emailAddresses.isEmpty());
     }
 
     @Test
     public void getUsersByProviderConfigIdTest() {
-        Boolean optOut = Boolean.TRUE;
-
-        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, optOut, 1L);
+        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, true, 1L);
 
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
         ProviderUserRepository providerUserRepository = Mockito.mock(ProviderUserRepository.class);
@@ -153,7 +147,7 @@ public class DefaultProviderDataAccessorTest {
         assertEquals(1, providerUserModelList.size());
         ProviderUserModel providerUserModel = providerUserModelList.get(0);
         assertEquals(projectOwnerEmail, providerUserModel.getEmailAddress());
-        assertEquals(optOut, providerUserModel.getOptOut());
+        assertTrue(providerUserModel.getOptOut());
     }
 
     @Test
@@ -161,15 +155,13 @@ public class DefaultProviderDataAccessorTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(null, null, null, null);
         List<ProviderUserModel> providerUserModelList = providerDataAccessor.getUsersByProviderConfigId(null);
 
-        assertEquals(0, providerUserModelList.size());
+        assertTrue(providerUserModelList.isEmpty());
     }
 
     @Test
     public void getUsersByProviderConfigNameTest() throws Exception {
-        Boolean optOut = Boolean.TRUE;
-
         ConfigurationModel configurationModel = createConfigurationModel();
-        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, optOut, 1L);
+        ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, true, 1L);
 
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
         ProviderUserRepository providerUserRepository = Mockito.mock(ProviderUserRepository.class);
@@ -184,7 +176,7 @@ public class DefaultProviderDataAccessorTest {
         assertEquals(1, providerUserModelList.size());
         ProviderUserModel providerUserModel = providerUserModelList.get(0);
         assertEquals(projectOwnerEmail, providerUserModel.getEmailAddress());
-        assertEquals(optOut, providerUserModel.getOptOut());
+        assertTrue(providerUserModel.getOptOut());
     }
 
     @Test
@@ -192,7 +184,7 @@ public class DefaultProviderDataAccessorTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(null, null, null, null);
         List<ProviderUserModel> providerUserModelList = providerDataAccessor.getUsersByProviderConfigName("");
 
-        assertEquals(0, providerUserModelList.size());
+        assertTrue(providerUserModelList.isEmpty());
     }
 
     @Test
@@ -204,7 +196,7 @@ public class DefaultProviderDataAccessorTest {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(null, null, null, configurationAccessor);
         List<ProviderUserModel> providerUserModelList = providerDataAccessor.getUsersByProviderConfigName("providerConfigName-test");
 
-        assertEquals(0, providerUserModelList.size());
+        assertTrue(providerUserModelList.isEmpty());
     }
 
     @Test
@@ -213,7 +205,7 @@ public class DefaultProviderDataAccessorTest {
         ProviderProject providerProject = new ProviderProject(name, description, href, projectOwnerEmail);
         ProviderProjectEntity providerProjectEntity = new ProviderProjectEntity(name, description, href, projectOwnerEmail, 1L);
         providerProjectEntity.setId(3L);
-        ProviderUserEntity providerUserEntity = new ProviderUserEntity("test-email", Boolean.TRUE, 1L);
+        ProviderUserEntity providerUserEntity = new ProviderUserEntity("test-email", true, 1L);
         providerUserEntity.setId(4L);
 
         Map<ProviderProject, Set<String>> projectToUserData = new HashMap<>();
@@ -247,5 +239,12 @@ public class DefaultProviderDataAccessorTest {
         configurationModel.put(configurationFieldModel);
 
         return configurationModel;
+    }
+
+    private void testProviderProject(ProviderProject expected, ProviderProject actual) {
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected.getHref(), actual.getHref());
+        assertEquals(expected.getProjectOwnerEmail(), actual.getProjectOwnerEmail());
     }
 }

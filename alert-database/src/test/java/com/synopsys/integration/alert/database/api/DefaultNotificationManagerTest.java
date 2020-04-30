@@ -36,7 +36,7 @@ public class DefaultNotificationManagerTest {
     private final Long providerConfigId = 2L;
 
     private final String provider = "provider-test";
-    private final String providerConfigName = "providerConfigName-test"; //provider.common.config.name
+    private final String providerConfigName = "providerConfigName-test";
     private final String notificationType = "notificationType-test";
     private final String content = "content";
 
@@ -78,7 +78,7 @@ public class DefaultNotificationManagerTest {
         DefaultNotificationManager notificationManager = new DefaultNotificationManager(notificationContentRepository, null, null, null, null);
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.saveAllNotifications(new ArrayList<>());
 
-        assertEquals(0, alertNotificationModelList.size());
+        assertTrue(alertNotificationModelList.isEmpty());
     }
 
     @Test
