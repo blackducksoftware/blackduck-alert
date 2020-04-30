@@ -13,6 +13,7 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 - [Environment Variables](#environment-variables) 
     - [Editing the Overrides File](#editing-the-overrides-file)
     - [Alert Hostname Variable](#alert-hostname-variable)
+    - [Alert Database Variables](#alert-database-variables)
     - [Alert Logging Level Variable](#alert-logging-level-variable)
     - [Email Channel Environment Variables](#email-channel-environment-variables)
     - [Environment Variable Classifications](#environment-variable-classifications)
@@ -217,6 +218,7 @@ This section will walk through each step of the installation procedure.
 #### 5. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
+- Set the optional environment variables for database connectivity. See [Alert Database Variables](#alert-database-variables)
 - Set any other optional environment variables as needed.
 
 ##### 6. Deploy the stack.
@@ -410,6 +412,7 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 #### 5. Modify environment variables.
 Please see [Environment Variables](#environment-variables)
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
+- Set the optional environment variables for database connectivity. See [Alert Database Variables](#alert-database-variables)
 - Set any other optional environment variables as needed.
 
 ##### 6. Install Black Duck.
@@ -483,6 +486,54 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
     - Good: ```ALERT_HOSTNAME=myhost.example.com```
     - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
 
+### Alert Database Variables
+There are additional environment variables to control how Alert connects to a database independent of the user and password secrets.
+These include POSTGRES_DB in the alertdb service, and ALERT_DB_HOST, ALERT_DB_PORT, and ALERT_DB_NAME in the alert service.
+
+- Change the POSTGRES_DB in the alertdb service if you want to use a different database name
+    - Editing the overrides file:
+        ```yaml
+          alertdb:
+              # Comment or remove the POSTGRES_USER and POSTGRES_PASSWORD if secrets are used for credentials.
+              environment:
+                - POSTGRES_DB=<DB_NAME>
+        ```
+    - Replace <DB_NAME> with the name of the database to create in Postgres to store Alert data.
+    
+The following variables in the overrides file are under the comment in the alert service section.
+    ```yaml
+    # -- Database Settings
+    ```
+- Add the ALERT_DB_HOST environment variable only if the alertdb service is using a different hostname (The value must be the hostname only of the database.)
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_DB_HOST=<DB_HOST_NAME>
+        ```
+    - Replace <DB_HOST_NAME> with the hostname of the machine where Postgres is installed.
+    - Do not add the protocol a.k.a scheme to the value of the variable.
+        - Good: ```ALERT_DB_HOST=myhost.example.com```
+        - Bad: ```ALERT_DB_HOST=https://myhost.example.com```
+
+- Add the ALERT_DB_PORT environment variable if the alertdb service is running on a different port than the default
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_DB_PORT=<DB_PORT>
+        ```
+    - Replace <DB_PORT> with the port used by the Postgres database (default is 5432)
+- Add the ALERT_DB_NAME environment variable if the POSTGRES_DB variable name of the alertdb service is not the default
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_DB_NAME=<DB_NAME>
+        ```
+    - Replace <DB_NAME> with the name of the database created in Postgres to store Alert data
+    - <DB_NAME> Should match the value in the POSTGRES_DB variable of the alertdb service
+        
 ### Alert Logging Level Variable
 To change the logging level of Alert add the following environment variable to the deployment. 
 
