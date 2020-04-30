@@ -323,10 +323,16 @@ task copyDeploymentFiles(type: Copy) {
         include "docker-swarm/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/hub"
+        into "docker-swarm/external-db/hub"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/standalone"
+        into "docker-swarm/external-db/standalone"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/on-prem-db/hub"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/on-prem-db/standalone"
     }
     into "${project.buildDir}/deployment"
 
