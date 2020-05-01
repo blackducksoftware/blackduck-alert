@@ -131,12 +131,19 @@ services:
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_NOOP_STRICT=
 #    # uncomment the secrets section to use secrets.
 #    # Please uncomment the secrets in use; both the required and the optional secrets.
+#    # Note: choose one jssecacerts or cacerts secret not both.
 #    secrets:
 #      - ALERT_ENCRYPTION_PASSWORD
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
-#      - ALERT_TRUST_STORE_PASSWORD
+#      # -- Custom Certificate Usage
+#      - source: jssecacerts
+#        target: jssecacerts
+#        mode: 0664
+#      - source: cacerts
+#        target: cacerts
+#        mode: 0664
 #      - ALERT_DB_USERNAME
 #      - ALERT_DB_PASSWORD
 #
