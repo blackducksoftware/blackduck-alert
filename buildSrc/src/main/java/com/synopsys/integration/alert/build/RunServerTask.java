@@ -26,8 +26,6 @@ public class RunServerTask extends Exec {
         String userHome = System.getProperties().getProperty("user.home");
         String user = new File(userHome).getName();
         Map<String, String> envVars = new HashMap<>();
-        envVars.put("ALERT_COMPONENT_SETTINGS_SETTINGS_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE", Boolean.toString(envOverride));
-        envVars.put("ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL", String.format("%s@synopsys.com", user));
         envVars.put("ALERT_ENCRYPTION_PASSWORD", "changeme");
         envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", "changeme");
         envVars.put("ALERT_TRUST_CERT", "true");
