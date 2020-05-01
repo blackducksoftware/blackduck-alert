@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   alertdb:
-    image: blackducksoftware/alert-database:1.0.2-SNAPSHOT
+    image: blackducksoftware/alert-database:1.0.2
     ports: ['5432']
     hostname: alertdb
     volumes: ['alert-db-postgres-volume:/var/lib/postgresql/data']

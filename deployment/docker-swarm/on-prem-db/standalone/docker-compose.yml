@@ -16,7 +16,7 @@ services:
         limits: {memory: 640M}
         reservations: {memory: 640M}
   alertdb:
-    image: blackducksoftware/alert-database:1.0.2-SNAPSHOT
+    image: blackducksoftware/alert-database:1.0.2
     ports: ['5432']
     hostname: alertdb
     volumes: ['alert-db-postgres-volume:/var/lib/postgresql/data']
