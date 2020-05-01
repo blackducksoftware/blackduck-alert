@@ -121,7 +121,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the database username for Alert.
     ```bash
-    docker secret create <STACK_NAME>ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
+    docker secret create <STACK_NAME>_ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_USER_NAME> with the path to the file containing the database username.
@@ -147,7 +147,7 @@ This section will walk through each step of the installation procedure.
 
 - Create a docker secret containing the database password for Alert.
     ```bash
-    docker secret create <STACK_NAME>ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>
+    docker secret create <STACK_NAME>_ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the database password.
@@ -271,7 +271,7 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 
 - Create a docker secret containing the database username for Alert.
     ```bash
-    docker secret create <STACK_NAME>ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
+    docker secret create <STACK_NAME>_ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_USER_NAME> with the path to the file containing the database username.
@@ -322,7 +322,7 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 
 - Create a docker secret containing the database password for Alert.
     ```bash
-    docker secret create <STACK_NAME>ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>
+    docker secret create <STACK_NAME>_ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the database password.
