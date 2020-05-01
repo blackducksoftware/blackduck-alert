@@ -12,7 +12,7 @@ buildscript {
 }
 
 project.ext.moduleName = 'com.synopsys.integration.alert.database'
-def alertDatabaseDockerImageVersion = '1.0.2'
+def alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 
 apply plugin: 'com.bmuschko.docker-remote-api'
 
