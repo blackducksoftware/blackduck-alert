@@ -394,14 +394,12 @@ validatePostgresDatabase() {
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary..."
-    CONTEXT_QUERY= `psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;'`
-    echo "Query Result $CONTEXT_QUERY"
     if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' | grep -q '2';
     then
         echo "Alert postgres database is initialized."
     else
         echo "Preparing the old Alert database to be upgraded to 6.0.0..."
-        if [ -f ${alertDataDir}/alertdb.mv.db ];
+        if [ -f "${alertDataDir}/alertdb.mv.db" ];
         then
             echo "A previous database existed."
 
