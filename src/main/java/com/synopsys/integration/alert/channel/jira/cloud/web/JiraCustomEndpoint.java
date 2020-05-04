@@ -139,7 +139,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
         while (checkAgain <= maxTimeForChecks) {
-            boolean foundPlugin = jiraAppService.getInstalledApp(username, accessToken, appKey).isPresent();
+            boolean foundPlugin = jiraAppService.isAppInstalled(username, accessToken, appKey);
             if (foundPlugin) {
                 return true;
             }
