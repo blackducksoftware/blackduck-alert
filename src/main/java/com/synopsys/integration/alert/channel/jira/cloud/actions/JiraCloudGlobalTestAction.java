@@ -55,7 +55,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
-        return jiraAppService.getInstalledApp(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isEmpty();
+        return !jiraAppService.isAppInstalled(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY);
     }
 
     @Override
