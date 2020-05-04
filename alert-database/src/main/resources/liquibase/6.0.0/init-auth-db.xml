@@ -367,6 +367,9 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="2020-05-04-14-41-58-554">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('component_tasks')</sqlCheck>
+        </preConditions>
         <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
             <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
              <column name="OPERATIONS">255</column>

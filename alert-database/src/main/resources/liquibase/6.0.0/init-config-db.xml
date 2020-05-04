@@ -175,6 +175,9 @@
         </insert>
     </changeSet>
     <changeSet author="psantos" id="2020-05-04-14-09-12-649" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_tasks'</sqlCheck>
+        </preConditions>
         <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
             <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
             <column name="NAME">component_tasks</column>
