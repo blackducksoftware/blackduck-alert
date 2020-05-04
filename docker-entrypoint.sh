@@ -394,7 +394,9 @@ validatePostgresDatabase() {
 
 postgresPrepare600Upgrade() {
     echo "Determining if preparation for 6.0.0 upgrade is necessary..."
-    if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' |grep -q '2';
+    CONTEXT_QUERY = `psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;'`
+    echo "Query Result $CONTEXT_QUERY"
+    if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' | grep -q '2';
     then
         echo "Alert postgres database is initialized."
     else
