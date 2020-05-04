@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.mock.MockProviderTaskPropertiesRepository;
+import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesEntity;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
 
 public class DefaultProviderTaskPropertiesAccessorTest {
@@ -20,36 +20,19 @@ public class DefaultProviderTaskPropertiesAccessorTest {
     private final String propertyName = "propertyName-test";
     private final String value = "value-test";
 
+    private ProviderTaskPropertiesRepository providerTaskPropertiesRepository = new MockProviderTaskPropertiesRepository(providerConfigId, taskName, propertyName, value);
+
     @Test
     public void getTaskPropertyTest() {
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = new MockProviderTaskPropertiesRepository(providerConfigId, taskName, propertyName, value);
-
         DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
         Optional<String> taskPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, propertyName);
 
         assertTrue(taskPropertyValue.isPresent());
         assertEquals(value, taskPropertyValue.get());
     }
-    /*
-    @Test
-    public void getTaskPropertyTest() {
-        ProviderTaskPropertiesEntity providerTaskPropertiesEntity = new ProviderTaskPropertiesEntity(providerConfigId, taskName, propertyName, value);
-
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = Mockito.mock(ProviderTaskPropertiesRepository.class);
-
-        Mockito.when(providerTaskPropertiesRepository.findByTaskNameAndPropertyName(Mockito.any(), Mockito.any())).thenReturn(Optional.of(providerTaskPropertiesEntity));
-
-        DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
-        Optional<String> taskPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, propertyName);
-
-        assertTrue(taskPropertyValue.isPresent());
-        assertEquals(value, taskPropertyValue.get());
-    }*/
 
     @Test
     public void getTaskPropertyEmptyTest() {
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = new MockProviderTaskPropertiesRepository(providerConfigId, taskName, propertyName, value);
-
         DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
         Optional<String> taskPropertyOptionalEmpty = providerTaskPropertiesAccessor.getTaskProperty("invalidTaskName", "invalidPropertyKey");
         Optional<String> taskPropertyValueEmpty = providerTaskPropertiesAccessor.getTaskProperty("", "");
@@ -57,36 +40,29 @@ public class DefaultProviderTaskPropertiesAccessorTest {
         assertFalse(taskPropertyOptionalEmpty.isPresent());
         assertFalse(taskPropertyValueEmpty.isPresent());
     }
-    /*
-    @Test
-    public void getTaskPropertyEmptyTest() {
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = Mockito.mock(ProviderTaskPropertiesRepository.class);
-
-        Mockito.when(providerTaskPropertiesRepository.findByTaskNameAndPropertyName(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
-
-        DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
-        Optional<String> taskPropertyOptionalEmpty = providerTaskPropertiesAccessor.getTaskProperty(taskName, propertyName);
-        Optional<String> taskPropertyValueEmpty = providerTaskPropertiesAccessor.getTaskProperty("", "");
-
-        assertFalse(taskPropertyOptionalEmpty.isPresent());
-        assertFalse(taskPropertyValueEmpty.isPresent());
-    }
-
-     */
 
     @Test
     public void setTaskPropertyTest() throws Exception {
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = Mockito.mock(ProviderTaskPropertiesRepository.class);
+        final Long newConfigId = 2L;
+        final String newTaskName = "taskName-new";
+        final String newPropertyName = "propertyName-new";
+        final String newValue = "value-new";
 
         DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
-        providerTaskPropertiesAccessor.setTaskProperty(providerConfigId, taskName, propertyName, value);
+        providerTaskPropertiesAccessor.setTaskProperty(newConfigId, newTaskName, newPropertyName, newValue);
 
-        Mockito.verify(providerTaskPropertiesRepository).save(Mockito.any());
+        Optional<ProviderTaskPropertiesEntity> providerTaskPropertiesEntityOptional = providerTaskPropertiesRepository.findByTaskNameAndPropertyName(newTaskName, newPropertyName);
+
+        assertTrue(providerTaskPropertiesEntityOptional.isPresent());
+        ProviderTaskPropertiesEntity providerTaskPropertiesEntity = providerTaskPropertiesEntityOptional.get();
+        assertEquals(newConfigId, providerTaskPropertiesEntity.getProviderConfigId());
+        assertEquals(newTaskName, providerTaskPropertiesEntity.getTaskName());
+        assertEquals(newPropertyName, providerTaskPropertiesEntity.getPropertyName());
+        assertEquals(newValue, providerTaskPropertiesEntity.getValue());
     }
 
     @Test
     public void setTaskPropertyExceptionTest() throws Exception {
-        ProviderTaskPropertiesRepository providerTaskPropertiesRepository = Mockito.mock(ProviderTaskPropertiesRepository.class);
         DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
 
         try {
