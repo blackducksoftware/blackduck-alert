@@ -32,6 +32,7 @@ mainClassName = 'com.synopsys.integration.alert.Application'
 
 version = '6.0.0-SIGQA4-SNAPSHOT'
 def testContainerPostgresVersion='12.2'
+def reuseContainer='false'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -219,8 +220,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
-                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
+                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
+                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
