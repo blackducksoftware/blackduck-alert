@@ -22,9 +22,7 @@ public class MockCustomCertificateRepository extends DefaultMockJPARepository<Cu
 
     public MockCustomCertificateRepository(String alias, String content, Date lastUpdated) {
         CustomCertificateEntity customCertificateEntity = new CustomCertificateEntity(alias, content, lastUpdated);
-        customCertificateEntity.setId(currentId);
-        customCertificateEntityMapById.put(currentId, customCertificateEntity);
-        currentId++;
+        this.save(customCertificateEntity);
     }
 
     @Override

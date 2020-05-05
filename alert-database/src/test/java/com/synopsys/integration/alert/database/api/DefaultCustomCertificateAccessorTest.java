@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -13,18 +14,20 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockCustomCertificateRepository;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 
 public class DefaultCustomCertificateAccessorTest {
     private final String alias = "alias-test";
     private final String content = "content-test";
+    private Date testDate = new Date();
 
-    private CustomCertificateModel expectedCustomCertificateModel = new CustomCertificateModel(alias, content, new Date().toString());
+    private CustomCertificateModel expectedCustomCertificateModel = new CustomCertificateModel(alias, content, DateUtils.formatDate(testDate, DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
 
     @Test
     public void getCertificatesTest() {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
 
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
         List<CustomCertificateModel> customCertificateModelList = customCertificateAccessor.getCertificates();
@@ -36,7 +39,7 @@ public class DefaultCustomCertificateAccessorTest {
 
     @Test
     public void getCertificateTest() {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
 
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
         Optional<CustomCertificateModel> customCertificateModelOptional = customCertificateAccessor.getCertificate(0L);
@@ -50,7 +53,7 @@ public class DefaultCustomCertificateAccessorTest {
 
     @Test
     public void storeCertificateTest() throws Exception {
-        CustomCertificateModel certificateModel = new CustomCertificateModel(alias, content, new Date().toString());
+        CustomCertificateModel certificateModel = new CustomCertificateModel(alias, content, testDate.toString());
 
         CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository();
 
@@ -68,6 +71,7 @@ public class DefaultCustomCertificateAccessorTest {
             customCertificateAccessor.storeCertificate(null);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
     }
 
@@ -77,17 +81,19 @@ public class DefaultCustomCertificateAccessorTest {
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
 
         try {
-            CustomCertificateModel certificateModel = new CustomCertificateModel("", content, new Date().toString());
+            CustomCertificateModel certificateModel = new CustomCertificateModel("", content, testDate.toString());
             customCertificateAccessor.storeCertificate(certificateModel);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
 
         try {
-            CustomCertificateModel certificateModel = new CustomCertificateModel(alias, "", new Date().toString());
+            CustomCertificateModel certificateModel = new CustomCertificateModel(alias, "", testDate.toString());
             customCertificateAccessor.storeCertificate(certificateModel);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
     }
 
@@ -97,16 +103,17 @@ public class DefaultCustomCertificateAccessorTest {
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
 
         try {
-            CustomCertificateModel certificateModel = new CustomCertificateModel(9L, alias, content, new Date().toString());
+            CustomCertificateModel certificateModel = new CustomCertificateModel(9L, alias, content, testDate.toString());
             customCertificateAccessor.storeCertificate(certificateModel);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
     }
 
     @Test
     public void deleteCertificateByAliasTest() throws Exception {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
         List<CustomCertificateModel> customCertificateModelList = customCertificateAccessor.getCertificates();
 
@@ -117,24 +124,25 @@ public class DefaultCustomCertificateAccessorTest {
         customCertificateAccessor.deleteCertificate(alias);
         customCertificateModelList = customCertificateAccessor.getCertificates();
 
-        assertEquals(0, customCertificateModelList.size());
+        assertTrue(customCertificateModelList.isEmpty());
     }
 
     @Test
     public void deleteCertificateByAliasBlankTest() throws Exception {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
 
         try {
             customCertificateAccessor.deleteCertificate("");
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
     }
 
     @Test
     public void deleteCertificateByIdTest() throws Exception {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
         List<CustomCertificateModel> customCertificateModelList = customCertificateAccessor.getCertificates();
 
@@ -145,12 +153,12 @@ public class DefaultCustomCertificateAccessorTest {
         customCertificateAccessor.deleteCertificate(0L);
         customCertificateModelList = customCertificateAccessor.getCertificates();
 
-        assertEquals(0, customCertificateModelList.size());
+        assertTrue(customCertificateModelList.isEmpty());
     }
 
     @Test
     public void deleteCertificateByIdNullTest() throws Exception {
-        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, new Date());
+        CustomCertificateRepository customCertificateRepository = new MockCustomCertificateRepository(alias, content, testDate);
         DefaultCustomCertificateAccessor customCertificateAccessor = new DefaultCustomCertificateAccessor(customCertificateRepository);
 
         try {
@@ -158,17 +166,20 @@ public class DefaultCustomCertificateAccessorTest {
             customCertificateAccessor.deleteCertificate(certificateId);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
 
         try {
             customCertificateAccessor.deleteCertificate(-1L);
             fail();
         } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
         }
     }
 
     private void testCustomCertificateModel(CustomCertificateModel expected, CustomCertificateModel actual) {
         assertEquals(expected.getAlias(), actual.getAlias());
         assertEquals(expected.getCertificateContent(), actual.getCertificateContent());
+        assertEquals(expected.getLastUpdated(), actual.getLastUpdated());
     }
 }

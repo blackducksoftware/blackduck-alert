@@ -13,7 +13,7 @@ public class MockProviderTaskPropertiesRepository extends DefaultMockJPAReposito
 
     public MockProviderTaskPropertiesRepository(Long providerConfigId, String taskName, String propertyName, String value) {
         ProviderTaskPropertiesEntity providerTaskPropertiesEntity = new ProviderTaskPropertiesEntity(providerConfigId, taskName, propertyName, value);
-        providerTaskPropertiesEntityMap.put(providerConfigId, providerTaskPropertiesEntity);
+        this.save(providerTaskPropertiesEntity);
     }
 
     @Override

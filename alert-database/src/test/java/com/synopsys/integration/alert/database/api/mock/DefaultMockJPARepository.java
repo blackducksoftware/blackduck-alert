@@ -9,15 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class DefaultMockJPARepository<T, ID> implements JpaRepository<T,ID> {
-    // Empty implementation of a JPA repository to be extended by other mock repositories.
-    // The child classes that extend this can then override the methods they need to
-    // provide the correct testing functionality needed.
-    // To use the class correctly have a child class extend this class and also implement the JPA Repository
-    // interface to be tested.
-    //
-    // For example creating a mock for SystemStatusRepository
-    // class MockSystemStatusRepository extends DefaultMockJPARepository<SystemStatus, Long> implements SystemStatusRepository
+// To use this class correctly have a child class extend this class and also implement the JPA Repository
+// interface to be tested.
+//
+// For example creating a mock for SystemStatusRepository
+// class MockSystemStatusRepository extends DefaultMockJPARepository<SystemStatus, Long> implements SystemStatusRepository
+public abstract class DefaultMockJPARepository<T, ID> implements JpaRepository<T, ID> {
     @Override
     public List<T> findAll() {
         return null;
