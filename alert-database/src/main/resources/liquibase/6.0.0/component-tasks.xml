@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="2020-05-04-14-09-12-649" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.REGISTERED_DESCRIPTORS where NAME = 'component_tasks'</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('COMPONENT')"/>
+            <column name="NAME">component_tasks</column>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="2020-05-04-14-41-58-554">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('component_tasks')</sqlCheck>
+        </preConditions>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+             <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_tasks')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert tableName="PERMISSION_MATRIX" schemaName="ALERT">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+             <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_tasks')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
