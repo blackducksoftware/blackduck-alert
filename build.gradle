@@ -31,6 +31,8 @@ project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
 version = '6.0.0-SIGQA4-SNAPSHOT'
+def testContainerPostgresVersion='12.2'
+
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.synopsys.integration.solution'
@@ -217,8 +219,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                '--spring.datasource.url=jdbc:tc:postgresql:12.2:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
-                                '--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:12.2:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw',
+                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
+                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
@@ -323,18 +325,24 @@ task copyDeploymentFiles(type: Copy) {
         include "docker-swarm/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/hub"
+        into "docker-swarm/external-db/hub"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/standalone"
+        into "docker-swarm/external-db/standalone"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/on-prem-db/hub"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm/on-prem-db/standalone"
     }
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose-externaldb.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose-externaldb.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "VERSION_TOKEN", value: "${project.version}")

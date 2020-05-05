@@ -61,7 +61,10 @@ public class BlackDuckResponseCache {
             Future<Optional<T>> optionalProjectVersionFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
             if (BooleanUtils.isTrue(bucket.hasAnyErrors())) {
                 Optional<Exception> error = bucket.getError(url);
-                error.ifPresent(exception -> logger.error(String.format("There was a problem retrieving the link '%s'.", url), exception));
+                error.ifPresent(exception -> {
+                    logger.debug(String.format("There was a problem retrieving the link '%s'. Error: %s", url, exception.getMessage()));
+                    logger.trace(exception.getMessage(), exception);
+                });
             }
             if (null != optionalProjectVersionFuture) {
                 return optionalProjectVersionFuture

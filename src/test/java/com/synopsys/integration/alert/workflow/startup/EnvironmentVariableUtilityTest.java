@@ -15,20 +15,22 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 
 public class EnvironmentVariableUtilityTest {
+    private static final String WORKING_PROPERTY_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
+
     @Test
     public void testKeyConversion() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
         String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(settingsDescriptorKey, SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
-        String expectedPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
+        String expectedPropertyKey = WORKING_PROPERTY_KEY;
         assertEquals(expectedPropertyKey, actualPropertyKey);
     }
 
     @Test
     public void testHasEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
-        String workingPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL";
+        String workingPropertyKey = WORKING_PROPERTY_KEY;
         Mockito.when(environment.containsProperty(Mockito.eq(workingPropertyKey))).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         assertFalse(environmentVariableUtility.hasEnvironmentValue("BAD_KEY"));
@@ -38,7 +40,7 @@ public class EnvironmentVariableUtilityTest {
     @Test
     public void testGetEnvironmentValueEmpty() {
         Environment environment = Mockito.mock(Environment.class);
-        String workingPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL";
+        String workingPropertyKey = WORKING_PROPERTY_KEY;
         Mockito.when(environment.containsProperty(Mockito.eq(workingPropertyKey))).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         assertTrue(environmentVariableUtility.getEnvironmentValue(workingPropertyKey).isEmpty());
@@ -47,7 +49,7 @@ public class EnvironmentVariableUtilityTest {
     @Test
     public void testGetEnvironmentValue() {
         Environment environment = Mockito.mock(Environment.class);
-        String workingPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL";
+        String workingPropertyKey = WORKING_PROPERTY_KEY;
         String expectedValue = "expected value";
         Mockito.when(environment.getProperty(Mockito.eq(workingPropertyKey))).thenReturn(expectedValue);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -59,7 +61,7 @@ public class EnvironmentVariableUtilityTest {
     @Test
     public void testGetEnvironmentValueDefaultValue() {
         Environment environment = Mockito.mock(Environment.class);
-        String workingPropertyKey = "ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL";
+        String workingPropertyKey = WORKING_PROPERTY_KEY;
         String expectedValue = "expected value";
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         Optional<String> optionalValue = environmentVariableUtility.getEnvironmentValue(workingPropertyKey, expectedValue);

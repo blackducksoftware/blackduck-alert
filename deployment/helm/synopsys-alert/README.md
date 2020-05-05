@@ -88,23 +88,40 @@ The following table lists the configurable parameters of the Alert chart and the
 | `alert.nodeSelector` | Alert node labels for pod assignment | `{}` | 
 | `alert.tolerations` | Alert node tolerations for pod assignment | `[]` |
 | `alert.affinity` | Alert node affinity for pod assignment | `{}` |
-| `deployAlertWithBlackDuck` | If true, Alert will be configured to run with a Black Duck instance | `false` |
-| `enableStandalone` | if true, Alert will be deployed with it's own cfssl instance | `true` |
 | `cfssl.image` | Image for the Cfssl container | `docker.io/blackducksoftware/blackduck-cfssl:1.0.0` |
 | `cfssl.limitMemory` | Cfssl container Memory Limit | `640M` |
 | `cfssl.requestMemory` | Cfssl container Request Limit | `640M` |
 | `cfssl.nodeSelector` | Cfssl node labels for pod assigment | `{}` |
 | `cfssl.tolerations` | Cfssl node tolerations for pod assignment | `[]` |
 | `cfssl.affinity` | Cfssl node affinity for pod assignment | `{}` |
+| `postgres.registry` |  Postgres registry containing image for the container | `"docker.io/centos"` |
+| `postgres.isExternal` |  If true, do not deploy a Postgres container |  `false` |
+| `postgres.host` |  Host name of the Postgres database | `""` |
+| `postgres.port` |  Port of the Postgres database | `5432` |
+| `postgres.userUserName` | Postgres database user owning the database Alert uses | `sa` |
+| `postgres.userPassword` | Postgres database password for the user | `blackduck` |
+| `postgres.databaseName` | Postgres database name where Alert data will be stored | `alertdb` |
+| `postgres.persistentVolumeClaimName` | Postgres node volume claim name | `""` | 
+| `postgres.claimSize` | Postgres node volume claim size | `"5Gi"` |
+| `postgres.storageClass` | Postgres node storage class for volume claim | `""` |
+| `postgres.volumeName` | Postgres node volume name for pod assignment | `""` |
+| `postgres.nodeSelector` | Postgres node labels for pod assignment | `{}` |
+| `postgres.tolerations` | Postgres node tolerations for pod assignment | `[]` |
+| `postgres.affinity` | Postgres node affinity for pod assignment | `{}` |
+| `postgres.podSecurityContext` | Postgres node pod security context | `{}` |
+| `postgres.securityContext` | Postgres node security context | `{}` |
+| `deployAlertWithBlackDuck` | If true, Alert will be configured to run with a Black Duck instance | `false` |
+| `enableCertificateSecret` | if true, Alert will use values in a Secret for authenticating it's certificates | `false` |
+| `enableStandalone` | if true, Alert will be deployed with it's own cfssl instance | `true` |
 | `enablePersistentStorage` | if true, Alert will have persistent storage | `false` |
-| `pvcSize` | Persistent Volume Claim claim size | `5G` |
-| `storageClassName` | Persistent Volume Claim storage class | `""` |
+| `environs` | environment variables for the Alert container | `[]` |
 | `exposeui` | if true, a Service to expose the UI will be created | `true` |
 | `exposedServiceType` | type of exposed Service | `NodePort` |
-| `environs` | environment variables for the Alert container | `[]` |
+| `pvcSize` | Persistent Volume Claim claim size | `5G` |
 | `secretEnvirons` | sensitive environment variables for the Alert container to be stored in a Secret | `[]` |
-| `setEnvryptionSecretData` | if true, you will be prompted to set values for encrypting Alert's data | `false` |
-| `enableCertificateSecret` | if true, Alert will use values in a Secret for authenticating it's certificates | `false` |
+| `setEncryptionSecretData` | if true, you will be prompted to set values for encrypting Alert's data | `false` |
+| `storageClassName` | Persistent Volume Claim storage class | `""` |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 

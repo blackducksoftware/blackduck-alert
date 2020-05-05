@@ -1,19 +1,5 @@
 version: '3.6'
 services:
-  alertdb:
-    # Comment or remove the POSTGRES_USER and POSTGRES_PASSWORD if secrets are used for credentials.
-    environment:
-      - POSTGRES_USER=sa
-      - POSTGRES_PASSWORD=blackduck
-      - POSTGRES_DB=alertdb
-#    # uncomment the variables that end in _FILE if secrets are being used.
-#      - POSTGRES_USER_FILE=/run/secrets/ALERT_DB_USERNAME
-#      - POSTGRES_PASSWORD_FILE=/run/secrets/ALERT_DB_PASSWORD
-#    # uncomment this section if the custom user and password are stored in docker secrets.
-#    secrets:
-#      - ALERT_DB_USERNAME
-#      - ALERT_DB_PASSWORD
-#
 #  alert:
 #    # uncomment environment to set environment variables for the alert service.
 #    environment:
@@ -45,8 +31,7 @@ services:
 #      - ALERT_PROVIDER_BLACKDUCK_BLACKDUCK_API_KEY=
 #      - ALERT_PROVIDER_BLACKDUCK_BLACKDUCK_TIMEOUT=
 #     # Component Settings
-#     # -- Admin
-#      - ALERT_COMPONENT_SETTINGS_SETTINGS_USER_DEFAULT_ADMIN_EMAIL=
+#
 #     # -- LDAP
 #      - ALERT_COMPONENT_AUTHENTICATION_SETTINGS_LDAP_ENABLED=
 #      - ALERT_COMPONENT_AUTHENTICATION_SETTINGS_LDAP_SERVER=
@@ -131,11 +116,19 @@ services:
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_NOOP_STRICT=
 #    # uncomment the secrets section to use secrets.
 #    # Please uncomment the secrets in use; both the required and the optional secrets.
+#    # Note: choose one jssecacerts or cacerts secret not both.
 #    secrets:
 #      - ALERT_ENCRYPTION_PASSWORD
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
+#      # -- Custom Certificate Usage
+#      - source: jssecacerts
+#        target: jssecacerts
+#        mode: 0664
+#      - source: cacerts
+#        target: cacerts
+#        mode: 0664
 #      - ALERT_TRUST_STORE_PASSWORD
 #      - ALERT_DB_USERNAME
 #      - ALERT_DB_PASSWORD
