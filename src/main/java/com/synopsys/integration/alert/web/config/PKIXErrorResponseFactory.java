@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +36,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.ResponseBodyBuilder;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 
 @Component
 public class PKIXErrorResponseFactory {
@@ -47,7 +47,8 @@ public class PKIXErrorResponseFactory {
     private static final String ALERT_DEPLOYMENT_KUBERNETES = "kubernetes";
 
     private static final String PKIX_HEADER = "There were issues with your Certificates.";
-    private static final String PKIX_TITLE = "To resolve this issue, use the appropriate link below to properly install your certificates and then restart Alert.";
+    private static final String PKIX_TITLE = "To resolve this issue, use the link below to properly install your certificates.";
+    private static final String PKIX_MESSAGE = "Click this link to go to the certificate page: ";
 
     private Gson gson;
     private ResponseFactory responseFactory;
@@ -61,7 +62,10 @@ public class PKIXErrorResponseFactory {
     public Optional<ResponseEntity<String>> createSSLExceptionResponse(String id, Exception e) {
         if (isPKIXError(e)) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
-            Map<String, Object> pkixErrorBody = Map.of("header", PKIX_HEADER, "title", PKIX_TITLE, "info", createInfo());
+            logger.debug(e.getMessage(), e);
+            String certificateLink = "/alert/components/" + CertificatesDescriptor.CERTIFICATES_URL;
+            Map<String, Object> pkixErrorBody = Map.of("header", PKIX_HEADER, "title", PKIX_TITLE, "message", PKIX_MESSAGE,
+                "componentLabel", CertificatesDescriptor.CERTIFICATES_LABEL, "componentLink", certificateLink);
             String pkixError = gson.toJson(pkixErrorBody);
             ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(id, pkixError);
             responseBodyBuilder.put("isDetailed", true);
@@ -84,15 +88,4 @@ public class PKIXErrorResponseFactory {
         return false;
     }
 
-    private List<String> createInfo() {
-        String swarm = String.format("Docker Swarm - %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_SWARM));
-        String compose = String.format("Docker Compose - %s", createLinkToReadme(ALERT_DEPLOYMENT_DOCKER_COMPOSE));
-        String kubes = String.format("Kubernetes - %s", createLinkToReadme(ALERT_DEPLOYMENT_KUBERNETES));
-
-        return List.of(swarm, compose, kubes);
-    }
-
-    private String createLinkToReadme(String deploymentType) {
-        return String.format("%s/%s/README.md#certificates", BLACKDUCK_GITHUB_DEPLOYMENT_URL, deploymentType);
-    }
 }
