@@ -331,17 +331,17 @@ task copyDeploymentFiles(type: Copy) {
         into "docker-swarm/external-db/standalone"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/on-prem-db/hub"
+        into "docker-swarm/hub"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/on-prem-db/standalone"
+        into "docker-swarm/standalone"
     }
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
