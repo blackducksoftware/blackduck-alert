@@ -48,7 +48,7 @@ public class PKIXErrorResponseFactory {
 
     private static final String PKIX_HEADER = "There were issues with your Certificates.";
     private static final String PKIX_TITLE = "To resolve this issue, use the link below to properly install your certificates.";
-    private static final String PKIX_MESSAGE = "Click this link to go to the certificate page: ";
+    private static final String PKIX_MESSAGE = "Certificate page: ";
 
     private Gson gson;
     private ResponseFactory responseFactory;
