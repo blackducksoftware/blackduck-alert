@@ -42,6 +42,7 @@ blackduck-alert-<VERSION>-deployment.zip file.
 - Extract the contents of the ZIP file.
 - For installing with Black Duck the files are located in the *hub* sub-directory.
 - For installing Alert standalone the files are located in the *standalone* sub-directory.
+- For installing Alert with an external Postgres database the instructions can be found in the *external-db* directory.
 
 ### Standalone Installation
 This section will walk through the instructions to install Alert in a standalone fashion.
