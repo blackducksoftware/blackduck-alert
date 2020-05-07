@@ -28,10 +28,11 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 
 - A Docker host with at least 2GB of allocatable memory.
 - Administrative access to the docker host machine. 
-- The `alert` and `alertdb` containers must share a volume, and the `PGDATA` variable defined in the `alertdb` container must be set to the volume path, with the path `/postgres/alertdb` appended.
+- You must create a postgres user and database that the created user owns for Alert to create the database structure.
 - Before installing or upgrading Alert the desired persistent storage volumes must be created for Alert and needs to be either:
     - Node locked.     
     - Backed by an NFS volume or a similar mechanism.
+ 
 
 ## Installing Alert
 Deployment files for Docker Swarm are located in the *docker-swarm* directory of the zip file.
