@@ -44,14 +44,15 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        systemMessageRepository.flush();
         systemMessageRepository.deleteAllInBatch();
     }
 
     @Test
     public void testGetSystemMessages() {
-        final List<SystemMessage> expectedMessageList = createSystemMessageList();
+        List<SystemMessage> expectedMessageList = createSystemMessageList();
         systemMessageRepository.saveAll(expectedMessageList);
-        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessages();
+        List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessages();
         assertEquals(expectedMessageList.size(), actualMessageList.size());
     }
 
@@ -60,24 +61,24 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         final String content = "add message test content";
         final SystemMessageSeverity systemMessageSeverity = SystemMessageSeverity.WARNING;
         defaultSystemMessageUtility.addSystemMessage(content, systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-        final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
+        List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
         assertEquals(1, actualMessageList.size());
-        final SystemMessage actualMessage = actualMessageList.get(0);
+        SystemMessage actualMessage = actualMessageList.get(0);
         assertEquals(content, actualMessage.getContent());
         assertEquals(systemMessageSeverity.name(), actualMessage.getSeverity());
     }
 
     @Test
     public void testRemoveSystemMessagesByType() {
-        final List<SystemMessage> expectedMessages = createSystemMessageList();
+        List<SystemMessage> expectedMessages = createSystemMessageList();
         systemMessageRepository.saveAll(expectedMessages);
         final SystemMessageSeverity systemMessageSeverity = SystemMessageSeverity.WARNING;
         defaultSystemMessageUtility.addSystemMessage("message 1", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         defaultSystemMessageUtility.addSystemMessage("message 2", systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-        final List<SystemMessage> savedMessages = systemMessageRepository.findAll();
+        List<SystemMessage> savedMessages = systemMessageRepository.findAll();
         assertEquals(MESSAGE_COUNT + 2, savedMessages.size());
         defaultSystemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
-        final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
+        List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
         assertEquals(expectedMessages, actualMessageList);
@@ -85,30 +86,30 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesSince() {
-        final List<SystemMessage> savedMessages = createSystemMessageList();
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        final Date currentDate = Date.from(currentTime.toInstant());
+        List<SystemMessage> savedMessages = createSystemMessageList();
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        Date currentDate = Date.from(currentTime.toInstant());
         savedMessages.add(new SystemMessage(currentDate, SEVERITY, "content", TYPE));
         currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesAfter(currentDate);
+        List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesAfter(currentDate);
         assertNotNull(actualMessageList);
         assertEquals(2, actualMessageList.size());
     }
 
     @Test
     public void testFindCreatedBefore() {
-        final List<SystemMessage> expectedMessages = createSystemMessageList();
+        List<SystemMessage> expectedMessages = createSystemMessageList();
         Collections.reverse(expectedMessages);
         ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        final List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
-        final Date currentDate = Date.from(currentTime.toInstant());
+        List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
+        Date currentDate = Date.from(currentTime.toInstant());
         savedMessages.add(new SystemMessage(currentDate, SEVERITY, "content", TYPE));
         currentTime = currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
+        List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
         assertEquals(expectedMessages.size(), actualMessageList.size());
@@ -116,27 +117,27 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testFindCreatedBeforeEmptyList() {
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        final Date currentDate = Date.from(currentTime.toInstant());
-        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        Date currentDate = Date.from(currentTime.toInstant());
+        List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
         assertTrue(actualMessageList.isEmpty());
     }
 
     @Test
     public void testFindBetweenDateRange() {
-        final List<SystemMessage> expectedMessages = createSystemMessageList();
+        List<SystemMessage> expectedMessages = createSystemMessageList();
         Collections.reverse(expectedMessages);
         ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        final ZonedDateTime startTime = currentTime.minusMinutes(10);
-        final List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
-        final Date currentDate = Date.from(currentTime.toInstant());
+        ZonedDateTime startTime = currentTime.minusMinutes(10);
+        List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
+        Date currentDate = Date.from(currentTime.toInstant());
         savedMessages.add(new SystemMessage(currentDate, SEVERITY, "content", TYPE));
         currentTime = currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(startTime.minusMinutes(15).toInstant()), SEVERITY, "content", TYPE));
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final DateRange dateRange = DateRange.of(Date.from(startTime.toInstant()), currentDate);
-        final List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.findBetween(dateRange);
+        DateRange dateRange = DateRange.of(Date.from(startTime.toInstant()), currentDate);
+        List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.findBetween(dateRange);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
         assertEquals(expectedMessages.size(), actualMessageList.size());
@@ -144,19 +145,19 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testDeleteList() {
-        final List<SystemMessage> savedMessages = createSystemMessageList();
+        List<SystemMessage> savedMessages = createSystemMessageList();
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessageModel> messagesToDelete = savedMessages.subList(1, 3).stream().map(this::convertToSystemMessage).collect(Collectors.toList());
+        List<SystemMessageModel> messagesToDelete = savedMessages.subList(1, 3).stream().map(this::convertToSystemMessage).collect(Collectors.toList());
 
         defaultSystemMessageUtility.deleteSystemMessages(messagesToDelete);
 
-        final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
+        List<SystemMessage> actualMessageList = systemMessageRepository.findAll();
         assertNotEquals(savedMessages.stream().map(this::convertToSystemMessage).collect(Collectors.toList()), actualMessageList);
         assertNotEquals(messagesToDelete.size(), actualMessageList.size());
     }
 
     private List<SystemMessage> createSystemMessageList() {
-        final List<SystemMessage> messages = new ArrayList<>(5);
+        List<SystemMessage> messages = new ArrayList<>(5);
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         for (int index = 0; index < MESSAGE_COUNT; index++) {
             zonedDateTime = zonedDateTime.minusMinutes(1);

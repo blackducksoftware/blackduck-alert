@@ -41,6 +41,9 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        definedFieldRepository.flush();
+        fieldContextRepository.flush();
+        configContextRepository.flush();
         definedFieldRepository.deleteAllInBatch();
         fieldContextRepository.deleteAllInBatch();
         configContextRepository.deleteAllInBatch();
@@ -48,59 +51,59 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findByContextId() {
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
-        final DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
+        DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
         assertEquals(2, definedFieldRepository.findAll().size());
 
-        final ConfigContextEntity configContextEntity1 = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity configContextEntity2 = new ConfigContextEntity(CONTEXT_NAME + "2");
-        final ConfigContextEntity savedContextEntity1 = configContextRepository.save(configContextEntity1);
-        final ConfigContextEntity savedContextEntity2 = configContextRepository.save(configContextEntity2);
+        ConfigContextEntity configContextEntity1 = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity configContextEntity2 = new ConfigContextEntity(CONTEXT_NAME + "2");
+        ConfigContextEntity savedContextEntity1 = configContextRepository.save(configContextEntity1);
+        ConfigContextEntity savedContextEntity2 = configContextRepository.save(configContextEntity2);
         assertEquals(2, configContextRepository.findAll().size());
 
-        final FieldContextRelation fieldContextRelation1 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity1.getId());
-        final FieldContextRelation fieldContextRelation2 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity2.getId());
-        final FieldContextRelation fieldContextRelation3 = new FieldContextRelation(savedFieldEntity2.getId(), savedContextEntity1.getId());
+        FieldContextRelation fieldContextRelation1 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity1.getId());
+        FieldContextRelation fieldContextRelation2 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity2.getId());
+        FieldContextRelation fieldContextRelation3 = new FieldContextRelation(savedFieldEntity2.getId(), savedContextEntity1.getId());
         fieldContextRepository.save(fieldContextRelation1);
         fieldContextRepository.save(fieldContextRelation2);
         fieldContextRepository.save(fieldContextRelation3);
         assertEquals(3, fieldContextRepository.findAll().size());
 
-        final List<FieldContextRelation> foundList1 = fieldContextRepository.findByContextId(savedContextEntity1.getId());
+        List<FieldContextRelation> foundList1 = fieldContextRepository.findByContextId(savedContextEntity1.getId());
         assertEquals(2, foundList1.size());
 
-        final List<FieldContextRelation> foundList2 = fieldContextRepository.findByContextId(savedContextEntity2.getId());
+        List<FieldContextRelation> foundList2 = fieldContextRepository.findByContextId(savedContextEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 
     @Test
     public void findByFieldId() {
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
-        final DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
+        DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
         assertEquals(2, definedFieldRepository.findAll().size());
 
-        final ConfigContextEntity configContextEntity1 = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity configContextEntity2 = new ConfigContextEntity(CONTEXT_NAME + "2");
-        final ConfigContextEntity savedContextEntity1 = configContextRepository.save(configContextEntity1);
-        final ConfigContextEntity savedContextEntity2 = configContextRepository.save(configContextEntity2);
+        ConfigContextEntity configContextEntity1 = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity configContextEntity2 = new ConfigContextEntity(CONTEXT_NAME + "2");
+        ConfigContextEntity savedContextEntity1 = configContextRepository.save(configContextEntity1);
+        ConfigContextEntity savedContextEntity2 = configContextRepository.save(configContextEntity2);
         assertEquals(2, configContextRepository.findAll().size());
 
-        final FieldContextRelation fieldContextRelation1 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity1.getId());
-        final FieldContextRelation fieldContextRelation2 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity2.getId());
-        final FieldContextRelation fieldContextRelation3 = new FieldContextRelation(savedFieldEntity2.getId(), savedContextEntity1.getId());
+        FieldContextRelation fieldContextRelation1 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity1.getId());
+        FieldContextRelation fieldContextRelation2 = new FieldContextRelation(savedFieldEntity1.getId(), savedContextEntity2.getId());
+        FieldContextRelation fieldContextRelation3 = new FieldContextRelation(savedFieldEntity2.getId(), savedContextEntity1.getId());
         fieldContextRepository.save(fieldContextRelation1);
         fieldContextRepository.save(fieldContextRelation2);
         fieldContextRepository.save(fieldContextRelation3);
         assertEquals(3, fieldContextRepository.findAll().size());
 
-        final List<FieldContextRelation> foundList1 = fieldContextRepository.findByFieldId(savedFieldEntity1.getId());
+        List<FieldContextRelation> foundList1 = fieldContextRepository.findByFieldId(savedFieldEntity1.getId());
         assertEquals(2, foundList1.size());
 
-        final List<FieldContextRelation> foundList2 = fieldContextRepository.findByFieldId(savedFieldEntity2.getId());
+        List<FieldContextRelation> foundList2 = fieldContextRepository.findByFieldId(savedFieldEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 }
