@@ -315,7 +315,6 @@ create table if not exists PUBLIC.DATABASECHANGELOG
 );
 
 ALTER SEQUENCE alert.audit_entries_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.authentication_type_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.config_contexts_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.custom_certificates_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.defined_fields_id_seq INCREMENT 50;

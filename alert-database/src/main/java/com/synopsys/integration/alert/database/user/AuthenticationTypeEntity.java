@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -38,8 +37,7 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 public class AuthenticationTypeEntity extends BaseEntity implements DatabaseEntity {
     private static final long serialVersionUID = 8587038201001576363L;
     @Id
-    @GeneratedValue(generator = "alert.authentication_type_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.authentication_type_id_seq", sequenceName = "alert.authentication_type_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "name")
