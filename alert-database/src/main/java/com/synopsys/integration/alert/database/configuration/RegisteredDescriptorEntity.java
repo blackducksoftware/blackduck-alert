@@ -26,23 +26,34 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
-public class RegisteredDescriptorEntity extends DatabaseEntity {
-    @Column(name = "NAME")
+@Table(schema = "alert", name = "registered_descriptors")
+public class RegisteredDescriptorEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = -7695067320131039823L;
+    @Id
+    @GeneratedValue(generator = "alert.registered_descriptors_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.registered_descriptors_id_seq", sequenceName = "alert.registered_descriptors_id_seq")
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "TYPE_ID")
+    @Column(name = "type_id")
     private Long typeId;
 
     @OneToMany
-    @JoinColumn(name = "DESCRIPTOR_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "descriptor_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<DescriptorConfigEntity> descriptorConfigEntities;
 
     public RegisteredDescriptorEntity() {
@@ -52,6 +63,16 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
     public RegisteredDescriptorEntity(String name, Long typeId) {
         this.name = name;
         this.typeId = typeId;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

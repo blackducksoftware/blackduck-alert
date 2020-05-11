@@ -27,31 +27,42 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
+@Table(schema = "alert", name = "descriptor_configs")
+public class DescriptorConfigEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = 2515539111869578867L;
+    @Id
+    @GeneratedValue(generator = "alert.descriptor_configs_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.descriptor_configs_id_seq", sequenceName = "alert.descriptor_configs_id_seq")
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "descriptor_id")
     private Long descriptorId;
-    @Column(name = "CONTEXT_ID")
+    @Column(name = "context_id")
     private Long contextId;
-    @Column(name = "CREATED_AT")
+    @Column(name = "created_at")
     private Date createdAt;
-    @Column(name = "LAST_UPDATED")
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @OneToMany
-    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "config_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<FieldValueEntity> fieldValueEntities;
 
     @OneToOne
-    @JoinColumn(name = "ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "id", referencedColumnName = "config_id", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
 
     public DescriptorConfigEntity() {
@@ -63,6 +74,16 @@ public class DescriptorConfigEntity extends DatabaseEntity {
         this.contextId = contextId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getDescriptorId() {

@@ -24,13 +24,24 @@ package com.synopsys.integration.alert.database.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "users")
-public class UserEntity extends DatabaseEntity {
+public class UserEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = -5139140762636521918L;
+    @Id
+    @GeneratedValue(generator = "alert.users_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.users_id_seq", sequenceName = "alert.users_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Column(name = "username")
     private String userName;
     @Column(name = "password")
@@ -72,6 +83,16 @@ public class UserEntity extends DatabaseEntity {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.authenticationType = authenticationType;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUserName() {

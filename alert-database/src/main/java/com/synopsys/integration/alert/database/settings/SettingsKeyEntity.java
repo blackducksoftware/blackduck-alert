@@ -24,17 +24,28 @@ package com.synopsys.integration.alert.database.settings;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "settings_key")
-public class SettingsKeyEntity extends DatabaseEntity {
-    @Column
+public class SettingsKeyEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = 7078325297864692468L;
+    @Id
+    @GeneratedValue(generator = "alert.settings_key_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.settings_key_id_seq", sequenceName = "alert.settings_key_id_seq")
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "key")
     private String key;
 
-    @Column
+    @Column(name = "value")
     private String value;
 
     public SettingsKeyEntity() {
@@ -44,6 +55,16 @@ public class SettingsKeyEntity extends DatabaseEntity {
     public SettingsKeyEntity(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getKey() {

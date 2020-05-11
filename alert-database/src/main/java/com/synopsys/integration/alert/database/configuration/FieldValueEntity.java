@@ -24,28 +24,39 @@ package com.synopsys.integration.alert.database.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "FIELD_VALUES")
-public class FieldValueEntity extends DatabaseEntity {
-    @Column(name = "CONFIG_ID")
+@Table(schema = "alert", name = "field_values")
+public class FieldValueEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = -7397653009915302223L;
+    @Id
+    @GeneratedValue(generator = "alert.field_values_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.field_values_id_seq", sequenceName = "alert.field_values_id_seq")
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "config_id")
     private Long configId;
-    @Column(name = "FIELD_ID")
+    @Column(name = "field_id")
     private Long fieldId;
-    @Column(name = "FIELD_VALUE")
+    @Column(name = "field_value")
     private String value;
 
     @ManyToOne
-    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "field_id", referencedColumnName = "id", insertable = false, updatable = false)
     private DefinedFieldEntity definedFieldEntity;
 
     @ManyToOne
-    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "config_id", referencedColumnName = "id", insertable = false, updatable = false)
     private DescriptorConfigEntity descriptorConfigEntity;
 
     public FieldValueEntity() {
@@ -56,6 +67,16 @@ public class FieldValueEntity extends DatabaseEntity {
         this.configId = configId;
         this.fieldId = fieldId;
         this.value = value;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getConfigId() {

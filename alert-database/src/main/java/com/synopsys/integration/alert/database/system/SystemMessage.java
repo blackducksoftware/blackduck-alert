@@ -26,15 +26,26 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "system_messages")
-public class SystemMessage extends DatabaseEntity {
+public class SystemMessage extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = -7981868651148954093L;
+    @Id
+    @GeneratedValue(generator = "alert.system_messages_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.system_messages_id_seq", sequenceName = "alert.system_messages_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date created;
@@ -53,6 +64,16 @@ public class SystemMessage extends DatabaseEntity {
         this.severity = severity;
         this.content = content;
         this.type = type;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getCreated() {
