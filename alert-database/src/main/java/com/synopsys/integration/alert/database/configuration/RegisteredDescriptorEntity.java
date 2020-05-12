@@ -31,7 +31,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -42,8 +41,7 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 public class RegisteredDescriptorEntity extends BaseEntity implements DatabaseEntity {
     private static final long serialVersionUID = -7695067320131039823L;
     @Id
-    @GeneratedValue(generator = "alert.registered_descriptors_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.registered_descriptors_id_seq", sequenceName = "alert.registered_descriptors_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "name")

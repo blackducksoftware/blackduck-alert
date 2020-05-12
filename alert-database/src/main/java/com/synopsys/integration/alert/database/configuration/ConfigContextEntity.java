@@ -31,7 +31,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -42,8 +41,7 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 public class ConfigContextEntity extends BaseEntity implements DatabaseEntity {
     private static final long serialVersionUID = 782495857552722347L;
     @Id
-    @GeneratedValue(generator = "alert.config_contexts_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.config_contexts_id_seq", sequenceName = "alert.config_contexts_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

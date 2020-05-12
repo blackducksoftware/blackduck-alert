@@ -315,16 +315,12 @@ create table if not exists PUBLIC.DATABASECHANGELOG
 );
 
 ALTER SEQUENCE alert.audit_entries_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.config_contexts_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.custom_certificates_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.defined_fields_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.descriptor_configs_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.descriptor_types_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.field_values_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.provider_projects_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.provider_users_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.raw_notification_content_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.registered_descriptors_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.roles_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.settings_key_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.system_messages_id_seq INCREMENT 50;
