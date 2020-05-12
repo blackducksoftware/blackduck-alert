@@ -23,9 +23,11 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -57,7 +59,7 @@ public abstract class UIConfig extends Stringable {
     protected abstract List<ConfigField> createFields();
 
     public List<ConfigField> getFields() {
-        return configFields;
+        return configFields.stream().map(SerializationUtils::clone).collect(Collectors.toList());
     }
 
     public final boolean hasFields() {

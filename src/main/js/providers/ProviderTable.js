@@ -33,22 +33,21 @@ class ProviderTable extends Component {
         this.combineModelWithDefaults = this.combineModelWithDefaults.bind(this);
 
         this.state = {
-            descriptor: null,
             providerConfig: {},
             saveCallback: () => null
         };
     }
 
     componentDidMount() {
-        const descriptor = this.props.descriptors.find(descriptor => descriptor.name === this.props.descriptorName
-            && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
-        if (descriptor) {
-            const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
+        const { descriptors, descriptorName } = this.props
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        if (descriptorList && descriptorList.length > 0) {
+            const foundDescriptor = descriptorList[0];
+            const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(foundDescriptor, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, foundDescriptor.name);
             this.setState({
-                descriptor,
                 providerConfig: emptyConfig
             });
-            this.props.getAllConfigs(descriptor.name);
+            this.props.getAllConfigs(foundDescriptor.name);
         }
     }
 
@@ -59,16 +58,18 @@ class ProviderTable extends Component {
     }
 
     combineModelWithDefaults(providerConfig) {
-        const { descriptor } = this.state;
-        if (!descriptor) {
-            return {};
+        const { descriptors, descriptorName } = this.props
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        if (descriptorList && descriptorList.length > 0) {
+            const foundDescriptor = descriptorList[0];
+            const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(foundDescriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, foundDescriptor.name);
+            const updatedFieldModel = FieldModelUtilities.combineFieldModels(emptyConfig, providerConfig);
+            if (providerConfig.id) {
+                updatedFieldModel.id = providerConfig.id;
+            }
+            return updatedFieldModel;
         }
-        const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
-        const updatedFieldModel = FieldModelUtilities.combineFieldModels(emptyConfig, providerConfig);
-        if (providerConfig.id) {
-            updatedFieldModel.id = providerConfig.id;
-        }
-        return updatedFieldModel;
+        return {};
     }
 
     createColumns() {
@@ -133,9 +134,11 @@ class ProviderTable extends Component {
     }
 
     retrieveData() {
-        const { descriptor } = this.state;
-        if (descriptor) {
-            this.props.getAllConfigs(descriptor.name);
+        const { descriptors, descriptorName } = this.props
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        if (descriptorList && descriptorList.length > 0) {
+            const foundDescriptor = descriptorList[0];
+            this.props.getAllConfigs(foundDescriptor.name);
         }
     }
 
@@ -180,14 +183,16 @@ class ProviderTable extends Component {
     }
 
     createModalFields() {
-        const { providerConfig, descriptor } = this.state;
-        const { fieldErrors } = this.props;
+        const { providerConfig } = this.state;
+        const { fieldErrors, descriptors, descriptorName } = this.props;
         const newConfig = this.combineModelWithDefaults(providerConfig);
-        if (descriptor) {
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        if (descriptorList && descriptorList.length > 0) {
+            const foundDescriptor = descriptorList[0];
             return (
                 <div>
                     <FieldsPanel
-                        descriptorFields={descriptor.fields}
+                        descriptorFields={foundDescriptor.fields}
                         self={this}
                         fieldErrors={fieldErrors}
                         stateName={'providerConfig'}
@@ -212,9 +217,11 @@ class ProviderTable extends Component {
         const { id } = selectedRow;
         const { providerConfigs } = this.props;
         let selectedConfig = providerConfigs.find(config => config.id === id);
-        const { descriptor } = this.state;
-        if (descriptor) {
-            descriptor.fields.forEach(field => {
+        const { descriptors, descriptorName } = this.props
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        if (descriptorList && descriptorList.length > 0) {
+            const foundDescriptor = descriptorList[0];
+            foundDescriptor.fields.forEach(field => {
                 if (field.sensitive) {
                     selectedConfig = FieldModelUtilities.updateFieldModelSingleValue(selectedConfig, field.key, "");
                 }
@@ -225,17 +232,6 @@ class ProviderTable extends Component {
         this.setState({
             providerConfig: selectedConfig
         }, callback);
-    }
-
-    checkPermissions(operation) {
-        const { descriptors } = this.props;
-        if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-            if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, operation));
-            }
-        }
-        return false;
     }
 
     createTableData(providerConfigs) {
@@ -264,20 +260,25 @@ class ProviderTable extends Component {
     }
 
     render() {
-        const { descriptor } = this.state;
-        const { providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage } = this.props;
-        const descriptorHeader = descriptor && (
+        const { providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage, descriptors, descriptorName } = this.props;
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        let foundDescriptor = null;
+        if (descriptorList && descriptorList.length > 0) {
+            foundDescriptor = descriptorList[0];
+        }
+        const descriptorHeader = foundDescriptor && (
             <div>
-                <ConfigurationLabel configurationName={descriptor.label} description={descriptor.description} />
+                <ConfigurationLabel configurationName={foundDescriptor.label} description={foundDescriptor.description} />
             </div>
         );
         const updating = Object.is(updateStatus, 'UPDATING');
         const deleting = Object.is(updateStatus, 'DELETING');
         const inProgress = testInProgress || updating || deleting;
         const fetching = descriptorFetching || configFetching;
-        const canCreate = this.checkPermissions(DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = this.checkPermissions(DescriptorUtilities.OPERATIONS.DELETE);
-        const canTest = this.checkPermissions(DescriptorUtilities.OPERATIONS.EXECUTE);
+        const canCreate = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.DELETE);
+        const canTest = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.EXECUTE);
+        const canSave = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         return (
@@ -300,6 +301,7 @@ class ProviderTable extends Component {
                         newButton={canCreate}
                         deleteButton={canDelete}
                         testButton={canTest}
+                        saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
                         actionMessage={actionMessage}

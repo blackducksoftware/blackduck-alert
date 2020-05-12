@@ -12,15 +12,18 @@ class UserManagement extends Component {
     constructor(props) {
         super(props);
 
-        const descriptor = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)[0];
-        this.state = { descriptor };
     }
 
     render() {
-        const { descriptor } = this.state;
-        const { label, description } = this.props;
-        const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
+        const { label, description, descriptors } = this.props;
+        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        let foundDescriptor = null;
+        if (descriptorList && descriptorList.length > 0) {
+            foundDescriptor = descriptorList[0];
+        }
+
+        const canCreate = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.DELETE);
         return (
             <div>
                 <ConfigurationLabel
