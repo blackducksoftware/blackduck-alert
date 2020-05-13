@@ -7,6 +7,7 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import ReadOnlyField from 'field/ReadOnlyField';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class CertificatesPage extends Component {
     constructor(props) {
@@ -146,8 +147,13 @@ class CertificatesPage extends Component {
     }
 
     render() {
-        const { fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors } = this.props;
+        const { fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors } = this.props;
+
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
+        const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
+        const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         return (
             <div>
                 <div>
@@ -166,8 +172,9 @@ class CertificatesPage extends Component {
                         refreshData={this.retrieveData}
                         data={certificates}
                         columns={this.createColumns()}
-                        newButton={true}
-                        deleteButton={true}
+                        newButton={canCreate}
+                        deleteButton={canDelete}
+                        saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={certificateDeleteError}
                         inProgress={inProgress}
@@ -181,7 +188,7 @@ class CertificatesPage extends Component {
 }
 
 CertificatesPage.propTypes = {
-    autoRefresh: PropTypes.bool,
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
     saveCertificate: PropTypes.func.isRequired,
     deleteCertificate: PropTypes.func.isRequired,
@@ -194,22 +201,20 @@ CertificatesPage.propTypes = {
     fieldErrors: PropTypes.object,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    saveStatus: PropTypes.string
+    saveStatus: PropTypes.string.isRequired
 };
 
 CertificatesPage.defaultProps = {
     inProgress: false,
     deleteSuccess: false,
-    message: '',
-    autoRefresh: true,
+    certificateDeleteError: '',
     fetching: false,
     certificates: [],
-    fieldErrors: {},
-    description: '',
-    label: ''
+    fieldErrors: {}
 };
 
 const mapStateToProps = state => ({
+    descriptors: state.descriptors.items,
     certificates: state.certificates.data,
     certificateDeleteError: state.certificates.certificateDeleteError,
     inProgress: state.certificates.inProgress,
