@@ -148,16 +148,12 @@ class CertificatesPage extends Component {
 
     render() {
         const { fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors } = this.props;
-        const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
-        let foundDescriptor = null;
-        if (descriptorList && descriptorList.length > 0) {
-            foundDescriptor = descriptorList[0];
-        }
 
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
-        const canCreate = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.CREATE);
-        const canDelete = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.DELETE);
-        const canSave = DescriptorUtilities.isOperationAssigned(foundDescriptor, DescriptorUtilities.OPERATIONS.WRITE);
+        const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
+        const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
+        const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         return (
             <div>
                 <div>
@@ -193,7 +189,6 @@ class CertificatesPage extends Component {
 
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    autoRefresh: PropTypes.bool,
     certificates: PropTypes.arrayOf(PropTypes.object),
     saveCertificate: PropTypes.func.isRequired,
     deleteCertificate: PropTypes.func.isRequired,
@@ -206,19 +201,16 @@ CertificatesPage.propTypes = {
     fieldErrors: PropTypes.object,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    saveStatus: PropTypes.string
+    saveStatus: PropTypes.string.isRequired
 };
 
 CertificatesPage.defaultProps = {
     inProgress: false,
     deleteSuccess: false,
-    message: '',
-    autoRefresh: true,
+    certificateDeleteError: '',
     fetching: false,
     certificates: [],
-    fieldErrors: {},
-    description: '',
-    label: ''
+    fieldErrors: {}
 };
 
 const mapStateToProps = state => ({

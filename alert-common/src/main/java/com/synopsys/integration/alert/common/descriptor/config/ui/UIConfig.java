@@ -59,6 +59,10 @@ public abstract class UIConfig extends Stringable {
     protected abstract List<ConfigField> createFields();
 
     public List<ConfigField> getFields() {
+        return configFields;
+    }
+
+    public List<ConfigField> getMetadataFields() {
         return configFields.stream().map(SerializationUtils::clone).collect(Collectors.toList());
     }
 
