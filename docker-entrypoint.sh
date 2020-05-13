@@ -399,6 +399,10 @@ postgresPrepare600Upgrade() {
         echo "Alert postgres database is initialized."
     else
         echo "Preparing the old Alert database to be upgraded to 6.0.0..."
+        touch_result=`touch ${alertDataDir}/alertdb.mv.db`
+        echo "Touch command result: ${touch_result}"
+        list_result=`ls -al ${alertDataDir}`
+        echo "list alert data directory: ${list_result}"
         if [ -f "${alertDataDir}/alertdb.mv.db" ];
         then
             echo "A previous database existed."
