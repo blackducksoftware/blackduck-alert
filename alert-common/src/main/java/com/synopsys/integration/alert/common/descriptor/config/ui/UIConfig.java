@@ -58,10 +58,16 @@ public abstract class UIConfig extends Stringable {
 
     protected abstract List<ConfigField> createFields();
 
+    /**
+     * This should be used when validating the fields.
+     */
     public List<ConfigField> getFields() {
         return configFields;
     }
 
+    /**
+     * This list of ConfigFields is used to define what is shown in the UI. This does not copy the validation functions.
+     */
     public List<ConfigField> getMetadataFields() {
         return configFields.stream().map(SerializationUtils::clone).collect(Collectors.toList());
     }
