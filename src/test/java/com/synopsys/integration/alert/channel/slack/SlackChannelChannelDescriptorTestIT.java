@@ -101,7 +101,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         }
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        String createdAt = RestConstants.formatDate(DateUtils.createCurrentDateTimestamp());
+        String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(
             String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content),
             fieldAccessor);

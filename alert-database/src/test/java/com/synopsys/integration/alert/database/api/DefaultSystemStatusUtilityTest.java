@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class DefaultSystemStatusUtilityTest {
     @Test
     public void getStartupTime() {
         SystemStatusRepository systemStatusRepository = Mockito.mock(SystemStatusRepository.class);
-        Date date = new Date();
+        OffsetDateTime date = OffsetDateTime.now();
         SystemStatus systemStatus = new SystemStatus(Boolean.TRUE, date);
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 

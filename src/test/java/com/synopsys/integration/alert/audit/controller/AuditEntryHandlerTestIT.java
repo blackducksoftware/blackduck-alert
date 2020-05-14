@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -153,7 +154,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         notificationContentRepository
-            .save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
+            .save(new MockNotificationContent(OffsetDateTime.now(), "provider", OffsetDateTime.now(), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
 
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
         ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
@@ -225,7 +226,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public void resendNotificationTestIT() throws Exception {
         String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), blackDuckProviderKey.getUniversalKey(), new java.util.Date(), "POLICY_OVERRIDE", content, 1L, providerConfigModel.getConfigurationId());
+        MockNotificationContent mockNotification = new MockNotificationContent(OffsetDateTime.now(), blackDuckProviderKey.getUniversalKey(), OffsetDateTime.now(), "POLICY_OVERRIDE", content, 1L, providerConfigModel.getConfigurationId());
 
         List<ConfigurationFieldModel> slackFieldsList = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
 

@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
@@ -114,15 +116,15 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     public void testFindByDate() throws Exception {
         Set<String> validResultDates = new HashSet<>();
         NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
-        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
         savedEntity = createEntity("2017-10-21T14:00:00.000Z");
-        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
         savedEntity = createEntity("2017-10-22T14:00:00.000Z");
-        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
         savedEntity = createEntity("2017-10-23T14:00:00.000Z");
-        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
         savedEntity = createEntity("2017-10-30T14:00:00.000Z");
-        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
 
         createEntity("2017-10-10T16:00:00.000Z");
         createEntity("2017-10-31T15:00:00.000Z");
@@ -131,13 +133,13 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         createEntity("2017-10-31T18:00:00.000Z");
         long count = notificationContentRepository.count();
         assertEquals(10, count);
-        Date startDate = RestConstants.parseDateString("2017-10-12T01:30:59.000Z");
-        Date endDate = RestConstants.parseDateString("2017-10-30T16:59:59.000Z");
+        OffsetDateTime startDate = DateUtils.parseDate("2017-10-12T01:30:59.000Z", RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime endDate = DateUtils.parseDate("2017-10-30T16:59:59.000Z", RestConstants.JSON_DATE_FORMAT);
         List<NotificationEntity> foundEntityList = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {
-            String createdAtString = RestConstants.formatDate(entity.getCreatedAt());
+            String createdAtString = DateUtils.formatDate(entity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT);
             assertTrue(validResultDates.contains(createdAtString));
         });
     }
@@ -223,11 +225,10 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     }
 
     private NotificationEntity createEntity(String dateString, String content) throws ParseException {
-        Date createdAt = RestConstants.parseDateString(dateString);
-        Date providerCreationTime = createdAt;
+        OffsetDateTime providerCreationTime = DateUtils.parseDate(dateString, RestConstants.JSON_DATE_FORMAT);
         final String provider = "provider_blackduck";
         final String notificationType = "type_1";
-        NotificationEntity entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null, providerConfigModel.getConfigurationId()).createEntity();
+        NotificationEntity entity = new MockNotificationContent(providerCreationTime, provider, providerCreationTime, notificationType, content, null, providerConfigModel.getConfigurationId()).createEntity();
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
     }

@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,11 +67,11 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
 
     @Override
     @Transactional
-    public Date getStartupTime() {
+    public OffsetDateTime getStartupTime() {
         return getSystemStatus().getStartupTime();
     }
 
-    private Date createCurrentDateTimestamp() {
+    private OffsetDateTime createCurrentDateTimestamp() {
         return DateUtils.createCurrentDateTimestamp();
     }
 

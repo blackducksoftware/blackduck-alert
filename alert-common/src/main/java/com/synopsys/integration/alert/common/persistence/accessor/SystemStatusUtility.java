@@ -22,15 +22,15 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 public interface SystemStatusUtility {
 
     boolean isSystemInitialized();
 
-    void setSystemInitialized(final boolean systemInitialized);
+    void setSystemInitialized(boolean systemInitialized);
 
     void startupOccurred();
 
-    Date getStartupTime();
+    OffsetDateTime getStartupTime();
 }

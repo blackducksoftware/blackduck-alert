@@ -35,8 +35,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -55,11 +53,9 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     @Column(name = "common_config_id")
     private UUID commonConfigId;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_created")
     private Date timeCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_last_sent")
     private Date timeLastSent;
 

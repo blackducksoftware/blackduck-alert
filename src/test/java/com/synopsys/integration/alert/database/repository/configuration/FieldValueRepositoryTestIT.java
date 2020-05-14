@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,7 +95,7 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity1);
@@ -142,7 +142,7 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);

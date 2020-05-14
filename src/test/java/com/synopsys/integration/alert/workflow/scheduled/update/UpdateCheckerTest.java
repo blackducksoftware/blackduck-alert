@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -94,8 +93,8 @@ public class UpdateCheckerTest {
     public void testAlertIsNewerButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.minusMinutes(20);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -107,8 +106,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(20);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -120,8 +119,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(80);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -133,8 +132,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderSnapshotDockerPatch(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(80);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0.1", formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -156,8 +155,8 @@ public class UpdateCheckerTest {
     public void testAlertIsNewerDateBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, -80);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.minusMinutes(80);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -169,8 +168,8 @@ public class UpdateCheckerTest {
     public void testAlertIsNewerButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, -20);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.minusMinutes(20);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -182,8 +181,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(20);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -195,8 +194,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(80);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -208,8 +207,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderButCloseDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 20);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(20);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -221,8 +220,8 @@ public class UpdateCheckerTest {
     public void testAlertIsOlderDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
-        Date alertTime = new Date();
-        Date dockerTagDate = DateUtils.addMinutes(alertTime, 80);
+        OffsetDateTime alertTime = OffsetDateTime.now();
+        OffsetDateTime dockerTagDate = alertTime.plusMinutes(80);
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", formatDate(alertTime, DOCKER_DATE_FORMAT), "1.0.0-" + versionSuffix, formatDate(dockerTagDate, DOCKER_DATE_FORMAT), null);
 
@@ -240,7 +239,7 @@ public class UpdateCheckerTest {
 
         DefaultSystemStatusUtility defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
+        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(OffsetDateTime.now());
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));

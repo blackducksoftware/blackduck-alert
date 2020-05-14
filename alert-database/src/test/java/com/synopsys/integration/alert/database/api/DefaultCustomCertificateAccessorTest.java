@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.database.certificates.CustomCertificateRep
 public class DefaultCustomCertificateAccessorTest {
     private final String alias = "alias-test";
     private final String content = "content-test";
-    private Date testDate = new Date();
+    private OffsetDateTime testDate = OffsetDateTime.now();
 
     private CustomCertificateModel expectedCustomCertificateModel = new CustomCertificateModel(alias, content, DateUtils.formatDate(testDate, DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
 

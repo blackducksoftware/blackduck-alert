@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -117,7 +117,7 @@ public class AuditEntryActionsTest {
         int totalPages = 2;
         int currentPage = 0;
         int pageSize = 2;
-        Date createdAt = new Date();
+        OffsetDateTime createdAt = OffsetDateTime.now();
         AlertNotificationModel entity_1 = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);
         entity_1.setId(1L);
         AlertNotificationModel entity_2 = new AlertNotificationModel(2L, 2L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);
@@ -141,7 +141,7 @@ public class AuditEntryActionsTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
 
-        NotificationEntity notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L, 1L).createEntity();
+        NotificationEntity notificationContent = new MockNotificationContent(OffsetDateTime.now(), "provider", OffsetDateTime.now(), "notificationType", "{content: \"content is here...\"}", 1L, 1L).createEntity();
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
         ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
@@ -188,7 +188,7 @@ public class AuditEntryActionsTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ConfigurationAccessor jobConfigReader = Mockito.mock(ConfigurationAccessor.class);
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
-        NotificationEntity notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L, 1L).createEntity();
+        NotificationEntity notificationContent = new MockNotificationContent(OffsetDateTime.now(), "provider", OffsetDateTime.now(), "notificationType", "{content: \"content is here...\"}", 1L, 1L).createEntity();
 
         ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
             "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");

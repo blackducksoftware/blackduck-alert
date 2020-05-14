@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,13 +42,13 @@ public class SystemStatus extends BaseEntity {
     @Column(name = "initialized_configuration")
     private boolean initialConfigurationPerformed;
     @Column(name = "startup_time")
-    private Date startupTime;
+    private OffsetDateTime startupTime;
 
     public SystemStatus() {
         //JPA requires a default constructor
     }
 
-    public SystemStatus(boolean initialConfigurationPerformed, Date startupTime) {
+    public SystemStatus(boolean initialConfigurationPerformed, OffsetDateTime startupTime) {
         this.initialConfigurationPerformed = initialConfigurationPerformed;
         this.startupTime = startupTime;
     }
@@ -57,7 +57,7 @@ public class SystemStatus extends BaseEntity {
         return initialConfigurationPerformed;
     }
 
-    public Date getStartupTime() {
+    public OffsetDateTime getStartupTime() {
         return startupTime;
     }
 

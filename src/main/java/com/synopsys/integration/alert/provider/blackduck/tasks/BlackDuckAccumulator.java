@@ -23,8 +23,8 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -71,8 +72,8 @@ public class BlackDuckAccumulator extends ProviderTask {
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
     }
 
-    public String formatDate(Date date) {
-        return RestConstants.formatDate(date);
+    public String formatDate(OffsetDateTime date) {
+        return DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     public void accumulate() {
         try {
             DateRange dateRange = createDateRange();
-            Date nextSearchStartTime = accumulate(dateRange);
+            OffsetDateTime nextSearchStartTime = accumulate(dateRange);
             String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
             saveNextSearchStart(nextSearchStartString);
@@ -112,34 +113,29 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     protected DateRange createDateRange() {
-        ZonedDateTime zonedEndDate = getCurrentZonedDate();
-        ZonedDateTime zonedStartDate = zonedEndDate;
-        Date endDate = Date.from(zonedEndDate.toInstant());
-
-        Date startDate = Date.from(zonedStartDate.toInstant());
+        OffsetDateTime endDate = OffsetDateTime.now();
+        OffsetDateTime startDate = endDate;
         try {
             Optional<String> nextSearchStartTime = getNextSearchStart();
             if (nextSearchStartTime.isPresent()) {
                 String lastRunValue = nextSearchStartTime.get();
-                Date startTime = parseDateString(lastRunValue);
-                zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
+                startDate = parseDateString(lastRunValue);
             } else {
-                zonedStartDate = zonedEndDate.minusMinutes(1);
+                startDate = endDate.minusMinutes(1);
             }
-            startDate = Date.from(zonedStartDate.toInstant());
         } catch (ParseException e) {
             logger.error("Error creating date range", e);
         }
         return DateRange.of(startDate, endDate);
     }
 
-    protected Date parseDateString(String date) throws ParseException {
-        return RestConstants.parseDateString(date);
+    protected OffsetDateTime parseDateString(String date) throws ParseException {
+        return DateUtils.parseDate(date, RestConstants.JSON_DATE_FORMAT);
     }
 
-    protected Date accumulate(DateRange dateRange) {
-        Date currentStartTime = dateRange.getStart();
-        Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
+    protected OffsetDateTime accumulate(DateRange dateRange) {
+        OffsetDateTime currentStartTime = dateRange.getStart();
+        Optional<OffsetDateTime> latestNotificationCreatedAtDate = Optional.empty();
 
         List<NotificationView> notifications = read(dateRange);
         if (!notifications.isEmpty()) {
@@ -156,12 +152,12 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (optionalBlackDuckHttpClient.isPresent()) {
             try {
                 BlackDuckServicesFactory blackDuckServicesFactory = getProviderProperties().createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                Date startDate = dateRange.getStart();
-                Date endDate = dateRange.getEnd();
-                logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
+                OffsetDateTime startDate = dateRange.getStart();
+                OffsetDateTime endDate = dateRange.getEnd();
+                logger.info("Accumulating Notifications Between {} and {} ", DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
 
                 NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                List<NotificationView> notificationViews = notificationService.getFilteredNotifications(startDate, endDate, getNotificationTypes());
+                List<NotificationView> notificationViews = notificationService.getFilteredNotifications(Date.from(startDate.toInstant()), Date.from(endDate.toInstant()), getNotificationTypes());
                 logger.debug("Read Notification Count: {}", notificationViews.size());
                 return notificationViews;
             } catch (Exception ex) {
@@ -198,8 +194,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private AlertNotificationModel createContent(NotificationView notification) {
-        Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-        Date providerCreationTime = notification.getCreatedAt();
+        OffsetDateTime createdAt = OffsetDateTime.now();
+        OffsetDateTime providerCreationTime = OffsetDateTime.ofInstant(notification.getCreatedAt().toInstant(), ZoneOffset.UTC);
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
@@ -207,36 +203,27 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     // Expects that the notifications are sorted oldest to newest
-    private Optional<Date> getLatestNotificationCreatedAtDate(List<NotificationView> sortedNotificationList) {
+    private Optional<OffsetDateTime> getLatestNotificationCreatedAtDate(List<NotificationView> sortedNotificationList) {
         if (!sortedNotificationList.isEmpty()) {
             int lastIndex = sortedNotificationList.size() - 1;
             NotificationView notificationView = sortedNotificationList.get(lastIndex);
-            return Optional.of(notificationView.getCreatedAt());
+            OffsetDateTime createdAtDate = OffsetDateTime.from(notificationView.getCreatedAt().toInstant());
+            return Optional.of(createdAtDate);
         }
         return Optional.empty();
     }
 
-    private Date calculateNextStartTime(Optional<Date> latestNotificationCreatedAt, Date currentStartDate) {
-        Date newStartDate = currentStartDate;
+    private OffsetDateTime calculateNextStartTime(Optional<OffsetDateTime> latestNotificationCreatedAt, OffsetDateTime currentStartDate) {
+        OffsetDateTime newStartDate = currentStartDate;
         if (latestNotificationCreatedAt.isPresent()) {
-            Date latestNotification = latestNotificationCreatedAt.get();
-            ZonedDateTime newSearchStart = ZonedDateTime.ofInstant(latestNotification.toInstant(), ZoneOffset.UTC);
+            OffsetDateTime latestNotification = latestNotificationCreatedAt.get();
             // increment 1 millisecond
-            newSearchStart = newSearchStart.plusNanos(1000000);
-            newStartDate = Date.from(newSearchStart.toInstant());
+            newStartDate = latestNotification.plusNanos(1000000);
             logger.info("Notifications found; updating to latest notification found");
         } else {
             logger.info("No notifications found; using current search time");
         }
         return newStartDate;
-    }
-
-    private ZonedDateTime getCurrentZonedDate() {
-        return ZonedDateTime
-                   .now()
-                   .withZoneSameInstant(ZoneOffset.UTC)
-                   .withSecond(0)
-                   .withNano(0);
     }
 
 }

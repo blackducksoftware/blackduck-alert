@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -136,26 +134,24 @@ public class DefaultNotificationManager implements NotificationManager {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationModel> findByCreatedAtBetween(Date startDate, Date endDate) {
+    public List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate) {
         List<NotificationEntity> byCreatedAtBetween = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
         return toModels(byCreatedAtBetween);
     }
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationModel> findByCreatedAtBefore(Date date) {
+    public List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date) {
         List<NotificationEntity> byCreatedAtBefore = notificationContentRepository.findByCreatedAtBefore(date);
         return toModels(byCreatedAtBefore);
     }
 
     @Override
     public List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset) {
-        ZonedDateTime zonedDate = ZonedDateTime.now();
-        zonedDate = zonedDate.minusDays(dayOffset);
-        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
-        zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
-        Date date = Date.from(zonedDate.toInstant());
-        return findByCreatedAtBefore(date);
+        OffsetDateTime searchTime = OffsetDateTime.now()
+                                        .minusDays(dayOffset)
+                                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        return findByCreatedAtBefore(searchTime);
     }
 
     @Override

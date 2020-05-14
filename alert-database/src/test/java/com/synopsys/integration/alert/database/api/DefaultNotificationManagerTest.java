@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.database.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,8 +48,8 @@ public class DefaultNotificationManagerTest {
 
     @Test
     public void saveAllNotificationsTest() throws Exception {
-        Date createdAt = new Date();
-        Date providerCreationTime = new Date(System.currentTimeMillis() - 10000);
+        OffsetDateTime createdAt = new Date();
+        OffsetDateTime providerCreationTime = new Date(System.currentTimeMillis() - 10000);
 
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, createdAt, providerCreationTime);
         NotificationEntity notificationEntity = new NotificationEntity(id, createdAt, provider, providerConfigId, providerCreationTime, notificationType, content);

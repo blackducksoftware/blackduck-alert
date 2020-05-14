@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.certificates;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,12 +46,12 @@ public class CustomCertificateEntity extends BaseEntity implements DatabaseEntit
     @Column(name = "certificate_content")
     private String certificateContent;
     @Column(name = "last_updated")
-    private Date lastUpdated;
+    private OffsetDateTime lastUpdated;
 
     public CustomCertificateEntity() {
     }
 
-    public CustomCertificateEntity(String alias, String certificateContent, Date lastUpdated) {
+    public CustomCertificateEntity(String alias, String certificateContent, OffsetDateTime lastUpdated) {
         this.alias = alias;
         this.certificateContent = certificateContent;
         this.lastUpdated = lastUpdated;
@@ -75,7 +75,7 @@ public class CustomCertificateEntity extends BaseEntity implements DatabaseEntit
         return certificateContent;
     }
 
-    public Date getLastUpdated() {
+    public OffsetDateTime getLastUpdated() {
         return lastUpdated;
     }
 }

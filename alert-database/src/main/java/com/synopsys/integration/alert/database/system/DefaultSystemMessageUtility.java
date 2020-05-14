@@ -23,8 +23,8 @@
 package com.synopsys.integration.alert.database.system;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,15 +56,15 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType) {
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
-        SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        SystemMessageEntity systemMessage = new SystemMessageEntity(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
     }
 
     @Override
     @Transactional
     public void removeSystemMessagesByType(SystemMessageType messageType) {
-        List<SystemMessage> messages = systemMessageRepository.findByType(messageType.name());
+        List<SystemMessageEntity> messages = systemMessageRepository.findByType(messageType.name());
         systemMessageRepository.deleteAll(messages);
     }
 
@@ -76,19 +76,19 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
 
     @Override
     @Transactional
-    public List<SystemMessageModel> getSystemMessagesAfter(Date date) {
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+    public List<SystemMessageModel> getSystemMessagesAfter(OffsetDateTime date) {
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 
     @Override
     @Transactional
-    public List<SystemMessageModel> getSystemMessagesBefore(Date date) {
+    public List<SystemMessageModel> getSystemMessagesBefore(OffsetDateTime date) {
         long recordCount = systemMessageRepository.count();
         if (recordCount == 0) {
             return Collections.emptyList();
         } else {
-            SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
+            SystemMessageEntity oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
             return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date));
         }
     }
@@ -102,26 +102,26 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
-        List<SystemMessage> convertedMessages = messagesToDelete.stream()
-                                                    .map(this::convertToSystemMessage)
-                                                    .filter(Objects::nonNull)
-                                                    .collect(Collectors.toList());
+        List<SystemMessageEntity> convertedMessages = messagesToDelete.stream()
+                                                          .map(this::convertToSystemMessage)
+                                                          .filter(Objects::nonNull)
+                                                          .collect(Collectors.toList());
         systemMessageRepository.deleteAll(convertedMessages);
     }
 
-    private List<SystemMessageModel> convertAllToSystemMessageModel(List<SystemMessage> systemMessages) {
+    private List<SystemMessageModel> convertAllToSystemMessageModel(List<SystemMessageEntity> systemMessages) {
         return systemMessages.stream().map(this::convertToSystemMessageModel).collect(Collectors.toList());
     }
 
-    private SystemMessageModel convertToSystemMessageModel(SystemMessage systemMessage) {
-        String createdAt = RestConstants.formatDate(systemMessage.getCreated());
+    private SystemMessageModel convertToSystemMessageModel(SystemMessageEntity systemMessage) {
+        String createdAt = DateUtils.formatDate(systemMessage.getCreated(), RestConstants.JSON_DATE_FORMAT);
         return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 
-    private SystemMessage convertToSystemMessage(SystemMessageModel systemMessageModel) {
+    private SystemMessageEntity convertToSystemMessage(SystemMessageModel systemMessageModel) {
         try {
-            Date date = RestConstants.parseDateString(systemMessageModel.getCreatedAt());
-            return new SystemMessage(date, systemMessageModel.getSeverity(), systemMessageModel.getContent(), systemMessageModel.getType());
+            OffsetDateTime date = DateUtils.parseDate(systemMessageModel.getCreatedAt(), RestConstants.JSON_DATE_FORMAT);
+            return new SystemMessageEntity(date, systemMessageModel.getSeverity(), systemMessageModel.getContent(), systemMessageModel.getType());
         } catch (ParseException e) {
             logger.error("There was an issue parsing the stored CreatedAt date.");
         }

@@ -22,18 +22,18 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface SystemMessageRepository extends JpaRepository<SystemMessage, Long> {
-    @Query("SELECT message FROM SystemMessage message WHERE message.created >= ?1 AND message.created < ?2 ORDER BY created_at asc")
-    List<SystemMessage> findByCreatedBetween(Date start, Date end);
+public interface SystemMessageRepository extends JpaRepository<SystemMessageEntity, Long> {
+    @Query("SELECT message FROM SystemMessageEntity message WHERE message.created >= ?1 AND message.created < ?2 ORDER BY created_at asc")
+    List<SystemMessageEntity> findByCreatedBetween(OffsetDateTime start, OffsetDateTime end);
 
-    SystemMessage findTopByOrderByCreatedAsc();
+    SystemMessageEntity findTopByOrderByCreatedAsc();
 
-    List<SystemMessage> findByType(String type);
+    List<SystemMessageEntity> findByType(String type);
 
 }

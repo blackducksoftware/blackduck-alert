@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -289,8 +290,8 @@ public class DefaultAuditUtility implements AuditUtility {
             }
             Comparator<AuditEntryModel> comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
-                Function<AuditEntryModel, Date> function = auditEntryModel -> {
-                    Date date = null;
+                Function<AuditEntryModel, OffsetDateTime> function = auditEntryModel -> {
+                    OffsetDateTime date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
                         date = parseDateString(auditEntryModel.getLastSent());
                     }
@@ -346,8 +347,8 @@ public class DefaultAuditUtility implements AuditUtility {
         return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerConfigId, providerConfigName, providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
-    private Date parseDateString(String dateString) {
-        Date date = null;
+    private OffsetDateTime parseDateString(String dateString) {
+        OffsetDateTime date = null;
         try {
             date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
         } catch (ParseException e) {

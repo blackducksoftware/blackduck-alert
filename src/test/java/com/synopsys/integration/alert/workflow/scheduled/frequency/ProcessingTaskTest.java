@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -35,7 +36,8 @@ public class ProcessingTaskTest {
 
     @BeforeEach
     public void initTest() {
-        AlertNotificationModel model = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", new Date(), new Date());
+        AlertNotificationModel model = new AlertNotificationModel(
+            1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", OffsetDateTime.now(), OffsetDateTime.now());
         modelList = Arrays.asList(model);
         eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", ProcessingType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }
@@ -66,8 +68,8 @@ public class ProcessingTaskTest {
     public void testDateRange() {
         ProcessingTask task = createTask(null, null, null, null, null);
         DateRange dateRange = task.getDateRange();
-        ZonedDateTime expectedEndDay = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        ZonedDateTime expectedStartDay = task.getLastRunTime();
+        OffsetDateTime expectedEndDay = OffsetDateTime.now();
+        OffsetDateTime expectedStartDay = task.getLastRunTime();
 
         ZonedDateTime actualStartDay = ZonedDateTime.ofInstant(dateRange.getStart().toInstant(), ZoneId.of(ZoneOffset.UTC.getId()));
         ZonedDateTime actualEndDay = ZonedDateTime.ofInstant(dateRange.getEnd().toInstant(), ZoneId.of(ZoneOffset.UTC.getId()));
@@ -88,7 +90,7 @@ public class ProcessingTaskTest {
         DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
         NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
-        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(Date.class), Mockito.any(Date.class))).thenReturn(modelList);
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class))).thenReturn(modelList);
         Mockito.when(notificationProcessor.processNotifications(FrequencyType.DAILY, modelList)).thenReturn(eventList);
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, eventManager, taskManager);
 
@@ -150,7 +152,7 @@ public class ProcessingTaskTest {
         assertEquals(Collections.emptyList(), actualModelList);
     }
 
-    private void assertDateIsEqual(ZonedDateTime expected, ZonedDateTime actual) {
+    private void assertDateIsEqual(OffsetDateTime expected, ZonedDateTime actual) {
         assertEquals(expected.getYear(), actual.getYear());
         assertEquals(expected.getMonth(), actual.getMonth());
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());

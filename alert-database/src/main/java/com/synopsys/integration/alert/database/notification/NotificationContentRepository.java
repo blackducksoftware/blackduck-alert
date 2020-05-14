@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.notification;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -35,10 +35,10 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 
 public interface NotificationContentRepository extends JpaRepository<NotificationEntity, Long> {
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
-    List<NotificationEntity> findByCreatedAtBetween(Date startDate, Date endDate);
+    List<NotificationEntity> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
 
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
-    List<NotificationEntity> findByCreatedAtBefore(Date date);
+    List<NotificationEntity> findByCreatedAtBefore(OffsetDateTime date);
 
     @Query(value = "SELECT entity FROM NotificationEntity entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationEntity> findAllSentNotifications(Pageable pageable);

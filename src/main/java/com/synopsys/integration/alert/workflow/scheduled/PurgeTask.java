@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -112,7 +110,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     private void purgeNotifications() {
         try {
-            Date date = createDate();
+            OffsetDateTime date = createDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
             List<AlertNotificationModel> notifications = notificationManager.findByCreatedAtBefore(date);
 
@@ -130,7 +128,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     private void purgeSystemMessages() {
         try {
-            Date date = createDate();
+            OffsetDateTime date = createDate();
             List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
             systemMessageUtility.deleteSystemMessages(messages);
         } catch (Exception ex) {
@@ -138,12 +136,11 @@ public class PurgeTask extends StartupScheduledTask {
         }
     }
 
-    public Date createDate() {
-        ZonedDateTime zonedDate = ZonedDateTime.now();
-        zonedDate = zonedDate.minusDays(dayOffset);
-        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
-        zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
-        return Date.from(zonedDate.toInstant());
+    // TODO give this method a more descriptive name
+    public OffsetDateTime createDate() {
+        return OffsetDateTime.now()
+                   .minusDays(dayOffset)
+                   .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
     private Boolean purgeOldData() {
