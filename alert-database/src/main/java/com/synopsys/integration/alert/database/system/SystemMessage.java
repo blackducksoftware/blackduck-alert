@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "system_messages")
 public class SystemMessage extends BaseEntity implements DatabaseEntity {
-    private static final long serialVersionUID = -7981868651148954093L;
     @Id
     @GeneratedValue(generator = "alert.system_messages_id_seq", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "alert.system_messages_id_seq", sequenceName = "alert.system_messages_id_seq")

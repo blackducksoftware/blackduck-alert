@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "provider_users")
 public class ProviderUserEntity extends BaseEntity implements DatabaseEntity {
-    private static final long serialVersionUID = 8474532281909078883L;
     @Id
     @GeneratedValue(generator = "alert.provider_users_id_seq", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "alert.provider_users_id_seq", sequenceName = "alert.provider_users_id_seq")

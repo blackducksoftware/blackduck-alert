@@ -30,9 +30,6 @@ import com.synopsys.integration.util.Stringable;
 
 @MappedSuperclass
 public abstract class BaseEntity extends Stringable implements Serializable {
-    public static final int DEFAULT_ALLOCATION_SIZE = 50;
-    private static final long serialVersionUID = 5939107067779376362L;
-
     public BaseEntity() {
         // JPA requires default constructor definitions
     }

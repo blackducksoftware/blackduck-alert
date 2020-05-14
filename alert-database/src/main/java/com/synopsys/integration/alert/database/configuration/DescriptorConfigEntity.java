@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "descriptor_configs")
 public class DescriptorConfigEntity extends BaseEntity implements DatabaseEntity {
-    private static final long serialVersionUID = 2515539111869578867L;
     @Id
     @GeneratedValue(generator = "alert.descriptor_configs_id_seq", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "alert.descriptor_configs_id_seq", sequenceName = "alert.descriptor_configs_id_seq")
