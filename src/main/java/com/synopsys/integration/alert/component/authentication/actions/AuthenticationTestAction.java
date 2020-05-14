@@ -64,6 +64,14 @@ public class AuthenticationTestAction extends TestAction {
         logger.info("Testing authentication.");
         boolean ldapEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
         boolean samlEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED);
+        if (!ldapEnabled && !samlEnabled) {
+            String errorMessage = "Enable LDAP or SAML authentication.";
+            Map<String, String> errorsMap = Map.of(
+                AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage,
+                AuthenticationDescriptor.KEY_SAML_ENABLED, errorMessage);
+            throw new AlertFieldException(errorsMap);
+        }
+
         if (ldapEnabled) {
             performLdapTest(fieldModel, registeredFieldValues);
         }
