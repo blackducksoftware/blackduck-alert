@@ -39,8 +39,8 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Table(schema = "alert", name = "custom_certificates")
 public class CustomCertificateEntity extends BaseEntity implements DatabaseEntity {
     @Id
-    @GeneratedValue(generator = "alert.custom_certificates_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.custom_certificates_id_seq", sequenceName = "alert.custom_certificates_id_seq")
+    @GeneratedValue(generator = "alert.custom_certificates_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.custom_certificates_id_seq_generator", sequenceName = "alert.custom_certificates_id_seq")
     @Column(name = "id")
     private Long id;
     @Column(name = "alias")

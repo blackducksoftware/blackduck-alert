@@ -41,8 +41,8 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Table(schema = "alert", name = "system_messages")
 public class SystemMessage extends BaseEntity implements DatabaseEntity {
     @Id
-    @GeneratedValue(generator = "alert.system_messages_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.system_messages_id_seq", sequenceName = "alert.system_messages_id_seq")
+    @GeneratedValue(generator = "alert.system_messages_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.system_messages_id_seq_generator", sequenceName = "alert.system_messages_id_seq")
     @Column(name = "id")
     private Long id;
     @Temporal(TemporalType.TIMESTAMP)

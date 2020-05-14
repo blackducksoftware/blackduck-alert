@@ -45,8 +45,8 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 @Table(schema = "alert", name = "raw_notification_content")
 public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @Id
-    @GeneratedValue(generator = "alert.raw_notification_content_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.raw_notification_content_id_seq", sequenceName = "alert.raw_notification_content_id_seq")
+    @GeneratedValue(generator = "alert.raw_notification_content_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.raw_notification_content_id_seq_generator", sequenceName = "alert.raw_notification_content_id_seq")
     @Column(name = "id")
     private Long id;
     @Temporal(TemporalType.TIMESTAMP)

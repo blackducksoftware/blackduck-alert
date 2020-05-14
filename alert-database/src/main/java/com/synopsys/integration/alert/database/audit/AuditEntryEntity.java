@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     public static final int STACK_TRACE_CHAR_LIMIT = 10000;
     @Id
-    @GeneratedValue(generator = "alert.audit_entries_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.audit_entries_id_seq", sequenceName = "alert.audit_entries_id_seq")
+    @GeneratedValue(generator = "alert.audit_entries_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.audit_entries_id_seq_generator", sequenceName = "alert.audit_entries_id_seq")
     @Column(name = "id")
     private Long id;
     @Column(name = "common_config_id")

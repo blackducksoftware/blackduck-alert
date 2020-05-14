@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Table(schema = "alert", name = "roles")
 public class RoleEntity extends BaseEntity implements DatabaseEntity {
     @Id
-    @GeneratedValue(generator = "alert.roles_id_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.roles_id_seq", sequenceName = "alert.roles_id_seq")
+    @GeneratedValue(generator = "alert.roles_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.roles_id_seq_generator", sequenceName = "alert.roles_id_seq")
     @Column(name = "id")
     private Long id;
     @Column(name = "rolename")
