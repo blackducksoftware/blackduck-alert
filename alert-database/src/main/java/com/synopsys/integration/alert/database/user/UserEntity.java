@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -37,8 +36,7 @@ import com.synopsys.integration.alert.database.DatabaseEntity;
 @Table(schema = "alert", name = "users")
 public class UserEntity extends BaseEntity implements DatabaseEntity {
     @Id
-    @GeneratedValue(generator = "alert.users_id_seq_generator", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.users_id_seq_generator", sequenceName = "alert.users_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "username")
