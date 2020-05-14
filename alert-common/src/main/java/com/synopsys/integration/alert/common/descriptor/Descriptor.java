@@ -117,7 +117,7 @@ public abstract class Descriptor extends Stringable {
         String description = uiConfig.getDescription();
         boolean autoGenerateUI = uiConfig.autoGenerateUI();
         String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.getFields(), uiConfig.createTestFields());
+        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.getMetadataFields(), uiConfig.createTestFields());
     }
 
 }

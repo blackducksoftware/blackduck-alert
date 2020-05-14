@@ -30,6 +30,7 @@ export const OPERATIONS = {
     EXECUTE: 'EXECUTE'
 };
 
+
 export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
     if (!descriptorList) {
         return null;
@@ -40,6 +41,13 @@ export function findDescriptorByNameAndContext(descriptorList, descriptorName, c
     }
 
     return resultList;
+}
+
+export function findFirstDescriptorByNameAndContext(descriptorList, descriptorName, context) {
+    if (!descriptorList) {
+        return null;
+    }
+    return descriptorList.find(descriptor => descriptor.name === descriptorName && descriptor.context === context);
 }
 
 export function findDescriptorByTypeAndContext(descriptorList, descriptorType, context) {
@@ -85,4 +93,6 @@ export function isOperationAssigned(descriptor, operationName) {
     }
     return false;
 }
+
+
 
