@@ -13,17 +13,15 @@ package com.synopsys.integration.alert.database.settings;
 
 import org.json.JSONException;
 
-import com.synopsys.integration.alert.database.BaseEntity;
+public interface BaseEntityTest<B> {
+    void testEmptyEntity() throws JSONException;
 
-public interface BaseEntityTest<B extends BaseEntity> {
-    public void testEmptyEntity() throws JSONException;
+    void testEntity() throws JSONException;
 
-    public void testEntity() throws JSONException;
+    Class<B> getEntityClass();
 
-    public Class<B> getEntityClass();
+    void assertEntityFieldsNull(B entity);
 
-    public void assertEntityFieldsNull(final B entity);
-
-    public void assertEntityFieldsFull(final B entity);
+    void assertEntityFieldsFull(B entity);
 
 }

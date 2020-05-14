@@ -94,6 +94,12 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() throws AlertDatabaseConstraintException {
+        auditEntryRepository.flush();
+        descriptorConfigRepository.flush();
+        fieldValueRepository.flush();
+        auditNotificationRepository.flush();
+        notificationRepository.flush();
+
         auditEntryRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();

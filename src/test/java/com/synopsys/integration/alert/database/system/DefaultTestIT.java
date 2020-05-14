@@ -35,13 +35,14 @@ public class DefaultTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        systemStatusRepository.flush();
         systemStatusRepository.deleteAllInBatch();
     }
 
     @Test
     public void testSetSystemInitialized() {
         defaultSystemStatusUtility.setSystemInitialized(false);
-        final List<SystemStatus> statusList = systemStatusRepository.findAll();
+        List<SystemStatus> statusList = systemStatusRepository.findAll();
         SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         assertFalse(systemStatus.isInitialConfigurationPerformed());
         assertFalse(defaultSystemStatusUtility.isSystemInitialized());
@@ -54,11 +55,11 @@ public class DefaultTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveStartupTime() {
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         defaultSystemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
-        final Date date = systemStatus.getStartupTime();
-        final ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+        SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        Date date = systemStatus.getStartupTime();
+        ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         assertNotNull(date);
 
         assertEquals(currentTime.getDayOfYear(), savedTime.getDayOfYear());
@@ -70,8 +71,8 @@ public class DefaultTestIT extends AlertIntegrationTest {
     @Test
     public void testGetStartupTime() {
         defaultSystemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
-        final Date expectedDate = systemStatus.getStartupTime();
+        SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        Date expectedDate = systemStatus.getStartupTime();
 
         assertEquals(expectedDate, defaultSystemStatusUtility.getStartupTime());
     }

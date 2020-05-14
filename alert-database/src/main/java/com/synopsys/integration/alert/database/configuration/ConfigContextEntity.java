@@ -26,20 +26,30 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "CONFIG_CONTEXTS")
-public class ConfigContextEntity extends DatabaseEntity {
-    @Column(name = "CONTEXT")
+@Table(schema = "alert", name = "config_contexts")
+public class ConfigContextEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = 782495857552722347L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "context")
     private String context;
 
     @OneToMany
-    @JoinColumn(name = "CONTEXT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "context_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<FieldContextRelation> fieldContextRelations;
 
     public ConfigContextEntity() {
@@ -48,6 +58,16 @@ public class ConfigContextEntity extends DatabaseEntity {
 
     public ConfigContextEntity(String context) {
         this.context = context;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getContext() {

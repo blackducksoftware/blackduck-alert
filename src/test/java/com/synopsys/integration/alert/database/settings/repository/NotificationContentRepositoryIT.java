@@ -69,6 +69,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         notificationContentRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.flush();
+        auditEntryRepository.flush();
 
         ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         providerConfigEnabled.setFieldValue("true");

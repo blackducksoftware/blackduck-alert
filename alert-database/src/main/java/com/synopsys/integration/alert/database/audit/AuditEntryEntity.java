@@ -28,21 +28,30 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
-public class AuditEntryEntity extends DatabaseEntity {
+public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     public static final int STACK_TRACE_CHAR_LIMIT = 10000;
-
+    @Id
+    @GeneratedValue(generator = "alert.audit_entries_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.audit_entries_id_seq_generator", sequenceName = "alert.audit_entries_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Column(name = "common_config_id")
     private UUID commonConfigId;
 
@@ -79,6 +88,16 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.status = status;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public UUID getCommonConfigId() {

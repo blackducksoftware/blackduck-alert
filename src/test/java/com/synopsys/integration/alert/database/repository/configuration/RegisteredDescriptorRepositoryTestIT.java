@@ -31,6 +31,7 @@ public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        registeredDescriptorRepository.flush();
         registeredDescriptorRepository.deleteAllInBatch();
     }
 

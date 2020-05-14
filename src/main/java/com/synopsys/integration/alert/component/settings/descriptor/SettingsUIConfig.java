@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
@@ -92,8 +91,7 @@ public class SettingsUIConfig extends UIConfig {
                                          .applyRequired(true)
                                          .applyValidationFunctions(this::minimumEncryptionFieldLength)
                                          .applyHeader(SETTINGS_HEADER_ENCRYPTION);
-        ConfigField environmentVariableOverride = new CheckboxConfigField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION);
-        return List.of(encryptionPassword, encryptionSalt, environmentVariableOverride);
+        return List.of(encryptionPassword, encryptionSalt);
     }
 
     private List<ConfigField> createProxyPanel() {

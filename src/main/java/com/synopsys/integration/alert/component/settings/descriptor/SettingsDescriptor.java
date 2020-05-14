@@ -37,8 +37,6 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_ENCRYPTION_PWD = "settings.encryption.password";
     public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";
 
-    public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
-
     public static final String FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT = "The value must be at least 8 characters.";
     public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";

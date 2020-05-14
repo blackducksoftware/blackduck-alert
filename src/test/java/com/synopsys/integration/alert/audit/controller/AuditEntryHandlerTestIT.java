@@ -106,6 +106,11 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() throws AlertDatabaseConstraintException {
+        auditEntryRepository.flush();
+        notificationContentRepository.flush();
+        descriptorConfigRepository.flush();
+        fieldValueRepository.flush();
+
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
@@ -131,6 +136,11 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @AfterEach
     public void cleanup() throws AlertDatabaseConstraintException {
         configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+
+        auditEntryRepository.flush();
+        notificationContentRepository.flush();
+        descriptorConfigRepository.flush();
+        fieldValueRepository.flush();
 
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();

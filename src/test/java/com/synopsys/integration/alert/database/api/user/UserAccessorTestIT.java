@@ -26,12 +26,16 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.database.user.AuthenticationTypeEntity;
+import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Autowired
     private DefaultUserAccessor userAccessor;
+    @Autowired
+    private AuthenticationTypeRepository authenticationTypeRepository;
 
     @Test
     public void testGetUsers() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
@@ -187,6 +191,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
+        List<AuthenticationTypeEntity> authTypes = authenticationTypeRepository.findAll();
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
         UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet(), true);
