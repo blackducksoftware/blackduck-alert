@@ -58,6 +58,12 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        registeredDescriptorRepository.flush();
+        descriptorFieldRepository.flush();
+        definedFieldRepository.flush();
+        descriptorConfigRepository.flush();
+        configContextRepository.flush();
+        fieldValueRepository.flush();
         registeredDescriptorRepository.deleteAllInBatch();
         descriptorFieldRepository.deleteAllInBatch();
         definedFieldRepository.deleteAllInBatch();
@@ -68,17 +74,17 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findByConfigIdTest() {
-        final RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
-        final RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
+        RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
 
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity("fieldKey1", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity("fieldKey2", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity("fieldKey3", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity("fieldKey4", Boolean.FALSE);
-        final DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
-        final DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
-        final DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity("fieldKey1", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity("fieldKey2", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity("fieldKey3", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity("fieldKey4", Boolean.FALSE);
+        DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
+        DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
         assertEquals(4, definedFieldRepository.findAll().size());
 
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity1.getId()));
@@ -86,46 +92,46 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity3.getId()));
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity4.getId()));
 
-        final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
         Date currentTime = DateUtils.createCurrentDateTimestamp();
-        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity1);
         descriptorConfigRepository.save(descriptorConfigEntity2);
         assertEquals(2, descriptorConfigRepository.findAll().size());
 
-        final FieldValueEntity fieldValueEntity1 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity1.getId(), "value1");
-        final FieldValueEntity fieldValueEntity2 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity2.getId(), "value2");
-        final FieldValueEntity fieldValueEntity3 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity3.getId(), "value3");
-        final FieldValueEntity fieldValueEntity4 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity4.getId(), "value4");
+        FieldValueEntity fieldValueEntity1 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity1.getId(), "value1");
+        FieldValueEntity fieldValueEntity2 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity2.getId(), "value2");
+        FieldValueEntity fieldValueEntity3 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity3.getId(), "value3");
+        FieldValueEntity fieldValueEntity4 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity4.getId(), "value4");
         fieldValueRepository.save(fieldValueEntity1);
         fieldValueRepository.save(fieldValueEntity2);
         fieldValueRepository.save(fieldValueEntity3);
         fieldValueRepository.save(fieldValueEntity4);
         assertEquals(4, fieldValueRepository.findAll().size());
 
-        final List<FieldValueEntity> fieldValueEntityList1 = fieldValueRepository.findByConfigId(descriptorConfigEntity1.getId());
+        List<FieldValueEntity> fieldValueEntityList1 = fieldValueRepository.findByConfigId(descriptorConfigEntity1.getId());
         assertEquals(2, fieldValueEntityList1.size());
 
-        final List<FieldValueEntity> fieldValueEntityList2 = fieldValueRepository.findByConfigId(descriptorConfigEntity2.getId());
+        List<FieldValueEntity> fieldValueEntityList2 = fieldValueRepository.findByConfigId(descriptorConfigEntity2.getId());
         assertEquals(2, fieldValueEntityList2.size());
     }
 
     @Test
     public void onDeleteCascadeTest() {
-        final RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
-        final RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
+        RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
 
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity("fieldKey1", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity("fieldKey2", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity("fieldKey3", Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity("fieldKey4", Boolean.FALSE);
-        final DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
-        final DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
-        final DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity("fieldKey1", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity("fieldKey2", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity("fieldKey3", Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity("fieldKey4", Boolean.FALSE);
+        DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
+        DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
         assertEquals(4, definedFieldRepository.findAll().size());
 
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity1.getId()));
@@ -133,22 +139,22 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity3.getId()));
         descriptorFieldRepository.save(new DescriptorFieldRelation(descriptorEntity.getId(), savedEntity4.getId()));
 
-        final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
         Date currentTime = DateUtils.createCurrentDateTimestamp();
-        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity1);
         descriptorConfigRepository.save(descriptorConfigEntity2);
         descriptorConfigRepository.save(descriptorConfigEntity3);
         assertEquals(3, descriptorConfigRepository.findAll().size());
 
-        final FieldValueEntity fieldValueEntity1 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity1.getId(), "value1");
-        final FieldValueEntity fieldValueEntity2 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity2.getId(), "value2");
-        final FieldValueEntity fieldValueEntity3 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity3.getId(), "value3");
-        final FieldValueEntity fieldValueEntity4 = new FieldValueEntity(descriptorConfigEntity3.getId(), savedEntity4.getId(), "value4");
+        FieldValueEntity fieldValueEntity1 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity1.getId(), "value1");
+        FieldValueEntity fieldValueEntity2 = new FieldValueEntity(descriptorConfigEntity1.getId(), savedEntity2.getId(), "value2");
+        FieldValueEntity fieldValueEntity3 = new FieldValueEntity(descriptorConfigEntity2.getId(), savedEntity3.getId(), "value3");
+        FieldValueEntity fieldValueEntity4 = new FieldValueEntity(descriptorConfigEntity3.getId(), savedEntity4.getId(), "value4");
         fieldValueRepository.save(fieldValueEntity1);
         fieldValueRepository.save(fieldValueEntity2);
         fieldValueRepository.save(fieldValueEntity3);

@@ -26,14 +26,21 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "custom_certificates")
-public class CustomCertificateEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -4913195698406375327L;
+public class CustomCertificateEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "alias")
     private String alias;
     @Column(name = "certificate_content")
@@ -48,6 +55,16 @@ public class CustomCertificateEntity extends DatabaseEntity {
         this.alias = alias;
         this.certificateContent = certificateContent;
         this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAlias() {

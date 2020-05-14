@@ -28,17 +28,27 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 
 @Entity
 @Table(schema = "alert", name = "raw_notification_content")
-public class NotificationEntity extends DatabaseEntity {
+public class NotificationEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(generator = "alert.raw_notification_content_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.raw_notification_content_id_seq_generator", sequenceName = "alert.raw_notification_content_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
@@ -79,6 +89,16 @@ public class NotificationEntity extends DatabaseEntity {
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getCreatedAt() {

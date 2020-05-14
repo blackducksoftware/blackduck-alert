@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="init-config-db.xml" relativeToChangelogFile="true"/>
     <include file="init-auth-db.xml" relativeToChangelogFile="true"/>
+    <include file="environment-override-removal.xml" relativeToChangelogFile="true"/>
     <include file="component-tasks.xml" relativeToChangelogFile="true"/>
     <include file="settings-fields.xml" relativeToChangelogFile="true"/>
     <include file="notification-migration-procedures.xml" relativeToChangelogFile="true"/>

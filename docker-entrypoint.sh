@@ -402,7 +402,7 @@ postgresPrepare600Upgrade() {
         if [ -f "${alertDataDir}/alertdb.mv.db" ];
         then
             echo "A previous database existed."
-
+            liquibaseChangelockReset
             echo "Clearing old checksums for offline upgrade..."
             ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
@@ -470,7 +470,6 @@ else
   importBlackDuckSystemCertificateIntoKeystore
   importDockerHubServerCertificate
   createDataBackUp
-  liquibaseChangelockReset
   createPostgresDatabase
   validatePostgresDatabase
   postgresPrepare600Upgrade

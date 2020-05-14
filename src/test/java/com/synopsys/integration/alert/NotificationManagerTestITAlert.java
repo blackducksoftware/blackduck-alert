@@ -122,6 +122,13 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private void cleanDB() {
+        notificationContentRepository.flush();
+        notificationContentRepository.flush();
+        auditNotificationRepository.flush();
+        auditEntryRepository.flush();
+        configGroupRepository.flush();
+        descriptorConfigRepository.flush();
+        fieldValueRepository.flush();
         notificationContentRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();

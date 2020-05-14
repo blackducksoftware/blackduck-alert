@@ -26,26 +26,36 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DEFINED_FIELDS")
-public class DefinedFieldEntity extends DatabaseEntity {
-    @Column(name = "SOURCE_KEY")
+@Table(schema = "alert", name = "defined_fields")
+public class DefinedFieldEntity extends BaseEntity implements DatabaseEntity {
+    private static final long serialVersionUID = -3477745434187375522L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "source_key")
     private String key;
-    @Column(name = "SENSITIVE")
+    @Column(name = "sensitive")
     private Boolean sensitive;
 
     @OneToMany
-    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "field_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<DescriptorFieldRelation> descriptorFieldRelations;
 
     @OneToMany
-    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    @JoinColumn(name = "field_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<FieldContextRelation> fieldContextRelations;
 
     public DefinedFieldEntity() {
@@ -55,6 +65,16 @@ public class DefinedFieldEntity extends DatabaseEntity {
     public DefinedFieldEntity(String key, Boolean sensitive) {
         this.key = key;
         this.sensitive = sensitive;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getKey() {

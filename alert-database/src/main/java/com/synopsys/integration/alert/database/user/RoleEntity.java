@@ -24,13 +24,21 @@ package com.synopsys.integration.alert.database.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "roles")
-public class RoleEntity extends DatabaseEntity {
+public class RoleEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "rolename")
     private String roleName;
     @Column(name = "custom")
@@ -43,6 +51,16 @@ public class RoleEntity extends DatabaseEntity {
     public RoleEntity(String roleName, Boolean custom) {
         this.roleName = roleName;
         this.custom = custom;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getRoleName() {

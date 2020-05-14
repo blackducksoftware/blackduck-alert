@@ -37,6 +37,10 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
+        providerProjectRepository.flush();
+        providerUserProjectRelationRepository.flush();
+        providerUserRepository.flush();
+
         providerProjectRepository.deleteAllInBatch();
         providerUserProjectRelationRepository.deleteAllInBatch();
         providerUserRepository.deleteAllInBatch();
@@ -44,6 +48,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     private ProviderKey createProviderKey(String key) {
         return new ProviderKey() {
+            private static final long serialVersionUID = 2052511010419848986L;
+
             @Override
             public String getUniversalKey() {
                 return key;

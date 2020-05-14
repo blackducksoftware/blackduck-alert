@@ -24,13 +24,23 @@ package com.synopsys.integration.alert.database.provider.project;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "provider_projects")
-public class ProviderProjectEntity extends DatabaseEntity {
+public class ProviderProjectEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(generator = "alert.provider_projects_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.provider_projects_id_seq_generator", sequenceName = "alert.provider_projects_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Column(name = "name")
     private String name;
 
@@ -56,6 +66,16 @@ public class ProviderProjectEntity extends DatabaseEntity {
         this.href = href;
         this.projectOwnerEmail = projectOwnerEmail;
         this.providerConfigId = providerConfigId;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
