@@ -23,12 +23,6 @@
 package com.synopsys.integration.alert.database;
 
 public interface DatabaseEntity {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id")
-//    private Long id;
-
     Long getId();
-
     void setId(Long id);
 }

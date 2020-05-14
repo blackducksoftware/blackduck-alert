@@ -314,6 +314,7 @@ create table if not exists PUBLIC.DATABASECHANGELOG
     DEPLOYMENT_ID VARCHAR(10)
 );
 
+-- In order for the sequences to match up correctly in hibernate with postgres set the increment to hibernates default allocation size of 50.
 ALTER SEQUENCE alert.audit_entries_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.custom_certificates_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.descriptor_configs_id_seq INCREMENT 50;
