@@ -4,32 +4,32 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.system.SystemStatus;
+import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
-public class MockSystemStatusRepository extends DefaultMockJPARepository<SystemStatus, Long> implements SystemStatusRepository {
+public class MockSystemStatusRepository extends DefaultMockJPARepository<SystemStatusEntity, Long> implements SystemStatusRepository {
 
     //Only methods that are used by a test are currently implemented, all others are left default.
-    private SystemStatus systemStatus;
+    private SystemStatusEntity systemStatus;
 
     public MockSystemStatusRepository(Boolean startingStatus) {
-        this.systemStatus = new SystemStatus(startingStatus, new Date());
+        this.systemStatus = new SystemStatusEntity(startingStatus, new Date());
     }
 
     @Override
-    public List<SystemStatus> findAll() {
+    public List<SystemStatusEntity> findAll() {
         return List.of(systemStatus);
     }
 
     @Override
-    public <S extends SystemStatus> S save(S entity) {
-        this.systemStatus = new SystemStatus(entity.isInitialConfigurationPerformed(), entity.getStartupTime());
+    public <S extends SystemStatusEntity> S save(S entity) {
+        this.systemStatus = new SystemStatusEntity(entity.isInitialConfigurationPerformed(), entity.getStartupTime());
 
         return (S) this.systemStatus;
     }
 
     @Override
-    public Optional<SystemStatus> findById(Long aLong) {
+    public Optional<SystemStatusEntity> findById(Long aLong) {
         return Optional.ofNullable(this.systemStatus);
     }
 

@@ -25,8 +25,10 @@ package com.synopsys.integration.alert.common.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 
 public final class DateUtils {
     public static final String DOCKER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
@@ -43,14 +45,19 @@ public final class DateUtils {
     }
 
     public static String formatDate(OffsetDateTime date, String format) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        return simpleDateFormat.format(date);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        return dtf.format(date);
+    }
+
+    public static OffsetDateTime fromDateUTC(Date date) {
+        return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
     }
 
     public static OffsetDateTime parseDate(String dateTime, String format) throws ParseException {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
         try {
-            return OffsetDateTime.parse(dateTime, dtf);
+            Date parsedDate = sdf.parse(dateTime);
+            return fromDateUTC(parsedDate);
         } catch (DateTimeParseException e) {
             throw new ParseException(e.getParsedString(), e.getErrorIndex());
         }

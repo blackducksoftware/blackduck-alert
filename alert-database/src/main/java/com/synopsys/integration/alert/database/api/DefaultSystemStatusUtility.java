@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.system.SystemStatus;
+import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
 @Component
@@ -52,16 +52,16 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
     @Override
     @Transactional
     public void setSystemInitialized(boolean systemInitialized) {
-        SystemStatus systemStatus = getSystemStatus();
-        SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime());
+        SystemStatusEntity systemStatus = getSystemStatus();
+        SystemStatusEntity newSystemStatus = new SystemStatusEntity(systemInitialized, systemStatus.getStartupTime());
         updateSystemStatus(newSystemStatus);
     }
 
     @Override
     @Transactional
     public void startupOccurred() {
-        SystemStatus systemStatus = getSystemStatus();
-        SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
+        SystemStatusEntity systemStatus = getSystemStatus();
+        SystemStatusEntity newSystemStatus = new SystemStatusEntity(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
         updateSystemStatus(newSystemStatus);
     }
 
@@ -75,11 +75,11 @@ public class DefaultSystemStatusUtility implements SystemStatusUtility {
         return DateUtils.createCurrentDateTimestamp();
     }
 
-    private SystemStatus getSystemStatus() {
-        return systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
+    private SystemStatusEntity getSystemStatus() {
+        return systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatusEntity());
     }
 
-    private void updateSystemStatus(SystemStatus systemStatus) {
+    private void updateSystemStatus(SystemStatusEntity systemStatus) {
         systemStatus.setId(SYSTEM_STATUS_ID);
         systemStatusRepository.save(systemStatus);
     }

@@ -29,7 +29,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface SystemMessageRepository extends JpaRepository<SystemMessageEntity, Long> {
-    @Query("SELECT message FROM SystemMessageEntity message WHERE message.created >= ?1 AND message.created < ?2 ORDER BY created_at asc")
+    @Query("SELECT message FROM SystemMessageEntity message WHERE message.created >= ?1 AND message.created < ?2 ORDER BY message.created asc")
     List<SystemMessageEntity> findByCreatedBetween(OffsetDateTime start, OffsetDateTime end);
 
     SystemMessageEntity findTopByOrderByCreatedAsc();

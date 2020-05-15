@@ -13,7 +13,7 @@ public class SystemStatusTest {
 
     @Test
     public void testConstructor() {
-        SystemStatus systemStatus = new SystemStatus();
+        SystemStatusEntity systemStatus = new SystemStatusEntity();
         assertFalse(systemStatus.isInitialConfigurationPerformed());
         assertNull(systemStatus.getStartupTime());
         assertNull(systemStatus.getId());
@@ -24,7 +24,7 @@ public class SystemStatusTest {
         OffsetDateTime date = OffsetDateTime.now();
         final boolean initialized = true;
         final Long id = 22L;
-        SystemStatus systemStatus = new SystemStatus(initialized, date);
+        SystemStatusEntity systemStatus = new SystemStatusEntity(initialized, date);
         systemStatus.setId(id);
         assertTrue(systemStatus.isInitialConfigurationPerformed());
         assertEquals(date, systemStatus.getStartupTime());

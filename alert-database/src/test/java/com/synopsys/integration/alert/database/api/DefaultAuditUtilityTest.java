@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,8 +108,8 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void findFirstByJobIdNotNullTest() {
-        Date timeCreated = Date.from(Instant.now().minusSeconds(600L));
-        Date timeLastSent = Date.from(Instant.now());
+        OffsetDateTime timeCreated = Date.from(Instant.now().minusSeconds(600L));
+        OffsetDateTime timeLastSent = Date.from(Instant.now());
         AuditEntryStatus status = AuditEntryStatus.PENDING;
         UUID testUUID = UUID.randomUUID();
 
@@ -194,8 +195,8 @@ public class DefaultAuditUtilityTest {
         String providerConfigName = "providerConfigName-test";
         String notificationType = "notificationType-test";
         String content = "content-test";
-        Date timeCreated = new Date(System.currentTimeMillis() - 10000);
-        Date timeLastSent = new Date(System.currentTimeMillis());
+        OffsetDateTime timeCreated = new Date(System.currentTimeMillis() - 10000);
+        OffsetDateTime timeLastSent = new Date(System.currentTimeMillis());
         Long auditEntryId = 3L;
         String channelName = "test-channel.common.name-value";
         String eventType = "test-channel.common.channel.name-value";

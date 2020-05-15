@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -160,7 +158,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         all = notificationManager.findAll(pageRequest, true);
         assertTrue(all.isEmpty());
 
-        Date now = new Date();
+        OffsetDateTime now = OffsetDateTime.now();
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
         AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
@@ -199,7 +197,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         // Search term should match the notification type but it was never sent so no match
         assertTrue(all.isEmpty());
 
-        Date now = new Date();
+        OffsetDateTime now = OffsetDateTime.now();
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
         AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
@@ -234,7 +232,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         fieldValueRepository.save(fieldValueEntity);
 
         final String auditStatus = "audit status thing";
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(), new Date(), auditStatus, "", "");
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, OffsetDateTime.now(), OffsetDateTime.now(), auditStatus, "", "");
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
@@ -279,17 +277,17 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBetween() {
-        LocalDateTime time = LocalDateTime.now();
-        OffsetDateTime startDate = createDate(time.minusHours(1));
-        OffsetDateTime endDate = createDate(time.plusHours(1));
-        OffsetDateTime createdAt = createDate(time.minusHours(3));
+        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime startDate = time.minusHours(1);
+        OffsetDateTime endDate = time.plusHours(1);
+        OffsetDateTime createdAt = time.minusHours(3);
         AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        createdAt = createDate(time.plusMinutes(1));
+        createdAt = time.plusMinutes(1);
         AlertNotificationModel entityToFind1 = createNotificationModel(createdAt);
-        createdAt = createDate(time.plusMinutes(5));
+        createdAt = time.plusMinutes(5);
         AlertNotificationModel entityToFind2 = createNotificationModel(createdAt);
-        createdAt = createDate(time.plusHours(3));
+        createdAt = time.plusHours(3);
         entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
@@ -304,14 +302,14 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBetweenInvalidDate() {
-        LocalDateTime time = LocalDateTime.now();
-        OffsetDateTime startDate = createDate(time.minusHours(1));
-        OffsetDateTime endDate = createDate(time.plusHours(1));
-        OffsetDateTime createdAtEarlier = createDate(time.minusHours(5));
+        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime startDate = time.minusHours(1);
+        OffsetDateTime endDate = time.plusHours(1);
+        OffsetDateTime createdAtEarlier = time.minusHours(5);
         AlertNotificationModel entity = createNotificationModel(createdAtEarlier);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        OffsetDateTime createdAtLater = createDate(time.plusHours(3));
+        OffsetDateTime createdAtLater = time.plusHours(3);
         entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
@@ -322,12 +320,12 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBefore() {
-        LocalDateTime time = LocalDateTime.now();
-        OffsetDateTime searchDate = createDate(time.plusHours(1));
-        OffsetDateTime createdAt = createDate(time.minusHours(5));
+        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime searchDate = time.plusHours(1);
+        OffsetDateTime createdAt = time.minusHours(5);
         AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        OffsetDateTime createdAtLaterThanSearch = createDate(time.plusHours(3));
+        OffsetDateTime createdAtLaterThanSearch = time.plusHours(3);
         entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
@@ -335,18 +333,18 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
         assertEquals(1, foundList.size());
 
-        searchDate = createDate(time.minusHours(6));
+        searchDate = time.minusHours(6);
         foundList = notificationManager.findByCreatedAtBefore(searchDate);
         assertTrue(foundList.isEmpty());
     }
 
     @Test
     public void findByCreatedAtBeforeDayOffset() {
-        LocalDateTime time = LocalDateTime.now();
-        OffsetDateTime createdAt = createDate(time.minusDays(5));
+        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime createdAt = time.minusDays(5);
         AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        OffsetDateTime createdAtLaterThanSearch = createDate(time.plusDays(3));
+        OffsetDateTime createdAtLaterThanSearch = time.plusDays(3);
         entity = createNotificationModel(createdAtLaterThanSearch);
         notificationManager.saveAllNotifications(List.of(entity));
 
@@ -360,17 +358,17 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotificationList() {
-        LocalDateTime time = LocalDateTime.now();
-        OffsetDateTime startDate = createDate(time.minusHours(1));
-        OffsetDateTime endDate = createDate(time.plusHours(1));
-        OffsetDateTime createdAt = createDate(time.minusHours(3));
+        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime startDate = time.minusHours(1);
+        OffsetDateTime endDate = time.plusHours(1);
+        OffsetDateTime createdAt = time.minusHours(3);
         AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
-        OffsetDateTime createdAtInRange = createDate(time.plusMinutes(1));
+        OffsetDateTime createdAtInRange = time.plusMinutes(1);
         AlertNotificationModel entityToFind1 = createNotificationModel(createdAtInRange);
-        createdAtInRange = createDate(time.plusMinutes(5));
+        createdAtInRange = time.plusMinutes(5);
         AlertNotificationModel entityToFind2 = createNotificationModel(createdAtInRange);
-        OffsetDateTime createdAtLater = createDate(time.plusHours(3));
+        OffsetDateTime createdAtLater = time.plusHours(3);
         entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
         notificationManager.saveAllNotifications(List.of(entityToFind1));
@@ -400,7 +398,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private AlertNotificationModel createNotificationModel() {
-        OffsetDateTime createdAt = createDate(LocalDateTime.now());
+        OffsetDateTime createdAt = OffsetDateTime.now();
         return createNotificationModel(createdAt);
     }
 
@@ -410,12 +408,8 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private NotificationEntity createNotificationContent() {
-        OffsetDateTime createdAt = createDate(LocalDateTime.now());
+        OffsetDateTime createdAt = OffsetDateTime.now();
         return createNotificationContent(createdAt);
-    }
-
-    private OffsetDateTime createDate(LocalDateTime localTime) {
-        return OffsetDateTime.from(localTime);
     }
 
 }

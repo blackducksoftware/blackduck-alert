@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.audit.mock;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
@@ -10,8 +10,8 @@ import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private UUID commonConfigId = UUID.fromString("1c0c7769-7cae-47d1-b80f-8c09eb8b90b9");
-    private Date timeCreated = new Date(400);
-    private Date timeLastSent = new Date(500);
+    private OffsetDateTime timeLastSent = OffsetDateTime.now();
+    private OffsetDateTime timeCreated = timeLastSent.plusMinutes(1);
     private AuditEntryStatus status = AuditEntryStatus.SUCCESS;
     private String errorMessage = "errorMessage";
     private String errorStackTrace = "errorStackTrace";
@@ -21,23 +21,23 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return commonConfigId;
     }
 
-    public void setCommonConfigId(final UUID commonConfigId) {
+    public void setCommonConfigId(UUID commonConfigId) {
         this.commonConfigId = commonConfigId;
     }
 
-    public Date getTimeCreated() {
+    public OffsetDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    public void setTimeCreated(final Date timeCreated) {
+    public void setTimeCreated(OffsetDateTime timeCreated) {
         this.timeCreated = timeCreated;
     }
 
-    public Date getTimeLastSent() {
+    public OffsetDateTime getTimeLastSent() {
         return timeLastSent;
     }
 
-    public void setTimeLastSent(final Date timeLastSent) {
+    public void setTimeLastSent(OffsetDateTime timeLastSent) {
         this.timeLastSent = timeLastSent;
     }
 
@@ -45,7 +45,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return status;
     }
 
-    public void setStatus(final AuditEntryStatus status) {
+    public void setStatus(AuditEntryStatus status) {
         this.status = status;
     }
 
@@ -53,7 +53,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return errorMessage;
     }
 
-    public void setErrorMessage(final String errorMessage) {
+    public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -61,7 +61,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return errorStackTrace;
     }
 
-    public void setErrorStackTrace(final String errorStackTrace) {
+    public void setErrorStackTrace(String errorStackTrace) {
         this.errorStackTrace = errorStackTrace;
     }
 
@@ -70,13 +70,13 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Override
     public AuditEntryEntity createEntity() {
-        final AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, timeCreated, timeLastSent, status.toString(), errorMessage, errorStackTrace);
+        AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, timeCreated, timeLastSent, status.toString(), errorMessage, errorStackTrace);
         entity.setId(id);
         entity.setErrorMessage(errorMessage);
         entity.setErrorStackTrace(errorStackTrace);
@@ -89,13 +89,12 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return new AuditEntryEntity();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getEntityJson() {
-        final JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         json.addProperty("commonConfigId", commonConfigId.toString());
-        json.addProperty("timeCreated", timeCreated.toLocaleString());
-        json.addProperty("timeLastSent", timeLastSent.toLocaleString());
+        json.addProperty("timeCreated", timeCreated.toString());
+        json.addProperty("timeLastSent", timeLastSent.toString());
         json.addProperty("status", status.toString());
         json.addProperty("errorMessage", errorMessage);
         json.addProperty("errorStackTrace", errorStackTrace);

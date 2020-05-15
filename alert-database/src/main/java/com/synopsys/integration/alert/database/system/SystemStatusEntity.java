@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "system_status")
-public class SystemStatus extends BaseEntity {
+public class SystemStatusEntity extends BaseEntity {
     private static final long serialVersionUID = -5482465786237355472L;
 
     @Id
@@ -44,11 +44,11 @@ public class SystemStatus extends BaseEntity {
     @Column(name = "startup_time")
     private OffsetDateTime startupTime;
 
-    public SystemStatus() {
+    public SystemStatusEntity() {
         //JPA requires a default constructor
     }
 
-    public SystemStatus(boolean initialConfigurationPerformed, OffsetDateTime startupTime) {
+    public SystemStatusEntity(boolean initialConfigurationPerformed, OffsetDateTime startupTime) {
         this.initialConfigurationPerformed = initialConfigurationPerformed;
         this.startupTime = startupTime;
     }

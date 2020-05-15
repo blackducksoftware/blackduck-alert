@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.database.api.mock.MockSystemStatusRepository;
-import com.synopsys.integration.alert.database.system.SystemStatus;
+import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
 public class DefaultSystemStatusUtilityTest {
@@ -23,7 +23,7 @@ public class DefaultSystemStatusUtilityTest {
     @Test
     public void isSystemInitializedTest() {
         SystemStatusRepository systemStatusRepository = Mockito.mock(SystemStatusRepository.class);
-        SystemStatus systemStatus = new SystemStatus(Boolean.TRUE, new Date());
+        SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, new Date());
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
@@ -36,7 +36,7 @@ public class DefaultSystemStatusUtilityTest {
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
         systemStatusUtility.setSystemInitialized(Boolean.TRUE);
 
-        SystemStatus testSystemStatus = systemStatusRepository.findAll().get(0);
+        SystemStatusEntity testSystemStatus = systemStatusRepository.findAll().get(0);
         assertTrue(testSystemStatus.isInitialConfigurationPerformed());
     }
 
@@ -48,7 +48,7 @@ public class DefaultSystemStatusUtilityTest {
 
         //createCurrentDateTimestamp can't be modified, so the expected values for getStartupTime must be estimated
         LocalDateTime estimatedDate = LocalDateTime.now();
-        SystemStatus testSystemStatus = systemStatusRepository.findAll().get(0);
+        SystemStatusEntity testSystemStatus = systemStatusRepository.findAll().get(0);
         LocalDateTime systemStatusLocalDateTime = testSystemStatus.getStartupTime()
                                                       .toInstant()
                                                       .atZone(ZoneId.systemDefault())
@@ -64,7 +64,7 @@ public class DefaultSystemStatusUtilityTest {
     public void getStartupTime() {
         SystemStatusRepository systemStatusRepository = Mockito.mock(SystemStatusRepository.class);
         OffsetDateTime date = OffsetDateTime.now();
-        SystemStatus systemStatus = new SystemStatus(Boolean.TRUE, date);
+        SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, date);
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);

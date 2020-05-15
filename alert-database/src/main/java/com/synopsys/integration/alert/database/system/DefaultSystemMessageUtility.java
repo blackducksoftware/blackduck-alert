@@ -77,7 +77,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public List<SystemMessageModel> getSystemMessagesAfter(OffsetDateTime date) {
-        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = OffsetDateTime.now();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 
@@ -110,7 +110,10 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     private List<SystemMessageModel> convertAllToSystemMessageModel(List<SystemMessageEntity> systemMessages) {
-        return systemMessages.stream().map(this::convertToSystemMessageModel).collect(Collectors.toList());
+        return systemMessages
+                   .stream()
+                   .map(this::convertToSystemMessageModel)
+                   .collect(Collectors.toList());
     }
 
     private SystemMessageModel convertToSystemMessageModel(SystemMessageEntity systemMessage) {

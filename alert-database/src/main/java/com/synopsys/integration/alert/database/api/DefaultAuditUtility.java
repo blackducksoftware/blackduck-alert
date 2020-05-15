@@ -27,7 +27,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +134,7 @@ public class DefaultAuditUtility implements AuditUtility {
                                                   .concat(componentNotificationIds.stream(), topLevelActionNotificationIds.stream())
                                                   .collect(Collectors.toSet());
         for (Long notificationId : allMessageNotificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, OffsetDateTime.now(), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
@@ -167,7 +166,7 @@ public class DefaultAuditUtility implements AuditUtility {
                 auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryEntity.setTimeLastSent(OffsetDateTime.now());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -198,7 +197,7 @@ public class DefaultAuditUtility implements AuditUtility {
                     }
                 }
                 auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryEntity.setTimeLastSent(OffsetDateTime.now());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -215,12 +214,12 @@ public class DefaultAuditUtility implements AuditUtility {
 
         AuditEntryStatus overallStatus = null;
         String lastSent = null;
-        Date lastSentDate = null;
+        OffsetDateTime lastSentDate = null;
         List<JobAuditModel> jobAuditModels = new ArrayList<>();
         for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
-            if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.before(auditEntryEntity.getTimeLastSent()))) {
+            if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.isBefore(auditEntryEntity.getTimeLastSent()))) {
                 lastSentDate = auditEntryEntity.getTimeLastSent();
                 lastSent = contentConverter.getStringValue(lastSentDate);
             }

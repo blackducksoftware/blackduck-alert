@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -195,7 +194,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private AlertNotificationModel createContent(NotificationView notification) {
         OffsetDateTime createdAt = OffsetDateTime.now();
-        OffsetDateTime providerCreationTime = OffsetDateTime.ofInstant(notification.getCreatedAt().toInstant(), ZoneOffset.UTC);
+        OffsetDateTime providerCreationTime = DateUtils.fromDateUTC(notification.getCreatedAt());
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
@@ -207,7 +206,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (!sortedNotificationList.isEmpty()) {
             int lastIndex = sortedNotificationList.size() - 1;
             NotificationView notificationView = sortedNotificationList.get(lastIndex);
-            OffsetDateTime createdAtDate = OffsetDateTime.from(notificationView.getCreatedAt().toInstant());
+            OffsetDateTime createdAtDate = DateUtils.fromDateUTC(notificationView.getCreatedAt());
             return Optional.of(createdAtDate);
         }
         return Optional.empty();
