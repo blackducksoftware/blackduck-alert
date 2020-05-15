@@ -130,10 +130,11 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testCreateDateRangeWithExistingFile() throws Exception {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        OffsetDateTime expectedStartDate = OffsetDateTime.now()
+        OffsetDateTime expectedStartDate = ZonedDateTime.now(ZoneOffset.UTC)
                                                .withSecond(0)
                                                .withNano(0)
-                                               .minusMinutes(5);
+                                               .minusMinutes(5)
+                                               .toOffsetDateTime();
         String startString = notificationAccumulator.formatDate(expectedStartDate);
 
         providerTaskPropertiesAccessor.setTaskProperty(null, notificationAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, startString);

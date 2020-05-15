@@ -192,7 +192,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_NAME).get(), auditEntry.getJobs().get(0).getName());
 
         NotificationConfig notification = auditEntry.getNotification();
-        assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
+        String createdAtStringValue = contentConverter.getStringValue(savedNotificationEntity.getCreatedAt());
+        assertEquals(createdAtStringValue, notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
         response = auditEntryController.get(null, null, null, null, null, false);
