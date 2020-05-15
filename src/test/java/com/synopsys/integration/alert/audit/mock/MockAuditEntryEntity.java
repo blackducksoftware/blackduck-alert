@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.audit.mock;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
@@ -10,7 +11,7 @@ import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private UUID commonConfigId = UUID.fromString("1c0c7769-7cae-47d1-b80f-8c09eb8b90b9");
-    private OffsetDateTime timeLastSent = OffsetDateTime.now();
+    private OffsetDateTime timeLastSent = OffsetDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC);
     private OffsetDateTime timeCreated = timeLastSent.plusMinutes(1);
     private AuditEntryStatus status = AuditEntryStatus.SUCCESS;
     private String errorMessage = "errorMessage";
