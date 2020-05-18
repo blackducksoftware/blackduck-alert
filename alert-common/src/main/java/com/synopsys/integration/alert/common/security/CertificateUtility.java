@@ -59,7 +59,7 @@ public class CertificateUtility {
         this.alertProperties = alertProperties;
     }
 
-    public void importCertificate(CustomCertificateModel customCertificate) throws AlertException {
+    public synchronized void importCertificate(CustomCertificateModel customCertificate) throws AlertException {
         logger.debug("Importing certificate into trust store.");
         validateCustomCertificateHasValues(customCertificate);
         File trustStoreFile = getAndValidateTrustStoreFile();
@@ -76,7 +76,7 @@ public class CertificateUtility {
         }
     }
 
-    public void removeCertificate(CustomCertificateModel customCertificate) throws AlertException {
+    public synchronized void removeCertificate(CustomCertificateModel customCertificate) throws AlertException {
         logger.debug("Removing certificate from trust store.");
         if (null == customCertificate) {
             throw new AlertException("The alias could not be determined from the custom certificate because it was null.");
@@ -84,14 +84,15 @@ public class CertificateUtility {
         removeCertificate(customCertificate.getAlias());
     }
 
-    public void removeCertificate(String certificateAlias) throws AlertException {
+    public synchronized void removeCertificate(String certificateAlias) throws AlertException {
         logger.debug("Removing certificate by alias from trust store.");
         if (StringUtils.isBlank(certificateAlias)) {
             throw new AlertException("The alias cannot be blank");
         }
-        File trustStore = getAndValidateTrustStoreFile();
-        KeyStore keyStore = getAsKeyStore(trustStore, getTrustStorePassword(), getTrustStoreType());
+
         try {
+            File trustStore = getAndValidateTrustStoreFile();
+            KeyStore keyStore = getAsKeyStore(trustStore, getTrustStorePassword(), getTrustStoreType());
             if (keyStore.containsAlias(certificateAlias)) {
                 keyStore.deleteEntry(certificateAlias);
                 try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(trustStore))) {
@@ -103,7 +104,7 @@ public class CertificateUtility {
         }
     }
 
-    public KeyStore getAsKeyStore(File keyStore, char[] keyStorePass, String keyStoreType) throws AlertException {
+    public synchronized KeyStore getAsKeyStore(File keyStore, char[] keyStorePass, String keyStoreType) throws AlertException {
         logger.debug("Get key store.");
         KeyStore.PasswordProtection protection = new KeyStore.PasswordProtection(keyStorePass);
         try {
@@ -113,7 +114,7 @@ public class CertificateUtility {
         }
     }
 
-    public File getAndValidateTrustStoreFile() throws AlertConfigurationException {
+    public synchronized File getAndValidateTrustStoreFile() throws AlertConfigurationException {
         logger.debug("Get and validate trust store.");
         Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
         if (optionalTrustStoreFileName.isPresent()) {
@@ -142,7 +143,7 @@ public class CertificateUtility {
         }
     }
 
-    public void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {
+    public synchronized void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {
         getAsJavaCertificate(customCertificateModel);
     }
 
