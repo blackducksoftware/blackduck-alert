@@ -40,29 +40,36 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class FieldValidationAction {
     private final Logger logger = LoggerFactory.getLogger(FieldValidationAction.class);
     public void validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel, Map<String, String> fieldErrors) {
+        logger.debug("Begin validating fields in configuration field model.");
         for (Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
             String key = fieldEntry.getKey();
             ConfigField field = fieldEntry.getValue();
+            logger.debug("Validating descriptor field: {}", key);
             Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
             if (field.isRequired() && optionalFieldValue.isEmpty()) {
+                logger.debug("Descriptor field {} is required and missing.", key);
                 fieldErrors.put(key, ConfigField.REQUIRED_FIELD_MISSING);
             }
 
             if (!fieldErrors.containsKey(key) && optionalFieldValue.isPresent()) {
                 // field is present now validate the field
+                logger.debug("FieldModel contains '{}'", key);
                 FieldValueModel fieldValueModel = optionalFieldValue.get();
                 if (hasValueOrChecked(fieldValueModel, field.getType())) {
                     checkRelatedFields(field, descriptorFields, fieldModel, fieldErrors);
                 }
                 Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
+                logger.debug("Validating '{}' errors: {}", key, validationErrors);
                 if (!validationErrors.isEmpty()) {
                     fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
                 }
             }
         }
+        logger.debug("Finished validating fields in configuration field model.");
     }
 
     private void checkRelatedFields(ConfigField field, Map<String, ConfigField> descriptorFields, FieldModel fieldModel, Map<String, String> fieldErrors) {
+        logger.debug("Begin validating related fields for field: '{}'", field.getKey());
         for (String relatedFieldKey : field.getRequiredRelatedFields()) {
             ConfigField relatedField = descriptorFields.get(relatedFieldKey);
             validateAnyRelatedFieldsMissing(relatedField, fieldModel, fieldErrors);
@@ -71,6 +78,7 @@ public class FieldValidationAction {
             ConfigField relatedField = descriptorFields.get(disallowedRelatedFieldKey);
             validateAnyDisallowedFieldsSet(relatedField, fieldModel, fieldErrors, field.getLabel());
         }
+        logger.debug("Finished validating related fields for field: '{}'", field.getKey());
     }
 
     private boolean hasValueOrChecked(FieldValueModel fieldValueModel, String type) {
@@ -88,6 +96,8 @@ public class FieldValidationAction {
         String key = field.getKey();
         Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
         if (optionalFieldValue.isEmpty() || optionalFieldValue.map(fieldValueModel -> !hasValueOrIsCheckbox(fieldValueModel, field.getType())).orElse(true)) {
+            String missingFieldKey = field.getKey();
+            logger.debug("Validating '{}': Missing related field '{}'", key, missingFieldKey);
             fieldErrors.put(key, field.getLabel() + " is missing");
         }
     }
@@ -97,6 +107,8 @@ public class FieldValidationAction {
         Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
         if (optionalFieldValue.isPresent() && hasValueOrChecked(optionalFieldValue.get(), field.getType())) {
             String errorMessage = String.format("%s cannot be set if %s is already set", field.getLabel(), validatedFieldLabel);
+            String missingFieldKey = field.getKey();
+            logger.debug("Validating '{}': Disallowed field '{}' cannot be set.", key, missingFieldKey);
             fieldErrors.put(key, errorMessage);
         }
     }
