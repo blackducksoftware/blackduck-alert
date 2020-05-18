@@ -32,6 +32,7 @@ import java.util.Date;
 
 public final class DateUtils {
     public static final String DOCKER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+    public static final String AUDIT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String UTC_DATE_FORMAT_TO_MINUTE = "yyyy-MM-dd HH:mm '(UTC)'";
 
     public static OffsetDateTime createCurrentDateTimestamp() {

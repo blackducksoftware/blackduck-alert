@@ -221,7 +221,7 @@ public class DefaultAuditUtility implements AuditUtility {
 
             if (null == timeLastSentOffsetDateTime || (null != auditEntryEntity.getTimeLastSent() && timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
                 timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
-                timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+                timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.AUDIT_DATE_FORMAT);
             }
             String id = contentConverter.getStringValue(auditEntryEntity.getId());
             String configId = contentConverter.getStringValue(commonConfigId);
@@ -348,7 +348,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private OffsetDateTime parseDateString(String dateString) {
         OffsetDateTime date = null;
         try {
-            date = DateUtils.parseDate(dateString, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+            date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
         } catch (ParseException e) {
             logger.error(e.toString());
         }

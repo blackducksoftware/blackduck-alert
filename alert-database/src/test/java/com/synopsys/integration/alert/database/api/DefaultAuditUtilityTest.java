@@ -140,7 +140,7 @@ public class DefaultAuditUtilityTest {
         String sortOrder = "ASC";
         Boolean onlyShowSentNotifications = Boolean.TRUE;
         String overallStatus = "overallStatusString";
-        String lastSent = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String lastSent = DateUtils.createCurrentDateString(DateUtils.AUDIT_DATE_FORMAT);
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
@@ -236,7 +236,7 @@ public class DefaultAuditUtilityTest {
         assertEquals(channelName, testJob.getName());
         assertEquals(eventType, testJob.getEventType());
         assertEquals(AuditEntryStatus.SUCCESS.getDisplayName(), testAuditEntryModel.getOverallStatus());
-        assertEquals(DateUtils.formatDate(timeLastSent, DateUtils.UTC_DATE_FORMAT_TO_MINUTE), testAuditEntryModel.getLastSent());
+        assertEquals(DateUtils.formatDate(timeLastSent, DateUtils.AUDIT_DATE_FORMAT), testAuditEntryModel.getLastSent());
     }
 
     @Test
