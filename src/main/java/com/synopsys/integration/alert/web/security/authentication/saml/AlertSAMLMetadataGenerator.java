@@ -31,10 +31,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class AlertSAMLMetadataGenerator extends MetadataGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);
+    private final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);
     private final SAMLContext samlContext;
 
-    public AlertSAMLMetadataGenerator(final SAMLContext samlContext) {
+    public AlertSAMLMetadataGenerator(SAMLContext samlContext) {
         this.samlContext = samlContext;
     }
 
@@ -48,11 +48,11 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
         return getEntityString(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
     }
 
-    private String getEntityString(final String entityKey) {
+    private String getEntityString(String entityKey) {
         try {
-            final ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
+            ConfigurationModel currentConfiguration = samlContext.getCurrentConfiguration();
             return samlContext.getFieldValueOrEmpty(currentConfiguration, entityKey);
-        } catch (final AlertException e) {
+        } catch (AlertException e) {
             logger.error("Could not get the SAML entity.", e);
         }
         return "";

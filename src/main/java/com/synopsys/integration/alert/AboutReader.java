@@ -38,30 +38,30 @@ import com.synopsys.integration.util.ResourceUtil;
 @Component
 public class AboutReader {
     public static final String PRODUCT_VERSION_UNKNOWN = "unknown";
-    private static final Logger logger = LoggerFactory.getLogger(AboutReader.class);
+    private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
     private final SystemStatusUtility systemStatusUtility;
 
     @Autowired
-    public AboutReader(final Gson gson, final SystemStatusUtility systemStatusUtility) {
+    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility) {
         this.gson = gson;
         this.systemStatusUtility = systemStatusUtility;
     }
 
     public AboutModel getAboutModel() {
         try {
-            final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
-            final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            final String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
+            String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
+            AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
+            String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
             return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
         }
     }
 
     public String getProductVersion() {
-        final AboutModel aboutModel = getAboutModel();
+        AboutModel aboutModel = getAboutModel();
         if (aboutModel != null) {
             return aboutModel.getVersion();
         } else {

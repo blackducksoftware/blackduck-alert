@@ -45,7 +45,7 @@ public class ProxyManager {
     public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
     public static final String KEY_PROXY_PWD = "settings.proxy.password";
 
-    private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
+    private final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
 
     private SettingsUtility settingsUtility;
 
@@ -57,27 +57,27 @@ public class ProxyManager {
     private Optional<ConfigurationModel> getSettingsConfiguration() {
         try {
             return settingsUtility.getConfiguration();
-        } catch (final AlertException ex) {
+        } catch (AlertException ex) {
             logger.error("Could not find the settings configuration for proxy data", ex);
         }
         return Optional.empty();
     }
 
     public ProxyInfo createProxyInfo() throws IllegalArgumentException {
-        final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
-        final Optional<String> alertProxyHost = getProxySetting(settingsConfiguration, KEY_PROXY_HOST);
-        final Optional<String> alertProxyPort = getProxySetting(settingsConfiguration, KEY_PROXY_PORT);
-        final Optional<String> alertProxyUsername = getProxySetting(settingsConfiguration, KEY_PROXY_USERNAME);
-        final Optional<String> alertProxyPassword = getProxySetting(settingsConfiguration, KEY_PROXY_PWD);
+        Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
+        Optional<String> alertProxyHost = getProxySetting(settingsConfiguration, KEY_PROXY_HOST);
+        Optional<String> alertProxyPort = getProxySetting(settingsConfiguration, KEY_PROXY_PORT);
+        Optional<String> alertProxyUsername = getProxySetting(settingsConfiguration, KEY_PROXY_USERNAME);
+        Optional<String> alertProxyPassword = getProxySetting(settingsConfiguration, KEY_PROXY_PWD);
 
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+        ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {
             proxyBuilder.setHost(alertProxyHost.get());
         }
         if (alertProxyPort.isPresent()) {
             proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
         }
-        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
+        CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
         if (alertProxyUsername.isPresent()) {
             credentialsBuilder.setUsername(alertProxyUsername.get());
         }
@@ -104,12 +104,12 @@ public class ProxyManager {
         return getProxySetting(KEY_PROXY_PWD);
     }
 
-    private Optional<String> getProxySetting(final String key) {
-        final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
+    private Optional<String> getProxySetting(String key) {
+        Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
         return getProxySetting(settingsConfiguration, key);
     }
 
-    private Optional<String> getProxySetting(final Optional<ConfigurationModel> settingsConfiguration, final String key) {
+    private Optional<String> getProxySetting(Optional<ConfigurationModel> settingsConfiguration, String key) {
         return settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(key)).flatMap(ConfigurationFieldModel::getFieldValue);
     }
 

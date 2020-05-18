@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 
 @Component
 public class SettingsValidator extends BaseSystemValidator {
-    private static final Logger logger = LoggerFactory.getLogger(SettingsValidator.class);
+    private final Logger logger = LoggerFactory.getLogger(SettingsValidator.class);
     private EncryptionUtility encryptionUtility;
 
     @Autowired

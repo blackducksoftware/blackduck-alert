@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -36,7 +38,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class FieldValidationAction {
-
+    private final Logger logger = LoggerFactory.getLogger(FieldValidationAction.class);
     public void validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel, Map<String, String> fieldErrors) {
         for (Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
             String key = fieldEntry.getKey();

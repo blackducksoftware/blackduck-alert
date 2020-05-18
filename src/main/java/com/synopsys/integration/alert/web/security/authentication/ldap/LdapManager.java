@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.web.security.authentication.UserManagement
 
 @Component
 public class LdapManager {
-    private static final Logger logger = LoggerFactory.getLogger(LdapManager.class);
+    private final Logger logger = LoggerFactory.getLogger(LdapManager.class);
 
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;

@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
-    private static final Logger logger = LoggerFactory.getLogger(SAMLAuthProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(SAMLAuthProvider.class);
     private AuthenticationEventManager authenticationEventManager;
 
     public SAMLAuthProvider(AuthenticationEventManager authenticationEventManager) {

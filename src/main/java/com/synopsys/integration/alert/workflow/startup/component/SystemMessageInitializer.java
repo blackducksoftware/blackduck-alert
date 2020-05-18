@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 @Component
 @Order(30)
 public class SystemMessageInitializer extends StartupComponent {
-    private static final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
+    private final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<Provider> providers;
     private final SettingsValidator settingsValidator;
     private final ConfigurationAccessor configurationAccessor;

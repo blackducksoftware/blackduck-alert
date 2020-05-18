@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 @Component
 // FIXME this class needs to be updated to handle multiple providers
 public class SchedulingGlobalApiAction extends ApiAction {
-    private static final Logger logger = LoggerFactory.getLogger(SchedulingGlobalApiAction.class);
+    private final Logger logger = LoggerFactory.getLogger(SchedulingGlobalApiAction.class);
     private BlackDuckProviderKey blackDuckProviderKey;
     private TaskManager taskManager;
     private ConfigurationAccessor configurationAccessor;
