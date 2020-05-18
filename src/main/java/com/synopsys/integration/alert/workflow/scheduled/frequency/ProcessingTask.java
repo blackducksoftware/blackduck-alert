@@ -53,7 +53,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
-        lastRunTime = OffsetDateTime.now();
+        lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public abstract FrequencyType getDigestType();
@@ -64,7 +64,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     public DateRange getDateRange() {
         OffsetDateTime startDate = lastRunTime;
-        OffsetDateTime endDate = OffsetDateTime.now();
+        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
         return DateRange.of(startDate, endDate);
     }
 
@@ -74,7 +74,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         List<AlertNotificationModel> notificationList = read(dateRange);
         List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
         eventManager.sendEvents(distributionEvents);
-        lastRunTime = OffsetDateTime.now();
+        lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public List<AlertNotificationModel> read(DateRange dateRange) {

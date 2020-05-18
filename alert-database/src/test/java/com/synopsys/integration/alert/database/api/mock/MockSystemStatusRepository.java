@@ -1,9 +1,9 @@
 package com.synopsys.integration.alert.database.api.mock;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
@@ -13,7 +13,7 @@ public class MockSystemStatusRepository extends DefaultMockJPARepository<SystemS
     private SystemStatusEntity systemStatus;
 
     public MockSystemStatusRepository(Boolean startingStatus) {
-        this.systemStatus = new SystemStatusEntity(startingStatus, new Date());
+        this.systemStatus = new SystemStatusEntity(startingStatus, DateUtils.createCurrentDateTimestamp());
     }
 
     @Override

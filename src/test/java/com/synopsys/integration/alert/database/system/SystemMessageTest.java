@@ -7,6 +7,8 @@ import java.time.OffsetDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.util.DateUtils;
+
 public class SystemMessageTest {
     @Test
     public void testConstructor() {
@@ -19,7 +21,7 @@ public class SystemMessageTest {
 
     @Test
     public void testGetters() {
-        OffsetDateTime date = OffsetDateTime.now();
+        OffsetDateTime date = DateUtils.createCurrentDateTimestamp();
         final String severity = "severity";
         final String content = "contents";
         final String type = "type";

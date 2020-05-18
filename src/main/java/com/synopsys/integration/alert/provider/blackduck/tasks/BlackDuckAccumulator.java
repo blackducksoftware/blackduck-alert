@@ -112,7 +112,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     protected DateRange createDateRange() {
-        OffsetDateTime endDate = OffsetDateTime.now();
+        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = endDate;
         try {
             Optional<String> nextSearchStartTime = getNextSearchStart();
@@ -193,7 +193,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private AlertNotificationModel createContent(NotificationView notification) {
-        OffsetDateTime createdAt = OffsetDateTime.now();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime providerCreationTime = DateUtils.fromDateUTC(notification.getCreatedAt());
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();

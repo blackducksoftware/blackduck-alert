@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -117,7 +118,7 @@ public class AuditEntryActionsTest {
         int totalPages = 2;
         int currentPage = 0;
         int pageSize = 2;
-        OffsetDateTime createdAt = OffsetDateTime.now();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         AlertNotificationModel entity_1 = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);
         entity_1.setId(1L);
         AlertNotificationModel entity_2 = new AlertNotificationModel(2L, 2L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt);

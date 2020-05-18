@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
@@ -68,7 +69,7 @@ public class ProcessingTaskTest {
     public void testDateRange() {
         ProcessingTask task = createTask(null, null, null, null, null);
         DateRange dateRange = task.getDateRange();
-        OffsetDateTime expectedEndDay = OffsetDateTime.now();
+        OffsetDateTime expectedEndDay = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime expectedStartDay = task.getLastRunTime();
 
         ZonedDateTime actualStartDay = ZonedDateTime.ofInstant(dateRange.getStart().toInstant(), ZoneId.of(ZoneOffset.UTC.getId()));

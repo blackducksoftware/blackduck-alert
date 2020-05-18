@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.database.certificates.CustomCertificateRep
 public class DefaultCustomCertificateAccessorTest {
     private final String alias = "alias-test";
     private final String content = "content-test";
-    private OffsetDateTime testDate = OffsetDateTime.now();
+    private OffsetDateTime testDate = DateUtils.createCurrentDateTimestamp();
 
     private CustomCertificateModel expectedCustomCertificateModel = new CustomCertificateModel(alias, content, DateUtils.formatDate(testDate, DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
 

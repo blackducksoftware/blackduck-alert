@@ -77,7 +77,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     @Override
     @Transactional
     public List<SystemMessageModel> getSystemMessagesAfter(OffsetDateTime date) {
-        OffsetDateTime currentTime = OffsetDateTime.now();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 

@@ -158,7 +158,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         all = notificationManager.findAll(pageRequest, true);
         assertTrue(all.isEmpty());
 
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = DateUtils.createCurrentDateTimestamp();
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
         AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
@@ -197,7 +197,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         // Search term should match the notification type but it was never sent so no match
         assertTrue(all.isEmpty());
 
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = DateUtils.createCurrentDateTimestamp();
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), now, now, AuditEntryStatus.PENDING.name(), null, null);
         AuditEntryEntity saveAuditEntry = auditEntryRepository.save(auditEntryEntity);
 
@@ -277,7 +277,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBetween() {
-        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = time.minusHours(1);
         OffsetDateTime endDate = time.plusHours(1);
         OffsetDateTime createdAt = time.minusHours(3);
@@ -302,7 +302,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBetweenInvalidDate() {
-        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = time.minusHours(1);
         OffsetDateTime endDate = time.plusHours(1);
         OffsetDateTime createdAtEarlier = time.minusHours(5);
@@ -320,7 +320,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBefore() {
-        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime searchDate = time.plusHours(1);
         OffsetDateTime createdAt = time.minusHours(5);
         AlertNotificationModel entity = createNotificationModel(createdAt);
@@ -340,7 +340,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void findByCreatedAtBeforeDayOffset() {
-        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime createdAt = time.minusDays(5);
         AlertNotificationModel entity = createNotificationModel(createdAt);
         notificationManager.saveAllNotifications(List.of(entity));
@@ -358,7 +358,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testDeleteNotificationList() {
-        OffsetDateTime time = OffsetDateTime.now();
+        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = time.minusHours(1);
         OffsetDateTime endDate = time.plusHours(1);
         OffsetDateTime createdAt = time.minusHours(3);
@@ -398,7 +398,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private AlertNotificationModel createNotificationModel() {
-        OffsetDateTime createdAt = OffsetDateTime.now();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         return createNotificationModel(createdAt);
     }
 
@@ -408,7 +408,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private NotificationEntity createNotificationContent() {
-        OffsetDateTime createdAt = OffsetDateTime.now();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         return createNotificationContent(createdAt);
     }
 

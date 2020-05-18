@@ -95,7 +95,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testFormatDate() {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        OffsetDateTime date = OffsetDateTime.now();
+        OffsetDateTime date = DateUtils.createCurrentDateTimestamp();
         assertEquals(DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT), notificationAccumulator.formatDate(date));
     }
 
@@ -321,7 +321,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testWrite() {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
-        OffsetDateTime creationDate = OffsetDateTime.now();
+        OffsetDateTime creationDate = DateUtils.createCurrentDateTimestamp();
         AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate);
         List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);

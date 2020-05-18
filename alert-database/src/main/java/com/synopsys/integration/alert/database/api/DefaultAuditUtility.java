@@ -213,20 +213,19 @@ public class DefaultAuditUtility implements AuditUtility {
         List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
         AuditEntryStatus overallStatus = null;
-        String lastSent = null;
-        OffsetDateTime lastSentDate = null;
+        String timeLastSent = null;
+        OffsetDateTime timeLastSentOffsetDateTime = null;
         List<JobAuditModel> jobAuditModels = new ArrayList<>();
         for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
-            if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.isBefore(auditEntryEntity.getTimeLastSent()))) {
-                lastSentDate = auditEntryEntity.getTimeLastSent();
-                lastSent = contentConverter.getStringValue(lastSentDate);
+            if (null == timeLastSentOffsetDateTime || (null != auditEntryEntity.getTimeLastSent() && timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
+                timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
+                timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             String id = contentConverter.getStringValue(auditEntryEntity.getId());
             String configId = contentConverter.getStringValue(commonConfigId);
             String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
-            String timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
 
             AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
@@ -264,7 +263,7 @@ public class DefaultAuditUtility implements AuditUtility {
         if (null != overallStatus) {
             overallStatusDisplayName = overallStatus.getDisplayName();
         }
-        return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, lastSent);
+        return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, timeLastSent);
     }
 
     private AuditEntryStatus getWorstStatus(AuditEntryStatus overallStatus, AuditEntryStatus currentStatus) {
@@ -349,7 +348,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private OffsetDateTime parseDateString(String dateString) {
         OffsetDateTime date = null;
         try {
-            date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
+            date = DateUtils.parseDate(dateString, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         } catch (ParseException e) {
             logger.error(e.toString());
         }

@@ -8,12 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockSystemStatusRepository;
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
@@ -23,7 +23,7 @@ public class DefaultSystemStatusUtilityTest {
     @Test
     public void isSystemInitializedTest() {
         SystemStatusRepository systemStatusRepository = Mockito.mock(SystemStatusRepository.class);
-        SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, new Date());
+        SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, DateUtils.createCurrentDateTimestamp());
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 
         DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
@@ -63,7 +63,7 @@ public class DefaultSystemStatusUtilityTest {
     @Test
     public void getStartupTime() {
         SystemStatusRepository systemStatusRepository = Mockito.mock(SystemStatusRepository.class);
-        OffsetDateTime date = OffsetDateTime.now();
+        OffsetDateTime date = DateUtils.createCurrentDateTimestamp();
         SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, date);
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 

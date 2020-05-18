@@ -86,7 +86,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     @Test
     public void testGetSystemMessagesSince() {
         List<SystemMessageEntity> savedMessages = createSystemMessageList();
-        OffsetDateTime currentDateTime = OffsetDateTime.now();
+        OffsetDateTime currentDateTime = DateUtils.createCurrentDateTimestamp();
         savedMessages.add(new SystemMessageEntity(currentDateTime.plusNanos(1), SEVERITY, "content", TYPE));
         savedMessages.add(new SystemMessageEntity(currentDateTime.plusNanos(5), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
@@ -101,7 +101,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         List<SystemMessageEntity> expectedMessages = createSystemMessageList();
         Collections.reverse(expectedMessages);
         List<SystemMessageEntity> savedMessages = new ArrayList<>(expectedMessages);
-        OffsetDateTime currentDateTime = OffsetDateTime.now();
+        OffsetDateTime currentDateTime = DateUtils.createCurrentDateTimestamp();
         savedMessages.add(new SystemMessageEntity(currentDateTime, SEVERITY, "content", TYPE));
         savedMessages.add(new SystemMessageEntity(currentDateTime.plusMinutes(5), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
@@ -113,7 +113,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testFindCreatedBeforeEmptyList() {
-        OffsetDateTime currentDate = OffsetDateTime.now();
+        OffsetDateTime currentDate = DateUtils.createCurrentDateTimestamp();
         List<SystemMessageModel> actualMessageList = defaultSystemMessageUtility.getSystemMessagesBefore(currentDate);
         assertTrue(actualMessageList.isEmpty());
     }
@@ -122,7 +122,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     public void testFindBetweenDateRange() {
         List<SystemMessageEntity> expectedMessages = createSystemMessageList();
         Collections.reverse(expectedMessages);
-        OffsetDateTime currentDateTime = OffsetDateTime.now();
+        OffsetDateTime currentDateTime = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startTime = currentDateTime.minusMinutes(10);
         List<SystemMessageEntity> savedMessages = new ArrayList<>(expectedMessages);
         savedMessages.add(new SystemMessageEntity(currentDateTime, SEVERITY, "content", TYPE));
@@ -151,7 +151,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     private List<SystemMessageEntity> createSystemMessageList() {
         List<SystemMessageEntity> messages = new ArrayList<>(MESSAGE_COUNT);
-        OffsetDateTime dateTime = OffsetDateTime.now();
+        OffsetDateTime dateTime = DateUtils.createCurrentDateTimestamp();
         for (int index = 0; index < MESSAGE_COUNT; index++) {
             dateTime = dateTime.minusMinutes(1);
             messages.add(new SystemMessageEntity(dateTime, "severity_" + index, "content_" + index, TYPE + "_" + index));

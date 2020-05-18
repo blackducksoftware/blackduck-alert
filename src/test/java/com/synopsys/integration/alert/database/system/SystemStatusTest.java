@@ -9,6 +9,8 @@ import java.time.OffsetDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.util.DateUtils;
+
 public class SystemStatusTest {
 
     @Test
@@ -21,7 +23,7 @@ public class SystemStatusTest {
 
     @Test
     public void testGetters() {
-        OffsetDateTime date = OffsetDateTime.now();
+        OffsetDateTime date = DateUtils.createCurrentDateTimestamp();
         final boolean initialized = true;
         final Long id = 22L;
         SystemStatusEntity systemStatus = new SystemStatusEntity(initialized, date);
