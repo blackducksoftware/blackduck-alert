@@ -50,7 +50,7 @@ public class DefaultNotificationManagerTest {
     @Test
     public void saveAllNotificationsTest() throws Exception {
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
-        OffsetDateTime providerCreationTime = createdAt.minusSeconds(1);
+        OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
 
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, createdAt, providerCreationTime);
         NotificationEntity notificationEntity = new NotificationEntity(id, createdAt, provider, providerConfigId, providerCreationTime, notificationType, content);
