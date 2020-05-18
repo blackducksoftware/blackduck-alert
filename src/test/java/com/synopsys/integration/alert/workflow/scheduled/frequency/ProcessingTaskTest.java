@@ -38,7 +38,7 @@ public class ProcessingTaskTest {
     @BeforeEach
     public void initTest() {
         AlertNotificationModel model = new AlertNotificationModel(
-            1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", OffsetDateTime.now(), OffsetDateTime.now());
+            1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         modelList = Arrays.asList(model);
         eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", ProcessingType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }

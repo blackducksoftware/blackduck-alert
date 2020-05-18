@@ -114,7 +114,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testCreateDateRangeParseException() throws Exception {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        OffsetDateTime expectedStartDate = OffsetDateTime.now()
+        OffsetDateTime expectedStartDate = DateUtils.createCurrentDateTimestamp()
                                                .withSecond(0).withNano(0)
                                                .minusMinutes(5);
         String startString = notificationAccumulator.formatDate(expectedStartDate);

@@ -15,7 +15,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     private Long providerConfigId;
 
     public MockNotificationContent() {
-        this(OffsetDateTime.now(), "provider", OffsetDateTime.now(), "notificationType", "{content: \"content is here...\"}", 1L, 1L);
+        this(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L);
     }
 
     public MockNotificationContent(OffsetDateTime createdAt, String provider, OffsetDateTime providerCreationTime, String notificationType, String content, Long id, Long providerConfigId) {

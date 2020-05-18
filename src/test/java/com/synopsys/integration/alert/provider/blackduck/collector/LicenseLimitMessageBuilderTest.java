@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import static org.junit.Assert.assertEquals;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ public class LicenseLimitMessageBuilderTest {
         Mockito.when(blackDuckHttpClient.getBaseUrl()).thenReturn(null);
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
-        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", OffsetDateTime.now(), null);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), null);
         List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(commonMessageData, licenseLimitNotificationView, null, blackDuckServicesFactory);
 
         assertEquals(1, providerMessageContents.size());

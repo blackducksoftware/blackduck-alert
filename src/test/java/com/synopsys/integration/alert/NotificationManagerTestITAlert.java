@@ -232,7 +232,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         fieldValueRepository.save(fieldValueEntity);
 
         final String auditStatus = "audit status thing";
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, OffsetDateTime.now(), OffsetDateTime.now(), auditStatus, "", "");
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), auditStatus, "", "");
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());

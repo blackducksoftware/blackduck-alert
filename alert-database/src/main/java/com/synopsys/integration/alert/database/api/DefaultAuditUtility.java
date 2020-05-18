@@ -134,7 +134,7 @@ public class DefaultAuditUtility implements AuditUtility {
                                                   .concat(componentNotificationIds.stream(), topLevelActionNotificationIds.stream())
                                                   .collect(Collectors.toSet());
         for (Long notificationId : allMessageNotificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, OffsetDateTime.now(), null, null, null, null);
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
@@ -166,7 +166,7 @@ public class DefaultAuditUtility implements AuditUtility {
                 auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
-                auditEntryEntity.setTimeLastSent(OffsetDateTime.now());
+                auditEntryEntity.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -197,7 +197,7 @@ public class DefaultAuditUtility implements AuditUtility {
                     }
                 }
                 auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-                auditEntryEntity.setTimeLastSent(OffsetDateTime.now());
+                auditEntryEntity.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

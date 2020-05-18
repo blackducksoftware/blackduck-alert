@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -148,7 +149,7 @@ public class DefaultNotificationManager implements NotificationManager {
 
     @Override
     public List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset) {
-        OffsetDateTime searchTime = OffsetDateTime.now()
+        OffsetDateTime searchTime = DateUtils.createCurrentDateTimestamp()
                                         .minusDays(dayOffset)
                                         .withHour(0).withMinute(0).withSecond(0).withNano(0);
         return findByCreatedAtBefore(searchTime);

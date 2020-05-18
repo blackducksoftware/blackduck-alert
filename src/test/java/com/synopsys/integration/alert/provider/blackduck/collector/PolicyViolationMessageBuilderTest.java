@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class PolicyViolationMessageBuilderTest {
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
-        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", OffsetDateTime.now(), job);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
         List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }

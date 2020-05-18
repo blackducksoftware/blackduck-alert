@@ -138,7 +138,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     // TODO give this method a more descriptive name
     public OffsetDateTime createDate() {
-        return OffsetDateTime.now()
+        return DateUtils.createCurrentDateTimestamp()
                    .minusDays(dayOffset)
                    .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
