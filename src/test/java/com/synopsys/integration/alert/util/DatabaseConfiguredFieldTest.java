@@ -45,6 +45,9 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     @BeforeEach
     @AfterEach
     public void initializeTest() {
+        configGroupRepository.flush();
+        descriptorConfigRepository.flush();
+        fieldValueRepository.flush();
         configGroupRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();

@@ -256,10 +256,9 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            if (descriptorList && descriptorList.length > 0) {
-                const foundDescriptor = descriptorList[0];
-                return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
+            const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            if (descriptor) {
+                return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={descriptor} />);
             }
             return defaultValue;
         }

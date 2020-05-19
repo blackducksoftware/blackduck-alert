@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -35,14 +35,15 @@ public class DefaultTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        systemStatusRepository.flush();
         systemStatusRepository.deleteAllInBatch();
     }
 
     @Test
     public void testSetSystemInitialized() {
         defaultSystemStatusUtility.setSystemInitialized(false);
-        final List<SystemStatus> statusList = systemStatusRepository.findAll();
-        SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        List<SystemStatusEntity> statusList = systemStatusRepository.findAll();
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
         assertFalse(systemStatus.isInitialConfigurationPerformed());
         assertFalse(defaultSystemStatusUtility.isSystemInitialized());
 
@@ -54,11 +55,11 @@ public class DefaultTestIT extends AlertIntegrationTest {
 
     @Test
     public void testSaveStartupTime() {
-        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         defaultSystemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
-        final Date date = systemStatus.getStartupTime();
-        final ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        OffsetDateTime date = systemStatus.getStartupTime();
+        ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         assertNotNull(date);
 
         assertEquals(currentTime.getDayOfYear(), savedTime.getDayOfYear());
@@ -70,8 +71,8 @@ public class DefaultTestIT extends AlertIntegrationTest {
     @Test
     public void testGetStartupTime() {
         defaultSystemStatusUtility.startupOccurred();
-        final SystemStatus systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
-        final Date expectedDate = systemStatus.getStartupTime();
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        OffsetDateTime expectedDate = systemStatus.getStartupTime();
 
         assertEquals(expectedDate, defaultSystemStatusUtility.getStartupTime());
     }

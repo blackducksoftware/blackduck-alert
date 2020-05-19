@@ -43,6 +43,9 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        registeredDescriptorRepository.flush();
+        descriptorFieldRepository.flush();
+        definedFieldRepository.flush();
         registeredDescriptorRepository.deleteAllInBatch();
         descriptorFieldRepository.deleteAllInBatch();
         definedFieldRepository.deleteAllInBatch();
@@ -50,61 +53,61 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findByDescriptorIdTest() {
-        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
-        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
-        final RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
-        final RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
+        RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
+        RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
+        RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
+        RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
         assertEquals(2, registeredDescriptorRepository.findAll().size());
 
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
-        final DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
+        DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
         assertEquals(2, definedFieldRepository.findAll().size());
 
-        final DescriptorFieldRelation descriptorFieldRelation1 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity1.getId());
-        final DescriptorFieldRelation descriptorFieldRelation2 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity2.getId());
-        final DescriptorFieldRelation descriptorFieldRelation3 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity2.getId(), savedFieldEntity1.getId());
+        DescriptorFieldRelation descriptorFieldRelation1 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity1.getId());
+        DescriptorFieldRelation descriptorFieldRelation2 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity2.getId());
+        DescriptorFieldRelation descriptorFieldRelation3 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity2.getId(), savedFieldEntity1.getId());
         descriptorFieldRepository.save(descriptorFieldRelation1);
         descriptorFieldRepository.save(descriptorFieldRelation2);
         descriptorFieldRepository.save(descriptorFieldRelation3);
 
         // Should find a relation to field 1 and 2
-        final List<DescriptorFieldRelation> foundList1 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity1.getId());
+        List<DescriptorFieldRelation> foundList1 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity1.getId());
         assertEquals(2, foundList1.size());
 
         // Should find a relation to field 1
-        final List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity2.getId());
+        List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 
     @Test
     public void findByFieldIdTest() {
-        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
-        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
-        final RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
-        final RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
+        RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
+        RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
+        RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
+        RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
         assertEquals(2, registeredDescriptorRepository.findAll().size());
 
-        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
-        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
-        final DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
-        final DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(FIELD_KEY_1, Boolean.FALSE);
+        DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(FIELD_KEY_2, Boolean.FALSE);
+        DefinedFieldEntity savedFieldEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        DefinedFieldEntity savedFieldEntity2 = definedFieldRepository.save(definedFieldEntity2);
         assertEquals(2, definedFieldRepository.findAll().size());
 
-        final DescriptorFieldRelation descriptorFieldRelation1 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity1.getId());
-        final DescriptorFieldRelation descriptorFieldRelation2 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity2.getId());
-        final DescriptorFieldRelation descriptorFieldRelation3 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity2.getId(), savedFieldEntity1.getId());
+        DescriptorFieldRelation descriptorFieldRelation1 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity1.getId());
+        DescriptorFieldRelation descriptorFieldRelation2 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity1.getId(), savedFieldEntity2.getId());
+        DescriptorFieldRelation descriptorFieldRelation3 = new DescriptorFieldRelation(savedRegisteredDescriptorEntity2.getId(), savedFieldEntity1.getId());
         descriptorFieldRepository.save(descriptorFieldRelation1);
         descriptorFieldRepository.save(descriptorFieldRelation2);
         descriptorFieldRepository.save(descriptorFieldRelation3);
 
         // Should find a relation to descriptor 1 and 2
-        final List<DescriptorFieldRelation> foundList1 = descriptorFieldRepository.findByFieldId(savedFieldEntity1.getId());
+        List<DescriptorFieldRelation> foundList1 = descriptorFieldRepository.findByFieldId(savedFieldEntity1.getId());
         assertEquals(2, foundList1.size());
 
         // Should find a relation to descriptor 1
-        final List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByFieldId(savedFieldEntity2.getId());
+        List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByFieldId(savedFieldEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 }

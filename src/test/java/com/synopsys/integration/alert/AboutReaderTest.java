@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
@@ -28,36 +29,36 @@ public class AboutReaderTest {
     public void initialize() {
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(new Date());
+        Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
     }
 
     @Test
     public void testAboutReadNull() {
-        final AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
-        final AboutModel aboutModel = reader.getAboutModel();
+        AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
+        AboutModel aboutModel = reader.getAboutModel();
         assertNull(aboutModel);
     }
 
     @Test
     public void testAboutRead() {
-        final AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
-        final AboutModel aboutModel = reader.getAboutModel();
+        AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
+        AboutModel aboutModel = reader.getAboutModel();
         assertNotNull(aboutModel);
     }
 
     @Test
     public void testAboutReadVersionUnknown() {
-        final AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
-        final String version = reader.getProductVersion();
+        AboutReader reader = new AboutReader(null, defaultSystemStatusUtility);
+        String version = reader.getProductVersion();
         assertEquals(AboutReader.PRODUCT_VERSION_UNKNOWN, version);
     }
 
     @Test
     public void testAboutReadVersion() {
-        final AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
-        final String version = reader.getProductVersion();
+        AboutReader reader = new AboutReader(new Gson(), defaultSystemStatusUtility);
+        String version = reader.getProductVersion();
         assertTrue(StringUtils.isNotBlank(version));
     }
 }

@@ -26,8 +26,8 @@ import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_F
 import static com.synopsys.integration.alert.common.util.DateUtils.parseDate;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,20 +224,20 @@ public class UpdateChecker {
      */
     private int compareDateStrings(String first, String second) {
         try {
-            Date firstDate = parseDate(first, DOCKER_DATE_FORMAT);
-            Date secondDate = parseDate(second, DOCKER_DATE_FORMAT);
+            OffsetDateTime firstDate = parseDate(first, DOCKER_DATE_FORMAT);
+            OffsetDateTime secondDate = parseDate(second, DOCKER_DATE_FORMAT);
 
-            Date hourEarlier = DateUtils.addHours(firstDate, -1);
-            Date hourLater = DateUtils.addHours(firstDate, 1);
+            OffsetDateTime hourEarlier = firstDate.minusHours(1);
+            OffsetDateTime hourLater = firstDate.plusHours(1);
 
-            boolean secondIsWithinAnHourOfFirst = hourEarlier.before(secondDate) && hourLater.after(secondDate);
+            boolean secondIsWithinAnHourOfFirst = hourEarlier.isBefore(secondDate) && hourLater.isAfter(secondDate);
 
             if (secondIsWithinAnHourOfFirst) {
                 return 0;
             }
-            if (firstDate.after(secondDate)) {
+            if (firstDate.isAfter(secondDate)) {
                 return -1;
-            } else if (firstDate.before(secondDate)) {
+            } else if (firstDate.isBefore(secondDate)) {
                 return 1;
             }
         } catch (ParseException e) {

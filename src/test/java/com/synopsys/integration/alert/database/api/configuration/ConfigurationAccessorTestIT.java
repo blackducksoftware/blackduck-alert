@@ -74,6 +74,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
+        descriptorConfigsRepository.flush();
         descriptorConfigsRepository.deleteAllInBatch();
         configurationAccessor = new DefaultConfigurationAccessor(
             registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configGroupRepository, configContextRepository, fieldValueRepository, encryptionUtility);
@@ -89,6 +90,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     private DescriptorKey createDescriptorKey(String key) {
         DescriptorKey testDescriptorKey = new DescriptorKey() {
+            private static final long serialVersionUID = 42094944704702165L;
+
             @Override
             public String getUniversalKey() {
                 return key;
@@ -128,6 +131,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
 
         DescriptorKey testDescriptorKey = new DescriptorKey() {
+            private static final long serialVersionUID = -6433896789808382044L;
+
             @Override
             public String getUniversalKey() {
                 return DESCRIPTOR_NAME;

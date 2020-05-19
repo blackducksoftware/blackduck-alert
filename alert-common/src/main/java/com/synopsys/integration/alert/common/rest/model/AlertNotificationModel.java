@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 public class AlertNotificationModel extends AlertSerializableModel {
     private Long id;
@@ -33,10 +33,10 @@ public class AlertNotificationModel extends AlertSerializableModel {
     private String notificationType;
     private String content;
 
-    private Date createdAt;
-    private Date providerCreationTime;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime providerCreationTime;
 
-    public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, Date createdAt, Date providerCreationTime) {
+    public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime) {
         this.id = id;
         this.providerConfigId = providerConfigId;
         this.provider = provider;
@@ -75,11 +75,11 @@ public class AlertNotificationModel extends AlertSerializableModel {
         return content;
     }
 
-    public Date getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Date getProviderCreationTime() {
+    public OffsetDateTime getProviderCreationTime() {
         return providerCreationTime;
     }
 

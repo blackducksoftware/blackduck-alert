@@ -22,22 +22,29 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "system_messages")
-public class SystemMessage extends DatabaseEntity {
-    @Temporal(TemporalType.TIMESTAMP)
+public class SystemMessageEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(generator = "alert.system_messages_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.system_messages_id_seq_generator", sequenceName = "alert.system_messages_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Column(name = "created_at")
-    private Date created;
+    private OffsetDateTime created;
     @Column(name = "severity")
     private String severity;
     @Column(name = "content")
@@ -45,17 +52,27 @@ public class SystemMessage extends DatabaseEntity {
     @Column(name = "type")
     private String type;
 
-    public SystemMessage() {
+    public SystemMessageEntity() {
     }
 
-    public SystemMessage(Date created, String severity, String content, String type) {
+    public SystemMessageEntity(OffsetDateTime created, String severity, String content, String type) {
         this.created = created;
         this.severity = severity;
         this.content = content;
         this.type = type;
     }
 
-    public Date getCreated() {
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public OffsetDateTime getCreated() {
         return created;
     }
 
@@ -70,4 +87,5 @@ public class SystemMessage extends DatabaseEntity {
     public String getType() {
         return type;
     }
+
 }

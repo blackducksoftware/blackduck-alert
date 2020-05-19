@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.web.config.DescriptorProcessor;
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
@@ -160,7 +159,6 @@ public class AlertStartupInitializerTest {
         ConfigurationFieldModel envOverrideField = Mockito.mock(ConfigurationFieldModel.class);
         ConfigurationModel slackModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(envOverrideField.getFieldValue()).thenReturn(Optional.of("true"));
-        Mockito.when(settingsModel.getField(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)).thenReturn(Optional.of(envOverrideField));
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(SETTINGS_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL)).thenReturn(List.of(settingsModel));
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelDescriptor.getDescriptorKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(slackModel));
 

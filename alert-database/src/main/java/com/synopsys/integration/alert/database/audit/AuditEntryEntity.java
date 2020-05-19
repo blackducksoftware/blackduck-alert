@@ -22,37 +22,42 @@
  */
 package com.synopsys.integration.alert.database.audit;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
-public class AuditEntryEntity extends DatabaseEntity {
+public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     public static final int STACK_TRACE_CHAR_LIMIT = 10000;
-
+    @Id
+    @GeneratedValue(generator = "alert.audit_entries_id_seq_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "alert.audit_entries_id_seq_generator", sequenceName = "alert.audit_entries_id_seq")
+    @Column(name = "id")
+    private Long id;
     @Column(name = "common_config_id")
     private UUID commonConfigId;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_created")
-    private Date timeCreated;
+    private OffsetDateTime timeCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_last_sent")
-    private Date timeLastSent;
+    private OffsetDateTime timeLastSent;
 
     @Column(name = "status")
     private String status;
@@ -72,7 +77,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(UUID commonConfigId, Date timeCreated, Date timeLastSent, String status, String errorMessage, String errorStackTrace) {
+    public AuditEntryEntity(UUID commonConfigId, OffsetDateTime timeCreated, OffsetDateTime timeLastSent, String status, String errorMessage, String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -81,19 +86,29 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.errorStackTrace = errorStackTrace;
     }
 
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public UUID getCommonConfigId() {
         return commonConfigId;
     }
 
-    public Date getTimeCreated() {
+    public OffsetDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    public Date getTimeLastSent() {
+    public OffsetDateTime getTimeLastSent() {
         return timeLastSent;
     }
 
-    public void setTimeLastSent(Date timeLastSent) {
+    public void setTimeLastSent(OffsetDateTime timeLastSent) {
         this.timeLastSent = timeLastSent;
     }
 
@@ -124,4 +139,5 @@ public class AuditEntryEntity extends DatabaseEntity {
     public List<AuditNotificationRelation> getAuditNotificationRelations() {
         return auditNotificationRelations;
     }
+
 }

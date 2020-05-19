@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.LicenseLimitMessageBuilder;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
@@ -28,7 +28,7 @@ public class LicenseLimitMessageBuilderTest {
         Mockito.when(blackDuckHttpClient.getBaseUrl()).thenReturn(null);
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
-        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", new Date(), null);
+        CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), null);
         List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(commonMessageData, licenseLimitNotificationView, null, blackDuckServicesFactory);
 
         assertEquals(1, providerMessageContents.size());

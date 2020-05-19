@@ -18,7 +18,7 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.2.8'
-    runtimeOnly 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.liquibase:liquibase-core:3.8.9'
 
     // Connection Pool
     // https://www.baeldung.com/hibernate-c3p0

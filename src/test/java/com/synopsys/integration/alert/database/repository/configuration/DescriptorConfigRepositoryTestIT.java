@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -43,6 +43,9 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
+        registeredDescriptorRepository.flush();
+        configContextRepository.flush();
+        descriptorConfigRepository.flush();
         registeredDescriptorRepository.deleteAllInBatch();
         configContextRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
@@ -50,42 +53,42 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findByDescriptorIdTest() {
-        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
-        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "Alt", 1L);
-        final RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
-        final RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
+        RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "Alt", 1L);
+        RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
+        RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
 
-        final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
-        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity1);
         descriptorConfigRepository.save(descriptorConfigEntity2);
         descriptorConfigRepository.save(descriptorConfigEntity3);
 
-        final List<DescriptorConfigEntity> descriptorConfig1List = descriptorConfigRepository.findByDescriptorId(savedDescriptorEntity1.getId());
+        List<DescriptorConfigEntity> descriptorConfig1List = descriptorConfigRepository.findByDescriptorId(savedDescriptorEntity1.getId());
         assertEquals(2, descriptorConfig1List.size());
 
-        final List<DescriptorConfigEntity> descriptorConfig2List = descriptorConfigRepository.findByDescriptorId(savedDescriptorEntity2.getId());
+        List<DescriptorConfigEntity> descriptorConfig2List = descriptorConfigRepository.findByDescriptorId(savedDescriptorEntity2.getId());
         assertEquals(1, descriptorConfig2List.size());
     }
 
     @Test
     public void onDeleteCascadeTest() {
-        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
-        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "2", 1L);
-        final RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
-        final RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
+        RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "2", 1L);
+        RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
+        RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
 
-        final ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
-        final ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
+        ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
-        final DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
-        final DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
+        DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorFieldEntity1);
         descriptorConfigRepository.save(descriptorFieldEntity2);
         assertEquals(2, descriptorConfigRepository.findAll().size());

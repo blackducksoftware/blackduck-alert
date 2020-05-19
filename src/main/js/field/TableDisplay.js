@@ -244,7 +244,6 @@ class TableDisplay extends Component {
     createInsertModal(onModalClose) {
         const { showConfiguration } = this.state;
         const { modalTitle, newConfigFields, inProgress, saveButton, testButton, errorDialogMessage, actionMessage, testButtonLabel } = this.props;
-        const testLabel = testButton ? testButtonLabel : null;
         const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
         return (
             <div

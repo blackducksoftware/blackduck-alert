@@ -24,13 +24,21 @@ package com.synopsys.integration.alert.database.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "users")
-public class UserEntity extends DatabaseEntity {
+public class UserEntity extends BaseEntity implements DatabaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "username")
     private String userName;
     @Column(name = "password")
@@ -72,6 +80,16 @@ public class UserEntity extends DatabaseEntity {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.authenticationType = authenticationType;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUserName() {

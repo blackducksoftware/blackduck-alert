@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet id="2020-05-13-12-07-55-180" author="psantos">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE SOURCE_KEY = 'settings.startup.environment.variable.override'</sqlCheck>
+        </preConditions>
+        <delete tableName="DEFINED_FIELDS" schemaName="ALERT">
+            <where>SOURCE_KEY = 'settings.startup.environment.variable.override'</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

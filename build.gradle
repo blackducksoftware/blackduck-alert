@@ -30,8 +30,9 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '6.0.0-SIGQA4-SNAPSHOT'
-def testContainerPostgresVersion='12.2'
+version = '6.1.0-SNAPSHOT'
+def testContainerPostgresVersion = '12.2'
+def reuseContainer = 'false'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -207,7 +208,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                         '-Dcom.sun.management.jmxremote.port=9045',
                         '-Dcom.sun.management.jmxremote.local.only=false',
                         '-Dcom.sun.management.jmxremote.authenticate=false',
-                        '-Dcom.sun.management.jmxremote.ssl=false']
+                        '-Dcom.sun.management.jmxremote.ssl=false',
+                        "-Djavax.net.ssl.trustStore=${project.buildDir}/certs/blackduck-alert.truststore"]
     // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
     def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
                                 "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
@@ -219,8 +221,8 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
                                 '--spring.datasource.username=sa',
                                 '--spring.datasource.password=blackduck',
                                 '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
-                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw",
+                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
+                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
                                 '--spring.test.database.replace=none',
 
                                 "--alert.images.dir=${project.buildDir}/resources/main/images",
@@ -331,17 +333,17 @@ task copyDeploymentFiles(type: Copy) {
         into "docker-swarm/external-db/standalone"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/on-prem-db/hub"
+        into "docker-swarm/hub"
     }
     from('deployment/blackduck-alert.env') {
-        into "docker-swarm/on-prem-db/standalone"
+        into "docker-swarm/standalone"
     }
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/on-prem-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
