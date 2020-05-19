@@ -55,8 +55,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "WHERE LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
                        + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "
                        + "LOWER(notificationRow.content) LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(notificationRow.createdAt, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(auditEntry.timeLastSent, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+                       + "COALESCE(to_char(notificationRow.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+                       + "COALESCE(to_char(auditEntry.timeLastSent, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
                        + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")

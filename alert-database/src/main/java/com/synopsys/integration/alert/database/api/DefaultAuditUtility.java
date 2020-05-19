@@ -337,7 +337,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private NotificationConfig populateConfigFromEntity(AlertNotificationModel notificationEntity) {
         String id = contentConverter.getStringValue(notificationEntity.getId());
         String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
-        String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
+        String providerCreationTime = DateUtils.formatDate(notificationEntity.getProviderCreationTime(), DateUtils.AUDIT_DATE_FORMAT);
 
         Long providerConfigId = notificationEntity.getProviderConfigId();
         String providerConfigName = retrieveProviderConfigName(providerConfigId);
