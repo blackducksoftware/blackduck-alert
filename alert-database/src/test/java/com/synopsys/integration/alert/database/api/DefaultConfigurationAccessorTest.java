@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +26,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
@@ -81,7 +81,7 @@ public class DefaultConfigurationAccessorTest {
         UUID uuid = UUID.randomUUID();
 
         ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(1L, uuid);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(3L);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(3L, 4L, fieldValue);
@@ -106,7 +106,7 @@ public class DefaultConfigurationAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(1L, jobId);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(3L);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(3L, 4L, fieldValue);
@@ -135,7 +135,7 @@ public class DefaultConfigurationAccessorTest {
         final String fieldKeyFrequency = "channel.common.frequency";
 
         ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(jobId, uuid);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(2L, 2L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(3L);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(3L, 4L, fieldValueFrequency);
@@ -179,7 +179,7 @@ public class DefaultConfigurationAccessorTest {
         configContextEntity.setId(3L);
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(4L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(5L);
 
         setupCreateJobMocks(registeredDescriptorEntity, configContextEntity, definedFieldEntity, descriptorConfigEntity);
@@ -205,7 +205,7 @@ public class DefaultConfigurationAccessorTest {
         configContextEntity.setId(3L);
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(4L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(5L);
         ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(6L, uuid);
 
@@ -254,7 +254,7 @@ public class DefaultConfigurationAccessorTest {
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(fieldId);
         FieldValueEntity fieldValueEntity = new FieldValueEntity(2L, 3L, fieldValue);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 5L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 5L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
 
@@ -315,7 +315,7 @@ public class DefaultConfigurationAccessorTest {
         DescriptorKey badDescriptorKey = createDescriptorKey("bad-descriptorKey");
         RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
         registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
@@ -358,7 +358,7 @@ public class DefaultConfigurationAccessorTest {
         descriptorTypeEntity.setId(1L);
         RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
         registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
@@ -400,7 +400,7 @@ public class DefaultConfigurationAccessorTest {
         descriptorTypeEntity.setId(1L);
         RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
         registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
@@ -438,7 +438,7 @@ public class DefaultConfigurationAccessorTest {
         final Long configurationId = 5L;
 
         DescriptorKey descriptorKey = createDescriptorKey("descriptorKeyName");
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         configContextEntity.setId(3L);
@@ -492,7 +492,7 @@ public class DefaultConfigurationAccessorTest {
         configContextEntity.setId(3L);
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(4L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(5L, 6L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
 
         Mockito.when(registeredDescriptorRepository.findFirstByName(Mockito.any())).thenReturn(Optional.of(registeredDescriptorEntity));
@@ -545,7 +545,7 @@ public class DefaultConfigurationAccessorTest {
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create("channel.common.name");
         configurationFieldModel.setFieldValue(fieldValue);
         List<ConfigurationFieldModel> configuredFields = List.of(configurationFieldModel);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         FieldValueEntity fieldValueEntity = new FieldValueEntity(5L, 6L, fieldValue);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
@@ -624,7 +624,7 @@ public class DefaultConfigurationAccessorTest {
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, true);
         definedFieldEntity.setId(fieldId);
         FieldValueEntity fieldValueEntity = new FieldValueEntity(2L, 3L, fieldValue);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 5L, new Date(), new Date());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 5L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
 
