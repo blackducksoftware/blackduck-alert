@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
     private List<AuthenticationPerformer> authenticationPerformers;
 
     @Autowired

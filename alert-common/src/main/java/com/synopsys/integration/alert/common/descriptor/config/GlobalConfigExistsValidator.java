@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 @Component
 public class GlobalConfigExistsValidator {
     public static final String GLOBAL_CONFIG_MISSING = "%s global configuration missing.";
-    private static final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
+    private final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
     private ConfigurationAccessor configurationAccessor;
     private List<Descriptor> descriptors;
 

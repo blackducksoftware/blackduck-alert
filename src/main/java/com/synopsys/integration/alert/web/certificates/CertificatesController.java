@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.web.model.CertificateModel;
 public class CertificatesController extends BaseController {
     public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
     private static final String CERTIFICATE_IMPORT_ERROR_FORMAT = "There was an issue importing the certificate: {}";
-    private static final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
+    private final Logger logger = LoggerFactory.getLogger(CertificatesController.class);
 
     private DescriptorKey descriptorKey;
     private AuthorizationManager authorizationManager;

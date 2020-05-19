@@ -60,7 +60,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
     public static final String EXCEPTION_FORMAT_CONFIGURATIONS_NOT_FOUND_FOR_CONTEXT_AND_DESCRIPTOR = "Configurations not found for the context '%s' and descriptor '%s'.";
-    private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
+    private final Logger logger = LoggerFactory.getLogger(ConfigController.class);
     private final ConfigActions configActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;

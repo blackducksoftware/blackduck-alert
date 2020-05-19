@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.web.actions.SystemActions;
 @RestController
 public class SystemController extends BaseController {
     public static final String NO_RESOURCE_FOUND = "No resource found";
-    private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
+    private final Logger logger = LoggerFactory.getLogger(SystemController.class);
     private final SystemActions systemActions;
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;

@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManag
 
 @Component
 public class AuthenticationApiAction extends ApiAction {
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
     private SAMLManager samlManager;
 
     @Autowired

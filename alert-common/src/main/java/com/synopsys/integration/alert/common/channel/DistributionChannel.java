@@ -36,7 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class DistributionChannel extends MessageReceiver<DistributionEvent> implements AlertEventListener {
-    private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
+    private final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     private final AuditUtility auditUtility;
 
     public DistributionChannel(Gson gson, AuditUtility auditUtility) {

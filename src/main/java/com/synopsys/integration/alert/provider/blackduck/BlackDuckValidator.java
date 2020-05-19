@@ -44,7 +44,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class BlackDuckValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_URL_ERROR_FORMAT = "Black Duck configuration '%s' is Invalid. Black Duck URL missing.";
     public static final String BLACKDUCK_LOCALHOST_ERROR_FORMAT = "Black Duck configuration '%s' is using localhost.";
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     public BlackDuckValidator(SystemMessageUtility systemMessageUtility) {
         super(systemMessageUtility);

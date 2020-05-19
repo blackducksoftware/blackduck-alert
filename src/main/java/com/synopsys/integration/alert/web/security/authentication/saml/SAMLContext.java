@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 public class SAMLContext implements Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+    private final Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private static final long serialVersionUID = 4696749244318473215L;
     private AuthenticationDescriptorKey descriptorKey;
     private transient ConfigurationAccessor configurationAccessor;

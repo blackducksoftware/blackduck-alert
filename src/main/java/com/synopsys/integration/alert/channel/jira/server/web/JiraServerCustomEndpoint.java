@@ -55,7 +55,7 @@ import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
-    private static final Logger logger = LoggerFactory.getLogger(JiraServerCustomEndpoint.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraServerCustomEndpoint.class);
 
     private final JiraServerChannelKey jiraChannelKey;
     private final ResponseFactory responseFactory;

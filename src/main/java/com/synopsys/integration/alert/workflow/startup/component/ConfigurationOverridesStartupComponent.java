@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 @Component
 @Order(11)
 public class ConfigurationOverridesStartupComponent extends StartupComponent {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
     private static final String ENV_VAR_LDAP_DISABLE = "ALERT_LDAP_DISABLED";
     private static final String ENV_VAR_SAML_DISABLE = "ALERT_SAML_DISABLED";
     private static final String ENV_VAR_ADMIN_USER_PASSWORD_RESET = "ALERT_ADMIN_USER_PASSWORD_RESET";

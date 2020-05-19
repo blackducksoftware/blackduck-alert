@@ -50,7 +50,7 @@ import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 
 @Component
 public class JiraMessageContentConverter {
-    private static final Logger logger = LoggerFactory.getLogger(JiraMessageContentConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraMessageContentConverter.class);
     private JiraMessageParser jiraMessageParser;
 
     @Autowired

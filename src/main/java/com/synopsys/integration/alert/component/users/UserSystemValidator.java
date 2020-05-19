@@ -42,7 +42,7 @@ public class UserSystemValidator extends BaseSystemValidator {
     public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
     public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
 
-    private static final Logger logger = LoggerFactory.getLogger(UserSystemValidator.class);
+    private final Logger logger = LoggerFactory.getLogger(UserSystemValidator.class);
     private UserAccessor userAccessor;
 
     @Autowired

@@ -226,6 +226,7 @@ export function updateConfig(config) {
                     const newId = data.id;
                     const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
                     dispatch(configUpdated(updatedConfig));
+                    dispatch(refreshConfig(newId));
                     return newId;
                 });
             } else {

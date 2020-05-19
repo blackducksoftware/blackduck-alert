@@ -74,7 +74,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 
 @Component
 public class DefaultAuditUtility implements AuditUtility {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;

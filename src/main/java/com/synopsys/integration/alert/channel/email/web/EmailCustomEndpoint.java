@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class EmailCustomEndpoint {
-    private static final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
+    private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
 
     private ResponseFactory responseFactory;
     private ProviderDataAccessor providerDataAccessor;

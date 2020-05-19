@@ -65,7 +65,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JobConfigActions {
-    private static final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
+    private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;

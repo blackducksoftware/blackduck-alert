@@ -38,13 +38,13 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class ChannelRestConnectionFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
 
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 
     @Autowired
-    public ChannelRestConnectionFactory(final AlertProperties alertProperties, final ProxyManager proxyManager) {
+    public ChannelRestConnectionFactory(AlertProperties alertProperties, ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
     }
@@ -53,9 +53,9 @@ public class ChannelRestConnectionFactory {
         return createIntHttpClient(new Slf4jIntLogger(logger), 5 * 60 * 1000);
     }
 
-    public IntHttpClient createIntHttpClient(final IntLogger intLogger, final int timeout) {
-        final Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+    public IntHttpClient createIntHttpClient(IntLogger intLogger, int timeout) {
+        Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         return new IntHttpClient(intLogger, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 }
