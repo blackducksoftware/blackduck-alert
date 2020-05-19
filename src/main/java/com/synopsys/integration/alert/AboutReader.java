@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
@@ -52,7 +53,7 @@ public class AboutReader {
         try {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
+            String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
             return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

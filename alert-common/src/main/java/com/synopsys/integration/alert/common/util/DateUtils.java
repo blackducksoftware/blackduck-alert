@@ -24,38 +24,46 @@ package com.synopsys.integration.alert.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
-import java.util.TimeZone;
 
 public final class DateUtils {
     public static final String DOCKER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
-    public static final String AUDIT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String AUDIT_DATE_FORMAT = "yyyy/MM/dd, HH:mm:ss";
     public static final String UTC_DATE_FORMAT_TO_MINUTE = "yyyy-MM-dd HH:mm '(UTC)'";
 
-    public static Date createCurrentDateTimestamp() {
-        final ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        return Date.from(zonedDateTime.toInstant());
+    public static OffsetDateTime createCurrentDateTimestamp() {
+        return OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public static String createCurrentDateString(String format) {
-        Date currentDate = createCurrentDateTimestamp();
+        OffsetDateTime currentDate = DateUtils.createCurrentDateTimestamp();
         return formatDate(currentDate, format);
     }
 
-    public static String formatDate(Date date, String format) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return simpleDateFormat.format(date);
+    public static String formatDate(OffsetDateTime date, String format) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        return dtf.format(date);
     }
 
-    public static Date parseDate(String date, String format) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return simpleDateFormat.parse(date);
+    public static OffsetDateTime fromDateUTC(Date date) {
+        return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+    }
+
+    public static OffsetDateTime parseDate(String dateTime, String format) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        try {
+            Date parsedDate = sdf.parse(dateTime);
+            return fromDateUTC(parsedDate);
+        } catch (DateTimeParseException e) {
+            throw new ParseException(e.getParsedString(), e.getErrorIndex());
+        }
     }
 
     private DateUtils() {
     }
+
 }

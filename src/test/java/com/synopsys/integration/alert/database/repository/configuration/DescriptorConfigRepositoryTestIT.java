@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -61,7 +61,7 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
@@ -86,7 +86,7 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
         ConfigContextEntity configContextEntity = new ConfigContextEntity(CONTEXT_NAME);
         ConfigContextEntity savedContextEntity = configContextRepository.save(configContextEntity);
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorFieldEntity1 = new DescriptorConfigEntity(savedDescriptorEntity1.getId(), savedContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorFieldEntity2 = new DescriptorConfigEntity(savedDescriptorEntity2.getId(), savedContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorFieldEntity1);

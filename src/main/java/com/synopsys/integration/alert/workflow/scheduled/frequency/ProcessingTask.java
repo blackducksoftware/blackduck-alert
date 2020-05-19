@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -37,6 +35,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -47,26 +46,25 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     private NotificationManager notificationManager;
     private NotificationProcessor notificationProcessor;
     private ChannelEventManager eventManager;
-    private ZonedDateTime lastRunTime;
+    private OffsetDateTime lastRunTime;
 
     public ProcessingTask(TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
         super(taskScheduler, taskManager);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
-        lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public abstract FrequencyType getDigestType();
 
-    public ZonedDateTime getLastRunTime() {
+    public OffsetDateTime getLastRunTime() {
         return lastRunTime;
     }
 
     public DateRange getDateRange() {
-        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        Date startDate = Date.from(lastRunTime.toInstant());
-        Date endDate = Date.from(currentTime.toInstant());
+        OffsetDateTime startDate = lastRunTime;
+        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
         return DateRange.of(startDate, endDate);
     }
 
@@ -76,15 +74,15 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         List<AlertNotificationModel> notificationList = read(dateRange);
         List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
         eventManager.sendEvents(distributionEvents);
-        lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public List<AlertNotificationModel> read(DateRange dateRange) {
         try {
             String taskName = getTaskName();
-            Date startDate = dateRange.getStart();
-            Date endDate = dateRange.getEnd();
-            logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
+            OffsetDateTime startDate = dateRange.getStart();
+            OffsetDateTime endDate = dateRange.getEnd();
+            logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
             List<AlertNotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);

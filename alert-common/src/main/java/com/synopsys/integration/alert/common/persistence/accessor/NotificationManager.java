@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,9 +36,9 @@ public interface NotificationManager {
 
     Optional<AlertNotificationModel> findById(Long notificationId);
 
-    List<AlertNotificationModel> findByCreatedAtBetween(Date startDate, Date endDate);
+    List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
 
-    List<AlertNotificationModel> findByCreatedAtBefore(Date date);
+    List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
 
     List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
 

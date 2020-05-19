@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -93,8 +95,8 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testFormatDate() {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        Date date = new Date();
-        assertEquals(RestConstants.formatDate(date), notificationAccumulator.formatDate(date));
+        OffsetDateTime date = DateUtils.createCurrentDateTimestamp();
+        assertEquals(DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT), notificationAccumulator.formatDate(date));
     }
 
     @Test
@@ -112,11 +114,9 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testCreateDateRangeParseException() throws Exception {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        ZonedDateTime startDateTime = ZonedDateTime.now();
-        startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        startDateTime = startDateTime.withSecond(0).withNano(0);
-        startDateTime = startDateTime.minusMinutes(5);
-        Date expectedStartDate = Date.from(startDateTime.toInstant());
+        OffsetDateTime expectedStartDate = DateUtils.createCurrentDateTimestamp()
+                                               .withSecond(0).withNano(0)
+                                               .minusMinutes(5);
         String startString = notificationAccumulator.formatDate(expectedStartDate);
 
         providerTaskPropertiesAccessor.setTaskProperty(null, notificationAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, startString);
@@ -130,18 +130,18 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testCreateDateRangeWithExistingFile() throws Exception {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
-        ZonedDateTime startDateTime = ZonedDateTime.now();
-        startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        startDateTime = startDateTime.withSecond(0).withNano(0);
-        startDateTime = startDateTime.minusMinutes(5);
-        Date expectedStartDate = Date.from(startDateTime.toInstant());
+        OffsetDateTime expectedStartDate = ZonedDateTime.now(ZoneOffset.UTC)
+                                               .withSecond(0)
+                                               .withNano(0)
+                                               .minusMinutes(5)
+                                               .toOffsetDateTime();
         String startString = notificationAccumulator.formatDate(expectedStartDate);
 
         providerTaskPropertiesAccessor.setTaskProperty(null, notificationAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, startString);
         DateRange dateRange = notificationAccumulator.createDateRange();
         assertNotNull(dateRange);
-        Date actualStartDate = dateRange.getStart();
-        Date actualEndDate = dateRange.getEnd();
+        OffsetDateTime actualStartDate = dateRange.getStart();
+        OffsetDateTime actualEndDate = dateRange.getEnd();
         assertEquals(expectedStartDate, actualStartDate);
         assertNotEquals(actualStartDate, actualEndDate);
     }
@@ -321,7 +321,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testWrite() {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
-        Date creationDate = new Date();
+        OffsetDateTime creationDate = DateUtils.createCurrentDateTimestamp();
         AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate);
         List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);

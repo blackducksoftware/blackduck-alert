@@ -23,10 +23,10 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class DefaultAuditUtility implements AuditUtility {
                                                   .concat(componentNotificationIds.stream(), topLevelActionNotificationIds.stream())
                                                   .collect(Collectors.toSet());
         for (Long notificationId : allMessageNotificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
@@ -166,7 +166,7 @@ public class DefaultAuditUtility implements AuditUtility {
                 auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryEntity.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -197,7 +197,7 @@ public class DefaultAuditUtility implements AuditUtility {
                     }
                 }
                 auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryEntity.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
                 auditEntryRepository.save(auditEntryEntity);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -213,20 +213,19 @@ public class DefaultAuditUtility implements AuditUtility {
         List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
         AuditEntryStatus overallStatus = null;
-        String lastSent = null;
-        Date lastSentDate = null;
+        String timeLastSent = null;
+        OffsetDateTime timeLastSentOffsetDateTime = null;
         List<JobAuditModel> jobAuditModels = new ArrayList<>();
         for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
-            if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.before(auditEntryEntity.getTimeLastSent()))) {
-                lastSentDate = auditEntryEntity.getTimeLastSent();
-                lastSent = contentConverter.getStringValue(lastSentDate);
+            if (null == timeLastSentOffsetDateTime || (null != auditEntryEntity.getTimeLastSent() && timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
+                timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
+                timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.AUDIT_DATE_FORMAT);
             }
             String id = contentConverter.getStringValue(auditEntryEntity.getId());
             String configId = contentConverter.getStringValue(commonConfigId);
             String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
-            String timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
 
             AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
@@ -264,7 +263,7 @@ public class DefaultAuditUtility implements AuditUtility {
         if (null != overallStatus) {
             overallStatusDisplayName = overallStatus.getDisplayName();
         }
-        return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, lastSent);
+        return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, timeLastSent);
     }
 
     private AuditEntryStatus getWorstStatus(AuditEntryStatus overallStatus, AuditEntryStatus currentStatus) {
@@ -289,8 +288,8 @@ public class DefaultAuditUtility implements AuditUtility {
             }
             Comparator<AuditEntryModel> comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
-                Function<AuditEntryModel, Date> function = auditEntryModel -> {
-                    Date date = null;
+                Function<AuditEntryModel, OffsetDateTime> function = auditEntryModel -> {
+                    OffsetDateTime date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
                         date = parseDateString(auditEntryModel.getLastSent());
                     }
@@ -338,7 +337,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private NotificationConfig populateConfigFromEntity(AlertNotificationModel notificationEntity) {
         String id = contentConverter.getStringValue(notificationEntity.getId());
         String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
-        String providerCreationTime = contentConverter.getStringValue(notificationEntity.getProviderCreationTime());
+        String providerCreationTime = DateUtils.formatDate(notificationEntity.getProviderCreationTime(), DateUtils.AUDIT_DATE_FORMAT);
 
         Long providerConfigId = notificationEntity.getProviderConfigId();
         String providerConfigName = retrieveProviderConfigName(providerConfigId);
@@ -346,8 +345,8 @@ public class DefaultAuditUtility implements AuditUtility {
         return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerConfigId, providerConfigName, providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
-    private Date parseDateString(String dateString) {
-        Date date = null;
+    private OffsetDateTime parseDateString(String dateString) {
+        OffsetDateTime date = null;
         try {
             date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
         } catch (ParseException e) {

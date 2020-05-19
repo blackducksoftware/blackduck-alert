@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "system_status")
-public class SystemStatus extends BaseEntity {
+public class SystemStatusEntity extends BaseEntity {
     private static final long serialVersionUID = -5482465786237355472L;
 
     @Id
@@ -42,13 +42,13 @@ public class SystemStatus extends BaseEntity {
     @Column(name = "initialized_configuration")
     private boolean initialConfigurationPerformed;
     @Column(name = "startup_time")
-    private Date startupTime;
+    private OffsetDateTime startupTime;
 
-    public SystemStatus() {
+    public SystemStatusEntity() {
         //JPA requires a default constructor
     }
 
-    public SystemStatus(boolean initialConfigurationPerformed, Date startupTime) {
+    public SystemStatusEntity(boolean initialConfigurationPerformed, OffsetDateTime startupTime) {
         this.initialConfigurationPerformed = initialConfigurationPerformed;
         this.startupTime = startupTime;
     }
@@ -57,7 +57,7 @@ public class SystemStatus extends BaseEntity {
         return initialConfigurationPerformed;
     }
 
-    public Date getStartupTime() {
+    public OffsetDateTime getStartupTime() {
         return startupTime;
     }
 

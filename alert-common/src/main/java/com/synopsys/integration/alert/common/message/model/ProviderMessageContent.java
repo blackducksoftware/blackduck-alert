@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -48,11 +48,11 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private final Long notificationId;
 
     private final Set<ComponentItem> componentItems;
-    private final Date providerCreationTime;
+    private final OffsetDateTime providerCreationTime;
     private final Long providerConfigId;
 
     private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
-        Date providerCreationTime, Long providerConfigId) {
+        OffsetDateTime providerCreationTime, Long providerConfigId) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;
@@ -99,7 +99,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return componentItems;
     }
 
-    public Date getProviderCreationTime() {
+    public OffsetDateTime getProviderCreationTime() {
         return providerCreationTime;
     }
 
@@ -140,7 +140,7 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         private String subTopicUrl;
         private ItemOperation action;
         private Long notificationId;
-        private Date providerCreationTime;
+        private OffsetDateTime providerCreationTime;
         private Long providerConfigId;
 
         public ProviderMessageContent build() throws AlertException {
@@ -244,18 +244,18 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             return this;
         }
 
-        public Builder applyEarliestProviderCreationTime(Date providerCreationTime) {
+        public Builder applyEarliestProviderCreationTime(OffsetDateTime providerCreationTime) {
             if (null == this.providerCreationTime) {
                 return applyProviderCreationTime(providerCreationTime);
             }
 
-            if (this.providerCreationTime.getTime() > providerCreationTime.getTime()) {
+            if (this.providerCreationTime.toLocalTime().compareTo(providerCreationTime.toLocalTime()) > 0) {
                 return applyProviderCreationTime(providerCreationTime);
             }
             return this;
         }
 
-        public Builder applyProviderCreationTime(Date providerCreationTime) {
+        public Builder applyProviderCreationTime(OffsetDateTime providerCreationTime) {
             this.providerCreationTime = providerCreationTime;
             return this;
         }

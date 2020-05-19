@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.database.notification;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -34,8 +34,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
@@ -49,16 +47,14 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @SequenceGenerator(name = "alert.raw_notification_content_id_seq_generator", sequenceName = "alert.raw_notification_content_id_seq")
     @Column(name = "id")
     private Long id;
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
-    private Date createdAt;
+    private OffsetDateTime createdAt;
     @Column(name = "provider")
     private String provider;
     @Column(name = "provider_config_id")
     private Long providerConfigId;
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "provider_creation_time")
-    private Date providerCreationTime;
+    private OffsetDateTime providerCreationTime;
     @Column(name = "notification_type")
     private String notificationType;
     @Column(name = "content")
@@ -72,7 +68,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     }
 
     // Reserved for queries
-    public NotificationEntity(Long id, Date createdAt, String provider, Long providerConfigId, Date providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(Long id, OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content) {
         this.setId(id);
         this.createdAt = createdAt;
         this.provider = provider;
@@ -82,7 +78,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.content = content;
     }
 
-    public NotificationEntity(Date createdAt, String provider, Long providerConfigId, Date providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerConfigId = providerConfigId;
@@ -101,7 +97,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.id = id;
     }
 
-    public Date getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -121,7 +117,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         return content;
     }
 
-    public Date getProviderCreationTime() {
+    public OffsetDateTime getProviderCreationTime() {
         return providerCreationTime;
     }
 
