@@ -23,33 +23,43 @@
 package com.synopsys.integration.alert.common.message.model;
 
 import java.text.ParseException;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.rest.RestConstants;
 
 public class DateRange extends AlertSerializableModel {
-    private final Date start;
-    private final Date end;
+    private final OffsetDateTime start;
+    private final OffsetDateTime end;
 
-    public static final DateRange of(final Date start, final Date end) {
+    public static final DateRange of(OffsetDateTime start, OffsetDateTime end) {
         return new DateRange(start, end);
     }
 
-    public static final DateRange of(final String start, final String end) throws ParseException {
-        return new DateRange(RestConstants.parseDateString(start), RestConstants.parseDateString(end));
+    public static final DateRange of(String start, String end) throws ParseException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(RestConstants.JSON_DATE_FORMAT);
+        try {
+            OffsetDateTime startDateTime = OffsetDateTime.parse(start, dtf);
+            OffsetDateTime endDateTime = OffsetDateTime.parse(end, dtf);
+            return new DateRange(startDateTime, endDateTime);
+        } catch (DateTimeParseException e) {
+            throw new ParseException(e.getParsedString(), e.getErrorIndex());
+        }
     }
 
-    private DateRange(final Date start, final Date end) {
+    private DateRange(OffsetDateTime start, OffsetDateTime end) {
         this.start = start;
         this.end = end;
     }
 
-    public Date getStart() {
+    public OffsetDateTime getStart() {
         return start;
     }
 
-    public Date getEnd() {
+    public OffsetDateTime getEnd() {
         return end;
     }
+
 }

@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,7 +70,7 @@ public class ConfigGroupRepositoryTestIT extends AlertIntegrationTest {
         RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId(), currentTime, currentTime);
         DescriptorConfigEntity savedDescriptorConfigEntity1 = descriptorConfigRepository.save(descriptorConfigEntity1);
@@ -101,7 +101,7 @@ public class ConfigGroupRepositoryTestIT extends AlertIntegrationTest {
         RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId(), currentTime, currentTime);
         descriptorConfigRepository.save(descriptorConfigEntity);
         assertEquals(1, descriptorConfigRepository.findAll().size());

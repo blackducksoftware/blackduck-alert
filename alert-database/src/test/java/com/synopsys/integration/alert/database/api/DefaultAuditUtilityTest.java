@@ -6,9 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +106,8 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void findFirstByJobIdNotNullTest() {
-        Date timeCreated = Date.from(Instant.now().minusSeconds(600L));
-        Date timeLastSent = Date.from(Instant.now());
+        OffsetDateTime timeLastSent = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime timeCreated = timeLastSent.minusMinutes(10L);
         AuditEntryStatus status = AuditEntryStatus.PENDING;
         UUID testUUID = UUID.randomUUID();
 
@@ -153,9 +152,10 @@ public class DefaultAuditUtilityTest {
         Mockito.when(notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder)).thenReturn(pageRequest);
 
         //At least two AlertNotificationModel are required for the comparator
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", new Date(), new Date());
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp());
         AlertNotificationModel alertNotificationModel2 = new AlertNotificationModel(2L, 2L, "provider-test2", "providerConfigName-test2", "notificationType-test2", "{content: \"content is here2..\"}",
-            new Date(System.currentTimeMillis() - 15000), new Date(System.currentTimeMillis() - 10000));
+            DateUtils.createCurrentDateTimestamp().minusSeconds(15), DateUtils.createCurrentDateTimestamp().minusSeconds(10));
 
         Pageable auditPageable = Mockito.mock(Pageable.class);
         Mockito.when(auditPageable.getOffset()).thenReturn(pageNumber.longValue());
@@ -194,8 +194,8 @@ public class DefaultAuditUtilityTest {
         String providerConfigName = "providerConfigName-test";
         String notificationType = "notificationType-test";
         String content = "content-test";
-        Date timeCreated = new Date(System.currentTimeMillis() - 10000);
-        Date timeLastSent = new Date(System.currentTimeMillis());
+        OffsetDateTime timeLastSent = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime timeCreated = timeLastSent.minusSeconds(10);
         Long auditEntryId = 3L;
         String channelName = "test-channel.common.name-value";
         String eventType = "test-channel.common.channel.name-value";
@@ -206,7 +206,8 @@ public class DefaultAuditUtilityTest {
 
         ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, new Date(), new Date());
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp());
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, alertNotificationModel.getId());
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), timeCreated, timeLastSent, AuditEntryStatus.SUCCESS.name(), null, null);
 
@@ -235,7 +236,7 @@ public class DefaultAuditUtilityTest {
         assertEquals(channelName, testJob.getName());
         assertEquals(eventType, testJob.getEventType());
         assertEquals(AuditEntryStatus.SUCCESS.getDisplayName(), testAuditEntryModel.getOverallStatus());
-        assertEquals(timeLastSent.toString(), testAuditEntryModel.getLastSent());
+        assertEquals(DateUtils.formatDate(timeLastSent, DateUtils.AUDIT_DATE_FORMAT), testAuditEntryModel.getLastSent());
     }
 
     @Test
@@ -245,7 +246,7 @@ public class DefaultAuditUtilityTest {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
         ProviderMessageContent content = createMessageContent();
         UUID commonConfigUUID = UUID.randomUUID();
-        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
         final Long auditID = 10L;
         savedAuditEntryEntity.setId(auditID);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedAuditEntryEntity));
@@ -269,7 +270,7 @@ public class DefaultAuditUtilityTest {
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
         ProviderMessageContent content = createMessageContent();
         UUID commonConfigUUID = UUID.randomUUID();
-        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
 
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
@@ -293,7 +294,7 @@ public class DefaultAuditUtilityTest {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
 
-        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
+        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -313,7 +314,7 @@ public class DefaultAuditUtilityTest {
     public void setAuditEntryFailureTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
-        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
+        AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);

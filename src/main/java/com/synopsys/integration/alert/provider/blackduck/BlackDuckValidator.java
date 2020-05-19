@@ -42,8 +42,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckValidator extends BaseSystemValidator {
-    public static final String MISSING_BLACKDUCK_URL_ERROR = "Black Duck Provider Invalid. Black Duck URL missing.";
-    public static final String BLACKDUCK_LOCALHOST_ERROR = "Black Duck Provider using localhost.";
+    public static final String MISSING_BLACKDUCK_URL_ERROR_FORMAT = "Black Duck configuration '%s' is Invalid. Black Duck URL missing.";
+    public static final String BLACKDUCK_LOCALHOST_ERROR_FORMAT = "Black Duck configuration '%s' is using localhost.";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     public BlackDuckValidator(SystemMessageUtility systemMessageUtility) {
@@ -52,50 +52,50 @@ public class BlackDuckValidator extends BaseSystemValidator {
 
     public boolean validate(BlackDuckProperties blackDuckProperties) {
         boolean valid = true;
-        logger.info("Validating Black Duck Provider...");
+        String configName = blackDuckProperties.getConfigName();
+        logger.info("Validating Black Duck configuration '{}'...", configName);
         getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
         getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
         getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            boolean missingUrl = addSystemMessageForError(MISSING_BLACKDUCK_URL_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
+            boolean missingUrl = addSystemMessageForError(String.format(MISSING_BLACKDUCK_URL_ERROR_FORMAT, configName), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
                 blackDuckUrlOptional.isEmpty());
             if (missingUrl) {
-                logger.error("  -> {}", MISSING_BLACKDUCK_URL_ERROR);
+                logger.error("  -> {}", String.format(MISSING_BLACKDUCK_URL_ERROR_FORMAT, configName));
                 valid = false;
             }
             if (blackDuckUrlOptional.isPresent()) {
                 String blackDuckUrlString = blackDuckUrlOptional.get();
                 Integer timeout = blackDuckProperties.getBlackDuckTimeout();
-                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
-                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
+                logger.debug("  -> Black Duck configuration '{}' URL found validating: {}", configName, blackDuckUrlString);
+                logger.debug("  -> Black Duck configuration '{}' Timeout: {}", configName, timeout);
                 URL blackDuckUrl = new URL(blackDuckUrlString);
-
-                boolean localHostError = addSystemMessageForError(BLACKDUCK_LOCALHOST_ERROR, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
+                boolean localHostError = addSystemMessageForError(String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
                     "localhost".equals(blackDuckUrl.getHost()));
                 if (localHostError) {
-                    logger.warn("  -> {}", BLACKDUCK_LOCALHOST_ERROR);
+                    logger.warn("  -> {}", String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName));
                 }
                 IntLogger intLogger = new Slf4jIntLogger(logger);
                 Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
                 if (blackDuckServerConfig.isPresent()) {
                     boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
                     if (canConnect) {
-                        logger.info("  -> Black Duck Provider Valid!");
+                        logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
                     } else {
-                        final String message = "Can not connect to the Black Duck server with the current configuration.";
+                        String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
                         connectivityWarning(message);
                         valid = false;
                     }
                 } else {
-                    final String message = "The Black Duck configuration is not valid.";
+                    String message = String.format("The Black Duck configuration '%s' is not valid.", configName);
                     connectivityWarning(message);
                     valid = false;
                 }
             }
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
-            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
-            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
+            logger.error("  -> Black Duck configuration '{}' is Invalid; cause: {}", configName, ex.getMessage());
+            logger.debug(String.format("  -> Black Duck configuration '%s' Stack Trace: ", configName), ex);
             valid = false;
         }
         return valid;

@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.api.mock;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class MockCustomCertificateRepository extends DefaultMockJPARepository<Cu
 
     }
 
-    public MockCustomCertificateRepository(String alias, String content, Date lastUpdated) {
+    public MockCustomCertificateRepository(String alias, String content, OffsetDateTime lastUpdated) {
         CustomCertificateEntity customCertificateEntity = new CustomCertificateEntity(alias, content, lastUpdated);
         this.save(customCertificateEntity);
     }

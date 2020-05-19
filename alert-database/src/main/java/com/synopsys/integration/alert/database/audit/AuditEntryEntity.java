@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.database.audit;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,8 +35,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -55,13 +53,11 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     @Column(name = "common_config_id")
     private UUID commonConfigId;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_created")
-    private Date timeCreated;
+    private OffsetDateTime timeCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_last_sent")
-    private Date timeLastSent;
+    private OffsetDateTime timeLastSent;
 
     @Column(name = "status")
     private String status;
@@ -81,7 +77,7 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(UUID commonConfigId, Date timeCreated, Date timeLastSent, String status, String errorMessage, String errorStackTrace) {
+    public AuditEntryEntity(UUID commonConfigId, OffsetDateTime timeCreated, OffsetDateTime timeLastSent, String status, String errorMessage, String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -104,15 +100,15 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
         return commonConfigId;
     }
 
-    public Date getTimeCreated() {
+    public OffsetDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    public Date getTimeLastSent() {
+    public OffsetDateTime getTimeLastSent() {
         return timeLastSent;
     }
 
-    public void setTimeLastSent(Date timeLastSent) {
+    public void setTimeLastSent(OffsetDateTime timeLastSent) {
         this.timeLastSent = timeLastSent;
     }
 
@@ -143,4 +139,5 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     public List<AuditNotificationRelation> getAuditNotificationRelations() {
         return auditNotificationRelations;
     }
+
 }

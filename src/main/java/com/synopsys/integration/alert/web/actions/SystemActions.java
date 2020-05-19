@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.web.actions;
 
 import java.text.ParseException;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageU
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.config.FieldModelProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -67,18 +68,18 @@ public class SystemActions {
         return systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime());
     }
 
-    public List<SystemMessageModel> getSystemMessagesAfter(final String startDate) throws ParseException {
-        final Date date = RestConstants.parseDateString(startDate);
+    public List<SystemMessageModel> getSystemMessagesAfter(String startDate) throws ParseException {
+        OffsetDateTime date = DateUtils.parseDate(startDate, RestConstants.JSON_DATE_FORMAT);
         return systemMessageUtility.getSystemMessagesAfter(date);
     }
 
-    public List<SystemMessageModel> getSystemMessagesBefore(final String endDate) throws ParseException {
-        final Date date = RestConstants.parseDateString(endDate);
+    public List<SystemMessageModel> getSystemMessagesBefore(String endDate) throws ParseException {
+        OffsetDateTime date = DateUtils.parseDate(endDate, RestConstants.JSON_DATE_FORMAT);
         return systemMessageUtility.getSystemMessagesBefore(date);
     }
 
-    public List<SystemMessageModel> getSystemMessagesBetween(final String startDate, final String endDate) throws ParseException {
-        final DateRange dateRange = DateRange.of(startDate, endDate);
+    public List<SystemMessageModel> getSystemMessagesBetween(String startDate, String endDate) throws ParseException {
+        DateRange dateRange = DateRange.of(startDate, endDate);
         return systemMessageUtility.findBetween(dateRange);
     }
 
@@ -89,14 +90,14 @@ public class SystemActions {
     public FieldModel getCurrentSystemSetup() {
         try {
             return settingsUtility.getFieldModel().orElse(null);
-        } catch (final AlertException ex) {
+        } catch (AlertException ex) {
             logger.error("Error getting initial settings", ex);
         }
 
         return null;
     }
 
-    public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) throws AlertException {
+    public FieldModel saveRequiredInformation(FieldModel settingsToSave, Map<String, String> fieldErrors) throws AlertException {
         FieldModel systemSettings = settingsToSave;
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(systemSettings));
         if (fieldErrors.isEmpty()) {
