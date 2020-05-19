@@ -25,9 +25,9 @@ public class DateUtilsTest {
         OffsetDateTime alertDateTime = DateUtils.createCurrentDateTimestamp();
         ZonedDateTime localZonedDateTime = ZonedDateTime.now();
 
-        OffsetDateTime alertLocalDateTime = alertDateTime.withOffsetSameLocal(localZonedDateTime.getOffset());
-        assertEquals(alertLocalDateTime.getHour(), localZonedDateTime.getHour());
-        assertEquals(alertLocalDateTime.getMinute(), localZonedDateTime.getMinute());
+        ZonedDateTime reZonedLocalTime = localZonedDateTime.withZoneSameInstant(alertDateTime.getOffset());
+        assertEquals(alertDateTime.getHour(), reZonedLocalTime.getHour());
+        assertEquals(alertDateTime.getMinute(), reZonedLocalTime.getMinute());
     }
 
     @Test

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.LicenseLimitMessageBuilder;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;

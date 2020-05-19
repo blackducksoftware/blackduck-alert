@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.mock.entity;
 import java.time.OffsetDateTime;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationEntity> {
