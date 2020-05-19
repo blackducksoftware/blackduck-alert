@@ -46,7 +46,7 @@ import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions {
-    private static final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
+    private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
     private CertificateUtility certificateUtility;
     private CustomCertificateAccessor certificateAccessor;

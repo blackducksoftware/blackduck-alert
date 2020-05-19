@@ -54,7 +54,7 @@ public class UploadEndpointManager {
     public static final String UPLOAD_ENDPOINT_URL = "/api/uploads";
     public static final String NO_UPLOAD_FUNCTIONALITY_REGISTERED = "No upload functionality has been created for this endpoint.";
     public static final String CUSTOM_ENDPOINT_ALREADY_REGISTERED = "A custom endpoint is already registered for ";
-    private static final Logger logger = LoggerFactory.getLogger(UploadEndpointManager.class);
+    private final Logger logger = LoggerFactory.getLogger(UploadEndpointManager.class);
     private Map<String, UploadTarget> uploadTargets = new HashMap<>();
     private FilePersistenceUtil filePersistenceUtil;
     private AuthorizationManager authorizationManager;

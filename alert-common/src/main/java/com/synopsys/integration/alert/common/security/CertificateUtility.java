@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.common.persistence.model.CustomCertificate
 
 @Component
 public class CertificateUtility {
-    private static final Logger logger = LoggerFactory.getLogger(CertificateUtility.class);
+    private final Logger logger = LoggerFactory.getLogger(CertificateUtility.class);
     private AlertProperties alertProperties;
 
     @Autowired

@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel
 
 @Component
 public class EmailAddressHandler {
-    private static final Logger logger = LoggerFactory.getLogger(EmailAddressHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EmailAddressHandler.class);
 
     private final ProviderDataAccessor providerDataAccessor;
 

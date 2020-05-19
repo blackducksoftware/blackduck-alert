@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumula
 @Deprecated(since = "6.0.0")
 //TODO Remove this class in 8.0.0
 public class LastSearchDataMigration extends StartupComponent {
-    private static final Logger logger = LoggerFactory.getLogger(LastSearchDataMigration.class);
+    private final Logger logger = LoggerFactory.getLogger(LastSearchDataMigration.class);
     private static final String LAST_SEARCH_FILE = "blackduck-accumulator-task-last-search.txt";
 
     // Because pg_stat_file requires admin privileges to run, we have to migrate the last search file data in code.

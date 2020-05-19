@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 
 @Component
 public class PKIXErrorResponseFactory {
-    private static final Logger logger = LoggerFactory.getLogger(PKIXErrorResponseFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(PKIXErrorResponseFactory.class);
     private static final String BLACKDUCK_GITHUB_DEPLOYMENT_URL = "https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment";
     private static final String ALERT_DEPLOYMENT_DOCKER_SWARM = "docker-swarm";
     private static final String ALERT_DEPLOYMENT_DOCKER_COMPOSE = "docker-compose";

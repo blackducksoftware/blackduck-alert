@@ -48,7 +48,7 @@ import com.synopsys.integration.phonehome.enums.ProductIdEnum;
 
 @Component
 public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckPhoneHomeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckPhoneHomeHandler.class);
 
     private BlackDuckProvider provider;
     private DescriptorAccessor descriptorAccessor;

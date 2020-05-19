@@ -45,7 +45,7 @@ import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 import com.synopsys.integration.issuetracker.common.service.TestIssueRequestCreator;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
-    private static final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
     private final FieldAccessor fieldAccessor;
     private final JiraMessageParser jiraMessageParser;
 

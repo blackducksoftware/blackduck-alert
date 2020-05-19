@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 
 @Component
 public class UserManagementAuthoritiesPopulator {
-    private static final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
+    private final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
     private AuthenticationDescriptorKey authenticationDescriptorKey;
     private ConfigurationAccessor configurationAccessor;
     private UserAccessor userAccessor;

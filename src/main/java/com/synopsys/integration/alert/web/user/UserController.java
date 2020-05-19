@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.web.model.UserConfig;
 public class UserController extends BaseController {
     public static final String USER_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/user";
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final ContentConverter contentConverter;
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;

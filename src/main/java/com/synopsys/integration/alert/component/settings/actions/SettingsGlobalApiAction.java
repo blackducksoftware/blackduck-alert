@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 
 @Component
 public class SettingsGlobalApiAction extends ApiAction {
-    private static final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
+    private final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
     private SettingsValidator settingsValidator;
 

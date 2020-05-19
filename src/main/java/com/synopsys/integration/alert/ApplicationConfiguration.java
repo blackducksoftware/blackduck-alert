@@ -53,7 +53,7 @@ import com.synopsys.integration.rest.support.AuthenticationSupport;
 @Configuration
 @AutoConfigureOrder(1)
 public class ApplicationConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
     @Bean
     public AlertProperties alertProperties() {
@@ -77,7 +77,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
-        final MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
+        MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
         factory.afterPropertiesSet();
 
         return factory;
@@ -90,10 +90,10 @@ public class ApplicationConfiguration {
 
     @Bean
     public SimpleJobLauncher jobLauncher() {
-        final SimpleJobLauncher launcher = new SimpleJobLauncher();
+        SimpleJobLauncher launcher = new SimpleJobLauncher();
         try {
             launcher.setJobRepository(jobRepository());
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error("Creating job launcher bean", ex);
         }
         return launcher;
@@ -101,7 +101,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public TaskScheduler taskScheduler() {
-        final ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
         return threadPoolTaskScheduler;
     }

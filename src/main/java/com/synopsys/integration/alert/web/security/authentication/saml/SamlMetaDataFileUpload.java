@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 
 @Component
 public class SamlMetaDataFileUpload {
-    private static final Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
+    private final Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
 
     @Autowired
     public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, AuthenticationDescriptorKey descriptorKey) throws AlertException {
