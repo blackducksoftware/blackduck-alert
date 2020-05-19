@@ -15,7 +15,7 @@ public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {
     }
 
     @Override
-    public void assertEntityFieldsNull(final AuditEntryEntity entity) {
+    public void assertEntityFieldsNull(AuditEntryEntity entity) {
         assertNull(entity.getCommonConfigId());
         assertNull(entity.getErrorMessage());
         assertNull(entity.getErrorStackTrace());
@@ -25,7 +25,7 @@ public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {
     }
 
     @Override
-    public void assertEntityFieldsFull(final AuditEntryEntity entity) {
+    public void assertEntityFieldsFull(AuditEntryEntity entity) {
         assertEquals(getMockUtil().getCommonConfigId(), entity.getCommonConfigId());
         assertEquals(getMockUtil().getErrorMessage(), entity.getErrorMessage());
         assertEquals(getMockUtil().getErrorStackTrace(), entity.getErrorStackTrace());

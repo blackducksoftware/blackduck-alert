@@ -22,10 +22,10 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -262,7 +262,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         }
         Long descriptorId = getDescriptorIdOrThrowException(descriptorKey);
         Long configContextId = getConfigContextIdOrThrowException(context);
-        Date currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
         DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
@@ -418,7 +418,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return configs;
     }
 
-    private ConfigurationModel createConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModel createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -439,7 +439,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return newModel;
     }
 
-    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -448,7 +448,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
     }
 
-    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, Date createdAt, Date lastUpdated, ConfigContextEnum context) {
+    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, ConfigContextEnum context) {
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 

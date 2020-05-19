@@ -37,7 +37,7 @@ public class AuditEntryModel extends Config {
     public AuditEntryModel() {
     }
 
-    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobAuditModel> jobs, final String overallStatus, final String lastSent) {
+    public AuditEntryModel(String id, NotificationConfig notification, List<JobAuditModel> jobs, String overallStatus, String lastSent) {
         super(id);
         this.notification = notification;
         this.jobs = jobs;
@@ -60,4 +60,5 @@ public class AuditEntryModel extends Config {
     public String getLastSent() {
         return lastSent;
     }
+
 }

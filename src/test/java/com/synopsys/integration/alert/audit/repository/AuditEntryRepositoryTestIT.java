@@ -15,7 +15,9 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,20 +36,20 @@ public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
     @Test
     @Transactional
     public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {
-        final UUID commonConfigId = UUID.randomUUID();
+        UUID commonConfigId = UUID.randomUUID();
 
-        final Date leastRecent = new Date(100);
-        final Date middleDate = new Date(200);
-        final Date mostRecent = new Date(300);
+        OffsetDateTime leastRecent = OffsetDateTime.ofInstant(Instant.ofEpochMilli(100), ZoneOffset.UTC);
+        OffsetDateTime middleDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(200), ZoneOffset.UTC);
+        OffsetDateTime mostRecent = OffsetDateTime.ofInstant(Instant.ofEpochMilli(300), ZoneOffset.UTC);
 
-        final AuditEntryEntity leastRecentEntity = new AuditEntryEntity(commonConfigId, null, leastRecent, null, null, null);
-        final AuditEntryEntity middleEntity = new AuditEntryEntity(commonConfigId, null, middleDate, null, null, null);
-        final AuditEntryEntity mostRecentEntity = new AuditEntryEntity(commonConfigId, null, mostRecent, null, null, null);
+        AuditEntryEntity leastRecentEntity = new AuditEntryEntity(commonConfigId, null, leastRecent, null, null, null);
+        AuditEntryEntity middleEntity = new AuditEntryEntity(commonConfigId, null, middleDate, null, null, null);
+        AuditEntryEntity mostRecentEntity = new AuditEntryEntity(commonConfigId, null, mostRecent, null, null, null);
         auditEntryRepository.save(leastRecentEntity);
         auditEntryRepository.save(middleEntity);
         auditEntryRepository.save(mostRecentEntity);
 
-        final Optional<AuditEntryEntity> foundEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId);
+        Optional<AuditEntryEntity> foundEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId);
         assertNotNull(foundEntity);
         assertTrue(foundEntity.isPresent());
         assertEquals(mostRecentEntity, foundEntity.get());
