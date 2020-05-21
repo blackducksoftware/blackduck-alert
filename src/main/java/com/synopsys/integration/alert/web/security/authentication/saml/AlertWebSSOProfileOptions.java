@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
-    private final Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);
+    private transient final Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);
     private final SAMLContext samlContext;
 
     public AlertWebSSOProfileOptions(SAMLContext samlContext) {
