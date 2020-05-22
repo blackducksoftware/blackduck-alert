@@ -197,13 +197,16 @@ $ helm install . --name <name> --namespace <namespace> --set enableStandalone=tr
 
 ### Persistent Storage
 The section will describe the changes needed to configure persistent storage.  
-**Please note:** By default the 'values.yaml' file has persistent storage disabled in order for Alert to work out of the box.
 
 #### Enable Persistent Storage
-- In the 'values.yaml' file change 
+- In the 'values.yaml' file ensure 
   ```yaml
   enablePersistentStorage: true 
   ```
+  - This is the default value to prevent loss of data  
+  - Alert will not startup correctly if this is set to 'true' and persistent volumes are note configured
+  - If this is false when the deployment is uninstalled all data will be lost
+  
 #### With Storage Claims
 This section defines configuration using Persistent Volume Claims.  Claims can be optionally used rather than just a Persistent volume.
 You must have a claim created for the 'alert' service regardless of an on-premise or external database.

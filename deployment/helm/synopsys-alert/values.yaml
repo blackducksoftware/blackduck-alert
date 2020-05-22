@@ -5,7 +5,7 @@
 registry: "docker.io/blackducksoftware"
 
 # Storage configurations
-enablePersistentStorage: false
+enablePersistentStorage: true
 storageClass: # it will apply to all PVC's storage class but it can be override at container level
 # enableStandalone deploys a cfssl instance with Alert
 enableStandalone: true
