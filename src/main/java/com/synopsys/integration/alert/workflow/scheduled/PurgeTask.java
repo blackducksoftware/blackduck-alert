@@ -111,7 +111,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     private void purgeNotifications() {
         try {
-            OffsetDateTime date = createDate();
+            OffsetDateTime date = createNotificationOlderThanSearchDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
             List<AlertNotificationModel> notifications = notificationManager.findByCreatedAtBefore(date);
 
@@ -129,7 +129,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     private void purgeSystemMessages() {
         try {
-            OffsetDateTime date = createDate();
+            OffsetDateTime date = createNotificationOlderThanSearchDate();
             List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
             systemMessageUtility.deleteSystemMessages(messages);
         } catch (Exception ex) {
@@ -137,8 +137,7 @@ public class PurgeTask extends StartupScheduledTask {
         }
     }
 
-    // TODO give this method a more descriptive name
-    public OffsetDateTime createDate() {
+    public OffsetDateTime createNotificationOlderThanSearchDate() {
         return DateUtils.createCurrentDateTimestamp()
                    .minusDays(dayOffset)
                    .withHour(0).withMinute(0).withSecond(0).withNano(0);
