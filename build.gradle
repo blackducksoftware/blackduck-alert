@@ -222,6 +222,7 @@ task helmDryRun(type: Exec) {
 }
 
 task cleanHelmTmp(type: Delete) {
+    // synopsys-alert@tmp is created by Jenkins when we switch directories. Once we have updated the builds to use the gradle tasks we dont need this cleanup anymore
     File helmTmpDirectory = new File("${projectDir}/deployment/helm/synopsys-alert@tmp/")
     if (helmTmpDirectory.exists()) {
         println "Deleting ${helmTmpDirectory.canonicalPath}"
