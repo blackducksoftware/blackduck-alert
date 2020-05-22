@@ -210,7 +210,7 @@ You must have a claim created for the 'alert' service regardless of an on-premis
 For the on-premise database deployment a second Persistent Volume Claim must be created to store the database data.
 
 ##### Alert Volume Claim Configuration
-- A persistent volume must be created first
+- A persistent volume must be created first if a dynamic provisioner not being used
 - A persistent volume claim must be created in the same namespace as the Alert deployment and bound to the persistent volume for Alert
 - Configure Alert to use the volume claim
 
@@ -238,7 +238,7 @@ For the on-premise database deployment a second Persistent Volume Claim must be 
   ```
     
 ##### Using On-Premise Database
-- A persistent volume must be created first for the Postgres database
+- A persistent volume must be created first for the Postgres database if a dynamic provisioner not being used
 - A persistent volume claim must be created in the same namespace as the Alert deployment for Postgres and bound to the persistent volume for Postgres
 - Configure Postgres to use the volume claim
 
@@ -270,7 +270,7 @@ You must have a Persistent Volume created for the 'alert' service regardless of 
 For the on-premise database deployment a second Persistent Volume must be created to store the database data.
 
 ##### Alert Volume Configuration
-- A persistent volume must be created first
+- A persistent volume must be created first if a dynamic provisioner not being used
 - Configure Alert to use the volume name
 
   ```yaml
@@ -308,7 +308,7 @@ For the on-premise database deployment a second Persistent Volume must be create
   ```
   
 ##### Using On-Premise Database
-- A persistent volume must be created first for the Postgres database
+- A persistent volume must be created first for the Postgres database if a dynamic provisioner not being used
 - Configure Alert to use the volume name
 
   ```yaml
