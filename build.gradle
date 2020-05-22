@@ -32,7 +32,6 @@ mainClassName = 'com.synopsys.integration.alert.Application'
 
 version = '6.0.0-SIGQA8-SNAPSHOT'
 def testContainerPostgresVersion = '12.2'
-def reuseContainer = 'false'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -166,32 +165,10 @@ gradle.taskGraph.whenReady { graph ->
     }
 }
 
-task createKeystore(type: Exec) {
+task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
     doFirst {
-        mkdir "${projectDir}/build/certs"
+        mkdir "${project.buildDir}/certs"
     }
-    def commandArray = []
-    commandArray.add('keytool')
-    commandArray.add('-genkeypair')
-    commandArray.add('-v')
-    commandArray.add('-keystore')
-    commandArray.add('blackduck-alert.keystore')
-    commandArray.add('-alias')
-    commandArray.add('blackduck-alert')
-    commandArray.add('-keyalg')
-    commandArray.add('RSA')
-    commandArray.add('-keysize')
-    commandArray.add('2048')
-    commandArray.add('-storetype')
-    commandArray.add('PKCS12')
-    commandArray.add('-validity')
-    commandArray.add('3650')
-    commandArray.add('-storepass')
-    commandArray.add('changeit')
-    commandArray.add('-dname')
-    commandArray.add("CN=localhost, OU=Engineering, O=Synopsys, C=US")
-    workingDir "${project.buildDir}/certs"
-    commandLine commandArray
 }
 
 task createTruststore(type: Copy) {
@@ -202,39 +179,7 @@ task createTruststore(type: Copy) {
 }
 
 task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
-    File jarFile = new File("${project.buildDir}/libs/blackduck-alert-${version}.jar")
-
-    def jmxVariables = ['-Dcom.sun.management.jmxremote',
-                        '-Dcom.sun.management.jmxremote.port=9045',
-                        '-Dcom.sun.management.jmxremote.local.only=false',
-                        '-Dcom.sun.management.jmxremote.authenticate=false',
-                        '-Dcom.sun.management.jmxremote.ssl=false',
-                        "-Djavax.net.ssl.trustStore=${project.buildDir}/certs/blackduck-alert.truststore"]
-    // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
-    def applicationVariables = ["--server.ssl.key-store=${project.buildDir}/certs/blackduck-alert.keystore",
-                                "--server.ssl.trust-store=${project.buildDir}/certs/blackduck-alert.truststore",
-                                '--server.port=8443',
-
-                                '--hibernate.default_schema=alert',
-                                '--spring.jpa.hibernate.ddl-auto=none',
-                                '--spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect',
-                                '--spring.datasource.username=sa',
-                                '--spring.datasource.password=blackduck',
-                                '--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver',
-                                "--spring.datasource.url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
-                                "--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:${testContainerPostgresVersion}:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=${reuseContainer}",
-                                '--spring.test.database.replace=none',
-
-                                "--alert.images.dir=${project.buildDir}/resources/main/images",
-                                "--alert.email.attachments.dir=${project.buildDir}/email/attachments"]
-    def commandArray = []
-    commandArray.add('java')
-    commandArray.addAll(getDebugVariables())
-    commandArray.addAll(jmxVariables)
-    commandArray.add('-jar')
-    commandArray.add(jarFile.getAbsolutePath())
-    commandArray.addAll(applicationVariables)
-    commandLine commandArray
+    postgresVersion = testContainerPostgresVersion
 }
 
 tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }
@@ -265,6 +210,29 @@ task cleanBundles(type: Delete) {
 }
 
 tasks.clean.finalizedBy(cleanBundles)
+
+task helmLint(type: Exec) {
+    workingDir = "${projectDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "lint", "${projectDir}/deployment/helm/synopsys-alert/"
+}
+
+task helmDryRun(type: Exec) {
+    workingDir = "${projectDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "install", "alert", "${projectDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
+}
+
+task cleanHelmTmp(type: Delete) {
+    File helmTmpDirectory = new File("${projectDir}/deployment/helm/synopsys-alert@tmp/")
+    if (helmTmpDirectory.exists()) {
+        println "Deleting ${helmTmpDirectory.canonicalPath}"
+        helmTmpDirectory.deleteDir()
+    }
+}
+
+task helmValidation(dependsOn: [helmLint, helmDryRun, cleanHelmTmp]) {
+    helmDryRun.mustRunAfter helmLint
+    cleanHelmTmp.mustRunAfter helmDryRun
+}
 
 task updateNpmVersion(type: Task) {
     final def packageJsonFile = new File("${projectDir}/package.json")
@@ -324,7 +292,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-swarm/**", "helm/**"
+        include "docker-swarm/**", "helm/synopsys-alert/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/external-db/hub"
