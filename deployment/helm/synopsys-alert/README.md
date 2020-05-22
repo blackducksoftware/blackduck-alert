@@ -94,11 +94,15 @@ $ helm install myalert . --namespace myalert
   The internal port is 8443 and the external port is 31594. When accessing the Alert UI the external port will be used in the URL.
   Once the external port is identified the URL to access the UI will be in the following format:
   
-  `https://my.kubernetes.host:<EXTERNAL_PORT>/alert`
+  `https://<EXTERNAL_NODE_IP>:<EXTERNAL_PORT>/alert`
+  
+  ```console
+  $ kubectl get nodes -o wide
+  ```
   
   For Example: 
   
-  `https://my.kubernetes.host:31594/alert`
+  `https://127.0.0.0:31594/alert`
 
 ## Upgrading the Chart
 
