@@ -229,6 +229,8 @@ task cleanHelmTmp(type: Delete) {
     }
 }
 
+tasks.clean.finalizedBy(cleanHelmTmp)
+
 task helmValidation(dependsOn: [helmLint, helmDryRun, cleanHelmTmp]) {
     helmDryRun.mustRunAfter helmLint
     cleanHelmTmp.mustRunAfter helmDryRun
