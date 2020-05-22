@@ -24,35 +24,25 @@ package com.synopsys.integration.alert.component.scheduling.actions;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
-// FIXME this class needs to be updated to handle multiple providers
 public class SchedulingGlobalApiAction extends ApiAction {
-    private final Logger logger = LoggerFactory.getLogger(SchedulingGlobalApiAction.class);
-    private BlackDuckProviderKey blackDuckProviderKey;
     private TaskManager taskManager;
-    private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public SchedulingGlobalApiAction(BlackDuckProviderKey blackDuckProviderKey, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
-        this.blackDuckProviderKey = blackDuckProviderKey;
+    public SchedulingGlobalApiAction(TaskManager taskManager) {
         this.taskManager = taskManager;
-        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
