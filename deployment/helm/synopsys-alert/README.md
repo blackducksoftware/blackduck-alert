@@ -1,9 +1,23 @@
-# alert-helm [alpha]
+# alert-helm [beta]
 Helm Charts for Synopsys Alert
 
-**Alpha Release**  
+**Beta Release**  
 * This helm chart is in early testing and is not fully supported.  
 * Some testing has been performed with Helm 2 releases. 
+
+## Table Of Contents
+- [Prerequisites](#prerequisites)
+- [Installing the Chart -- Helm 2](#installing-the-chart----helm-2)
+- [Installing the Chart -- Helm 3](#installing-the-chart----helm-3)
+    - [Quick Start with Helm 3](#quick-start-with-helm-3)
+- [Finding Alert External Port](#finding-alert-external-port)
+- [Upgrading the Chart](#upgrading-the-chart)
+- [Uninstalling the Chart](#uninstalling-the-chart)
+- [Configuration](#configuration)
+  - [Configuration Parameters](#configuration-parameters)
+  - [Persistent Storage](#persistent-storage)
+  - [External Postgres Database](#external-postgres-database)
+  - [Installing with Black Duck](#installing-with-black-duck)
 
 ## Prerequisites
 
@@ -12,14 +26,14 @@ Helm Charts for Synopsys Alert
 
 ## Installing the Chart -- Helm 2
 
-#### Create the Namespace
+### Create the Namespace
 ```console
 $ kubectl create ns <namespace>
 ```
-#### Configure your Alert Instance
+### Configure your Alert Instance
 Modify the values.yaml file or pass in values to `helm intsall` with --set.  
 
-#### Install the Alert Chart
+### Install the Alert Chart
 ```
 $ helm install . --name <name> --namespace <namespace>
 ```
@@ -29,35 +43,66 @@ $ helm install . --name <name> --namespace <namespace>
 
 ## Installing the Chart -- Helm 3
 
-#### Create the Namespace and TLS Secrets
+### Create the Namespace and TLS Secrets
 ```console
 $ kubectl create ns <namespace>
 ```
-#### Configure your Black Duck Instance
+### Configure your Alert Instance
 Modify the values.yaml file or pass in values to `helm install` with --set.  
+Please see the [Configuration](#configuration) section for more details.
 
-#### Install the Black Duck Chart
-```
+### Install the Alert Chart
+```console
 $ helm install <name> . --namespace <namespace>
 ```
 
-## Quick Start with Helm 3
+### Quick Start with Helm 3
 #### Step 1
 Navigate to the alert-helm chart repository in your terminal
-```
+```console
 $ cd <path>/alert-helm
 ```
 
 #### Step 2
-```
+```console
 $ kubectl create ns myalert
 ```
 
 #### Step 3
 Deploy Alert
-```
+```console
 $ helm install myalert . --namespace myalert
 ```
+
+## Finding Alert External Port
+ Once Alert has been deployed if the `exposeui` parameter is true, then Alert will be available via an exposed port.
+ To determine the port to access the Alert UI execute the following command:
+ ```console 
+ $ kubectl -n <NAMESPACE> get services
+ ```
+ From the output find the Alert exposed service. This service will be your Alert installation name with the `-exposed` suffix in the name. 
+ If the installation name is 'myalert' then there will be a service `myalert-exposed` in the list of services.
+ 
+ It will display a port with the following format:
+  
+  `<INTERNAL_PORT>:<EXTERNAL_PORT>/TCP`
+  
+  For example:
+  
+  `8443:31594/TCP`
+  
+  The internal port is 8443 and the external port is 31594. When accessing the Alert UI the external port will be used in the URL.
+  Once the external port is identified the URL to access the UI will be in the following format:
+  
+  `https://<EXTERNAL_NODE_IP>:<EXTERNAL_PORT>/alert`
+  
+  ```console
+  $ kubectl get nodes -o wide
+  ```
+  
+  For Example: 
+  
+  `https://127.0.0.0:31594/alert`
 
 ## Upgrading the Chart
 
@@ -79,21 +124,34 @@ The command removes all the Kubernetes components associated with the chart and 
 
 The following table lists the configurable parameters of the Alert chart and their default values.
 
-#### Common Configuration
+### Configuration Parameters
+This contains a table briefly describing each parameter in the values.yaml file.
+
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `alert.image` | image for the Alert container | `docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN` |
-| `alert.limitMemory` | Alert container Memory Limit | `2560M` |
-| `alert.requestMemory` | Alert container Memory Request | `2560M` |
+| `alert.imageTag` | Image tag for the Alert container | `docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN` |
+| `alert.registy` | The container registry for the Alert pod | `""` |
+| `alert.port` | The internal port the Alert pod will use | `8443` |
+| `alert.resources.limits.memory` | Alert container Memory Limit | `2560M` |
+| `alert.resources.requests.memory` | Alert container Memory Request | `2560M` |
+| `alert.persistentVolumeClaimName` | The name of the persistent storage claim | `""` |
+| `alert.claimSize` | The persistent storage claim size limit | `5Gi` |
+| `alert.storageClass` | The name of the storage class for persistent storage | `""` |
+| `alert.volumeName` | The name of the persistent storage volume | `""` |
 | `alert.nodeSelector` | Alert node labels for pod assignment | `{}` | 
 | `alert.tolerations` | Alert node tolerations for pod assignment | `[]` |
 | `alert.affinity` | Alert node affinity for pod assignment | `{}` |
-| `cfssl.image` | Image for the Cfssl container | `docker.io/blackducksoftware/blackduck-cfssl:1.0.0` |
-| `cfssl.limitMemory` | Cfssl container Memory Limit | `640M` |
-| `cfssl.requestMemory` | Cfssl container Request Limit | `640M` |
+| `alert.securityContext` | Alert security context | `{}` |
+| `alert.podSecurityContext` | Alert pod security context | `{}` |
+| `cfssl.imageTag` | Image for the Cfssl container | `docker.io/blackducksoftware/blackduck-cfssl:1.0.1` |
+| `cffsl.registy` | The container registry for the Cfssl pod | `""` |
+| `cfssl.resources.limits.memory` | Cfssl container Memory Limit | `640M` |
+| `cfssl.resources.requests.memory` | Cfssl container Request Limit | `640M` |
 | `cfssl.nodeSelector` | Cfssl node labels for pod assigment | `{}` |
 | `cfssl.tolerations` | Cfssl node tolerations for pod assignment | `[]` |
 | `cfssl.affinity` | Cfssl node affinity for pod assignment | `{}` |
+| `cfssl.securityContext` | Cfssl node security context | `{}` |
+| `cfssl.podSecurityContext` | Cfssl pod security context | `{}` |
 | `postgres.registry` |  Postgres registry containing image for the container | `"docker.io/centos"` |
 | `postgres.isExternal` |  If true, do not deploy a Postgres container |  `false` |
 | `postgres.host` |  Host name of the Postgres database | `""` |
@@ -110,18 +168,24 @@ The following table lists the configurable parameters of the Alert chart and the
 | `postgres.affinity` | Postgres node affinity for pod assignment | `{}` |
 | `postgres.podSecurityContext` | Postgres node pod security context | `{}` |
 | `postgres.securityContext` | Postgres node security context | `{}` |
+| `postgres.resources` | Postrges node resources | `{}` |
+| `blackDuckName` | The ReleaseName of the Black Duck instance | `""` |
+| `blackDuckNamespace` | The Namespace of the Black Duck instance | `""` |
 | `deployAlertWithBlackDuck` | If true, Alert will be configured to run with a Black Duck instance | `false` |
-| `enableCertificateSecret` | if true, Alert will use values in a Secret for authenticating it's certificates | `false` |
-| `enableStandalone` | if true, Alert will be deployed with it's own cfssl instance | `true` |
-| `enablePersistentStorage` | if true, Alert will have persistent storage | `false` |
-| `environs` | environment variables for the Alert container | `[]` |
-| `exposeui` | if true, a Service to expose the UI will be created | `true` |
-| `exposedServiceType` | type of exposed Service | `NodePort` |
+| `enableCertificateSecret` | If true, Alert will use values in a Secret for authenticating it's certificates | `false` |
+| `enableStandalone` | If true, Alert will be deployed with it's own cfssl instance | `true` |
+| `enablePersistentStorage` | If true, Alert will have persistent storage | `true` |
+| `environs` | Environment variables for the Alert container | `[]` |
+| `exposeui` | If true, a Service to expose the UI will be created | `true` |
+| `exposedServiceType` | Type of exposed Service | `NodePort` |
+| `imagePullSecrets` | Pull secrets to download images | `[]` |
+| `javaKeystoreSecretName` | (deprecated) The name of the secret for the Java certificate truststore | `""` |
 | `pvcSize` | Persistent Volume Claim claim size | `5G` |
-| `secretEnvirons` | sensitive environment variables for the Alert container to be stored in a Secret | `[]` |
-| `setEncryptionSecretData` | if true, you will be prompted to set values for encrypting Alert's data | `false` |
+| `secretEnvirons` | Sensitive environment variables for the Alert container to be stored in a Secret | `[]` |
+| `setEncryptionSecretData` | If true, you will be prompted to set values for encrypting Alert's data | `false` |
+| `status` | Used to start or stop alert instance | `Running` |
 | `storageClassName` | Persistent Volume Claim storage class | `""` |
-
+| `webserverCustomCertificatesSecretName` | The name of the secret containing the SSL certificate and private key for Alert server | `""` |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
@@ -130,3 +194,240 @@ Alternatively, a YAML file that specifies the values for the above parameters ca
 ```console
 $ helm install . --name <name> --namespace <namespace> --set enableStandalone=true
 ```
+
+### Persistent Storage
+The section will describe the changes needed to configure persistent storage.  
+
+#### Enable Persistent Storage
+- In the 'values.yaml' file ensure 
+  ```yaml
+  enablePersistentStorage: true 
+  ```
+  - This is the default value to prevent loss of data  
+  - Alert will not startup correctly if this is set to 'true' and persistent volumes are note configured
+  - If this is false when the deployment is uninstalled all data will be lost
+  
+#### With Storage Claims
+This section defines configuration using Persistent Volume Claims.  Claims can be optionally used rather than just a Persistent volume.
+You must have a claim created for the 'alert' service regardless of an on-premise or external database.
+For the on-premise database deployment a second Persistent Volume Claim must be created to store the database data.
+
+##### Alert Volume Claim Configuration
+- A persistent volume must be created first if a dynamic provisioner not being used
+- A persistent volume claim must be created in the same namespace as the Alert deployment and bound to the persistent volume for Alert
+- Configure Alert to use the volume claim
+
+  ```yaml
+  alert:
+    persistentVolumeClaimName: "<ALERT_CLAIM_NAME>"
+  ```
+  
+  - Replace <ALERT_CLAIM_NAME> with the name of the persistent volume claim for Alert data
+  - An optional storage class with the persistent volume claim requires the addition of the storage class name
+  
+    ```yaml
+    alert:
+      persistentVolumeClaimName: "<ALERT_CLAIM_NAME>"
+      storageClassName: "<STORAGE_CLASS_NAME>"  
+    ```
+    
+    - Replace <STORAGE_CLASS_NAME> with the name of the storage class in the persistent volume claim
+
+  - Example:
+  ```yaml
+  alert:
+    persistentVolumeClaimName: "alert-pvc"
+    storageClassName: "myStorageClass"
+  ```
+    
+##### Using On-Premise Database
+- A persistent volume must be created first for the Postgres database if a dynamic provisioner not being used
+- A persistent volume claim must be created in the same namespace as the Alert deployment for Postgres and bound to the persistent volume for Postgres
+- Configure Postgres to use the volume claim
+
+  ```yaml
+  postgres:
+    persistentVolumeClaimName: "<POSTGRES_CLAIM_NAME>"
+  ```
+  
+  - Replace <POSTGRES_CLAIM_NAME> with the name of the persistent volume claim for Postgres data
+  - An optional storage class with the persistent volume claim requires the addition of the storage class name
+  
+    ```yaml
+    postgres:
+      persistentVolumeClaimName: "<POSTGRES_CLAIM_NAME>"
+      storageClassName: "<STORAGE_CLASS_NAME>"  
+    ```
+    
+    - Replace <STORAGE_CLASS_NAME> with the name of the storage class in the persistent volume claim
+  - Example:
+    ```yaml
+    postgres:
+      persistentVolumeClaimName: "postgres-pvc"
+      storageClassName: "myStorageClass"
+    ```
+
+#### Without Storage Claims
+This section defines configuration using Persistent Volume.  Claims will automatically be created and bound to the volumes defined.
+You must have a Persistent Volume created for the 'alert' service regardless of an on-premise or external database.
+For the on-premise database deployment a second Persistent Volume must be created to store the database data.
+
+##### Alert Volume Configuration
+- A persistent volume must be created first if a dynamic provisioner not being used
+- Configure Alert to use the volume name
+
+  ```yaml
+  alert:
+    volumeName: "<ALERT_VOLUME_NAME>"
+  ```
+  
+  - Replace <ALERT_VOLUME_NAME> with the name of the persistent volume for Alert data
+  - An optional storage class with the persistent volume requires the addition of the storage class name
+  
+    ```yaml
+    alert:
+      volumeName: "<ALERT_VOLUME_NAME>"
+      storageClassName: "<STORAGE_CLASS_NAME>"  
+    ```
+    
+    - Replace <STORAGE_CLASS_NAME> with the name of the storage class in the persistent volume claim
+  - Define the claim size by default it is 5GB
+    
+    ```yaml
+    alert:
+      claimSize: "5Gi"
+    ```
+  - Example:
+  ```yaml
+  alert:
+    claimSize: "5Gi"
+    storageClassName: "myStorageClass"
+    volumeName: "alert-volume"
+  ```  
+  - A claim will be created with the release name for example 'myalert-pvc' please verify the claim bound to the volume
+  
+  ```console
+  $ kubectl -n <ALERT_NAMESPACE> get pvc
+  ```
+  
+##### Using On-Premise Database
+- A persistent volume must be created first for the Postgres database if a dynamic provisioner not being used
+- Configure Alert to use the volume name
+
+  ```yaml
+  postgres:
+    volumeName: "<POSTGRES_VOLUME_NAME>"
+  ```
+  
+  - Replace <POSTGRES_VOLUME_NAME> with the name of the persistent volume for Postgres data
+  - An optional storage class with the persistent volume requires the addition of the storage class name
+  
+    ```yaml
+    postgres:
+      volumeName: "<POSTGRES_VOLUME_NAME>"
+      storageClassName: "<STORAGE_CLASS_NAME>"  
+    ```
+    
+    - Replace <STORAGE_CLASS_NAME> with the name of the storage class in the persistent volume claim
+  - Define the claim size by default it is 5GB
+    
+    ```yaml
+    postgres:
+      claimSize: "5Gi"
+    ```
+  - Example:
+    ```yaml
+    postgres:
+      claimSize: "5Gi"
+      storageClassName: "myStorageClass"
+      volumeName: "postgres-volume"
+    ```  
+    - A claim will be created with the release name for example 'myalert-postgres' please verify the claim bound to the volume
+    
+    ```console
+    $ kubectl -n <ALERT_NAMESPACE> get pvc
+    ```
+    
+### External Postgres Database
+- On the external database create a user to own the Alert database
+
+  ```sql 
+  CREATE ROLE <ROLE_NAME> LOGIN PASSWORD '<PASSWORD>'
+  ```
+  - Replace <ROLE_NAME> with the user name for the database
+  - Replace <PASSWORD> with the password for the database user
+  
+- On the external database create a database owned by the user just created
+
+  ```sql
+  CREATE DATABASE <DATABASE_NAME> WITH OWNER <ROLE_NAME>
+  ```
+  - Replace <DATABASE_NAME> with the name of the database for Alert
+  - Replace <ROLE_NAME> with the Alert database user created in the previous step
+  
+- Disable on premise database container creation
+
+  ```yaml
+  postgres:
+    isExternal: true
+  ```
+  
+- Configure alert Postgres user by setting 'userUserName'
+
+  ```yaml
+  postgres:
+    userUserName: <ROLE_NAME>
+  ```
+  - Replace <ROLE_NAME> with the database user name
+  
+- Configure alert Postgres password by setting 'userPassword'
+
+  ```yaml 
+  postgres:
+    userPassword: <PASSWORD>
+  ```
+  - Replace <PASSWORD> with the password of the database user
+  
+- Configure alert Postgres host by setting 'host'
+
+  ```yaml
+  postgres:
+    host: <DATABASE_HOST>
+  ```
+  - Replace <DATABASE_HOST> with the hostname of the database server
+  
+- Configure alert Postgres port by setting 'port'
+
+  ```yaml
+  postgres:
+    port: <DATABASE_PORT>
+  ```
+  - Replace <DATABASE_PORT> with the port the database server is running on 
+  
+- Configure alert Postgres database name by setting 'databaseName'
+
+  ```yaml
+  postgres:
+    databaseName: <DATABASE_NAME>
+  ```
+  - Replace <DATABASE_NAME> with the name of the database created in previous steps
+  
+### Installing with Black Duck
+- Enable deployment with Black Duck by setting 'deployAlertWithBlackDuck'
+
+  ```yaml
+  deployAlertWithBlackDuck: true
+  ```
+- Configure the Black Duck release name by setting 'blackDuckName'
+  
+  ```yaml
+  blackDuckName: "<BLACKDUCK_RELEASE_NAME>"
+  ```
+  - Replace <BLACKDUCK_RELEASE_NAME> with the name of the release of Black Duck
+  
+- Configure the Black Duck namespace by setting 'blackDuckNamespace'
+
+  ```yaml
+  blackDuckNamespace: "<BLACK_DUCK_NAMESPACE>"
+  ```
+  - Replace <BLACK_DUCK_NAMESPACE> with the namespace where the Black Duck product deployed to
