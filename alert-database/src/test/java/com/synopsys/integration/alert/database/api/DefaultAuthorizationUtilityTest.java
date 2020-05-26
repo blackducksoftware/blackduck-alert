@@ -1,18 +1,28 @@
 package com.synopsys.integration.alert.database.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -24,6 +34,233 @@ import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 public class DefaultAuthorizationUtilityTest {
+
+    private RoleRepository roleRepository;
+    private UserRoleRepository userRoleRepository;
+    private PermissionMatrixRepository permissionMatrixRepository;
+    private RegisteredDescriptorRepository registeredDescriptorRepository;
+    private ConfigContextRepository configContextRepository;
+
+    @BeforeEach
+    public void init() {
+        this.roleRepository = Mockito.mock(RoleRepository.class);
+        this.userRoleRepository = Mockito.mock(UserRoleRepository.class);
+        this.permissionMatrixRepository = Mockito.mock(PermissionMatrixRepository.class);
+        this.registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
+        this.configContextRepository = Mockito.mock(ConfigContextRepository.class);
+    }
+
+    @Test
+    public void getRolesTest() {
+        RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), true);
+        roleEntity.setId(1L);
+
+        Mockito.when(roleRepository.findAll()).thenReturn(List.of(roleEntity));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        Set<UserRoleModel> userRoleModelsSet = authorizationUtility.getRoles();
+
+        UserRoleModel expectedUserRoleModel = createUserRoleModel(1L, DefaultUserRole.ALERT_USER.name(), true);
+
+        assertEquals(1, userRoleModelsSet.size());
+        assertTrue(userRoleModelsSet.contains(expectedUserRoleModel));
+    }
+
+    @Test
+    public void getRolesByRoleIdsTest() {
+        RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), true);
+        roleEntity.setId(1L);
+
+        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        Set<UserRoleModel> userRoleModelsSet = authorizationUtility.getRoles(List.of(1L));
+
+        UserRoleModel expectedUserRoleModel = createUserRoleModel(1L, DefaultUserRole.ALERT_USER.name(), true);
+
+        assertEquals(1, userRoleModelsSet.size());
+        assertTrue(userRoleModelsSet.contains(expectedUserRoleModel));
+    }
+
+    @Test
+    public void doesRoleNameExistTest() {
+        Mockito.when(roleRepository.existsRoleEntityByRoleName(Mockito.any())).thenReturn(true);
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+
+        assertTrue(authorizationUtility.doesRoleNameExist("name"));
+    }
+
+    @Test
+    public void createRoleTest() throws Exception {
+        final String roleName = "roleName";
+
+        Mockito.when(roleRepository.save(Mockito.any())).thenReturn(new RoleEntity(roleName, true));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        UserRoleModel userRoleModel = authorizationUtility.createRole(roleName);
+
+        UserRoleModel expectedUserRoleModel = createUserRoleModel(null, roleName, true);
+
+        assertEquals(expectedUserRoleModel, userRoleModel);
+    }
+
+    @Test
+    public void createRoleNullTest() throws Exception {
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        try {
+            authorizationUtility.createRole("");
+            fail("Blank roleName did not throw expected AlertDatabaseConstraintException.");
+        } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void createRoleWithPermissions() throws Exception {
+        final String roleName = "roleName";
+        final String contextString = "context-test";
+        final String descriptorName = "descriptorName";
+
+        RoleEntity roleEntity = new RoleEntity(roleName, true);
+        roleEntity.setId(1L);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(contextString);
+        configContextEntity.setId(1L);
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
+        registeredDescriptorEntity.setId(1L);
+
+        PermissionKey permissionKey = new PermissionKey(contextString, descriptorName);
+        PermissionMatrixModel permissionMatrixModel = new PermissionMatrixModel(Map.of(permissionKey, AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit()));
+        PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), configContextEntity.getId(), registeredDescriptorEntity.getId(), AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit());
+
+        Mockito.when(roleRepository.save(Mockito.any())).thenReturn(new RoleEntity(roleName, true));
+        mockUpdateRoleOperations(permissionMatrixRelation, configContextEntity, registeredDescriptorEntity);
+        mockCreateModelFromPermission(configContextEntity, registeredDescriptorEntity);
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+
+        Mockito.verify(permissionMatrixRepository).deleteAll(Mockito.any());
+
+        assertEquals(roleName, userRoleModel.getName());
+        assertTrue(userRoleModel.isCustom());
+        assertEquals(permissionMatrixModel, userRoleModel.getPermissions());
+    }
+
+    @Test
+    public void updateRoleNameTest() throws Exception {
+        final String roleName = "roleName";
+        final Long roleId = 1L;
+
+        RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), true);
+        roleEntity.setId(1L);
+
+        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        authorizationUtility.updateRoleName(roleId, roleName);
+
+        Mockito.verify(roleRepository).save(Mockito.any());
+    }
+
+    @Test
+    public void updateRoleNameCustomFalseTest() throws Exception {
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+
+        RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), false);
+        roleEntity.setId(1L);
+
+        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
+
+        try {
+            authorizationUtility.updateRoleName(1L, "roleName");
+            fail("Custom parameter of roleEntity set to 'false' did not throw expected AlertDatabaseConstraintException.");
+        } catch (AlertDatabaseConstraintException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void updatePermissionsForRole() throws Exception {
+        final String roleName = "roleName";
+        final String contextString = "context-test";
+        final String descriptorName = "descriptorName";
+
+        RoleEntity roleEntity = new RoleEntity(roleName, true);
+        roleEntity.setId(1L);
+        ConfigContextEntity configContextEntity = new ConfigContextEntity(contextString);
+        configContextEntity.setId(1L);
+        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
+        registeredDescriptorEntity.setId(1L);
+
+        PermissionKey permissionKey = new PermissionKey(contextString, descriptorName);
+        PermissionMatrixModel permissionMatrix = new PermissionMatrixModel(Map.of(permissionKey, AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit()));
+        PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), configContextEntity.getId(), registeredDescriptorEntity.getId(), AccessOperation.READ.getBit() + AccessOperation.WRITE.getBit());
+
+        Mockito.when(roleRepository.findByRoleName(Mockito.any())).thenReturn(Optional.of(roleEntity));
+        mockUpdateRoleOperations(permissionMatrixRelation, configContextEntity, registeredDescriptorEntity);
+        mockCreateModelFromPermission(configContextEntity, registeredDescriptorEntity);
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        PermissionMatrixModel permissionMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrix);
+
+        Mockito.verify(permissionMatrixRepository).saveAll(Mockito.any());
+
+        assertFalse(permissionMatrixModel.isEmpty());
+        assertEquals(permissionMatrix, permissionMatrixModel);
+    }
+
+    @Test
+    public void deleteRoleTest() throws Exception {
+        final String roleName = "roleName";
+        final Long roleId = 1L;
+
+        RoleEntity roleEntity = new RoleEntity(roleName, true);
+        roleEntity.setId(1L);
+
+        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        authorizationUtility.deleteRole(roleId);
+
+        Mockito.verify(roleRepository).deleteById(Mockito.any());
+    }
+
+    @Test
+    public void deleteRoleCustomFalseTest() throws Exception {
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+
+        RoleEntity roleEntity = new RoleEntity("name", false);
+        roleEntity.setId(1L);
+        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
+
+        try {
+            authorizationUtility.deleteRole(1L);
+            fail("Custom parameter of roleEntity set to 'false' did not throw expected AlertForbiddenOperationException.");
+        } catch (AlertForbiddenOperationException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void updateUserRolesTest() {
+        final Long userId = 1L;
+        final String roleName = "roleName";
+        final Long roleId = 1L;
+
+        RoleEntity roleEntity = new RoleEntity(roleName, true);
+        roleEntity.setId(1L);
+        UserRoleModel userRoleModel = createUserRoleModel(roleId, roleName, true);
+        Collection<UserRoleModel> userRoleModelCollection = List.of(userRoleModel);
+
+        Mockito.when(roleRepository.findRoleEntitiesByRoleNames(Mockito.any())).thenReturn(List.of(roleEntity));
+
+        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        authorizationUtility.updateUserRoles(userId, userRoleModelCollection);
+
+        Mockito.verify(userRoleRepository).deleteAllByUserId(Mockito.any());
+        Mockito.verify(userRoleRepository).saveAll(Mockito.any());
+    }
+
     @Test
     public void testSuperSetRoles() {
         RoleRepository roleRepository = Mockito.mock(RoleRepository.class);
@@ -101,4 +338,24 @@ public class DefaultAuthorizationUtilityTest {
         assertFalse(matrixModel.hasPermission(permission_3, AccessOperation.EXECUTE));
     }
 
+    private void mockUpdateRoleOperations(PermissionMatrixRelation permissionMatrixRelation, ConfigContextEntity configContextEntity, RegisteredDescriptorEntity registeredDescriptorEntity) {
+        Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.any())).thenReturn(List.of(permissionMatrixRelation));
+        Mockito.when(configContextRepository.findFirstByContext(Mockito.any())).thenReturn(Optional.of(configContextEntity));
+        Mockito.when(registeredDescriptorRepository.findFirstByName(Mockito.any())).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(permissionMatrixRepository.saveAll(Mockito.any())).thenReturn(List.of(permissionMatrixRelation));
+    }
+
+    private void mockCreateModelFromPermission(ConfigContextEntity configContextEntity, RegisteredDescriptorEntity registeredDescriptorEntity) {
+        Mockito.when(configContextRepository.findById(Mockito.any())).thenReturn(Optional.of(configContextEntity));
+        Mockito.when(registeredDescriptorRepository.findById(Mockito.any())).thenReturn(Optional.of(registeredDescriptorEntity));
+    }
+
+    private UserRoleModel createUserRoleModel(Long id, String name, Boolean custom) {
+        PermissionMatrixModel permissionMatrixModel = new PermissionMatrixModel(Map.of());
+        return new UserRoleModel(id, name, custom, permissionMatrixModel);
+    }
+
+    private UserRoleModel createUserRoleModel(Long id, String name, Boolean custom, PermissionMatrixModel permissionMatrixModel) {
+        return new UserRoleModel(id, name, custom, permissionMatrixModel);
+    }
 }
