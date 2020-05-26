@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.database.api;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -163,12 +164,19 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
                                             .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
         Long projectId = project.getId();
+        List<ProviderUserProjectRelation> userRelationsToRemove = providerUserProjectRelationRepository.findByProviderProjectId(projectId);
+        List<ProviderUserProjectRelation> userRelationsToAdd = new LinkedList<>();
         for (String emailAddress : emailAddresses) {
-            providerUserRepository.findByEmailAddressAndProviderConfigId(emailAddress, providerConfigId)
-                .stream()
-                .map(ProviderUserEntity::getId)
-                .forEach(userId -> providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(userId, projectId)));
+            List<ProviderUserEntity> providerUserEntities = providerUserRepository.findByEmailAddressAndProviderConfigId(emailAddress, providerConfigId);
+            for (ProviderUserEntity userEntity : providerUserEntities) {
+                Long userId = userEntity.getId();
+                userRelationsToAdd.add(new ProviderUserProjectRelation(userId, projectId));
+                userRelationsToRemove.removeIf(entity -> entity.getProviderUserId().equals(userId)
+                                                             && entity.getProviderProjectId().equals(projectId));
+            }
         }
+        logger.debug("Adding {} user relations to project {} ", userRelationsToAdd.size(), project.getName());
+        logger.debug("Removing {} user relations from project {} ", userRelationsToRemove.size(), project.getName());
     }
 
     private List<ProviderUserModel> saveUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
