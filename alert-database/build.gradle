@@ -7,14 +7,17 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
+        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
     }
 }
 
-project.ext.moduleName = 'com.synopsys.integration.alert.database'
 def alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 
-apply plugin: 'com.bmuschko.docker-remote-api'
+ext {
+    moduleName = 'com.synopsys.integration.alert.database'
+}
+
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.2.8'
@@ -45,8 +48,8 @@ task stageDocker(type: Copy) {
 
 task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
     inputDir = file("${project.buildDir}/docker")
-    tag = "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
     buildArgs = ['VERSION': "${alertDatabaseDockerImageVersion}"]
+    images.add("blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}")
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
