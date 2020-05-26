@@ -12,7 +12,7 @@ buildscript {
     dependencies {
         classpath 'com.synopsys.integration:common-gradle-plugin:1.1.1'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
+        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
     }
 }
 
@@ -347,8 +347,8 @@ task stageDocker(type: Copy, dependsOn: [untarArchiveForDocker]) {
 
 task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
     inputDir = file("${project.buildDir}/docker")
-    tag = "blackducksoftware/${project.name}:${project.version}"
     buildArgs = ['VERSION': "${project.version}"]
+    images.add("blackducksoftware/${project.name}:${project.version}")
 }
 
 task dockerLogin(type: Exec) {
