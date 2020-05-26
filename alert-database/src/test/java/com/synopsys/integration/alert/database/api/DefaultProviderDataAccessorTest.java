@@ -229,7 +229,7 @@ public class DefaultProviderDataAccessorTest {
 
         Mockito.verify(providerProjectRepository).deleteByHref(Mockito.any());
         Mockito.verify(providerUserRepository).deleteByProviderConfigIdAndEmailAddress(Mockito.any(), Mockito.any());
-        Mockito.verify(providerUserProjectRelationRepository).save(Mockito.any());
+        Mockito.verify(providerUserProjectRelationRepository).saveAll(Mockito.any());
     }
 
     private ConfigurationModel createConfigurationModel() {

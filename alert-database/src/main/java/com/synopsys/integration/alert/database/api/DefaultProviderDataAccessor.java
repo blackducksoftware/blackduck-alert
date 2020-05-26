@@ -177,6 +177,8 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         }
         logger.debug("Adding {} user relations to project {} ", userRelationsToAdd.size(), project.getName());
         logger.debug("Removing {} user relations from project {} ", userRelationsToRemove.size(), project.getName());
+        providerUserProjectRelationRepository.saveAll(userRelationsToAdd);
+        providerUserProjectRelationRepository.deleteAll(userRelationsToRemove);
     }
 
     private List<ProviderUserModel> saveUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
