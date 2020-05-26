@@ -12,7 +12,7 @@ enableStandalone: true
 
 # alert - configurations for the Alert Pod
 alert:
-  imageTag: VERSION_TOKEN
+  imageTag: ALERT_VERSION_TOKEN
   registry: "" # override the docker registry at container level
   port: 8443
   resources:
