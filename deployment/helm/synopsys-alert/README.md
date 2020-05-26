@@ -129,7 +129,7 @@ This contains a table briefly describing each parameter in the values.yaml file.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `alert.imageTag` | Image tag for the Alert container | `docker.io/blackducksoftware/blackduck-alert:VERSION_TOKEN` |
+| `alert.imageTag` | Image tag for the Alert container | `docker.io/blackducksoftware/blackduck-alert:ALERT_VERSION_TOKEN` |
 | `alert.registy` | The container registry for the Alert pod | `""` |
 | `alert.port` | The internal port the Alert pod will use | `8443` |
 | `alert.resources.limits.memory` | Alert container Memory Limit | `2560M` |
