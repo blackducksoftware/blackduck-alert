@@ -312,13 +312,13 @@ task copyDeploymentFiles(type: Copy) {
     into "${project.buildDir}/deployment"
 
     doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
     }
 }
 
