@@ -211,32 +211,6 @@ task cleanBundles(type: Delete) {
 
 tasks.clean.finalizedBy(cleanBundles)
 
-task helmLint(type: Exec) {
-    workingDir = "${projectDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "lint", "${projectDir}/deployment/helm/synopsys-alert/"
-}
-
-task helmDryRun(type: Exec) {
-    workingDir = "${projectDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "install", "alert", "${projectDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
-}
-
-task cleanHelmTmp(type: Delete) {
-    // synopsys-alert@tmp is created by Jenkins when we switch directories. Once we have updated the builds to use the gradle tasks we dont need this cleanup anymore
-    File helmTmpDirectory = new File("${projectDir}/deployment/helm/synopsys-alert@tmp/")
-    if (helmTmpDirectory.exists()) {
-        println "Deleting ${helmTmpDirectory.canonicalPath}"
-        helmTmpDirectory.deleteDir()
-    }
-}
-
-tasks.clean.finalizedBy(cleanHelmTmp)
-
-task helmValidation(dependsOn: [helmLint, helmDryRun, cleanHelmTmp]) {
-    helmDryRun.mustRunAfter helmLint
-    cleanHelmTmp.mustRunAfter helmDryRun
-}
-
 task updateNpmVersion(type: Task) {
     final def packageJsonFile = new File("${projectDir}/package.json")
     def packageSlurper = new JsonSlurper()
@@ -327,6 +301,21 @@ task createDeploymentZip(type: Zip, dependsOn: [copyDeploymentFiles]) {
     into "${project.name}-${project.version}-deployment"
     baseName "${project.name}"
     classifier 'deployment'
+}
+
+task helmLint(type: Exec) {
+    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "lint", "${project.buildDir}/deployment/helm/synopsys-alert/"
+}
+
+task helmDryRun(type: Exec) {
+    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
+}
+
+task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun]) {
+    helmLint.mustRunAfter copyDeploymentFiles
+    helmDryRun.mustRunAfter helmLint
 }
 
 task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
