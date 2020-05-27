@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
 public abstract class ProviderProperties {
     public static final Long UNKNOWN_CONFIG_ID = -1L;
+    public static final String UNKNOWN_CONFIG_NAME = "UNKNOWN CONFIGURATION";
     private Long configId;
     private boolean configEnabled;
     private String configName;
@@ -34,7 +35,7 @@ public abstract class ProviderProperties {
     public ProviderProperties(Long configId, FieldAccessor fieldAccessor) {
         this.configId = configId;
         this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
-        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
+        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME);
     }
 
     public Long getConfigId() {

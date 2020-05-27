@@ -92,7 +92,8 @@ public class SystemValidatorTest {
         BlackDuckValidator blackDuckValidator = new BlackDuckValidator(defaultSystemMessageUtility);
         blackDuckValidator.validate(blackDuckProperties);
         Mockito.verify(defaultSystemMessageUtility)
-            .addSystemMessage(Mockito.eq(String.format(BlackDuckValidator.MISSING_BLACKDUCK_URL_ERROR_FORMAT, DEFAULT_CONFIG_NAME)), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING));
+            .addSystemMessage(Mockito.eq(String.format(BlackDuckValidator.MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, DEFAULT_CONFIG_NAME)), Mockito.eq(SystemMessageSeverity.WARNING),
+                Mockito.eq(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING));
     }
 
     @Test
