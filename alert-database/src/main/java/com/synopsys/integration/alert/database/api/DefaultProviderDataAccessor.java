@@ -166,14 +166,12 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         Long projectId = project.getId();
         List<ProviderUserProjectRelation> userRelationsToRemove = providerUserProjectRelationRepository.findByProviderProjectId(projectId);
         List<ProviderUserProjectRelation> userRelationsToAdd = new LinkedList<>();
-        for (String emailAddress : emailAddresses) {
-            List<ProviderUserEntity> providerUserEntities = providerUserRepository.findByEmailAddressAndProviderConfigId(emailAddress, providerConfigId);
-            for (ProviderUserEntity userEntity : providerUserEntities) {
-                Long userId = userEntity.getId();
-                userRelationsToAdd.add(new ProviderUserProjectRelation(userId, projectId));
-                userRelationsToRemove.removeIf(entity -> entity.getProviderUserId().equals(userId)
-                                                             && entity.getProviderProjectId().equals(projectId));
-            }
+        List<ProviderUserEntity> providerUserEntities = providerUserRepository.findByEmailAddressInAndProviderConfigId(emailAddresses, providerConfigId);
+        for (ProviderUserEntity userEntity : providerUserEntities) {
+            Long userId = userEntity.getId();
+            userRelationsToAdd.add(new ProviderUserProjectRelation(userId, projectId));
+            userRelationsToRemove.removeIf(entity -> entity.getProviderUserId().equals(userId)
+                                                         && entity.getProviderProjectId().equals(projectId));
         }
         logger.debug("Adding {} user relations to project {} ", userRelationsToAdd.size(), project.getName());
         logger.debug("Removing {} user relations from project {} ", userRelationsToRemove.size(), project.getName());
