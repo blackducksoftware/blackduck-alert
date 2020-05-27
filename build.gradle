@@ -364,8 +364,10 @@ artifactory {
 }
 
 task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+    helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
-    dockerLogin.mustRunAfter build
+
+    dockerLogin.mustRunAfter createDeploymentZip
     buildDockerImage.mustRunAfter dockerLogin
 
     pushImage.mustRunAfter buildDockerImage
