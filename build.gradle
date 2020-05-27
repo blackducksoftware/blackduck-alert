@@ -363,7 +363,8 @@ artifactory {
     }
 }
 
-task all(dependsOn: [build, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+    createDeploymentZip.mustRunAfter helmValidation
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
 
