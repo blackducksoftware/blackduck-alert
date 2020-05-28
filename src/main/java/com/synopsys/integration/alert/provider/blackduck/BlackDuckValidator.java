@@ -113,6 +113,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
         return valid;
     }
 
+    // TODO Revisit the system message API perhaps add a new message typ for provider configuration missing
     private void removeNoProviderConfigMessages() {
         Set<String> messageTypes = Set.of(
             SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY.name(),
@@ -124,6 +125,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
         getSystemMessageUtility().deleteSystemMessages(messagesToDelete);
     }
 
+    // TODO Revisit the system message API perhaps add provider config id to be able to delete messages for provider config
     private void removeOldConfigMessages(String configName) {
         List<SystemMessageModel> messagesToDelete = getSystemMessageUtility().getSystemMessages().stream()
                                                         .filter(message -> message.getContent().contains(String.format("'%s'", configName)))

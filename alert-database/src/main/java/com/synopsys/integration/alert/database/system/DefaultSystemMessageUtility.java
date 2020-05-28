@@ -118,13 +118,15 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
 
     private SystemMessageModel convertToSystemMessageModel(SystemMessageEntity systemMessage) {
         String createdAt = DateUtils.formatDate(systemMessage.getCreated(), RestConstants.JSON_DATE_FORMAT);
-        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
+        return new SystemMessageModel(String.valueOf(systemMessage.getId()), systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 
     private SystemMessageEntity convertToSystemMessage(SystemMessageModel systemMessageModel) {
         try {
             OffsetDateTime date = DateUtils.parseDate(systemMessageModel.getCreatedAt(), RestConstants.JSON_DATE_FORMAT);
-            return new SystemMessageEntity(date, systemMessageModel.getSeverity(), systemMessageModel.getContent(), systemMessageModel.getType());
+            SystemMessageEntity entity = new SystemMessageEntity(date, systemMessageModel.getSeverity(), systemMessageModel.getContent(), systemMessageModel.getType());
+            entity.setId(Long.valueOf(systemMessageModel.getId()));
+            return entity;
         } catch (ParseException e) {
             logger.error("There was an issue parsing the stored CreatedAt date.");
         }
