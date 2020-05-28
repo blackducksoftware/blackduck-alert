@@ -31,7 +31,7 @@ public class AboutReaderTest {
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
-        Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
+        Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel("1", RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
     }
 
     @Test

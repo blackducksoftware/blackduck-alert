@@ -46,7 +46,7 @@ public class StatefulProvider {
         List<ProviderTask> tasks, ProviderProperties properties, ProviderDistributionFilter distributionFilter, ProviderMessageContentCollector messageContentCollector) {
         FieldAccessor fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
         boolean configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
-        String configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("UNKNOWN CONFIGURATION");
+        String configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(ProviderProperties.UNKNOWN_CONFIG_NAME);
 
         return new StatefulProvider(providerKey, configurationModel.getConfigurationId(), configName, configEnabled, tasks, properties, distributionFilter, messageContentCollector);
     }
