@@ -98,17 +98,17 @@ public class DefaultDescriptorGlobalConfigUtility {
 
     public FieldModel update(Long id, FieldModel fieldModel) throws AlertException {
         FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
-        Map<String, ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction);
+        Map<String, ConfigurationFieldModel> valueMap = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction);
         Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(id);
-
-        if (!existingConfig.isPresent()) {
-            return apiAction.afterUpdateAction(beforeUpdateAction);
+        ConfigurationModel configurationModel;
+        if (existingConfig.isPresent()) {
+            Map<String, ConfigurationFieldModel> updatedValues = updateSensitiveFields(valueMap, existingConfig.get());
+            configurationModel = configurationAccessor.updateConfiguration(id, updatedValues.values());
         } else {
-            Map<String, ConfigurationFieldModel> updatedValues = updateSensitiveFields(values, existingConfig.get());
-            ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedValues.values());
-            FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-            return apiAction.afterUpdateAction(convertedFieldModel);
+            configurationModel = configurationAccessor.createConfiguration(key, context, valueMap.values());
         }
+        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
+        return apiAction.afterUpdateAction(convertedFieldModel);
     }
 
     private Map<String, ConfigurationFieldModel> updateSensitiveFields(Map<String, ConfigurationFieldModel> values, ConfigurationModel existingConfig) {
