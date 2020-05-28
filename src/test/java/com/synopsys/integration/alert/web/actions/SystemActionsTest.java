@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -155,7 +154,7 @@ public class SystemActionsTest {
     private List<SystemMessageModel> createSystemMessageList() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.minusMinutes(1);
-        return Collections.singletonList(new SystemMessageModel(RestConstants.formatDate(Date.from(zonedDateTime.toInstant())), "type", "content", "type"));
+        return List.of(new SystemMessageModel("1", RestConstants.formatDate(Date.from(zonedDateTime.toInstant())), "type", "content", "type"));
     }
 
 }
