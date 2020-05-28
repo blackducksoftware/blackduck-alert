@@ -23,7 +23,9 @@
 package com.synopsys.integration.alert.common.descriptor.accessor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,9 +98,33 @@ public class DefaultDescriptorGlobalConfigUtility {
 
     public FieldModel update(Long id, FieldModel fieldModel) throws AlertException {
         FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
-        Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction).values();
-        ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, values);
-        FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-        return apiAction.afterUpdateAction(convertedFieldModel);
+        Map<String, ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction);
+        Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(id);
+
+        if (!existingConfig.isPresent()) {
+            return apiAction.afterUpdateAction(beforeUpdateAction);
+        } else {
+            Map<String, ConfigurationFieldModel> updatedValues = updateSensitiveFields(values, existingConfig.get());
+            ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedValues.values());
+            FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
+            return apiAction.afterUpdateAction(convertedFieldModel);
+        }
+    }
+
+    private Map<String, ConfigurationFieldModel> updateSensitiveFields(Map<String, ConfigurationFieldModel> values, ConfigurationModel existingConfig) {
+        Collection<ConfigurationFieldModel> sensitiveFields = existingConfig.getCopyOfFieldList().stream()
+                                                                  .filter(ConfigurationFieldModel::isSensitive)
+                                                                  .collect(Collectors.toSet());
+        for (ConfigurationFieldModel sensitiveConfigurationFieldModel : sensitiveFields) {
+            String key = sensitiveConfigurationFieldModel.getFieldKey();
+            if (values.containsKey(key)) {
+                ConfigurationFieldModel sensitiveFieldModel = values.get(key);
+                if (!sensitiveFieldModel.isSet()) {
+                    ConfigurationFieldModel newFieldModel = values.get(key);
+                    newFieldModel.setFieldValues(sensitiveConfigurationFieldModel.getFieldValues());
+                }
+            }
+        }
+        return values;
     }
 }
