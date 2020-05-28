@@ -161,7 +161,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     private SystemMessageModel convertToSystemMessage(SystemMessageEntity systemMessage) {
         String date = DateUtils.formatDate(systemMessage.getCreated(), RestConstants.JSON_DATE_FORMAT);
-        return new SystemMessageModel(date, systemMessage.getSeverity(), systemMessage.getContent(), systemMessage.getType());
+        return new SystemMessageModel(String.valueOf(systemMessage.getId()), date, systemMessage.getSeverity(), systemMessage.getContent(), systemMessage.getType());
     }
 
 }
