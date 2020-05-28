@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
@@ -33,7 +31,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 
 public class BlackDuckValidatorTask extends ProviderTask {
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckValidatorTask.class);
     private final BlackDuckValidator validator;
 
     public BlackDuckValidatorTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties, BlackDuckValidator validator) {
