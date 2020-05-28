@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -34,6 +35,7 @@ import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropert
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
 
 @Component
+@Transactional
 public class DefaultProviderTaskPropertiesAccessor implements ProviderTaskPropertiesAccessor {
     private ProviderTaskPropertiesRepository providerTaskPropertiesRepository;
 

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.database.provider.user;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -42,4 +43,6 @@ public interface ProviderUserRepository extends JpaRepository<ProviderUserEntity
     List<ProviderUserEntity> findByEmailAddressAndProviderConfigId(String emailAddress, Long providerConfigId);
 
     void deleteByProviderConfigIdAndEmailAddress(Long providerConfigId, String emailAddress);
+
+    List<ProviderUserEntity> findByEmailAddressInAndProviderConfigId(Collection<String> emailAddresses, Long providerConfigId);
 }
