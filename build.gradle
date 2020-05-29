@@ -28,6 +28,8 @@ ext {
     javaTargetCompatibility = JavaVersion.VERSION_11
 
     moduleName = 'com.synopsys.integration.alert.main'
+
+    postgresContainerVersion = '12.2'
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
