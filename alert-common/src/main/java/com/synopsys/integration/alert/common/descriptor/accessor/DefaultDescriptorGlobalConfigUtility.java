@@ -111,6 +111,7 @@ public class DefaultDescriptorGlobalConfigUtility {
         return apiAction.afterUpdateAction(convertedFieldModel);
     }
 
+    // TODO build a new utility to perform this action or try to refactor FieldModelProcessor into the alert-common sub-project
     private Map<String, ConfigurationFieldModel> updateSensitiveFields(Map<String, ConfigurationFieldModel> values, ConfigurationModel existingConfig) {
         Collection<ConfigurationFieldModel> sensitiveFields = existingConfig.getCopyOfFieldList().stream()
                                                                   .filter(ConfigurationFieldModel::isSensitive)
