@@ -32,10 +32,10 @@ RUN set -e \
     		zip \
     		postgresql-client
 
-RUN mkdir -p -m 774 $CERTIFICATE_MANAGER_DIR
-RUN mkdir -p -m 774 $SECURITY_DIR
-RUN mkdir -p -m 774 $ALERT_CONFIG_HOME
-RUN mkdir -p -m 774 $ALERT_DATA_DIR
+RUN mkdir -p -m 775 $CERTIFICATE_MANAGER_DIR
+RUN mkdir -p -m 775 $SECURITY_DIR
+RUN mkdir -p -m 775 $ALERT_CONFIG_HOME
+RUN mkdir -p -m 775 $ALERT_DATA_DIR
 
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
