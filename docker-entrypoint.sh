@@ -446,6 +446,7 @@ postgresPrepare600Upgrade() {
     fi
 }
 echo "Checking if certificate management script exists..."
+whoami
 ls -al $certificateManagerDir
 
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
