@@ -10,8 +10,6 @@ buildscript {
 
 apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
-apply from: 'buildSrc/deploymentTasks.gradle'
-
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
@@ -44,12 +42,3 @@ task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
-task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
-    helmValidation.mustRunAfter build
-    createDeploymentZip.mustRunAfter helmValidation
-
-    dockerLogin.mustRunAfter createDeploymentZip
-    buildDockerImage.mustRunAfter dockerLogin
-
-    pushImage.mustRunAfter buildDockerImage
-}

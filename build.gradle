@@ -42,6 +42,7 @@ apply plugin: 'com.synopsys.integration.solution'
 
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
+apply from: 'buildSrc/deploymentTasks.gradle'
 apply from: 'buildSrc/docker.gradle'
 
 allprojects {
@@ -157,4 +158,14 @@ artifactory {
     publish {
         defaults { publications('mavenJava') }
     }
+}
+
+task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+    helmValidation.mustRunAfter build
+    createDeploymentZip.mustRunAfter helmValidation
+
+    dockerLogin.mustRunAfter createDeploymentZip
+    buildDockerImage.mustRunAfter dockerLogin
+
+    pushImage.mustRunAfter buildDockerImage
 }
