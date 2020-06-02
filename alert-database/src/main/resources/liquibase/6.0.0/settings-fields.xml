@@ -20,9 +20,7 @@
     </changeSet>
     <changeSet id="2020-06-02-10-25-16-721" author="psantos">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DESCRIPTOR_CONFIGS where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND created_at = NULL </sqlCheck>
-            </not>
+            <sqlCheck expectedResult="1"> select count(*) FROM ALERT.DESCRIPTOR_CONFIGS where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND created_at is null </sqlCheck>
         </preConditions>
         <update schemaName="alert" tableName="descriptor_configs">
             <column name="created_at" type="timestamp" valueComputed="now()"/>
@@ -31,9 +29,7 @@
     </changeSet>
     <changeSet id="2020-06-02-10-52-08-950" author="psantos">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DESCRIPTOR_CONFIGS where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND last_updated = NULL </sqlCheck>
-            </not>
+            <sqlCheck expectedResult="1"> select count(*) FROM ALERT.DESCRIPTOR_CONFIGS where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND last_updated is null </sqlCheck>
         </preConditions>
         <update schemaName="alert" tableName="descriptor_configs">
             <column name="last_updated" type="timestamp" valueComputed="now()"/>
