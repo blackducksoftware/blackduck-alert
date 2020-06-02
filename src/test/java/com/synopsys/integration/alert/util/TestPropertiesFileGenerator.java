@@ -10,21 +10,21 @@ import org.junit.jupiter.api.Test;
 
 public class TestPropertiesFileGenerator {
     @Test
-    @Ignore
+    @Ignore("This test is to generate the test.properties for new developers.")
     public void generatePropertiesFile() throws IOException {
-        final String propertiesFileName = ResourceLoader.RESOURCE_DIR + "/" + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
+        String propertiesFileName = ResourceLoader.RESOURCE_DIR + "/" + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
         System.out.println("Generating file: " + propertiesFileName + "..");
 
-        final File testPropertiesFile = new File(propertiesFileName);
+        File testPropertiesFile = new File(propertiesFileName);
         if (!testPropertiesFile.exists()) {
-            final boolean successfullyCreated = testPropertiesFile.createNewFile();
+            boolean successfullyCreated = testPropertiesFile.createNewFile();
             if (!successfullyCreated) {
                 System.out.println("There was a problem creating the file '" + propertiesFileName + "'.");
                 return;
             }
 
-            final StringBuilder dataBuilder = new StringBuilder();
-            for (final TestPropertyKey propertyKey : TestPropertyKey.values()) {
+            StringBuilder dataBuilder = new StringBuilder();
+            for (TestPropertyKey propertyKey : TestPropertyKey.values()) {
                 dataBuilder.append(propertyKey.getPropertyKey());
                 dataBuilder.append('=');
                 dataBuilder.append(System.lineSeparator());

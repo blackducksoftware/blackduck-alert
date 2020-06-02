@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -42,12 +40,6 @@ import freemarker.template.TemplateExceptionHandler;
 @Component
 public class FreemarkerTemplatingService {
     public static final String KEY_ALERT_SERVER_URL = "alertServerUrl";
-    private final AlertProperties alertProperties;
-
-    @Autowired
-    public FreemarkerTemplatingService(AlertProperties alertProperties) {
-        this.alertProperties = alertProperties;
-    }
 
     public Configuration createFreemarkerConfig(TemplateLoader templateLoader) {
         Configuration configuration = createDefaultConfiguration();

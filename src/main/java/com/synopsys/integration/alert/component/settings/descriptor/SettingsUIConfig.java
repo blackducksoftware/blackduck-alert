@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class SettingsUIConfig extends UIConfig {
     private static final String LABEL_ENCRYPTION_PASSWORD = "Encryption Password";
     private static final String LABEL_ENCRYPTION_GLOBAL_SALT = "Encryption Global Salt";
-    private static final String LABEL_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "Startup Environment Variable Override";
     private static final String LABEL_PROXY_HOST = "Proxy Host";
     private static final String LABEL_PROXY_PORT = "Proxy Port";
     private static final String LABEL_PROXY_USERNAME = "Proxy Username";
@@ -52,7 +51,6 @@ public class SettingsUIConfig extends UIConfig {
 
     private static final String SETTINGS_ENCRYPTION_PASSWORD_DESCRIPTION = "The password used when encrypting sensitive fields. Must be at least 8 characters long.";
     private static final String SETTINGS_ENCRYPTION_SALT_DESCRIPTION = "The salt used when encrypting sensitive fields. Must be at least 8 characters long.";
-    private static final String SETTINGS_ENVIRONMENT_VARIABLE_OVERRIDE_DESCRIPTION = "If true, the Alert environment variables will override the stored configurations.";
 
     private static final String SETTINGS_PROXY_HOST_DESCRIPTION = "The host name of the proxy server to use.";
     private static final String SETTINGS_PROXY_PORT_DESCRIPTION = "The port of the proxy server to use.";
