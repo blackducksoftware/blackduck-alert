@@ -7,10 +7,12 @@ registry: "docker.io/blackducksoftware"
 # Storage configurations
 enablePersistentStorage: true
 storageClass: # it will apply to all PVC's storage class but it can be override at container level
+# enableStandalone deploys a cfssl instance with Alert
+enableStandalone: true
 
 # alert - configurations for the Alert Pod
 alert:
-  imageTag: VERSION_TOKEN
+  imageTag: ALERT_VERSION_TOKEN
   registry: "" # override the docker registry at container level
   port: 8443
   resources:
@@ -26,8 +28,6 @@ alert:
   securityContext: {}
   podSecurityContext: {}
 
-# enableStandalone deploys a cfssl instance with Alert
-enableStandalone: true
 # cfssl - configurations for the cfssl Pod
 cfssl:
   imageTag: 1.0.1

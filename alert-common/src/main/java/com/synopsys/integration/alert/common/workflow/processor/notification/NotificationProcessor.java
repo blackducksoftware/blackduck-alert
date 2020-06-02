@@ -91,7 +91,8 @@ public class NotificationProcessor {
         StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
 
         ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
-        List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notifications);
+        List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
+        List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notificationsByProviderConfig);
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
         if (!filteredNotifications.isEmpty()) {
@@ -114,6 +115,13 @@ public class NotificationProcessor {
         return notifications
                    .stream()
                    .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
+                   .collect(Collectors.toList());
+    }
+
+    private List<AlertNotificationModel> filterNotificationsByProviderConfigId(StatefulProvider provider, List<AlertNotificationModel> notifications) {
+        return notifications
+                   .stream()
+                   .filter(notification -> notification.getProviderConfigId().equals(provider.getConfigId()))
                    .collect(Collectors.toList());
     }
 

@@ -23,16 +23,22 @@
 package com.synopsys.integration.alert.common.persistence.model;
 
 public class SystemMessageModel {
+    private final String id;
     private final String severity;
     private final String createdAt;
     private final String content;
     private final String type;
 
-    public SystemMessageModel(final String severity, final String createdAt, final String content, final String type) {
+    public SystemMessageModel(String id, String severity, String createdAt, String content, String type) {
+        this.id = id;
         this.severity = severity;
         this.createdAt = createdAt;
         this.content = content;
         this.type = type;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getSeverity() {

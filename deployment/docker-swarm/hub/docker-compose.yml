@@ -14,10 +14,10 @@ services:
       mode: replicated
       restart_policy: {condition: on-failure, delay: 5s, window: 60s}
       resources:
-        limits: {memory: 640M}
-        reservations: {memory: 640M}
+        limits: {memory: 1024M}
+        reservations: {memory: 1024M}
   alert:
-    image: blackducksoftware/blackduck-alert:VERSION_TOKEN
+    image: blackducksoftware/blackduck-alert:ALERT_VERSION_TOKEN
     ports: ['8443:8443']
     env_file: [blackduck-alert.env]
     healthcheck:
