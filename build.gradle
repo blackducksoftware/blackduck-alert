@@ -21,22 +21,30 @@ plugins {
     id 'com.moowork.node' version '1.3.1'
 }
 
-// Copied from src/test/java - com.synopsys.integration.alert.TestTags
-project.ext.junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
+ext {
+    // Copied from src/test/java - com.synopsys.integration.alert.TestTags
+    junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
+    
+    javaSourceCompatibility = JavaVersion.VERSION_11
+    javaTargetCompatibility = JavaVersion.VERSION_11
 
-project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
-project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
+    moduleName = 'com.synopsys.integration.alert.main'
 
-project.ext.moduleName = 'com.synopsys.integration.alert.main'
+    postgresContainerVersion = '12.2'
+}
+
 mainClassName = 'com.synopsys.integration.alert.Application'
 
 version = '6.1.0-SNAPSHOT'
-def testContainerPostgresVersion = '12.2'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.synopsys.integration.solution'
-apply plugin: 'com.bmuschko.docker-remote-api'
+
+apply from: 'buildSrc/buildTasks.gradle'
+apply from: 'buildSrc/runTasks.gradle'
+apply from: 'buildSrc/deploymentTasks.gradle'
+apply from: 'buildSrc/docker.gradle'
 
 allprojects {
     apply plugin: 'java'
@@ -136,216 +144,6 @@ distributions {
             mkdir 'email/attachments'
         }
     }
-}
-
-task copyToLib(type: Copy, dependsOn: [compileJava]) {
-    from findJar('h2', 'liquibase', 'logback-classic', 'logback-core', 'slf4j-api', 'snakeyaml')
-    into "${project.buildDir}/libs/liquibase"
-}
-
-def findJar(Object... prefixes) {
-    configurations.runtimeClasspath.filter { file ->
-        prefixes.any { prefix -> file.name.startsWith(prefix)
-        }
-    }
-}
-
-tasks.compileJava.finalizedBy(tasks.copyToLib)
-
-// run alert locally
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
-// disable the test task when running the alert server to speed up startup time.
-gradle.taskGraph.whenReady { graph ->
-    if (graph.hasTask(runServer)) {
-        compileTestJava.enabled = false
-        test.enabled = false
-    }
-}
-
-task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
-    doFirst {
-        mkdir "${project.buildDir}/certs"
-    }
-}
-
-task createTruststore(type: Copy) {
-    from "${System.getProperty('java.home')}/lib/security/"
-    include 'cacerts'
-    into "${project.buildDir}/certs/"
-    rename 'cacerts', 'blackduck-alert.truststore'
-}
-
-task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
-    postgresVersion = testContainerPostgresVersion
-}
-
-tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }
-tasks.createTruststore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.truststore").exists() }
-tasks.runServer.mustRunAfter(createKeystore)
-tasks.runServer.mustRunAfter(createTruststore)
-
-// Build tasks
-
-task cleanBundles(type: Delete) {
-    File testDatabaseDirectory = new File('testDB')
-    if (testDatabaseDirectory.exists()) {
-        println "Deleting ${testDatabaseDirectory.canonicalPath}"
-        testDatabaseDirectory.deleteDir()
-    }
-
-    File staticResourcesDirectory = new File('src/main/static')
-    if (staticResourcesDirectory.exists()) {
-        println "Deleting ${staticResourcesDirectory.canonicalPath}"
-        staticResourcesDirectory.deleteDir()
-    }
-
-    File emailFileDirectory = new File('email')
-    if (emailFileDirectory.exists()) {
-        println "Deleting ${emailFileDirectory.canonicalPath}"
-        emailFileDirectory.deleteDir()
-    }
-}
-
-tasks.clean.finalizedBy(cleanBundles)
-
-task updateNpmVersion(type: Task) {
-    final def packageJsonFile = new File("${projectDir}/package.json")
-    def packageSlurper = new JsonSlurper()
-    def packageJson = packageSlurper.parse file("${projectDir}/package.json")
-    if (packageJson.version != version) {
-        packageJson.version = version
-
-        final def updatedPackageJson = JsonOutput.toJson(packageJson)
-
-        packageJsonFile.delete()
-        packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
-    }
-}
-
-npm_run() {
-    args = ['build']
-}
-
-tasks.npm_run.mustRunAfter(updateNpmVersion)
-
-task webpack(type: Exec) {
-    inputs.file("package-lock.json")
-    inputs.file("webpack.config.js")
-    inputs.dir("$projectDir/src/main")
-
-    commandLine "$projectDir/node_modules/.bin/webpack"
-}
-
-task createAboutText(type: Task) {
-    final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
-    aboutFile.delete()
-    def readmeContentArray = new File("${projectDir}/README.md").text.readLines()
-    def descriptionStart = readmeContentArray.indexOf("<!-- description-text-start -->") + 1
-    def descriptionEnd = readmeContentArray.indexOf("<!-- description-text-end -->")
-    def description = readmeContentArray.subList(descriptionStart, descriptionEnd).join(" ")
-
-    def projectUrlStart = readmeContentArray.indexOf("<!-- project-url-text-start -->") + 1
-    def projectUrlEnd = readmeContentArray.indexOf("<!-- project-url-text-end -->")
-    def projectUrlText = readmeContentArray.subList(projectUrlStart, projectUrlEnd).join(" ")
-    def gitUrl = projectUrlText.substring(projectUrlText.indexOf("https"))
-    gitUrl = gitUrl.substring(0, gitUrl.indexOf("releases"))
-
-    def time = new Date().format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS\'Z\'');
-    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description, created: time])
-    logger.info("About text file: {} content: {}", aboutFile, aboutJson)
-    aboutFile << aboutJson
-}
-
-task copyToTemplates(type: Copy, dependsOn: [npm_run]) {
-    from "${project.buildDir}/resources/main/static/index.html"
-    into "${project.buildDir}/resources/main/templates/"
-}
-
-tasks.compileJava.mustRunAfter(createAboutText)
-tasks.compileJava.finalizedBy(copyToTemplates)
-
-task copyDeploymentFiles(type: Copy) {
-    from('deployment') {
-        include "docker-swarm/**", "helm/synopsys-alert/**"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-swarm/external-db/hub"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-swarm/external-db/standalone"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-swarm/hub"
-    }
-    from('deployment/blackduck-alert.env') {
-        into "docker-swarm/standalone"
-    }
-    into "${project.buildDir}/deployment"
-
-    doLast {
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/hub/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-    }
-}
-
-task createDeploymentZip(type: Zip, dependsOn: [copyDeploymentFiles]) {
-    from "${project.buildDir}/deployment"
-    into "${project.name}-${project.version}-deployment"
-    baseName "${project.name}"
-    classifier 'deployment'
-}
-
-task helmLint(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "lint", "${project.buildDir}/deployment/helm/synopsys-alert/"
-}
-
-task helmDryRun(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
-}
-
-task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun]) {
-    helmLint.mustRunAfter copyDeploymentFiles
-    helmDryRun.mustRunAfter helmLint
-}
-
-task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
-    from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
-    into "${project.buildDir}/docker"
-}
-
-task stageDocker(type: Copy, dependsOn: [untarArchiveForDocker]) {
-    into "${project.buildDir}/docker"
-    from("${project.projectDir}") {
-        include 'Dockerfile'
-        include 'docker-entrypoint.sh'
-    }
-    from("${project.buildDir}/distributions") {
-        include "blackduck-alert-boot-${project.version}.tar"
-    }
-}
-
-task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
-    inputDir = file("${project.buildDir}/docker")
-    buildArgs = ['VERSION': "${project.version}"]
-    images.add("blackducksoftware/${project.name}:${project.version}")
-}
-
-task dockerLogin(type: Exec) {
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
-}
-
-task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
-    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
 publishing {

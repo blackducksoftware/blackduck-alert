@@ -1,0 +1,44 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
+    }
+}
+
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
+    from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
+    into "${project.buildDir}/docker"
+}
+
+task stageDocker(type: Copy, dependsOn: [untarArchiveForDocker]) {
+    into "${project.buildDir}/docker"
+    from("${project.projectDir}") {
+        include 'Dockerfile'
+        include 'docker-entrypoint.sh'
+    }
+    from("${project.buildDir}/distributions") {
+        include "blackduck-alert-boot-${project.version}.tar"
+    }
+}
+
+task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
+    inputDir = file("${project.buildDir}/docker")
+    buildArgs = ['VERSION': "${project.version}"]
+    images.add("blackducksoftware/${project.name}:${project.version}")
+}
+
+task dockerLogin(type: Exec) {
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
+}
+
+task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
+    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+}
+

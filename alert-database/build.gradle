@@ -11,10 +11,13 @@ buildscript {
     }
 }
 
-project.ext.moduleName = 'com.synopsys.integration.alert.database'
 def alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 
-apply plugin: 'com.bmuschko.docker-remote-api'
+ext {
+    moduleName = 'com.synopsys.integration.alert.database'
+}
+
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.2.8'

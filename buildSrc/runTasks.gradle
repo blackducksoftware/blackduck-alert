@@ -1,0 +1,29 @@
+task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
+    doFirst {
+        mkdir "${project.buildDir}/certs"
+    }
+}
+
+task createTruststore(type: Copy) {
+    from "${System.getProperty('java.home')}/lib/security/"
+    include 'cacerts'
+    into "${project.buildDir}/certs/"
+    rename 'cacerts', 'blackduck-alert.truststore'
+}
+
+task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
+    postgresVersion = project.ext.postgresContainerVersion
+}
+
+// disable the test task when running the alert server to speed up startup time.
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(runServer)) {
+        compileTestJava.enabled = false
+        test.enabled = false
+    }
+}
+
+tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }
+tasks.createTruststore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.truststore").exists() }
+tasks.runServer.mustRunAfter(createKeystore)
+tasks.runServer.mustRunAfter(createTruststore)
