@@ -2,6 +2,11 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gavink" id="2020-02-05-09-16-18-370">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DEFINED_FIELDS where source_key = 'settings.user.default.admin.email' </sqlCheck>
+            </not>
+        </preConditions>
         <delete schemaName="alert" tableName="defined_fields">
             <where>
                 SOURCE_KEY = 'settings.user.default.admin.email'
@@ -12,5 +17,23 @@
                 SOURCE_KEY = 'settings.user.default.admin.password'
             </where>
         </delete>
+    </changeSet>
+    <changeSet id="2020-06-02-10-25-16-721" author="psantos">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DESCRIPTOR_CONFIG where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND created_at = NULL </sqlCheck>
+        </preConditions>
+        <update schemaName="alert" tableName="descriptor_configs">
+            <column name="created_at" type="timestamp" valueComputed="now()"/>
+            <where>descriptor_id=GET_DESCRIPTOR_ID('component_settings') AND context_id=GET_CONTEXT_ID('GLOBAL')</where>
+        </update>
+    </changeSet>
+    <changeSet id="2020-06-02-10-52-08-950" author="psantos">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DESCRIPTOR_CONFIG where descriptor_id = GET_DESCRIPTOR_ID('component_settings') AND context_id = GET_CONTEXT_ID('GLOBAL') AND last_updated = NULL </sqlCheck>
+        </preConditions>
+        <update schemaName="alert" tableName="descriptor_configs">
+            <column name="last_updated" type="timestamp" valueComputed="now()"/>
+            <where>descriptor_id=GET_DESCRIPTOR_ID('component_settings') AND context_id=GET_CONTEXT_ID('GLOBAL')</where>
+        </update>
     </changeSet>
 </databaseChangeLog>
