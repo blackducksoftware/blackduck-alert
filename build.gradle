@@ -30,7 +30,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 project.ext.moduleName = 'com.synopsys.integration.alert.main'
 mainClassName = 'com.synopsys.integration.alert.Application'
 
-version = '6.0.0-SIGQA12-SNAPSHOT'
+version = '6.0.0-SIGQA12'
 def testContainerPostgresVersion = '12.2'
 
 apply plugin: 'idea'
