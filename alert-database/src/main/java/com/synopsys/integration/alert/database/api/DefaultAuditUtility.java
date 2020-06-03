@@ -314,6 +314,8 @@ public class DefaultAuditUtility implements AuditUtility {
         }
         String timeLastSent = null;
         if (null != auditEntryEntity.getTimeLastSent()) {
+            // TODO should this be using the DateUtils like we do above?
+            // timeLastSent = DateUtils.formatDate(auditEntryEntity.getTimeLastSent(), DateUtils.AUDIT_DATE_FORMAT);
             timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
         }
         String status = null;
