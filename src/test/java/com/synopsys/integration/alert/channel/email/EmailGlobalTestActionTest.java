@@ -185,7 +185,7 @@ public class EmailGlobalTestActionTest {
         TestAlertProperties testAlertProperties = new TestAlertProperties();
 
         EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
 
         Gson gson = new Gson();

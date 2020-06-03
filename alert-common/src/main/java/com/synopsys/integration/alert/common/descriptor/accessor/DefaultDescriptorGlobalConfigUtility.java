@@ -117,11 +117,11 @@ public class DefaultDescriptorGlobalConfigUtility {
                                                                   .filter(ConfigurationFieldModel::isSensitive)
                                                                   .collect(Collectors.toSet());
         for (ConfigurationFieldModel sensitiveConfigurationFieldModel : sensitiveFields) {
-            String key = sensitiveConfigurationFieldModel.getFieldKey();
-            if (values.containsKey(key)) {
-                ConfigurationFieldModel sensitiveFieldModel = values.get(key);
+            String fieldKey = sensitiveConfigurationFieldModel.getFieldKey();
+            if (values.containsKey(fieldKey)) {
+                ConfigurationFieldModel sensitiveFieldModel = values.get(fieldKey);
                 if (!sensitiveFieldModel.isSet()) {
-                    ConfigurationFieldModel newFieldModel = values.get(key);
+                    ConfigurationFieldModel newFieldModel = values.get(fieldKey);
                     newFieldModel.setFieldValues(sensitiveConfigurationFieldModel.getFieldValues());
                 }
             }

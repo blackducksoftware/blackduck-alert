@@ -44,6 +44,12 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumula
 @Order(55)
 @Deprecated(since = "6.0.0")
 //TODO Remove this class in 8.0.0
+/**
+ * This class is to move the last search time from a String in a file into the database.
+ *
+ * This class should be removed in 8.0.0.
+ * @deprecated since 6.0.0
+ */
 public class LastSearchDataMigration extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(LastSearchDataMigration.class);
     private static final String LAST_SEARCH_FILE = "blackduck-accumulator-task-last-search.txt";

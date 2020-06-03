@@ -41,10 +41,6 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 @Component
 public class PKIXErrorResponseFactory {
     private final Logger logger = LoggerFactory.getLogger(PKIXErrorResponseFactory.class);
-    private static final String BLACKDUCK_GITHUB_DEPLOYMENT_URL = "https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment";
-    private static final String ALERT_DEPLOYMENT_DOCKER_SWARM = "docker-swarm";
-    private static final String ALERT_DEPLOYMENT_DOCKER_COMPOSE = "docker-compose";
-    private static final String ALERT_DEPLOYMENT_KUBERNETES = "kubernetes";
 
     private static final String PKIX_HEADER = "There were issues with your Certificates.";
     private static final String PKIX_TITLE = "To resolve this issue, use the link below to properly install your certificates.";

@@ -47,7 +47,7 @@ public class EmailChannelTestIT extends ChannelTest {
         TestAlertProperties testAlertProperties = new TestAlertProperties();
         EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
 
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
         EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
