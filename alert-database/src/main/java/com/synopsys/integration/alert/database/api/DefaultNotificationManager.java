@@ -89,7 +89,8 @@ public class DefaultNotificationManager implements NotificationManager {
                                                        .stream()
                                                        .map(this::toModel)
                                                        .collect(Collectors.toList());
-
+        notificationContentRepository.flush();
+        // TODO move this sendEvent call out of this class.  We can then remove the flush call since the save will be in a transaction.
         if (!savedModels.isEmpty()) {
             List<Long> notificationIds = savedModels.stream()
                                              .map(AlertNotificationModel::getId)
