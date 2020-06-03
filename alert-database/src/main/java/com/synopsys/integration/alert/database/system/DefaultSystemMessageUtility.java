@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +64,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void removeSystemMessagesByType(SystemMessageType messageType) {
         List<SystemMessageEntity> messages = systemMessageRepository.findByType(messageType.name());
         systemMessageRepository.deleteAll(messages);
@@ -101,7 +102,7 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
         List<SystemMessageEntity> convertedMessages = messagesToDelete.stream()
                                                           .map(this::convertToSystemMessage)
