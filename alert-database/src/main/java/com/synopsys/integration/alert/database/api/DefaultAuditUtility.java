@@ -219,7 +219,7 @@ public class DefaultAuditUtility implements AuditUtility {
         for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
-            if (null == timeLastSentOffsetDateTime || (null != auditEntryEntity.getTimeLastSent() && timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
+            if (null != auditEntryEntity.getTimeLastSent() && (null == timeLastSentOffsetDateTime || timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
                 timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
                 timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.AUDIT_DATE_FORMAT);
             }
