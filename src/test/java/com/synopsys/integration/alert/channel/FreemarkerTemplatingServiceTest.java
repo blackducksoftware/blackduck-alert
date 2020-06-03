@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.util.TestAlertProperties;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -17,8 +16,7 @@ public class FreemarkerTemplatingServiceTest {
 
     @Test
     public void testLoadingByClass() throws IOException {
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/freemarker");
         Configuration configuration = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
         Template test1 = configuration.getTemplate("namespace_1/template_1.ftl");
