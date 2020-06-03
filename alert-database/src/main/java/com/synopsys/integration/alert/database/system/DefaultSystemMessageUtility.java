@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
@@ -46,6 +45,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
+@Transactional
 public class DefaultSystemMessageUtility implements SystemMessageUtility {
     private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageUtility.class);
     private final SystemMessageRepository systemMessageRepository;
@@ -56,7 +56,6 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     @Override
-    @Transactional
     public void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SystemMessageEntity systemMessage = new SystemMessageEntity(currentTime, severity.name(), message, messageType.name());
@@ -64,27 +63,26 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void removeSystemMessagesByType(SystemMessageType messageType) {
         List<SystemMessageEntity> messages = systemMessageRepository.findByType(messageType.name());
         systemMessageRepository.deleteAll(messages);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<SystemMessageModel> getSystemMessages() {
         return convertAllToSystemMessageModel(systemMessageRepository.findAll());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<SystemMessageModel> getSystemMessagesAfter(OffsetDateTime date) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         return convertAllToSystemMessageModel(systemMessageRepository.findByCreatedBetween(date, currentTime));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<SystemMessageModel> getSystemMessagesBefore(OffsetDateTime date) {
         long recordCount = systemMessageRepository.count();
         if (recordCount == 0) {
@@ -96,13 +94,12 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<SystemMessageModel> findBetween(DateRange dateRange) {
         return systemMessageRepository.findByCreatedBetween(dateRange.getStart(), dateRange.getEnd()).stream().map(this::convertToSystemMessageModel).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
         List<SystemMessageEntity> convertedMessages = messagesToDelete.stream()
                                                           .map(this::convertToSystemMessage)
