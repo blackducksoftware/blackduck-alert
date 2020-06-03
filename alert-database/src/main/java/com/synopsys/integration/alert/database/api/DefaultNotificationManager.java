@@ -89,6 +89,7 @@ public class DefaultNotificationManager implements NotificationManager {
                                                        .stream()
                                                        .map(this::toModel)
                                                        .collect(Collectors.toList());
+        notificationContentRepository.flush();
 
         if (!savedModels.isEmpty()) {
             List<Long> notificationIds = savedModels.stream()
