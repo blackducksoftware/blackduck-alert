@@ -28,13 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class ConfigurationModel extends AlertSerializableModel {
+public class ConfigurationModel extends AlertSerializableModel {
     private final Long descriptorId;
     private final Long configurationId;
     private final String createdAt;
@@ -53,6 +52,10 @@ public final class ConfigurationModel extends AlertSerializableModel {
         this.lastUpdated = lastUpdated;
         this.context = context;
         configuredFields = new HashMap<>();
+    }
+
+    protected Map<String, ConfigurationFieldModel> getConfiguredFields() {
+        return configuredFields;
     }
 
     public Long getDescriptorId() {
@@ -88,20 +91,7 @@ public final class ConfigurationModel extends AlertSerializableModel {
         return new HashMap<>(configuredFields);
     }
 
-    public void put(ConfigurationFieldModel configFieldModel) {
-        Objects.requireNonNull(configFieldModel);
-        String fieldKey = configFieldModel.getFieldKey();
-        Objects.requireNonNull(fieldKey);
-        if (configuredFields.containsKey(fieldKey)) {
-            ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
-            List<String> values = combine(oldConfigField, configFieldModel);
-            oldConfigField.setFieldValues(values);
-        } else {
-            configuredFields.put(fieldKey, configFieldModel);
-        }
-    }
-
-    private List<String> combine(ConfigurationFieldModel first, ConfigurationFieldModel second) {
-        return Stream.concat(first.getFieldValues().stream(), second.getFieldValues().stream()).collect(Collectors.toList());
+    public ConfigurationModelMutable createMutableCopy() {
+        return new ConfigurationModelMutable(descriptorId, configurationId, createdAt, lastUpdated, context);
     }
 }
