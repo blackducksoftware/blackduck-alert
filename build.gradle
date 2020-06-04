@@ -24,7 +24,7 @@ plugins {
 ext {
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
     junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
-    
+
     javaSourceCompatibility = JavaVersion.VERSION_11
     javaTargetCompatibility = JavaVersion.VERSION_11
 
@@ -34,7 +34,6 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-
 version = '6.1.0-SNAPSHOT'
 
 apply plugin: 'idea'
