@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
@@ -57,7 +56,6 @@ public class BlackDuckValidator extends BaseSystemValidator {
         super(systemMessageUtility);
     }
 
-    @Transactional
     public boolean validate(BlackDuckProperties blackDuckProperties) {
         boolean valid = true;
         String configName = blackDuckProperties.getConfigName();
