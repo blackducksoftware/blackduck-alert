@@ -56,6 +56,14 @@ function frequencyColumnDataFormat(cell) {
     );
 }
 
+function defaultColumnDataFormat(cell) {
+    return (
+        <div title={cell}>
+            {cell}
+        </div>
+    );
+}
+
 const jobModificationState = {
     EDIT: 'EDIT',
     COPY: 'COPY'
@@ -198,8 +206,8 @@ class Index extends Component {
         const className = `alert-icon ${color}`;
 
         return (
-            <div className="btn btn-link jobIconButton">
-                <FontAwesomeIcon icon={icon} className={className} size="lg" />
+            <div className="btn btn-link jobIconButton" title={cell}>
+                <FontAwesomeIcon icon={icon} className={className} size="lg" title={cell} />
             </div>
         );
 
@@ -234,14 +242,14 @@ class Index extends Component {
     }
 
     nameDataFormat(cell, row) {
-        const defaultValue = <div className="inline">{cell}</div>;
+        const defaultValue = <div className="inline" title={cell}>{cell}</div>;
         const { jobsValidationResults } = this.props;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
             const jobErrors = jobsValidationResults.filter(item => item.id === row.id);
             if (jobErrors) {
                 return (
-                    <span className="missingData">
-                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                    <span className="missingData" title={cell}>
+                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" title={cell} />
                         {defaultValue}
                     </span>
                 );
@@ -253,7 +261,7 @@ class Index extends Component {
     }
 
     descriptorDataFormat(cell) {
-        const defaultValue = <div className="inline">{cell}</div>;
+        const defaultValue = <div className="inline" title={cell}>{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
             const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -354,15 +362,28 @@ class Index extends Component {
                     ref="table"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                    <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell" dataFormat={this.nameDataFormat}>Distribution Job</TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.descriptorDataFormat}>Provider</TableHeaderColumn>
-                    <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
-                    <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataField="enabled" width="96" dataSort columnTitle columnClassName="tableCell" dataFormat={this.enabledState}>Enabled</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} thStyle={{ textAlign: 'center' }}>Edit</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.copyButtonClick} thStyle={{ textAlign: 'center' }}>Copy</TableHeaderColumn>
+                    <TableHeaderColumn dataField="name" dataSort columnClassName="tableCell"
+                                       dataFormat={this.nameDataFormat}>Distribution Job</TableHeaderColumn>
+                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell"
+                                       dataFormat={this.descriptorDataFormat}>Type</TableHeaderColumn>
+                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell"
+                                       dataFormat={this.descriptorDataFormat}>Provider</TableHeaderColumn>
+                    <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell"
+                                       dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
+                    <TableHeaderColumn dataField="lastRan" dataSort
+                                       columnClassName="tableCell"
+                                       dataFormat={defaultColumnDataFormat}>Last Run</TableHeaderColumn>
+                    <TableHeaderColumn dataField="status" dataSort
+                                       columnClassName={statusColumnClassNameFormat}
+                                       dataFormat={defaultColumnDataFormat}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="enabled" width="96" dataSort columnClassName="tableCell"
+                                       dataFormat={this.enabledState}>Enabled</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell"
+                                       dataFormat={this.editButtonClick}
+                                       thStyle={{ textAlign: 'center' }}>Edit</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell"
+                                       dataFormat={this.copyButtonClick}
+                                       thStyle={{ textAlign: 'center' }}>Copy</TableHeaderColumn>
                 </BootstrapTable>
 
                 {this.props.inProgress &&
