@@ -295,30 +295,6 @@ importDockerHubServerCertificate(){
     fi
 }
 
-createDataBackUp(){
-    if [ -d $alertConfigHome/data ];
-    then
-      echo "Creating a backup of the data directory: $alertConfigHome/data"
-      if [ -f "$alertConfigHome/data/backup.zip" ];
-        then
-        rm -f "$alertConfigHome/data/backup.zip"
-      fi
-      cd "$alertConfigHome"
-      zip "$alertConfigHome/backup.zip" -r "data"
-      if [ -f "$alertConfigHome/backup.zip" ];
-        then
-          echo "Created a backup of the data directory: $alertConfigHome/backup.zip"
-          echo "Moving backup file to: $alertConfigHome/data"
-          mv "$alertConfigHome/backup.zip" "$alertConfigHome/data"
-        else
-          echo "Cannot create the backup."
-          echo "Cannot continue; stopping in 10 seconds..."
-          sleep 10
-          exit 1;
-      fi
-    fi
-}
-
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
   $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
@@ -469,7 +445,6 @@ else
   createKeystore
   importBlackDuckSystemCertificateIntoKeystore
   importDockerHubServerCertificate
-  createDataBackUp
   createPostgresDatabase
   validatePostgresDatabase
   postgresPrepare600Upgrade
