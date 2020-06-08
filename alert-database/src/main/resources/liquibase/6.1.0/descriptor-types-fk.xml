@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="2020-06-04-14-50-44-523">
+        <addForeignKeyConstraint
+                constraintName="fk_registered_descriptors_type_id"
+                baseTableSchemaName="alert"
+                baseTableName="registered_descriptors"
+                baseColumnNames="type_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="descriptor_types"
+                referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

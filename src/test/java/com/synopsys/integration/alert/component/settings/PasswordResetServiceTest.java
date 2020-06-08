@@ -43,7 +43,7 @@ public class PasswordResetServiceTest {
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(invalidUsername))).thenReturn(Optional.empty());
 
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(invalidUsername);
@@ -60,7 +60,7 @@ public class PasswordResetServiceTest {
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
 
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, null, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);
@@ -80,7 +80,7 @@ public class PasswordResetServiceTest {
         ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(Mockito.eq(EMAIL_CHANNEL_KEY.getUniversalKey()), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(null);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         PasswordResetService passwordResetService = new PasswordResetService(null, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);
@@ -121,7 +121,7 @@ public class PasswordResetServiceTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(EMAIL_CHANNEL_KEY), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         TestAlertProperties alertProperties = new TestAlertProperties();
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         passwordResetService.resetPassword(username);
     }
@@ -154,7 +154,7 @@ public class PasswordResetServiceTest {
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
 
-        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(alertProperties);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor, freemarkerTemplatingService, EMAIL_CHANNEL_KEY);
         try {
             passwordResetService.resetPassword(username);

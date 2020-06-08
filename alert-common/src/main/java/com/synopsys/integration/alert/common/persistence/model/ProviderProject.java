@@ -22,9 +22,14 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProviderProject extends AlertSerializableModel {
+    private static final String[] HASH_CODE_EQUALS_EXCLUDED_FIELDS = { "description" };
+
     private String name;
     private String description;
     private String href;
@@ -51,6 +56,16 @@ public class ProviderProject extends AlertSerializableModel {
 
     public String getProjectOwnerEmail() {
         return projectOwnerEmail;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, HASH_CODE_EQUALS_EXCLUDED_FIELDS);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, HASH_CODE_EQUALS_EXCLUDED_FIELDS);
     }
 
 }

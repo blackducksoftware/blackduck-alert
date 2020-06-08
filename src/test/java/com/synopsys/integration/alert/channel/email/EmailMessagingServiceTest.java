@@ -19,40 +19,38 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
 
     @Test
     public void sendAuthenticatedMessage() throws MessagingException, AlertException {
-        final TestProperties testProperties = new TestProperties();
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
+        TestProperties testProperties = new TestProperties();
+        EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
-        final FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService(testAlertProperties);
-        final EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
+        FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
 
-        final Session mockSession = Mockito.mock(Session.class);
-        final Transport mockTransport = Mockito.mock(Transport.class);
+        Session mockSession = Mockito.mock(Session.class);
+        Transport mockTransport = Mockito.mock(Transport.class);
 
         Mockito.doNothing().when(mockTransport).connect();
         Mockito.doNothing().when(mockTransport).close();
         Mockito.when(mockSession.getTransport(Mockito.anyString())).thenReturn(mockTransport);
         Mockito.when(mockSession.getProperties()).thenReturn(testProperties.getProperties());
 
-        final Message message = new MimeMessage(mockSession);
+        Message message = new MimeMessage(mockSession);
         Mockito.doNothing().when(mockTransport).sendMessage(Mockito.eq(message), Mockito.any());
 
         emailMessagingService.sendMessages(emailProperties, mockSession, List.of(message));
     }
 
     private FieldAccessor createEmailGlobalConfigEntity() {
-        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
+        ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
         fieldModel.setFieldValue("true");
-        final Map<String, ConfigurationFieldModel> fieldMap = Map.of(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), fieldModel);
+        Map<String, ConfigurationFieldModel> fieldMap = Map.of(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), fieldModel);
 
-        final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         return fieldAccessor;
     }
 

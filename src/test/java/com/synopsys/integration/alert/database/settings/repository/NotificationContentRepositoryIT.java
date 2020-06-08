@@ -144,9 +144,8 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         });
     }
 
-    // Only re-enable for performance testing
     @Test
-    @Disabled
+    @Disabled("Only re-enable for performance testing")
     @Tags(value = {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.DEFAULT_PERFORMANCE),
@@ -156,9 +155,8 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         notificationQueryTest(notificationContentRepository::findMatchingNotification);
     }
 
-    // Only re-enable for performance testing
     @Test
-    @Disabled
+    @Disabled("Only re-enable for performance testing")
     @Tags(value = {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.DEFAULT_PERFORMANCE),
