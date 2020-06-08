@@ -46,12 +46,16 @@ public class ConfigurationModel extends AlertSerializableModel {
     }
 
     public ConfigurationModel(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, ConfigContextEnum context) {
+        this(registeredDescriptorId, descriptorConfigId, createdAt, lastUpdated, context, new HashMap<>());
+    }
+
+    public ConfigurationModel(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, ConfigContextEnum context, Map<String, ConfigurationFieldModel> configuredFields) {
         descriptorId = registeredDescriptorId;
         configurationId = descriptorConfigId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.context = context;
-        configuredFields = new HashMap<>();
+        this.configuredFields = configuredFields;
     }
 
     protected Map<String, ConfigurationFieldModel> getConfiguredFields() {
@@ -92,6 +96,8 @@ public class ConfigurationModel extends AlertSerializableModel {
     }
 
     public ConfigurationModelMutable createMutableCopy() {
-        return new ConfigurationModelMutable(descriptorId, configurationId, createdAt, lastUpdated, context);
+        ConfigurationModelMutable mutableCopy = new ConfigurationModelMutable(descriptorId, configurationId, createdAt, lastUpdated, context);
+        mutableCopy.getConfiguredFields().putAll(configuredFields);
+        return mutableCopy;
     }
 }
