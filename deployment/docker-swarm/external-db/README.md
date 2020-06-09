@@ -743,10 +743,11 @@ For this advanced setting, since there are more than just environment variables 
         The maximum heap size in Java is the maximum size of the heap in the Java virtual machine (JVM), but the JVM also uses additional memory.  
         Therefore, the ALERT_MAX_HEAP_SIZE environment variable must be less than the amount defined in the mem_limit which is set for the container. 
         Synopsys recommends setting the deploy.resources using the following formula: ALERT_MAX_HEAP_SIZE + 256M.
-        
+        ```bash
             ALERT_MAX_HEAP_SIZE = 4096M
             limits = ALERT_MAX_HEAP_SIZE + 256M = 4352M
             reservations = ALERT_MAX_HEAP_SIZE + 256M = 4352M
+        ```
                 
 Example: 
 - Change the memory limit from 2G to 4G.
