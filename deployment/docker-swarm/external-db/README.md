@@ -36,7 +36,7 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 
 ## Installing Alert
 Deployment files for Docker Swarm are located in the *docker-swarm* directory of the zip file.
-```
+```text
 blackduck-alert-<VERSION>-deployment.zip file.
 ```
 - Extract the contents of the ZIP file.
@@ -83,7 +83,6 @@ This section will walk through each step of the installation procedure.
             ALERT_ENCRYPTION_PASSWORD:
               external: true
               name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -316,7 +315,6 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
           ALERT_DB_USERNAME:
             external: true
             name: "<STACK_NAME>_ALERT_DB_USERNAME"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -391,13 +389,13 @@ Deploy alert onto the stack and NGinX will eventually become healthy when the al
 
 ##### 8. Deploy the stack.
 - Execute the command to add Alert to the stack: 
-    ```
+    ```bash
     docker stack deploy -c <PATH>/docker-swarm/external-db/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <PATH> with the directory path to the Alert installation files. 
     - Use the same stack name used to install Black Duck from step 6 i.e. blackduck.
-    ```
+    ```bash
     docker stack deploy -c <PATH>/docker-swarm/external-db/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml blackduck
     ```
 
@@ -412,11 +410,11 @@ The steps in the upgrade procedure are the same as the installation procedure af
     ```
 
 ### Standalone Upgrade
-1. Run ```docker stack rm <STACK_NAME>``` replacing <STACK_NAME> with the name of the stack to be used in the deployment. 
+1. Run `docker stack rm <STACK_NAME>` replacing <STACK_NAME> with the name of the stack to be used in the deployment. 
 2. Follow the [Standalone Installation](#standalone-installation)
 
 ### Upgrade with Black Duck
-1. Run ```docker stack rm <STACK_NAME>``` replacing <STACK_NAME> with the name of the stack to be used in the deployment.
+1. Run `docker stack rm <STACK_NAME>` replacing <STACK_NAME> with the name of the stack to be used in the deployment.
 2. Follow [Installation with Black Duck](#installation-with-black-duck)
 
 ## Certificates 	
@@ -428,29 +426,29 @@ This section describes how to configure the optional certificates.  Please verif
     - Before custom certificates can be used for Alert the signed certificate and key must be available.	
 
         - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.	
-        ```bash	
+        ```bash
         docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>	
-        ```	
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
         - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.	
 
         - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.	
 
-        ```bash	
+        ```bash
         docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>	
-        ```	
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
         - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.	
 
     - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.	
-    ```yaml	
+    ```yaml
         alert:	
             secrets:	
                 - WEBSERVER_CUSTOM_CERT_FILE	
                 - WEBSERVER_CUSTOM_KEY_FILE	
-    ```	
+    ```
     - Uncomment the following secrets from the secrets section of the docker-compose.local-overrides.yml file.	
-    ```yaml	
+    ```yaml
         secrets:	
             WEBSERVER_CUSTOM_CERT_FILE:	
                 external: true	
@@ -458,7 +456,7 @@ This section describes how to configure the optional certificates.  Please verif
             WEBSERVER_CUSTOM_KEY_FILE:	
                 external: true	
                 name: "<STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE"	
-    ```	
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
 
 ### Using Custom Certificate TrustStore	
@@ -474,88 +472,88 @@ This section describes how to configure the optional certificates.  Please verif
 
     - Create the secret.  Only create one of the following secrets.	
         - jssecacerts - The java TrustStore file with any custom certificates imported.	
-            ```bash	
+            ```bash
             docker secret create <STACK_NAME>_jssecacerts <PATH_TO_TRUST_STORE_FILE>	
-            ```	
+            ```
             - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
             - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.	
 
         or 	
 
         - cacerts - The java TrustStore file with any custom certificates imported. 	
-            ```bash	
+            ```bash
             docker secret create <STACK_NAME>_cacerts <PATH_TO_TRUST_STORE_FILE>	
-            ```	
+            ```
             - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
             - Replace <PATH_TO_TRUST_STORE_FILE> with the path to the TrustStore file to be used.	
 
     - Uncomment the following from the docker-compose.local-overrides.yml file from the secrets section near the bottom of the file.	
-    ```yaml	
+    ```yaml
         secrets:	
             jssecacerts:	
                 external: true	
                 name: "<STACK_NAME>_jssecacerts"	
-    ```	
+    ```
     or 	
-    ```yaml	
+    ```yaml
         secrets:	
             cacerts:	
                 external: true	
                 name: "<STACK_NAME>_cacerts"	
-    ```	
+    ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
     - Uncomment the following from the docker-compose.local-overrides.yml file from the services alert section	
-    ```yaml	
+    ```yaml
         secrets:	
             - source: jssecacerts	
               target: jssecacerts	
               mode: 0664	
-    ```	
+    ```
     or	
-    ```yaml	
+    ```yaml
         secrets:	
             - source: cacerts	
               target: cacerts	
               mode: 0664	
-    ```	
+    ```
     Note: The mode (file permissions) must be specified because the certificate file is copied to a location Alert uses internally. Read/Write permissions are required to copy the file and import certificates into the TrustStore.	
 
     - Create a docker secret containing the password for the trust store.	
-        ```bash	
+        ```bash
         docker secret create <STACK_NAME>_ALERT_TRUST_STORE_PASSWORD <FILE_CONTAINING_PASSWORD>	
-        ```	
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
         - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.	
 
     - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.	
     - Uncomment the following from the docker-compose.local-overrides.yml file alert service section.	
-        ```yaml	
+        ```yaml
             alert:	
                 secrets:	
                     - ALERT_TRUST_STORE_PASSWORD	
-        ```	
+        ```
     - Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.	
-        ```yaml	
+        ```yaml
             secrets:	
                 ALERT_TRUST_STORE_PASSWORD:	
                   external: true	
                   name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"	
                 	
-        ```	
+        ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
 
 ## Environment Variables
 Alert supports initial configuration of the application's components via environment variables.  
 Environment variable values are only used if there is no configuration data for the corresponding component in the database.
 Please see the [Environment Variable Classifications](#environment-variable-classifications) to understand how environment variables pertain to Alert configuration data.
-Edit the ```docker-compose.local-overrides.yml``` file to include the environment variables.
+Edit the `docker-compose.local-overrides.yml` file to include the environment variables.
 
 ### Editing the Overrides File
-- Verify that ```alert:``` is uncommented from the service section, otherwise uncomment the ```alert:``` of docker-compose.local-overrides.yml.
-- Uncomment ```environment:``` from the alert service section of docker-compose.local-overrides.yml. 
-- Environment variables have the format ```- <VARIABLE_NAME>=<VARIABLE_VALUE>``` 
-- Environment variables are commented out in the ```docker-compose.local-overrides.yml``` file. 
-- Uncomment the environment variables to be used from the ```environment: ``` section of the alert service.
+- Verify that `alert:` is uncommented from the service section, otherwise uncomment the `alert:` of docker-compose.local-overrides.yml.
+- Uncomment `environment:` from the alert service section of docker-compose.local-overrides.yml. 
+- Environment variables have the format `- <VARIABLE_NAME>=<VARIABLE_VALUE>` 
+- Environment variables are commented out in the `docker-compose.local-overrides.yml` file. 
+- Uncomment the environment variables to be used from the `environment: ` section of the alert service.
 
 Example:
 ```yaml
@@ -576,8 +574,8 @@ The ALERT_HOSTNAME environment variable must be specified in order for Alert to 
     ```
     - Replace <NEW_HOST_NAME> with the hostname of the machine where Alert is installed.
 - Do not add the protocol a.k.a scheme to the value of the variable.
-    - Good: ```ALERT_HOSTNAME=myhost.example.com```
-    - Bad: ```ALERT_HOSTNAME=https://myhost.example.com```
+    - Good: `ALERT_HOSTNAME=myhost.example.com`
+    - Bad: `ALERT_HOSTNAME=https://myhost.example.com`
 
 ### Alert Database Variables
 There are additional environment variables to control how Alert connects to a database independent of the user and password secrets.
@@ -595,8 +593,8 @@ They are defined in the overrides file under the comment:
         ```
     - Replace <DB_HOST_NAME> with the hostname of the machine where Postgres is installed.
     - Do not add the protocol a.k.a scheme to the value of the variable.
-        - Good: ```ALERT_DB_HOST=myhost.example.com```
-        - Bad: ```ALERT_DB_HOST=https://myhost.example.com```
+        - Good: `ALERT_DB_HOST=myhost.example.com`
+        - Bad: `ALERT_DB_HOST=https://myhost.example.com`
 
 - Add the ALERT_DB_PORT environment variable
     - Editing overrides file:
@@ -637,7 +635,7 @@ A majority of the Email Channel environment variables that can be set are relate
 
 [JavaMail Properties](https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html)
 
-- The Email Channel environment variables have a prefix of ```ALERT_CHANNEL_EMAIL_```
+- The Email Channel environment variables have a prefix of `ALERT_CHANNEL_EMAIL_`
 - The remaining portion of the variable, after the prefix, map to the JavaMail properties if the '_' character is replaced with '.'
 
 Examples:
@@ -646,7 +644,7 @@ Examples:
 
 ### Environment Variable Classifications
 There are certain classifications with the environment variables expressed by a specific naming convention:
-```ALERT_<CLASSIFICATION>_<ITEM_NAME>_<CONFIGURATION_PROPERTY>```
+`ALERT_<CLASSIFICATION>_<ITEM_NAME>_<CONFIGURATION_PROPERTY>`
 - Provider:  The environment variables to configure these components start with ALERT_PROVIDER_
 - Channel: The environment variables to configure these components start with ALERT_CHANNEL_
 - Component: The environment variables to configure these components start with ALERT_COMPONENT_
@@ -667,7 +665,7 @@ This section describes some advanced configuration settings for the Alert server
 ### Changing Server Port
 If Alert should not be running on its default port of 8443, then this section describes what must be changed in order to use a different port.
 
-For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
+For this advanced setting, since there are more than just environment variables that need to be set, edit the `docker-compose.local-overrides.yml` file.
 
 - Overrides File Changes
     - Define the new ports for the alert service.  Add 'ports' to the service description. 
@@ -675,7 +673,7 @@ For this advanced setting, since there are more than just environment variables 
         alert: 
             ports: ['<NEW_PORT>:<NEW_PORT>']
     ```
-    - Define the ```ALERT_SERVER_PORT``` environment variable.
+    - Define the `ALERT_SERVER_PORT` environment variable.
     ```yaml
         alert: 
             environment:
@@ -695,7 +693,7 @@ For this advanced setting, since there are more than just environment variables 
     ```
     - Replace <NEW_PORT> with the port to be used.
 Example:
-- Change the port to 9090 via the ```docker-compose.local-overrides.yml``` file for the blackduck stack.
+- Change the port to 9090 via the `docker-compose.local-overrides.yml` file for the blackduck stack.
 ```yaml
     alert:
         ports: ['9090:9090']
@@ -729,7 +727,7 @@ If Alert should be using more memory than its default settings, then this sectio
 For this advanced setting, since there are more than just environment variables that need to be set, edit the ```docker-compose.local-overrides.yml``` file.
 
 - Overrides File Changes.
-    - Define the ```ALERT_MAX_HEAP_SIZE``` environment variable:
+    - Define the `ALERT_MAX_HEAP_SIZE` environment variable:
     ```yaml
         alert:
             environment:
