@@ -1,9 +1,5 @@
-# alert-helm [beta]
+# alert-helm
 Helm Charts for Synopsys Alert
-
-**Beta Release**  
-* This helm chart is in early testing and is not fully supported.  
-* Some testing has been performed with Helm 2 releases. 
 
 ## Table Of Contents
 - [Prerequisites](#prerequisites)
