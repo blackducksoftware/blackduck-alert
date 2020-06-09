@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
@@ -232,8 +233,8 @@ public class DefaultProviderDataAccessorTest {
         Mockito.verify(providerUserProjectRelationRepository).saveAll(Mockito.any());
     }
 
-    private ConfigurationModel createConfigurationModel() {
-        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
+    private ConfigurationModelMutable createConfigurationModel() {
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(KEY_PROVIDER_CONFIG_NAME);
         configurationFieldModel.setFieldValue(fieldValue);
         configurationModel.put(configurationFieldModel);

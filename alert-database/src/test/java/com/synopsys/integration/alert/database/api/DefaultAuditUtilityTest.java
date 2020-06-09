@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
@@ -214,7 +214,7 @@ public class DefaultAuditUtilityTest {
         Mockito.when(auditNotificationRepository.findByNotificationId(Mockito.any())).thenReturn(List.of(auditNotificationRelation));
         Mockito.when(auditEntryRepository.findAllById(Mockito.any())).thenReturn(List.of(auditEntryEntity));
 
-        ConfigurationModel configurationModel = new ConfigurationModel(10L, 11L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(10L, 11L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create("channel.common.name");
         configurationFieldModel.setFieldValue("test-channel.common.name-value");
         ConfigurationFieldModel configurationFieldModel2 = ConfigurationFieldModel.create("channel.common.channel.name");

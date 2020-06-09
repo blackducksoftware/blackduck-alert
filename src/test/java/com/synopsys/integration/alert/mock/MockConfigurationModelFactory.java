@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -49,7 +50,7 @@ public class MockConfigurationModelFactory {
     }
 
     public static ConfigurationJobModel createDistributionJob(Collection<ConfigurationFieldModel> configurationFieldModels) {
-        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
         configurationFieldModels.forEach(configurationModel::put);
         return new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
     }
