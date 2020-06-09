@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.exception.AlertConfigurationExcepti
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
@@ -39,7 +40,7 @@ public class LdapManagerTest {
     private static final AuthenticationDescriptorKey AUTHENTICATION_DESCRIPTOR_KEY = new AuthenticationDescriptorKey();
 
     private ConfigurationModel createConfigurationModel() {
-        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
 
         ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_ENABLED);
         ConfigurationFieldModel serverField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_SERVER);
