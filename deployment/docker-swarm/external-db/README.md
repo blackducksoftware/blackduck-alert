@@ -114,7 +114,6 @@ This section will walk through each step of the installation procedure.
             ALERT_ENCRYPTION_GLOBAL_SALT:
               external: true
               name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -140,7 +139,6 @@ This section will walk through each step of the installation procedure.
           ALERT_DB_USERNAME:
             external: true
             name: "<STACK_NAME>_ALERT_DB_USERNAME"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -166,7 +164,6 @@ This section will walk through each step of the installation procedure.
           ALERT_DB_PASSWORD:
             external: true
             name: "<STACK_NAME>_ALERT_DB_PASSWORD"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -232,7 +229,6 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
             ALERT_ENCRYPTION_PASSWORD:
               external: true
               name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -264,7 +260,6 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
             ALERT_ENCRYPTION_GLOBAL_SALT:
               external: true
               name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -365,7 +360,6 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
           ALERT_DB_PASSWORD:
             external: true
             name: "<STACK_NAME>_ALERT_DB_PASSWORD"
-            
     ```
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
@@ -537,8 +531,7 @@ This section describes how to configure the optional certificates.  Please verif
             secrets:	
                 ALERT_TRUST_STORE_PASSWORD:	
                   external: true	
-                  name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"	
-                	
+                  name: "<STACK_NAME>_ALERT_TRUST_STORE_PASSWORD"
         ```
         - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
 
