@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.Collection;
 import java.util.List;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -37,17 +37,17 @@ public class NumberConfigField extends ConfigField {
         createValidators(List.of(this::validateIsNumber), null);
     }
 
-    private Collection<String> validateIsNumber(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateIsNumber(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues()) {
             String value = fieldToValidate.getValue().orElse("");
             try {
                 Integer.valueOf(value);
             } catch (NumberFormatException ex) {
-                return List.of(NOT_AN_INTEGER_VALUE);
+                return ValidationResult.of(NOT_AN_INTEGER_VALUE);
             }
         }
 
-        return List.of();
+        return ValidationResult.of();
     }
 
 }

@@ -23,9 +23,8 @@
 package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface UploadValidationFunction extends Function<File, Collection<String>> {
+public interface UploadValidationFunction extends Function<File, ValidationResult> {
 }

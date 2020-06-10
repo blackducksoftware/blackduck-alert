@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
@@ -141,27 +142,27 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         return formatDescription.toString();
     }
 
-    private Collection<String> validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         String projectNamePattern = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(projectNamePattern)) {
             try {
                 Pattern.compile(projectNamePattern);
             } catch (PatternSyntaxException e) {
-                return List.of("Project name pattern is not a regular expression. " + e.getMessage());
+                return ValidationResult.of("Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        return List.of();
+        return ValidationResult.of();
     }
 
-    private Collection<String> validateConfiguredProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateConfiguredProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
         boolean filterByProject = fieldModel.getFieldValueModel(KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
         String projectNamePattern = fieldModel.getFieldValueModel(KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
         boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern);
         if (filterByProject && missingProject) {
-            return List.of("You must select at least one project.");
+            return ValidationResult.of("You must select at least one project.");
         }
-        return List.of();
+        return ValidationResult.of();
     }
 
 }

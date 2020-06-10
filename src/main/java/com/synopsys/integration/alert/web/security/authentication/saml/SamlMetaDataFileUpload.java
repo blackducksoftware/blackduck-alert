@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +41,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.synopsys.integration.alert.common.action.UploadEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -57,7 +56,7 @@ public class SamlMetaDataFileUpload {
         uploadEndpointManager.registerTarget(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, AuthenticationDescriptor.SAML_METADATA_FILE, this::validateXMLFile);
     }
 
-    private Collection<String> validateXMLFile(File file) {
+    private ValidationResult validateXMLFile(File file) {
 
         try (InputStream fileInputStream = new FileInputStream(file)) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -68,9 +67,9 @@ public class SamlMetaDataFileUpload {
             builder.setErrorHandler(errorHandler);
             builder.parse(new InputSource(fileInputStream));
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            return List.of(String.format("XML file error: %s", ex.getMessage()));
+            return ValidationResult.of(String.format("XML file error: %s", ex.getMessage()));
         }
-        return List.of();
+        return ValidationResult.of();
     }
 
     private class XMLErrorHandler implements ErrorHandler {

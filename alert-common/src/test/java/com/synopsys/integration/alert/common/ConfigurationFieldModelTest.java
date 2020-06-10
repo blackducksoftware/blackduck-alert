@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -45,7 +46,7 @@ public class ConfigurationFieldModelTest {
 
     private List<ConfigField> createConfigFields() {
         EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
-        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(List.of());
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.of());
         return List.of(new TextInputConfigField(KEY_FIELD_1, KEY_FIELD_1, DESCRIPTION_1), new PasswordConfigField(KEY_FIELD_2, KEY_FIELD_2, DESCRIPTION_2, encryptionValidator));
     }
 

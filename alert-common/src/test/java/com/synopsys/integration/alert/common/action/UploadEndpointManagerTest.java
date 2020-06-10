@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -105,7 +105,7 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
-        UploadValidationFunction validationFunction = (file) -> List.of();
+        UploadValidationFunction validationFunction = (file) -> ValidationResult.of();
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
         ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
@@ -117,7 +117,7 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
-        UploadValidationFunction validationFunction = (file) -> List.of("validation error");
+        UploadValidationFunction validationFunction = (file) -> ValidationResult.of("validation error");
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
         ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);

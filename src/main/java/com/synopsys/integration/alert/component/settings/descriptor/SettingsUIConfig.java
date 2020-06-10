@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -114,33 +115,33 @@ public class SettingsUIConfig extends UIConfig {
         return List.of(proxyHost, proxyPort, proxyUsername, proxyPassword);
     }
 
-    private Collection<String> minimumEncryptionFieldLength(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult minimumEncryptionFieldLength(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues() && fieldToValidate.getValue().orElse("").length() < 8) {
-            return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
+            return ValidationResult.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
         }
-        return List.of();
+        return ValidationResult.of();
     }
 
     private class EncryptionFieldsSetValidator extends EncryptionValidator {
         @Override
-        public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
+        public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
             Function<FieldValueModel, Boolean> fieldSetCheck = field -> field.hasValues() || field.isSet();
             boolean pwdFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(fieldSetCheck).orElse(false);
             boolean saltFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(fieldSetCheck).orElse(false);
             if (pwdFieldSet && saltFieldSet) {
-                return List.of();
+                return ValidationResult.of();
             }
-            return List.of(ConfigField.REQUIRED_FIELD_MISSING);
+            return ValidationResult.of(ConfigField.REQUIRED_FIELD_MISSING);
         }
     }
 
     private class EncryptionFieldValidator extends EncryptionValidator {
         @Override
-        public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
+        public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
             if (fieldValueModel.containsNoData() && !fieldValueModel.isSet()) {
-                return List.of(ConfigField.REQUIRED_FIELD_MISSING);
+                return ValidationResult.of(ConfigField.REQUIRED_FIELD_MISSING);
             }
-            return List.of();
+            return ValidationResult.of();
         }
     }
 

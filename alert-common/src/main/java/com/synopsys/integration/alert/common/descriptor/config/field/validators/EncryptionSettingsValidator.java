@@ -22,9 +22,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,11 +40,12 @@ public final class EncryptionSettingsValidator extends EncryptionValidator {
     }
 
     @Override
-    public Collection<String> apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
+    public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         if (encryptionUtility.isInitialized()) {
-            return List.of();
+            return ValidationResult.of();
+            //return List.of();
         }
-        return List.of(ENCRYPTION_MISSING);
+        return ValidationResult.of(ENCRYPTION_MISSING);
     }
 
 }

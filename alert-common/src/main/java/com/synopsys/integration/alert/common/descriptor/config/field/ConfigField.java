@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -194,14 +195,16 @@ public abstract class ConfigField extends AlertSerializableModel {
         return this;
     }
 
-    public Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    public ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         return validate(fieldToValidate, fieldModel, getValidationFunctions());
     }
 
-    private Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
+    /*
+    private ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
         Collection<String> errors = new LinkedList<>();
         validateRequiredField(fieldToValidate, errors);
         validateLength(fieldToValidate, errors);
+
         if (errors.isEmpty()) {
             for (ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {
@@ -209,7 +212,19 @@ public abstract class ConfigField extends AlertSerializableModel {
                 }
             }
         }
+        return ValidationResult.of(errors);
+    }*/
+    private ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
+        ValidationResult errors = ValidationResult.of(validateRequiredField(fieldToValidate), validateLength(fieldToValidate));
 
+        if (!errors.hasErrors()) {
+            for (ConfigValidationFunction validation : validationFunctions) {
+                if (null != validation) {
+                    //errors.addAll(validation.apply(fieldToValidate, fieldModel));
+                    errors = ValidationResult.of(validation.apply(fieldToValidate, fieldModel));
+                }
+            }
+        }
         return errors;
     }
 
@@ -286,12 +301,21 @@ public abstract class ConfigField extends AlertSerializableModel {
         this.defaultValues = defaultValues;
     }
 
+    /*
     private void validateRequiredField(FieldValueModel fieldToValidate, Collection<String> errors) {
         if (isRequired() && fieldToValidate.containsNoData()) {
             errors.add(REQUIRED_FIELD_MISSING);
         }
     }
+     */
+    private ValidationResult validateRequiredField(FieldValueModel fieldToValidate) {
+        if (isRequired() && fieldToValidate.containsNoData()) {
+            return ValidationResult.of(REQUIRED_FIELD_MISSING);
+        }
+        return ValidationResult.of();
+    }
 
+    /*
     private void validateLength(FieldValueModel fieldValueModel, Collection<String> errors) {
         Collection<String> values = fieldValueModel.getValues();
         if (null == values) {
@@ -305,6 +329,22 @@ public abstract class ConfigField extends AlertSerializableModel {
         if (tooLargeFound) {
             errors.add(FIELD_LENGTH_LARGE);
         }
+    }
+     */
+    private ValidationResult validateLength(FieldValueModel fieldValueModel) {
+        Collection<String> values = fieldValueModel.getValues();
+        if (null == values) {
+            return ValidationResult.of();
+        }
+
+        boolean tooLargeFound = values
+                                    .stream()
+                                    .filter(StringUtils::isNotBlank)
+                                    .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
+        if (tooLargeFound) {
+            return ValidationResult.of(FIELD_LENGTH_LARGE);
+        }
+        return ValidationResult.of();
     }
 
 }
