@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -221,11 +222,11 @@ public class DefaultAuditUtility implements AuditUtility {
 
             if (null != auditEntryEntity.getTimeLastSent() && (null == timeLastSentOffsetDateTime || timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
                 timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
-                timeLastSent = DateUtils.formatDate(timeLastSentOffsetDateTime, DateUtils.AUDIT_DATE_FORMAT);
+                timeLastSent = formatAuditDate(timeLastSentOffsetDateTime);
             }
             String id = contentConverter.getStringValue(auditEntryEntity.getId());
             String configId = contentConverter.getStringValue(commonConfigId);
-            String timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
+            String timeCreated = formatAuditDate(auditEntryEntity.getTimeCreated());
 
             AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
@@ -291,7 +292,7 @@ public class DefaultAuditUtility implements AuditUtility {
                 Function<AuditEntryModel, OffsetDateTime> function = auditEntryModel -> {
                     OffsetDateTime date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
-                        date = parseDateString(auditEntryModel.getLastSent());
+                        date = parseAuditDateString(auditEntryModel.getLastSent());
                     }
                     return date;
                 };
@@ -308,16 +309,8 @@ public class DefaultAuditUtility implements AuditUtility {
     }
 
     private AuditJobStatusModel convertToJobStatusModel(AuditEntryEntity auditEntryEntity) {
-        String timeCreated = null;
-        if (null != auditEntryEntity.getTimeCreated()) {
-            timeCreated = contentConverter.getStringValue(auditEntryEntity.getTimeCreated());
-        }
-        String timeLastSent = null;
-        if (null != auditEntryEntity.getTimeLastSent()) {
-            // TODO should this be using the DateUtils like we do above?
-            // timeLastSent = DateUtils.formatDate(auditEntryEntity.getTimeLastSent(), DateUtils.AUDIT_DATE_FORMAT);
-            timeLastSent = contentConverter.getStringValue(auditEntryEntity.getTimeLastSent());
-        }
+        String timeCreated = formatAuditDate(auditEntryEntity.getTimeCreated());
+        String timeLastSent = formatAuditDate(auditEntryEntity.getTimeLastSent());
         String status = null;
         if (null != auditEntryEntity.getStatus()) {
             status = AuditEntryStatus.valueOf(auditEntryEntity.getStatus()).getDisplayName();
@@ -339,7 +332,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private NotificationConfig populateConfigFromEntity(AlertNotificationModel notificationEntity) {
         String id = contentConverter.getStringValue(notificationEntity.getId());
         String createdAt = contentConverter.getStringValue(notificationEntity.getCreatedAt());
-        String providerCreationTime = DateUtils.formatDate(notificationEntity.getProviderCreationTime(), DateUtils.AUDIT_DATE_FORMAT);
+        String providerCreationTime = formatAuditDate(notificationEntity.getProviderCreationTime());
 
         Long providerConfigId = notificationEntity.getProviderConfigId();
         String providerConfigName = retrieveProviderConfigName(providerConfigId);
@@ -347,7 +340,15 @@ public class DefaultAuditUtility implements AuditUtility {
         return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerConfigId, providerConfigName, providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
-    private OffsetDateTime parseDateString(String dateString) {
+    @Nullable
+    private String formatAuditDate(OffsetDateTime dateTime) {
+        if (null != dateTime) {
+            return DateUtils.formatDate(dateTime, DateUtils.AUDIT_DATE_FORMAT);
+        }
+        return null;
+    }
+
+    private OffsetDateTime parseAuditDateString(String dateString) {
         OffsetDateTime date = null;
         try {
             date = DateUtils.parseDate(dateString, DateUtils.AUDIT_DATE_FORMAT);
