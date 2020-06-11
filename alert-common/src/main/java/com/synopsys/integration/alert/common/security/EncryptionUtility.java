@@ -143,7 +143,7 @@ public class EncryptionUtility {
             EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getPassword();
         } catch (IOException ex) {
-            logger.debug("Error getting password from file.", ex);
+            logger.debug("Error getting password from volume data file: {}", ex.getLocalizedMessage());
             return null;
         }
     }
@@ -170,9 +170,8 @@ public class EncryptionUtility {
         try {
             return Optional.ofNullable(filePersistenceUtil.readFromSecretsFile(SECRETS_ENCRYPTION_SALT));
         } catch (IOException ex) {
-            logger.debug("Error getting new global salt file.", ex);
+            logger.debug("Error getting new global salt file: {}", ex.getLocalizedMessage());
         }
-
         return Optional.empty();
     }
 
@@ -181,7 +180,7 @@ public class EncryptionUtility {
             EncryptionFileData encryptionFileData = filePersistenceUtil.readJsonFromFile(DATA_FILE_NAME, EncryptionFileData.class);
             return encryptionFileData.getGlobalSalt();
         } catch (IOException ex) {
-            logger.debug("Error getting password from file.", ex);
+            logger.debug("Error getting global salt from volume data file: {}", ex.getLocalizedMessage());
             return null;
         }
     }
