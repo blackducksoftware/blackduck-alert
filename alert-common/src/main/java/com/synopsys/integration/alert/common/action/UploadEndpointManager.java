@@ -150,13 +150,13 @@ public class UploadEndpointManager {
             if (validationFunction.isPresent()) {
                 writeFile(tempFilename, fileResource);
                 File fileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
-                ValidationResult errors = validationFunction.get().apply(fileToValidate);
+                ValidationResult validationResult = validationFunction.get().apply(fileToValidate);
                 filePersistenceUtil.delete(fileToValidate);
-                if (!errors.hasErrors()) {
+                if (!validationResult.hasErrors()) {
                     writeFile(targetFilename, fileResource);
                     return responseFactory.createCreatedResponse("", "File uploaded.");
                 }
-                return responseFactory.createBadRequestResponse("", errors.combineErrorMessages());
+                return responseFactory.createBadRequestResponse("", validationResult.combineErrorMessages());
             } else {
                 writeFile(targetFilename, fileResource);
                 return responseFactory.createCreatedResponse("", "File uploaded.");
