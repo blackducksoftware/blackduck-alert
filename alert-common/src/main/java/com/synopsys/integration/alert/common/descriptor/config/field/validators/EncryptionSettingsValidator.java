@@ -43,7 +43,6 @@ public final class EncryptionSettingsValidator extends EncryptionValidator {
     public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         if (encryptionUtility.isInitialized()) {
             return ValidationResult.of();
-            //return List.of();
         }
         return ValidationResult.of(ENCRYPTION_MISSING);
     }

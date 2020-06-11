@@ -199,21 +199,6 @@ public abstract class ConfigField extends AlertSerializableModel {
         return validate(fieldToValidate, fieldModel, getValidationFunctions());
     }
 
-    /*
-    private ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
-        Collection<String> errors = new LinkedList<>();
-        validateRequiredField(fieldToValidate, errors);
-        validateLength(fieldToValidate, errors);
-
-        if (errors.isEmpty()) {
-            for (ConfigValidationFunction validation : validationFunctions) {
-                if (null != validation) {
-                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
-                }
-            }
-        }
-        return ValidationResult.of(errors);
-    }*/
     private ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
         ValidationResult errors = ValidationResult.of(validateRequiredField(fieldToValidate), validateLength(fieldToValidate));
 
@@ -301,13 +286,6 @@ public abstract class ConfigField extends AlertSerializableModel {
         this.defaultValues = defaultValues;
     }
 
-    /*
-    private void validateRequiredField(FieldValueModel fieldToValidate, Collection<String> errors) {
-        if (isRequired() && fieldToValidate.containsNoData()) {
-            errors.add(REQUIRED_FIELD_MISSING);
-        }
-    }
-     */
     private ValidationResult validateRequiredField(FieldValueModel fieldToValidate) {
         if (isRequired() && fieldToValidate.containsNoData()) {
             return ValidationResult.of(REQUIRED_FIELD_MISSING);
@@ -315,22 +293,6 @@ public abstract class ConfigField extends AlertSerializableModel {
         return ValidationResult.of();
     }
 
-    /*
-    private void validateLength(FieldValueModel fieldValueModel, Collection<String> errors) {
-        Collection<String> values = fieldValueModel.getValues();
-        if (null == values) {
-            return;
-        }
-
-        boolean tooLargeFound = values
-                                    .stream()
-                                    .filter(StringUtils::isNotBlank)
-                                    .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
-        if (tooLargeFound) {
-            errors.add(FIELD_LENGTH_LARGE);
-        }
-    }
-     */
     private ValidationResult validateLength(FieldValueModel fieldValueModel) {
         Collection<String> values = fieldValueModel.getValues();
         if (null == values) {

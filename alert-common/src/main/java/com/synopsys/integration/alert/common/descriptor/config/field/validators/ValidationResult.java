@@ -50,9 +50,6 @@ public class ValidationResult {
     }
 
     public String combineErrorMessages() {
-        //loop through the list and combine the error messages
-        //Look into StringBuilder & StringUtils
-        //Stringable
         return StringUtils.join(errors, ", ");
     }
 
