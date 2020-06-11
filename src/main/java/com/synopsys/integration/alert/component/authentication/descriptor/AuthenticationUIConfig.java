@@ -201,9 +201,9 @@ public class AuthenticationUIConfig extends UIConfig {
                                   .map(Boolean::valueOf)
                                   .orElse(false);
         if (samlEnabled && !fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return ValidationResult.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
+            return ValidationResult.errors(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     private ValidationResult validateMetaDataFile(FieldValueModel fieldToValidate, FieldModel fieldModel) {
@@ -215,10 +215,10 @@ public class AuthenticationUIConfig extends UIConfig {
             Optional<FieldValueModel> metadataUrlField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
             boolean metadataUrlEmpty = metadataUrlField.map(field -> !field.hasValues()).orElse(true);
             if (metadataUrlEmpty && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-                return ValidationResult.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+                return ValidationResult.errors(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
             }
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

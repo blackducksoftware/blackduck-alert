@@ -105,7 +105,7 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
-        UploadValidationFunction validationFunction = (file) -> ValidationResult.of();
+        UploadValidationFunction validationFunction = (file) -> ValidationResult.success();
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
         ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
@@ -117,7 +117,7 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
-        UploadValidationFunction validationFunction = (file) -> ValidationResult.of("validation error");
+        UploadValidationFunction validationFunction = (file) -> ValidationResult.errors("validation error");
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
         ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);

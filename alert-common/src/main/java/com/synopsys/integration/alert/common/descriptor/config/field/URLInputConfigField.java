@@ -44,10 +44,10 @@ public class URLInputConfigField extends TextInputConfigField {
             try {
                 new URL(url);
             } catch (MalformedURLException e) {
-                return ValidationResult.of(e.getMessage());
+                return ValidationResult.errors(e.getMessage());
             }
         }
 
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 }

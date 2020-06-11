@@ -148,10 +148,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
             try {
                 Pattern.compile(projectNamePattern);
             } catch (PatternSyntaxException e) {
-                return ValidationResult.of("Project name pattern is not a regular expression. " + e.getMessage());
+                return ValidationResult.errors("Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     private ValidationResult validateConfiguredProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
@@ -160,9 +160,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         String projectNamePattern = fieldModel.getFieldValueModel(KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
         boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern);
         if (filterByProject && missingProject) {
-            return ValidationResult.of("You must select at least one project.");
+            return ValidationResult.errors("You must select at least one project.");
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

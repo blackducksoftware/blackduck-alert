@@ -17,7 +17,7 @@ public class ValidationResultTest {
 
     @Test
     public void getErrorsTest() {
-        ValidationResult errors = ValidationResult.of(ERROR_MESSAGE_1);
+        ValidationResult errors = ValidationResult.errors(ERROR_MESSAGE_1);
         ArrayList<String> errorList = new ArrayList<>(errors.getErrors());
 
         assertEquals(1, errorList.size());
@@ -26,8 +26,8 @@ public class ValidationResultTest {
 
     @Test
     public void hasErrorsTest() {
-        ValidationResult errors = ValidationResult.of(ERROR_MESSAGE_1);
-        ValidationResult emptyErrors = ValidationResult.of();
+        ValidationResult errors = ValidationResult.errors(ERROR_MESSAGE_1);
+        ValidationResult emptyErrors = ValidationResult.success();
 
         assertTrue(errors.hasErrors());
         assertFalse(emptyErrors.hasErrors());
@@ -36,7 +36,7 @@ public class ValidationResultTest {
     @Test
     public void combineErrorMessages() {
         List<String> listOfErrorStrings = List.of(ERROR_MESSAGE_1, ERROR_MESSAGE_2);
-        ValidationResult errors = ValidationResult.of(listOfErrorStrings);
+        ValidationResult errors = ValidationResult.errors(listOfErrorStrings);
 
         String expectedString = StringUtils.join(listOfErrorStrings, ", ");
 
@@ -46,8 +46,8 @@ public class ValidationResultTest {
 
     @Test
     public void ofValidationResultTest() {
-        ValidationResult error1 = ValidationResult.of(ERROR_MESSAGE_1);
-        ValidationResult error2 = ValidationResult.of(ERROR_MESSAGE_2);
+        ValidationResult error1 = ValidationResult.errors(ERROR_MESSAGE_1);
+        ValidationResult error2 = ValidationResult.errors(ERROR_MESSAGE_2);
 
         ValidationResult combinedErrors = ValidationResult.of(error1, error2);
         Collection<String> errorList = combinedErrors.getErrors();

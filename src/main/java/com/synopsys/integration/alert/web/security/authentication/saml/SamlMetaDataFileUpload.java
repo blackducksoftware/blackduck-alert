@@ -67,9 +67,9 @@ public class SamlMetaDataFileUpload {
             builder.setErrorHandler(errorHandler);
             builder.parse(new InputSource(fileInputStream));
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            return ValidationResult.of(String.format("XML file error: %s", ex.getMessage()));
+            return ValidationResult.errors(String.format("XML file error: %s", ex.getMessage()));
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     private class XMLErrorHandler implements ErrorHandler {

@@ -80,7 +80,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
             if (configurations.isEmpty()) {
-                return ValidationResult.of();
+                return ValidationResult.success();
             }
 
             List<ConfigurationModel> modelsWithName = configurations.stream()
@@ -102,6 +102,6 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error reading provider configurations to detect duplicate names.", ex);
         }
-        return ValidationResult.of(errorList);
+        return ValidationResult.errors(errorList);
     }
 }

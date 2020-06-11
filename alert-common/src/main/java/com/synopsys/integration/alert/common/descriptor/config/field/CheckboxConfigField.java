@@ -48,10 +48,10 @@ public class CheckboxConfigField extends ConfigField {
             boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(value);
             boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(value);
             if (!trueTextPresent && !falseTextPresent) {
-                ValidationResult.of("Not a boolean value 'true' or 'false'");
+                ValidationResult.errors("Not a boolean value 'true' or 'false'");
             }
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     @Override

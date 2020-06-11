@@ -22,16 +22,36 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.validators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidationResult {
 
     private Collection<String> errors;
+
+    public static ValidationResult success() {
+        return new ValidationResult();
+    }
+
+    public static ValidationResult errors(Collection<String> errors) {
+        return new ValidationResult(errors);
+    }
+
+    public static ValidationResult errors(String... errors) {
+        return new ValidationResult(Arrays.asList(errors));
+    }
+
+    public static ValidationResult of(ValidationResult... validationResults) {
+        Collection<String> validationErrors = Arrays.stream(validationResults)
+                                                  .map(ValidationResult::getErrors)
+                                                  .flatMap(Collection::stream)
+                                                  .collect(Collectors.toList());
+        return new ValidationResult(validationErrors);
+    }
 
     private ValidationResult() {
         this.errors = List.of();
@@ -51,25 +71,5 @@ public class ValidationResult {
 
     public String combineErrorMessages() {
         return StringUtils.join(errors, ", ");
-    }
-
-    public static ValidationResult of() {
-        return new ValidationResult();
-    }
-
-    public static ValidationResult of(Collection<String> errors) {
-        return new ValidationResult(errors);
-    }
-
-    public static ValidationResult of(String... errors) {
-        return new ValidationResult(Arrays.asList(errors));
-    }
-
-    public static ValidationResult of(ValidationResult... validationResults) {
-        Collection<String> newValidationResult = new ArrayList(validationResults.length);
-        for (ValidationResult result : validationResults) {
-            newValidationResult.addAll(result.getErrors());
-        }
-        return new ValidationResult(newValidationResult);
     }
 }

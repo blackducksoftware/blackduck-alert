@@ -42,9 +42,9 @@ public final class EncryptionSettingsValidator extends EncryptionValidator {
     @Override
     public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         if (encryptionUtility.isInitialized()) {
-            return ValidationResult.of();
+            return ValidationResult.success();
         }
-        return ValidationResult.of(ENCRYPTION_MISSING);
+        return ValidationResult.errors(ENCRYPTION_MISSING);
     }
 
 }

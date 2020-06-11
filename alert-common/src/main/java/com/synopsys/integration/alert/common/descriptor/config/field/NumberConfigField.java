@@ -43,11 +43,11 @@ public class NumberConfigField extends ConfigField {
             try {
                 Integer.valueOf(value);
             } catch (NumberFormatException ex) {
-                return ValidationResult.of(NOT_AN_INTEGER_VALUE);
+                return ValidationResult.errors(NOT_AN_INTEGER_VALUE);
             }
         }
 
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

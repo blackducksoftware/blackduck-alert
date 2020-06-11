@@ -19,7 +19,7 @@ public class BlackDuckDescriptorTest {
     public void testGetDefinedFields() {
         EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.of());
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.success());
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         BlackDuckContent blackDuckContent = new BlackDuckContent();
         BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent);

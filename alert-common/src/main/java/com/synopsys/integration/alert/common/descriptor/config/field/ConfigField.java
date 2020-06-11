@@ -205,7 +205,6 @@ public abstract class ConfigField extends AlertSerializableModel {
         if (!errors.hasErrors()) {
             for (ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {
-                    //errors.addAll(validation.apply(fieldToValidate, fieldModel));
                     errors = ValidationResult.of(validation.apply(fieldToValidate, fieldModel));
                 }
             }
@@ -288,15 +287,15 @@ public abstract class ConfigField extends AlertSerializableModel {
 
     private ValidationResult validateRequiredField(FieldValueModel fieldToValidate) {
         if (isRequired() && fieldToValidate.containsNoData()) {
-            return ValidationResult.of(REQUIRED_FIELD_MISSING);
+            return ValidationResult.errors(REQUIRED_FIELD_MISSING);
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     private ValidationResult validateLength(FieldValueModel fieldValueModel) {
         Collection<String> values = fieldValueModel.getValues();
         if (null == values) {
-            return ValidationResult.of();
+            return ValidationResult.success();
         }
 
         boolean tooLargeFound = values
@@ -304,9 +303,9 @@ public abstract class ConfigField extends AlertSerializableModel {
                                     .filter(StringUtils::isNotBlank)
                                     .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
         if (tooLargeFound) {
-            return ValidationResult.of(FIELD_LENGTH_LARGE);
+            return ValidationResult.errors(FIELD_LENGTH_LARGE);
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

@@ -117,9 +117,9 @@ public class SettingsUIConfig extends UIConfig {
 
     private ValidationResult minimumEncryptionFieldLength(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues() && fieldToValidate.getValue().orElse("").length() < 8) {
-            return ValidationResult.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
+            return ValidationResult.errors(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT);
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
     private class EncryptionFieldsSetValidator extends EncryptionValidator {
@@ -129,9 +129,9 @@ public class SettingsUIConfig extends UIConfig {
             boolean pwdFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(fieldSetCheck).orElse(false);
             boolean saltFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(fieldSetCheck).orElse(false);
             if (pwdFieldSet && saltFieldSet) {
-                return ValidationResult.of();
+                return ValidationResult.success();
             }
-            return ValidationResult.of(ConfigField.REQUIRED_FIELD_MISSING);
+            return ValidationResult.errors(ConfigField.REQUIRED_FIELD_MISSING);
         }
     }
 
@@ -139,9 +139,9 @@ public class SettingsUIConfig extends UIConfig {
         @Override
         public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
             if (fieldValueModel.containsNoData() && !fieldValueModel.isSet()) {
-                return ValidationResult.of(ConfigField.REQUIRED_FIELD_MISSING);
+                return ValidationResult.errors(ConfigField.REQUIRED_FIELD_MISSING);
             }
-            return ValidationResult.of();
+            return ValidationResult.success();
         }
     }
 

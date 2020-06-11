@@ -99,10 +99,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
                                                  .filter(additionalEmailAddresses -> !additionalEmailAddresses.isEmpty())
                                                  .isPresent();
             if (!hasAdditionalAddresses) {
-                return ValidationResult.of("No additional email addresses were provided.");
+                return ValidationResult.errors("No additional email addresses were provided.");
             }
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

@@ -46,7 +46,7 @@ public class ConfigurationFieldModelTest {
 
     private List<ConfigField> createConfigFields() {
         EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
-        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.of());
+        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.success());
         return List.of(new TextInputConfigField(KEY_FIELD_1, KEY_FIELD_1, DESCRIPTION_1), new PasswordConfigField(KEY_FIELD_2, KEY_FIELD_2, DESCRIPTION_2, encryptionValidator));
     }
 

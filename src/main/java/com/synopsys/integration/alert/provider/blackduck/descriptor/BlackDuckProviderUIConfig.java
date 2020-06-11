@@ -75,9 +75,9 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
     private ValidationResult validateAPIToken(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         String apiKey = fieldToValidate.getValue().orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {
-            return ValidationResult.of("Invalid Black Duck API Token.");
+            return ValidationResult.errors("Invalid Black Duck API Token.");
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }

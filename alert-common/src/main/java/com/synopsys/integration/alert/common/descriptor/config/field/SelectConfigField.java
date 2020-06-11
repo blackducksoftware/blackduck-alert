@@ -108,10 +108,10 @@ public class SelectConfigField extends ConfigField {
                                                                         .map(LabelValueSelectOption::getValue)
                                                                         .anyMatch(fieldOption -> fieldOption.equalsIgnoreCase(value)));
             if (!doesMatchKnownReferral) {
-                return ValidationResult.of(INVALID_OPTION_SELECTED);
+                return ValidationResult.errors(INVALID_OPTION_SELECTED);
             }
         }
-        return ValidationResult.of();
+        return ValidationResult.success();
     }
 
 }
