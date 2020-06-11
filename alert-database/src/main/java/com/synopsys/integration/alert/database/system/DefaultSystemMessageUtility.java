@@ -47,6 +47,7 @@ import com.synopsys.integration.rest.RestConstants;
 @Component
 @Transactional
 public class DefaultSystemMessageUtility implements SystemMessageUtility {
+
     private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageUtility.class);
     private final SystemMessageRepository systemMessageRepository;
 
@@ -64,7 +65,12 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
 
     @Override
     public void removeSystemMessagesByType(SystemMessageType messageType) {
-        List<SystemMessageEntity> messages = systemMessageRepository.findByType(messageType.name());
+        removeSystemMessagesByTypeString(messageType.name());
+    }
+
+    @Override
+    public void removeSystemMessagesByTypeString(String systemMessageType) {
+        List<SystemMessageEntity> messages = systemMessageRepository.findByType(systemMessageType);
         systemMessageRepository.deleteAll(messages);
     }
 

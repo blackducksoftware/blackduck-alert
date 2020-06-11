@@ -36,6 +36,8 @@ public interface SystemMessageUtility {
 
     void removeSystemMessagesByType(SystemMessageType messageType);
 
+    void removeSystemMessagesByTypeString(String systemMessageType);
+
     List<SystemMessageModel> getSystemMessages();
 
     List<SystemMessageModel> getSystemMessagesAfter(OffsetDateTime date);

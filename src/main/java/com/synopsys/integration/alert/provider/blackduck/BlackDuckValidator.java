@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -61,48 +60,49 @@ public class BlackDuckValidator extends BaseSystemValidator {
         String configName = blackDuckProperties.getConfigName();
         logger.info("Validating Black Duck configuration '{}'...", configName);
 
-        removeNoProviderConfigMessages();
+        removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING);
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            String errorMessage;
             if (ProviderProperties.UNKNOWN_CONFIG_NAME.equals(configName)) {
-                errorMessage = MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT;
+                addSystemMessageForError(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING, true);
             } else {
                 removeOldConfigMessages(configName);
-                errorMessage = String.format(MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT, configName);
-            }
-            boolean missingUrl = addSystemMessageForError(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
-                blackDuckUrlOptional.isEmpty());
-            if (missingUrl) {
-                logger.error("  -> {}", String.format(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, configName));
-                valid = false;
-            }
-            if (blackDuckUrlOptional.isPresent()) {
-                String blackDuckUrlString = blackDuckUrlOptional.get();
-                Integer timeout = blackDuckProperties.getBlackDuckTimeout();
-                logger.debug("  -> Black Duck configuration '{}' URL found validating: {}", configName, blackDuckUrlString);
-                logger.debug("  -> Black Duck configuration '{}' Timeout: {}", configName, timeout);
-                URL blackDuckUrl = new URL(blackDuckUrlString);
-                boolean localHostError = addSystemMessageForError(String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
-                    "localhost".equals(blackDuckUrl.getHost()));
-                if (localHostError) {
-                    logger.warn("  -> {}", String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName));
+                removeOldConfigMessages(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+                String errorMessage = String.format(MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT, configName);
+
+                boolean missingUrl = addSystemMessageForError(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING,
+                    blackDuckUrlOptional.isEmpty());
+                if (missingUrl) {
+                    logger.error("  -> {}", String.format(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, configName));
+                    valid = false;
                 }
-                IntLogger intLogger = new Slf4jIntLogger(logger);
-                Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
-                if (blackDuckServerConfig.isPresent()) {
-                    boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
-                    if (canConnect) {
-                        logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
+                if (blackDuckUrlOptional.isPresent()) {
+                    String blackDuckUrlString = blackDuckUrlOptional.get();
+                    Integer timeout = blackDuckProperties.getBlackDuckTimeout();
+                    logger.debug("  -> Black Duck configuration '{}' URL found validating: {}", configName, blackDuckUrlString);
+                    logger.debug("  -> Black Duck configuration '{}' Timeout: {}", configName, timeout);
+                    URL blackDuckUrl = new URL(blackDuckUrlString);
+                    boolean localHostError = addSystemMessageForError(String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST,
+                        "localhost".equals(blackDuckUrl.getHost()));
+                    if (localHostError) {
+                        logger.warn("  -> {}", String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName));
+                    }
+                    IntLogger intLogger = new Slf4jIntLogger(logger);
+                    Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
+                    if (blackDuckServerConfig.isPresent()) {
+                        boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
+                        if (canConnect) {
+                            logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
+                        } else {
+                            String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
+                            connectivityWarning(message);
+                            valid = false;
+                        }
                     } else {
-                        String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
+                        String message = String.format("The Black Duck configuration '%s' is not valid.", configName);
                         connectivityWarning(message);
                         valid = false;
                     }
-                } else {
-                    String message = String.format("The Black Duck configuration '%s' is not valid.", configName);
-                    connectivityWarning(message);
-                    valid = false;
                 }
             }
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
@@ -113,24 +113,24 @@ public class BlackDuckValidator extends BaseSystemValidator {
         return valid;
     }
 
-    // TODO Revisit the system message API perhaps add a new message typ for provider configuration missing
-    private void removeNoProviderConfigMessages() {
-        Set<String> messageTypes = Set.of(
-            SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY.name(),
-            SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST.name(),
-            SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING.name());
-        List<SystemMessageModel> messagesToDelete = getSystemMessageUtility().getSystemMessages().stream()
-                                                        .filter(message -> messageTypes.contains(message.getType()) && message.getContent().contains(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT))
-                                                        .collect(Collectors.toList());
-        getSystemMessageUtility().deleteSystemMessages(messagesToDelete);
-    }
-
     // TODO Revisit the system message API perhaps add provider config id to be able to delete messages for provider config
+    // TODO Remove this in 8.0.0
+    @Deprecated
     private void removeOldConfigMessages(String configName) {
         List<SystemMessageModel> messagesToDelete = getSystemMessageUtility().getSystemMessages().stream()
                                                         .filter(message -> message.getContent().contains(String.format("'%s'", configName)))
                                                         .collect(Collectors.toList());
         getSystemMessageUtility().deleteSystemMessages(messagesToDelete);
+    }
+
+    private void removeOldConfigMessages(BlackDuckProperties properties, SystemMessageType... systemMessageTypes) {
+        for (SystemMessageType systemMessageType : systemMessageTypes) {
+            removeSystemMessagesByTypeString(createProviderSystemMessageType(properties, systemMessageType));
+        }
+    }
+
+    private String createProviderSystemMessageType(BlackDuckProperties properties, SystemMessageType systemMessageType) {
+        return String.format("%d_%s", properties.getConfigId(), systemMessageType.name());
     }
 
     private void connectivityWarning(String message) {

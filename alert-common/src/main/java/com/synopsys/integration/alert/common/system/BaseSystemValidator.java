@@ -41,6 +41,14 @@ public class BaseSystemValidator {
         return false;
     }
 
+    public void removeSystemMessagesByType(SystemMessageType messageType) {
+        getSystemMessageUtility().removeSystemMessagesByType(messageType);
+    }
+
+    public void removeSystemMessagesByTypeString(String systemMessageType) {
+        getSystemMessageUtility().removeSystemMessagesByTypeString(systemMessageType);
+    }
+
     public SystemMessageUtility getSystemMessageUtility() {
         return systemMessageUtility;
     }
