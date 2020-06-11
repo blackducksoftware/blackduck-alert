@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.DatabaseEntity;
@@ -266,7 +267,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
         DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
-        ConfigurationModel createdConfig = createEmptyConfigModel(descriptorId, savedDescriptorConfig.getId(), savedDescriptorConfig.getCreatedAt(), savedDescriptorConfig.getLastUpdated(), context);
+        ConfigurationModelMutable createdConfig = createEmptyConfigModel(descriptorId, savedDescriptorConfig.getId(), savedDescriptorConfig.getCreatedAt(), savedDescriptorConfig.getLastUpdated(), context);
         if (configuredFields != null && !configuredFields.isEmpty()) {
             for (ConfigurationFieldModel configuredField : configuredFields) {
                 String fieldKey = configuredField.getFieldKey();
@@ -323,7 +324,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
         fieldValueRepository.deleteAll(oldValues);
 
-        ConfigurationModel updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
+        ConfigurationModelMutable updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
             descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId());
         if (configuredFields != null && !configuredFields.isEmpty()) {
             for (ConfigurationFieldModel configFieldModel : configuredFields) {
@@ -418,13 +419,13 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return configs;
     }
 
-    private ConfigurationModel createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModelMutable createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
-        ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
+        ConfigurationModelMutable newModel = new ConfigurationModelMutable(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
         List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
         for (FieldValueEntity fieldValueEntity : fieldValueEntities) {
             DefinedFieldEntity definedFieldEntity = definedFieldRepository
@@ -439,20 +440,20 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return newModel;
     }
 
-    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModelMutable createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
-        return new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
+        return new ConfigurationModelMutable(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
     }
 
-    private ConfigurationModel createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, ConfigContextEnum context) {
+    private ConfigurationModelMutable createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, ConfigContextEnum context) {
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
-        return new ConfigurationModel(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, context);
+        return new ConfigurationModelMutable(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, context);
     }
 
     private Long getDescriptorIdOrThrowException(String descriptorName) throws AlertDatabaseConstraintException {

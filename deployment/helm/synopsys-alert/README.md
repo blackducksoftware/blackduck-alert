@@ -1,9 +1,5 @@
-# alert-helm [beta]
+# alert-helm
 Helm Charts for Synopsys Alert
-
-**Beta Release**  
-* This helm chart is in early testing and is not fully supported.  
-* Some testing has been performed with Helm 2 releases. 
 
 ## Table Of Contents
 - [Prerequisites](#prerequisites)
@@ -27,14 +23,14 @@ Helm Charts for Synopsys Alert
 ## Installing the Chart -- Helm 2
 
 ### Create the Namespace
-```console
+```bash
 $ kubectl create ns <namespace>
 ```
 ### Configure your Alert Instance
-Modify the values.yaml file or pass in values to `helm intsall` with --set.  
+Modify the values.yaml file or pass in values to `helm install` with --set.  
 
 ### Install the Alert Chart
-```
+```bash
 $ helm install . --name <name> --namespace <namespace>
 ```
 
@@ -44,7 +40,7 @@ $ helm install . --name <name> --namespace <namespace>
 ## Installing the Chart -- Helm 3
 
 ### Create the Namespace and TLS Secrets
-```console
+```bash
 $ kubectl create ns <namespace>
 ```
 ### Configure your Alert Instance
@@ -52,32 +48,32 @@ Modify the values.yaml file or pass in values to `helm install` with --set.
 Please see the [Configuration](#configuration) section for more details.
 
 ### Install the Alert Chart
-```console
+```bash
 $ helm install <name> . --namespace <namespace>
 ```
 
 ### Quick Start with Helm 3
 #### Step 1
 Navigate to the alert-helm chart repository in your terminal
-```console
+```bash
 $ cd <path>/alert-helm
 ```
 
 #### Step 2
-```console
+```bash
 $ kubectl create ns myalert
 ```
 
 #### Step 3
 Deploy Alert
-```console
+```bash
 $ helm install myalert . --namespace myalert
 ```
 
 ## Finding Alert External Port
  Once Alert has been deployed if the `exposeui` parameter is true, then Alert will be available via an exposed port.
  To determine the port to access the Alert UI execute the following command:
- ```console 
+ ```bash 
  $ kubectl -n <NAMESPACE> get services
  ```
  From the output find the Alert exposed service. This service will be your Alert installation name with the `-exposed` suffix in the name. 
@@ -96,7 +92,7 @@ $ helm install myalert . --namespace myalert
   
   `https://<EXTERNAL_NODE_IP>:<EXTERNAL_PORT>/alert`
   
-  ```console
+  ```bash
   $ kubectl get nodes -o wide
   ```
   
@@ -106,7 +102,7 @@ $ helm install myalert . --namespace myalert
 
 ## Upgrading the Chart
 
-```console
+```bash
 $ helm upgrade <name> . --namespace <namespace>
 ```
 
@@ -114,7 +110,7 @@ $ helm upgrade <name> . --namespace <namespace>
 
 To uninstall/delete the deployment:
 
-```console
+```bash
 $ helm delete <name> 
 ```
 
@@ -191,7 +187,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
-```console
+```bash
 $ helm install . --name <name> --namespace <namespace> --set enableStandalone=true
 ```
 
@@ -306,7 +302,7 @@ For the on-premise database deployment a second Persistent Volume must be create
   ```  
   - A claim will be created with the release name for example 'myalert-pvc' please verify the claim bound to the volume
   
-  ```console
+  ```bash
   $ kubectl -n <ALERT_NAMESPACE> get pvc
   ```
   
@@ -344,7 +340,7 @@ For the on-premise database deployment a second Persistent Volume must be create
     ```  
     - A claim will be created with the release name for example 'myalert-postgres' please verify the claim bound to the volume
     
-    ```console
+    ```bash
     $ kubectl -n <ALERT_NAMESPACE> get pvc
     ```
     

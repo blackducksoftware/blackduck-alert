@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
@@ -112,13 +112,10 @@ public class DefaultAuditUtilityTest {
         UUID testUUID = UUID.randomUUID();
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(testUUID, timeCreated, timeLastSent, status.name(), null, null);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
-        Mockito.when(contentConverter.getStringValue(Mockito.eq(timeCreated))).thenReturn(timeCreated.toString());
-        Mockito.when(contentConverter.getStringValue(Mockito.eq(timeLastSent))).thenReturn(timeLastSent.toString());
 
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
         AuditJobStatusModel auditJobStatusModel = auditUtility.findFirstByJobId(testUUID).get();
 
         String testTimeAuditCreated = auditJobStatusModel.getTimeAuditCreated();
@@ -126,8 +123,8 @@ public class DefaultAuditUtilityTest {
         String testStatus = auditJobStatusModel.getStatus();
 
         assertTrue(auditUtility.findFirstByJobId(testUUID).isPresent());
-        assertEquals(timeCreated.toString(), testTimeAuditCreated);
-        assertEquals(timeLastSent.toString(), testTimeLastSent);
+        assertEquals(DateUtils.formatDate(timeCreated, DateUtils.AUDIT_DATE_FORMAT), testTimeAuditCreated);
+        assertEquals(DateUtils.formatDate(timeLastSent, DateUtils.AUDIT_DATE_FORMAT), testTimeLastSent);
         assertEquals(status.getDisplayName(), testStatus);
     }
 
@@ -214,7 +211,7 @@ public class DefaultAuditUtilityTest {
         Mockito.when(auditNotificationRepository.findByNotificationId(Mockito.any())).thenReturn(List.of(auditNotificationRelation));
         Mockito.when(auditEntryRepository.findAllById(Mockito.any())).thenReturn(List.of(auditEntryEntity));
 
-        ConfigurationModel configurationModel = new ConfigurationModel(10L, 11L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(10L, 11L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create("channel.common.name");
         configurationFieldModel.setFieldValue("test-channel.common.name-value");
         ConfigurationFieldModel configurationFieldModel2 = ConfigurationFieldModel.create("channel.common.channel.name");

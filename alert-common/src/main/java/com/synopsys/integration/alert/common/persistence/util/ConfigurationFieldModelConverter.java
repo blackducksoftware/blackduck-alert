@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -133,7 +134,7 @@ public class ConfigurationFieldModelConverter {
 
         long descriptorId = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
-        ConfigurationModel configurationModel = new ConfigurationModel(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
+        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
         convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);
         return configurationModel;
     }
