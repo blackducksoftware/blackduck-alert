@@ -59,8 +59,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
         boolean valid = true;
         String configName = blackDuckProperties.getConfigName();
         logger.info("Validating Black Duck configuration '{}'...", configName);
-
-        removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING);
+        
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             removeOldConfigMessages(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
