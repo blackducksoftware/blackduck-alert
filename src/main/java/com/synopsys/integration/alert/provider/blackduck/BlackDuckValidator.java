@@ -24,9 +24,7 @@ package com.synopsys.integration.alert.provider.blackduck;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,6 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
@@ -66,7 +63,6 @@ public class BlackDuckValidator extends BaseSystemValidator {
         removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING);
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            removeOldConfigMessages(configName);
             removeOldConfigMessages(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
             String errorMessage = String.format(MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT, configName);
             String urlMissingType = createProviderSystemMessageType(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
@@ -111,16 +107,6 @@ public class BlackDuckValidator extends BaseSystemValidator {
             valid = false;
         }
         return valid;
-    }
-
-    // TODO Revisit the system message API perhaps add provider config id to be able to delete messages for provider config
-    // TODO Remove this in 8.0.0
-    @Deprecated
-    private void removeOldConfigMessages(String configName) {
-        List<SystemMessageModel> messagesToDelete = getSystemMessageUtility().getSystemMessages().stream()
-                                                        .filter(message -> message.getContent().contains(String.format("'%s'", configName)))
-                                                        .collect(Collectors.toList());
-        getSystemMessageUtility().deleteSystemMessages(messagesToDelete);
     }
 
     private void removeOldConfigMessages(BlackDuckProperties properties, SystemMessageType... systemMessageTypes) {
