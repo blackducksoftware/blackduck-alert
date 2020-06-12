@@ -38,7 +38,7 @@ public class ProviderConfigMissingValidatorTest {
         ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageUtility, providers, configurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageUtility)
-            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
+            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
 
     }
 
@@ -53,7 +53,7 @@ public class ProviderConfigMissingValidatorTest {
         ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageUtility, providers, configurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageUtility)
-            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
+            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
 
     }
 
@@ -70,7 +70,7 @@ public class ProviderConfigMissingValidatorTest {
         ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageUtility, providers, configurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageUtility)
-            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
+            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
 
     }
 
@@ -87,7 +87,7 @@ public class ProviderConfigMissingValidatorTest {
         ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageUtility, providers, configurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageUtility, Mockito.never())
-            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
+            .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
 
     }
 }
