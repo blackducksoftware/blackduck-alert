@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
@@ -56,8 +57,9 @@ public class SystemValidatorTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
+        SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
 
-        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator);
+        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator, systemMessageUtility);
         systemValidator.validate();
     }
 
@@ -70,8 +72,9 @@ public class SystemValidatorTest {
         SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
+        SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
 
-        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator);
+        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator, systemMessageUtility);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
