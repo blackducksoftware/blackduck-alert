@@ -22,9 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +39,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -91,7 +90,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         return List.of(subjectLine, additionalEmailAddresses, additionalEmailAddressesOnly, projectOwnerOnly, attachmentFormat);
     }
 
-    private Collection<String> validateAdditionalEmailAddressesOnly(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateAdditionalEmailAddressesOnly(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
         if (useOnlyAdditionalEmailAddresses) {
             boolean hasAdditionalAddresses = fieldModel
@@ -100,10 +99,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
                                                  .filter(additionalEmailAddresses -> !additionalEmailAddresses.isEmpty())
                                                  .isPresent();
             if (!hasAdditionalAddresses) {
-                return Set.of("No additional email addresses were provided.");
+                return ValidationResult.errors("No additional email addresses were provided.");
             }
         }
-        return Set.of();
+        return ValidationResult.success();
     }
 
 }

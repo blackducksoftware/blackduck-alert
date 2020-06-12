@@ -22,16 +22,15 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -39,6 +38,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 @Component
 public class FieldValidationAction {
     private final Logger logger = LoggerFactory.getLogger(FieldValidationAction.class);
+
     public void validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel, Map<String, String> fieldErrors) {
         logger.debug("Begin validating fields in configuration field model.");
         for (Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
@@ -58,10 +58,10 @@ public class FieldValidationAction {
                 if (hasValueOrChecked(fieldValueModel, field.getType())) {
                     checkRelatedFields(field, descriptorFields, fieldModel, fieldErrors);
                 }
-                Collection<String> validationErrors = field.validate(fieldValueModel, fieldModel);
-                logger.debug("Validating '{}' errors: {}", key, validationErrors);
-                if (!validationErrors.isEmpty()) {
-                    fieldErrors.put(key, StringUtils.join(validationErrors, ", "));
+                ValidationResult validationResult = field.validate(fieldValueModel, fieldModel);
+                logger.debug("Validating '{}' errors: {}", key, validationResult);
+                if (validationResult.hasErrors()) {
+                    fieldErrors.put(key, validationResult.combineErrorMessages());
                 }
             }
         }

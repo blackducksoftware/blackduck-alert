@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -96,7 +97,7 @@ public class SelectConfigField extends ConfigField {
         return clearable;
     }
 
-    private Collection<String> validateIsValidOption(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateIsValidOption(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Collection<LabelValueSelectOption> fieldOptions = getOptions();
         if (fieldToValidate.hasValues() && !fieldOptions.isEmpty()) {
             boolean doesMatchKnownReferral = fieldToValidate.getValues()
@@ -107,10 +108,10 @@ public class SelectConfigField extends ConfigField {
                                                                         .map(LabelValueSelectOption::getValue)
                                                                         .anyMatch(fieldOption -> fieldOption.equalsIgnoreCase(value)));
             if (!doesMatchKnownReferral) {
-                return List.of(INVALID_OPTION_SELECTED);
+                return ValidationResult.errors(INVALID_OPTION_SELECTED);
             }
         }
-        return List.of();
+        return ValidationResult.success();
     }
 
 }

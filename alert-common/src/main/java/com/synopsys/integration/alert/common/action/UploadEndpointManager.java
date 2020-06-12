@@ -25,12 +25,10 @@ package com.synopsys.integration.alert.common.action;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -151,13 +150,13 @@ public class UploadEndpointManager {
             if (validationFunction.isPresent()) {
                 writeFile(tempFilename, fileResource);
                 File fileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
-                Collection<String> errors = validationFunction.get().apply(fileToValidate);
+                ValidationResult validationResult = validationFunction.get().apply(fileToValidate);
                 filePersistenceUtil.delete(fileToValidate);
-                if (errors.isEmpty()) {
+                if (!validationResult.hasErrors()) {
                     writeFile(targetFilename, fileResource);
                     return responseFactory.createCreatedResponse("", "File uploaded.");
                 }
-                return responseFactory.createBadRequestResponse("", StringUtils.join(errors, ","));
+                return responseFactory.createBadRequestResponse("", validationResult.combineErrorMessages());
             } else {
                 writeFile(targetFilename, fileResource);
                 return responseFactory.createCreatedResponse("", "File uploaded.");

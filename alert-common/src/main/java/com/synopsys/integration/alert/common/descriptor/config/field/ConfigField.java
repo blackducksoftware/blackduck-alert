@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -194,22 +195,20 @@ public abstract class ConfigField extends AlertSerializableModel {
         return this;
     }
 
-    public Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    public ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         return validate(fieldToValidate, fieldModel, getValidationFunctions());
     }
 
-    private Collection<String> validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
-        Collection<String> errors = new LinkedList<>();
-        validateRequiredField(fieldToValidate, errors);
-        validateLength(fieldToValidate, errors);
-        if (errors.isEmpty()) {
+    private ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel, List<ConfigValidationFunction> validationFunctions) {
+        ValidationResult errors = ValidationResult.of(validateRequiredField(fieldToValidate), validateLength(fieldToValidate));
+
+        if (!errors.hasErrors()) {
             for (ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {
-                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
+                    errors = ValidationResult.of(validation.apply(fieldToValidate, fieldModel));
                 }
             }
         }
-
         return errors;
     }
 
@@ -286,16 +285,17 @@ public abstract class ConfigField extends AlertSerializableModel {
         this.defaultValues = defaultValues;
     }
 
-    private void validateRequiredField(FieldValueModel fieldToValidate, Collection<String> errors) {
+    private ValidationResult validateRequiredField(FieldValueModel fieldToValidate) {
         if (isRequired() && fieldToValidate.containsNoData()) {
-            errors.add(REQUIRED_FIELD_MISSING);
+            return ValidationResult.errors(REQUIRED_FIELD_MISSING);
         }
+        return ValidationResult.success();
     }
 
-    private void validateLength(FieldValueModel fieldValueModel, Collection<String> errors) {
+    private ValidationResult validateLength(FieldValueModel fieldValueModel) {
         Collection<String> values = fieldValueModel.getValues();
         if (null == values) {
-            return;
+            return ValidationResult.success();
         }
 
         boolean tooLargeFound = values
@@ -303,8 +303,9 @@ public abstract class ConfigField extends AlertSerializableModel {
                                     .filter(StringUtils::isNotBlank)
                                     .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
         if (tooLargeFound) {
-            errors.add(FIELD_LENGTH_LARGE);
+            return ValidationResult.errors(FIELD_LENGTH_LARGE);
         }
+        return ValidationResult.success();
     }
 
 }
