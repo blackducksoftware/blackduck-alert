@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -75,12 +75,12 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         return providerKey;
     }
 
-    private Collection<String> validateDuplicateNames(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateDuplicateNames(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         List<String> errorList = List.of();
         try {
             List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
             if (configurations.isEmpty()) {
-                return List.of();
+                return ValidationResult.success();
             }
 
             List<ConfigurationModel> modelsWithName = configurations.stream()
@@ -102,6 +102,6 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error reading provider configurations to detect duplicate names.", ex);
         }
-        return errorList;
+        return ValidationResult.errors(errorList);
     }
 }

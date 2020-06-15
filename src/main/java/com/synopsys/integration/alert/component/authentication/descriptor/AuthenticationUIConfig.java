@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.UploadFileButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -194,18 +195,18 @@ public class AuthenticationUIConfig extends UIConfig {
         return List.of(userName, password, samlInfo);
     }
 
-    private Collection<String> validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateMetaDataUrl(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED);
         boolean samlEnabled = samlEnabledField.flatMap(FieldValueModel::getValue)
                                   .map(Boolean::valueOf)
                                   .orElse(false);
         if (samlEnabled && !fieldToValidate.hasValues() && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return List.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
+            return ValidationResult.errors(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
-        return List.of();
+        return ValidationResult.success();
     }
 
-    private Collection<String> validateMetaDataFile(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateMetaDataFile(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<FieldValueModel> samlEnabledField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED);
         boolean samlEnabled = samlEnabledField.flatMap(FieldValueModel::getValue)
                                   .map(Boolean::valueOf)
@@ -214,10 +215,10 @@ public class AuthenticationUIConfig extends UIConfig {
             Optional<FieldValueModel> metadataUrlField = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
             boolean metadataUrlEmpty = metadataUrlField.map(field -> !field.hasValues()).orElse(true);
             if (metadataUrlEmpty && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-                return List.of(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+                return ValidationResult.errors(AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
             }
         }
-        return List.of();
+        return ValidationResult.success();
     }
 
 }

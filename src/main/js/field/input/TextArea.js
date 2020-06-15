@@ -7,14 +7,15 @@ class TextArea extends Component {
         const {
             inputClass, sizeClass, readOnly, name, value, onChange, id
         } = this.props;
+        const divClasses = `${sizeClass} d-inline-flex`;
 
-        let field = null;
+        let field;
         if (readOnly) {
-            field = (<div className={sizeClass}>
+            field = (<div className={divClasses}>
                 <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
             </div>);
         } else {
-            field = (<div className={sizeClass}>
+            field = (<div className={divClasses}>
                 <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
             </div>);
         }
@@ -39,7 +40,7 @@ TextArea.defaultProps = {
     id: 'id',
     value: '',
     readOnly: false,
-    inputClass: 'textInput',
+    inputClass: 'form-control',
     sizeClass: 'col-sm-8',
     name: 'name',
     onChange: () => true

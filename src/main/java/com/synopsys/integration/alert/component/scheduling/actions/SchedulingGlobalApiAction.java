@@ -57,15 +57,15 @@ public class SchedulingGlobalApiAction extends ApiAction {
 
     @Override
     public FieldModel afterGetAction(FieldModel fieldModel) {
-        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(DailyTask.class)).orElse("")), true));
-        String processFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(String.valueOf(DailyTask.DEFAULT_HOUR_OF_DAY));
-        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of(processFrequency), true));
+        return calculateNextRuntime(fieldModel);
+    }
 
-        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(PurgeTask.class)).orElse("")), true));
-        String purgeFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(String.valueOf(PurgeTask.DEFAULT_FREQUENCY));
-        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of(purgeFrequency), true));
+    @Override
+    public FieldModel afterUpdateAction(FieldModel fieldModel) {
+        FieldModel updatedFieldModel = handleNewAndSavedConfig(fieldModel);
+        updatedFieldModel = calculateNextRuntime(updatedFieldModel);
 
-        return fieldModel;
+        return updatedFieldModel;
     }
 
     public FieldModel handleNewAndSavedConfig(FieldModel fieldModel) {
@@ -75,6 +75,18 @@ public class SchedulingGlobalApiAction extends ApiAction {
         String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
         taskManager.scheduleCronTask(dailyDigestCron, ScheduledTask.computeTaskName(DailyTask.class));
         taskManager.scheduleCronTask(purgeDataCron, ScheduledTask.computeTaskName(PurgeTask.class));
+        return fieldModel;
+    }
+
+    private FieldModel calculateNextRuntime(FieldModel fieldModel) {
+        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(DailyTask.class)).orElse("")), true));
+        String processFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(String.valueOf(DailyTask.DEFAULT_HOUR_OF_DAY));
+        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, new FieldValueModel(List.of(processFrequency), true));
+
+        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(PurgeTask.class)).orElse("")), true));
+        String purgeFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(String.valueOf(PurgeTask.DEFAULT_FREQUENCY));
+        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, new FieldValueModel(List.of(purgeFrequency), true));
+
         return fieldModel;
     }
 

@@ -22,12 +22,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -43,16 +42,16 @@ public class CheckboxConfigField extends ConfigField {
         applyDefaultValue(Boolean.FALSE.toString());
     }
 
-    private Collection<String> validateValueIsBoolean(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+    private ValidationResult validateValueIsBoolean(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         if (fieldToValidate.hasValues()) {
             String value = fieldToValidate.getValue().orElse("");
             boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(value);
             boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(value);
             if (!trueTextPresent && !falseTextPresent) {
-                List.of("Not a boolean value 'true' or 'false'");
+                ValidationResult.errors("Not a boolean value 'true' or 'false'");
             }
         }
-        return List.of();
+        return ValidationResult.success();
     }
 
     @Override
