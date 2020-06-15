@@ -47,6 +47,7 @@ import com.synopsys.integration.rest.RestConstants;
 @Component
 @Transactional
 public class DefaultSystemMessageUtility implements SystemMessageUtility {
+
     private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageUtility.class);
     private final SystemMessageRepository systemMessageRepository;
 
@@ -57,14 +58,24 @@ public class DefaultSystemMessageUtility implements SystemMessageUtility {
 
     @Override
     public void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType) {
+        addSystemMessage(message, severity, messageType.name());
+    }
+
+    @Override
+    public void addSystemMessage(String message, SystemMessageSeverity severity, String messageType) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        SystemMessageEntity systemMessage = new SystemMessageEntity(currentTime, severity.name(), message, messageType.name());
+        SystemMessageEntity systemMessage = new SystemMessageEntity(currentTime, severity.name(), message, messageType);
         systemMessageRepository.save(systemMessage);
     }
 
     @Override
     public void removeSystemMessagesByType(SystemMessageType messageType) {
-        List<SystemMessageEntity> messages = systemMessageRepository.findByType(messageType.name());
+        removeSystemMessagesByTypeString(messageType.name());
+    }
+
+    @Override
+    public void removeSystemMessagesByTypeString(String systemMessageType) {
+        List<SystemMessageEntity> messages = systemMessageRepository.findByType(systemMessageType);
         systemMessageRepository.deleteAll(messages);
     }
 
