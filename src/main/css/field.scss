@@ -145,6 +145,23 @@ small {
 
 .selectButton {
   margin-left: 5px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  vertical-align: middle !important;
+}
+
+.selectClearButton {
+  margin: 3px;
+  vertical-align: middle !important;
+  border: 1px solid darken($color-danger, 5%);
+  background-color: $color-danger;
+  color: $synopsys-color-section-background;
+
+  &:hover {
+    background-color: darken($color-danger, 10%);
+    border-color: darken($color-danger, 17%);
+    color: $synopsys-color-section-background;
+  }
 }
 
 .tableSelectOkButton {

@@ -54,12 +54,16 @@ class ConfirmModal extends Component {
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    {message}
-                </Modal.Body>
+                {message && (
+                    <Modal.Body>
+                        {message}
+                    </Modal.Body>
+                )}
                 <Modal.Footer>
-                    <button id="confirmNegative" type="button" className="btn btn-link" onClick={this.handleNegativeClick}>{negativeButtonText}</button>
-                    <button id="confirmAffirmative" type="button" className="btn btn-danger" onClick={this.handleAffirmativeClick}>{affirmativeButtonText}</button>
+                    <button id="confirmNegative" type="button" className="btn btn-link"
+                            onClick={this.handleNegativeClick}>{negativeButtonText}</button>
+                    <button id="confirmAffirmative" type="button" className="btn btn-danger"
+                            onClick={this.handleAffirmativeClick}>{affirmativeButtonText}</button>
                 </Modal.Footer>
             </Modal>
         );
