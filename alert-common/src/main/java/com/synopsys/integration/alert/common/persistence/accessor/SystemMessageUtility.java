@@ -34,7 +34,11 @@ public interface SystemMessageUtility {
 
     void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType);
 
+    void addSystemMessage(String message, SystemMessageSeverity severity, String messageType);
+
     void removeSystemMessagesByType(SystemMessageType messageType);
+
+    void removeSystemMessagesByTypeString(String systemMessageType);
 
     List<SystemMessageModel> getSystemMessages();
 

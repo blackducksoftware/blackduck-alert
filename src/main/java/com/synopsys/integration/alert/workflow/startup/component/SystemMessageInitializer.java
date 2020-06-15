@@ -33,7 +33,9 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
@@ -46,13 +48,15 @@ public class SystemMessageInitializer extends StartupComponent {
     private final SettingsValidator settingsValidator;
     private final ConfigurationAccessor configurationAccessor;
     private final UserSystemValidator userSystemValidator;
+    private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
-    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator) {
+    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator, SystemMessageUtility systemMessageUtility) {
         this.providers = providers;
         this.settingsValidator = settingsValidator;
         this.configurationAccessor = configurationAccessor;
         this.userSystemValidator = userSystemValidator;
+        this.systemMessageUtility = systemMessageUtility;
     }
 
     @Override
@@ -64,6 +68,7 @@ public class SystemMessageInitializer extends StartupComponent {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
 
+        clearOldMessages();
         boolean defaultAdminValid = userSystemValidator.validateDefaultAdminUser();
         boolean encryptionValid = settingsValidator.validateEncryption();
         boolean providersValid = validateProviders();
@@ -73,15 +78,20 @@ public class SystemMessageInitializer extends StartupComponent {
         return valid;
     }
 
+    private void clearOldMessages() {
+        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessages();
+        systemMessageUtility.deleteSystemMessages(messages);
+    }
+
     public boolean validateProviders() {
         boolean valid = true;
         logger.info("Validating configured providers: ");
         for (Provider provider : providers) {
             try {
                 List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
-                for (ConfigurationModel configuration : configurations) {
-                    valid = valid && provider.validate(configuration);
-                }
+                valid = configurations.stream()
+                            .filter(model -> !model.getCopyOfFieldList().isEmpty())
+                            .allMatch(provider::validate);
             } catch (AlertDatabaseConstraintException ex) {
                 logger.debug("Error getting provider configurations", ex);
             }
