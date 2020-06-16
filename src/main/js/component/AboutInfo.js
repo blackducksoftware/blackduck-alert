@@ -8,7 +8,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
 import LabeledField from 'field/LabeledField';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -19,14 +19,18 @@ class AboutInfo extends React.Component {
         return (cell, row) => {
             const id = `aboutNameKey-${cell}`;
             const url = `${uriPrefix}${row.urlName}`;
-            return (<NavLink to={url} id={id}>{cell}</NavLink>);
+            if (row.navigate) {
+                return (<NavLink to={url} id={id}>{cell}</NavLink>);
+            } else {
+                return (<div id={id}>{cell}</div>);
+            }
         };
     }
 
     createDescriptorTable(tableData, uriPrefix) {
         const nameRenderer = this.createNameColumnRenderer(uriPrefix);
         const tableOptions = {
-            defaultSortName: 'label',
+            defaultSortName: 'name',
             defaultSortOrder: 'asc',
             noDataText: 'No data found'
         };
@@ -39,36 +43,89 @@ class AboutInfo extends React.Component {
                     headerContainerClass="scrollable"
                     bodyContainerClass="scrollable"
                 >
-                    <TableHeaderColumn dataField="label" isKey dataFormat={nameRenderer}>
+                    <TableHeaderColumn dataField="name" isKey dataFormat={nameRenderer}>
                         Name
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="urlName" hidden>
                         Url
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="navigate" hidden>
+                        Navigate
                     </TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );
     }
 
+    createProviderTableData(globalDescriptors) {
+        const data = [];
+        for (let key in globalDescriptors) {
+            const descriptor = globalDescriptors[key];
+            if (!data.find(existing => existing.urlName === descriptor.urlName)) {
+                data.push({
+                    name: descriptor.label,
+                    urlName: descriptor.urlName,
+                    navigate: true
+                });
+            }
+        }
+        return data;
+    }
+
+    createChannelTableData(globalDescriptors, distributionDescriptors) {
+        const data = [];
+        const nameSet = new Set();
+        globalDescriptors.map(descriptor => descriptor.name)
+        .forEach(name => nameSet.add(name));
+        distributionDescriptors.map(descriptor => descriptor.name)
+        .forEach(name => nameSet.add(name));
+
+        nameSet.forEach(descriptorName => {
+            const globalDescriptor = globalDescriptors.find(descriptor => descriptor.name === descriptorName);
+            const distributionDescriptor = distributionDescriptors.find(descriptor => descriptor.name === descriptorName);
+            if (globalDescriptor) {
+                data.push({
+                    name: globalDescriptor.label,
+                    urlName: globalDescriptor.urlName,
+                    navigate: true
+                });
+            } else {
+                data.push({
+                    name: distributionDescriptor.label,
+                    urlName: distributionDescriptor.urlName,
+                    navigate: false
+                });
+            }
+        });
+
+        return data;
+    }
+
     render() {
         const {
             version, description, projectUrl, descriptors
         } = this.props;
-        const providerList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-        const channelList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-        const providerTable = this.createDescriptorTable(providerList, '/alert/providers/');
-        const channelTable = this.createDescriptorTable(channelList, '/alert/channels/');
-        const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All Distributions</NavLink></div>);
-        const providersMissing = !providerList || providerList.length <= 0;
-        const channelsMissing = !channelList || channelList.length <= 0;
+        const providerGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        const channelGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        const channelDistributionList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const providerData = this.createProviderTableData(providerGlobalList);
+        const channelData = this.createChannelTableData(channelGlobalList, channelDistributionList);
+        const providerTable = this.createDescriptorTable(providerData, '/alert/providers/');
+        const channelTable = this.createDescriptorTable(channelData, '/alert/channels/');
+        const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All
+            Distributions</NavLink></div>);
+        const providersMissing = !providerData || providerData.length <= 0;
+        const channelsMissing = !channelData || channelData.length <= 0;
         return (
             <div>
                 <ConfigurationLabel configurationName="About" />
                 <div className="form-horizontal">
                     <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl} url={projectUrl} />
-                    <LabeledField label="View Distributions" name="distribution" readOnly="true" value="" field={distributionLink} />
+                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl}
+                                   url={projectUrl} />
+                    <LabeledField label="View Distributions" name="distribution" readOnly="true" value=""
+                                  field={distributionLink} />
                     {providersMissing && channelsMissing &&
                     <div className="form-group">
                         <div className="form-group">
@@ -80,6 +137,7 @@ class AboutInfo extends React.Component {
                         </div>
                     </div>
                     }
+                    {!providersMissing &&
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Providers</label>
@@ -90,6 +148,8 @@ class AboutInfo extends React.Component {
                             </div>
                         </div>
                     </div>
+                    }
+                    {!channelsMissing &&
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Distribution Channels</label>
@@ -100,6 +160,7 @@ class AboutInfo extends React.Component {
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
             </div>
         );
