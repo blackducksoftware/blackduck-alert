@@ -9,13 +9,14 @@ import GeneralButton from 'field/input/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import * as FieldModelUtilities from "../../util/fieldModelUtilities";
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import ConfirmModal from 'component/common/ConfirmModal';
 
 const { MultiValue, ValueContainer } = components;
 
 const typeLabel = (props) => {
     const { data } = props;
-    const missingItem = (data.missing) ? { textDecoration: "line-through" } : {};
+    const missingItem = (data.missing) ? { textDecoration: 'line-through' } : {};
 
     return (
         <MultiValue {...props}>
@@ -63,13 +64,17 @@ class TableSelectInput extends Component {
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.selectOnClick = this.selectOnClick.bind(this);
         this.createDataList = this.createDataList.bind(this);
+        this.handleClearClick = this.handleClearClick.bind(this);
+        this.handleShowClearConfirm = this.handleShowClearConfirm.bind(this);
+        this.handleHideClearConfirm = this.handleHideClearConfirm.bind(this);
 
         this.state = {
             progress: false,
             showTable: false,
             data: [],
             selectedData: [],
-            displayedData: []
+            displayedData: [],
+            showClearConfirm: false
         };
     }
 
@@ -104,13 +109,44 @@ class TableSelectInput extends Component {
         selectedData.push(...value);
         const keyColumnHeader = this.props.columns.find(column => column.isKey).header;
         const convertedValues = selectedData.map(selected => {
-            const columnContainsValue = data.map(dataValue => dataValue[keyColumnHeader]).includes(selected);
-            return Object.assign({ label: selected, value: selected, missing: !columnContainsValue });
+            const columnContainsValue = data.map(dataValue => dataValue[keyColumnHeader])
+            .includes(selected);
+            return Object.assign({
+                label: selected,
+                value: selected,
+                missing: !columnContainsValue
+            });
         });
         this.setState({
             displayedData: convertedValues
         });
     }
+
+    handleShowClearConfirm() {
+        this.setState({
+            showClearConfirm: true
+        });
+    }
+
+    handleHideClearConfirm() {
+        this.setState({
+            showClearConfirm: false
+        });
+    }
+
+    handleClearClick() {
+        this.setState({
+            selectedData: [],
+            displayedData: []
+        });
+
+        this.props.onChange({
+            target: {
+                name: this.props.fieldKey,
+                value: []
+            }
+        });
+    };
 
     onRowSelectedAll(isSelected, rows) {
         if (rows) {
@@ -280,6 +316,7 @@ class TableSelectInput extends Component {
             </div>
             :
             <BootstrapTable
+                ref
                 version="4"
                 data={this.createDataList()}
                 containerClass="table"
@@ -318,8 +355,10 @@ class TableSelectInput extends Component {
             ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div></div>
-        }
-
+        };
+        const { fieldKey } = this.props;
+        const selectButtonId = `${fieldKey}_select`;
+        const clearButtonId = `${fieldKey}_clear`;
         return (
             <div className="col-sm-8 d-inline-flex p-2">
                 <Select
@@ -333,9 +372,21 @@ class TableSelectInput extends Component {
                     clearable={false}
                     value={this.state.displayedData}
                 />
-                <button className="selectButton" onClick={this.selectOnClick} disabled={this.state.showTable || this.props.readOnly}>
+                <GeneralButton id={selectButtonId} className="selectButton" onClick={this.selectOnClick}
+                               disabled={this.state.showTable || this.props.readOnly}>
                     Select
-                </button>
+                </GeneralButton>
+                {this.state.selectedData && this.state.selectedData.length > 0 &&
+                <GeneralButton id={clearButtonId} className="selectClearButton"
+                               onClick={this.handleShowClearConfirm}>
+                    Clear
+                </GeneralButton>
+                }
+                <ConfirmModal showModal={this.state.showClearConfirm}
+                              title="Are you sure you want to clear all selected items?"
+                              affirmativeAction={this.handleClearClick}
+                              negativeAction={this.handleHideClearConfirm}
+                />
             </div>
         );
     }
