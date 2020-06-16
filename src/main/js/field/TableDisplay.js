@@ -355,12 +355,14 @@ class TableDisplay extends Component {
         }
 
         const {
-            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable
+            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable, inProgress
         } = this.props;
+
+        const emptyTableMessage = inProgress ? 'Loading...' : 'No Data';
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
-            noDataText: 'No Data',
+            noDataText: emptyTableMessage,
             clearSearch: true,
             insertModal: this.createInsertModal,
             handleConfirmDeleteRow: this.collectItemsToDelete,

@@ -11,12 +11,12 @@ const tasks = (state = initialState, action) => {
         case TASKS_FETCH_ERROR_ALL:
             return Object.assign({}, state, {
                 tasksFetchError: action.tasksFetchError,
-                fetching: false,
+                fetching: false
             });
         case TASKS_FETCHED_ALL:
             return Object.assign({}, state, {
                 data: action.tasks,
-                fetching: false,
+                fetching: false
             });
         case TASKS_FETCHING_ALL:
             return Object.assign({}, state, {
