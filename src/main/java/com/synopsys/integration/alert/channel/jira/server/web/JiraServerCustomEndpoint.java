@@ -51,6 +51,8 @@ import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopsys.integration.rest.response.Response;
 
 @Component
@@ -79,9 +81,17 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
             String username = jiraProperties.getUsername();
             String password = jiraProperties.getPassword();
-            Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
-            if (BooleanUtils.isTrue(response.isStatusCodeError())) {
-                return Optional.of(responseFactory.createBadRequestResponse("", "The Jira server responded with error code: " + response.getStatusCode()));
+            try {
+                Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
+                if (BooleanUtils.isTrue(response.isStatusCodeError())) {
+                    return Optional.of(responseFactory.createBadRequestResponse("", "The Jira server responded with error code: " + response.getStatusCode()));
+                }
+            } catch (IntegrationRestException e) {
+                if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
+                    return Optional.of(responseFactory.createNotFoundResponse(
+                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app yourself or request a compatibility update. " + e.getMessage()));
+                }
+                throw e;
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
