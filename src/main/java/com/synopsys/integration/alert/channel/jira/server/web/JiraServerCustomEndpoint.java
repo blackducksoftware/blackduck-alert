@@ -52,7 +52,6 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
-import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
@@ -81,11 +80,11 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
             String username = jiraProperties.getUsername();
             String password = jiraProperties.getPassword();
             try {
-                Response response = jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
+                jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
                     return Optional.of(responseFactory.createNotFoundResponse(
-                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. " + e.getMessage()));
+                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage()));
                 }
                 createBadRequestIntegrationException(e);
             }
@@ -94,7 +93,6 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
                 return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server."));
             }
         } catch (IntegrationException e) {
-            logger.error("There was an issue connecting to Jira server", e);
             createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
@@ -157,6 +155,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     private Optional<ResponseEntity<String>> createBadRequestIntegrationException(IntegrationException error) {
+        logger.error("There was an issue connecting to Jira server", error);
         return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira server: " + error.getMessage()));
     }
 }
