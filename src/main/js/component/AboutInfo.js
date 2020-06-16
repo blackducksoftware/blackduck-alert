@@ -82,7 +82,6 @@ class AboutInfo extends React.Component {
 
         nameSet.forEach(descriptorName => {
             const globalDescriptor = globalDescriptors.find(descriptor => descriptor.name === descriptorName);
-            const distributionDescriptor = distributionDescriptors.find(descriptor => descriptor.name === descriptorName);
             if (globalDescriptor) {
                 data.push({
                     name: globalDescriptor.label,
@@ -90,6 +89,7 @@ class AboutInfo extends React.Component {
                     navigate: true
                 });
             } else {
+                const distributionDescriptor = distributionDescriptors.find(descriptor => descriptor.name === descriptorName);
                 data.push({
                     name: distributionDescriptor.label,
                     urlName: distributionDescriptor.urlName,
