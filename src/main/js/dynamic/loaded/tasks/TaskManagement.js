@@ -144,8 +144,7 @@ TaskManagement.propTypes = {
 };
 
 TaskManagement.defaultProps = {
-    fetching: false,
-    inProgress: false
+    fetching: false
 }
 
 const mapStateToProps = state => ({
