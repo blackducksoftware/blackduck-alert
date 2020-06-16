@@ -24,6 +24,7 @@ class TableDisplay extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -36,11 +37,13 @@ class TableDisplay extends Component {
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
         this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
-
+        this.tablePopup = React.createRef();
+        this.table = React.createRef();
         this.state = {
             currentRowSelected: null,
             uiValidation: VALIDATION_STATE.NONE,
             showConfiguration: false,
+            isInsertModal: false,
             showDelete: false,
             rowsToDelete: []
         };
@@ -50,8 +53,11 @@ class TableDisplay extends Component {
         this.updateData();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (!this.state.showConfiguration && this.state.currentRowSelected && !this.props.inProgress && !this.props.hasFieldErrors && this.state.uiValidation === VALIDATION_STATE.SUCCESS) {
+    componentDidUpdate() {
+        const { showConfiguration, currentRowSelected, uiValidation } = this.state;
+        const { inProgress, hasFieldErrors } = this.props;
+        if (!showConfiguration && currentRowSelected && !inProgress && !hasFieldErrors
+            && uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
         }
     }
@@ -59,15 +65,23 @@ class TableDisplay extends Component {
     createTableColumns() {
         const defaultDataFormat = (cell) => {
             if (cell) {
-                return <div title={cell.toString()}> {cell} </div>;
+                return (
+                    <div title={cell.toString()}>
+                        {cell}
+                    </div>
+                );
             }
-            return <div> {cell} </div>;
+            return (
+                <div>
+                    {cell}
+                </div>
+            );
         };
 
-        return this.props.columns.map(column => {
-
-            const assignedDataFormate = column['dataFormat'] ? column['dataFormat'] : defaultDataFormat;
-            const searchable = column['searchable'] ? column['searchable'] : true;
+        const { columns } = this.props;
+        return columns.map((column) => {
+            const assignedDataFormate = column.dataFormat ? column.dataFormat : defaultDataFormat;
+            const searchable = column.searchable ? column.searchable : true;
             return (
                 <TableHeaderColumn
                     key={column.header}
@@ -79,61 +93,71 @@ class TableDisplay extends Component {
                     columnClassName="tableCell"
                     tdStyle={{ whiteSpace: 'normal' }}
                     dataFormat={assignedDataFormate}
-                >{column.headerLabel}
+                >
+                    {column.headerLabel}
                 </TableHeaderColumn>
-            )
+            );
         });
     }
 
     updateData() {
-        this.props.refreshData();
+        const { refreshData } = this.props;
+        refreshData();
     }
 
     createButtonGroup(buttons) {
+        const {
+            autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh
+        } = this.props;
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
-        const refreshButton = !this.props.autoRefresh && (
+        const refreshButton = !autoRefresh && (
             <button type="button" className={classes} onClick={this.updateData}>
-                <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
+                <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                Refresh
             </button>
         );
         return (
             <div>
                 {buttons.insertBtn
-                && <InsertButton
-                    className="addJobButton btn-md"
-                    onClick={() => {
-                        insertOnClick();
-                        this.props.clearModalFieldState();
-                        this.setState({
-                            showConfiguration: true
-                        });
-                    }}
-                >
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    {this.props.tableNewButtonLabel}
-                </InsertButton>
-                }
+                && (
+                    <InsertButton
+                        className="addJobButton btn-md"
+                        onClick={() => {
+                            insertOnClick();
+                            clearModalFieldState();
+                            this.setState({
+                                showConfiguration: true,
+                                isInsertModal: true
+                            });
+                        }}
+                    >
+                        <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                        {tableNewButtonLabel}
+                    </InsertButton>
+                )}
                 {buttons.deleteBtn
-                && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
-                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    {this.props.tableDeleteButtonLabel}
-                </DeleteButton>
-                }
-                {this.props.tableRefresh && refreshButton}
+                && (
+                    <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                        <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                        {tableDeleteButtonLabel}
+                    </DeleteButton>
+                )}
+                {tableRefresh && refreshButton}
             </div>
         );
     }
 
     handleClose() {
+        const { onConfigClose } = this.props;
         const stateCallback = () => {
             const closeCallback = () => {
-                this.refs.table.cleanSelected();
+                this.table.current.cleanSelected();
                 this.updateData();
             };
-            this.props.onConfigClose(closeCallback);
-        }
+            onConfigClose(closeCallback);
+        };
         this.setState({
             currentRowSelected: null
         }, stateCallback);
@@ -141,7 +165,7 @@ class TableDisplay extends Component {
 
     handleInsertModalSubmit(event, onModalClose) {
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
             event.stopPropagation();
         }
         const { nestedInAnotherModal } = this.props;
@@ -155,7 +179,7 @@ class TableDisplay extends Component {
 
     handleInsertModalTest(event, onModalClose) {
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
             event.stopPropagation();
         }
         const { nestedInAnotherModal } = this.props;
@@ -168,8 +192,9 @@ class TableDisplay extends Component {
     }
 
     handleSubmit(event) {
+        const { onConfigSave } = this.props;
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
             event.stopPropagation();
         }
         const callback = (result) => {
@@ -181,12 +206,13 @@ class TableDisplay extends Component {
                 uiValidation: validationState
             }, validationSetCallback);
         };
-        this.props.onConfigSave(callback);
+        onConfigSave(callback);
     }
 
     handleTest(event) {
+        const { onConfigTest } = this.props;
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
             event.stopPropagation();
         }
         const callback = (result) => {
@@ -195,28 +221,47 @@ class TableDisplay extends Component {
                 uiValidation: validationState
             });
         };
-        this.props.onConfigTest(callback);
+        onConfigTest(callback);
     }
 
-    createEditModal() {
-        const { currentRowSelected } = this.state;
-        const { modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage, actionMessage } = this.props;
-        const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
+    handleCancel() {
+        this.hideModal();
+        this.handleClose();
+    }
+
+    createTableModal() {
+        const tablePopupRef = this.tablePopup.current;
+        const { currentRowSelected, isInsertModal } = this.state;
+        const {
+            modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
+            actionMessage
+        } = this.props;
+        const popupActionMessage = errorDialogMessage || actionMessage;
+        const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
+        let cancelFunction = this.handleCancel;
+        if (isInsertModal) {
+            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
+        }
+        let submitFunction = this.handleSubmit;
+        if (isInsertModal) {
+            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
+        }
+        let testFunction = this.handleTest;
+        if (isInsertModal) {
+            testFunction = tablePopupRef && tablePopupRef.handleTest;
+        }
         return (
-            <div
-                onKeyDown={e => e.stopPropagation()}
-                onClick={e => e.stopPropagation()}
-                onFocus={e => e.stopPropagation()}
-                onMouseOver={e => e.stopPropagation()}
-            >
+            <div>
                 <PopUp
-                    onCancel={() => {
-                        this.hideModal();
-                        this.handleClose();
-                    }}
-                    handleSubmit={this.handleSubmit}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onFocus={(e) => e.stopPropagation()}
+                    onMouseOver={(e) => e.stopPropagation()}
+                    ref={this.tablePopup}
+                    onCancel={cancelFunction}
+                    handleSubmit={submitFunction}
                     includeSave={saveButton}
-                    handleTest={this.handleTest}
+                    handleTest={testFunction}
                     testLabel={testButtonLabel}
                     includeTest={testButton}
                     show={this.isShowModal()}
@@ -225,60 +270,43 @@ class TableDisplay extends Component {
                     performingAction={inProgress}
                     actionMessage={popupActionMessage}
                 >
-                    {newConfigFields(currentRowSelected)}
+                    {configFields}
                 </PopUp>
             </div>
         );
     }
 
     isShowModal() {
-        return this.state.showConfiguration || this.props.hasFieldErrors;
+        const { showConfiguration } = this.state;
+        const { hasFieldErrors } = this.props;
+        return showConfiguration || hasFieldErrors;
     }
 
     hideModal() {
         this.setState({
-            showConfiguration: false
+            showConfiguration: false,
+            isInsertModal: false
         });
     }
 
     createInsertModal(onModalClose) {
-        const { showConfiguration } = this.state;
-        const { modalTitle, newConfigFields, inProgress, saveButton, testButton, errorDialogMessage, actionMessage, testButtonLabel } = this.props;
-        const popupActionMessage = errorDialogMessage ? errorDialogMessage : actionMessage;
-        return (
-            <div
-                onKeyDown={e => e.stopPropagation()}
-                onClick={e => e.stopPropagation()}
-                onFocus={e => e.stopPropagation()}
-                onMouseOver={e => e.stopPropagation()}
-            >
-                <PopUp
-                    onCancel={() => {
-                        onModalClose();
-                        this.hideModal();
-                        this.handleClose();
-                    }}
-                    handleSubmit={(event) => {
-                        this.handleInsertModalSubmit(event, onModalClose);
-                    }}
-                    includeSave={saveButton}
-                    handleTest={(event) => {
-                        this.handleInsertModalTest(event, onModalClose);
-                    }}
-                    includeTest={testButton}
-                    testLabel={testButtonLabel}
-                    show={showConfiguration}
-                    title={modalTitle}
-                    okLabel="Save"
-                    performingAction={inProgress}
-                    actionMessage={popupActionMessage}
-                >
-                    {newConfigFields()}
-                </PopUp>
-            </div>
-        );
+        const cancelFunction = () => {
+            onModalClose();
+            this.handleCancel();
+        };
+        const submitFunction = (event) => {
+            this.handleInsertModalSubmit(event, onModalClose);
+        };
+        const testFunction = (event) => {
+            this.handleInsertModalTest(event, onModalClose);
+        };
+        if (this.tablePopup && this.tablePopup.current) {
+            this.tablePopup.current.onCancel = cancelFunction;
+            this.tablePopup.current.handleSubmit = submitFunction;
+            this.tablePopup.current.handleTest = testFunction;
+        }
+        return (<div />);
     }
-
 
     collectItemsToDelete(next, dropRowKeys) {
         this.setState({
@@ -295,68 +323,87 @@ class TableDisplay extends Component {
     }
 
     deleteItems() {
-        this.props.onConfigDelete(this.state.rowsToDelete, this.closeDeleteModal);
+        const { rowsToDelete } = this.state;
+        const { onConfigDelete } = this.props;
+        onConfigDelete(rowsToDelete, this.closeDeleteModal);
     }
 
     editButtonClicked(currentRowSelected) {
-        this.props.clearModalFieldState();
+        const { clearModalFieldState, onEditState } = this.props;
+        clearModalFieldState();
         const callback = () => this.setState({
             currentRowSelected,
             showConfiguration: true
         });
-        this.props.onEditState(currentRowSelected, callback);
+        onEditState(currentRowSelected, callback);
     }
 
     editButtonClick(cell, row) {
-        return (<IconTableCellFormatter
-            handleButtonClicked={this.editButtonClicked}
-            currentRowSelected={row}
-            buttonIconName="pencil-alt"
-            buttonText="Edit"
-        />);
+        return (
+            <IconTableCellFormatter
+                handleButtonClicked={this.editButtonClicked}
+                currentRowSelected={row}
+                buttonIconName="pencil-alt"
+                buttonText="Edit"
+            />
+        );
     }
 
     copyButtonClicked(currentRowSelected) {
+        const { onConfigCopy } = this.props;
         const callback = () => this.setState({
             currentRowSelected,
             showConfiguration: true
         });
-        this.props.onConfigCopy(currentRowSelected, callback);
+        onConfigCopy(currentRowSelected, callback);
     }
 
     copyButtonClick(cell, row) {
-        return (<IconTableCellFormatter
-            handleButtonClicked={this.copyButtonClicked}
-            currentRowSelected={row}
-            buttonIconName="copy"
-            buttonText="Copy"
-        />);
+        return (
+            <IconTableCellFormatter
+                handleButtonClicked={this.copyButtonClicked}
+                currentRowSelected={row}
+                buttonIconName="copy"
+                buttonText="Copy"
+            />
+        );
     }
 
     render() {
         const tableColumns = this.createTableColumns();
-        if (this.props.enableEdit) {
-            tableColumns.push(<TableHeaderColumn
-                dataField=""
-                width="48"
-                columnClassName="tableCell"
-                dataFormat={this.editButtonClick}
-                thStyle={{ textAlign: 'center' }}
-            >Edit</TableHeaderColumn>);
-        }
-        if (this.props.enableCopy) {
-            tableColumns.push(<TableHeaderColumn
-                dataField=""
-                width="48"
-                columnClassName="tableCell"
-                dataFormat={this.copyButtonClick}
-                thStyle={{ textAlign: 'center' }}
-            >Copy</TableHeaderColumn>);
-        }
-
+        const { showDelete } = this.state;
         const {
-            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data, tableSearchable
+            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
+            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, refreshData
         } = this.props;
+        if (enableEdit) {
+            const editColumn = (
+                <TableHeaderColumn
+                    dataField=""
+                    width="48"
+                    columnClassName="tableCell"
+                    dataFormat={this.editButtonClick}
+                    thStyle={{ textAlign: 'center' }}
+                >
+                    Edit
+                </TableHeaderColumn>
+            );
+            tableColumns.push(editColumn);
+        }
+        if (enableCopy) {
+            const copyColumn = (
+                <TableHeaderColumn
+                    dataField=""
+                    width="48"
+                    columnClassName="tableCell"
+                    dataFormat={this.copyButtonClick}
+                    thStyle={{ textAlign: 'center' }}
+                >
+                    Copy
+                </TableHeaderColumn>
+            );
+            tableColumns.push(copyColumn);
+        }
 
         const tableOptions = {
             btnGroup: this.createButtonGroup,
@@ -376,15 +423,22 @@ class TableDisplay extends Component {
                 return isSelect && '#e8e8e8';
             }
         };
-        const deleteModal = (<ConfirmModal title="Delete"
-                                           affirmativeAction={this.deleteItems}
-                                           affirmativeButtonText="Confirm"
-                                           negativeAction={this.closeDeleteModal}
-                                           negativeButtonText="Cancel"
-                                           message="Are you sure you want to delete these items?"
-                                           showModal={this.state.showDelete} />
+        const deleteModal = (
+            <ConfirmModal
+                title="Delete"
+                affirmativeAction={this.deleteItems}
+                affirmativeButtonText="Confirm"
+                negativeAction={this.closeDeleteModal}
+                negativeButtonText="Cancel"
+                message="Are you sure you want to delete these items?"
+                showModal={showDelete}
+            />
         );
-
+        const progressIndicator = (
+            <div className="progressIcon">
+                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+            </div>
+        );
         const content = (
             <div>
                 <BootstrapTable
@@ -401,31 +455,26 @@ class TableDisplay extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
-                    ref="table"
+                    ref={this.table}
                 >
                     {tableColumns}
                 </BootstrapTable>
 
-                {this.props.inProgress &&
-                <div className="progressIcon">
-                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                </div>
-                }
+                {inProgress && progressIndicator}
 
-                <p name="tableMessage">{tableMessage}</p>
+                <p id="tableMessage">{tableMessage}</p>
             </div>
         );
 
-        const refresh = this.props.tableRefresh && (
+        const refresh = tableRefresh && (
             <div className="pull-right">
-                <AutoRefresh startAutoReload={this.props.refreshData} autoRefresh={autoRefresh} />
+                <AutoRefresh startAutoReload={refreshData} autoRefresh={autoRefresh} />
             </div>
         );
 
         return (
             <div>
-
-                {this.createEditModal()}
+                {this.createTableModal()}
                 {refresh}
                 {deleteModal}
                 {content}
@@ -477,6 +526,7 @@ TableDisplay.propTypes = {
 };
 
 TableDisplay.defaultProps = {
+    data: [],
     sortName: '',
     sortOrder: 'asc',
     selectRowBox: true,
@@ -505,10 +555,10 @@ TableDisplay.defaultProps = {
     nestedInAnotherModal: false,
     enableEdit: true,
     enableCopy: true,
-    testButtonLabel: "Test Configuration"
+    testButtonLabel: 'Test Configuration'
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     autoRefresh: state.refresh.autoRefresh
 });
 
