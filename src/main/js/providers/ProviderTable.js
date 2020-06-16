@@ -265,7 +265,7 @@ class ProviderTable extends Component {
         );
         const updating = Object.is(updateStatus, 'UPDATING');
         const deleting = Object.is(updateStatus, 'DELETING');
-        const inProgress = testInProgress || updating || deleting;
+        const inProgress = configFetching || testInProgress || updating || deleting;
         const fetching = descriptorFetching || configFetching;
         const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
