@@ -19,6 +19,12 @@ class TaskManagement extends Component {
         };
     }
 
+    onEdit(selectedRow, callback) {
+        this.setState({
+            task: selectedRow
+        }, callback);
+    }
+
     createColumns() {
         return [
             {
@@ -49,7 +55,8 @@ class TaskManagement extends Component {
     }
 
     clearModalFieldState() {
-        if (this.state.task && Object.keys(this.state.task).length > 0) {
+        const { task } = this.state;
+        if (task && Object.keys(task).length > 0) {
             this.setState({
                 task: {}
             });
@@ -63,8 +70,16 @@ class TaskManagement extends Component {
             return null;
         }
         const propertyFields = [];
-        properties.forEach(property => {
-            const field = <ReadOnlyField label={property.displayName} name={property.key} readOnly="true" value={property.value} />
+        properties.forEach((property) => {
+            const field = (
+                <ReadOnlyField
+                    id={property.key}
+                    label={property.displayName}
+                    name={property.key}
+                    readOnly="true"
+                    value={property.value}
+                />
+            );
             propertyFields.push(field);
         });
 
@@ -79,31 +94,45 @@ class TaskManagement extends Component {
         const propertyFields = this.createPropertyFields();
         return (
             <div>
-                <ReadOnlyField label="Type" name={nameKey} readOnly="true" value={task[nameKey]} />
-                <ReadOnlyField label="Full Type Name" name={fullyQualifiedNameKey} readOnly="true" value={task[fullyQualifiedNameKey]} />
-                <ReadOnlyField label="Next Run Time" name={nextRunTimeKey} readOnly="true" value={task[nextRunTimeKey]} />
+                <ReadOnlyField
+                    id={nameKey}
+                    label="Type"
+                    name={nameKey}
+                    readOnly="true"
+                    value={task[nameKey]}
+                />
+                <ReadOnlyField
+                    id={fullyQualifiedNameKey}
+                    label="Full Type Name"
+                    name={fullyQualifiedNameKey}
+                    readOnly="true"
+                    value={task[fullyQualifiedNameKey]}
+                />
+                <ReadOnlyField
+                    id={nextRunTimeKey}
+                    label="Next Run Time"
+                    name={nextRunTimeKey}
+                    readOnly="true"
+                    value={task[nextRunTimeKey]}
+                />
                 {propertyFields}
             </div>
         );
     }
 
-    onEdit(selectedRow, callback) {
-        this.setState({
-            task: selectedRow
-        }, callback);
-    }
-
     retrieveData() {
-        this.props.getTasks();
+        const { getTasks } = this.props;
+        getTasks();
     }
 
     createTaskData() {
         const { tasks } = this.props;
-        return tasks.map(task => {
+        return tasks.map((task) => {
             const searchableProperties = JSON.stringify(task.properties);
-            return Object.assign({}, task, {
-                searchableProperties: searchableProperties
-            });
+            return {
+                ...task,
+                searchableProperties
+            };
         });
     }
 
@@ -113,7 +142,8 @@ class TaskManagement extends Component {
             <div>
                 <ConfigurationLabel
                     configurationName={label}
-                    description={description} />
+                    description={description}
+                />
                 <TableDisplay
                     newConfigFields={this.createModalFields}
                     modalTitle="Task Details"
@@ -139,18 +169,19 @@ TaskManagement.propTypes = {
     tasks: PropTypes.array.isRequired,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    fetching: PropTypes.bool
+    fetching: PropTypes.bool,
+    getTasks: PropTypes.func.isRequired
 };
 
 TaskManagement.defaultProps = {
     fetching: false
-}
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     tasks: state.tasks.data
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     getTasks: () => dispatch(fetchTasks())
 });
 
