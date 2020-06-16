@@ -35,10 +35,12 @@ class UserTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.saveStatus === 'SAVING' && this.props.saveStatus === 'SAVED') {
-            this.state.saveCallback(true);
-        } else if (prevProps.saveStatus === 'SAVING' && this.props.saveStatus === 'ERROR') {
-            this.state.saveCallback(false);
+        const { saveStatus } = this.props;
+        const { saveCallback } = this.state;
+        if (prevProps.saveStatus === 'SAVING' && saveStatus === 'SAVED') {
+            saveCallback(true);
+        } else if (prevProps.saveStatus === 'SAVING' && saveStatus === 'ERROR') {
+            saveCallback(false);
         }
     }
 
@@ -78,14 +80,18 @@ class UserTable extends Component {
     }
 
     retrieveData() {
-        this.props.getUsers();
+        const { getUsers } = this.props;
+        getUsers();
     }
 
     handleChange(e) {
-        const { name, value, type, checked } = e.target;
+        const {
+            name, value, type, checked
+        } = e.target;
         const { user } = this.state;
 
-        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
+        const updatedValue = type === 'checkbox' ? checked.toString()
+        .toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser
@@ -93,15 +99,15 @@ class UserTable extends Component {
     }
 
     onSave(callback) {
+        const { saveUserAction } = this.props;
         const { user } = this.state;
         if (this.checkIfPasswordsMatch(user)) {
             this.setState({
                 saveCallback: callback
-            }, () => this.props.saveUser(user));
+            }, () => saveUserAction(user));
             return true;
-        } else {
-            callback(false);
         }
+        callback(false);
         return false;
     }
 
@@ -124,24 +130,28 @@ class UserTable extends Component {
     }
 
     onDelete(usersToDelete, callback) {
+        const { deleteUserAction } = this.props;
         if (usersToDelete) {
-            usersToDelete.forEach(userId => {
-                this.props.deleteUser(userId);
+            usersToDelete.forEach((userId) => {
+                deleteUserAction(userId);
             });
         }
         callback();
     }
 
     onConfigClose(callback) {
-        this.props.clearFieldErrors();
-        if (this.state.user && this.state.user[KEY_CONFIRM_PASSWORD_ERROR]) {
-            delete this.state.user[KEY_CONFIRM_PASSWORD_ERROR];
+        const { clearFieldErrors } = this.props;
+        const { user } = this.state;
+        clearFieldErrors();
+        if (user && user[KEY_CONFIRM_PASSWORD_ERROR]) {
+            delete user[KEY_CONFIRM_PASSWORD_ERROR];
         }
         callback();
     }
 
     clearModalFieldState() {
-        if (this.state.user && Object.keys(this.state.user).length > 0) {
+        const { user } = this.state;
+        if (user && Object.keys(user).length > 0) {
             this.setState({
                 user: {}
             });
@@ -149,7 +159,8 @@ class UserTable extends Component {
     }
 
     retrieveRoles() {
-        return this.props.roles.map(role => {
+        const { roles } = this.props;
+        return roles.map((role) => {
             const rolename = role.roleName;
             return {
                 label: rolename,
@@ -166,16 +177,17 @@ class UserTable extends Component {
     }
 
     onCopy(selectedRow, callback) {
-        selectedRow.id = null;
+        const copy = JSON.parse(JSON.stringify(selectedRow));
+        copy.id = null;
         this.setState({
-            user: selectedRow
+            user: copy
         });
         callback();
     }
 
     createModalFields() {
         const { user } = this.state;
-        const { fieldErrors } = this.props;
+        const { fieldErrors, getRoles } = this.props;
 
         const usernameKey = 'username';
         const passwordKey = 'password';
@@ -201,32 +213,63 @@ class UserTable extends Component {
         );
         let passwordConfirmField = null;
         if (!external) {
-            passwordConfirmField = (<PasswordInput
-                name={confirmPasswordKey} label="Confirm Password" description="The user's password." readOnly={false}
-                required onChange={this.handleChange} value={user[confirmPasswordKey]}
-                errorName={confirmPasswordKey} errorValue={user[confirmPasswordError]}
-            />);
+            passwordConfirmField = (
+                <PasswordInput
+                    id={confirmPasswordKey}
+                    name={confirmPasswordKey}
+                    label="Confirm Password"
+                    description="The user's password."
+                    readOnly={false}
+                    required
+                    onChange={this.handleChange}
+                    value={user[confirmPasswordKey]}
+                    errorName={confirmPasswordKey}
+                    errorValue={user[confirmPasswordError]}
+                />
+            );
         }
 
         return (
             <div>
                 {external && externalNote}
                 <TextInput
-                    name={usernameKey} label="Username" description="The user's username." readOnly={external}
-                    required={!external} onChange={this.handleChange} value={user[usernameKey]}
+                    id={usernameKey}
+                    name={usernameKey}
+                    label="Username"
+                    description="The user's username."
+                    readOnly={external}
+                    required={!external}
+                    onChange={this.handleChange}
+                    value={user[usernameKey]}
                     errorName={usernameKey}
-                    errorValue={fieldErrors[usernameKey]} />
+                    errorValue={fieldErrors[usernameKey]}
+                />
                 <PasswordInput
-                    name={passwordKey} label="Password" description="The user's password." readOnly={external}
-                    required={!external} onChange={this.handleChange} value={user[passwordKey]}
+                    id={passwordKey}
+                    name={passwordKey}
+                    label="Password"
+                    description="The user's password."
+                    readOnly={external}
+                    required={!external}
+                    onChange={this.handleChange}
+                    value={user[passwordKey]}
                     isSet={user[passwordSetKey]}
                     errorName={passwordKey}
-                    errorValue={fieldErrors[passwordKey]} />
+                    errorValue={fieldErrors[passwordKey]}
+                />
                 {passwordConfirmField}
                 <TextInput
-                    name={emailKey} label="Email" description="The user's email." readOnly={external}
-                    required={!external} onChange={this.handleChange} value={user[emailKey]} errorName={emailKey}
-                    errorValue={fieldErrors[emailKey]} />
+                    id={emailKey}
+                    name={emailKey}
+                    label="Email"
+                    description="The user's email."
+                    readOnly={external}
+                    required={!external}
+                    onChange={this.handleChange}
+                    value={user[emailKey]}
+                    errorName={emailKey}
+                    errorValue={fieldErrors[emailKey]}
+                />
                 <DynamicSelectInput
                     name={roleNames}
                     id={roleNames}
@@ -236,15 +279,20 @@ class UserTable extends Component {
                     multiSelect
                     options={this.retrieveRoles()}
                     value={user[roleNames]}
-                    onFocus={this.props.getRoles} />
+                    onFocus={getRoles}
+                />
             </div>
         );
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching } = this.props;
+        const {
+            canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching, users
+        } = this.props;
+        const { user } = this.state;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0 || this.state.user[KEY_CONFIRM_PASSWORD_ERROR] && this.state.user[KEY_CONFIRM_PASSWORD_ERROR].length > 0;
+        const hasErrors = (fieldErrorKeys && fieldErrorKeys.length > 0)
+            || (user[KEY_CONFIRM_PASSWORD_ERROR] && user[KEY_CONFIRM_PASSWORD_ERROR].length > 0);
         return (
             <div>
                 <div>
@@ -258,7 +306,7 @@ class UserTable extends Component {
                         onEditState={this.onEdit}
                         onConfigCopy={this.onCopy}
                         refreshData={this.retrieveData}
-                        data={this.props.users}
+                        data={users}
                         columns={this.createColumns()}
                         newButton={canCreate}
                         deleteButton={canDelete}
@@ -279,12 +327,15 @@ UserTable.defaultProps = {
     userDeleteError: null,
     fieldErrors: {},
     inProgress: false,
-    fetching: false
+    fetching: false,
+    saveStatus: null,
+    users: [],
+    roles: []
 };
 
 UserTable.propTypes = {
-    saveUser: PropTypes.func.isRequired,
-    deleteUser: PropTypes.func.isRequired,
+    saveUserAction: PropTypes.func.isRequired,
+    deleteUserAction: PropTypes.func.isRequired,
     getUsers: PropTypes.func.isRequired,
     getRoles: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -294,10 +345,12 @@ UserTable.propTypes = {
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
-    saveStatus: PropTypes.string
+    saveStatus: PropTypes.string,
+    users: PropTypes.array,
+    roles: PropTypes.array
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     users: state.users.data,
     roles: state.roles.data,
     userDeleteError: state.users.userDeleteError,
@@ -307,9 +360,9 @@ const mapStateToProps = state => ({
     saveStatus: state.users.saveStatus
 });
 
-const mapDispatchToProps = dispatch => ({
-    saveUser: user => dispatch(saveUser(user)),
-    deleteUser: userId => dispatch(deleteUser(userId)),
+const mapDispatchToProps = (dispatch) => ({
+    saveUserAction: (user) => dispatch(saveUser(user)),
+    deleteUserAction: (userId) => dispatch(deleteUser(userId)),
     getUsers: () => dispatch(fetchUsers()),
     getRoles: () => dispatch(fetchRoles()),
     clearFieldErrors: () => dispatch(clearUserFieldErrors())
