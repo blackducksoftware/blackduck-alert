@@ -80,8 +80,8 @@ class TableDisplay extends Component {
 
         const { columns } = this.props;
         return columns.map((column) => {
-            const assignedDataFormate = column.dataFormat ? column.dataFormat : defaultDataFormat;
-            const searchable = column.searchable ? column.searchable : true;
+            const assignedDataFormat = column.dataFormat ? column.dataFormat : defaultDataFormat;
+            const searchable = Object.prototype.hasOwnProperty.call(column, 'searchable') ? column.searchable : true;
             return (
                 <TableHeaderColumn
                     key={column.header}
@@ -92,7 +92,7 @@ class TableDisplay extends Component {
                     dataSort
                     columnClassName="tableCell"
                     tdStyle={{ whiteSpace: 'normal' }}
-                    dataFormat={assignedDataFormate}
+                    dataFormat={assignedDataFormat}
                 >
                     {column.headerLabel}
                 </TableHeaderColumn>
@@ -239,15 +239,11 @@ class TableDisplay extends Component {
         const popupActionMessage = errorDialogMessage || actionMessage;
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
         let cancelFunction = this.handleCancel;
-        if (isInsertModal) {
-            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
-        }
         let submitFunction = this.handleSubmit;
-        if (isInsertModal) {
-            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
-        }
         let testFunction = this.handleTest;
         if (isInsertModal) {
+            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
+            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
             testFunction = tablePopupRef && tablePopupRef.handleTest;
         }
         return (
@@ -369,6 +365,20 @@ class TableDisplay extends Component {
         );
     }
 
+    createIconTableHeader(dataFormat, text) {
+        return (
+            <TableHeaderColumn
+                dataField=""
+                width="48"
+                columnClassName="tableCell"
+                dataFormat={dataFormat}
+                thStyle={{ textAlign: 'center' }}
+            >
+                {text}
+            </TableHeaderColumn>
+        );
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
@@ -377,31 +387,11 @@ class TableDisplay extends Component {
             tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, refreshData
         } = this.props;
         if (enableEdit) {
-            const editColumn = (
-                <TableHeaderColumn
-                    dataField=""
-                    width="48"
-                    columnClassName="tableCell"
-                    dataFormat={this.editButtonClick}
-                    thStyle={{ textAlign: 'center' }}
-                >
-                    Edit
-                </TableHeaderColumn>
-            );
+            const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
             tableColumns.push(editColumn);
         }
         if (enableCopy) {
-            const copyColumn = (
-                <TableHeaderColumn
-                    dataField=""
-                    width="48"
-                    columnClassName="tableCell"
-                    dataFormat={this.copyButtonClick}
-                    thStyle={{ textAlign: 'center' }}
-                >
-                    Copy
-                </TableHeaderColumn>
-            );
+            const copyColumn = this.createIconTableHeader(this.copyButtonClick, 'Copy');
             tableColumns.push(copyColumn);
         }
 
