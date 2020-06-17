@@ -20,6 +20,7 @@ class RoleTable extends Component {
         this.deletePermission = this.deletePermission.bind(this);
         this.onEdit = this.onEdit.bind(this);
         this.onCopy = this.onCopy.bind(this);
+
         this.state = {
             role: {
                 permissions: []
@@ -92,13 +93,13 @@ class RoleTable extends Component {
     }
 
     onRoleClose(callback) {
-        const { clearFieldErrorsAction } = this.props;
+        const { clearFieldErrors } = this.props;
         this.setState({
             role: {
                 permissions: []
             }
         }, callback);
-        clearFieldErrorsAction();
+        clearFieldErrors();
     }
 
     handleChange(e) {
@@ -274,7 +275,7 @@ RoleTable.defaultProps = {
 RoleTable.propTypes = {
     saveRoleAction: PropTypes.func.isRequired,
     deleteRoleAction: PropTypes.func.isRequired,
-    clearFieldErrorsAction: PropTypes.func.isRequired,
+    clearFieldErrors: PropTypes.func.isRequired,
     getRoles: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
@@ -301,7 +302,7 @@ const mapDispatchToProps = (dispatch) => ({
     saveRoleAction: (role) => dispatch(saveRole(role)),
     deleteRoleAction: (roleId) => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),
-    clearFieldErrorsAction: () => dispatch(clearRoleFieldErrors())
+    clearFieldErrors: () => dispatch(clearRoleFieldErrors())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoleTable);

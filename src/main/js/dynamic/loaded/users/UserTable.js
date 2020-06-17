@@ -44,6 +44,75 @@ class UserTable extends Component {
         }
     }
 
+    onSave(callback) {
+        const { user } = this.state;
+        const { saveUserAction } = this.props;
+        if (this.checkIfPasswordsMatch(user)) {
+            this.setState({
+                saveCallback: callback
+            }, () => saveUserAction(user));
+            return true;
+        }
+        callback(false);
+        return false;
+    }
+
+    onDelete(usersToDelete, callback) {
+        const { deleteUserAction } = this.props;
+        if (usersToDelete) {
+            usersToDelete.forEach((userId) => {
+                deleteUserAction(userId);
+            });
+        }
+        callback();
+    }
+
+    onConfigClose(callback) {
+        const { clearFieldErrors } = this.props;
+        const { user } = this.state;
+        clearFieldErrors();
+        if (user && user[KEY_CONFIRM_PASSWORD_ERROR]) {
+            delete user[KEY_CONFIRM_PASSWORD_ERROR];
+        }
+        callback();
+    }
+
+    onEdit(selectedRow, callback) {
+        this.setState({
+            user: selectedRow
+        });
+        callback();
+    }
+
+    onCopy(selectedRow, callback) {
+        const copy = JSON.parse(JSON.stringify(selectedRow));
+        copy.id = null;
+        this.setState({
+            user: copy
+        });
+        callback();
+    }
+
+    clearModalFieldState() {
+        const { user } = this.state;
+        if (user && Object.keys(user).length > 0) {
+            this.setState({
+                user: {}
+            });
+        }
+    }
+
+    retrieveRoles() {
+        const { roles } = this.props;
+        return roles.map((role) => {
+            const rolename = role.roleName;
+            return {
+                label: rolename,
+                value: rolename
+            };
+        });
+    }
+
     createColumns() {
         return [
             {
@@ -98,19 +167,6 @@ class UserTable extends Component {
         });
     }
 
-    onSave(callback) {
-        const { saveUserAction } = this.props;
-        const { user } = this.state;
-        if (this.checkIfPasswordsMatch(user)) {
-            this.setState({
-                saveCallback: callback
-            }, () => saveUserAction(user));
-            return true;
-        }
-        callback(false);
-        return false;
-    }
-
     checkIfPasswordsMatch(user) {
         const passwordKey = 'password';
         const confirmPasswordKey = 'confirmPassword';
@@ -127,62 +183,6 @@ class UserTable extends Component {
             user: newUser
         });
         return matching;
-    }
-
-    onDelete(usersToDelete, callback) {
-        const { deleteUserAction } = this.props;
-        if (usersToDelete) {
-            usersToDelete.forEach((userId) => {
-                deleteUserAction(userId);
-            });
-        }
-        callback();
-    }
-
-    onConfigClose(callback) {
-        const { clearFieldErrors } = this.props;
-        const { user } = this.state;
-        clearFieldErrors();
-        if (user && user[KEY_CONFIRM_PASSWORD_ERROR]) {
-            delete user[KEY_CONFIRM_PASSWORD_ERROR];
-        }
-        callback();
-    }
-
-    clearModalFieldState() {
-        const { user } = this.state;
-        if (user && Object.keys(user).length > 0) {
-            this.setState({
-                user: {}
-            });
-        }
-    }
-
-    retrieveRoles() {
-        const { roles } = this.props;
-        return roles.map((role) => {
-            const rolename = role.roleName;
-            return {
-                label: rolename,
-                value: rolename
-            };
-        });
-    }
-
-    onEdit(selectedRow, callback) {
-        this.setState({
-            user: selectedRow
-        });
-        callback();
-    }
-
-    onCopy(selectedRow, callback) {
-        const copy = JSON.parse(JSON.stringify(selectedRow));
-        copy.id = null;
-        this.setState({
-            user: copy
-        });
-        callback();
     }
 
     createModalFields() {
