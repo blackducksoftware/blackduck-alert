@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate } from 'store/actions/certificates';
+import {
+    clearCertificateFieldErrors,
+    deleteCertificate,
+    fetchCertificates,
+    saveCertificate
+} from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
@@ -14,7 +19,6 @@ class CertificatesPage extends Component {
         super(props);
         this.retrieveData = this.retrieveData.bind(this);
         this.clearModalFieldState = this.clearModalFieldState.bind(this);
-        this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onConfigClose = this.onConfigClose.bind(this);
@@ -31,11 +35,120 @@ class CertificatesPage extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.saveStatus === 'SAVING' && (this.props.saveStatus === 'SAVED' || this.props.saveStatus === 'ERROR')) {
-            this.state.saveCallback(true);
+        const { saveCallback, deleteCallback } = this.state;
+        const { saveStatus, deleteSuccess, inProgress } = this.props;
+        if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
+            saveCallback(true);
         }
-        if (prevProps.inProgress && !prevProps.deleteSuccess && !this.props.inProgress && this.props.deleteSuccess) {
-            this.state.deleteCallback();
+        if (prevProps.inProgress && !prevProps.deleteSuccess && !inProgress && deleteSuccess) {
+            deleteCallback();
+        }
+    }
+
+    onConfigClose(callback) {
+        const { clearFieldErrors } = this.props;
+        clearFieldErrors();
+        callback();
+    }
+
+    onSave(callback) {
+        const { saveCertificateAction } = this.props;
+        const { certificate } = this.state;
+        saveCertificateAction(certificate);
+        this.setState({
+            saveCallback: callback
+        });
+        return true;
+    }
+
+    onDelete(certificatesToDelete, callback) {
+        const { deleteCertificateAction } = this.props;
+        if (certificatesToDelete) {
+            certificatesToDelete.forEach((certificateId) => {
+                this.props.deleteCertificateAction(certificateId);
+            });
+        }
+        this.setState({
+            deleteCallback: callback
+        });
+    }
+
+    onEdit(selectedRow, callback) {
+        this.setState({
+            certificate: selectedRow
+        }, callback);
+    }
+
+    onCopy(selectedRow, callback) {
+        const copy = JSON.parse(JSON.stringify(selectedRow));
+        copy.id = null;
+        this.setState({
+            certificate: copy
+        }, callback);
+    }
+
+    createModalFields() {
+        const { certificate } = this.state;
+        const { fieldErrors } = this.props;
+        const aliasKey = 'alias';
+        const certificateContentKey = 'certificateContent';
+        return (
+            <div>
+                <ReadOnlyField
+                    label="Last Updated"
+                    name="lastUpdated"
+                    readOnly="true"
+                    value={certificate.lastUpdated}
+                />
+                <TextInput
+                    name={aliasKey}
+                    label="Alias"
+                    description="The certificate alias name."
+                    required
+                    onChange={this.handleChange}
+                    value={certificate[aliasKey]}
+                    errorName={aliasKey}
+                    errorValue={fieldErrors[aliasKey]}
+                />
+                <TextArea
+                    name={certificateContentKey}
+                    label="Certificate Content"
+                    description="The certificate content text."
+                    required
+                    onChange={this.handleChange}
+                    value={certificate[certificateContentKey]}
+                    errorName={certificateContentKey}
+                    errorValue={fieldErrors[certificateContentKey]}
+                />
+            </div>
+        );
+    }
+
+    handleChange(e) {
+        const {
+            name, value, type, checked
+        } = e.target;
+        const { certificate } = this.state;
+
+        const updatedValue = type === 'checkbox' ? checked.toString()
+        .toLowerCase() === 'true' : value;
+        const newCertificate = Object.assign(certificate, { [name]: updatedValue });
+        this.setState({
+            certificate: newCertificate
+        });
+    }
+
+    retrieveData() {
+        const { getCertificates } = this.props;
+        getCertificates();
+    }
+
+    clearModalFieldState() {
+        const { certificate } = this.state;
+        if (certificate && Object.keys(certificate).length > 0) {
+            this.setState({
+                certificate: {}
+            });
         }
     }
 
@@ -63,93 +176,13 @@ class CertificatesPage extends Component {
         ];
     }
 
-    onConfigClose(callback) {
-        this.props.clearFieldErrors();
-        callback();
-    }
-
-    clearModalFieldState() {
-        if (this.state.certificate && Object.keys(this.state.certificate).length > 0) {
-            this.setState({
-                certificate: {}
-            });
-        }
-    }
-
-    retrieveData() {
-        this.props.getCertificates();
-    }
-
-    handleChange(e) {
-        const { name, value, type, checked } = e.target;
-        const { certificate } = this.state;
-
-        const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
-        const newCertificate = Object.assign(certificate, { [name]: updatedValue });
-        this.setState({
-            certificate: newCertificate
-        });
-    }
-
-    onSave(callback) {
-        const { certificate } = this.state;
-        this.props.saveCertificate(certificate);
-        this.setState({
-            saveCallback: callback
-        });
-        return true;
-    }
-
-    onDelete(certificatesToDelete, callback) {
-        if (certificatesToDelete) {
-            certificatesToDelete.forEach(certificateId => {
-                this.props.deleteCertificate(certificateId);
-            });
-        }
-        this.setState({
-            deleteCallback: callback
-        });
-    }
-
-    createModalFields() {
-        const { certificate } = this.state;
-        const { fieldErrors } = this.props;
-        const aliasKey = 'alias';
-        const certificateContentKey = 'certificateContent';
-        return (
-            <div>
-                <ReadOnlyField label="Last Updated" name="lastUpdated" readOnly="true" value={certificate['lastUpdated']} />
-                <TextInput
-                    name={aliasKey} label="Alias" description="The certificate alias name."
-                    required onChange={this.handleChange} value={certificate[aliasKey]}
-                    errorName={aliasKey}
-                    errorValue={fieldErrors[aliasKey]} />
-                <TextArea
-                    name={certificateContentKey} label="Certificate Content" description="The certificate content text."
-                    required onChange={this.handleChange} value={certificate[certificateContentKey]}
-                    errorName={certificateContentKey}
-                    errorValue={fieldErrors[certificateContentKey]} />
-            </div>
-        );
-    }
-
-    onEdit(selectedRow, callback) {
-        this.setState({
-            certificate: selectedRow
-        }, callback);
-    }
-
-    onCopy(selectedRow, callback) {
-        selectedRow.id = null;
-        this.setState({
-            certificate: selectedRow
-        }, callback);
-    }
-
     render() {
-        const { fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors } = this.props;
+        const {
+            fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors
+        } = this.props;
 
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors,
+            DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
@@ -190,8 +223,8 @@ class CertificatesPage extends Component {
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
-    saveCertificate: PropTypes.func.isRequired,
-    deleteCertificate: PropTypes.func.isRequired,
+    saveCertificateAction: PropTypes.func.isRequired,
+    deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
     certificateDeleteError: PropTypes.string,
@@ -213,7 +246,7 @@ CertificatesPage.defaultProps = {
     fieldErrors: {}
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     certificates: state.certificates.data,
     certificateDeleteError: state.certificates.certificateDeleteError,
@@ -224,9 +257,9 @@ const mapStateToProps = state => ({
     deleteSuccess: state.certificates.deleteSuccess
 });
 
-const mapDispatchToProps = dispatch => ({
-    saveCertificate: certificate => dispatch(saveCertificate(certificate)),
-    deleteCertificate: certificateId => dispatch(deleteCertificate(certificateId)),
+const mapDispatchToProps = (dispatch) => ({
+    saveCertificateAction: (certificate) => dispatch(saveCertificate(certificate)),
+    deleteCertificateAction: (certificateId) => dispatch(deleteCertificate(certificateId)),
     getCertificates: () => dispatch(fetchCertificates()),
     clearFieldErrors: () => dispatch(clearCertificateFieldErrors())
 });
