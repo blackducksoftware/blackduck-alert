@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.web.model;
 
+import java.util.List;
+
 import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
@@ -31,18 +33,22 @@ public class AboutModel extends Stringable {
     private String projectUrl;
     private boolean initialized;
     private String startupTime;
+    private List<String> providers;
+    private List<String> channels;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String created, final String description, final String projectUrl, final boolean initialized, final String startupTime) {
+    public AboutModel(String version, String created, String description, String projectUrl, boolean initialized, String startupTime, List<String> providers, List<String> channels) {
         this.version = version;
         this.created = created;
         this.description = description;
         this.projectUrl = projectUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
+        this.providers = providers;
+        this.channels = channels;
     }
 
     public String getVersion() {
@@ -67,5 +73,13 @@ public class AboutModel extends Stringable {
 
     public String getStartupTime() {
         return startupTime;
+    }
+
+    public List<String> getProviders() {
+        return providers;
+    }
+
+    public List<String> getChannels() {
+        return channels;
     }
 }

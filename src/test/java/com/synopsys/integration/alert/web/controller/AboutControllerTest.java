@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.web.controller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -22,64 +23,68 @@ public class AboutControllerTest {
 
     @Test
     public void testController() {
-        final String version = "1.2.3";
-        final String created = "date";
-        final String description = "description";
-        final String gitHubUrl = "https://www.google.com";
-        final boolean initialized = true;
-        final String startupTime = "startup time is now";
+        String version = "1.2.3";
+        String created = "date";
+        String description = "description";
+        String gitHubUrl = "https://www.google.com";
+        boolean initialized = true;
+        String startupTime = "startup time is now";
+        List<String> providers = List.of("provider_key");
+        List<String> channels = List.of("channel_key");
 
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime);
-        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        ResponseFactory responseFactory = new ResponseFactory();
+        AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime, providers, channels);
+        AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
-        final ResponseEntity<String> response = controller.about();
+        AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
+        ResponseEntity<String> response = controller.about();
 
-        final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
+        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
     @Test
     public void testGetAboutData() {
-        final String version = "1.2.3";
-        final String created = "date";
-        final String description = "description";
-        final String gitHubUrl = "https://www.google.com";
-        final boolean initialized = true;
-        final String startupTime = "startup time is now";
+        String version = "1.2.3";
+        String created = "date";
+        String description = "description";
+        String gitHubUrl = "https://www.google.com";
+        boolean initialized = true;
+        String startupTime = "startup time is now";
+        List<String> providers = List.of("provider_key");
+        List<String> channels = List.of("channel_key");
 
-        final Gson gson = new Gson();
-        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final ResponseFactory responseFactory = new ResponseFactory();
+        Gson gson = new Gson();
+        ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        ResponseFactory responseFactory = new ResponseFactory();
 
-        final AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime);
-        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime, providers, channels);
+        AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
 
-        final ResponseEntity<String> response = aboutController.about();
-        final ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
+        ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
     @Test
     public void testGetAboutDataNotPresent() {
-        final Gson gson = new Gson();
-        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        Gson gson = new Gson();
+        ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        ResponseFactory responseFactory = new ResponseFactory();
+        AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
 
-        final ResponseEntity<String> response = aboutController.about();
-        final ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
+        ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }

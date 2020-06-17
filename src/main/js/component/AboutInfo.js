@@ -57,59 +57,35 @@ class AboutInfo extends React.Component {
         );
     }
 
-    createProviderTableData(globalDescriptors) {
+    createTableData(userBasedDescriptors, descriptorNames) {
+        debugger;
         const data = [];
-        for (let key in globalDescriptors) {
-            const descriptor = globalDescriptors[key];
-            if (!data.find(existing => existing.urlName === descriptor.urlName)) {
+        for (let key in descriptorNames) {
+            const descriptor = descriptorNames[key];
+            const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(
+                userBasedDescriptors, descriptor, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const globalConfigAllowed = Boolean(globalDescriptor);
+            if (globalConfigAllowed) {
                 data.push({
                     name: descriptor.label,
                     urlName: descriptor.urlName,
-                    navigate: true
+                    navigate: globalConfigAllowed
                 });
+            } else {
+                
             }
         }
         return data;
     }
 
-    createChannelTableData(globalDescriptors, distributionDescriptors) {
-        const data = [];
-        const nameSet = new Set();
-        globalDescriptors.map(descriptor => descriptor.name)
-        .forEach(name => nameSet.add(name));
-        distributionDescriptors.map(descriptor => descriptor.name)
-        .forEach(name => nameSet.add(name));
-
-        nameSet.forEach(descriptorName => {
-            const globalDescriptor = globalDescriptors.find(descriptor => descriptor.name === descriptorName);
-            if (globalDescriptor) {
-                data.push({
-                    name: globalDescriptor.label,
-                    urlName: globalDescriptor.urlName,
-                    navigate: true
-                });
-            } else {
-                const distributionDescriptor = distributionDescriptors.find(descriptor => descriptor.name === descriptorName);
-                data.push({
-                    name: distributionDescriptor.label,
-                    urlName: distributionDescriptor.urlName,
-                    navigate: false
-                });
-            }
-        });
-
-        return data;
-    }
-
     render() {
         const {
-            version, description, projectUrl, descriptors
+            version, description, projectUrl, descriptors, providers, channels
         } = this.props;
-        const providerGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-        const channelGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-        const channelDistributionList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-        const providerData = this.createProviderTableData(providerGlobalList);
-        const channelData = this.createChannelTableData(channelGlobalList, channelDistributionList);
+        const userProviderList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER);
+        const userChannelList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL);
+        const providerData = this.createTableData(userProviderList, providers);
+        const channelData = this.createTableData(userChannelList, channels);
         const providerTable = this.createDescriptorTable(providerData, '/alert/providers/');
         const channelTable = this.createDescriptorTable(channelData, '/alert/channels/');
         const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All
@@ -172,11 +148,15 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
+    providers: PropTypes.array,
+    channels: PropTypes.array,
     descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfo.defaultProps = {
     description: '',
+    providers: [],
+    channels: [],
     descriptors: []
 };
 
@@ -184,6 +164,8 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
+    providers: state.about.providerList,
+    channels: state.about.channelList,
     descriptors: state.descriptors.items
 });
 
