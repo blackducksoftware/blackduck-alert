@@ -11,7 +11,6 @@ class RoleTable extends Component {
         super(props);
 
         this.retrieveData = this.retrieveData.bind(this);
-        this.createColumns = this.createColumns.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
@@ -21,7 +20,7 @@ class RoleTable extends Component {
         this.deletePermission = this.deletePermission.bind(this);
         this.onEdit = this.onEdit.bind(this);
         this.onCopy = this.onCopy.bind(this);
-        
+
         this.state = {
             role: {
                 permissions: []
@@ -32,17 +31,80 @@ class RoleTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.saveStatus === 'SAVING' && (this.props.saveStatus === 'SAVED' || this.props.saveStatus === 'ERROR')) {
+        const { saveStatus } = this.props;
+        const { saveCallback } = this.state;
+        if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
             this.setState({
                 role: {
                     permissions: []
                 }
-            }, () => this.state.saveCallback(true));
+            }, () => saveCallback(true));
         }
     }
 
+    onEdit(selectedRow, callback) {
+        this.setState({
+            role: selectedRow
+        }, callback);
+    }
+
+    onCopy(selectedRow, callback) {
+        const copy = JSON.parse(JSON.stringify(selectedRow));
+        copy.id = null;
+        this.setState({
+            role: copy
+        }, callback);
+    }
+
+    onSave(callback) {
+        const { descriptors, saveRoleAction } = this.props;
+        const { role } = this.state;
+        const { permissions } = role;
+        const correctedPermissions = [];
+        permissions.forEach((permission) => {
+            const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
+            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === descriptorName);
+            if (descriptor) {
+                const descriptorKey = descriptor.name;
+                const permissionCopy = JSON.parse(JSON.stringify(permission));
+                permissionCopy[PERMISSIONS_TABLE.DESCRIPTOR_NAME] = descriptorKey;
+                correctedPermissions.push(permissionCopy);
+            }
+        });
+        role.permissions = correctedPermissions;
+
+        this.setState({
+            saveCallback: callback
+        }, () => saveRoleAction(role));
+
+        return true;
+    }
+
+    onDelete(rolesToDelete, callback) {
+        const { deleteRoleAction } = this.props;
+        if (rolesToDelete) {
+            rolesToDelete.forEach((roleId) => {
+                deleteRoleAction(roleId);
+            });
+        }
+        callback();
+        this.retrieveData();
+    }
+
+    onRoleClose(callback) {
+        const { clearFieldErrors } = this.props;
+        this.setState({
+            role: {
+                permissions: []
+            }
+        }, callback);
+        clearFieldErrors();
+    }
+
     handleChange(e) {
-        const { name, value, type, checked } = e.target;
+        const {
+            name, value, type, checked
+        } = e.target;
         const { role } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
         .toLowerCase() === 'true' : value;
@@ -70,85 +132,29 @@ class RoleTable extends Component {
     }
 
     retrieveData() {
-        this.props.getRoles();
-    }
-
-    onEdit(selectedRow, callback) {
-        this.setState({
-            role: selectedRow
-        }, callback);
-    }
-
-    onCopy(selectedRow, callback) {
-        selectedRow.id = null;
-        this.setState({
-            role: selectedRow
-        }, callback);
-    }
-
-    onSave(callback) {
-        const { descriptors } = this.props;
-        const { role } = this.state;
-        const { permissions } = role;
-        let correctedPermissions = [];
-        permissions.forEach(permission => {
-            const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
-            const descriptor = descriptors.find(currentDescriptor => currentDescriptor.label === descriptorName);
-            if (descriptor) {
-                const descriptorKey = descriptor.name;
-
-                permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] = descriptorKey;
-                correctedPermissions.push(permission);
-            }
-        });
-        role.permissions = correctedPermissions;
-
-        this.setState({
-            saveCallback: callback
-        }, () => this.props.saveRole(role));
-
-        return true;
-    }
-
-    onDelete(rolesToDelete, callback) {
-        if (rolesToDelete) {
-            rolesToDelete.forEach(roleId => {
-                this.props.deleteRole(roleId);
-            });
-        }
-        callback();
-        this.retrieveData();
-    }
-
-    onRoleClose(callback) {
-        this.setState({
-            role: {
-                permissions: []
-            }
-        }, callback);
-        this.props.clearFieldErrors();
-
+        const { getRoles } = this.props;
+        getRoles();
     }
 
     async savePermissions(permission) {
         const { role, incrementalId } = this.state;
         const { permissions } = role;
-
-        if (!permission.id) {
-            permission.id = incrementalId;
+        const permissionCopy = JSON.parse(JSON.stringify(permission));
+        if (!permissionCopy.id) {
+            permissionCopy.id = incrementalId;
             this.setState({
                 incrementalId: incrementalId + 1
             });
-            permissions.push(permission);
+            permissions.push(permissionCopy);
         } else {
-            const matchingPermissionIndex = permissions.findIndex(listPermission => listPermission.id === permission.id);
+            const matchingPermissionIndex = permissions.findIndex((listPermission) => listPermission.id === permission.id);
             if (matchingPermissionIndex > -1) {
                 permissions[matchingPermissionIndex] = permission;
             }
         }
         role.permissions = permissions;
         this.setState({
-            role: role
+            role
         });
         return true;
     }
@@ -156,8 +162,8 @@ class RoleTable extends Component {
     deletePermission(permissionIds) {
         const { role } = this.state;
         const { permissions } = role;
-        const filteredPermissions = permissions.filter(listPermission => !permissionIds.includes(listPermission.id));
-        let newRole = { ...role };
+        const filteredPermissions = permissions.filter((listPermission) => !permissionIds.includes(listPermission.id));
+        const newRole = { ...role };
         newRole.permissions = filteredPermissions;
         this.setState({
             role: newRole
@@ -165,51 +171,66 @@ class RoleTable extends Component {
     }
 
     createModalFields() {
-        const { role } = this.state;
+        const { role, incrementalId } = this.state;
 
         const { permissions } = role;
-        let incrementedId = this.state.incrementalId;
-        permissions.forEach(permission => {
-            if (!permission.id) {
-                permission.id = incrementedId;
-                incrementedId++;
+        let incrementedId = incrementalId;
+        const updatedPermissions = [];
+        permissions.forEach((permission) => {
+            const permissionCopy = JSON.parse(JSON.stringify(permission));
+            if (!permissionCopy.id) {
+                permissionCopy.id = incrementedId;
+                incrementedId += 1;
             }
+            updatedPermissions.push(permissionCopy);
         });
 
-        if (incrementedId !== this.state.incrementalId) {
+        if (incrementedId !== incrementalId) {
             role.permissions = permissions;
             this.setState({
-                role: role,
-                incrementedId: incrementedId
+                role,
+                incrementalId: incrementedId
             });
         }
 
         const roleNameKey = 'roleName';
         const roleNameValue = role[roleNameKey];
 
-        const { canCreate, canDelete, fieldErrors, inProgress, fetching } = this.props;
+        const {
+            canCreate, canDelete, fieldErrors, inProgress, fetching, descriptors
+        } = this.props;
 
         return (
             <div>
-                <TextInput name={roleNameKey} label="Role Name" description="The name of the role." required={true}
-                           onChange={this.handleChange} value={roleNameValue} errorName={roleNameKey}
-                           errorValue={fieldErrors[roleNameKey]} />
+                <TextInput
+                    name={roleNameKey}
+                    label="Role Name"
+                    description="The name of the role."
+                    required
+                    onChange={this.handleChange}
+                    value={roleNameValue}
+                    errorName={roleNameKey}
+                    errorValue={fieldErrors[roleNameKey]}
+                />
                 <PermissionTable
                     inProgress={inProgress}
                     fetching={fetching}
                     data={permissions}
                     saveRole={this.savePermissions}
                     deleteRole={this.deletePermission}
-                    descriptors={this.props.descriptors}
+                    descriptors={descriptors}
                     canCreate={canCreate}
                     canDelete={canDelete}
-                    nestedInModal={true} />
+                    nestedInModal
+                />
             </div>
         );
     }
 
     render() {
-        const { canCreate, canDelete, fieldErrors, roleError, inProgress, fetching } = this.props;
+        const {
+            canCreate, canDelete, fieldErrors, roleError, inProgress, fetching, roles
+        } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
         return (
@@ -223,7 +244,7 @@ class RoleTable extends Component {
                     onConfigClose={this.onRoleClose}
                     onConfigCopy={this.onCopy}
                     refreshData={this.retrieveData}
-                    data={this.props.roles}
+                    data={roles}
                     columns={this.createColumns()}
                     newButton={canCreate}
                     deleteButton={canDelete}
@@ -243,12 +264,16 @@ RoleTable.defaultProps = {
     roleError: null,
     fieldErrors: {},
     inProgress: false,
-    fetching: false
+    fetching: false,
+    roles: [],
+    descriptors: [],
+    saveStatus: null
 };
 
 RoleTable.propTypes = {
-    saveRole: PropTypes.func.isRequired,
-    deleteRole: PropTypes.func.isRequired,
+    saveRoleAction: PropTypes.func.isRequired,
+    deleteRoleAction: PropTypes.func.isRequired,
+    clearFieldErrors: PropTypes.func.isRequired,
     getRoles: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
@@ -257,10 +282,11 @@ RoleTable.propTypes = {
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
-    saveStatus: PropTypes.string
+    saveStatus: PropTypes.string,
+    roles: PropTypes.array
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
     roleError: state.roles.roleError,
@@ -270,9 +296,9 @@ const mapStateToProps = state => ({
     saveStatus: state.roles.saveStatus
 });
 
-const mapDispatchToProps = dispatch => ({
-    saveRole: role => dispatch(saveRole(role)),
-    deleteRole: roleId => dispatch(deleteRole(roleId)),
+const mapDispatchToProps = (dispatch) => ({
+    saveRoleAction: (role) => dispatch(saveRole(role)),
+    deleteRoleAction: (roleId) => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),
     clearFieldErrors: () => dispatch(clearRoleFieldErrors())
 });
