@@ -42,6 +42,7 @@ class RoleTable extends Component {
         }
     }
 
+
     onEdit(selectedRow, callback) {
         this.setState({
             role: selectedRow
@@ -186,7 +187,7 @@ class RoleTable extends Component {
         });
 
         if (incrementedId !== incrementalId) {
-            role.permissions = permissions;
+            role.permissions = updatedPermissions;
             this.setState({
                 role,
                 incrementalId: incrementedId
@@ -203,6 +204,7 @@ class RoleTable extends Component {
         return (
             <div>
                 <TextInput
+                    id={roleNameKey}
                     name={roleNameKey}
                     label="Role Name"
                     description="The name of the role."

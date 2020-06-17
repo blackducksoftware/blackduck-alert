@@ -73,6 +73,7 @@ class TaskManagement extends Component {
         properties.forEach((property) => {
             const field = (
                 <ReadOnlyField
+                    id={property.key}
                     label={property.displayName}
                     name={property.key}
                     readOnly="true"
@@ -94,18 +95,21 @@ class TaskManagement extends Component {
         return (
             <div>
                 <ReadOnlyField
+                    id={nameKey}
                     label="Type"
                     name={nameKey}
                     readOnly="true"
                     value={task[nameKey]}
                 />
                 <ReadOnlyField
+                    id={fullyQualifiedNameKey}
                     label="Full Type Name"
                     name={fullyQualifiedNameKey}
                     readOnly="true"
                     value={task[fullyQualifiedNameKey]}
                 />
                 <ReadOnlyField
+                    id={nextRunTimeKey}
                     label="Next Run Time"
                     name={nextRunTimeKey}
                     readOnly="true"

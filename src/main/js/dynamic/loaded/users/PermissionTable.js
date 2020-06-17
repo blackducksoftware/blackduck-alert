@@ -191,42 +191,50 @@ class PermissionTable extends Component {
                     onChange={this.handlePermissionsChange}
                     value={permissionsData[PERMISSIONS_TABLE.CONTEXT]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.CREATE} label="Create"
+                    name={PERMISSIONS_TABLE.CREATE} id={PERMISSIONS_TABLE.CREATE}
+                    label="Create"
                     description="Allow users to create new items with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.CREATE]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.DELETE_OPERATION} label="Delete"
+                    name={PERMISSIONS_TABLE.DELETE_OPERATION} id={PERMISSIONS_TABLE.DELETE_OPERATION}
+                    label="Delete"
                     description="Allow users to delete items with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.DELETE_OPERATION]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.READ} label="Read"
+                    name={PERMISSIONS_TABLE.READ} id={PERMISSIONS_TABLE.READ}
+                    label="Read"
                     description="This permission shows or hides content for the user."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.READ]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.WRITE} label="Write"
+                    name={PERMISSIONS_TABLE.WRITE} id={PERMISSIONS_TABLE.WRITE}
+                    label="Write"
                     description="Allow users to edit items with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.EXECUTE} label="Execute"
+                    name={PERMISSIONS_TABLE.EXECUTE} id={PERMISSIONS_TABLE.EXECUTE}
+                    label="Execute"
                     description="Allow users to perform functionality with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_READ} label="Upload Read"
+                    name={PERMISSIONS_TABLE.UPLOAD_READ} id={PERMISSIONS_TABLE.UPLOAD_READ}
+                    label="Upload Read"
                     description="This permission shows or hides upload related content for the user."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_WRITE} label="Upload Write"
+                    name={PERMISSIONS_TABLE.UPLOAD_WRITE} id={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                    label="Upload Write"
                     description="Allow users to modify uploaded content with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_DELETE} label="Upload Delete"
+                    name={PERMISSIONS_TABLE.UPLOAD_DELETE} id={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                    label="Upload Delete"
                     description="Allow users to delete uploaded content with this permission."
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]} />

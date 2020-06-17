@@ -24,6 +24,7 @@ class TableDisplay extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.updateData = this.updateData.bind(this);
         this.collectItemsToDelete = this.collectItemsToDelete.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
@@ -36,11 +37,13 @@ class TableDisplay extends Component {
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
         this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
-
+        this.tablePopup = React.createRef();
+        this.table = React.createRef();
         this.state = {
             currentRowSelected: null,
             uiValidation: VALIDATION_STATE.NONE,
             showConfiguration: false,
+            isInsertModal: false,
             showDelete: false,
             rowsToDelete: []
         };
@@ -50,10 +53,11 @@ class TableDisplay extends Component {
         this.updateData();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const { currentRowSelected, showConfiguration, uiValidation } = this.state;
+    componentDidUpdate() {
+        const { showConfiguration, currentRowSelected, uiValidation } = this.state;
         const { inProgress, hasFieldErrors } = this.props;
-        if (!showConfiguration && currentRowSelected && !inProgress && !hasFieldErrors && uiValidation === VALIDATION_STATE.SUCCESS) {
+        if (!showConfiguration && currentRowSelected && !inProgress && !hasFieldErrors
+            && uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
         }
     }
@@ -76,8 +80,8 @@ class TableDisplay extends Component {
 
         const { columns } = this.props;
         return columns.map((column) => {
-            const assignedDataFormate = column.dataFormat ? column.dataFormat : defaultDataFormat;
-            const searchable = column.searchable ? column.searchable : true;
+            const assignedDataFormat = column.dataFormat ? column.dataFormat : defaultDataFormat;
+            const searchable = Object.prototype.hasOwnProperty.call(column, 'searchable') ? column.searchable : true;
             return (
                 <TableHeaderColumn
                     key={column.header}
@@ -88,7 +92,7 @@ class TableDisplay extends Component {
                     dataSort
                     columnClassName="tableCell"
                     tdStyle={{ whiteSpace: 'normal' }}
-                    dataFormat={assignedDataFormate}
+                    dataFormat={assignedDataFormat}
                 >
                     {column.headerLabel}
                 </TableHeaderColumn>
@@ -124,7 +128,8 @@ class TableDisplay extends Component {
                             insertOnClick();
                             clearModalFieldState();
                             this.setState({
-                                showConfiguration: true
+                                showConfiguration: true,
+                                isInsertModal: true
                             });
                         }}
                     >
@@ -136,7 +141,7 @@ class TableDisplay extends Component {
                 && (
                     <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
                         <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                        {this.props.tableDeleteButtonLabel}
+                        {tableDeleteButtonLabel}
                     </DeleteButton>
                 )}
                 {tableRefresh && refreshButton}
@@ -148,7 +153,7 @@ class TableDisplay extends Component {
         const { onConfigClose } = this.props;
         const stateCallback = () => {
             const closeCallback = () => {
-                this.refs.table.cleanSelected();
+                this.table.current.cleanSelected();
                 this.updateData();
             };
             onConfigClose(closeCallback);
@@ -219,28 +224,40 @@ class TableDisplay extends Component {
         onConfigTest(callback);
     }
 
-    createEditModal() {
-        const { currentRowSelected } = this.state;
+    handleCancel() {
+        this.hideModal();
+        this.handleClose();
+    }
+
+    createTableModal() {
+        const tablePopupRef = this.tablePopup.current;
+        const { currentRowSelected, isInsertModal } = this.state;
         const {
             modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
             actionMessage
         } = this.props;
         const popupActionMessage = errorDialogMessage || actionMessage;
+        const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
+        let cancelFunction = this.handleCancel;
+        let submitFunction = this.handleSubmit;
+        let testFunction = this.handleTest;
+        if (isInsertModal) {
+            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
+            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
+            testFunction = tablePopupRef && tablePopupRef.handleTest;
+        }
         return (
-            <div
-                onKeyDown={e => e.stopPropagation()}
-                onClick={e => e.stopPropagation()}
-                onFocus={e => e.stopPropagation()}
-                onMouseOver={e => e.stopPropagation()}
-            >
+            <div>
                 <PopUp
-                    onCancel={() => {
-                        this.hideModal();
-                        this.handleClose();
-                    }}
-                    handleSubmit={this.handleSubmit}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onFocus={(e) => e.stopPropagation()}
+                    onMouseOver={(e) => e.stopPropagation()}
+                    ref={this.tablePopup}
+                    onCancel={cancelFunction}
+                    handleSubmit={submitFunction}
                     includeSave={saveButton}
-                    handleTest={this.handleTest}
+                    handleTest={testFunction}
                     testLabel={testButtonLabel}
                     includeTest={testButton}
                     show={this.isShowModal()}
@@ -249,7 +266,7 @@ class TableDisplay extends Component {
                     performingAction={inProgress}
                     actionMessage={popupActionMessage}
                 >
-                    {newConfigFields(currentRowSelected)}
+                    {configFields}
                 </PopUp>
             </div>
         );
@@ -263,51 +280,29 @@ class TableDisplay extends Component {
 
     hideModal() {
         this.setState({
-            showConfiguration: false
+            showConfiguration: false,
+            isInsertModal: false
         });
     }
 
     createInsertModal(onModalClose) {
-        const { showConfiguration } = this.state;
-        const {
-            modalTitle, newConfigFields, inProgress, saveButton, testButton, errorDialogMessage, actionMessage,
-            testButtonLabel
-        } = this.props;
-        const popupActionMessage = errorDialogMessage || actionMessage;
-        return (
-            <div
-                onKeyDown={(e) => e.stopPropagation()}
-                onClick={(e) => e.stopPropagation()}
-                onFocus={(e) => e.stopPropagation()}
-                onMouseOver={(e) => e.stopPropagation()}
-            >
-                <PopUp
-                    onCancel={() => {
-                        onModalClose();
-                        this.hideModal();
-                        this.handleClose();
-                    }}
-                    handleSubmit={(event) => {
-                        this.handleInsertModalSubmit(event, onModalClose);
-                    }}
-                    includeSave={saveButton}
-                    handleTest={(event) => {
-                        this.handleInsertModalTest(event, onModalClose);
-                    }}
-                    includeTest={testButton}
-                    testLabel={testButtonLabel}
-                    show={showConfiguration}
-                    title={modalTitle}
-                    okLabel="Save"
-                    performingAction={inProgress}
-                    actionMessage={popupActionMessage}
-                >
-                    {newConfigFields()}
-                </PopUp>
-            </div>
-        );
+        const cancelFunction = () => {
+            onModalClose();
+            this.handleCancel();
+        };
+        const submitFunction = (event) => {
+            this.handleInsertModalSubmit(event, onModalClose);
+        };
+        const testFunction = (event) => {
+            this.handleInsertModalTest(event, onModalClose);
+        };
+        if (this.tablePopup && this.tablePopup.current) {
+            this.tablePopup.current.onCancel = cancelFunction;
+            this.tablePopup.current.handleSubmit = submitFunction;
+            this.tablePopup.current.handleTest = testFunction;
+        }
+        return (<div />);
     }
-
 
     collectItemsToDelete(next, dropRowKeys) {
         this.setState({
@@ -370,42 +365,35 @@ class TableDisplay extends Component {
         );
     }
 
+    createIconTableHeader(dataFormat, text) {
+        return (
+            <TableHeaderColumn
+                dataField=""
+                width="48"
+                columnClassName="tableCell"
+                dataFormat={dataFormat}
+                thStyle={{ textAlign: 'center' }}
+            >
+                {text}
+            </TableHeaderColumn>
+        );
+    }
+
     render() {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
         const {
             selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
-            tableSearchable, inProgress, enableEdit, enableCopy, tableRefresh, refreshData
+            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, refreshData
         } = this.props;
         if (enableEdit) {
-            const editColumn = (
-                <TableHeaderColumn
-                    dataField=""
-                    width="48"
-                    columnClassName="tableCell"
-                    dataFormat={this.editButtonClick}
-                    thStyle={{ textAlign: 'center' }}
-                >
-                    Edit
-                </TableHeaderColumn>
-            );
+            const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
             tableColumns.push(editColumn);
         }
         if (enableCopy) {
-            const copyColumn = (
-                <TableHeaderColumn
-                    dataField=""
-                    width="48"
-                    columnClassName="tableCell"
-                    dataFormat={this.copyButtonClick}
-                    thStyle={{ textAlign: 'center' }}
-                >
-                    Copy
-                </TableHeaderColumn>
-            );
+            const copyColumn = this.createIconTableHeader(this.copyButtonClick, 'Copy');
             tableColumns.push(copyColumn);
         }
-
 
         const emptyTableMessage = inProgress ? 'Loading...' : 'No Data';
 
@@ -443,7 +431,6 @@ class TableDisplay extends Component {
                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
             </div>
         );
-
         const content = (
             <div>
                 <BootstrapTable
@@ -460,14 +447,14 @@ class TableDisplay extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
-                    ref="table"
+                    ref={this.table}
                 >
                     {tableColumns}
                 </BootstrapTable>
 
                 {inProgress && progressIndicator}
 
-                <p name="tableMessage">{tableMessage}</p>
+                <p id="tableMessage">{tableMessage}</p>
             </div>
         );
 
@@ -479,8 +466,7 @@ class TableDisplay extends Component {
 
         return (
             <div>
-
-                {this.createEditModal()}
+                {this.createTableModal()}
                 {refresh}
                 {deleteModal}
                 {content}
