@@ -157,6 +157,7 @@ class TaskManagement extends Component {
                     saveButton={false}
                     hasFieldErrors={false}
                     fetching={fetching}
+                    inProgress={fetching}
                     enableEdit={false}
                     enableCopy={false}
                 />
@@ -178,7 +179,8 @@ TaskManagement.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-    tasks: state.tasks.data
+    tasks: state.tasks.data,
+    fetching: state.tasks.fetching
 });
 
 const mapDispatchToProps = (dispatch) => ({

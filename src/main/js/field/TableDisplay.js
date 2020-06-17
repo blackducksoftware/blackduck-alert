@@ -405,9 +405,11 @@ class TableDisplay extends Component {
             tableColumns.push(copyColumn);
         }
 
+        const emptyTableMessage = inProgress ? 'Loading...' : 'No Data';
+
         const tableOptions = {
             btnGroup: this.createButtonGroup,
-            noDataText: 'No Data',
+            noDataText: emptyTableMessage,
             clearSearch: true,
             insertModal: this.createInsertModal,
             handleConfirmDeleteRow: this.collectItemsToDelete,

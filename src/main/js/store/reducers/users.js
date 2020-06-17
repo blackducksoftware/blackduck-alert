@@ -65,7 +65,7 @@ const users = (state = initialState, action) => {
             });
         case USER_MANAGEMENT_USER_FETCHING_ALL:
             return Object.assign({}, state, {
-                inProgress: false,
+                inProgress: true,
                 deleteSuccess: false,
                 data: [],
                 fetching: true,
