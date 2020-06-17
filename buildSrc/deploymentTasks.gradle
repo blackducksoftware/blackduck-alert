@@ -56,3 +56,13 @@ task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmP
     helmPackage.mustRunAfter helmDryRun
 }
 
+task helmPushChart(type: Exec) {
+    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    if (!project.ext.isSnapshot) {
+        commandLine "helm", "repo", "add", "sig-cloudnative", "https://${System.env.ARTIFACTORY_HOST}/artifactory/sig-cloudnative", "&&",
+                "helm", "push-artifactory", "synopsys-alert*.tgz", "sig-cloudnative", "-u", "${project.ext.artifactoryDeployerUsername}", "-p", "${project.ext.artifactoryDeployerPassword}"
+    } else {
+        throw new GradleException("'Can not push SNAPSHOT helm charts'")
+    }
+}
+
