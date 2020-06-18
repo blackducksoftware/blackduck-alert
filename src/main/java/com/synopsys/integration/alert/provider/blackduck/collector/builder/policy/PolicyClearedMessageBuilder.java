@@ -57,18 +57,14 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
-public class PolicyClearedMessageBuilder implements BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
+public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public PolicyClearedMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+        super(NotificationType.RULE_VIOLATION_CLEARED.name());
         this.policyCommonBuilder = policyCommonBuilder;
-    }
-
-    @Override
-    public String getNotificationType() {
-        return NotificationType.RULE_VIOLATION_CLEARED.name();
     }
 
     @Override

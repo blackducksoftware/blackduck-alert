@@ -66,18 +66,14 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 
 @Component
-public class BomEditMessageBuilder implements BlackDuckMessageBuilder<BomEditNotificationView> {
+public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(BomEditMessageBuilder.class);
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+        super(NotificationType.BOM_EDIT.name());
         this.policyCommonBuilder = policyCommonBuilder;
-    }
-
-    @Override
-    public String getNotificationType() {
-        return NotificationType.BOM_EDIT.name();
     }
 
     @Override

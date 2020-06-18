@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -39,12 +40,12 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
-public class LicenseLimitMessageBuilder implements BlackDuckMessageBuilder<LicenseLimitNotificationView> {
+public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseLimitNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(LicenseLimitMessageBuilder.class);
 
-    @Override
-    public String getNotificationType() {
-        return NotificationType.LICENSE_LIMIT.name();
+    @Autowired
+    public LicenseLimitMessageBuilder() {
+        super(NotificationType.LICENSE_LIMIT.name());
     }
 
     @Override
