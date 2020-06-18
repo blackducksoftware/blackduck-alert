@@ -46,7 +46,6 @@ public abstract class BlackDuckMessageBuilder<T> {
         return this.providerName;
     }
 
-    //abstract public String getNotificationType();
     public String getNotificationType() {
         return this.notificationType;
     }
@@ -64,28 +63,3 @@ public abstract class BlackDuckMessageBuilder<T> {
         return null;
     }
 }
-
-/*
-public interface BlackDuckMessageBuilder<T> {
-    default String getProviderName() {
-        return "Black Duck";
-    }
-
-    String getNotificationType();
-
-    List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
-
-    default String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
-        try {
-            return projectService.getProjectByName(projectName)
-                       .flatMap(ProjectView::getHref)
-                       .orElse(null);
-        } catch (IntegrationException e) {
-            logMethod.accept(String.format("Could not get the href for '%s': %s", projectName, e.getMessage()));
-        }
-        return null;
-    }
-
-}
-
- */
