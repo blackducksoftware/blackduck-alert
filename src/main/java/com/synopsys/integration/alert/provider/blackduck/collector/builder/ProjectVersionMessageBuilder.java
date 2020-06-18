@@ -41,18 +41,14 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
-public class ProjectVersionMessageBuilder implements BlackDuckMessageBuilder<ProjectVersionNotificationView> {
+public class ProjectVersionMessageBuilder extends BlackDuckMessageBuilder<ProjectVersionNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(ProjectVersionMessageBuilder.class);
     private OperationUtil operationUtil;
 
     @Autowired
     public ProjectVersionMessageBuilder(OperationUtil operationUtil) {
+        super(NotificationType.PROJECT_VERSION.name());
         this.operationUtil = operationUtil;
-    }
-
-    @Override
-    public String getNotificationType() {
-        return NotificationType.PROJECT_VERSION.name();
     }
 
     @Override

@@ -33,6 +33,39 @@ import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.exception.IntegrationException;
 
+public abstract class BlackDuckMessageBuilder<T> {
+
+    private final String providerName = "Black Duck";
+    private String notificationType;
+
+    public BlackDuckMessageBuilder(String notificationType) {
+        this.notificationType = notificationType;
+    }
+
+    public String getProviderName() {
+        return this.providerName;
+    }
+
+    //abstract public String getNotificationType();
+    public String getNotificationType() {
+        return this.notificationType;
+    }
+
+    abstract public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+
+    protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
+        try {
+            return projectService.getProjectByName(projectName)
+                       .flatMap(ProjectView::getHref)
+                       .orElse(null);
+        } catch (IntegrationException e) {
+            logMethod.accept(String.format("Could not get the href for '%s': %s", projectName, e.getMessage()));
+        }
+        return null;
+    }
+}
+
+/*
 public interface BlackDuckMessageBuilder<T> {
     default String getProviderName() {
         return "Black Duck";
@@ -54,3 +87,5 @@ public interface BlackDuckMessageBuilder<T> {
     }
 
 }
+
+ */
