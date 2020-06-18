@@ -269,6 +269,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
 
         ConfigurationModelMutable createdConfig = createEmptyConfigModel(descriptorId, savedDescriptorConfig.getId(), savedDescriptorConfig.getCreatedAt(), savedDescriptorConfig.getLastUpdated(), context);
         if (configuredFields != null && !configuredFields.isEmpty()) {
+            List<FieldValueEntity> fieldValuesToSave = new ArrayList<>(configuredFields.size());
             for (ConfigurationFieldModel configuredField : configuredFields) {
                 String fieldKey = configuredField.getFieldKey();
                 if (configuredField.isSet()) {
@@ -277,11 +278,12 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                                                              .orElseThrow(() -> new AlertDatabaseConstraintException("A field with the provided key did not exist: " + fieldKey));
                     for (String value : configuredField.getFieldValues()) {
                         FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
-                        fieldValueRepository.save(newFieldValueEntity);
+                        fieldValuesToSave.add(newFieldValueEntity);
                     }
                 }
                 createdConfig.put(configuredField);
             }
+            fieldValueRepository.saveAll(fieldValuesToSave);
         }
         return createdConfig;
     }
@@ -327,14 +329,16 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         ConfigurationModelMutable updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
             descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId());
         if (configuredFields != null && !configuredFields.isEmpty()) {
+            List<FieldValueEntity> fieldValuesToSave = new ArrayList<>(configuredFields.size());
             for (ConfigurationFieldModel configFieldModel : configuredFields) {
                 Long fieldId = getFieldIdOrThrowException(configFieldModel.getFieldKey());
                 for (String value : configFieldModel.getFieldValues()) {
                     FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, configFieldModel.isSensitive()));
-                    fieldValueRepository.save(newFieldValue);
+                    fieldValuesToSave.add(newFieldValue);
                 }
                 updatedConfig.put(configFieldModel);
             }
+            fieldValueRepository.saveAll(fieldValuesToSave);
         }
         descriptorConfigEntity.setLastUpdated(DateUtils.createCurrentDateTimestamp());
         descriptorConfigsRepository.save(descriptorConfigEntity);
@@ -371,10 +375,13 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         if (newJobId == null) {
             newJobId = UUID.randomUUID();
         }
+
+        List<ConfigGroupEntity> configGroupsToSave = new ArrayList<>(configurationModels.size());
         for (ConfigurationModel createdModel : configurationModels) {
             ConfigGroupEntity configGroupEntityToSave = new ConfigGroupEntity(createdModel.getConfigurationId(), newJobId);
-            configGroupRepository.save(configGroupEntityToSave);
+            configGroupsToSave.add(configGroupEntityToSave);
         }
+        configGroupRepository.saveAll(configGroupsToSave);
         return new ConfigurationJobModel(newJobId, configurationModels);
     }
 
