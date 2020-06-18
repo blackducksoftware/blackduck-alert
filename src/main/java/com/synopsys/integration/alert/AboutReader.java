@@ -23,8 +23,7 @@
 package com.synopsys.integration.alert;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
@@ -46,13 +46,13 @@ public class AboutReader {
     private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
     private final SystemStatusUtility systemStatusUtility;
-    private final DescriptorMap descriptorMap;
+    private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility, DescriptorMap descriptorMap) {
+    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
         this.systemStatusUtility = systemStatusUtility;
-        this.descriptorMap = descriptorMap;
+        this.descriptorActions = descriptorActions;
     }
 
     public AboutModel getAboutModel() {
@@ -60,12 +60,8 @@ public class AboutReader {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
-            List<String> providers = descriptorMap.getProviderDescriptorMap().keySet().stream()
-                                         .map(DescriptorKey::getUniversalKey)
-                                         .collect(Collectors.toList());
-            List<String> channels = descriptorMap.getChannelDescriptorMap().keySet().stream()
-                                        .map(DescriptorKey::getUniversalKey)
-                                        .collect(Collectors.toList());
+            Set<DescriptorMetadata> providers = descriptorActions.getDescriptors(null, DescriptorType.PROVIDER.name(), null);
+            Set<DescriptorMetadata> channels = descriptorActions.getDescriptors(null, DescriptorType.CHANNEL.name(), null);
             return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

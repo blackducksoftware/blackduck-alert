@@ -57,22 +57,19 @@ class AboutInfo extends React.Component {
         );
     }
 
-    createTableData(userBasedDescriptors, descriptorNames) {
-        debugger;
+    createTableData(userBasedDescriptors, descriptors) {
         const data = [];
-        for (let key in descriptorNames) {
-            const descriptor = descriptorNames[key];
+        for (let key in descriptors) {
+            const descriptor = descriptors[key];
             const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(
-                userBasedDescriptors, descriptor, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+                userBasedDescriptors, descriptor.name, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             const globalConfigAllowed = Boolean(globalDescriptor);
-            if (globalConfigAllowed) {
+            if (!data.find((item) => item.urlName === descriptor.urlName)) {
                 data.push({
                     name: descriptor.label,
                     urlName: descriptor.urlName,
                     navigate: globalConfigAllowed
                 });
-            } else {
-                
             }
         }
         return data;
