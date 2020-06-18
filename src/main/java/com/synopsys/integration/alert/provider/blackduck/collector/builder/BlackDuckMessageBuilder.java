@@ -34,9 +34,8 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class BlackDuckMessageBuilder<T> {
-
     private final String providerName = "Black Duck";
-    private String notificationType;
+    private final String notificationType;
 
     public BlackDuckMessageBuilder(String notificationType) {
         this.notificationType = notificationType;
@@ -50,7 +49,7 @@ public abstract class BlackDuckMessageBuilder<T> {
         return this.notificationType;
     }
 
-    abstract public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+    public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 
     protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
         try {
