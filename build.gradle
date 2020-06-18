@@ -160,6 +160,8 @@ artifactory {
     }
 }
 
+tasks.dockerLogin.mustRunAfter(helmPushChart)
+
 task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
