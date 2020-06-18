@@ -19,11 +19,11 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -243,12 +243,12 @@ public class UpdateCheckerTest {
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
 
-        DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
-        
+        DescriptorMetadataActions descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);
+
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
-        AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility, descriptorMap);
+        AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility, descriptorMetadataActions);
         UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         UpdateModel updateModel = updateChecker.getUpdateModel();
