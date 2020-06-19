@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
-import { clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig } from 'store/actions/globalConfiguration';
+import {
+    clearConfigFieldErrors,
+    deleteConfig,
+    getAllConfigs,
+    testConfig,
+    updateConfig
+} from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
