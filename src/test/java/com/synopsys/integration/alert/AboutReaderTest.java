@@ -37,7 +37,7 @@ public class AboutReaderTest {
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel("1", RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
         descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);
-        Mockito.when(descriptorMetadataActions.getDescriptors(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(descriptorMetadataActions.getDescriptorsByType(Mockito.anyString()))
             .thenReturn(Set.of(Mockito.mock(DescriptorMetadata.class), Mockito.mock(DescriptorMetadata.class)));
     }
 

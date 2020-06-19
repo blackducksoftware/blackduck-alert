@@ -30,6 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -54,8 +55,8 @@ public class DescriptorMetadataActions {
         this.authorizationManager = authorizationManager;
     }
 
-    public Set<DescriptorMetadata> getDescriptors(@Nullable String name, @Nullable String type, @Nullable String context) {
-        return getDescriptors(name, type, context, this::generateUIComponents);
+    public Set<DescriptorMetadata> getDescriptorsByType(@Nonnull String type) {
+        return getDescriptors(null, type, null, this::generateUIComponents);
     }
 
     public Set<DescriptorMetadata> getDescriptorsByPermissions(@Nullable String name, @Nullable String type, @Nullable String context) {

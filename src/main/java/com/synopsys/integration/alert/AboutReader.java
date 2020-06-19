@@ -60,8 +60,8 @@ public class AboutReader {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
-            Set<DescriptorMetadata> providers = descriptorActions.getDescriptors(null, DescriptorType.PROVIDER.name(), null);
-            Set<DescriptorMetadata> channels = descriptorActions.getDescriptors(null, DescriptorType.CHANNEL.name(), null);
+            Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
+            Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
             return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
