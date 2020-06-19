@@ -57,8 +57,6 @@ class ProviderTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('Previous Props: ', prevProps);
-        console.log('Current state: ', this.props);
         if (prevProps.updateStatus === 'UPDATING' && (this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'ERROR')) {
             this.state.saveCallback(true);
         }
