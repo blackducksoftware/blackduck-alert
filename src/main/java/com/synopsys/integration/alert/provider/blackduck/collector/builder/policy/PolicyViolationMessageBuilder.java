@@ -72,18 +72,14 @@ import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class PolicyViolationMessageBuilder implements BlackDuckMessageBuilder<RuleViolationNotificationView> {
+public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleViolationNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyViolationMessageBuilder.class);
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public PolicyViolationMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+        super(NotificationType.RULE_VIOLATION.name());
         this.policyCommonBuilder = policyCommonBuilder;
-    }
-
-    @Override
-    public String getNotificationType() {
-        return NotificationType.RULE_VIOLATION.name();
     }
 
     @Override

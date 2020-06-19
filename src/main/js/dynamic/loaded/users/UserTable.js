@@ -215,6 +215,7 @@ class UserTable extends Component {
         if (!external) {
             passwordConfirmField = (
                 <PasswordInput
+                    id={confirmPasswordKey}
                     name={confirmPasswordKey}
                     label="Confirm Password"
                     description="The user's password."
@@ -232,6 +233,7 @@ class UserTable extends Component {
             <div>
                 {external && externalNote}
                 <TextInput
+                    id={usernameKey}
                     name={usernameKey}
                     label="Username"
                     description="The user's username."
@@ -243,6 +245,7 @@ class UserTable extends Component {
                     errorValue={fieldErrors[usernameKey]}
                 />
                 <PasswordInput
+                    id={passwordKey}
                     name={passwordKey}
                     label="Password"
                     description="The user's password."
@@ -256,6 +259,7 @@ class UserTable extends Component {
                 />
                 {passwordConfirmField}
                 <TextInput
+                    id={emailKey}
                     name={emailKey}
                     label="Email"
                     description="The user's email."

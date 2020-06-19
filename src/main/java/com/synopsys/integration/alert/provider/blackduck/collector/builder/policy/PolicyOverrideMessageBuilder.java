@@ -52,18 +52,14 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
 @Component
-public class PolicyOverrideMessageBuilder implements BlackDuckMessageBuilder<PolicyOverrideNotificationView> {
+public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<PolicyOverrideNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyOverrideMessageBuilder.class);
     private PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public PolicyOverrideMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+        super(NotificationType.POLICY_OVERRIDE.name());
         this.policyCommonBuilder = policyCommonBuilder;
-    }
-
-    @Override
-    public String getNotificationType() {
-        return NotificationType.POLICY_OVERRIDE.name();
     }
 
     @Override

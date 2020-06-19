@@ -45,6 +45,7 @@ class CertificatesPage extends Component {
         }
     }
 
+
     onConfigClose(callback) {
         const { clearFieldErrors } = this.props;
         clearFieldErrors();
@@ -65,7 +66,7 @@ class CertificatesPage extends Component {
         const { deleteCertificateAction } = this.props;
         if (certificatesToDelete) {
             certificatesToDelete.forEach((certificateId) => {
-                this.props.deleteCertificateAction(certificateId);
+                deleteCertificateAction(certificateId);
             });
         }
         this.setState({
@@ -95,12 +96,14 @@ class CertificatesPage extends Component {
         return (
             <div>
                 <ReadOnlyField
+                    id="lastUpdated"
                     label="Last Updated"
                     name="lastUpdated"
                     readOnly="true"
                     value={certificate.lastUpdated}
                 />
                 <TextInput
+                    id={aliasKey}
                     name={aliasKey}
                     label="Alias"
                     description="The certificate alias name."
@@ -111,6 +114,7 @@ class CertificatesPage extends Component {
                     errorValue={fieldErrors[aliasKey]}
                 />
                 <TextArea
+                    id={certificateContentKey}
                     name={certificateContentKey}
                     label="Certificate Content"
                     description="The certificate content text."
@@ -181,8 +185,7 @@ class CertificatesPage extends Component {
             fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors
         } = this.props;
 
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors,
-            DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
         const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
