@@ -331,9 +331,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applyComponentItemCallbackInfo(ComponentItemCallbackInfo callbackInfo) {
             if (callbackInfo != null) {
-                this.componentCallbackUrl = callbackInfo.getCallbackUrl();
-                this.componentCallbackProviderKey = callbackInfo.getProviderKey();
-                this.componentCallbackNotificationType = callbackInfo.getNotificationType();
+                applyComponentItemCallbackInfo(callbackInfo.getCallbackUrl(), callbackInfo.getProviderKey(), callbackInfo.getNotificationType());
             }
             return this;
         }
