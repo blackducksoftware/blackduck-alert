@@ -35,25 +35,27 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 
 public class ComponentItem extends AlertSerializableModel implements Buildable {
     private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };
 
-    private String category;
-    private ItemOperation operation;
-    private ComponentItemPriority priority;
+    private final String category;
+    private final ItemOperation operation;
+    private final ComponentItemPriority priority;
 
-    private LinkableItem component;
-    private LinkableItem subComponent;
+    private final LinkableItem component;
+    private final LinkableItem subComponent;
+    private final ComponentItemCallbackInfo callbackInfo;
 
-    private LinkableItem categoryItem;
-    private LinkableItem categoryGroupingAttribute;
-    private boolean collapseOnCategory;
+    private final LinkableItem categoryItem;
+    private final LinkableItem categoryGroupingAttribute;
+    private final boolean collapseOnCategory;
 
-    private LinkedHashSet<LinkableItem> componentAttributes;
-    private Set<Long> notificationIds;
+    private final LinkedHashSet<LinkableItem> componentAttributes;
+    private final Set<Long> notificationIds;
 
     private ComponentItem(
         String category,
@@ -61,7 +63,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         ComponentItemPriority priority,
         LinkableItem component,
         LinkableItem subComponent,
-        LinkableItem categoryItem,
+        ComponentItemCallbackInfo callbackInfo, LinkableItem categoryItem,
         LinkableItem categoryGroupingAttribute,
         boolean collapseOnCategory,
         LinkedHashSet<LinkableItem> componentAttributes,
@@ -72,6 +74,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         this.priority = priority;
         this.component = component;
         this.subComponent = subComponent;
+        this.callbackInfo = callbackInfo;
         this.categoryItem = categoryItem;
         this.categoryGroupingAttribute = categoryGroupingAttribute;
         this.collapseOnCategory = collapseOnCategory;
@@ -119,6 +122,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
     public Optional<LinkableItem> getSubComponent() {
         return Optional.ofNullable(subComponent);
+    }
+
+    public Optional<ComponentItemCallbackInfo> getCallbackInfo() {
+        return Optional.ofNullable(callbackInfo);
     }
 
     public LinkableItem getCategoryItem() {
@@ -207,6 +214,11 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String subComponentName;
         private String subComponentValue;
         private String subComponentUrl;
+
+        private String componentCallbackUrl;
+        private ProviderKey componentCallbackProviderKey;
+        private String componentCallbackNotificationType;
+
         private boolean collapseOnCategory = false;
 
         private String categoryItemName;
@@ -215,7 +227,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String categoryGroupingAttributeName;
         private String categoryGroupingAttributeValue;
 
-        private Set<Long> notificationIds = new LinkedHashSet<>();
+        private final Set<Long> notificationIds = new LinkedHashSet<>();
 
         public ComponentItem build() throws AlertException {
             if (null == category || null == operation || null == componentName || null == componentValue || null == categoryItemName || null == categoryItemValue || (null == notificationIds || notificationIds.isEmpty())) {
@@ -226,6 +238,11 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             LinkableItem subComponent = null;
             if (StringUtils.isNotBlank(subComponentName) && StringUtils.isNotBlank(subComponentValue)) {
                 subComponent = new LinkableItem(subComponentName, subComponentValue, subComponentUrl);
+            }
+
+            ComponentItemCallbackInfo callbackInfo = null;
+            if (StringUtils.isNotBlank(componentCallbackUrl) && componentCallbackProviderKey != null && StringUtils.isNotBlank(componentCallbackNotificationType)) {
+                callbackInfo = new ComponentItemCallbackInfo(componentCallbackUrl, componentCallbackProviderKey, componentCallbackNotificationType);
             }
 
             LinkableItem categoryItem = new LinkableItem(categoryItemName, categoryItemValue, categoryItemUrl);
@@ -239,7 +256,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
                 componentPriority = priority;
             }
 
-            return new ComponentItem(category, operation, componentPriority, component, subComponent, categoryItem, subCategoryItem, collapseOnCategory, componentAttributes, notificationIds);
+            return new ComponentItem(category, operation, componentPriority, component, subComponent, callbackInfo, categoryItem, subCategoryItem, collapseOnCategory, componentAttributes, notificationIds);
         }
 
         public Builder applyCategory(String category) {
@@ -302,12 +319,28 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         public Builder applySubComponent(String subComponentName, String subComponentValue, String subComponentUrl) {
             this.subComponentName = subComponentName;
             this.subComponentValue = subComponentValue;
-            addSubComponentUrl(subComponentUrl);
+            applySubComponentUrl(subComponentUrl);
             return this;
         }
 
-        public Builder addSubComponentUrl(String subComponentUrl) {
+        public Builder applySubComponentUrl(String subComponentUrl) {
             this.subComponentUrl = subComponentUrl;
+            return this;
+        }
+
+        public Builder applyComponentItemCallbackInfo(ComponentItemCallbackInfo callbackInfo) {
+            if (callbackInfo != null) {
+                this.componentCallbackUrl = callbackInfo.getCallbackUrl();
+                this.componentCallbackProviderKey = callbackInfo.getProviderKey();
+                this.componentCallbackNotificationType = callbackInfo.getNotificationType();
+            }
+            return this;
+        }
+
+        public Builder applyComponentItemCallbackInfo(String callbackUrl, ProviderKey providerKey, String notificationType) {
+            this.componentCallbackUrl = callbackUrl;
+            this.componentCallbackProviderKey = providerKey;
+            this.componentCallbackNotificationType = notificationType;
             return this;
         }
 
