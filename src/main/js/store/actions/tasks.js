@@ -1,6 +1,7 @@
 import { TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL } from 'store/actions/types';
 import * as RequestUtilities from 'util/RequestUtilities';
-import { verifyLoginByStatus } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import { unauthorized } from 'store/actions/session';
 
 const TASKS_API_URL = `/alert/api/task`;
 
@@ -28,6 +29,9 @@ export function fetchTasks() {
     return (dispatch, getState) => {
         dispatch(fetchingAllTasks());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllTasksError('You are not permitted to view this information.')));
         const request = RequestUtilities.createReadRequest(TASKS_API_URL, csrfToken);
         request.then((response) => {
             if (response.ok) {
@@ -36,24 +40,19 @@ export function fetchTasks() {
                     dispatch(fetchedAllTasks(jsonArray));
                 });
             } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(fetchingAllTasksError('You are not permitted to view this information.'));
-                        break;
-                    default:
-                        response.json()
-                        .then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllTasksError(message));
-                        });
-                }
+                errorHandlers.push(HttpErrorUtils.createDefaultHandler(() => {
+                    response.json()
+                    .then((json) => {
+                        let message = '';
+                        if (json && json.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = json.message.toString();
+                        }
+                        dispatch(fetchingAllTasksError(message));
+                    });
+                }));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         })
         .catch((error) => {

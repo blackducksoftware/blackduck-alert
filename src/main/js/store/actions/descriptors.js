@@ -1,6 +1,7 @@
 import { DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING } from 'store/actions/types';
 
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const FETCH_DESCRIPTOR_URL = '/alert/api/metadata/descriptors';
 
@@ -42,18 +43,24 @@ export function getDescriptors() {
     return (dispatch) => {
         dispatch(fetchingDescriptors());
         const getUrl = `${FETCH_DESCRIPTOR_URL}`;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
-            response.json().then((json) => {
-                if (!response.ok) {
-                    dispatch(descriptorsError(json.message));
-                    dispatch(verifyLoginByStatus(response.status));
-                } else {
+        })
+        .then((response) => {
+            response.json()
+            .then((json) => {
+                if (response.ok) {
                     dispatch(descriptorsFetched(json));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(json.message)));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler.call(response.status));
                 }
             });
         }).catch((error) => {

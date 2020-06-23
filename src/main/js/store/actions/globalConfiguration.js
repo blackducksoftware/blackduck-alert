@@ -15,9 +15,10 @@ import {
     CONFIG_UPDATING
 } from 'store/actions/types';
 
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 /**
  * Triggers Config Fetching reducer
@@ -130,15 +131,14 @@ function clearFieldErrors() {
 
 function handleFailureResponse(dispatch, response) {
     response.json().then((data) => {
-        switch (response.status) {
-            case 400:
-            case 412:
-                return dispatch(configError(data.message, data.errors));
-            default: {
-                dispatch(configError(data.message, null));
-                return dispatch(verifyLoginByStatus(response.status));
-            }
-        }
+        const errorHandlers = [];
+        const configErrorHandler = () => configError(data.message, data.errors);
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => configError(data.message, null)));
+        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(configErrorHandler));
+        errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(configErrorHandler));
+        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+        dispatch(handler.call(response.status));
     });
 }
 
@@ -150,10 +150,14 @@ export function refreshConfig(id) {
             return;
         }
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((body) => {
+                response.json()
+                .then((body) => {
                     if (body) {
                         dispatch(configRefreshed(body));
                     } else {
@@ -161,7 +165,8 @@ export function refreshConfig(id) {
                     }
                 });
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         }).catch(console.error);
     };
@@ -171,10 +176,14 @@ export function getAllConfigs(descriptorName) {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((body) => {
+                response.json()
+                .then((body) => {
                     if (body.length > 0) {
                         dispatch(configAllFetched(body));
                     } else {
@@ -182,7 +191,8 @@ export function getAllConfigs(descriptorName) {
                     }
                 });
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         }).catch(console.error);
     };
@@ -192,10 +202,14 @@ export function getConfig(descriptorName) {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((body) => {
+                response.json()
+                .then((body) => {
                     if (body.length > 0) {
                         dispatch(configFetched(body[0]));
                     } else {
@@ -203,7 +217,8 @@ export function getConfig(descriptorName) {
                     }
                 });
             } else {
-                dispatch(verifyLoginByStatus(response.status));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         }).catch(console.error);
     };

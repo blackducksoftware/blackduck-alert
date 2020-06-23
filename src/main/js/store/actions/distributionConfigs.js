@@ -15,8 +15,9 @@ import {
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING
 } from 'store/actions/types';
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 function fetchingJob() {
     return {
@@ -116,19 +117,16 @@ function jobError(type, message, errors) {
 }
 
 function handleFailureResponse(type, dispatch, response) {
-    response.json().then((data) => {
-        switch (response.status) {
-            case 400:
-                return dispatch(jobError(type, data.message, data.errors));
-            case 401:
-                dispatch(jobError(type, data.message, data.errors));
-                return dispatch(verifyLoginByStatus(response.status));
-            case 412:
-                return dispatch(jobError(type, data.message, data.errors));
-            default: {
-                return dispatch(jobError(type, data.message, null));
-            }
-        }
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    response.json()
+    .then((data) => {
+        const errorMessageHandler = () => jobError(type, data.message, data.errors);
+        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(errorMessageHandler));
+        errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(errorMessageHandler));
+        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobError(type, data.message, null)));
+        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+        dispatch(handler.call(response.status));
     });
 }
 
@@ -136,11 +134,16 @@ export function getDistributionJob(jobId) {
     return (dispatch, getState) => {
         dispatch(fetchingJob());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobFetchErrorMessage('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(jobFetchError));
         if (jobId) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
             request.then((response) => {
                 if (response.ok) {
-                    response.json().then((json) => {
+                    response.json()
+                    .then((json) => {
                         if (json) {
                             dispatch(jobFetched(json));
                         } else {
@@ -148,16 +151,8 @@ export function getDistributionJob(jobId) {
                         }
                     });
                 } else {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(verifyLoginByStatus(response.status));
-                            break;
-                        case 403:
-                            dispatch(jobFetchErrorMessage('You are not permitted to view this information.'));
-                            break;
-                        default:
-                            dispatch(jobFetchError());
-                    }
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler.call(response.status));
                 }
             }).catch(console.error);
         } else {

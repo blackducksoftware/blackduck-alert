@@ -11,8 +11,9 @@ import {
     CERTIFICATES_SAVING
 } from 'store/actions/types';
 
-import * as RequestUtilities from 'util/RequestUtilities'
-import { verifyLoginByStatus } from 'store/actions/session';
+import * as RequestUtilities from 'util/RequestUtilities';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import { unauthorized } from 'store/actions/session';
 
 const CERTIFICATES_API_URL = `/alert/api/certificates`;
 
@@ -94,6 +95,10 @@ export function fetchCertificates() {
     return (dispatch, getState) => {
         dispatch(fetchingAllCertificates());
         const { csrfToken } = getState().session;
+
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllCertificatesError('You are not permitted to view this information.')));
         const request = RequestUtilities.createReadRequest(CERTIFICATES_API_URL, csrfToken);
         request.then((response) => {
             if (response.ok) {
@@ -102,24 +107,20 @@ export function fetchCertificates() {
                     dispatch(fetchedAllCertificates(jsonArray));
                 });
             } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(fetchingAllCertificatesError('You are not permitted to view this information.'));
-                        break;
-                    default:
-                        response.json()
-                        .then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllCertificatesError(message));
-                        });
-                }
+                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                    response.json()
+                    .then((json) => {
+                        let message = '';
+                        if (json && json.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = json.message.toString();
+                        }
+                        dispatch(fetchingAllCertificatesError(message));
+                    });
+                }));
+
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         })
         .catch((error) => {
@@ -134,6 +135,9 @@ export function saveCertificate(certificate) {
         dispatch(savingCertificate());
         const { id } = certificate;
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateError('You are not permitted to perform this action.')));
         let request;
         if (id) {
             const url = CERTIFICATES_API_URL.concat(`/${id}`);
@@ -148,21 +152,15 @@ export function saveCertificate(certificate) {
                     dispatch(savedCertificate());
                 });
             } else {
-                response.json()
-                .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(saveCertificateError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            dispatch(saveCertificateError('You are not permitted to perform this action.'));
-                            break;
-                        case 400:
-                        default: {
-                            return dispatch(saveCertificateError(data));
-                        }
-                    }
-                });
+                const defaultHandler = () => {
+                    response.json()
+                    .then((data) => dispatch(saveCertificateError(data)));
+                };
+                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         })
         .catch(console.error);
@@ -174,26 +172,24 @@ export function deleteCertificate(certificateId) {
         dispatch(deletingCertificate());
         const { csrfToken } = getState().session;
         const url = CERTIFICATES_API_URL.concat(`/${certificateId}`);
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingCertificateErrorMessage('You are not permitted to perform this action.')));
+
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {
             if (response.ok) {
                 dispatch(deletedCertificate());
             } else {
-                response.json()
-                .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(deletingCertificateError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            dispatch(deletingCertificateErrorMessage('You are not permitted to perform this action.'));
-                            break;
-                        case 400:
-                        default: {
-                            return dispatch(deletingCertificateError(data));
-                        }
-                    }
-                });
+                const defaultHandler = () => {
+                    response.json()
+                    .then((data) => dispatch(deletingCertificateError(data)));
+                };
+                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         })
         .catch(console.error);

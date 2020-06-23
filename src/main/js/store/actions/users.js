@@ -11,7 +11,8 @@ import {
     USER_MANAGEMENT_USER_SAVING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import { verifyLoginByStatus } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import { unauthorized } from 'store/actions/session';
 
 function fetchingAllUsers() {
     return {
@@ -98,6 +99,9 @@ export function fetchUsers() {
     return (dispatch, getState) => {
         dispatch(fetchingAllUsers());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError('You are not permitted to view this information.')));
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
             headers: {
@@ -112,24 +116,19 @@ export function fetchUsers() {
                     dispatch(fetchedAllUsers(jsonArray));
                 });
             } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(fetchingAllUsersError('You are not permitted to view this information.'));
-                        break;
-                    default:
-                        response.json()
-                        .then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllUsersError(message));
-                        });
-                }
+                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                    response.json()
+                    .then((json) => {
+                        let message = '';
+                        if (json && json.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = json.message.toString();
+                        }
+                        dispatch(fetchingAllUsersError(message));
+                    });
+                }));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler.call(response.status));
             }
         })
         .catch((error) => {
@@ -144,6 +143,9 @@ export function saveUser(user) {
         dispatch(savingUser());
         const { id } = user;
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage('You are not permitted to perform this action.')));
         let request;
         if (id) {
             request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
@@ -159,17 +161,11 @@ export function saveUser(user) {
             } else {
                 response.json()
                 .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(saveUserError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            return dispatch(saveUserErrorMessage('You are not permitted to perform this action.'));
-                        case 400:
-                        default: {
-                            return dispatch(saveUserError(data));
-                        }
-                    }
+                    const defaultHandler = () => saveUserError(data);
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler.call(response.status));
                 });
             }
         })
@@ -181,6 +177,9 @@ export function deleteUser(userId) {
     return (dispatch, getState) => {
         dispatch(deletingUser());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingUserErrorMessage('You are not permitted to perform this action.')));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             if (response.ok) {
@@ -188,17 +187,11 @@ export function deleteUser(userId) {
             } else {
                 response.json()
                 .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(deletingUserError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            return dispatch(deletingUserErrorMessage('You are not permitted to perform this action.'));
-                        case 400:
-                        default: {
-                            return dispatch(deletingUserError(data));
-                        }
-                    }
+                    const defaultHandler = () => deletingUserError(data);
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler.call(response.status));
                 });
             }
         })
