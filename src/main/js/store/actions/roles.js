@@ -100,7 +100,7 @@ export function fetchRoles() {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllRolesError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllRolesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         fetch(ConfigRequestBuilder.ROLE_API_URL, {
             credentials: 'same-origin',
             headers: {
@@ -143,7 +143,7 @@ export function saveRole(role) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const { id } = role;
         let request;
         if (id) {
@@ -178,7 +178,7 @@ export function deleteRole(roleId) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
             if (response.ok) {

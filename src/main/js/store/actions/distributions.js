@@ -152,7 +152,7 @@ export function deleteDistributionJob(job) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
             if (response.ok) {
@@ -178,7 +178,7 @@ export function fetchDistributionJobs() {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
         fetch(ConfigRequestBuilder.JOB_API_URL, {
             credentials: 'same-origin',
@@ -224,7 +224,7 @@ export function fetchJobsValidationResults() {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         fetch(ConfigRequestBuilder.JOB_API_URL + '/validate', {
             credentials: 'same-origin',
             headers: {

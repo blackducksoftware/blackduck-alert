@@ -98,7 +98,7 @@ export function fetchCertificates() {
 
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllCertificatesError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllCertificatesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = RequestUtilities.createReadRequest(CERTIFICATES_API_URL, csrfToken);
         request.then((response) => {
             if (response.ok) {
@@ -137,7 +137,7 @@ export function saveCertificate(certificate) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateError('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let request;
         if (id) {
             const url = CERTIFICATES_API_URL.concat(`/${id}`);
@@ -174,7 +174,7 @@ export function deleteCertificate(certificateId) {
         const url = CERTIFICATES_API_URL.concat(`/${certificateId}`);
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingCertificateErrorMessage('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingCertificateErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
 
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {

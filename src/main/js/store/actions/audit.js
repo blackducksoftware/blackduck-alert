@@ -86,7 +86,7 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
         const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         fetch(fetchUrl, {
             credentials: 'same-origin',
             headers: {
@@ -125,7 +125,7 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         fetch(resendUrl, {
             method: 'POST',
             credentials: 'same-origin',

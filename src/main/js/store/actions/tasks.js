@@ -31,7 +31,7 @@ export function fetchTasks() {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllTasksError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllTasksError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = RequestUtilities.createReadRequest(TASKS_API_URL, csrfToken);
         request.then((response) => {
             if (response.ok) {

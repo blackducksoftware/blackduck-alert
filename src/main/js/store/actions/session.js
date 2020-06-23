@@ -173,16 +173,6 @@ export function logout() {
     };
 }
 
-export function verifyLoginByStatus(status) {
-    return (dispatch) => {
-        switch (status) {
-            case 401:
-            case 403:
-                return dispatch(loggedOut());
-        }
-    };
-}
-
 export function unauthorized() {
     return (dispatch) => dispatch(loggedOut());
 }

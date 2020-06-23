@@ -101,7 +101,7 @@ export function fetchUsers() {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
             headers: {
@@ -145,7 +145,7 @@ export function saveUser(user) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let request;
         if (id) {
             request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
@@ -179,7 +179,7 @@ export function deleteUser(userId) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingUserErrorMessage('You are not permitted to perform this action.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             if (response.ok) {

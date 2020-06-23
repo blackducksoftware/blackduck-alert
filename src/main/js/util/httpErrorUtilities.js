@@ -1,3 +1,8 @@
+export const MESSAGES = {
+    FORBIDDEN_ACTION: 'You are not permitted to perform this action.',
+    FORBIDDEN_READ: 'You are not permitted to view this information.'
+};
+
 export function createStatusCodeHandler(statusCode, callback) {
     return {
         statusCode,

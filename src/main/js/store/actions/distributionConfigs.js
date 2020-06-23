@@ -136,7 +136,7 @@ export function getDistributionJob(jobId) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobFetchErrorMessage('You are not permitted to view this information.')));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobFetchErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(jobFetchError));
         if (jobId) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
