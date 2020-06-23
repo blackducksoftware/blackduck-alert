@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -41,6 +43,10 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.synopsys.integration.blackduck.exception.BlackDuckApiException;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -94,6 +100,21 @@ public class BlackDuckGlobalTestAction extends TestAction {
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage), errorException);
         }
+
+        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        if (optionalBlackDuckHttpClient.isPresent()) {
+            try {
+                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+                NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
+                notificationService.getLatestNotificationDate();
+            } catch (BlackDuckApiException ex) {
+                if (RestConstants.FORBIDDEN_403 == ex.getOriginalIntegrationRestException().getHttpStatusCode()) {
+                    throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed, cannot read notifications from Black Duck.");
+                }
+                logger.error("Error reading notifications", ex);
+            }
+        }
+
         return new MessageResult("Successfully connected to BlackDuck server.");
     }
 
