@@ -59,11 +59,11 @@ import com.synopsys.integration.datastructure.SetMap;
 @Component
 public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleViolationClearedNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyClearedMessageBuilder.class);
-    private PolicyCommonBuilder policyCommonBuilder;
+    private final PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public PolicyClearedMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
-        super(NotificationType.RULE_VIOLATION_CLEARED.name());
+        super(NotificationType.RULE_VIOLATION_CLEARED);
         this.policyCommonBuilder = policyCommonBuilder;
     }
 
@@ -90,7 +90,7 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), ItemOperation.DELETE, violationContent.getProjectVersion(), policyFilter);
+                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), violationContent.getProjectVersion(), policyFilter);
                 items.addAll(componentItems);
             }
             messageContentBuilder.applyAllComponentItems(items);
@@ -103,13 +103,13 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
     }
 
     private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentVersionStatus componentVersionStatus,
-        Set<PolicyInfo> policies, Long notificationId, ItemOperation operation, String projectVersionUrl, Collection<String> policyFilter) {
+        Set<PolicyInfo> policies, Long notificationId, String projectVersionUrl, Collection<String> policyFilter) {
         List<ComponentItem> componentItems = new LinkedList<>();
         String componentName = componentVersionStatus.getComponentName();
         String componentVersionName = componentVersionStatus.getComponentVersionName();
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
-        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(blackDuckResponseCache, componentData, policies, notificationId, operation,
-            componentVersionStatus.getBomComponent(), List.of(), policyFilter));
+        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId,
+            ItemOperation.DELETE, componentVersionStatus.getBomComponent(), List.of(), policyFilter));
         return componentItems;
     }
 }

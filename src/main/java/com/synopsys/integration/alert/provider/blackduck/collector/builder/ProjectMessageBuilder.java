@@ -43,11 +43,11 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 @Component
 public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(ProjectMessageBuilder.class);
-    private OperationUtil operationUtil;
+    private final OperationUtil operationUtil;
 
     @Autowired
     public ProjectMessageBuilder(OperationUtil operationUtil) {
-        super(NotificationType.PROJECT.name());
+        super(NotificationType.PROJECT);
         this.operationUtil = operationUtil;
     }
 

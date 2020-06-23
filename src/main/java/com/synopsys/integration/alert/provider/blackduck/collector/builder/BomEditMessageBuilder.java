@@ -73,7 +73,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
 
     @Autowired
     public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
-        super(NotificationType.BOM_EDIT.name());
+        super(NotificationType.BOM_EDIT);
         this.policyCommonBuilder = policyCommonBuilder;
     }
 

@@ -40,9 +40,11 @@ import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.BlackDuckIssueTrackerCallbackUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
@@ -52,6 +54,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.enumeration.VulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
@@ -62,7 +65,7 @@ import com.synopsys.integration.datastructure.SetMap;
 public class PolicyCommonBuilder {
     private final Logger logger = LoggerFactory.getLogger(PolicyCommonBuilder.class);
 
-    public List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
+    public List<ComponentItem> retrievePolicyItems(NotificationType notificationType, BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
         Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes, Collection<String> policyFilter) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
@@ -70,15 +73,18 @@ public class PolicyCommonBuilder {
             if (policyFilter.isEmpty() || policyFilter.contains(policyName)) {
                 ComponentItemPriority priority = PolicyPriorityUtil.getPriorityFromSeverity(policyInfo.getSeverity());
 
-                Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
-
-                List<LinkableItem> policyAttributes = new ArrayList<>();
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
                 LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
-                optionalBomComponent.ifPresent(bomComponent -> {
+                ComponentItemCallbackInfo nullableCallbackInfo = null;
+
+                List<LinkableItem> policyAttributes = new ArrayList<>();
+                Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+                if (optionalBomComponent.isPresent()) {
+                    ProjectVersionComponentView bomComponent = optionalBomComponent.get();
+                    nullableCallbackInfo = BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(notificationType, bomComponent).orElse(null);
                     policyAttributes.addAll(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent));
                     policyAttributes.addAll(ComponentBuilderUtil.getUsageLinkableItems(bomComponent));
-                });
+                }
                 policyAttributes.addAll(customAttributes);
 
                 try {
@@ -87,6 +93,7 @@ public class PolicyCommonBuilder {
                                                         .applyOperation(operation)
                                                         .applyPriority(priority)
                                                         .applyCategoryItem(policyNameItem)
+                                                        .applyComponentItemCallbackInfo(nullableCallbackInfo)
                                                         .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                         .applyAllComponentAttributes(policyAttributes)
                                                         .applyNotificationId(notificationId);

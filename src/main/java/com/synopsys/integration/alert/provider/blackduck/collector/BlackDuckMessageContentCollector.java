@@ -48,14 +48,14 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
-    private BlackDuckProperties blackDuckProperties;
-    private Map<String, BlackDuckMessageBuilder> messageBuilderMap;
-    private BlackDuckBucket blackDuckBucket;
+    private final BlackDuckProperties blackDuckProperties;
+    private final Map<String, BlackDuckMessageBuilder> messageBuilderMap;
+    private final BlackDuckBucket blackDuckBucket;
 
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
-        this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, BlackDuckMessageBuilder::getNotificationType);
+        this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, builder -> builder.getNotificationType().name());
         this.blackDuckBucket = new BlackDuckBucket();
     }
 
