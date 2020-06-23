@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
@@ -42,9 +43,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.BlackDuckIssueTrackerCallbackUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
@@ -64,6 +65,12 @@ import com.synopsys.integration.datastructure.SetMap;
 @Component
 public class PolicyCommonBuilder {
     private final Logger logger = LoggerFactory.getLogger(PolicyCommonBuilder.class);
+    private final BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility;
+
+    @Autowired
+    public PolicyCommonBuilder(BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility) {
+        this.blackDuckIssueTrackerCallbackUtility = blackDuckIssueTrackerCallbackUtility;
+    }
 
     public List<ComponentItem> retrievePolicyItems(NotificationType notificationType, BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
         Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes, Collection<String> policyFilter) {
@@ -81,7 +88,7 @@ public class PolicyCommonBuilder {
                 Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
                 if (optionalBomComponent.isPresent()) {
                     ProjectVersionComponentView bomComponent = optionalBomComponent.get();
-                    nullableCallbackInfo = BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(notificationType, bomComponent).orElse(null);
+                    nullableCallbackInfo = blackDuckIssueTrackerCallbackUtility.createCallbackInfo(notificationType, bomComponent).orElse(null);
                     policyAttributes.addAll(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent));
                     policyAttributes.addAll(ComponentBuilderUtil.getUsageLinkableItems(bomComponent));
                 }

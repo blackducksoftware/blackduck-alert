@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.BlackDuckIssueTrackerCallbackUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
@@ -70,11 +69,13 @@ import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(BomEditMessageBuilder.class);
     private final PolicyCommonBuilder policyCommonBuilder;
+    private final BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility;
 
     @Autowired
-    public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+    public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder, BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility) {
         super(NotificationType.BOM_EDIT);
         this.policyCommonBuilder = policyCommonBuilder;
+        this.blackDuckIssueTrackerCallbackUtility = blackDuckIssueTrackerCallbackUtility;
     }
 
     @Override
@@ -145,7 +146,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                                                     .applyAllComponentAttributes(componentAttributes)
                                                     .applyNotificationId(notificationId);
                 ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
-                BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(getNotificationType(), versionBomComponent)
+                blackDuckIssueTrackerCallbackUtility.createCallbackInfo(getNotificationType(), versionBomComponent)
                     .ifPresent(builder::applyComponentItemCallbackInfo);
                 items.add(builder.build());
             }
@@ -191,7 +192,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                                                         .applyAllComponentAttributes(commonAttributes)
                                                         .applyNotificationId(notificationId);
                     ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
-                    BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(getNotificationType(), versionBomComponent)
+                    blackDuckIssueTrackerCallbackUtility.createCallbackInfo(getNotificationType(), versionBomComponent)
                         .ifPresent(builder::applyComponentItemCallbackInfo);
                     items.add(builder.build());
                 }
