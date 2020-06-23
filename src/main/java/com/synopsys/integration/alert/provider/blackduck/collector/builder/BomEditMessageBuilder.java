@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.BlackDuckIssueTrackerCallbackUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
@@ -85,16 +86,16 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
-        Optional<ProjectVersionComponentView> bomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
+        Optional<ProjectVersionComponentView> optionalBomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
         Long notificationId = commonMessageData.getNotificationId();
 
         // TODO Stop using this when Black Duck supports going back to the project-version
         // blackduck-common-api 2019.12.0.4+ should have the project version link in the BomEditNotificationContent
-        Optional<ProjectVersionWrapper> projectVersionWrapper = bomComponent.flatMap(responseCache::getProjectVersionWrapper);
+        Optional<ProjectVersionWrapper> projectVersionWrapper = optionalBomComponent.flatMap(responseCache::getProjectVersionWrapper);
 
-        if (bomComponent.isPresent() && projectVersionWrapper.isPresent()) {
+        if (optionalBomComponent.isPresent() && projectVersionWrapper.isPresent()) {
+            ProjectVersionComponentView bomComponent = optionalBomComponent.get();
             try {
-                ProjectVersionComponentView projectVersionComponentView = bomComponent.get();
                 ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
                 ProjectView projectView = projectVersionData.getProjectView();
                 ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
@@ -105,11 +106,11 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                     .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
                         projectVersionData.getProjectVersionView().getHref().orElse(null));
 
-                List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent.get()).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent.get()).stream())
+                List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent).stream())
                                                           .collect(Collectors.toList());
 
-                List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, projectVersionComponentView, projectVersionData, commonAttributes));
-                projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, projectVersionComponentView, commonAttributes)));
+                List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, bomComponent, projectVersionData, commonAttributes));
+                projectVersionWrapper.ifPresent(versionWrapper -> componentItems.addAll(createPolicyItems(responseCache, blackDuckService, notificationId, versionWrapper, bomComponent, commonAttributes)));
 
                 messageContentBuilder.applyAllComponentItems(componentItems);
                 return List.of(messageContentBuilder.build());
@@ -147,6 +148,8 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                                                     .applyAllComponentAttributes(componentAttributes)
                                                     .applyNotificationId(notificationId);
                 ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(getNotificationType(), versionBomComponent)
+                    .ifPresent(builder::applyComponentItemCallbackInfo);
                 items.add(builder.build());
             }
         } catch (Exception genericException) {
@@ -191,6 +194,8 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                                                         .applyAllComponentAttributes(commonAttributes)
                                                         .applyNotificationId(notificationId);
                     ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                    BlackDuckIssueTrackerCallbackUtil.createCallbackInfo(getNotificationType(), versionBomComponent)
+                        .ifPresent(builder::applyComponentItemCallbackInfo);
                     items.add(builder.build());
                 }
             }
