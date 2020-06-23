@@ -68,7 +68,7 @@ import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 @Component
 public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(BomEditMessageBuilder.class);
-    private PolicyCommonBuilder policyCommonBuilder;
+    private final PolicyCommonBuilder policyCommonBuilder;
 
     @Autowired
     public BomEditMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
@@ -141,7 +141,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                 ComponentItem.Builder builder = new ComponentItem.Builder()
                                                     .applyCategory(MessageBuilderConstants.CATEGORY_TYPE_VULNERABILITY)
                                                     .applyOperation(ItemOperation.UPDATE)
-                                                    // FIXME get the vulnerability id(s) and create a ComponentItem from each of them
+                                                    // TODO get the vulnerability id(s) and create a ComponentItem from each of them
                                                     .applyCategoryItem(new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, "Present"))
                                                     .applyCollapseOnCategory(true)
                                                     .applyAllComponentAttributes(componentAttributes)
