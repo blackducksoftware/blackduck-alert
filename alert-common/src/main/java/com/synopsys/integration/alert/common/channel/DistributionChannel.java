@@ -55,7 +55,6 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
         } else {
             logger.warn("Received an event for channel '{}', but this channel is '{}'.", event.getDestination(), getDestinationName());
         }
-
     }
 
     public void sendAuditedMessage(DistributionEvent event) throws IntegrationException {
