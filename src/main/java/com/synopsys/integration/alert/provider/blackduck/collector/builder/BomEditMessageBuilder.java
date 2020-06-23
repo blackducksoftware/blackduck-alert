@@ -89,10 +89,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         Optional<ProjectVersionComponentView> optionalBomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
         Long notificationId = commonMessageData.getNotificationId();
 
-        // TODO Stop using this when Black Duck supports going back to the project-version
-        // blackduck-common-api 2019.12.0.4+ should have the project version link in the BomEditNotificationContent
-        Optional<ProjectVersionWrapper> projectVersionWrapper = optionalBomComponent.flatMap(responseCache::getProjectVersionWrapper);
-
+        Optional<ProjectVersionWrapper> projectVersionWrapper = responseCache.getProjectVersionWrapper(bomEditContent.getProjectVersion());
         if (optionalBomComponent.isPresent() && projectVersionWrapper.isPresent()) {
             ProjectVersionComponentView bomComponent = optionalBomComponent.get();
             try {
