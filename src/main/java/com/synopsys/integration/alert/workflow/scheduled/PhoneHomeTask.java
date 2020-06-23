@@ -59,11 +59,13 @@ import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
-import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.request.PhoneHomeRequestBody;
+import com.synopsys.integration.phonehome.request.PhoneHomeRequestBodyBuilder;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.util.NameVersion;
 
 @Component
 public class PhoneHomeTask extends StartupScheduledTask {
@@ -117,12 +119,11 @@ public class PhoneHomeTask extends StartupScheduledTask {
             for (ProviderPhoneHomeHandler handler : providerHandlers) {
                 List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
-                    PhoneHomeRequestBody.Builder phoneHomeBuilder = new PhoneHomeRequestBody.Builder();
-                    phoneHomeBuilder.setArtifactId(ARTIFACT_ID);
-                    phoneHomeBuilder.setArtifactVersion(productVersion);
-                    phoneHomeBuilder.setArtifactModules(getChannelMetaData().toArray(String[]::new));
                     PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
-                    PhoneHomeRequestBody requestBody = handler.populatePhoneHomeData(configuration, phoneHomeBuilder).build();
+                    NameVersion alertArtifactInfo = new NameVersion(ARTIFACT_ID, productVersion);
+                    PhoneHomeRequestBodyBuilder requestBodyBuilder = handler.populatePhoneHomeData(configuration, alertArtifactInfo);
+                    requestBodyBuilder.addArtifactModules(getChannelMetaData().toArray(String[]::new));
+                    PhoneHomeRequestBody requestBody = requestBodyBuilder.build();
                     PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(requestBody, System.getenv());
                     boolean taskSucceeded = BooleanUtils.isTrue(phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT));
                     if (!taskSucceeded) {
