@@ -155,19 +155,19 @@ export function deleteDistributionJob(job) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletingJobConfigSuccess(jobId));
-            } else {
-                response.json()
-                .then((data) => {
-                    const deleteMessageHandler = () => jobDeleteError(data.message);
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletingJobConfigSuccess(jobId));
+                } else {
+                    const deleteMessageHandler = () => jobDeleteError(responseData.message);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(deleteMessageHandler));
                     errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(deleteMessageHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(data.message, null)));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(responseData.message, null)));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
-                });
-            }
+                    dispatch(handler(response.status));
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -188,30 +188,28 @@ export function fetchDistributionJobs() {
             }
         })
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    jsonArray.forEach((jobConfig) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    responseData.forEach((jobConfig) => {
                         dispatch(fetchAuditInfoForJob(jobConfig));
                     });
                     dispatch(allJobsFetched());
-                });
-            } else {
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(fetchingAllJobsError(message));
-                    });
-                }));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
-        }).catch((error) => {
+                        return fetchingAllJobsError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
+        })
+        .catch((error) => {
             console.log(error);
             dispatch(fetchingAllJobsError(error));
         });
@@ -233,27 +231,25 @@ export function fetchJobsValidationResults() {
             }
         })
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(jobsValidationFetched(jsonArray));
-                });
-            } else {
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(jobsValidationFetched(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(jobsValidationError(message));
-                    });
-                }));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
-        }).catch((error) => {
+                        return jobsValidationError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
+        })
+        .catch((error) => {
             console.log(error);
             dispatch(jobsValidationError(error));
         });

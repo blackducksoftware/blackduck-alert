@@ -36,15 +36,15 @@ export function getAboutInfo() {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         fetch(ABOUT_INFO_URL)
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((body) => {
-                    dispatch(aboutInfoFetched(body));
-                });
-            } else {
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(aboutInfoFetched(responseData));
+                } else {
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };

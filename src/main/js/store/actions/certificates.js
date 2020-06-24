@@ -155,9 +155,9 @@ export function saveCertificate(certificate) {
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                     dispatch(handler(response.status));
                 }
-            })
-            .catch(console.error);
-        });
+            });
+        })
+        .catch(console.error);
     };
 }
 

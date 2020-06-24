@@ -28,16 +28,16 @@ export function getLatestMessages() {
         dispatch(fetchingLatestSystemMessages());
         fetch(LATEST_MESSAGES_URL)
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((body) => {
-                    dispatch(latestSystemMessagesFetched(body));
-                });
-            } else {
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(latestSystemMessagesFetched(responseData));
+                } else {
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
-            .catch(console.error);
+        .catch(console.error);
     };
 }

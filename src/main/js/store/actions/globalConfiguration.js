@@ -129,17 +129,15 @@ function clearFieldErrors() {
     };
 }
 
-function handleFailureResponse(dispatch, response) {
-    response.json().then((data) => {
-        const errorHandlers = [];
-        const configErrorHandler = () => configError(data.message, data.errors);
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => configError(data.message, null)));
-        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(configErrorHandler));
-        errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(configErrorHandler));
-        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-        dispatch(handler.call(response.status));
-    });
+function handleFailureResponse(dispatch, responseData, statusCode) {
+    const errorHandlers = [];
+    const configErrorHandler = () => configError(responseData.message, responseData.errors);
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => configError(responseData.message, null)));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(configErrorHandler));
+    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(configErrorHandler));
+    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+    dispatch(handler(statusCode));
 }
 
 export function refreshConfig(id) {
@@ -155,19 +153,20 @@ export function refreshConfig(id) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((body) => {
-                    if (body) {
-                        dispatch(configRefreshed(body));
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    if (responseData) {
+                        dispatch(configRefreshed(responseData));
                     } else {
                         dispatch(configRefreshed({}));
                     }
-                });
-            } else {
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+
+                } else {
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -181,19 +180,19 @@ export function getAllConfigs(descriptorName) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((body) => {
-                    if (body.length > 0) {
-                        dispatch(configAllFetched(body));
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    if (responseData.length > 0) {
+                        dispatch(configAllFetched(responseData));
                     } else {
                         dispatch(configAllFetched({}));
                     }
-                });
-            } else {
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                } else {
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -207,19 +206,19 @@ export function getConfig(descriptorName) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((body) => {
-                    if (body.length > 0) {
-                        dispatch(configFetched(body[0]));
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    if (responseData.length > 0) {
+                        dispatch(configFetched(responseData[0]));
                     } else {
                         dispatch(configFetched({}));
                     }
-                });
-            } else {
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                } else {
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -236,17 +235,17 @@ export function updateConfig(config) {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
         request.then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    const newId = data.id;
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    const newId = responseData.id;
                     const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
                     dispatch(configUpdated(updatedConfig));
                     dispatch(refreshConfig(newId));
-                    return newId;
-                });
-            } else {
-                handleFailureResponse(dispatch, response);
-            }
+                } else {
+                    handleFailureResponse(dispatch, responseData, response.status);
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -285,13 +284,17 @@ export function deleteConfig(id) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
-            if (response.ok) {
-                response.json().then(() => {
-                    dispatch(configDeleted());
-                });
-            } else {
-                handleFailureResponse(dispatch, response);
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    response.json()
+                    .then(() => {
+                        dispatch(configDeleted());
+                    });
+                } else {
+                    handleFailureResponse(dispatch, responseData, response.status);
+                }
+            });
         }).catch(console.error);
     };
 }

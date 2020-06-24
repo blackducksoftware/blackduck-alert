@@ -34,26 +34,23 @@ export function fetchTasks() {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllTasksError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = RequestUtilities.createReadRequest(TASKS_API_URL, csrfToken);
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(fetchedAllTasks(jsonArray));
-                });
-            } else {
-                errorHandlers.push(HttpErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchedAllTasks(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(fetchingAllTasksError(message));
-                    });
-                }));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                        return fetchingAllTasksError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch((error) => {
             console.log(error);

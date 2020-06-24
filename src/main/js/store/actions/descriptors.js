@@ -54,13 +54,13 @@ export function getDescriptors() {
         })
         .then((response) => {
             response.json()
-            .then((json) => {
+            .then((responseData) => {
                 if (response.ok) {
-                    dispatch(descriptorsFetched(json));
+                    dispatch(descriptorsFetched(responseData));
                 } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(json.message)));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(responseData.message)));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
+                    dispatch(handler(response.status));
                 }
             });
         }).catch((error) => {
