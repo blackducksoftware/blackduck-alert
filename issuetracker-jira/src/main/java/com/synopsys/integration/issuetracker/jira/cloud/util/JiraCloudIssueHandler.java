@@ -26,19 +26,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerProperties;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final IssueService issueService;

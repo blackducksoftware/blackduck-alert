@@ -33,19 +33,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerException;
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerFieldException;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
-import com.synopsys.integration.issuetracker.common.service.IssueTrackerService;
-import com.synopsys.integration.issuetracker.common.service.TransitionValidator;
 
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private com.synopsys.integration.issuetracker.common.service.IssueTrackerService issueTrackerService;
+    private IssueTrackerService issueTrackerService;
     private TestIssueRequestCreator testIssueRequestCreator;
 
     public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueRequestCreator testIssueRequestCreator) {
@@ -78,12 +76,12 @@ public abstract class IssueCreatorTestAction {
 
     protected abstract String getDoneStatusFieldKey();
 
-    protected abstract <T> com.synopsys.integration.issuetracker.common.service.TransitionValidator<T> createTransitionValidator(IssueTrackerContext issueTrackerContext) throws IntegrationException;
+    protected abstract <T> TransitionValidator<T> createTransitionValidator(IssueTrackerContext issueTrackerContext) throws IntegrationException;
 
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
     private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        com.synopsys.integration.issuetracker.common.service.TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
+        TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();

@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.issuetracker.service;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
 
 public abstract class IssueTrackerService<T extends IssueTrackerContext> {
     private Gson gson;

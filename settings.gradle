@@ -1,5 +1,5 @@
 rootProject.name = 'blackduck-alert'
 include 'alert-common'
 include 'alert-database'
-
+include 'issuetracker-jira'
 

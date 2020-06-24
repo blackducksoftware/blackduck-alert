@@ -22,15 +22,14 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
 
 public class IssueTrackerRequest {
     private final IssueSearchProperties issueSearchProperties;
     private final IssueOperation operation;
-    private final com.synopsys.integration.issuetracker.common.message.IssueContentModel requestContent;
+    private final IssueContentModel requestContent;
 
-    public IssueTrackerRequest(IssueOperation operation, IssueSearchProperties issueSearchProperties, com.synopsys.integration.issuetracker.common.message.IssueContentModel requestContent) {
+    public IssueTrackerRequest(IssueOperation operation, IssueSearchProperties issueSearchProperties, IssueContentModel requestContent) {
         this.operation = operation;
         this.issueSearchProperties = issueSearchProperties;
         this.requestContent = requestContent;

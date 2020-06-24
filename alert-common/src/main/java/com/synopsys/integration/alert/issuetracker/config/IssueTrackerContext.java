@@ -22,14 +22,11 @@
  */
 package com.synopsys.integration.alert.issuetracker.config;
 
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerServiceConfig;
-
 public class IssueTrackerContext<T extends IssueTrackerServiceConfig> {
     private T issueTrackerConfig;
-    private com.synopsys.integration.issuetracker.common.config.IssueConfig issueConfig;
+    private IssueConfig issueConfig;
 
-    public IssueTrackerContext(T issueTrackerConfig, com.synopsys.integration.issuetracker.common.config.IssueConfig issueConfig) {
+    public IssueTrackerContext(T issueTrackerConfig, IssueConfig issueConfig) {
         this.issueTrackerConfig = issueTrackerConfig;
         this.issueConfig = issueConfig;
     }

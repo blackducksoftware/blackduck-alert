@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.common.event;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
 
 public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;

@@ -22,13 +22,12 @@
  */
 package com.synopsys.integration.alert.issuetracker.message;
 
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
 
 public class IssueCommentRequest extends IssueTrackerRequest {
     public static final IssueOperation OPERATION = IssueOperation.UPDATE;
 
-    private IssueCommentRequest(IssueSearchProperties issueSearchProperties, com.synopsys.integration.issuetracker.common.message.IssueContentModel requestContent) {
+    private IssueCommentRequest(IssueSearchProperties issueSearchProperties, IssueContentModel requestContent) {
         super(OPERATION, issueSearchProperties, requestContent);
     }
 

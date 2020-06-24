@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.issuetracker.service;
 
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 
 public interface TestIssueRequestCreator {
     // This method could create a creation request or a resolution request.

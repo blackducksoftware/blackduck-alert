@@ -1,0 +1,5 @@
+ext.moduleName = 'com.synopsys.integration.alert.issuetracker.jira'
+
+dependencies {
+    implementation project(':alert-common')
+}

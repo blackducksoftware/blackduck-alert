@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.issuetracker.exception;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerException;
-
 public class IssueTrackerFieldException extends IssueTrackerException {
     private static final long serialVersionUID = -6064390279820606078L;
     private final Map<String, String> fieldErrors;

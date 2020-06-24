@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.issuetracker.exception;
 
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerException;
-
 public class IssueMissingTransitionException extends IssueTrackerException {
     private static final long serialVersionUID = 9152514378880170516L;
     private final String issueKey;

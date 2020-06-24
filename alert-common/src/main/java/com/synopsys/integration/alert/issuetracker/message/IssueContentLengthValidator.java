@@ -26,8 +26,7 @@ import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerContentLengthException;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerContentLengthException;
 
 public abstract class IssueContentLengthValidator {
     protected abstract int getTitleLength();
