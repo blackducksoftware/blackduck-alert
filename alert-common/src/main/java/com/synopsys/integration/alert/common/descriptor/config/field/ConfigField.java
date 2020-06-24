@@ -79,7 +79,7 @@ public abstract class ConfigField extends AlertSerializableModel {
     private Set<String> requiredRelatedFields;
     private Set<String> disallowedRelatedFields;
     private Set<String> defaultValues;
-    private transient List<ConfigValidationFunction> validationFunctions;
+    private final transient List<ConfigValidationFunction> validationFunctions;
 
     /**
      * @param key         A string to uniquely identify this field throughout the application.
@@ -205,7 +205,7 @@ public abstract class ConfigField extends AlertSerializableModel {
         if (!errors.hasErrors()) {
             for (ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {
-                    errors = ValidationResult.of(validation.apply(fieldToValidate, fieldModel));
+                    errors = ValidationResult.of(errors, validation.apply(fieldToValidate, fieldModel));
                 }
             }
         }
