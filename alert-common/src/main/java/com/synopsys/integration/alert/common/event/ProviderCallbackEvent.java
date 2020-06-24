@@ -8,9 +8,10 @@ import com.synopsys.integration.issuetracker.common.IssueOperation;
 public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;
     private final String notificationType;
+
     private final LinkableItem channelDestination;
     private final IssueOperation operation;
-    private final String channelEventDescription;
+    private final String channelActionSummary;
 
     private final ContentKey providerContentKey;
     private final ComponentItem componentItem;
@@ -21,7 +22,7 @@ public class ProviderCallbackEvent extends AlertEvent {
         String notificationType,
         LinkableItem channelDestination,
         IssueOperation operation,
-        String channelEventDescription,
+        String channelActionSummary,
         ContentKey providerContentKey,
         ComponentItem componentItem
     ) {
@@ -30,7 +31,7 @@ public class ProviderCallbackEvent extends AlertEvent {
         this.notificationType = notificationType;
         this.channelDestination = channelDestination;
         this.operation = operation;
-        this.channelEventDescription = channelEventDescription;
+        this.channelActionSummary = channelActionSummary;
         this.providerContentKey = providerContentKey;
         this.componentItem = componentItem;
     }
@@ -51,8 +52,8 @@ public class ProviderCallbackEvent extends AlertEvent {
         return operation;
     }
 
-    public String getChannelEventDescription() {
-        return channelEventDescription;
+    public String getChannelActionSummary() {
+        return channelActionSummary;
     }
 
     public ContentKey getProviderContentKey() {
