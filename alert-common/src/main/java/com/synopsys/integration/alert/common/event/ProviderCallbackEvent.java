@@ -9,6 +9,7 @@ public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;
     private final String notificationType;
 
+    // TODO consider splitting channelDestination out into something resembling "key" and "link"
     private final LinkableItem channelDestination;
     private final IssueOperation operation;
     private final String channelActionSummary;
