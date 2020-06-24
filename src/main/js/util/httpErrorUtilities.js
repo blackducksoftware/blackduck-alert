@@ -3,6 +3,24 @@ export const MESSAGES = {
     FORBIDDEN_READ: 'You are not permitted to view this information.'
 };
 
+export function createErrorObject(errorResponse) {
+    const responseMessage = Object.prototype.hasOwnProperty.call('message') && errorResponse.message;
+    const responseErrors = Object.prototype.hasOwnProperty.call('errors') && errorResponse.errors;
+    const message = responseMessage || '';
+    const fieldErrors = responseErrors || {};
+    return {
+        fieldErrors,
+        message
+    };
+}
+
+export function createEmptyErrorObject() {
+    return {
+        message: '',
+        fieldErrors: {}
+    };
+}
+
 export function createStatusCodeHandler(statusCode, callback) {
     return {
         statusCode,
