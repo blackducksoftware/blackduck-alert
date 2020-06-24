@@ -77,14 +77,14 @@ function deletedUser() {
 function deletingUserErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
-        userDeleteError: message
+        message
     };
 }
 
 function deletingUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
-        userDeleteError: message,
+        message,
         errors
     };
 }
@@ -110,26 +110,23 @@ export function fetchUsers() {
             }
         })
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(fetchedAllUsers(jsonArray));
-                });
-            } else {
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchedAllUsers(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(fetchingAllUsersError(message));
-                    });
-                }));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                        return fetchingAllUsersError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -153,21 +150,18 @@ export function saveUser(user) {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then(() => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
                     dispatch(savedUser());
-                });
-            } else {
-                response.json()
-                .then((data) => {
-                    const defaultHandler = () => saveUserError(data);
+                } else {
+                    const defaultHandler = () => saveUserError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
-                });
-            }
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };
@@ -182,18 +176,18 @@ export function deleteUser(userId) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletedUser());
-            } else {
-                response.json()
-                .then((data) => {
-                    const defaultHandler = () => deletingUserError(data);
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletedUser());
+                } else {
+                    const defaultHandler = () => deletingUserError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
-                });
-            }
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };

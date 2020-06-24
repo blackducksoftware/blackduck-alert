@@ -11,6 +11,7 @@ import {
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING
 } from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,
@@ -19,7 +20,7 @@ const initialState = {
     data: [],
     userFetchError: '',
     userSaveError: null,
-    userDeleteError: null,
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {},
     saveStatus: ''
 };
@@ -30,7 +31,7 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userDeleteError: action.userDeleteError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: ''
             });
@@ -38,6 +39,7 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: ''
             });
@@ -76,6 +78,7 @@ const users = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 userSaveError: action.userSaveError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: 'ERROR'
             });
@@ -83,6 +86,7 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: 'SAVED'
             });
@@ -94,7 +98,7 @@ const users = (state = initialState, action) => {
             });
         case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
-                userDeleteError: null,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: ''
             });
