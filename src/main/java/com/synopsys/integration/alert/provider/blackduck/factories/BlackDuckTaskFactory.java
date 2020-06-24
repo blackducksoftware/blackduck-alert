@@ -36,10 +36,10 @@ import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTaskFactory;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckValidatorTask;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {

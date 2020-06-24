@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,32 +36,68 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.blackduck.exception.BlackDuckApiException;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class BlackDuckDistributionTestAction extends TestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
+    private final BlackDuckProvider blackDuckProvider;
+    private final ConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckDistributionTestAction.class);
 
     @Autowired
-    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
+        this.blackDuckProvider = blackDuckProvider;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         Optional<String> optionalProviderConfigName = registeredFieldValues.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (optionalProviderConfigName.isPresent()) {
+            String providerConfigName = optionalProviderConfigName.get();
             Optional<String> projectNamePattern = registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (projectNamePattern.isPresent()) {
-                validatePatternMatchesProject(optionalProviderConfigName.get(), projectNamePattern.get());
+                validatePatternMatchesProject(providerConfigName, projectNamePattern.get());
+            }
+
+            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                                            .map(blackDuckProvider::createStatefulProvider)
+                                                                            .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
+            if (optionalBlackDuckProperties.isPresent()) {
+                BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
+                Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+                if (optionalBlackDuckHttpClient.isPresent()) {
+                    try {
+                        BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
+                        NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
+                        notificationService.getLatestNotificationDate();
+                    } catch (BlackDuckApiException ex) {
+                        if (RestConstants.FORBIDDEN_403 == ex.getOriginalIntegrationRestException().getHttpStatusCode()) {
+                            throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck.");
+                        }
+                        logger.error("Error reading notifications", ex);
+                    }
+                }
             }
         } else {
             throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required");
         }
+
         return new MessageResult("Successfully tested BlackDuck provider fields");
     }
 
