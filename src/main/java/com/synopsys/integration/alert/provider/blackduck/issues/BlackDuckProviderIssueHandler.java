@@ -4,10 +4,11 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.synopsys.integration.blackduck.api.manual.component.ResourceMetadata;
+import com.google.gson.Gson;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.IssueView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.model.RequestFactory;
@@ -16,9 +17,11 @@ import com.synopsys.integration.rest.request.Request;
 
 public class BlackDuckProviderIssueHandler {
     public static final String ISSUE_ENDPOINT_MEDIA_TYPE_V6 = "application/vnd.blackducksoftware.bill-of-materials-6+json";
+    private final Gson gson;
     private final BlackDuckService blackDuckService;
 
-    public BlackDuckProviderIssueHandler(BlackDuckService blackDuckService) {
+    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckService blackDuckService) {
+        this.gson = gson;
         this.blackDuckService = blackDuckService;
     }
 
@@ -27,15 +30,17 @@ public class BlackDuckProviderIssueHandler {
 
         Date currentDate = Date.from(Instant.now());
         IssueView issueRequestModel = createIssueRequestModel(issueModel);
+        Function<String, Request.Builder> requestBuilderCreator;
         if (optionalExistingIssue.isPresent()) {
             issueRequestModel.setIssueCreatedAt(optionalExistingIssue.get().getIssueCreatedAt());
             issueRequestModel.setIssueUpdatedAt(currentDate);
-            putIssue(bomComponentVersionIssuesUrl, issueRequestModel);
+            requestBuilderCreator = RequestFactory::createCommonPutRequestBuilder;
         } else {
             issueRequestModel.setIssueCreatedAt(currentDate);
             issueRequestModel.setIssueUpdatedAt(null);
-            postIssue(bomComponentVersionIssuesUrl, issueRequestModel);
+            requestBuilderCreator = RequestFactory::createCommonPostRequestBuilder;
         }
+        performRequest(bomComponentVersionIssuesUrl, issueRequestModel, requestBuilderCreator);
     }
 
     // TODO fix this logic once the bomComponentVersionIssuesUrl supports GET requests directly
@@ -52,16 +57,14 @@ public class BlackDuckProviderIssueHandler {
                    .findAny();
     }
 
-    private void postIssue(String uri, IssueView requestModel) throws IntegrationException {
-        blackDuckService.post(uri, requestModel);
-    }
-
-    private void putIssue(String uri, IssueView requestModel) throws IntegrationException {
-        ResourceMetadata resourceMetadata = new ResourceMetadata();
-        resourceMetadata.setHref(uri);
-        requestModel.setMeta(resourceMetadata);
-
-        blackDuckService.put(requestModel);
+    private void performRequest(String uri, IssueView requestModel, Function<String, Request.Builder> requestBuilderCreator) throws IntegrationException {
+        String requestJson = gson.toJson(requestModel);
+        Request request = requestBuilderCreator.apply(requestJson)
+                              .uri(uri)
+                              .addAdditionalHeader("Content Type", ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .addAdditionalHeader("Accept", ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .build();
+        blackDuckService.execute(request);
     }
 
     private IssueView createIssueRequestModel(BlackDuckProviderIssueModel issueModel) {

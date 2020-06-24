@@ -24,10 +24,12 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class BlackDuckCallbackHandler extends ProviderCallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Gson gson;
 
     @Autowired
     public BlackDuckCallbackHandler(BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor, Gson gson) {
         super(blackDuckProvider, configurationAccessor, gson);
+        this.gson = gson;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class BlackDuckCallbackHandler extends ProviderCallbackHandler {
                                                                                   .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger));
         if (optionalBlackDuckServicesFactory.isPresent()) {
             BlackDuckServicesFactory blackDuckServicesFactory = optionalBlackDuckServicesFactory.get();
-            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(blackDuckServicesFactory.createBlackDuckService());
+            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.createBlackDuckService());
 
             BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
             blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel);
