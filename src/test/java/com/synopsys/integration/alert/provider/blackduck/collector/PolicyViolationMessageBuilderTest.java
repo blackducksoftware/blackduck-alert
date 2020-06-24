@@ -19,6 +19,8 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyClearedMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
@@ -31,18 +33,19 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 public class PolicyViolationMessageBuilderTest {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
+    private final BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility = new BlackDuckIssueTrackerCallbackUtility(new BlackDuckProviderKey());
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
-        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder();
+        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
         PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(policyCommonBuilder);
         runSingleTest(policyViolationClearedMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
-        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder();
+        PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
         PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyCommonBuilder);
         runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }

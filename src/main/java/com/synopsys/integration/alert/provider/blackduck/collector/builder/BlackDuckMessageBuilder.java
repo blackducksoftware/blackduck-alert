@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -35,9 +36,9 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class BlackDuckMessageBuilder<T> {
     private final String providerName = "Black Duck";
-    private final String notificationType;
+    private final NotificationType notificationType;
 
-    public BlackDuckMessageBuilder(String notificationType) {
+    public BlackDuckMessageBuilder(NotificationType notificationType) {
         this.notificationType = notificationType;
     }
 
@@ -45,8 +46,8 @@ public abstract class BlackDuckMessageBuilder<T> {
         return this.providerName;
     }
 
-    public String getNotificationType() {
-        return this.notificationType;
+    public NotificationType getNotificationType() {
+        return notificationType;
     }
 
     public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);

@@ -43,9 +43,9 @@ import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 
 public class BlackDuckResponseCache {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckResponseCache.class);
-    private BlackDuckBucketService blackDuckBucketService;
-    private BlackDuckBucket bucket;
-    private long timeout;
+    private final BlackDuckBucketService blackDuckBucketService;
+    private final BlackDuckBucket bucket;
+    private final long timeout;
 
     public BlackDuckResponseCache(BlackDuckBucketService blackDuckBucketService, BlackDuckBucket bucket, long timeout) {
         this.blackDuckBucketService = blackDuckBucketService;
@@ -115,23 +115,13 @@ public class BlackDuckResponseCache {
         return Optional.empty();
     }
 
-    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(ProjectVersionComponentView versionBomComponent) {
-        Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-        if (versionBomComponentHref.isPresent()) {
-            String versionHref = versionBomComponentHref.get();
-            int componentsIndex = versionHref.indexOf(ProjectVersionView.COMPONENTS_LINK);
-            String projectVersionUri = versionHref.substring(0, componentsIndex - 1);
-
-            Optional<ProjectVersionView> projectVersion = getItem(ProjectVersionView.class, projectVersionUri);
-            ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
-            projectVersion.ifPresent(wrapper::setProjectVersionView);
-            projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
-                .ifPresent(wrapper::setProjectView);
-            return Optional.of(wrapper);
-
-        }
-
-        return Optional.empty();
+    public Optional<ProjectVersionWrapper> getProjectVersionWrapper(String projectVersionUrl) {
+        Optional<ProjectVersionView> projectVersion = getItem(ProjectVersionView.class, projectVersionUrl);
+        ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
+        projectVersion.ifPresent(wrapper::setProjectVersionView);
+        projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
+            .ifPresent(wrapper::setProjectView);
+        return Optional.of(wrapper);
     }
 
 }
