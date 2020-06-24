@@ -37,6 +37,8 @@ public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCa
                 Optional<StatefulProvider> optionalStatefulProvider = validateAndRetrieveStatefulProvider(event);
                 if (optionalStatefulProvider.isPresent()) {
                     performProviderCallback(event, optionalStatefulProvider.get());
+                } else {
+                    logger.warn("Cannot perform callback due to invalid provider config");
                 }
             } catch (IntegrationException ex) {
                 logger.error("There was an error performing the callback.", ex);
