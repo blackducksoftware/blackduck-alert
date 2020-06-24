@@ -10,17 +10,15 @@ import {
     CERTIFICATES_SAVED,
     CERTIFICATES_SAVING,
     SERIALIZE
-} from "../actions/types";
+} from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,
     fetching: false,
     deleteSuccess: false,
     data: [],
-    certificateFetchError: '',
-    certificateSaveError: null,
-    certificateDeleteError: null,
-    fieldErrors: {},
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     saveStatus: ''
 };
 
@@ -30,15 +28,14 @@ const certificates = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                certificateDeleteError: action.certificateDeleteError,
-                fieldErrors: action.errors || {},
+                error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: ''
             });
         case CERTIFICATES_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
             });
         case CERTIFICATES_DELETING:
@@ -76,15 +73,14 @@ const certificates = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                certificateSaveError: action.certificateSaveError,
-                fieldErrors: action.errors || {},
+                error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: 'ERROR'
             });
         case CERTIFICATES_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: 'SAVED'
             });
         case CERTIFICATES_SAVING:
@@ -95,8 +91,7 @@ const certificates = (state = initialState, action) => {
             });
         case CERTIFICATES_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
-                certificateDeleteError: null,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
             });
         }

@@ -52,7 +52,7 @@ function savedCertificate() {
 function saveCertificateError({ message, errors }) {
     return {
         type: CERTIFICATES_SAVE_ERROR,
-        certificateSaveError: message,
+        message,
         errors
 
     };
@@ -73,14 +73,14 @@ function deletedCertificate() {
 function deletingCertificateErrorMessage(message) {
     return {
         type: CERTIFICATES_DELETE_ERROR,
-        certificateDeleteError: message
+        message
     };
 }
 
 function deletingCertificateError({ message, errors }) {
     return {
         type: CERTIFICATES_DELETE_ERROR,
-        certificateDeleteError: message,
+        message,
         errors
     };
 }
@@ -101,27 +101,24 @@ export function fetchCertificates() {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllCertificatesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = RequestUtilities.createReadRequest(CERTIFICATES_API_URL, csrfToken);
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(fetchedAllCertificates(jsonArray));
-                });
-            } else {
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchedAllCertificates(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(fetchingAllCertificatesError(message));
-                    });
-                }));
+                        return fetchingAllCertificatesError(message);
+                    }));
 
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -146,24 +143,21 @@ export function saveCertificate(certificate) {
             request = RequestUtilities.createPostRequest(CERTIFICATES_API_URL, csrfToken, certificate);
         }
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then(() => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
                     dispatch(savedCertificate());
-                });
-            } else {
-                const defaultHandler = () => {
-                    response.json()
-                    .then((data) => dispatch(saveCertificateError(data)));
-                };
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                } else {
+                    const defaultHandler = () => saveCertificateError(responseData);
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
-        })
-        .catch(console.error);
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            })
+            .catch(console.error);
+        });
     };
 }
 
@@ -178,19 +172,19 @@ export function deleteCertificate(certificateId) {
 
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletedCertificate());
-            } else {
-                const defaultHandler = () => {
-                    response.json()
-                    .then((data) => dispatch(deletingCertificateError(data)));
-                };
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletedCertificate());
+                } else {
+                    const defaultHandler = () => deletingCertificateError(responseData);
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };
