@@ -109,26 +109,23 @@ export function fetchRoles() {
             }
         })
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(fetchedAllRoles(jsonArray));
-                });
-            } else {
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                    response.json()
-                    .then((json) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchedAllRoles(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                         let message = '';
-                        if (json && json.message) {
+                        if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = json.message.toString();
+                            message = responseData.message.toString();
                         }
-                        dispatch(fetchingAllRolesError(message));
-                    });
-                }));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler.call(response.status));
-            }
+                        return fetchingAllRolesError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -152,21 +149,18 @@ export function saveRole(role) {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
         }
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then(() => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
                     dispatch(savedRole());
-                });
-            } else {
-                response.json()
-                .then((data) => {
-                    const defaultHandler = () => saveRoleError(data);
+                } else {
+                    const defaultHandler = () => saveRoleError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
-                });
-            }
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };
@@ -181,18 +175,18 @@ export function deleteRole(roleId) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletedRole());
-            } else {
-                response.json()
-                .then((data) => {
-                    const defaultHandler = () => deletingRoleError(data);
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletedRole());
+                } else {
+                    const defaultHandler = () => deletingRoleError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler.call(response.status));
-                });
-            }
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };

@@ -11,6 +11,7 @@ import {
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING
 } from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,
@@ -19,7 +20,7 @@ const initialState = {
     data: [],
     roleFetchError: '',
     roleError: null,
-    fieldErrors: {},
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     saveStatus: ''
 };
 
@@ -30,14 +31,14 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
-                fieldErrors: action.errors || {},
+                error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
             });
         case USER_MANAGEMENT_ROLE_DELETING:
@@ -75,14 +76,14 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
-                fieldErrors: action.errors || {},
+                error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: 'ERROR'
             });
         case USER_MANAGEMENT_ROLE_SAVED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: 'SAVED'
             });
         case USER_MANAGEMENT_ROLE_SAVING:
@@ -94,7 +95,7 @@ const roles = (state = initialState, action) => {
         case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
             return Object.assign({}, state, {
                 roleError: null,
-                fieldErrors: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
             });
         }
