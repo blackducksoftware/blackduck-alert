@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.synopsys.integration.blackduck.api.manual.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.IssueView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
@@ -36,13 +38,13 @@ public class BlackDuckProviderIssueHandler {
         }
     }
 
-    // This is really a BomComponentIssueView, but that class is not considered a BlackDuckResponse
     // TODO fix this logic once the bomComponentVersionIssuesUrl supports GET requests directly
     private Optional<IssueView> retrieveExistingIssue(String bomComponentVersionIssuesUrl, String issueKey) throws IntegrationException {
         String issueLookupUrl = createIssueLookupUrl(bomComponentVersionIssuesUrl);
         Request.Builder requestBuilder = RequestFactory.createCommonGetRequestBuilder(issueLookupUrl)
                                              .addAdditionalHeader("Accept", ISSUE_ENDPOINT_MEDIA_TYPE_V6);
 
+        // This is really a List<BomComponentIssueView>, but BomComponentIssueView is not considered a BlackDuckResponse.
         List<IssueView> bomComponentIssues = blackDuckService.getAllResponses(requestBuilder, IssueView.class);
         return bomComponentIssues
                    .stream()
@@ -58,7 +60,7 @@ public class BlackDuckProviderIssueHandler {
         ResourceMetadata resourceMetadata = new ResourceMetadata();
         resourceMetadata.setHref(uri);
         requestModel.setMeta(resourceMetadata);
-        
+
         blackDuckService.put(requestModel);
     }
 
@@ -72,8 +74,16 @@ public class BlackDuckProviderIssueHandler {
         return blackDuckIssueView;
     }
 
+    /**
+     * @param bomComponentVersionIssuesUrl a string in the format of<br/>
+     *                                     {blackDuckUrl}/api/projects/{projectId}/versions/{projectVersionId}/components/{componentId}/issues<br/>
+     *                                     or<br/>
+     *                                     {blackDuckUrl}/api/projects/{projectId}/versions/{projectVersionId}/components/{componentId}/component-versions/{componentVersionId}/issues
+     * @return a string in the format of {blackDuckUrl}/api/projects/{projectId}/versions/{projectVersionId}/issues
+     */
     private String createIssueLookupUrl(String bomComponentVersionIssuesUrl) {
-        return bomComponentVersionIssuesUrl;
+        String projectVersionUrl = StringUtils.substringBefore(bomComponentVersionIssuesUrl, "/components");
+        return projectVersionUrl + "/issues";
     }
 
 }
