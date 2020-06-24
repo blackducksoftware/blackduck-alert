@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.IssueView;
@@ -47,7 +48,7 @@ public class BlackDuckProviderIssueHandler {
     private Optional<IssueView> retrieveExistingIssue(String bomComponentVersionIssuesUrl, String issueKey) throws IntegrationException {
         String issueLookupUrl = createIssueLookupUrl(bomComponentVersionIssuesUrl);
         Request.Builder requestBuilder = RequestFactory.createCommonGetRequestBuilder(issueLookupUrl)
-                                             .addAdditionalHeader("Accept", ISSUE_ENDPOINT_MEDIA_TYPE_V6);
+                                             .addAdditionalHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6);
 
         // This is really a List<BomComponentIssueView>, but BomComponentIssueView is not considered a BlackDuckResponse.
         List<IssueView> bomComponentIssues = blackDuckService.getAllResponses(requestBuilder, IssueView.class);
@@ -61,8 +62,8 @@ public class BlackDuckProviderIssueHandler {
         String requestJson = gson.toJson(requestModel);
         Request request = requestBuilderCreator.apply(requestJson)
                               .uri(uri)
-                              .addAdditionalHeader("Content Type", ISSUE_ENDPOINT_MEDIA_TYPE_V6)
-                              .addAdditionalHeader("Accept", ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .addAdditionalHeader(HttpHeaders.CONTENT_TYPE, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .addAdditionalHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
                               .build();
         blackDuckService.execute(request);
     }
