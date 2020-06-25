@@ -44,12 +44,12 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.UniquePhoneHomeProduct;
+import com.synopsys.integration.phonehome.request.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBodyBuilder;
 import com.synopsys.integration.util.NameVersion;
 
 @Component
 public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
-    private static final String UNKNOWN_ID = "<unknown>";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckPhoneHomeHandler.class);
 
     private BlackDuckProvider provider;
@@ -69,8 +69,8 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
     @Override
     public PhoneHomeRequestBodyBuilder populatePhoneHomeData(ConfigurationModel configurationModel, NameVersion alertArtifactInfo) {
         String registrationId = null;
-        String blackDuckUrl = UNKNOWN_ID;
-        String blackDuckVersion = UNKNOWN_ID;
+        String blackDuckUrl = PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE;
+        String blackDuckVersion = PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE;
         try {
             descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId());
             StatefulProvider statefulProvider = provider.createStatefulProvider(configurationModel);
@@ -85,7 +85,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
                 CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
                 blackDuckVersion = currentVersionView.getVersion();
                 registrationId = blackDuckRegistrationService.getRegistrationId();
-                blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(UNKNOWN_ID);
+                blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
             }
         } catch (IntegrationException ignored) {
             // ignoring this exception
@@ -93,7 +93,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
 
         // We must check if the reg id is blank because of an edge case in which Black Duck can authenticate (while the webserver is coming up) without registration
         if (StringUtils.isBlank(registrationId)) {
-            registrationId = UNKNOWN_ID;
+            registrationId = PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE;
         }
         PhoneHomeRequestBodyBuilder phoneHomeBuilder = new PhoneHomeRequestBodyBuilder(registrationId, blackDuckUrl, alertArtifactInfo, UniquePhoneHomeProduct.BLACK_DUCK, blackDuckVersion);
         return phoneHomeBuilder;
