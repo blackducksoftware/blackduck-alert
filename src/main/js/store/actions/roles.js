@@ -153,6 +153,7 @@ export function saveRole(role) {
             .then((responseData) => {
                 if (response.ok) {
                     dispatch(savedRole());
+                    dispatch(fetchRoles());
                 } else {
                     const defaultHandler = () => saveRoleError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));

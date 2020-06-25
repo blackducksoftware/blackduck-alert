@@ -8,12 +8,11 @@ import {
     DESCRIPTORS_FETCHING,
     SERIALIZE
 } from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
-    error: {
-        message: ''
-    },
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     // may need to rethink this state object
     currentDistributionComponents: null,
     items: []
@@ -24,17 +23,13 @@ const config = (state = initialState, action) => {
         case DESCRIPTORS_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
-                error: {
-                    message: ''
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case DESCRIPTORS_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
-                error: {
-                    message: ''
-                },
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 items: [
                     ...action.items
                 ]
@@ -43,18 +38,14 @@ const config = (state = initialState, action) => {
         case DESCRIPTORS_FETCH_ERROR:
             return Object.assign({}, state, {
                 fetching: false,
-                error: {
-                    message: action.message
-                }
+                error: HTTPErrorUtils.createErrorObject(action)
             });
 
         case DESCRIPTORS_DISTRIBUTION_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
                 currentDistributionComponents: null,
-                error: {
-                    message: ''
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case DESCRIPTORS_DISTRIBUTION_FETCHED:
@@ -67,19 +58,14 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 currentDistributionComponents: null,
-                error: {
-                    message: action.message,
-                    error: action.error
-                }
+                error: HTTPErrorUtils.createErrorObject(action)
             });
 
         case DESCRIPTORS_DISTRIBUTION_RESET:
             return Object.assign({}, state, {
                 fetching: false,
                 currentDistributionComponents: null,
-                error: {
-                    message: ''
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case SERIALIZE:

@@ -57,8 +57,10 @@ class ProviderTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.updateStatus === 'UPDATING' && (this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'ERROR')) {
-            this.state.saveCallback(true);
+        const { updateStatus } = this.props;
+        const saveSuccess = updateStatus === 'UPDATED';
+        if (prevProps.updateStatus === 'UPDATING' && (updateStatus === 'UPDATED' || updateStatus === 'ERROR')) {
+            this.state.saveCallback(saveSuccess);
         }
     }
 
@@ -138,8 +140,8 @@ class ProviderTable extends Component {
     }
 
     retrieveData() {
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const { descriptors, descriptorName } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
             this.props.getAllConfigs(descriptor.name);
         }

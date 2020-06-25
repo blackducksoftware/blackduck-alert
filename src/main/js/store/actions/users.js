@@ -154,6 +154,7 @@ export function saveUser(user) {
             .then((responseData) => {
                 if (response.ok) {
                     dispatch(savedUser());
+                    dispatch(fetchUsers());
                 } else {
                     const defaultHandler = () => saveUserError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));

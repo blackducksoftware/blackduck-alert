@@ -65,6 +65,7 @@ class UserTable extends Component {
             });
         }
         callback();
+        this.retrieveData();
     }
 
     onConfigClose(callback) {

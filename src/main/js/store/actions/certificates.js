@@ -147,6 +147,7 @@ export function saveCertificate(certificate) {
             .then((responseData) => {
                 if (response.ok) {
                     dispatch(savedCertificate());
+                    dispatch(fetchCertificates());
                 } else {
                     const defaultHandler = () => saveCertificateError(responseData);
                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));

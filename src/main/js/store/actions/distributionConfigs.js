@@ -41,7 +41,7 @@ function jobFetchError() {
 function jobFetchErrorMessage(message) {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR,
-        configurationMessage: message
+        message
     };
 }
 
@@ -111,7 +111,7 @@ function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
 function jobError(type, message, errors) {
     return {
         type,
-        configurationMessage: message,
+        message,
         errors
     };
 }
