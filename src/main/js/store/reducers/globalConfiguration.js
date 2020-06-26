@@ -42,6 +42,10 @@ const globalConfiguration = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 allConfigs: action.config,
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
             });
         case CONFIG_FETCHED:
             return Object.assign({}, state, {
@@ -68,7 +72,11 @@ const globalConfiguration = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'FETCHED',
                 testing: false,
-                config: action.config
+                config: action.config,
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
             });
 
         case CONFIG_UPDATE_ERROR:

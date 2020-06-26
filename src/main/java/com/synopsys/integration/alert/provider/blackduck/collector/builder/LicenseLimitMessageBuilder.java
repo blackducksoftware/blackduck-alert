@@ -45,7 +45,7 @@ public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseL
 
     @Autowired
     public LicenseLimitMessageBuilder() {
-        super(NotificationType.LICENSE_LIMIT.name());
+        super(NotificationType.LICENSE_LIMIT);
     }
 
     @Override

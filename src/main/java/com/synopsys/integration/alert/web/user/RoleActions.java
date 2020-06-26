@@ -84,7 +84,9 @@ public class RoleActions {
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+        UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+        authorizationManager.loadPermissionsIntoCache();
+        return userRoleModel;
     }
 
     public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException {
@@ -100,6 +102,7 @@ public class RoleActions {
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         authorizationUtility.deleteRole(roleId);
+        authorizationManager.loadPermissionsIntoCache();
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {

@@ -37,6 +37,7 @@ class TableDisplay extends Component {
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
         this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
+        this.onAutoRefresh = this.onAutoRefresh.bind(this);
         this.tablePopup = React.createRef();
         this.table = React.createRef();
         this.state = {
@@ -59,6 +60,14 @@ class TableDisplay extends Component {
         if (!showConfiguration && currentRowSelected && !inProgress && !hasFieldErrors
             && uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
+        }
+    }
+
+    onAutoRefresh() {
+        const { refreshData } = this.props;
+        const { showConfiguration } = this.state;
+        if (!showConfiguration) {
+            refreshData();
         }
     }
 
@@ -384,7 +393,7 @@ class TableDisplay extends Component {
         const { showDelete } = this.state;
         const {
             selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
-            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, refreshData
+            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh
         } = this.props;
         if (enableEdit) {
             const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
@@ -460,7 +469,7 @@ class TableDisplay extends Component {
 
         const refresh = tableRefresh && (
             <div className="pull-right">
-                <AutoRefresh startAutoReload={refreshData} autoRefresh={autoRefresh} />
+                <AutoRefresh startAutoReload={this.onAutoRefresh} autoRefresh={autoRefresh} />
             </div>
         );
 

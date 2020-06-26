@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
@@ -42,11 +46,13 @@ public class AboutReader {
     private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
     private final SystemStatusUtility systemStatusUtility;
+    private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility) {
+    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
         this.systemStatusUtility = systemStatusUtility;
+        this.descriptorActions = descriptorActions;
     }
 
     public AboutModel getAboutModel() {
@@ -54,7 +60,9 @@ public class AboutReader {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate);
+            Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
+            Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;

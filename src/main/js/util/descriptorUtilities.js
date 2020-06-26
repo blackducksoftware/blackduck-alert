@@ -35,7 +35,7 @@ export function findDescriptorByNameAndContext(descriptorList, descriptorName, c
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.name === descriptorName && descriptor.context === context);
+    const resultList = descriptorList.filter((descriptor) => descriptor.name === descriptorName && descriptor.context === context);
     if (!resultList) {
         return null;
     }
@@ -47,14 +47,14 @@ export function findFirstDescriptorByNameAndContext(descriptorList, descriptorNa
     if (!descriptorList) {
         return null;
     }
-    return descriptorList.find(descriptor => descriptor.name === descriptorName && descriptor.context === context);
+    return descriptorList.find((descriptor) => descriptor.name === descriptorName && descriptor.context === context);
 }
 
 export function findDescriptorByTypeAndContext(descriptorList, descriptorType, context) {
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter(descriptor => descriptor.type === descriptorType && descriptor.context === context);
+    const resultList = descriptorList.filter((descriptor) => descriptor.type === descriptorType && descriptor.context === context);
     if (!resultList) {
         return null;
     }
@@ -62,11 +62,24 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
     return resultList;
 }
 
+export function findDescriptorByType(descriptorList, descriptorType) {
+    if (!descriptorList) {
+        return null;
+    }
+    const resultList = descriptorList.filter((descriptor) => descriptor.type === descriptorType);
+    if (!resultList) {
+        return null;
+    }
+
+    return resultList;
+}
+
+
 export function findDescriptorField(descriptor, fieldKey) {
     if (descriptor) {
         const fieldArray = descriptor.fields;
         if (fieldArray) {
-            return fieldArray.find(field => field.key === fieldKey);
+            return fieldArray.find((field) => field.key === fieldKey);
         }
     }
     return null;
@@ -80,19 +93,16 @@ export function findDescriptorFieldOptions(descriptor, fieldKey) {
     return [];
 }
 
-export function isOneOperationAssigned(descriptor, operationArray) {
-    if (!operationArray) {
-        return false;
-    }
-    return operationArray.find(operation => isOperationAssigned(descriptor, operation)) !== undefined;
-}
-
 export function isOperationAssigned(descriptor, operationName) {
     if (descriptor) {
-        return descriptor.operations.find(operation => operation === operationName) !== undefined;
+        return descriptor.operations.find((operation) => operation === operationName) !== undefined;
     }
     return false;
 }
 
-
-
+export function isOneOperationAssigned(descriptor, operationArray) {
+    if (!operationArray) {
+        return false;
+    }
+    return operationArray.find((operation) => isOperationAssigned(descriptor, operation)) !== undefined;
+}
