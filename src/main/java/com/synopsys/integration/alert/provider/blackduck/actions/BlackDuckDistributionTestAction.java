@@ -43,13 +43,8 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.blackduck.exception.BlackDuckApiException;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckApiTokenValidator;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class BlackDuckDistributionTestAction extends TestAction {
@@ -80,18 +75,10 @@ public class BlackDuckDistributionTestAction extends TestAction {
                                                                             .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
             if (optionalBlackDuckProperties.isPresent()) {
                 BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
-                Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-                if (optionalBlackDuckHttpClient.isPresent()) {
-                    try {
-                        BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                        NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                        notificationService.getLatestNotificationDate();
-                    } catch (BlackDuckApiException ex) {
-                        if (RestConstants.FORBIDDEN_403 == ex.getOriginalIntegrationRestException().getHttpStatusCode()) {
-                            throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck.");
-                        }
-                        logger.error("Error reading notifications", ex);
-                    }
+
+                BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+                if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+                    throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck.");
                 }
             }
         } else {
