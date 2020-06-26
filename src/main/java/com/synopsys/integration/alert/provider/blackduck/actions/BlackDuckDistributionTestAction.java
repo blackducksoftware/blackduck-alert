@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,32 +36,55 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckApiTokenValidator;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDistributionTestAction extends TestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
+    private final BlackDuckProvider blackDuckProvider;
+    private final ConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckDistributionTestAction.class);
 
     @Autowired
-    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor) {
+    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
+        this.blackDuckProvider = blackDuckProvider;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         Optional<String> optionalProviderConfigName = registeredFieldValues.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (optionalProviderConfigName.isPresent()) {
+            String providerConfigName = optionalProviderConfigName.get();
             Optional<String> projectNamePattern = registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (projectNamePattern.isPresent()) {
-                validatePatternMatchesProject(optionalProviderConfigName.get(), projectNamePattern.get());
+                validatePatternMatchesProject(providerConfigName, projectNamePattern.get());
+            }
+
+            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                                            .map(blackDuckProvider::createStatefulProvider)
+                                                                            .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
+            if (optionalBlackDuckProperties.isPresent()) {
+                BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
+
+                BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+                if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+                    throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck.");
+                }
             }
         } else {
             throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required");
         }
+
         return new MessageResult("Successfully tested BlackDuck provider fields");
     }
 

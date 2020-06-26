@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 
 public class BlackDuckValidatorTask extends ProviderTask {
     private final BlackDuckValidator validator;
