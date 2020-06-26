@@ -35,10 +35,10 @@ import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActi
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerFieldException;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerCreateIssueTestAction;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerService;
 

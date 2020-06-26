@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerException;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 

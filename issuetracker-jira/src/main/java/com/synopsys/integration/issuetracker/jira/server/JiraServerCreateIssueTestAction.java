@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.service.IssueCreatorTestAction;
+import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
+import com.synopsys.integration.alert.issuetracker.service.TestIssueRequestCreator;
+import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.service.IssueCreatorTestAction;
-import com.synopsys.integration.issuetracker.common.service.IssueTrackerService;
-import com.synopsys.integration.issuetracker.common.service.TestIssueRequestCreator;
-import com.synopsys.integration.issuetracker.common.service.TransitionValidator;
 import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.issuetracker.jira.server.util.JiraServerTransitionHandler;

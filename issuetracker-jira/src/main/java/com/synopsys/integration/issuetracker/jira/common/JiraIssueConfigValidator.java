@@ -29,10 +29,10 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.exception.IssueTrackerFieldException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;

@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.issuetracker.service.util;
 
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueTrackerServiceConfig;
 
 public class TestServerConfig implements IssueTrackerServiceConfig {
 

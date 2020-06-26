@@ -35,8 +35,8 @@ import com.synopsys.integration.alert.common.channel.message.ChannelMessageParse
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {

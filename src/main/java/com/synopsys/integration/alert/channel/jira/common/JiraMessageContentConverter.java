@@ -38,15 +38,15 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.message.IssueCommentRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
-import com.synopsys.integration.issuetracker.common.message.IssueCommentRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
-import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 
 @Component
 public class JiraMessageContentConverter {

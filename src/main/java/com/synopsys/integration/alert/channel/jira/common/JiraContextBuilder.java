@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.common;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 
 public abstract class JiraContextBuilder<T> {

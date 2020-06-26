@@ -9,15 +9,15 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.issuetracker.message.IssueCommentRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.issuetracker.service.util.TestContext;
+import com.synopsys.integration.alert.issuetracker.service.util.TestServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
-import com.synopsys.integration.issuetracker.common.message.IssueCommentRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
-import com.synopsys.integration.issuetracker.common.service.util.TestContext;
-import com.synopsys.integration.issuetracker.common.service.util.TestServerConfig;
 
 public class IssueTrackerServiceTest {
     private static final String EXPECTED_STATUS = "Good Status";

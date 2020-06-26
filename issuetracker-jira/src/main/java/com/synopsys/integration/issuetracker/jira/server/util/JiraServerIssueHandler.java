@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraIssueHandler;
