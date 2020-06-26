@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudCreateIssueTestAction;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.issuetracker.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
@@ -40,7 +39,7 @@ import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 
 public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
-    private final Logger logger = LoggerFactory.getLogger(JiraCloudCreateIssueTestAction.class);
+    private final Logger logger = LoggerFactory.getLogger(JiraServerCreateIssueTestAction.class);
     private Gson gson;
 
     public JiraServerCreateIssueTestAction(IssueTrackerService issueTrackerService, Gson gson, TestIssueRequestCreator testIssueRequestCreator) {
