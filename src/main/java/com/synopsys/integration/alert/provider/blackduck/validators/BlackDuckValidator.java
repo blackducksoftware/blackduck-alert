@@ -46,6 +46,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT = "Black Duck configuration '%s' is invalid. Black Duck URL missing.";
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
     public static final String BLACKDUCK_LOCALHOST_ERROR_FORMAT = "Black Duck configuration '%s' is using localhost.";
+    public static final String BLACKDUCK_API_PERMISSION_FORMAT = "User permission failed, cannot read notifications from Black Duck.";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     public static String createProviderSystemMessageType(BlackDuckProperties properties, SystemMessageType systemMessageType) {
@@ -104,8 +105,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
 
             BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
             if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-                String message = "User permission failed, cannot read notifications from Black Duck.";
-                connectivityWarning(blackDuckProperties, message);
+                connectivityWarning(blackDuckProperties, BLACKDUCK_API_PERMISSION_FORMAT);
                 valid = false;
             }
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
