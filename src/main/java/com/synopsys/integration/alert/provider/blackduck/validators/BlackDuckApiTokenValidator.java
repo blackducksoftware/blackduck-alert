@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.validators;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +43,7 @@ public class BlackDuckApiTokenValidator {
     }
 
     public boolean isApiTokenValid() {
-        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-        return optionalBlackDuckHttpClient
+        return blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
                    .map(this::isNotificationApiAllowed)
                    .orElse(false);
     }
@@ -54,6 +51,7 @@ public class BlackDuckApiTokenValidator {
     private boolean isNotificationApiAllowed(BlackDuckHttpClient httpClient) {
         boolean valid = true;
         try {
+            //Verifies if the user has access to /api/notifications endpoint. Since only the the ability to access the endpoint is tested returning actual notifications is not needed.
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(httpClient, new Slf4jIntLogger(logger));
             NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
             notificationService.getLatestNotificationDate();
