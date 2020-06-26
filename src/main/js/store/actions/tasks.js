@@ -21,7 +21,7 @@ function fetchedAllTasks(tasks) {
 function fetchingAllTasksError(message) {
     return {
         type: TASKS_FETCH_ERROR_ALL,
-        tasksFetchError: message
+        message
     };
 }
 

@@ -290,6 +290,7 @@ export function deleteConfig(id) {
                     response.json()
                     .then(() => {
                         dispatch(configDeleted());
+                        dispatch(refreshConfig());
                     });
                 } else {
                     handleFailureResponse(dispatch, responseData, response.status);

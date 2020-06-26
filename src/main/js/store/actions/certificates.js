@@ -33,7 +33,7 @@ function fetchedAllCertificates(certificates) {
 function fetchingAllCertificatesError(message) {
     return {
         type: CERTIFICATES_FETCH_ERROR_ALL,
-        certificatesFetchError: message
+        message
     };
 }
 
@@ -46,6 +46,14 @@ function savingCertificate() {
 function savedCertificate() {
     return {
         type: CERTIFICATES_SAVED
+    };
+}
+
+function saveCertificateErrorMessage(message) {
+    return {
+        type: CERTIFICATES_SAVE_ERROR,
+        message
+
     };
 }
 
@@ -134,7 +142,7 @@ export function saveCertificate(certificate) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let request;
         if (id) {
             const url = CERTIFICATES_API_URL.concat(`/${id}`);

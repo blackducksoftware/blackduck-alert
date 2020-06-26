@@ -48,7 +48,7 @@ const certificates = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                certificatesFetchError: action.certificatesFetchError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
             });

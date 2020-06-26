@@ -52,6 +52,7 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 roleFetchError: action.roleFetchError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
             });

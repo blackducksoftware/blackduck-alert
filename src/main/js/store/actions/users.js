@@ -49,14 +49,14 @@ function savedUser() {
 function saveUserErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
-        userSaveError: message
+        message
     };
 }
 
 function saveUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
-        userSaveError: message,
+        message,
         errors
 
     };

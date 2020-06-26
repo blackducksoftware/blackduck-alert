@@ -184,7 +184,6 @@ class ProviderTable extends Component {
             });
         }
         callback();
-        this.retrieveData();
     }
 
     createModalFields() {

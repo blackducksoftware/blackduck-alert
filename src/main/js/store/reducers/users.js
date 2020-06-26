@@ -19,7 +19,6 @@ const initialState = {
     deleteSuccess: false,
     data: [],
     userFetchError: '',
-    userSaveError: null,
     error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {},
     saveStatus: ''
@@ -54,6 +53,7 @@ const users = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 userFetchError: action.userFetchError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
             });
@@ -77,7 +77,6 @@ const users = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                userSaveError: action.userSaveError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: 'ERROR'
