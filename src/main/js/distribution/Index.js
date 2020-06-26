@@ -18,6 +18,7 @@ import DistributionConfiguration, {
     KEY_NAME,
     KEY_PROVIDER_NAME
 } from 'dynamic/DistributionConfiguration';
+import StatusMessage from 'field/StatusMessage';
 
 /**
  * Selects className based on field value
@@ -345,6 +346,8 @@ class Index extends Component {
         const content = (
             <div>
                 {this.getCurrentJobConfig()}
+                <StatusMessage actionMessage={null}
+                               errorMessage={this.props.errorMessage} />
                 <BootstrapTable
                     version="4"
                     hover
@@ -391,7 +394,6 @@ class Index extends Component {
                     <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                 </div>
                 }
-
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
@@ -427,14 +429,16 @@ Index.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
     jobConfigTableMessage: PropTypes.string,
-    jobsValidationResults: PropTypes.arrayOf(PropTypes.object)
+    jobsValidationResults: PropTypes.arrayOf(PropTypes.object),
+    errorMessage: PropTypes.string
 };
 
 Index.defaultProps = {
     autoRefresh: true,
     descriptors: [],
     jobConfigTableMessage: '',
-    jobsValidationResults: []
+    jobsValidationResults: [],
+    errorMessage: null
 };
 
 const mapStateToProps = state => ({
@@ -443,7 +447,8 @@ const mapStateToProps = state => ({
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
     jobConfigTableMessage: state.distributions.jobConfigTableMessage,
-    jobsValidationResults: state.distributions.jobsValidationResult
+    jobsValidationResults: state.distributions.jobsValidationResult,
+    errorMessage: state.distributions.error.message
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -41,7 +41,8 @@ function allJobsFetched() {
 function fetchingAllJobsError(message) {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR_ALL,
-        jobConfigTableMessage: message
+        jobConfigTableMessage: message,
+        message
     };
 }
 

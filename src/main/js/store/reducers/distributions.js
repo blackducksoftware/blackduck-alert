@@ -13,6 +13,7 @@ import {
     DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING,
     SERIALIZE
 } from 'store/actions/types';
+import * as HTTPErrorUtil from 'util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,
@@ -21,7 +22,8 @@ const initialState = {
     jobConfigTableMessage: '',
     jobDeleteMessage: '',
     jobsValidationResult: [],
-    jobsValidationMessage: ''
+    jobsValidationMessage: '',
+    error: HTTPErrorUtil.createEmptyErrorObject()
 };
 
 const config = (state = initialState, action) => {
@@ -39,8 +41,9 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: []
+                jobConfigTableMessage: '',
+                jobs: [],
+                error: HTTPErrorUtil.createErrorObject(action)
             });
 
         case DISTRIBUTION_JOB_UPDATE_AUDIT_INFO:
@@ -55,7 +58,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                jobConfigTableMessage: action.jobConfigTableMessage
+                jobConfigTableMessage: action.jobConfigTableMessage,
+                error: HTTPErrorUtil.createEmptyErrorObject()
             });
 
         case DISTRIBUTION_JOB_DELETED:
