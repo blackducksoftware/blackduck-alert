@@ -37,14 +37,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageU
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.blackduck.exception.BlackDuckApiException;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class BlackDuckValidator extends BaseSystemValidator {
@@ -107,22 +102,12 @@ public class BlackDuckValidator extends BaseSystemValidator {
                 }
             }
 
-            Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-            if (optionalBlackDuckHttpClient.isPresent()) {
-                try {
-                    BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                    NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                    notificationService.getLatestNotificationDate();
-                } catch (BlackDuckApiException ex) {
-                    if (RestConstants.FORBIDDEN_403 == ex.getOriginalIntegrationRestException().getHttpStatusCode()) {
-                        String message = "User permission failed, cannot read notifications from Black Duck.";
-                        connectivityWarning(blackDuckProperties, message);
-                        valid = false;
-                    }
-                    logger.error("Error reading notifications", ex);
-                }
+            BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+            if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+                String message = "User permission failed, cannot read notifications from Black Duck.";
+                connectivityWarning(blackDuckProperties, message);
+                valid = false;
             }
-
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
             logger.error("  -> Black Duck configuration '{}' is invalid; cause: {}", configName, ex.getMessage());
             logger.debug(String.format("  -> Black Duck configuration '%s' Stack Trace: ", configName), ex);
