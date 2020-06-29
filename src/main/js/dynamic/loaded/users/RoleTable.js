@@ -292,7 +292,7 @@ const mapStateToProps = (state) => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
     roleError: state.roles.roleError,
-    fieldErrors: state.roles.fieldErrors,
+    fieldErrors: state.roles.error.fieldErrors,
     inProgress: state.roles.inProgress,
     fetching: state.roles.fetching,
     saveStatus: state.roles.saveStatus

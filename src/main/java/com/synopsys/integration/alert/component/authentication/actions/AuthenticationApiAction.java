@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManag
 @Component
 public class AuthenticationApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
-    private SAMLManager samlManager;
+    private final SAMLManager samlManager;
 
     @Autowired
     public AuthenticationApiAction(SAMLManager samlManager) {
@@ -52,8 +52,8 @@ public class AuthenticationApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterUpdateAction(FieldModel fieldModel) {
-        return handleNewAndUpdatedConfig(fieldModel);
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) {
+        return handleNewAndUpdatedConfig(currentFieldModel);
     }
 
     private FieldModel handleNewAndUpdatedConfig(FieldModel fieldModel) {

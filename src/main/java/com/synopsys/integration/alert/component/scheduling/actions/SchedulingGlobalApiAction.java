@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
 public class SchedulingGlobalApiAction extends ApiAction {
-    private TaskManager taskManager;
+    private final TaskManager taskManager;
 
     @Autowired
     public SchedulingGlobalApiAction(TaskManager taskManager) {
@@ -61,8 +61,8 @@ public class SchedulingGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterUpdateAction(FieldModel fieldModel) {
-        FieldModel updatedFieldModel = handleNewAndSavedConfig(fieldModel);
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) {
+        FieldModel updatedFieldModel = handleNewAndSavedConfig(currentFieldModel);
         updatedFieldModel = calculateNextRuntime(updatedFieldModel);
 
         return updatedFieldModel;

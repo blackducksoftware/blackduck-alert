@@ -137,7 +137,7 @@ class TaskManagement extends Component {
     }
 
     render() {
-        const { label, description, fetching } = this.props;
+        const { label, description, fetching, errorMessage } = this.props;
         return (
             <div>
                 <ConfigurationLabel
@@ -155,6 +155,7 @@ class TaskManagement extends Component {
                     newButton={false}
                     deleteButton={false}
                     saveButton={false}
+                    errorDialogMessage={errorMessage}
                     hasFieldErrors={false}
                     fetching={fetching}
                     inProgress={fetching}
@@ -168,6 +169,7 @@ class TaskManagement extends Component {
 
 TaskManagement.propTypes = {
     tasks: PropTypes.array.isRequired,
+    errorMessage: PropTypes.string,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
@@ -175,11 +177,13 @@ TaskManagement.propTypes = {
 };
 
 TaskManagement.defaultProps = {
-    fetching: false
+    fetching: false,
+    errorMessage: null
 };
 
 const mapStateToProps = (state) => ({
     tasks: state.tasks.data,
+    errorMessage: state.tasks.error.message,
     fetching: state.tasks.fetching
 });
 

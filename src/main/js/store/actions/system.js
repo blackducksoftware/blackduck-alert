@@ -1,5 +1,6 @@
 import { SYSTEM_LATEST_MESSAGES_FETCHED, SYSTEM_LATEST_MESSAGES_FETCHING } from 'store/actions/types';
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 
@@ -21,19 +22,22 @@ function latestSystemMessagesFetched(latestMessages) {
 }
 
 export function getLatestMessages() {
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
     return (dispatch) => {
         dispatch(fetchingLatestSystemMessages());
         fetch(LATEST_MESSAGES_URL)
-            .then((response) => {
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
                 if (response.ok) {
-                    response.json()
-                        .then((body) => {
-                            dispatch(latestSystemMessagesFetched(body));
-                        });
+                    dispatch(latestSystemMessagesFetched(responseData));
                 } else {
-                    dispatch(verifyLoginByStatus(response.status));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            })
-            .catch(console.error);
+            });
+        })
+        .catch(console.error);
     };
 }
