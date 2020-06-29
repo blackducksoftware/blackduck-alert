@@ -15,8 +15,9 @@ import {
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING
 } from 'store/actions/types';
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 function fetchingJob() {
     return {
@@ -40,7 +41,7 @@ function jobFetchError() {
 function jobFetchErrorMessage(message) {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR,
-        configurationMessage: message
+        message
     };
 }
 
@@ -110,55 +111,46 @@ function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
 function jobError(type, message, errors) {
     return {
         type,
-        configurationMessage: message,
+        message,
         errors
     };
 }
 
-function handleFailureResponse(type, dispatch, response) {
-    response.json().then((data) => {
-        switch (response.status) {
-            case 400:
-                return dispatch(jobError(type, data.message, data.errors));
-            case 401:
-                dispatch(jobError(type, data.message, data.errors));
-                return dispatch(verifyLoginByStatus(response.status));
-            case 412:
-                return dispatch(jobError(type, data.message, data.errors));
-            default: {
-                return dispatch(jobError(type, data.message, null));
-            }
-        }
-    });
+function handleFailureResponse(type, dispatch, responseData, statusCode) {
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    const errorMessageHandler = () => jobError(type, responseData.message, responseData.errors);
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(errorMessageHandler));
+    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(errorMessageHandler));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobError(type, responseData.message, null)));
+    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+    dispatch(handler(statusCode));
 }
 
 export function getDistributionJob(jobId) {
     return (dispatch, getState) => {
         dispatch(fetchingJob());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobFetchErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(jobFetchError));
         if (jobId) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
             request.then((response) => {
-                if (response.ok) {
-                    response.json().then((json) => {
-                        if (json) {
-                            dispatch(jobFetched(json));
+                response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        if (responseData) {
+                            dispatch(jobFetched(responseData));
                         } else {
                             dispatch(jobFetchError());
                         }
-                    });
-                } else {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(verifyLoginByStatus(response.status));
-                            break;
-                        case 403:
-                            dispatch(jobFetchErrorMessage('You are not permitted to view this information.'));
-                            break;
-                        default:
-                            dispatch(jobFetchError());
+                    } else {
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
                     }
-                }
+                });
             }).catch(console.error);
         } else {
             dispatch(jobFetched({}));
@@ -172,13 +164,14 @@ export function saveDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
-            if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(saveJobSuccess(json.message));
-                });
-            } else {
-                handleFailureResponse(DISTRIBUTION_JOB_SAVE_ERROR, dispatch, response);
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(saveJobSuccess(responseData.message));
+                } else {
+                    handleFailureResponse(DISTRIBUTION_JOB_SAVE_ERROR, dispatch, responseData, response.status);
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -189,13 +182,14 @@ export function updateDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config.jobId, config);
         request.then((response) => {
-            if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(updateJobSuccess(json.message));
-                });
-            } else {
-                handleFailureResponse(DISTRIBUTION_JOB_UPDATE_ERROR, dispatch, response);
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(updateJobSuccess(responseData.message));
+                } else {
+                    handleFailureResponse(DISTRIBUTION_JOB_UPDATE_ERROR, dispatch, responseData, response.status);
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -206,13 +200,14 @@ export function testDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
-            if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(testJobSuccess(json.message));
-                });
-            } else {
-                handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, response);
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(testJobSuccess(responseData.message));
+                } else {
+                    handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, responseData, response.status);
+                }
+            });
         }).catch(console.error);
     };
 }

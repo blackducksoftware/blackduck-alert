@@ -11,7 +11,8 @@ import {
     USER_MANAGEMENT_ROLE_SAVING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 function fetchingAllRoles() {
     return {
@@ -97,6 +98,9 @@ export function fetchRoles() {
     return (dispatch, getState) => {
         dispatch(fetchingAllRoles());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllRolesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         fetch(ConfigRequestBuilder.ROLE_API_URL, {
             credentials: 'same-origin',
             headers: {
@@ -105,31 +109,23 @@ export function fetchRoles() {
             }
         })
         .then((response) => {
-            if (response.ok) {
-                response.json()
-                .then((jsonArray) => {
-                    dispatch(fetchedAllRoles(jsonArray));
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(fetchingAllRolesError('You are not permitted to view this information.'));
-                        break;
-                    default:
-                        response.json()
-                        .then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllRolesError(message));
-                        });
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchedAllRoles(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        let message = '';
+                        if (responseData && responseData.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = responseData.message.toString();
+                        }
+                        return fetchingAllRolesError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            }
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -142,6 +138,9 @@ export function saveRole(role) {
     return (dispatch, getState) => {
         dispatch(savingRole());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const { id } = role;
         let request;
         if (id) {
@@ -150,27 +149,19 @@ export function saveRole(role) {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
         }
         request.then((response) => {
-            if (response.ok) {
-                response.json()
-                .then(() => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
                     dispatch(savedRole());
-                });
-            } else {
-                response.json()
-                .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(saveRoleError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            return dispatch(saveRoleErrorMessage('You are not permitted to perform this action.'));
-                        case 400:
-                        default: {
-                            return dispatch(saveRoleError(data));
-                        }
-                    }
-                });
-            }
+                    dispatch(fetchRoles());
+                } else {
+                    const defaultHandler = () => saveRoleError(responseData);
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };
@@ -180,26 +171,23 @@ export function deleteRole(roleId) {
     return (dispatch, getState) => {
         dispatch(deletingRole());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletedRole());
-            } else {
-                response.json()
-                .then((data) => {
-                    switch (response.status) {
-                        case 401:
-                            dispatch(deletingRoleError(data));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            return dispatch(deletingRoleErrorMessage('You are not permitted to perform this action.'));
-                        case 400:
-                        default: {
-                            return dispatch(deletingRoleError(data));
-                        }
-                    }
-                });
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletedRole());
+                } else {
+                    const defaultHandler = () => deletingRoleError(responseData);
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         })
         .catch(console.error);
     };

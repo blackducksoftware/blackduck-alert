@@ -157,6 +157,7 @@ class Details extends Component {
                                 </div>
                             </Tab>
                         </Tabs>
+                        <p name="message">{this.props.errorMessage}</p>
                     </div>
                 </Modal.Body>
 
@@ -167,6 +168,7 @@ class Details extends Component {
 
 Details.propTypes = {
     show: PropTypes.bool,
+    errorMessage: PropTypes.string,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     currentEntry: PropTypes.object.isRequired,
     resendNotification: PropTypes.func.isRequired,
@@ -183,6 +185,7 @@ Details.propTypes = {
 };
 
 Details.defaultProps = {
+    errorMessage: null,
     show: false,
     descriptors: []
 };

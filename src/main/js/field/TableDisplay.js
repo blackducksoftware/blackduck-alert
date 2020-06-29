@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PopUp from 'field/PopUp';
 import ConfirmModal from 'component/common/ConfirmModal';
+import StatusMessage from 'field/StatusMessage';
 
 const VALIDATION_STATE = {
     NONE: 'NONE',
@@ -210,7 +211,11 @@ class TableDisplay extends Component {
             const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
             const validationSetCallback = () => this.setState({
                 showConfiguration: false
-            }, this.updateData);
+            }, () => {
+                if (validationState !== VALIDATION_STATE.FAILED) {
+                    this.updateData();
+                }
+            });
             this.setState({
                 uiValidation: validationState
             }, validationSetCallback);
@@ -243,9 +248,9 @@ class TableDisplay extends Component {
         const { currentRowSelected, isInsertModal } = this.state;
         const {
             modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
-            actionMessage
+            actionMessage, hasFieldErrors
         } = this.props;
-        const popupActionMessage = errorDialogMessage || actionMessage;
+        const popupActionMessage = (hasFieldErrors && errorDialogMessage) || actionMessage;
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
         let cancelFunction = this.handleCancel;
         let submitFunction = this.handleSubmit;
@@ -392,8 +397,8 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
         const {
-            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
-            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh
+            actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
+            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, hasFieldErrors, errorDialogMessage
         } = this.props;
         if (enableEdit) {
             const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
@@ -440,8 +445,11 @@ class TableDisplay extends Component {
                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
             </div>
         );
+        const status = !hasFieldErrors
+            && <StatusMessage errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
         const content = (
             <div>
+                {status}
                 <BootstrapTable
                     version="4"
                     hover
@@ -472,7 +480,6 @@ class TableDisplay extends Component {
                 <AutoRefresh startAutoReload={this.onAutoRefresh} autoRefresh={autoRefresh} />
             </div>
         );
-
         return (
             <div>
                 {this.createTableModal()}

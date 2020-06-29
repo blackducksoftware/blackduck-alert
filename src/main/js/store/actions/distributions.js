@@ -13,9 +13,10 @@ import {
     DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING
 } from 'store/actions/types';
 
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 function updateJobWithAuditInfo(job) {
     return {
@@ -40,7 +41,8 @@ function allJobsFetched() {
 function fetchingAllJobsError(message) {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR_ALL,
-        jobConfigTableMessage: message
+        jobConfigTableMessage: message,
+        message
     };
 }
 
@@ -149,29 +151,24 @@ export function deleteDistributionJob(job) {
         const { jobId } = job;
         dispatch(deletingJobConfig());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(deletingJobConfigSuccess(jobId));
-            } else {
-                response.json()
-                .then((data) => {
-                    switch (response.status) {
-                        case 400:
-                            return dispatch(jobDeleteError(data.message));
-                        case 401:
-                            dispatch(jobDeleteError(data.message));
-                            return dispatch(verifyLoginByStatus(response.status));
-                        case 403:
-                            return dispatch(jobDeleteError('You are not permitted to perform this action.'));
-                        case 412:
-                            return dispatch(jobDeleteError(data.message));
-                        default: {
-                            return dispatch(jobDeleteError(data.message, null));
-                        }
-                    }
-                });
-            }
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(deletingJobConfigSuccess(jobId));
+                } else {
+                    const deleteMessageHandler = () => jobDeleteError(responseData.message);
+                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(deleteMessageHandler));
+                    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(deleteMessageHandler));
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(responseData.message, null)));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                }
+            });
         }).catch(console.error);
     };
 }
@@ -180,43 +177,40 @@ export function fetchDistributionJobs() {
     return (dispatch, getState) => {
         dispatch(fetchingAllJobs());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
         fetch(ConfigRequestBuilder.JOB_API_URL, {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonArray) => {
-                    jsonArray.forEach((jobConfig) => {
+        })
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    responseData.forEach((jobConfig) => {
                         dispatch(fetchAuditInfoForJob(jobConfig));
                     });
                     dispatch(allJobsFetched());
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(fetchingAllJobsError('You are not permitted to view this information.'));
-                        break;
-                    case 404:
-                        dispatch(fetchingAllJobsNoneFound());
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(fetchingAllJobsError(message));
-                        });
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        let message = '';
+                        if (responseData && responseData.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = responseData.message.toString();
+                        }
+                        return fetchingAllJobsError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            }
-        }).catch((error) => {
+            });
+        })
+        .catch((error) => {
             console.log(error);
             dispatch(fetchingAllJobsError(error));
         });
@@ -227,37 +221,36 @@ export function fetchJobsValidationResults() {
     return (dispatch, getState) => {
         dispatch(jobsValidationFetching());
         const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         fetch(ConfigRequestBuilder.JOB_API_URL + '/validate', {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonArray) => {
-                    dispatch(jobsValidationFetched(jsonArray));
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(jobsValidationError('You are not permitted to perform this action.'));
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            let message = '';
-                            if (json && json.message) {
-                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                message = json.message.toString();
-                            }
-                            dispatch(jobsValidationError(message));
-                        });
+        })
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(jobsValidationFetched(responseData));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        let message = '';
+                        if (responseData && responseData.message) {
+                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                            message = responseData.message.toString();
+                        }
+                        return jobsValidationError(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            }
-        }).catch((error) => {
+            });
+        })
+        .catch((error) => {
             console.log(error);
             dispatch(jobsValidationError(error));
         });

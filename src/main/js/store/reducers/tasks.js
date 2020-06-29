@@ -1,8 +1,9 @@
-import { SERIALIZE, TASKS_FETCH_ERROR_ALL, TASKS_FETCHING_ALL } from 'store/actions/types';
-import { TASKS_FETCHED_ALL } from "../actions/types";
+import { SERIALIZE, TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL } from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     data: []
 };
 
@@ -10,12 +11,13 @@ const tasks = (state = initialState, action) => {
     switch (action.type) {
         case TASKS_FETCH_ERROR_ALL:
             return Object.assign({}, state, {
-                tasksFetchError: action.tasksFetchError,
+                error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false
             });
         case TASKS_FETCHED_ALL:
             return Object.assign({}, state, {
                 data: action.tasks,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 fetching: false
             });
         case TASKS_FETCHING_ALL:
