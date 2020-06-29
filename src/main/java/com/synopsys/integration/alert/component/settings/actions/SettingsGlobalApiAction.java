@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 public class SettingsGlobalApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
-    private SettingsValidator settingsValidator;
+    private final SettingsValidator settingsValidator;
 
     @Autowired
     public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, SettingsValidator settingsValidator) {
@@ -78,9 +78,9 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
         handleAfterNewAndUpdate();
-        return super.afterUpdateAction(fieldModel);
+        return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
     private FieldModel createFieldModelCopy(FieldModel fieldModel) {

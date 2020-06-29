@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.helper.ProviderAfterUpdateActionHelper;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -35,7 +37,7 @@ public class BlackDuckGlobalApiActionTest {
 
     @Test
     public void afterUpdateActionSuccessTest() throws AlertException {
-        runApiActionTest(BlackDuckGlobalApiAction::afterUpdateAction);
+        runApiActionTest((blackDuckGlobalApiAction, fieldModel) -> blackDuckGlobalApiAction.afterUpdateAction(fieldModel, fieldModel));
     }
 
     private void runApiActionTest(ThrowingBiFunction<BlackDuckGlobalApiAction, FieldModel, FieldModel, AlertException> apiAction) throws AlertException {
@@ -65,12 +67,14 @@ public class BlackDuckGlobalApiActionTest {
 
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(BlackDuckProviderKey.class), Mockito.eq(ConfigContextEnum.DISTRIBUTION))).thenReturn(List.of());
 
+        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.validate(configurationModel)).thenReturn(true);
         Mockito.when(blackDuckProvider.createStatefulProvider(configurationModel)).thenReturn(statefulProvider);
-        Mockito.when(statefulProvider.getKey()).thenReturn(new BlackDuckProviderKey());
+        Mockito.when(statefulProvider.getKey()).thenReturn(blackDuckProviderKey);
         Mockito.when(statefulProvider.getConfigId()).thenReturn(providerConfigId);
         Mockito.when(statefulProvider.isConfigEnabled()).thenReturn(true);
         Mockito.when(statefulProvider.getConfigName()).thenReturn(providerConfigName);
@@ -85,7 +89,8 @@ public class BlackDuckGlobalApiActionTest {
         Mockito.when(fieldModelConverter.convertToConfigurationModel(Mockito.any())).thenReturn(configurationModel);
 
         ProviderSchedulingManager providerLifecycleManager = new ProviderSchedulingManager(List.of(blackDuckProvider), taskManager, null);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, configurationAccessor);
+        ProviderAfterUpdateActionHelper providerAfterUpdateActionHelper = new ProviderAfterUpdateActionHelper(configurationAccessor, List.of(blackDuckProviderKey));
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, configurationAccessor, providerAfterUpdateActionHelper);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(blackDuckAccumulator.getTaskName());
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(blackDuckDataSyncTask.getTaskName());

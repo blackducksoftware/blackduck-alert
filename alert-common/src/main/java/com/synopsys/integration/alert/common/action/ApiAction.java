@@ -51,8 +51,8 @@ public abstract class ApiAction {
     /**
      * @throws AlertException Overriding classes may throw this exception
      */
-    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
-        return fieldModel;
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        return currentFieldModel;
     }
 
     /**
