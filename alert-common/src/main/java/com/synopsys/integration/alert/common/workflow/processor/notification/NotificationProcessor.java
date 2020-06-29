@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -35,8 +36,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -54,9 +55,9 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 public class NotificationProcessor {
     private final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
 
-    private ConfigurationAccessor configurationAccessor;
-    private Map<String, Provider> providerKeyToProvider;
-    private NotificationToDistributionEventConverter notificationToEventConverter;
+    private final ConfigurationAccessor configurationAccessor;
+    private final Map<String, Provider> providerKeyToProvider;
+    private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
     public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
@@ -86,18 +87,21 @@ public class NotificationProcessor {
             return List.of();
         }
 
-        Provider provider = providerKeyToProvider.get(job.getProviderName());
-        ConfigurationModel providerConfig = retrieveProviderConfig(job);
-        StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
+        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(job);
+        if (optionalProviderConfig.isPresent()) {
+            ConfigurationModel providerConfig = optionalProviderConfig.get();
+            Provider provider = providerKeyToProvider.get(job.getProviderName());
+            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
 
-        ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
-        List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
-        List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notificationsByProviderConfig);
-        List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
+            ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
+            List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
+            List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notificationsByProviderConfig);
+            List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
-        if (!filteredNotifications.isEmpty()) {
-            ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
-            return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
+            if (!filteredNotifications.isEmpty()) {
+                ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
+                return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
+            }
         }
         return List.of();
     }
@@ -145,11 +149,12 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private ConfigurationModel retrieveProviderConfig(ConfigurationJobModel job) {
+    private Optional<ConfigurationModel> retrieveProviderConfig(ConfigurationJobModel job) {
         try {
-            return configurationAccessor.getProviderConfigurationByName(job.getProviderConfigName()).orElseThrow();
-        } catch (Exception e) {
-            throw new AlertRuntimeException(String.format("Could not retrieve the provider config for job: %s. Exiting task.", job.getName()), e);
+            return configurationAccessor.getProviderConfigurationByName(job.getProviderConfigName());
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("Could not retrieve the provider config for job: {}", job.getName(), e);
+            return Optional.empty();
         }
     }
 
