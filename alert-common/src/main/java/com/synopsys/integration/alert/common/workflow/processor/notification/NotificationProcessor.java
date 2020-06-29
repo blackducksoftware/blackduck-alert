@@ -89,9 +89,8 @@ public class NotificationProcessor {
 
         Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(job);
         if (optionalProviderConfig.isPresent()) {
-            ConfigurationModel providerConfig = optionalProviderConfig.get();
             Provider provider = providerKeyToProvider.get(job.getProviderName());
-            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
+            StatefulProvider statefulProvider = provider.createStatefulProvider(optionalProviderConfig.get());
 
             ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
             List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
