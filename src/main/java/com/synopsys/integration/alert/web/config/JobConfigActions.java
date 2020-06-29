@@ -152,9 +152,17 @@ public class JobConfigActions {
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
         validateJobNameUnique(id, jobFieldModel);
+        
+        ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
+                                                .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
+        Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
+        for (ConfigurationModel previousJobConfiguration : previousJob.getCopyOfConfigurations()) {
+            FieldModel previousJobFieldModel = modelConverter.convertToFieldModel(previousJobConfiguration);
+            descriptorAndContextToPreviousFieldModel.put(previousJobFieldModel.getDescriptorName() + previousJobFieldModel.getContext(), previousJobFieldModel);
+        }
+
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
             descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
@@ -162,7 +170,6 @@ public class JobConfigActions {
             Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
             Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
-            descriptorAndContextToPreviousFieldModel.put(beforeUpdateEventFieldModel.getDescriptorName() + beforeUpdateEventFieldModel.getContext(), beforeUpdateEventFieldModel);
         }
 
         ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);

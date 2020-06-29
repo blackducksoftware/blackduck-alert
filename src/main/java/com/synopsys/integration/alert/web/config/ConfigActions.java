@@ -130,11 +130,14 @@ public class ConfigActions {
 
     public FieldModel updateConfig(Long id, FieldModel fieldModel) throws AlertException {
         validateConfig(fieldModel, new HashMap<>());
+        Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
+        FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
+
         FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
         Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
         ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
-        FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(updatedFieldModel, dbSavedModel);
+        FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, dbSavedModel);
         return dbSavedModel.fill(afterUpdateAction);
     }
 
