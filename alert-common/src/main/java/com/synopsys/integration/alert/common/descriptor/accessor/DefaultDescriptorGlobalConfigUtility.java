@@ -97,8 +97,8 @@ public class DefaultDescriptorGlobalConfigUtility {
     }
 
     public FieldModel update(Long id, FieldModel fieldModel) throws AlertException {
-        FieldModel beforeUpdateAction = apiAction.beforeUpdateAction(fieldModel);
-        Map<String, ConfigurationFieldModel> valueMap = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateAction);
+        FieldModel beforeUpdateActionFieldModel = apiAction.beforeUpdateAction(fieldModel);
+        Map<String, ConfigurationFieldModel> valueMap = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateActionFieldModel);
         Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(id);
         ConfigurationModel configurationModel;
         if (existingConfig.isPresent()) {
@@ -108,7 +108,7 @@ public class DefaultDescriptorGlobalConfigUtility {
             configurationModel = configurationAccessor.createConfiguration(key, context, valueMap.values());
         }
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
-        return apiAction.afterUpdateAction(beforeUpdateAction, convertedFieldModel);
+        return apiAction.afterUpdateAction(beforeUpdateActionFieldModel, convertedFieldModel);
     }
 
     // TODO build a new utility to perform this action or try to refactor FieldModelProcessor into the alert-common sub-project
