@@ -67,9 +67,9 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
-        handleNewOrUpdatedConfig(currentFieldModel);
-        return super.afterSaveAction(previousFieldModel, currentFieldModel);
+    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
+        handleNewOrUpdatedConfig(fieldModel);
+        return super.afterSaveAction(fieldModel);
     }
 
     @Override

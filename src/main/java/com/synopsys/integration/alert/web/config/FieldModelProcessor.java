@@ -91,13 +91,13 @@ public class FieldModelProcessor {
         return fieldModel;
     }
 
-    public FieldModel performAfterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
-        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(currentFieldModel);
+    public FieldModel performAfterSaveAction(FieldModel fieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             ApiAction apiAction = optionalApiAction.get();
-            return apiAction.afterSaveAction(previousFieldModel, currentFieldModel);
+            return apiAction.afterSaveAction(fieldModel);
         }
-        return currentFieldModel;
+        return fieldModel;
     }
 
     public FieldModel performBeforeUpdateAction(FieldModel fieldModel) throws AlertException {

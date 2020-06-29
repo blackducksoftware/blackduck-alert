@@ -72,9 +72,9 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
         handleAfterNewAndUpdate();
-        return super.afterSaveAction(previousFieldModel, currentFieldModel);
+        return super.afterSaveAction(fieldModel);
     }
 
     @Override

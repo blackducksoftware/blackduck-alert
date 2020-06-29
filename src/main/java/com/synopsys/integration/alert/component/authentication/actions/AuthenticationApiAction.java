@@ -47,8 +47,8 @@ public class AuthenticationApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) {
-        return handleNewAndUpdatedConfig(currentFieldModel);
+    public FieldModel afterSaveAction(FieldModel fieldModel) {
+        return handleNewAndUpdatedConfig(fieldModel);
     }
 
     @Override

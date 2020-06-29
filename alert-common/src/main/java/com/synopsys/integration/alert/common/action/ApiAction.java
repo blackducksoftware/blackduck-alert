@@ -37,8 +37,8 @@ public abstract class ApiAction {
     /**
      * @throws AlertException Overriding classes may throw this exception
      */
-    public FieldModel afterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
-        return currentFieldModel;
+    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
+        return fieldModel;
     }
 
     /**

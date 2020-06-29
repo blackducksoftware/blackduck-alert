@@ -93,7 +93,7 @@ public class DefaultDescriptorGlobalConfigUtility {
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
         ConfigurationModel configuration = configurationAccessor.createConfiguration(key, context, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
-        return apiAction.afterSaveAction(beforeAction, convertedFieldModel);
+        return apiAction.afterSaveAction(convertedFieldModel);
     }
 
     public FieldModel update(Long id, FieldModel fieldModel) throws AlertException {

@@ -124,7 +124,7 @@ public class ConfigActions {
         Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
         ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
-        FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(modifiedFieldModel, dbSavedModel);
+        FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
         return dbSavedModel.fill(afterSaveAction);
     }
 
