@@ -71,16 +71,18 @@ class ConfirmModal extends Component {
 }
 
 ConfirmModal.propTypes = {
+    id: PropTypes.string,
     affirmativeAction: PropTypes.func.isRequired,
     affirmativeButtonText: PropTypes.string,
     message: PropTypes.string.isRequired,
     negativeAction: PropTypes.func,
     negativeButtonText: PropTypes.string,
     showModal: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
 };
 
 ConfirmModal.defaultProps = {
+    id: 'confirmModal',
     affirmativeButtonText: 'Yes',
     negativeButtonText: 'No',
     negativeAction: () => true

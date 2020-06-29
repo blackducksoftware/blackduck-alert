@@ -187,7 +187,8 @@ class Index extends Component {
     }
 
     editButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+        return <IconTableCellFormatter id="distribution" handleButtonClicked={this.editButtonClicked}
+                                       currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
     }
 
     copyButtonClicked(currentRowSelected) {
@@ -198,7 +199,8 @@ class Index extends Component {
     }
 
     copyButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+        return <IconTableCellFormatter id="distribution" handleButtonClicked={this.copyButtonClicked}
+                                       currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
     enabledState(cell) {
@@ -219,20 +221,22 @@ class Index extends Component {
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         let refreshButton = !this.props.autoRefresh && (
-            <button type="button" className={classes} onClick={this.reloadJobs}>
+            <button id="distribution-refresh-button" type="button" className={classes} onClick={this.reloadJobs}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
             </button>
         );
         return (
             <div>
                 {buttons.insertBtn
-                && <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
+                &&
+                <InsertButton id="distribution-insert-button" className="addJobButton btn-md" onClick={insertOnClick}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
                 }
                 {buttons.deleteBtn
-                && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                && <DeleteButton id="distribution-delete-button" className="deleteJobButton btn-md"
+                                 onClick={deleteOnClick}>
                     <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                     Delete
                 </DeleteButton>

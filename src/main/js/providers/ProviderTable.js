@@ -285,6 +285,7 @@ class ProviderTable extends Component {
                 {descriptorHeader}
                 <div>
                     <TableDisplay
+                        id="providers"
                         newConfigFields={this.createModalFields}
                         modalTitle="Black Duck Provider"
                         clearModalFieldState={this.clearModalFieldState}

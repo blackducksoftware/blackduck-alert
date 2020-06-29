@@ -43,12 +43,16 @@ class Details extends Component {
     expandComponent(row) {
         let errorMessage = null;
         if (row.errorMessage) {
-            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={row.errorMessage} />;
+            errorMessage = <TextInput id="auditDetailErrorMessage" label="Error" readOnly name="errorMessage"
+                                      value={row.errorMessage} />;
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="auditJobDetails" sizeClass="col-sm-12" label="Stack Trace" readOnly name="errorStackTrace"
-                                        value={row.errorStackTrace} cols={"auto"} />;
+            errorStackTrace =
+                <TextArea id="auditDetailStackTrace" inputClass="auditJobDetails" sizeClass="col-sm-12"
+                          label="Stack Trace" readOnly
+                          name="errorStackTrace"
+                          value={row.errorStackTrace} cols={'auto'} />;
         }
 
         return (<div className="auditJobDetails">{errorMessage}{errorStackTrace}</div>);

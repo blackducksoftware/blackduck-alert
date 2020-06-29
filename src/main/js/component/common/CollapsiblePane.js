@@ -18,21 +18,22 @@ class CollapsiblePane extends Component {
     }
 
     render() {
+        const { id, title, children } = this.props;
         const { expanded } = this.state;
         const contentClass = expanded ? 'shown' : 'hidden';
         const iconClass = expanded ? 'minus' : 'plus';
         return (
             <div className="collapsiblePanel">
-                <button
-                    type="button"
-                    className="btn btn-link"
-                    onClick={() => this.setState({ expanded: !this.state.expanded })}
+                <button id={`${id}-expand-button`}
+                        type="button"
+                        className="btn btn-link"
+                        onClick={() => this.setState({ expanded: !this.state.expanded })}
                 >
                     <FontAwesomeIcon icon={iconClass} className='icon' size="lg" />
-                    {this.props.title}
+                    {title}
                 </button>
                 <div className={contentClass}>
-                    {this.props.children}
+                    {children}
                 </div>
             </div>
         );
@@ -40,12 +41,14 @@ class CollapsiblePane extends Component {
 }
 
 CollapsiblePane.propTypes = {
+    id: PropTypes.string,
     title: PropTypes.string.isRequired,
     expanded: PropTypes.bool,
     children: PropTypes.array.isRequired
 };
 
 CollapsiblePane.defaultProps = {
+    id: 'collapsiblePaneId',
     expanded: false
 };
 

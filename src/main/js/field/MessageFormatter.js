@@ -39,9 +39,10 @@ class MessageFormatter extends Component {
     }
 
     render() {
+        const { id } = this.props;
         const message = this.props.message && this.createMessage();
         return (
-            <div>
+            <div id={id}>
                 {message}
             </div>
         );
@@ -49,10 +50,12 @@ class MessageFormatter extends Component {
 }
 
 MessageFormatter.propTypes = {
+    id: PropTypes.string,
     message: PropTypes.string
 };
 
 MessageFormatter.defaultProps = {
+    id: 'messageFormatterId',
     message: null
 };
 

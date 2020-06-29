@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GeneralButton = ({
                            onClick, children, className, id, disabled, performingAction
@@ -28,7 +28,7 @@ const GeneralButton = ({
 GeneralButton.defaultProps = {
     children: 'Click Me',
     className: 'btn-md',
-    id: 'id',
+    id: 'generalButtonId',
     disabled: false,
     performingAction: false
 };
