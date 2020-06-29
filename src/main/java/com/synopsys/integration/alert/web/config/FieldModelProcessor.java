@@ -109,13 +109,13 @@ public class FieldModelProcessor {
         return fieldModel;
     }
 
-    public FieldModel performAfterUpdateAction(FieldModel fieldModel) throws AlertException {
-        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
+    public FieldModel performAfterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(currentFieldModel);
         if (optionalApiAction.isPresent()) {
             ApiAction apiAction = optionalApiAction.get();
-            return apiAction.afterUpdateAction(fieldModel);
+            return apiAction.afterUpdateAction(previousFieldModel, currentFieldModel);
         }
-        return fieldModel;
+        return currentFieldModel;
     }
 
     public Map<String, String> validateFieldModel(FieldModel fieldModel) {

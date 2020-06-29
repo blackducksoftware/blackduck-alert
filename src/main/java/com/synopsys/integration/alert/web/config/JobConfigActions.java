@@ -152,6 +152,15 @@ public class JobConfigActions {
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
         validateJobNameUnique(id, jobFieldModel);
+        
+        ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
+                                                .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
+        Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
+        for (ConfigurationModel previousJobConfiguration : previousJob.getCopyOfConfigurations()) {
+            FieldModel previousJobFieldModel = modelConverter.convertToFieldModel(previousJobConfiguration);
+            descriptorAndContextToPreviousFieldModel.put(previousJobFieldModel.getDescriptorName() + previousJobFieldModel.getContext(), previousJobFieldModel);
+        }
+
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -167,7 +176,8 @@ public class JobConfigActions {
         JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         Set<FieldModel> updatedFieldModels = new HashSet<>();
         for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-            FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(fieldModel);
+            FieldModel previousFieldModel = descriptorAndContextToPreviousFieldModel.get(fieldModel.getDescriptorName() + fieldModel.getContext());
+            FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, fieldModel);
             updatedFieldModels.add(updatedModel);
         }
         savedJobFieldModel.setFieldModels(updatedFieldModels);
