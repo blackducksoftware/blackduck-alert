@@ -135,7 +135,7 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeSaveAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
-        Mockito.when(apiAction.afterSaveAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+        Mockito.when(apiAction.afterSaveAction(Mockito.eq(fieldModel), Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
         DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.save(fieldModel);
@@ -157,7 +157,7 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
-        Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+        Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel), Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
         DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.update(1L, fieldModel);
@@ -179,7 +179,7 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
-        Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+        Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel), Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
         DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.update(1L, fieldModel);

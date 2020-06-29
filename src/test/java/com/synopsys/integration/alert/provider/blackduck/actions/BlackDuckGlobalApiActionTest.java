@@ -30,12 +30,12 @@ import com.synopsys.integration.function.ThrowingBiFunction;
 public class BlackDuckGlobalApiActionTest {
     @Test
     public void afterSaveActionSuccessTest() throws AlertException {
-        runApiActionTest(BlackDuckGlobalApiAction::afterSaveAction);
+        runApiActionTest((blackDuckGlobalApiAction, fieldModel) -> blackDuckGlobalApiAction.afterSaveAction(null, fieldModel));
     }
 
     @Test
     public void afterUpdateActionSuccessTest() throws AlertException {
-        runApiActionTest(BlackDuckGlobalApiAction::afterUpdateAction);
+        runApiActionTest((blackDuckGlobalApiAction, fieldModel) -> blackDuckGlobalApiAction.afterUpdateAction(null, fieldModel));
     }
 
     private void runApiActionTest(ThrowingBiFunction<BlackDuckGlobalApiAction, FieldModel, FieldModel, AlertException> apiAction) throws AlertException {

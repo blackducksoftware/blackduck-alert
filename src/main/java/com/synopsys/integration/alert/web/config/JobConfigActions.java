@@ -131,18 +131,21 @@ public class JobConfigActions {
         validateJobNameUnique(null, jobFieldModel);
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             FieldModel beforeSaveEventFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
             descriptorNames.add(beforeSaveEventFieldModel.getDescriptorName());
             Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
+            descriptorAndContextToPreviousFieldModel.put(beforeSaveEventFieldModel.getDescriptorName() + beforeSaveEventFieldModel.getContext(), beforeSaveEventFieldModel);
         }
         ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
 
         Set<FieldModel> updatedFieldModels = new HashSet<>();
         for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-            FieldModel updatedModel = fieldModelProcessor.performAfterSaveAction(fieldModel);
+            FieldModel previousFieldModel = descriptorAndContextToPreviousFieldModel.get(fieldModel.getDescriptorName() + fieldModel.getContext());
+            FieldModel updatedModel = fieldModelProcessor.performAfterSaveAction(previousFieldModel, fieldModel);
             updatedFieldModels.add(updatedModel);
         }
         savedJobFieldModel.setFieldModels(updatedFieldModels);
@@ -154,6 +157,7 @@ public class JobConfigActions {
         validateJobNameUnique(id, jobFieldModel);
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
             descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
@@ -161,13 +165,15 @@ public class JobConfigActions {
             Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
             Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
+            descriptorAndContextToPreviousFieldModel.put(beforeUpdateEventFieldModel.getDescriptorName() + beforeUpdateEventFieldModel.getContext(), beforeUpdateEventFieldModel);
         }
 
         ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
         JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         Set<FieldModel> updatedFieldModels = new HashSet<>();
         for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-            FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(fieldModel);
+            FieldModel previousFieldModel = descriptorAndContextToPreviousFieldModel.get(fieldModel.getDescriptorName() + fieldModel.getContext());
+            FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, fieldModel);
             updatedFieldModels.add(updatedModel);
         }
         savedJobFieldModel.setFieldModels(updatedFieldModels);

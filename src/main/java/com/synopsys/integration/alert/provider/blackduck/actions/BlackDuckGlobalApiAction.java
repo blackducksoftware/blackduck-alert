@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private ProviderSchedulingManager providerLifecycleManager;
+    private final ProviderSchedulingManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
@@ -64,15 +64,15 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig(fieldModel);
-        return super.afterSaveAction(fieldModel);
+    public FieldModel afterSaveAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        handleNewOrUpdatedConfig(previousFieldModel, currentFieldModel);
+        return super.afterSaveAction(previousFieldModel, currentFieldModel);
     }
 
     @Override
-    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig(fieldModel);
-        return super.afterUpdateAction(fieldModel);
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        handleNewOrUpdatedConfig(previousFieldModel, currentFieldModel);
+        return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
     @Override
@@ -88,8 +88,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertException {
-        Optional<String> providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+    private void handleNewOrUpdatedConfig(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        Optional<String> providerConfigName = currentFieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (providerConfigName.isPresent()) {
             Optional<ConfigurationModel> retrievedConfig = configurationAccessor.getProviderConfigurationByName(providerConfigName.get());
             if (retrievedConfig.isPresent()) {
