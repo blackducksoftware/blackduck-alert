@@ -2,7 +2,9 @@ package com.synopsys.integration.azure.boards.common.http;
 
 import org.apache.http.HttpStatus;
 
-public class HttpServiceException extends Exception {
+import com.synopsys.integration.exception.IntegrationException;
+
+public class HttpServiceException extends IntegrationException {
     private final int httpErrorCode;
 
     public static HttpServiceException internalServerError(String message) {

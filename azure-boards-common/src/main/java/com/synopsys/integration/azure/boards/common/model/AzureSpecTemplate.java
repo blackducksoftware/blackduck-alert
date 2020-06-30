@@ -30,7 +30,11 @@ public class AzureSpecTemplate {
         for (Map.Entry<String, String> replacementEntry : replacementMappings.entrySet()) {
             populatedSpec = StringUtils.replaceOnce(populatedSpec, replacementEntry.getKey(), replacementEntry.getValue());
         }
+        return populatedSpec;
+    }
 
+    public String populateSpecAndClearReplacements() {
+        String populatedSpec = populateSpec();
         if (!replacementMappings.isEmpty()) {
             replacementMappings.clear();
         }
