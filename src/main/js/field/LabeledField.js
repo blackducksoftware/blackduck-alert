@@ -67,6 +67,7 @@ class LabeledField extends Component {
 }
 
 LabeledField.propTypes = {
+    id: PropTypes.string,
     field: PropTypes.node,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
@@ -78,6 +79,7 @@ LabeledField.propTypes = {
 };
 
 LabeledField.defaultProps = {
+    id: 'labeledFieldId',
     field: null,
     labelClass: 'col-sm-3 col-form-label',
     errorName: null,

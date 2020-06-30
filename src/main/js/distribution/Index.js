@@ -350,7 +350,7 @@ class Index extends Component {
         const content = (
             <div>
                 {this.getCurrentJobConfig()}
-                <StatusMessage actionMessage={null}
+                <StatusMessage id="distribution-status-message" actionMessage={null}
                                errorMessage={this.props.errorMessage} />
                 <BootstrapTable
                     version="4"

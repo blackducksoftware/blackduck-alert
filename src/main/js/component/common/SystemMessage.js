@@ -35,12 +35,14 @@ class SystemMessage extends Component {
 }
 
 SystemMessage.propTypes = {
+    id: PropTypes.string,
     severity: PropTypes.string,
     createdAt: PropTypes.string,
     content: PropTypes.string
 };
 
 SystemMessage.defaultProps = {
+    id: 'systemMessageId',
     severity: 'INFO',
     createdAt: '',
     content: ''

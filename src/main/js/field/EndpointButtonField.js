@@ -115,7 +115,7 @@ class EndpointButtonField extends Component {
                 </div>
                 }
                 {this.state.success &&
-                <StatusMessage actionMessage={statusMessage} />
+                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
 
             </div>

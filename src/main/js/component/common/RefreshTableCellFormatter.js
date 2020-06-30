@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) => (
+const RefreshTableCellFormatter = ({ id, handleButtonClicked, currentRowSelected }) => (
     <button
+        id={id}
         className="btn btn-link editJobButton"
         type="button"
         title="Refresh"
@@ -17,6 +18,7 @@ const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) 
 );
 
 RefreshTableCellFormatter.propTypes = {
+    id: PropTypes.string.isRequired,
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired
 };

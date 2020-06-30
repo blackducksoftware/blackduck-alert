@@ -59,8 +59,10 @@ class Details extends Component {
     }
 
     resendButton(cell, row) {
-        return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
-                                           buttonText="Re-send" />);
+        return (<RefreshTableCellFormatter
+            id={`audit-detail-refresh-cell`}
+            handleButtonClicked={this.onResendClick} currentRowSelected={row}
+            buttonText="Re-send" />);
     }
 
     flattenJobsForTable(jsonArray = []) {
@@ -122,7 +124,7 @@ class Details extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="expandableContainer">
-                        <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                        <Tabs defaultActiveKey={1} id="audit-details-tabs">
                             <Tab eventKey={1} title="Distribution Jobs">
                                 <div className="container-fluid">
                                     <BootstrapTable
@@ -144,7 +146,8 @@ class Details extends Component {
                                         <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell"
                                                            dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
                                         <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle
-                                                           columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
+                                                           columnClassName="tableCell">Time Last
+                                            Sent</TableHeaderColumn>
                                         <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell"
                                                            dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
                                         <TableHeaderColumn dataField="" width="48" expandable={false}

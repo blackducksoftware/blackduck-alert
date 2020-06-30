@@ -353,10 +353,9 @@ class TableDisplay extends Component {
 
     editButtonClick(cell, row) {
         const { id } = this.props;
-        const { id: rowId } = row;
         return (
             <IconTableCellFormatter
-                id={`${id}-${rowId}-edit-cell`}
+                id={`${id}-edit-cell`}
                 handleButtonClicked={this.editButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="pencil-alt"
@@ -376,10 +375,9 @@ class TableDisplay extends Component {
 
     copyButtonClick(cell, row) {
         const { id } = this.props;
-        const { id: rowId } = row;
         return (
             <IconTableCellFormatter
-                id={`${id}-${rowId}-copy-cell`}
+                id={`${id}-copy-cell`}
                 handleButtonClicked={this.copyButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="copy"
@@ -456,7 +454,8 @@ class TableDisplay extends Component {
             </div>
         );
         const status = !hasFieldErrors
-            && <StatusMessage errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
+            && <StatusMessage
+                id={`${id}-status-message`} errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
         const content = (
             <div>
                 {status}

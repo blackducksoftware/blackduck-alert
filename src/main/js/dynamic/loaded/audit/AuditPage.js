@@ -220,6 +220,7 @@ class AuditPage extends Component {
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
             return (<RefreshTableCellFormatter
+                id={`audit-refresh-cell`}
                 handleButtonClicked={this.onResendClick}
                 currentRowSelected={row}
                 buttonText="Re-send"
@@ -245,6 +246,7 @@ class AuditPage extends Component {
             <ButtonGroup>
                 {!this.props.autoRefresh &&
                 <div
+                    id="audit-refresh-button"
                     role="button"
                     tabIndex={0}
                     className="btn btn-info react-bs-table-add-btn tableButton"
@@ -336,7 +338,8 @@ class AuditPage extends Component {
                         errorMessage={this.props.errorMessage}
                         onlyShowSentNotifications={this.state.onlyShowSentNotifications}
                     />
-                    <StatusMessage actionMessage={this.props.message} errorMessage={this.props.errorMessage} />
+                    <StatusMessage id="audit-status-message" actionMessage={this.props.message}
+                                   errorMessage={this.props.errorMessage} />
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
