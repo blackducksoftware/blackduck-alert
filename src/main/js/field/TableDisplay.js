@@ -252,13 +252,19 @@ class TableDisplay extends Component {
         } = this.props;
         const popupActionMessage = (hasFieldErrors && errorDialogMessage) || actionMessage;
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
+        const popupAssignmentFunction = (functionToTest, defaultFunction) => {
+            if (tablePopupRef && functionToTest) {
+                return functionToTest;
+            }
+            return defaultFunction;
+        };
         let cancelFunction = this.handleCancel;
         let submitFunction = this.handleSubmit;
         let testFunction = this.handleTest;
         if (isInsertModal) {
-            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
-            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
-            testFunction = tablePopupRef && tablePopupRef.handleTest;
+            cancelFunction = popupAssignmentFunction(tablePopupRef.onCancel, this.handleCancel);
+            submitFunction = popupAssignmentFunction(tablePopupRef.handleSubmit, this.handleSubmit);
+            testFunction = popupAssignmentFunction(tablePopupRef.handleTest, this.handleTest);
         }
         return (
             <div>
