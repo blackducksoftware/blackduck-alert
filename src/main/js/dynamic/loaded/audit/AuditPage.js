@@ -220,7 +220,7 @@ class AuditPage extends Component {
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
             return (<RefreshTableCellFormatter
-                id={`audit-refresh-cell`}
+                id="audit-refresh-cell"
                 handleButtonClicked={this.onResendClick}
                 currentRowSelected={row}
                 buttonText="Re-send"
