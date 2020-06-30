@@ -4,7 +4,7 @@ import LabeledField from 'field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
-import GeneralButton from './input/GeneralButton';
+import GeneralButton from 'field/input/GeneralButton';
 
 class UploadFileButtonField extends Component {
     constructor(props) {
