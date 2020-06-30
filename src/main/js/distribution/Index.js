@@ -187,7 +187,7 @@ class Index extends Component {
     }
 
     editButtonClick(cell, row) {
-        return <IconTableCellFormatter id="distribution" handleButtonClicked={this.editButtonClicked}
+        return <IconTableCellFormatter id="distribution-edit-cell" handleButtonClicked={this.editButtonClicked}
                                        currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
     }
 
@@ -199,7 +199,7 @@ class Index extends Component {
     }
 
     copyButtonClick(cell, row) {
-        return <IconTableCellFormatter id="distribution" handleButtonClicked={this.copyButtonClicked}
+        return <IconTableCellFormatter id="distribution-copy-cell" handleButtonClicked={this.copyButtonClicked}
                                        currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
