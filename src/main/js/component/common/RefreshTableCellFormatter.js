@@ -18,9 +18,13 @@ const RefreshTableCellFormatter = ({ id, handleButtonClicked, currentRowSelected
 );
 
 RefreshTableCellFormatter.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired
+};
+
+RefreshTableCellFormatter.defaultProps = {
+    id: 'refreshTableCellFormatterId'
 };
 
 export default RefreshTableCellFormatter;

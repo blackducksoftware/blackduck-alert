@@ -30,7 +30,7 @@ class IconTableCellFormatter extends Component {
 }
 
 IconTableCellFormatter.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired,
     buttonText: PropTypes.string.isRequired,
