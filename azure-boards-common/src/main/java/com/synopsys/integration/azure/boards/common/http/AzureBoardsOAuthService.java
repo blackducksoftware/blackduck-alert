@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
@@ -40,10 +39,11 @@ public class AzureBoardsOAuthService {
         }
     }
 
-    public AuthorizationCodeRequestUrl getAuthorizationUrl(AuthorizationCodeFlow authorizationCodeFlow, String redirectUri) {
+    public String getAuthorizationUrl(AuthorizationCodeFlow authorizationCodeFlow, String redirectUri) {
         return authorizationCodeFlow.newAuthorizationUrl()
                    .setClientId(authorizationCodeFlow.getClientId())
-                   .setRedirectUri(redirectUri);
+                   .setRedirectUri(redirectUri)
+                   .build();
     }
 
     public Credential authorizeAndStoreCredential(AuthorizationCodeFlow authorizationCodeFlow, String userId, String authorizationCode) throws IntegrationException {
