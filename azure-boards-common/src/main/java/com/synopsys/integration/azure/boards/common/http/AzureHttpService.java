@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.Proxy;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
@@ -16,6 +18,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.gson.Gson;
 
 public class AzureHttpService {
+    public static final String AZURE_API_VERSION_QUERY_PARAM_NAME = "api-version";
     public static final String AZURE_API_VERSION = "5.1";
 
     private final String baseUrl;
@@ -34,13 +37,13 @@ public class AzureHttpService {
     }
 
     public AzureHttpService(String baseUrl, HttpRequestFactory httpRequestFactory, Gson gson) {
-        this.baseUrl = baseUrl;
+        this.baseUrl = sanitizeUrl(baseUrl);
         this.httpRequestFactory = httpRequestFactory;
         this.gson = gson;
     }
 
     public HttpResponse getResponse(String urlEndpoint) throws IOException {
-        GenericUrl url = new GenericUrl(baseUrl + urlEndpoint);
+        GenericUrl url = constructRequestUrl(urlEndpoint);
         HttpRequest request = httpRequestFactory.buildGetRequest(url);
         HttpHeaders headers = request.getHeaders();
         headers.setAccept(acceptHeader());
@@ -64,7 +67,7 @@ public class AzureHttpService {
     }
 
     public HttpResponse post(String urlEndpoint, Object requestBodyObject) throws IOException {
-        GenericUrl url = new GenericUrl(baseUrl + urlEndpoint);
+        GenericUrl url = constructRequestUrl(urlEndpoint);
         HttpRequest postRequest = buildPostRequest(url, requestBodyObject);
         return postRequest.execute();
     }
@@ -119,6 +122,41 @@ public class AzureHttpService {
     protected <T> T parseResponse(HttpResponse response, Type responseType) throws IOException {
         String responseString = response.parseAsString();
         return gson.fromJson(responseString, responseType);
+    }
+
+    private GenericUrl constructRequestUrl(String spec) {
+        StringBuilder requestUrlBuilder = new StringBuilder();
+
+        if (!StringUtils.startsWith(spec, baseUrl)) {
+            requestUrlBuilder.append(baseUrl);
+        }
+
+        if (!StringUtils.startsWith(spec, "/")) {
+            requestUrlBuilder.append("/");
+        }
+
+        requestUrlBuilder.append(spec);
+
+        if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
+            char queryParamSeparator = '?';
+            if (StringUtils.contains(spec, queryParamSeparator)) {
+                queryParamSeparator = '&';
+            }
+            requestUrlBuilder.append(queryParamSeparator);
+            requestUrlBuilder.append(AZURE_API_VERSION_QUERY_PARAM_NAME);
+            requestUrlBuilder.append('=');
+            requestUrlBuilder.append(AZURE_API_VERSION);
+        }
+
+        return new GenericUrl(requestUrlBuilder.toString());
+    }
+
+    private String sanitizeUrl(String url) {
+        url = StringUtils.trim(url);
+        if (StringUtils.endsWith(url, "/")) {
+            return StringUtils.chomp(url);
+        }
+        return url;
     }
 
 }

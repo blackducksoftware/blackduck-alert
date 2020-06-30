@@ -25,7 +25,7 @@ public class AzureBoardsOAuthService {
     private final DataStoreFactory dataStoreFactory;
 
     public AzureBoardsOAuthService(String authorizationServerUrl, Proxy proxy, DataStoreFactory dataStoreFactory) {
-        this.authorizationServerUrl = sanitizedUrl(authorizationServerUrl);
+        this.authorizationServerUrl = sanitizeUrl(authorizationServerUrl);
         this.proxy = proxy;
         this.dataStoreFactory = dataStoreFactory;
     }
@@ -75,7 +75,7 @@ public class AzureBoardsOAuthService {
         return new String(encodedBytes);
     }
 
-    private String sanitizedUrl(String url) {
+    private String sanitizeUrl(String url) {
         url = StringUtils.trim(url);
         if (StringUtils.endsWith(url, "/")) {
             return StringUtils.chomp(url);
