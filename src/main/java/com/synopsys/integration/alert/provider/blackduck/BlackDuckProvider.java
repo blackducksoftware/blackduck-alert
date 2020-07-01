@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckCon
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckTaskFactory;
 import com.synopsys.integration.alert.provider.blackduck.factories.DistributionFilterFactory;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;

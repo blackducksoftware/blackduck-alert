@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckApiTokenValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.builder.BuilderStatus;
@@ -93,6 +94,11 @@ public class BlackDuckGlobalTestAction extends TestAction {
                 throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, failureMessage, errorException);
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage), errorException);
+        }
+
+        BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+        if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+            throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed, cannot read notifications from Black Duck.");
         }
         return new MessageResult("Successfully connected to BlackDuck server.");
     }

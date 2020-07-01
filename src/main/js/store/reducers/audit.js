@@ -1,10 +1,20 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START, SERIALIZE } from 'store/actions/types';
+import {
+    AUDIT_FETCH_ERROR,
+    AUDIT_FETCHED,
+    AUDIT_FETCHING,
+    AUDIT_RESEND_COMPLETE,
+    AUDIT_RESEND_ERROR,
+    AUDIT_RESEND_START,
+    SERIALIZE
+} from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
     totalPageCount: 0,
     items: [],
     message: '',
+    error: {},
     inProgress: false
 };
 
@@ -21,14 +31,15 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 inProgress: false,
-                message: 'Send successful'
+                message: 'Send successful',
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case AUDIT_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
                 inProgress: true,
-                message: 'Loading...'
+                message: ''
             });
 
         case AUDIT_FETCHED:
@@ -37,7 +48,8 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 totalPageCount: action.totalPageCount,
                 items: action.items,
-                message: ''
+                message: '',
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case AUDIT_RESEND_ERROR:
@@ -45,7 +57,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 inProgress: false,
-                message: action.message
+                message: '',
+                error: HTTPErrorUtils.createErrorObject(action)
             });
         case SERIALIZE:
             return initialState;

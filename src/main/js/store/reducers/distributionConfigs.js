@@ -16,6 +16,7 @@ import {
     DISTRIBUTION_JOB_UPDATING,
     SERIALIZE
 } from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
@@ -25,9 +26,7 @@ const initialState = {
     testingConfig: false,
     sendingCustomMessage: false,
     job: {},
-    error: {
-        message: ''
-    },
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     configurationMessage: ''
 };
 
@@ -41,7 +40,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: '',
-                error: {}
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case DISTRIBUTION_JOB_FETCHED:
@@ -52,7 +51,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
-                error: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 job: action.job
             });
 
@@ -63,11 +62,8 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 success: false,
                 testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
+                configurationMessage: action.message,
+                error: HTTPErrorUtils.createErrorObject(action)
             });
 
         case DISTRIBUTION_JOB_UPDATING:
@@ -79,7 +75,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: 'Saving...',
-                error: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 job: action.job
             });
 
@@ -92,7 +88,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
-                error: {},
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 ...action
             });
 
@@ -104,11 +100,8 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 success: false,
                 testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
+                configurationMessage: action.message,
+                error: HTTPErrorUtils.createErrorObject(action)
             });
 
         case DISTRIBUTION_JOB_TESTING:
@@ -119,7 +112,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: true,
                 configurationMessage: 'Testing...',
-                error: {}
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case DISTRIBUTION_JOB_TEST_SUCCESS:
@@ -130,7 +123,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
-                error: {}
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case DISTRIBUTION_JOB_TEST_FAILURE:
@@ -140,11 +133,8 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 success: false,
                 testingConfig: true,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
+                configurationMessage: action.message,
+                error: HTTPErrorUtils.createErrorObject(action)
             });
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
             return Object.assign({}, state, {
@@ -153,18 +143,18 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
             return Object.assign({}, state, {
                 inProgress: false,
-                error: {
+                error: HTTPErrorUtils.createErrorObject({
                     ...state.error,
                     ...action.errors
-                }
+                })
             });
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE:
             return Object.assign({}, state, {
                 inProgress: false,
-                error: {
+                error: HTTPErrorUtils.createErrorObject({
                     ...state.error,
                     ...action.errors
-                }
+                })
             });
         case SERIALIZE:
             return initialState;

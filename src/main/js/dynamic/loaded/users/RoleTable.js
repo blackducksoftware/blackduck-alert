@@ -238,6 +238,7 @@ class RoleTable extends Component {
         return (
             <div>
                 <TableDisplay
+                    id="roles"
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
                     onEditState={this.onEdit}
@@ -292,7 +293,7 @@ const mapStateToProps = (state) => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
     roleError: state.roles.roleError,
-    fieldErrors: state.roles.fieldErrors,
+    fieldErrors: state.roles.error.fieldErrors,
     inProgress: state.roles.inProgress,
     fetching: state.roles.fetching,
     saveStatus: state.roles.saveStatus

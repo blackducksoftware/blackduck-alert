@@ -94,7 +94,7 @@ DynamicSelectInput.propTypes = {
 };
 
 DynamicSelectInput.defaultProps = {
-    id: 'id',
+    id: 'dynamicSelectInputId',
     value: [],
     placeholder: 'Choose a value',
     options: [],

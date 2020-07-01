@@ -182,7 +182,7 @@ class CertificatesPage extends Component {
 
     render() {
         const {
-            fetching, inProgress, certificates, certificateDeleteError, label, description, fieldErrors, descriptors
+            fetching, inProgress, certificates, errorMessage, label, description, fieldErrors, descriptors
         } = this.props;
 
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -197,6 +197,7 @@ class CertificatesPage extends Component {
                 </div>
                 <div>
                     <TableDisplay
+                        id="certificates"
                         newConfigFields={this.createModalFields}
                         modalTitle="Certificate"
                         clearModalFieldState={this.clearModalFieldState}
@@ -212,7 +213,7 @@ class CertificatesPage extends Component {
                         deleteButton={canDelete}
                         saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
-                        errorDialogMessage={certificateDeleteError}
+                        errorDialogMessage={errorMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                         enableCopy={false}
@@ -230,7 +231,7 @@ CertificatesPage.propTypes = {
     deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
-    certificateDeleteError: PropTypes.string,
+    errorMessage: PropTypes.string,
     inProgress: PropTypes.bool,
     deleteSuccess: PropTypes.bool,
     fetching: PropTypes.bool,
@@ -243,7 +244,7 @@ CertificatesPage.propTypes = {
 CertificatesPage.defaultProps = {
     inProgress: false,
     deleteSuccess: false,
-    certificateDeleteError: '',
+    errorMessage: '',
     fetching: false,
     certificates: [],
     fieldErrors: {}
@@ -252,10 +253,10 @@ CertificatesPage.defaultProps = {
 const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     certificates: state.certificates.data,
-    certificateDeleteError: state.certificates.certificateDeleteError,
     inProgress: state.certificates.inProgress,
     fetching: state.certificates.fetching,
-    fieldErrors: state.certificates.fieldErrors,
+    errorMessage: state.certificates.error.message,
+    fieldErrors: state.certificates.error.fieldErrors,
     saveStatus: state.certificates.saveStatus,
     deleteSuccess: state.certificates.deleteSuccess
 });

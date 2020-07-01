@@ -1,6 +1,7 @@
 import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING } from 'store/actions/types';
 
-import { verifyLoginByStatus } from 'store/actions/session';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const ABOUT_INFO_URL = '/alert/api/about';
 
@@ -30,16 +31,21 @@ function aboutInfoError(message, errors) {
 export function getAboutInfo() {
     return (dispatch) => {
         dispatch(fetchingAboutInfo());
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         fetch(ABOUT_INFO_URL)
-            .then((response) => {
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
                 if (response.ok) {
-                    response.json().then((body) => {
-                        dispatch(aboutInfoFetched(body));
-                    });
+                    dispatch(aboutInfoFetched(responseData));
                 } else {
-                    dispatch(verifyLoginByStatus(response.status));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            })
-            .catch(console.error);
+            });
+        })
+        .catch(console.error);
     };
 }

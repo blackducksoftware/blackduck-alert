@@ -65,6 +65,7 @@ class UserTable extends Component {
             });
         }
         callback();
+        this.retrieveData();
     }
 
     onConfigClose(callback) {
@@ -287,7 +288,7 @@ class UserTable extends Component {
 
     render() {
         const {
-            canCreate, canDelete, fieldErrors, userDeleteError, inProgress, fetching, users
+            canCreate, canDelete, fieldErrors, errorMessage, inProgress, fetching, users
         } = this.props;
         const { user } = this.state;
         const fieldErrorKeys = Object.keys(fieldErrors);
@@ -297,6 +298,7 @@ class UserTable extends Component {
             <div>
                 <div>
                     <TableDisplay
+                        id="users"
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
                         clearModalFieldState={this.clearModalFieldState}
@@ -311,7 +313,7 @@ class UserTable extends Component {
                         newButton={canCreate}
                         deleteButton={canDelete}
                         hasFieldErrors={hasErrors}
-                        errorDialogMessage={userDeleteError}
+                        errorDialogMessage={errorMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                     />
@@ -324,7 +326,7 @@ class UserTable extends Component {
 UserTable.defaultProps = {
     canCreate: true,
     canDelete: true,
-    userDeleteError: null,
+    errorMessage: null,
     fieldErrors: {},
     inProgress: false,
     fetching: false,
@@ -341,7 +343,7 @@ UserTable.propTypes = {
     clearFieldErrors: PropTypes.func.isRequired,
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    userDeleteError: PropTypes.string,
+    errorMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
@@ -353,8 +355,8 @@ UserTable.propTypes = {
 const mapStateToProps = (state) => ({
     users: state.users.data,
     roles: state.roles.data,
-    userDeleteError: state.users.userDeleteError,
-    fieldErrors: state.users.fieldErrors,
+    errorMessage: state.users.error.message,
+    fieldErrors: state.users.error.fieldErrors,
     inProgress: state.users.inProgress,
     fetching: state.users.fetching,
     saveStatus: state.users.saveStatus

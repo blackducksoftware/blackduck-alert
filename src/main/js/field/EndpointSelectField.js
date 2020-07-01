@@ -74,6 +74,7 @@ class EndpointSelectField extends Component {
 }
 
 EndpointSelectField.propTypes = {
+    id: PropTypes.string,
     currentConfig: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     endpoint: PropTypes.string.isRequired,
@@ -82,6 +83,7 @@ EndpointSelectField.propTypes = {
 };
 
 EndpointSelectField.defaultProps = {
+    id: 'endpointSelectFieldId',
     currentConfig: {},
     requestedDataFieldKeys: []
 };
