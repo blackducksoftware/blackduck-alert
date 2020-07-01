@@ -9,10 +9,10 @@ import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.jira.JiraTestConfigHelper;
 import com.synopsys.integration.issuetracker.jira.cloud.util.JiraCloudIssueHandler;

@@ -30,13 +30,13 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.jira.server.JiraServerService;
 

@@ -24,7 +24,7 @@ package com.synopsys.integration.issuetracker.jira.common;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.util.Stringable;
 
 public class JiraIssueSearchProperties extends Stringable implements Serializable, IssueSearchProperties {

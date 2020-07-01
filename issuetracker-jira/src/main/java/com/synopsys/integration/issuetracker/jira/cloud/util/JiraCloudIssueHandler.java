@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;

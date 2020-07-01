@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.issuetracker.exception.IssueTrackerContentLengthException;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerContentLengthException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.issuetracker.jira.common.util.JiraContentValidator;
 
 public class JiraContentValidatorTest {

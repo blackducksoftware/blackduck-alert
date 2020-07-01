@@ -25,16 +25,16 @@ package com.synopsys.integration.alert.common.channel;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {

@@ -32,19 +32,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCommentRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.message.IssueCommentRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.exception.IntegrationException;
 

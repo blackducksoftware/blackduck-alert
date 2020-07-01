@@ -28,10 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.issuetracker.service.TransitionValidator;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;

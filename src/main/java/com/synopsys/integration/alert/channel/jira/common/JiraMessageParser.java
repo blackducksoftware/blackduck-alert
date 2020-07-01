@@ -31,12 +31,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {

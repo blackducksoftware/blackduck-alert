@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.issuetracker.jira.cloud;
 
-import com.synopsys.integration.alert.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 
 public class JiraCloudContext extends IssueTrackerContext<JiraCloudProperties> {
     public JiraCloudContext(JiraCloudProperties issueTrackerConfig, IssueConfig issueConfig) {

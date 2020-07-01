@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.issuetracker.jira.common.util;
 
-import com.synopsys.integration.alert.issuetracker.message.IssueContentLengthValidator;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 
 public class JiraContentValidator extends IssueContentLengthValidator {
     public static final int CONTENT_LENGTH = 30000;

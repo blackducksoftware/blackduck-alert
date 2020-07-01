@@ -26,9 +26,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {

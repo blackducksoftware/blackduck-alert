@@ -29,6 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -36,13 +43,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.issuetracker.message.IssueCreationRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueResolutionRequest;
-import com.synopsys.integration.alert.issuetracker.message.IssueSearchProperties;
-import com.synopsys.integration.alert.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.issuetracker.service.TestIssueRequestCreator;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
