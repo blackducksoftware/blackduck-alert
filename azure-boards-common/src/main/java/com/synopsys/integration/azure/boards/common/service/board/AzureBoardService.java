@@ -6,15 +6,15 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
-import com.synopsys.integration.azure.boards.common.model.AzureSpecTemplate;
+import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
-public class AzureBoardsService {
+public class AzureBoardService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_BOARDS = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/work/boards");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_BOARDS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/work/boards/{boardId}");
 
     private final AzureHttpService azureHttpService;
 
-    public AzureBoardsService(AzureHttpService azureHttpService) {
+    public AzureBoardService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 
