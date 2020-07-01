@@ -25,6 +25,10 @@ package com.synopsys.integration.azure.boards.common.service.query.builder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class WorkItemQueryOrderBy {
     private final WorkItemQueryWhere workItemQueryWhere;
@@ -70,6 +74,29 @@ public class WorkItemQueryOrderBy {
 
     /* package-private */ List<WorkItemOrderByField> getFields() {
         return fields;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder orderByBuilder = new StringBuilder();
+        orderByBuilder.append("ORDER BY ");
+        String joinedFields = fields
+                                  .stream()
+                                  .map(this::formatField)
+                                  .collect(Collectors.joining(", "));
+        orderByBuilder.append(joinedFields);
+        return orderByBuilder.toString();
+    }
+
+    private String formatField(WorkItemOrderByField field) {
+        Optional<String> optionalDirectionName = field.getDirection()
+                                                     .map(WorkItemOrderByDirection::name)
+                                                     .map(StringUtils::lowerCase)
+                                                     .map(StringUtils::capitalize);
+        if (optionalDirectionName.isPresent()) {
+            return String.format("[%s] %s", field.getFieldName(), optionalDirectionName.get());
+        }
+        return String.format("[%s]", field.getFieldName());
     }
 
 }

@@ -70,4 +70,11 @@ public class WorkItemQueryWhere {
         return conditions;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder whereBuilder = new StringBuilder();
+        whereBuilder.append("WHERE ");
+        // FIXME implement
+        return whereBuilder.toString();
+    }
 }

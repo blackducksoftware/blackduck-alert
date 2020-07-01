@@ -23,12 +23,15 @@
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
 public class WorkItemQuery {
+    private static final DateTimeFormatter AS_OF_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
     private final WorkItemQuerySelect select;
     private final WorkItemQueryFrom from;
     private final WorkItemQueryWhere where;
@@ -60,7 +63,22 @@ public class WorkItemQuery {
         queryStringBuilder.append(select.toString());
         queryStringBuilder.append(' ');
         queryStringBuilder.append(from.toString());
-        queryStringBuilder.append(' ');
+
+        if (null != where) {
+            queryStringBuilder.append(' ');
+            queryStringBuilder.append(where.toString());
+        }
+
+        if (null != orderBy) {
+            queryStringBuilder.append(" ASOF ");
+            queryStringBuilder.append(orderBy.toString());
+        }
+
+        if (null != asOf) {
+            queryStringBuilder.append(' ');
+            queryStringBuilder.append(AS_OF_FORMAT.format(asOf));
+        }
+
         return queryStringBuilder.toString();
     }
 
