@@ -59,15 +59,17 @@ public final class WorkItemResponseFields {
         return Stream.of(workItemClassFields)
                    .filter(field -> Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
                    .filter(field -> field.getType().equals(AzureFieldDefinition.class))
-                   .map(field -> {
-                       try {
-                           return (AzureFieldDefinition) field.get(null);
-                       } catch (IllegalAccessException e) {
-                           return null;
-                       }
-                   })
+                   .map(WorkItemResponseFields::convertToAzureFieldDefinition)
                    .filter(Objects::nonNull)
                    .collect(Collectors.toList());
+    }
+
+    private static AzureFieldDefinition convertToAzureFieldDefinition(Field field) {
+        try {
+            return (AzureFieldDefinition) field.get(null);
+        } catch (IllegalAccessException e) {
+            return null;
+        }
     }
 
 }
