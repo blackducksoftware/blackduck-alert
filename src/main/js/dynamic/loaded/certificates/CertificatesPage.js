@@ -197,6 +197,7 @@ class CertificatesPage extends Component {
                 </div>
                 <div>
                     <TableDisplay
+                        id="certificates"
                         newConfigFields={this.createModalFields}
                         modalTitle="Certificate"
                         clearModalFieldState={this.clearModalFieldState}

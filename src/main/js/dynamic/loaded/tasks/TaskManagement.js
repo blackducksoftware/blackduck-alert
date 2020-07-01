@@ -145,6 +145,7 @@ class TaskManagement extends Component {
                     description={description}
                 />
                 <TableDisplay
+                    id="task-management"
                     newConfigFields={this.createModalFields}
                     modalTitle="Task Details"
                     clearModalFieldState={this.clearModalFieldState}

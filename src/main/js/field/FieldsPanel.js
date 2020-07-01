@@ -99,6 +99,7 @@ class FieldsPanel extends React.Component {
         });
         const panel = (panelName === DEFAULT_PANEL) ? <div>{this.createHeaders(fieldMapping)}</div> : (
             <CollapsiblePane
+                id={panelName}
                 title={panelName}
                 expanded={hasValues}
             >{this.createHeaders(fieldMapping)}

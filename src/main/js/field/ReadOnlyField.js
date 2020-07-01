@@ -29,12 +29,14 @@ class ReadOnlyField extends Component {
 }
 
 ReadOnlyField.propTypes = {
+    id: PropTypes.string,
     value: PropTypes.string,
     url: PropTypes.string,
     alt: PropTypes.string
 };
 
 ReadOnlyField.defaultProps = {
+    id: 'readOnlyFieldId',
     value: '',
     url: '',
     alt: ''
