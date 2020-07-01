@@ -22,10 +22,10 @@ class PopUp extends Component {
 
     render() {
         const {
-            children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage
+            id, children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage
         } = this.props;
         return (
-            <div>
+            <div id={id}>
                 <Modal size="lg" show={show} onHide={this.internalCancel}>
                     <Modal.Header closeButton>
                         <Modal.Title>{title}</Modal.Title>
@@ -59,7 +59,8 @@ class PopUp extends Component {
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
-                            <MessageFormatter name="actionMessage" message={actionMessage} />
+                            <MessageFormatter id={`${id}-action-message`} name="actionMessage"
+                                              message={actionMessage} />
                         </form>
                     </Modal.Body>
                 </Modal>
@@ -69,6 +70,7 @@ class PopUp extends Component {
 }
 
 PopUp.propTypes = {
+    id: PropTypes.string,
     onCancel: PropTypes.func.isRequired,
     children: PropTypes.any.isRequired,
     handleSubmit: PropTypes.func,
@@ -85,6 +87,7 @@ PopUp.propTypes = {
 };
 
 PopUp.defaultProps = {
+    id: 'popupId',
     show: true,
     title: 'Pop up',
     cancelLabel: 'Cancel',

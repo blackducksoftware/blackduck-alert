@@ -24,7 +24,7 @@ class StatusMessage extends Component {
     }
 
     render() {
-        const { errorMessage, actionMessage } = this.props;
+        const { id, errorMessage, actionMessage } = this.props;
         const onErrorClose = () => {
             this.setState({ showError: false });
         };
@@ -32,21 +32,27 @@ class StatusMessage extends Component {
             this.setState({ showMessage: false });
         };
         return (
-            <div>
-                {errorMessage && this.state.showError && <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose} variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
+            <div id={id}>
+                {errorMessage && this.state.showError &&
+                <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose}
+                       variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
 
-                {actionMessage && this.state.showMessage && <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose} variant="success">{actionMessage}</Alert></FadeField>}
+                {actionMessage && this.state.showMessage &&
+                <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose}
+                                  variant="success">{actionMessage}</Alert></FadeField>}
             </div>
         );
     }
 }
 
 StatusMessage.propTypes = {
+    id: PropTypes.string,
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string
 };
 
 StatusMessage.defaultProps = {
+    id: 'statusMessageId',
     errorMessage: null,
     actionMessage: null
 };

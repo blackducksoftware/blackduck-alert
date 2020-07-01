@@ -7,7 +7,7 @@ const CancelButton = ({ onClick, children, id }) => (
 
 CancelButton.defaultProps = {
     children: 'Cancel',
-    id: 'id',
+    id: 'cancelButtonId',
     onClick: () => true
 };
 

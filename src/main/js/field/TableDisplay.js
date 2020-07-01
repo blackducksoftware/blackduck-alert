@@ -117,13 +117,13 @@ class TableDisplay extends Component {
 
     createButtonGroup(buttons) {
         const {
-            autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh
+            id, autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh
         } = this.props;
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const refreshButton = !autoRefresh && (
-            <button type="button" className={classes} onClick={this.updateData}>
+            <button id={`${id}-refresh-button`} type="button" className={classes} onClick={this.updateData}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
                 Refresh
             </button>
@@ -133,6 +133,7 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && (
                     <InsertButton
+                        id={`${id}-insert-button`}
                         className="addJobButton btn-md"
                         onClick={() => {
                             insertOnClick();
@@ -149,7 +150,8 @@ class TableDisplay extends Component {
                 )}
                 {buttons.deleteBtn
                 && (
-                    <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                    <DeleteButton id={`${id}-delete-button`}
+                                  className="deleteJobButton btn-md" onClick={deleteOnClick}>
                         <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                         {tableDeleteButtonLabel}
                     </DeleteButton>
@@ -247,7 +249,7 @@ class TableDisplay extends Component {
         const tablePopupRef = this.tablePopup.current;
         const { currentRowSelected, isInsertModal } = this.state;
         const {
-            modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
+            id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
             actionMessage, hasFieldErrors
         } = this.props;
         const popupActionMessage = (hasFieldErrors && errorDialogMessage) || actionMessage;
@@ -263,6 +265,7 @@ class TableDisplay extends Component {
         return (
             <div>
                 <PopUp
+                    id={`${id}-popup`}
                     onKeyDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                     onFocus={(e) => e.stopPropagation()}
@@ -349,8 +352,10 @@ class TableDisplay extends Component {
     }
 
     editButtonClick(cell, row) {
+        const { id } = this.props;
         return (
             <IconTableCellFormatter
+                id={`${id}-edit-cell`}
                 handleButtonClicked={this.editButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="pencil-alt"
@@ -369,8 +374,10 @@ class TableDisplay extends Component {
     }
 
     copyButtonClick(cell, row) {
+        const { id } = this.props;
         return (
             <IconTableCellFormatter
+                id={`${id}-copy-cell`}
                 handleButtonClicked={this.copyButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="copy"
@@ -397,7 +404,7 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
         const {
-            actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
+            id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
             tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, hasFieldErrors, errorDialogMessage
         } = this.props;
         if (enableEdit) {
@@ -431,6 +438,7 @@ class TableDisplay extends Component {
         };
         const deleteModal = (
             <ConfirmModal
+                id={`${id}-delete-confirm-modal`}
                 title="Delete"
                 affirmativeAction={this.deleteItems}
                 affirmativeButtonText="Confirm"
@@ -446,7 +454,8 @@ class TableDisplay extends Component {
             </div>
         );
         const status = !hasFieldErrors
-            && <StatusMessage errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
+            && <StatusMessage
+                id={`${id}-status-message`} errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
         const content = (
             <div>
                 {status}
@@ -492,6 +501,7 @@ class TableDisplay extends Component {
 }
 
 TableDisplay.propTypes = {
+    id: PropTypes.string,
     refreshData: PropTypes.func.isRequired,
     data: PropTypes.array,
     columns: PropTypes.arrayOf(PropTypes.shape({
@@ -534,6 +544,7 @@ TableDisplay.propTypes = {
 };
 
 TableDisplay.defaultProps = {
+    id: 'tableDisplayId',
     data: [],
     sortName: '',
     sortOrder: 'asc',

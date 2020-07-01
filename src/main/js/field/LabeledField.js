@@ -16,7 +16,7 @@ class LabeledField extends Component {
     render() {
         const { showDescription } = this.state;
         const {
-            field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
+            id, field, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
         } = this.props;
 
         const baseClasses = `${labelClass} text-right`;
@@ -53,12 +53,12 @@ class LabeledField extends Component {
 
         return (
             <div key={label} className="form-group">
-                <label className={labelClasses}>{label}</label>
+                <label id={`${id}-label`} className={labelClasses}>{label}</label>
                 {descriptionField}
                 {field}
                 {errorName && errorValue &&
                 <div className="offset-sm-3 col-sm-8">
-                    <p className="fieldError" name={errorName}>{errorValue}</p>
+                    <p id={`${id}-fieldError`} className="fieldError" name={errorName}>{errorValue}</p>
                 </div>
                 }
             </div>
@@ -67,6 +67,7 @@ class LabeledField extends Component {
 }
 
 LabeledField.propTypes = {
+    id: PropTypes.string,
     field: PropTypes.node,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
@@ -78,6 +79,7 @@ LabeledField.propTypes = {
 };
 
 LabeledField.defaultProps = {
+    id: 'labeledFieldId',
     field: null,
     labelClass: 'col-sm-3 col-form-label',
     errorName: null,

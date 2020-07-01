@@ -48,9 +48,9 @@ class ConfirmModal extends Component {
     }
 
     render() {
-        const { affirmativeButtonText, message, negativeButtonText, title } = this.props;
+        const { id, affirmativeButtonText, message, negativeButtonText, title } = this.props;
         return (
-            <Modal show={this.state.show} onHide={this.handleNegativeClick}>
+            <Modal id={id} show={this.state.show} onHide={this.handleNegativeClick}>
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
@@ -71,16 +71,18 @@ class ConfirmModal extends Component {
 }
 
 ConfirmModal.propTypes = {
+    id: PropTypes.string,
     affirmativeAction: PropTypes.func.isRequired,
     affirmativeButtonText: PropTypes.string,
     message: PropTypes.string.isRequired,
     negativeAction: PropTypes.func,
     negativeButtonText: PropTypes.string,
     showModal: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
 };
 
 ConfirmModal.defaultProps = {
+    id: 'confirmModal',
     affirmativeButtonText: 'Yes',
     negativeButtonText: 'No',
     negativeAction: () => true

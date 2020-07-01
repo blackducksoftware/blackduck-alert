@@ -27,7 +27,7 @@ class AboutInfo extends React.Component {
         };
     }
 
-    createDescriptorTable(tableData, uriPrefix) {
+    createDescriptorTable(id, tableData, uriPrefix) {
         const nameRenderer = this.createNameColumnRenderer(uriPrefix);
         const tableOptions = {
             defaultSortName: 'name',
@@ -35,7 +35,7 @@ class AboutInfo extends React.Component {
             noDataText: 'No data found'
         };
         return (
-            <div className="form-group">
+            <div id={id} className="form-group">
                 <BootstrapTable
                     version="4"
                     data={tableData}
@@ -83,8 +83,8 @@ class AboutInfo extends React.Component {
         const userChannelList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL);
         const providerData = this.createTableData(userProviderList, providers);
         const channelData = this.createTableData(userChannelList, channels);
-        const providerTable = this.createDescriptorTable(providerData, '/alert/providers/');
-        const channelTable = this.createDescriptorTable(channelData, '/alert/channels/');
+        const providerTable = this.createDescriptorTable('about-providers', providerData, '/alert/providers/');
+        const channelTable = this.createDescriptorTable('about-channels', channelData, '/alert/channels/');
         const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All
             Distributions</NavLink></div>);
         const providersMissing = !providerData || providerData.length <= 0;
@@ -93,11 +93,14 @@ class AboutInfo extends React.Component {
             <div>
                 <ConfigurationLabel configurationName="About" />
                 <div className="form-horizontal">
-                    <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
-                    <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl}
+                    <ReadOnlyField id="about-description" label="Description" name="description" readOnly="true"
+                                   value={description} />
+                    <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
+                    <ReadOnlyField id="about-url" label="Project URL" name="projectUrl" readOnly="true"
+                                   value={projectUrl}
                                    url={projectUrl} />
-                    <LabeledField label="View Distributions" name="distribution" readOnly="true" value=""
+                    <LabeledField id="about-view-distribution" label="View Distributions" name="distribution"
+                                  readOnly="true" value=""
                                   field={distributionLink} />
                     {providersMissing && channelsMissing &&
                     <div className="form-group">

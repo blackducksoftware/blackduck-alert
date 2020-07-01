@@ -41,7 +41,7 @@ TextInput.propTypes = {
 };
 
 TextInput.defaultProps = {
-    id: 'id',
+    id: 'textInputId',
     isSet: false,
     value: '',
     readOnly: false,

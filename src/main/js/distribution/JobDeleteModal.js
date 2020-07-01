@@ -44,7 +44,7 @@ class JobDeleteModal extends Component {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <form className="form-horizontal" onSubmit={this.onSubmit}>
+                    <form id="jobDeleteTable" className="form-horizontal" onSubmit={this.onSubmit}>
                         <div className="form-group">
                             <BootstrapTable
                                 version="4"
@@ -58,17 +58,27 @@ class JobDeleteModal extends Component {
                                 bodyContainerClass="tableScrollableBody"
                             >
                                 <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                                <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution Id</TableHeaderColumn>
-                                <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-                                <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.props.typeColumnDataFormat}>Type</TableHeaderColumn>
-                                <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.props.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                                <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={this.props.frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
-                                <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
-                                <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={this.props.statusColumnClassNameFormat}>Status</TableHeaderColumn>
+                                <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution
+                                    Id</TableHeaderColumn>
+                                <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution
+                                    Job</TableHeaderColumn>
+                                <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell"
+                                                   dataFormat={this.props.typeColumnDataFormat}>Type</TableHeaderColumn>
+                                <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell"
+                                                   dataFormat={this.props.providerColumnDataFormat}>Provider</TableHeaderColumn>
+                                <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell"
+                                                   dataFormat={this.props.frequencyColumnDataFormat}>Frequency
+                                    Type</TableHeaderColumn>
+                                <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last
+                                    Run</TableHeaderColumn>
+                                <TableHeaderColumn dataField="status" dataSort columnTitle
+                                                   columnClassName={this.props.statusColumnClassNameFormat}>Status</TableHeaderColumn>
                             </BootstrapTable>
                         </div>
-                        <p name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
-                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} isFixed={false} />
+                        <p id="jobDeleteMessage" name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
+                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-delete-cancel"
+                                       submitId="job-delete-submit" submitLabel="Confirm" includeSave includeCancel
+                                       onCancelClick={this.handleClose} isFixed={false} />
                     </form>
                 </Modal.Body>
             </Modal>
