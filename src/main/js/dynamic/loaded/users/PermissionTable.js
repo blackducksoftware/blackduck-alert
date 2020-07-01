@@ -294,6 +294,7 @@ class PermissionTable extends Component {
         return (
             <div>
                 <TableDisplay
+                    id="permissions"
                     modalTitle="Role Permissions"
                     inProgress={savingInProgress}
                     fetching={fetching}

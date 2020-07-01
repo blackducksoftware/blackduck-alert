@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PopUp from 'field/PopUp';
 import ConfirmModal from 'component/common/ConfirmModal';
+import StatusMessage from 'field/StatusMessage';
 
 const VALIDATION_STATE = {
     NONE: 'NONE',
@@ -37,6 +38,7 @@ class TableDisplay extends Component {
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
         this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
+        this.onAutoRefresh = this.onAutoRefresh.bind(this);
         this.tablePopup = React.createRef();
         this.table = React.createRef();
         this.state = {
@@ -59,6 +61,14 @@ class TableDisplay extends Component {
         if (!showConfiguration && currentRowSelected && !inProgress && !hasFieldErrors
             && uiValidation === VALIDATION_STATE.SUCCESS) {
             this.handleClose();
+        }
+    }
+
+    onAutoRefresh() {
+        const { refreshData } = this.props;
+        const { showConfiguration } = this.state;
+        if (!showConfiguration) {
+            refreshData();
         }
     }
 
@@ -107,13 +117,13 @@ class TableDisplay extends Component {
 
     createButtonGroup(buttons) {
         const {
-            autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh
+            id, autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh
         } = this.props;
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         const refreshButton = !autoRefresh && (
-            <button type="button" className={classes} onClick={this.updateData}>
+            <button id={`${id}-refresh-button`} type="button" className={classes} onClick={this.updateData}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
                 Refresh
             </button>
@@ -123,6 +133,7 @@ class TableDisplay extends Component {
                 {buttons.insertBtn
                 && (
                     <InsertButton
+                        id={`${id}-insert-button`}
                         className="addJobButton btn-md"
                         onClick={() => {
                             insertOnClick();
@@ -139,7 +150,8 @@ class TableDisplay extends Component {
                 )}
                 {buttons.deleteBtn
                 && (
-                    <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                    <DeleteButton id={`${id}-delete-button`}
+                                  className="deleteJobButton btn-md" onClick={deleteOnClick}>
                         <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                         {tableDeleteButtonLabel}
                     </DeleteButton>
@@ -201,7 +213,11 @@ class TableDisplay extends Component {
             const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
             const validationSetCallback = () => this.setState({
                 showConfiguration: false
-            }, this.updateData);
+            }, () => {
+                if (validationState !== VALIDATION_STATE.FAILED) {
+                    this.updateData();
+                }
+            });
             this.setState({
                 uiValidation: validationState
             }, validationSetCallback);
@@ -233,22 +249,29 @@ class TableDisplay extends Component {
         const tablePopupRef = this.tablePopup.current;
         const { currentRowSelected, isInsertModal } = this.state;
         const {
-            modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
-            actionMessage
+            id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
+            actionMessage, hasFieldErrors
         } = this.props;
-        const popupActionMessage = errorDialogMessage || actionMessage;
+        const popupActionMessage = (hasFieldErrors && errorDialogMessage) || actionMessage;
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
+        const popupAssignmentFunction = (functionToTest, defaultFunction) => {
+            if (tablePopupRef && functionToTest) {
+                return functionToTest;
+            }
+            return defaultFunction;
+        };
         let cancelFunction = this.handleCancel;
         let submitFunction = this.handleSubmit;
         let testFunction = this.handleTest;
         if (isInsertModal) {
-            cancelFunction = tablePopupRef && tablePopupRef.onCancel;
-            submitFunction = tablePopupRef && tablePopupRef.handleSubmit;
-            testFunction = tablePopupRef && tablePopupRef.handleTest;
+            cancelFunction = popupAssignmentFunction(tablePopupRef.onCancel, this.handleCancel);
+            submitFunction = popupAssignmentFunction(tablePopupRef.handleSubmit, this.handleSubmit);
+            testFunction = popupAssignmentFunction(tablePopupRef.handleTest, this.handleTest);
         }
         return (
             <div>
                 <PopUp
+                    id={`${id}-popup`}
                     onKeyDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                     onFocus={(e) => e.stopPropagation()}
@@ -335,8 +358,10 @@ class TableDisplay extends Component {
     }
 
     editButtonClick(cell, row) {
+        const { id } = this.props;
         return (
             <IconTableCellFormatter
+                id={`${id}-edit-cell`}
                 handleButtonClicked={this.editButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="pencil-alt"
@@ -355,8 +380,10 @@ class TableDisplay extends Component {
     }
 
     copyButtonClick(cell, row) {
+        const { id } = this.props;
         return (
             <IconTableCellFormatter
+                id={`${id}-copy-cell`}
                 handleButtonClicked={this.copyButtonClicked}
                 currentRowSelected={row}
                 buttonIconName="copy"
@@ -383,8 +410,8 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
         const {
-            selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
-            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, refreshData
+            id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
+            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, hasFieldErrors, errorDialogMessage
         } = this.props;
         if (enableEdit) {
             const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
@@ -417,6 +444,7 @@ class TableDisplay extends Component {
         };
         const deleteModal = (
             <ConfirmModal
+                id={`${id}-delete-confirm-modal`}
                 title="Delete"
                 affirmativeAction={this.deleteItems}
                 affirmativeButtonText="Confirm"
@@ -431,8 +459,12 @@ class TableDisplay extends Component {
                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
             </div>
         );
+        const status = !hasFieldErrors
+            && <StatusMessage
+                id={`${id}-status-message`} errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
         const content = (
             <div>
+                {status}
                 <BootstrapTable
                     version="4"
                     hover
@@ -460,10 +492,9 @@ class TableDisplay extends Component {
 
         const refresh = tableRefresh && (
             <div className="pull-right">
-                <AutoRefresh startAutoReload={refreshData} autoRefresh={autoRefresh} />
+                <AutoRefresh startAutoReload={this.onAutoRefresh} autoRefresh={autoRefresh} />
             </div>
         );
-
         return (
             <div>
                 {this.createTableModal()}
@@ -476,6 +507,7 @@ class TableDisplay extends Component {
 }
 
 TableDisplay.propTypes = {
+    id: PropTypes.string,
     refreshData: PropTypes.func.isRequired,
     data: PropTypes.array,
     columns: PropTypes.arrayOf(PropTypes.shape({
@@ -518,6 +550,7 @@ TableDisplay.propTypes = {
 };
 
 TableDisplay.defaultProps = {
+    id: 'tableDisplayId',
     data: [],
     sortName: '',
     sortOrder: 'asc',

@@ -26,21 +26,24 @@ class SystemMessage extends Component {
     }
 
     render() {
-        const { createdAt, content, severity } = this.props;
-        return (<div className="messageHeader">
-            <FontAwesomeIcon icon={this.getIcon()} className={`alert-icon ${this.getClassName()}`} size="lg" title={severity} /><span className="messageDate">{createdAt}</span>
+        const { createdAt, content, severity, id } = this.props;
+        return (<div id={id} className="messageHeader">
+            <FontAwesomeIcon icon={this.getIcon()} className={`alert-icon ${this.getClassName()}`} size="lg"
+                             title={severity} /><span className="messageDate">{createdAt}</span>
             <div>{content}</div>
         </div>);
     }
 }
 
 SystemMessage.propTypes = {
+    id: PropTypes.string,
     severity: PropTypes.string,
     createdAt: PropTypes.string,
     content: PropTypes.string
 };
 
 SystemMessage.defaultProps = {
+    id: 'systemMessageId',
     severity: 'INFO',
     createdAt: '',
     content: ''

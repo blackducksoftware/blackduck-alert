@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.provider.helper.ProviderAfterUpdateActionHelper;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -43,17 +44,19 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {
-    private ProviderSchedulingManager providerLifecycleManager;
+    private final ProviderSchedulingManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
+    private final ProviderAfterUpdateActionHelper providerAfterUpdateActionHelper;
 
     public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderSchedulingManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
-        ConfigurationAccessor configurationAccessor) {
+        ConfigurationAccessor configurationAccessor, ProviderAfterUpdateActionHelper providerAfterUpdateActionHelper) {
         this.blackDuckProvider = blackDuckProvider;
         this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
         this.configurationAccessor = configurationAccessor;
+        this.providerAfterUpdateActionHelper = providerAfterUpdateActionHelper;
     }
 
     @Override
@@ -70,9 +73,10 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     }
 
     @Override
-    public FieldModel afterUpdateAction(FieldModel fieldModel) throws AlertException {
-        handleNewOrUpdatedConfig(fieldModel);
-        return super.afterUpdateAction(fieldModel);
+    public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
+        handleNewOrUpdatedConfig(currentFieldModel);
+        providerAfterUpdateActionHelper.updateDistributionJobsWithNewProviderName(previousFieldModel, currentFieldModel);
+        return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
     @Override
@@ -88,8 +92,8 @@ public class BlackDuckGlobalApiAction extends ApiAction {
         providerDataAccessor.deleteProjects(blackDuckProjects);
     }
 
-    private void handleNewOrUpdatedConfig(FieldModel fieldModel) throws AlertException {
-        Optional<String> providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+    private void handleNewOrUpdatedConfig(FieldModel currentFieldModel) throws AlertException {
+        Optional<String> providerConfigName = currentFieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (providerConfigName.isPresent()) {
             Optional<ConfigurationModel> retrievedConfig = configurationAccessor.getProviderConfigurationByName(providerConfigName.get());
             if (retrievedConfig.isPresent()) {

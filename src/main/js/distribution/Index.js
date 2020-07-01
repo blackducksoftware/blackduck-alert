@@ -18,6 +18,7 @@ import DistributionConfiguration, {
     KEY_NAME,
     KEY_PROVIDER_NAME
 } from 'dynamic/DistributionConfiguration';
+import StatusMessage from 'field/StatusMessage';
 
 /**
  * Selects className based on field value
@@ -186,7 +187,8 @@ class Index extends Component {
     }
 
     editButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+        return <IconTableCellFormatter id="distribution-edit-cell" handleButtonClicked={this.editButtonClicked}
+                                       currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
     }
 
     copyButtonClicked(currentRowSelected) {
@@ -197,7 +199,8 @@ class Index extends Component {
     }
 
     copyButtonClick(cell, row) {
-        return <IconTableCellFormatter handleButtonClicked={this.copyButtonClicked} currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+        return <IconTableCellFormatter id="distribution-copy-cell" handleButtonClicked={this.copyButtonClicked}
+                                       currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
     }
 
     enabledState(cell) {
@@ -218,20 +221,22 @@ class Index extends Component {
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
         let refreshButton = !this.props.autoRefresh && (
-            <button type="button" className={classes} onClick={this.reloadJobs}>
+            <button id="distribution-refresh-button" type="button" className={classes} onClick={this.reloadJobs}>
                 <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
             </button>
         );
         return (
             <div>
                 {buttons.insertBtn
-                && <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
+                &&
+                <InsertButton id="distribution-insert-button" className="addJobButton btn-md" onClick={insertOnClick}>
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
                 }
                 {buttons.deleteBtn
-                && <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                && <DeleteButton id="distribution-delete-button" className="deleteJobButton btn-md"
+                                 onClick={deleteOnClick}>
                     <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                     Delete
                 </DeleteButton>
@@ -345,6 +350,8 @@ class Index extends Component {
         const content = (
             <div>
                 {this.getCurrentJobConfig()}
+                <StatusMessage id="distribution-status-message" actionMessage={null}
+                               errorMessage={this.props.errorMessage} />
                 <BootstrapTable
                     version="4"
                     hover
@@ -391,7 +398,6 @@ class Index extends Component {
                     <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                 </div>
                 }
-
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
@@ -427,14 +433,16 @@ Index.propTypes = {
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
     jobConfigTableMessage: PropTypes.string,
-    jobsValidationResults: PropTypes.arrayOf(PropTypes.object)
+    jobsValidationResults: PropTypes.arrayOf(PropTypes.object),
+    errorMessage: PropTypes.string
 };
 
 Index.defaultProps = {
     autoRefresh: true,
     descriptors: [],
     jobConfigTableMessage: '',
-    jobsValidationResults: []
+    jobsValidationResults: [],
+    errorMessage: null
 };
 
 const mapStateToProps = state => ({
@@ -443,7 +451,8 @@ const mapStateToProps = state => ({
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
     jobConfigTableMessage: state.distributions.jobConfigTableMessage,
-    jobsValidationResults: state.distributions.jobsValidationResult
+    jobsValidationResults: state.distributions.jobsValidationResult,
+    errorMessage: state.distributions.error.message
 });
 
 const mapDispatchToProps = dispatch => ({

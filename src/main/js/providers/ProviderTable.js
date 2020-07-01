@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
-import { clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig } from 'store/actions/globalConfiguration';
+import {
+    clearConfigFieldErrors,
+    deleteConfig,
+    getAllConfigs,
+    testConfig,
+    updateConfig
+} from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
@@ -51,8 +57,10 @@ class ProviderTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.updateStatus === 'UPDATING' && (this.props.updateStatus === 'UPDATED' || this.props.updateStatus === 'ERROR')) {
-            this.state.saveCallback(true);
+        const { updateStatus } = this.props;
+        const saveSuccess = updateStatus === 'UPDATED';
+        if (prevProps.updateStatus === 'UPDATING' && (updateStatus === 'UPDATED' || updateStatus === 'ERROR')) {
+            this.state.saveCallback(saveSuccess);
         }
     }
 
@@ -132,8 +140,8 @@ class ProviderTable extends Component {
     }
 
     retrieveData() {
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const { descriptors, descriptorName } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
             this.props.getAllConfigs(descriptor.name);
         }
@@ -176,7 +184,6 @@ class ProviderTable extends Component {
             });
         }
         callback();
-        this.retrieveData();
     }
 
     createModalFields() {
@@ -278,6 +285,7 @@ class ProviderTable extends Component {
                 {descriptorHeader}
                 <div>
                     <TableDisplay
+                        id="providers"
                         newConfigFields={this.createModalFields}
                         modalTitle="Black Duck Provider"
                         clearModalFieldState={this.clearModalFieldState}

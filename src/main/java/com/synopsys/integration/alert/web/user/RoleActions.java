@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,7 +51,6 @@ import com.synopsys.integration.alert.web.model.PermissionModel;
 import com.synopsys.integration.alert.web.model.RolePermissionModel;
 
 @Component
-@Transactional
 public class RoleActions {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final AuthorizationUtility authorizationUtility;
@@ -84,7 +81,9 @@ public class RoleActions {
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        return authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+        UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+        authorizationManager.loadPermissionsIntoCache();
+        return userRoleModel;
     }
 
     public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException {
@@ -100,6 +99,7 @@ public class RoleActions {
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         authorizationUtility.deleteRole(roleId);
+        authorizationManager.loadPermissionsIntoCache();
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {

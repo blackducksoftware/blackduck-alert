@@ -22,6 +22,9 @@
  */
 package com.synopsys.integration.alert.web.model;
 
+import java.util.Set;
+
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
@@ -31,18 +34,23 @@ public class AboutModel extends Stringable {
     private String projectUrl;
     private boolean initialized;
     private String startupTime;
+    private Set<DescriptorMetadata> providers;
+    private Set<DescriptorMetadata> channels;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String created, final String description, final String projectUrl, final boolean initialized, final String startupTime) {
+    public AboutModel(String version, String created, String description, String projectUrl, boolean initialized, String startupTime, Set<DescriptorMetadata> providers,
+        Set<DescriptorMetadata> channels) {
         this.version = version;
         this.created = created;
         this.description = description;
         this.projectUrl = projectUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
+        this.providers = providers;
+        this.channels = channels;
     }
 
     public String getVersion() {
@@ -67,5 +75,13 @@ public class AboutModel extends Stringable {
 
     public String getStartupTime() {
         return startupTime;
+    }
+
+    public Set<DescriptorMetadata> getProviders() {
+        return providers;
+    }
+
+    public Set<DescriptorMetadata> getChannels() {
+        return channels;
     }
 }

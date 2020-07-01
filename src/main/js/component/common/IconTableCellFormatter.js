@@ -14,7 +14,7 @@ class IconTableCellFormatter extends Component {
     }
 
     render() {
-        let { buttonClass } = this.props;
+        let { buttonClass, id } = this.props;
 
         if (buttonClass) {
             buttonClass = `${buttonClass} tableButton`;
@@ -23,12 +23,14 @@ class IconTableCellFormatter extends Component {
         }
 
         return (
-            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><FontAwesomeIcon icon={this.props.buttonIconName} className="alert-icon" size="lg" /></button>
+            <button id={id} className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}>
+                <FontAwesomeIcon icon={this.props.buttonIconName} className="alert-icon" size="lg" /></button>
         );
     }
 }
 
 IconTableCellFormatter.propTypes = {
+    id: PropTypes.string,
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired,
     buttonText: PropTypes.string.isRequired,
@@ -37,7 +39,8 @@ IconTableCellFormatter.propTypes = {
 };
 
 IconTableCellFormatter.defaultProps = {
-    buttonClass: null
+    buttonClass: null,
+    id: 'iconCellFormatterId'
 };
 
 export default IconTableCellFormatter;

@@ -35,7 +35,7 @@ PasswordInput.propTypes = {
 };
 
 PasswordInput.defaultProps = {
-    id: 'id',
+    id: 'passwordInputId',
     isSet: false,
     value: '',
     readOnly: false,

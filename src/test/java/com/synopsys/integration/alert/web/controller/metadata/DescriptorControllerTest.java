@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
 
 public class DescriptorControllerTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();
@@ -84,32 +85,33 @@ public class DescriptorControllerTest {
         final DescriptorType type1 = DescriptorType.CHANNEL;
         final ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
         Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors(null, type1.name(), context1.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata1.size());
+        int expectedSize = descriptors.size() / (DescriptorType.values().length * ConfigContextEnum.values().length);
+        assertEquals(expectedSize, descriptorMetadata1.size());
 
         final DescriptorType type2 = DescriptorType.COMPONENT;
         final ConfigContextEnum context2 = ConfigContextEnum.GLOBAL;
         Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, type2.name(), context2.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata2.size());
+        assertEquals(expectedSize, descriptorMetadata2.size());
 
         final DescriptorType type3 = DescriptorType.PROVIDER;
         final ConfigContextEnum context3 = ConfigContextEnum.GLOBAL;
         Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, type3.name(), context3.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata3.size());
+        assertEquals(expectedSize, descriptorMetadata3.size());
 
         final DescriptorType type4 = DescriptorType.CHANNEL;
         final ConfigContextEnum context4 = ConfigContextEnum.DISTRIBUTION;
         Set<DescriptorMetadata> descriptorMetadata4 = controller.getDescriptors(null, type4.name(), context4.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata4.size());
+        assertEquals(expectedSize, descriptorMetadata4.size());
 
         final DescriptorType type5 = DescriptorType.COMPONENT;
         final ConfigContextEnum context5 = ConfigContextEnum.DISTRIBUTION;
         Set<DescriptorMetadata> descriptorMetadata5 = controller.getDescriptors(null, type5.name(), context5.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata5.size());
+        assertEquals(expectedSize, descriptorMetadata5.size());
 
         final DescriptorType type6 = DescriptorType.PROVIDER;
         final ConfigContextEnum context6 = ConfigContextEnum.DISTRIBUTION;
         Set<DescriptorMetadata> descriptorMetadata6 = controller.getDescriptors(null, type6.name(), context6.name());
-        assertEquals(descriptors.size() / (3 * 2), descriptorMetadata6.size());
+        assertEquals(expectedSize, descriptorMetadata6.size());
     }
 
     @Test
@@ -154,12 +156,14 @@ public class DescriptorControllerTest {
     private DescriptorController createDescriptorController() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.anyString(), Mockito.anyString());
-        return new DescriptorController(descriptors, authorizationManager);
+        DescriptorMetadataActions actions = new DescriptorMetadataActions(descriptors, authorizationManager);
+        return new DescriptorController(actions);
     }
 
     private Set<Descriptor> createComprehensiveSetOfDescriptors() {

@@ -35,7 +35,7 @@ CheckboxInput.propTypes = {
 };
 
 CheckboxInput.defaultProps = {
-    id: 'id',
+    id: 'checkboxInputId',
     isChecked: false,
     readOnly: false,
     name: 'name',

@@ -1,6 +1,13 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START } from 'store/actions/types';
-
-import { verifyLoginByStatus } from 'store/actions/session';
+import {
+    AUDIT_FETCH_ERROR,
+    AUDIT_FETCHED,
+    AUDIT_FETCHING,
+    AUDIT_RESEND_COMPLETE,
+    AUDIT_RESEND_ERROR,
+    AUDIT_RESEND_START
+} from 'store/actions/types';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import { unauthorized } from 'store/actions/session';
 
 const FETCH_URL = '/alert/api/audit';
 
@@ -77,31 +84,30 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
         dispatch(fetchingAuditData());
         const { csrfToken } = getState().session;
         const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         fetch(fetchUrl, {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((body) => {
-                    dispatch(auditDataFetched(body.totalPages, body.content));
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(auditDataFetchError('You are not permitted to view this information.'));
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            dispatch(auditDataFetchError(json.message));
-                        });
+        })
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(auditDataFetched(responseData.totalPages, responseData.content));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        return auditDataFetchError(responseData.message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            }
-        }).catch((error) => {
+            });
+        })
+        .catch((error) => {
             dispatch(auditDataFetchError(error));
         });
     };
@@ -115,7 +121,9 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
             resendUrl += `job/${commonConfigId}/`;
         }
         const { csrfToken } = getState().session;
-
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         fetch(resendUrl, {
             method: 'POST',
             credentials: 'same-origin',
@@ -123,23 +131,21 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then((response) => {
-            if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                        dispatch(verifyLoginByStatus(response.status));
-                        break;
-                    case 403:
-                        dispatch(auditResendError('You are not permitted to perform this action.'));
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            dispatch(auditResendError(json.message));
-                        });
+        })
+        .then((response) => {
+            response.json()
+            .then((responseData) => {
+                if (response.ok) {
+                    dispatch(auditResentSuccessfully());
+                    dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        return auditResendError(responseData.message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
                 }
-            }
-            dispatch(auditResentSuccessfully());
-            dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
+            });
         }).catch(console.error);
     };
 }

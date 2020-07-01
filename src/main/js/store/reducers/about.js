@@ -25,7 +25,9 @@ const config = (state = initialState, action) => {
                 description: action.description,
                 projectUrl: action.projectUrl,
                 initialized: action.initialized,
-                startupTime: action.startupTime
+                startupTime: action.startupTime,
+                providerList: action.providers,
+                channelList: action.channels
             });
         case ABOUT_INFO_FETCH_ERROR:
             return Object.assign({}, state, {

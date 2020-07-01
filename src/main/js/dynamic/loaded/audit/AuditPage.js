@@ -12,7 +12,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import StatusMessage from 'field/StatusMessage';
 import '../../../../css/audit.scss';
 
 
@@ -220,6 +220,7 @@ class AuditPage extends Component {
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
             return (<RefreshTableCellFormatter
+                id="audit-refresh-cell"
                 handleButtonClicked={this.onResendClick}
                 currentRowSelected={row}
                 buttonText="Re-send"
@@ -245,6 +246,7 @@ class AuditPage extends Component {
             <ButtonGroup>
                 {!this.props.autoRefresh &&
                 <div
+                    id="audit-refresh-button"
                     role="button"
                     tabIndex={0}
                     className="btn btn-info react-bs-table-add-btn tableButton"
@@ -333,8 +335,11 @@ class AuditPage extends Component {
                         searchTerm={this.state.searchTerm}
                         sortField={this.state.sortField}
                         sortOrder={this.state.sortOrder}
+                        errorMessage={this.props.errorMessage}
                         onlyShowSentNotifications={this.state.onlyShowSentNotifications}
                     />
+                    <StatusMessage id="audit-status-message" actionMessage={this.props.message}
+                                   errorMessage={this.props.errorMessage} />
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
@@ -388,8 +393,6 @@ class AuditPage extends Component {
                             <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
                         </span>
                     </div>}
-
-                    <p name="message">{this.props.message}</p>
                 </div>
             </div>
         );
@@ -399,6 +402,7 @@ class AuditPage extends Component {
 AuditPage.defaultProps = {
     inProgress: false,
     message: '',
+    errorMessage: null,
     autoRefresh: true,
     fetching: false,
     totalPageCount: 0,
@@ -411,6 +415,7 @@ AuditPage.defaultProps = {
 AuditPage.propTypes = {
     inProgress: PropTypes.bool,
     message: PropTypes.string,
+    errorMessage: PropTypes.string,
     autoRefresh: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     totalPageCount: PropTypes.number,
@@ -423,6 +428,7 @@ AuditPage.propTypes = {
 
 const mapStateToProps = state => ({
     message: state.audit.message,
+    errorMessage: state.audit.error.message,
     inProgress: state.audit.inProgress,
     totalPageCount: state.audit.totalPageCount,
     items: state.audit.items,

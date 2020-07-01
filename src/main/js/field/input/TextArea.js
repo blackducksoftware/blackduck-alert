@@ -37,7 +37,7 @@ TextArea.propTypes = {
 };
 
 TextArea.defaultProps = {
-    id: 'id',
+    id: 'textAreaId',
     value: '',
     readOnly: false,
     inputClass: 'form-control',

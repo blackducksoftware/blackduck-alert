@@ -43,20 +43,26 @@ class Details extends Component {
     expandComponent(row) {
         let errorMessage = null;
         if (row.errorMessage) {
-            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={row.errorMessage} />;
+            errorMessage = <TextInput id="auditDetailErrorMessage" label="Error" readOnly name="errorMessage"
+                                      value={row.errorMessage} />;
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="auditJobDetails" sizeClass="col-sm-12" label="Stack Trace" readOnly name="errorStackTrace"
-                                        value={row.errorStackTrace} cols={"auto"} />;
+            errorStackTrace =
+                <TextArea id="auditDetailStackTrace" inputClass="auditJobDetails" sizeClass="col-sm-12"
+                          label="Stack Trace" readOnly
+                          name="errorStackTrace"
+                          value={row.errorStackTrace} cols={'auto'} />;
         }
 
         return (<div className="auditJobDetails">{errorMessage}{errorStackTrace}</div>);
     }
 
     resendButton(cell, row) {
-        return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row}
-                                           buttonText="Re-send" />);
+        return (<RefreshTableCellFormatter
+            id="audit-detail-refresh-cell"
+            handleButtonClicked={this.onResendClick} currentRowSelected={row}
+            buttonText="Re-send" />);
     }
 
     flattenJobsForTable(jsonArray = []) {
@@ -118,7 +124,7 @@ class Details extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="expandableContainer">
-                        <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                        <Tabs defaultActiveKey={1} id="audit-details-tabs">
                             <Tab eventKey={1} title="Distribution Jobs">
                                 <div className="container-fluid">
                                     <BootstrapTable
@@ -140,7 +146,8 @@ class Details extends Component {
                                         <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell"
                                                            dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
                                         <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle
-                                                           columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
+                                                           columnClassName="tableCell">Time Last
+                                            Sent</TableHeaderColumn>
                                         <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell"
                                                            dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
                                         <TableHeaderColumn dataField="" width="48" expandable={false}
@@ -157,6 +164,7 @@ class Details extends Component {
                                 </div>
                             </Tab>
                         </Tabs>
+                        <p name="message">{this.props.errorMessage}</p>
                     </div>
                 </Modal.Body>
 
@@ -167,6 +175,7 @@ class Details extends Component {
 
 Details.propTypes = {
     show: PropTypes.bool,
+    errorMessage: PropTypes.string,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     currentEntry: PropTypes.object.isRequired,
     resendNotification: PropTypes.func.isRequired,
@@ -183,6 +192,7 @@ Details.propTypes = {
 };
 
 Details.defaultProps = {
+    errorMessage: null,
     show: false,
     descriptors: []
 };

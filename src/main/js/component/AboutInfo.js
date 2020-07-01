@@ -27,7 +27,7 @@ class AboutInfo extends React.Component {
         };
     }
 
-    createDescriptorTable(tableData, uriPrefix) {
+    createDescriptorTable(id, tableData, uriPrefix) {
         const nameRenderer = this.createNameColumnRenderer(uriPrefix);
         const tableOptions = {
             defaultSortName: 'name',
@@ -35,7 +35,7 @@ class AboutInfo extends React.Component {
             noDataText: 'No data found'
         };
         return (
-            <div className="form-group">
+            <div id={id} className="form-group">
                 <BootstrapTable
                     version="4"
                     data={tableData}
@@ -57,61 +57,34 @@ class AboutInfo extends React.Component {
         );
     }
 
-    createProviderTableData(globalDescriptors) {
+    createTableData(userBasedDescriptors, descriptors) {
         const data = [];
-        for (let key in globalDescriptors) {
-            const descriptor = globalDescriptors[key];
-            if (!data.find(existing => existing.urlName === descriptor.urlName)) {
+        for (let key in descriptors) {
+            const descriptor = descriptors[key];
+            const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(
+                userBasedDescriptors, descriptor.name, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const globalConfigAllowed = Boolean(globalDescriptor);
+            if (!data.find((item) => item.urlName === descriptor.urlName)) {
                 data.push({
                     name: descriptor.label,
                     urlName: descriptor.urlName,
-                    navigate: true
+                    navigate: globalConfigAllowed
                 });
             }
         }
         return data;
     }
 
-    createChannelTableData(globalDescriptors, distributionDescriptors) {
-        const data = [];
-        const nameSet = new Set();
-        globalDescriptors.map(descriptor => descriptor.name)
-        .forEach(name => nameSet.add(name));
-        distributionDescriptors.map(descriptor => descriptor.name)
-        .forEach(name => nameSet.add(name));
-
-        nameSet.forEach(descriptorName => {
-            const globalDescriptor = globalDescriptors.find(descriptor => descriptor.name === descriptorName);
-            if (globalDescriptor) {
-                data.push({
-                    name: globalDescriptor.label,
-                    urlName: globalDescriptor.urlName,
-                    navigate: true
-                });
-            } else {
-                const distributionDescriptor = distributionDescriptors.find(descriptor => descriptor.name === descriptorName);
-                data.push({
-                    name: distributionDescriptor.label,
-                    urlName: distributionDescriptor.urlName,
-                    navigate: false
-                });
-            }
-        });
-
-        return data;
-    }
-
     render() {
         const {
-            version, description, projectUrl, descriptors
+            version, description, projectUrl, descriptors, providers, channels
         } = this.props;
-        const providerGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-        const channelGlobalList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-        const channelDistributionList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-        const providerData = this.createProviderTableData(providerGlobalList);
-        const channelData = this.createChannelTableData(channelGlobalList, channelDistributionList);
-        const providerTable = this.createDescriptorTable(providerData, '/alert/providers/');
-        const channelTable = this.createDescriptorTable(channelData, '/alert/channels/');
+        const userProviderList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER);
+        const userChannelList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL);
+        const providerData = this.createTableData(userProviderList, providers);
+        const channelData = this.createTableData(userChannelList, channels);
+        const providerTable = this.createDescriptorTable('about-providers', providerData, '/alert/providers/');
+        const channelTable = this.createDescriptorTable('about-channels', channelData, '/alert/channels/');
         const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All
             Distributions</NavLink></div>);
         const providersMissing = !providerData || providerData.length <= 0;
@@ -120,11 +93,14 @@ class AboutInfo extends React.Component {
             <div>
                 <ConfigurationLabel configurationName="About" />
                 <div className="form-horizontal">
-                    <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
-                    <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrl}
+                    <ReadOnlyField id="about-description" label="Description" name="description" readOnly="true"
+                                   value={description} />
+                    <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
+                    <ReadOnlyField id="about-url" label="Project URL" name="projectUrl" readOnly="true"
+                                   value={projectUrl}
                                    url={projectUrl} />
-                    <LabeledField label="View Distributions" name="distribution" readOnly="true" value=""
+                    <LabeledField id="about-view-distribution" label="View Distributions" name="distribution"
+                                  readOnly="true" value=""
                                   field={distributionLink} />
                     {providersMissing && channelsMissing &&
                     <div className="form-group">
@@ -172,11 +148,15 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
+    providers: PropTypes.array,
+    channels: PropTypes.array,
     descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfo.defaultProps = {
     description: '',
+    providers: [],
+    channels: [],
     descriptors: []
 };
 
@@ -184,6 +164,8 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
+    providers: state.about.providerList,
+    channels: state.about.channelList,
     descriptors: state.descriptors.items
 });
 

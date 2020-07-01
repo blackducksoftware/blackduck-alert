@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.validators;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -45,6 +46,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT = "Black Duck configuration '%s' is invalid. Black Duck URL missing.";
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
     public static final String BLACKDUCK_LOCALHOST_ERROR_FORMAT = "Black Duck configuration '%s' is using localhost.";
+    public static final String BLACKDUCK_API_PERMISSION_FORMAT = "User permission failed, cannot read notifications from Black Duck.";
     private final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
 
     public static String createProviderSystemMessageType(BlackDuckProperties properties, SystemMessageType systemMessageType) {
@@ -59,7 +61,7 @@ public class BlackDuckValidator extends BaseSystemValidator {
         boolean valid = true;
         String configName = blackDuckProperties.getConfigName();
         logger.info("Validating Black Duck configuration '{}'...", configName);
-        
+
         try {
             Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             removeOldConfigMessages(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
@@ -99,6 +101,12 @@ public class BlackDuckValidator extends BaseSystemValidator {
                     connectivityWarning(blackDuckProperties, message);
                     valid = false;
                 }
+            }
+
+            BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+            if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+                connectivityWarning(blackDuckProperties, BLACKDUCK_API_PERMISSION_FORMAT);
+                valid = false;
             }
         } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
             logger.error("  -> Black Duck configuration '{}' is invalid; cause: {}", configName, ex.getMessage());

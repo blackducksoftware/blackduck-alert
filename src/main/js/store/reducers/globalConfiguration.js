@@ -16,15 +16,14 @@ import {
     SERIALIZE
 } from 'store/actions/types';
 
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+
 const initialState = {
     fetching: false,
     updateStatus: null,
     testing: false,
     actionMessage: null,
-    error: {
-        message: '',
-        fieldErrors: {}
-    },
+    error: HTTPErrorUtils.createEmptyErrorObject(),
     config: {},
     allConfigs: []
 };
@@ -42,6 +41,7 @@ const globalConfiguration = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 allConfigs: action.config,
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
         case CONFIG_FETCHED:
             return Object.assign({}, state, {
@@ -50,10 +50,7 @@ const globalConfiguration = (state = initialState, action) => {
                 testing: false,
                 actionMessage: null,
                 config: action.config,
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_REFRESHING:
@@ -68,17 +65,15 @@ const globalConfiguration = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'FETCHED',
                 testing: false,
-                config: action.config
+                config: action.config,
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_UPDATE_ERROR:
             return Object.assign({}, state, {
                 updateStatus: 'ERROR',
                 actionMessage: null,
-                error: {
-                    message: action.message,
-                    fieldErrors: action.errors
-                }
+                error: HTTPErrorUtils.createErrorObject(action)
             });
         case CONFIG_UPDATING:
             return Object.assign({}, state, {
@@ -86,10 +81,7 @@ const globalConfiguration = (state = initialState, action) => {
                 updateStatus: 'UPDATING',
                 testing: false,
                 actionMessage: null,
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_UPDATED:
@@ -98,10 +90,7 @@ const globalConfiguration = (state = initialState, action) => {
                 updateStatus: 'UPDATED',
                 testing: false,
                 actionMessage: 'Update successful',
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                },
+                error: HTTPErrorUtils.createEmptyErrorObject(),
                 config: action.config
             });
 
@@ -119,10 +108,7 @@ const globalConfiguration = (state = initialState, action) => {
                 updateStatus: null,
                 testing: false,
                 actionMessage: 'Test successful',
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_TEST_FAILED:
@@ -131,10 +117,7 @@ const globalConfiguration = (state = initialState, action) => {
                 updateStatus: null,
                 testing: false,
                 actionMessage: null,
-                error: {
-                    message: action.message,
-                    fieldErrors: action.errors || {}
-                }
+                error: HTTPErrorUtils.createErrorObject(action)
             });
 
         case CONFIG_DELETED:
@@ -142,28 +125,19 @@ const globalConfiguration = (state = initialState, action) => {
                 updateStatus: 'DELETED',
                 actionMessage: 'Delete successful',
                 config: {},
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_DELETING:
             return Object.assign({}, state, {
                 actionMessage: null,
                 updateStatus: 'DELETING',
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case CONFIG_CLEAR_FIELD_ERRORS:
             return Object.assign({}, state, {
-                error: {
-                    message: '',
-                    fieldErrors: {}
-                }
+                error: HTTPErrorUtils.createEmptyErrorObject()
             });
 
         case SERIALIZE:

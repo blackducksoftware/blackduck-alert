@@ -108,14 +108,15 @@ class AboutInfoFooter extends React.Component {
                 {popover}
             </Overlay>);
         return (
-            <div className="statusPopover">
+            <div id="about-footer-status" className="statusPopover">
                 <div
                     ref={(button) => {
                         this.target = button;
                     }}
                     onClick={this.handleOverlayButton}
                 >
-                    <div className={iconColor}><FontAwesomeIcon icon={iconClassName} className="alert-icon" size="lg" /></div>
+                    <div className={iconColor}><FontAwesomeIcon icon={iconClassName} className="alert-icon" size="lg" />
+                    </div>
                 </div>
                 {overlayComponent}
             </div>

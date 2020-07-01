@@ -5,7 +5,13 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import FieldsPanel from 'field/FieldsPanel';
-import { checkDescriptorForGlobalConfig, getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
+import {
+    checkDescriptorForGlobalConfig,
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob
+} from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
@@ -199,7 +205,8 @@ class DistributionConfiguration extends Component {
                     handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}
                 />
-                <p name="configurationMessage">{this.props.configurationMessage}</p>
+                <p id="distribution-configuration-message"
+                   name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
     }
@@ -303,7 +310,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
     job: state.distributionConfigs.job,
-    fieldErrors: state.distributionConfigs.error,
+    fieldErrors: state.distributionConfigs.error.fieldErrors,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress,
     descriptors: state.descriptors.items,
