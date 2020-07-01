@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.azure.boards.common.service.project;
 
+import java.util.Map;
+
 import com.google.gson.JsonObject;
-import com.synopsys.integration.azure.boards.common.model.ReferenceLinksModel;
+import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 
 public class TeamProjectResponseModel {
     private String id;
@@ -38,7 +40,7 @@ public class TeamProjectResponseModel {
     private JsonObject capabilities;
     private JsonObject defaultTeam;
     private JsonObject visibility;
-    private ReferenceLinksModel _links;
+    private Map<String, ReferenceLinkModel> _links;
 
     public TeamProjectResponseModel() {
         // For serialization
@@ -92,7 +94,7 @@ public class TeamProjectResponseModel {
         return visibility;
     }
 
-    public ReferenceLinksModel getLinks() {
+    public Map<String, ReferenceLinkModel> getLinks() {
         return _links;
     }
 
