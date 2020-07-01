@@ -1,4 +1,5 @@
 rootProject.name = 'blackduck-alert'
+include 'azure-boards-common'
 include 'alert-common'
 include 'alert-database'
 
