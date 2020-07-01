@@ -35,11 +35,11 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.workflow.ProviderCallbackHandler;
+import com.synopsys.integration.alert.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
