@@ -4,7 +4,7 @@ import LabeledField from 'field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
-import GeneralButton from "./input/GeneralButton";
+import GeneralButton from 'field/input/GeneralButton';
 
 class UploadFileButtonField extends Component {
     constructor(props) {
@@ -166,7 +166,7 @@ class UploadFileButtonField extends Component {
                     </div>
                 </div>
                 {this.state.success &&
-                <StatusMessage actionMessage={this.state.statusMessage} />
+                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={this.state.statusMessage} />
                 }
             </div>
         );
@@ -185,6 +185,7 @@ class UploadFileButtonField extends Component {
 }
 
 UploadFileButtonField.propTypes = {
+    id: PropTypes.string,
     endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
@@ -202,6 +203,7 @@ UploadFileButtonField.propTypes = {
 };
 
 UploadFileButtonField.defaultProps = {
+    id: 'uploadFileButtonFieldId',
     value: false,
     name: '',
     errorValue: null,

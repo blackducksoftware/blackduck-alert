@@ -238,6 +238,7 @@ class RoleTable extends Component {
         return (
             <div>
                 <TableDisplay
+                    id="roles"
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
                     onEditState={this.onEdit}

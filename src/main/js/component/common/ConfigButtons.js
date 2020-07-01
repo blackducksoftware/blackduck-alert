@@ -18,7 +18,7 @@ class ConfigButtons extends Component {
     }
 
     createTestButton() {
-        const { includeTest, onTestClick, testLabel } = this.props;
+        const { includeTest, onTestClick, testLabel, testId } = this.props;
         if (includeTest) {
             return (<div style={{
                 display: 'inline-block',
@@ -27,31 +27,31 @@ class ConfigButtons extends Component {
                 borderRight: '1px solid #aaa'
             }}
             >
-                <GeneralButton id="generalButton" onClick={onTestClick}>{testLabel}</GeneralButton>
+                <GeneralButton id={testId} onClick={onTestClick}>{testLabel}</GeneralButton>
             </div>);
         }
         return null;
     }
 
     createSaveButton() {
-        const { includeSave, submitLabel } = this.props;
+        const { includeSave, submitLabel, submitId } = this.props;
         if (includeSave) {
-            return (<SubmitButton id="submitButton">{submitLabel}</SubmitButton>);
+            return (<SubmitButton id={submitId}>{submitLabel}</SubmitButton>);
         }
         return null;
     }
 
     createCancelButton() {
-        const { includeCancel, onCancelClick, cancelLabel } = this.props;
+        const { includeCancel, onCancelClick, cancelLabel, cancelId } = this.props;
 
         if (includeCancel) {
-            return (<CancelButton id="cancelButton" onClick={onCancelClick}>{cancelLabel}</CancelButton>);
+            return (<CancelButton id={cancelId} onClick={onCancelClick}>{cancelLabel}</CancelButton>);
         }
         return null;
     }
 
     createDeleteButton() {
-        const { includeDelete, includeSave, onDeleteClick, deleteLabel } = this.props;
+        const { includeDelete, includeSave, onDeleteClick, deleteLabel, deleteId } = this.props;
         const borderLeft = includeSave ? '1px solid #aaa' : 'none';
         const style = {
             display: 'inline-block',
@@ -61,7 +61,7 @@ class ConfigButtons extends Component {
         if (includeDelete) {
             return (<div style={Object.assign(style, { borderLeft })}
                 >
-                    <GeneralButton id="deleteButton" onClick={this.handleDelete}>{deleteLabel}</GeneralButton>
+                    <GeneralButton id={deleteId} onClick={this.handleDelete}>{deleteLabel}</GeneralButton>
                 </div>
             );
         }
@@ -148,6 +148,10 @@ class ConfigButtons extends Component {
 
 
 ConfigButtons.propTypes = {
+    cancelId: PropTypes.string,
+    submitId: PropTypes.string,
+    testId: PropTypes.string,
+    deleteId: PropTypes.string,
     includeCancel: PropTypes.bool,
     includeSave: PropTypes.bool,
     includeTest: PropTypes.bool,
@@ -165,6 +169,10 @@ ConfigButtons.propTypes = {
 };
 
 ConfigButtons.defaultProps = {
+    cancelId: 'cancelButton',
+    submitId: 'submitButton',
+    testId: 'generalButton',
+    deleteId: 'deleteButton',
     includeCancel: false,
     includeSave: true,
     includeTest: false,

@@ -146,7 +146,11 @@ class GlobalConfiguration extends React.Component {
                     description={description}
                     lastUpdated={lastUpdated}
                 />
-                <StatusMessage errorMessage={errorMessage} actionMessage={actionMessage} />
+                <StatusMessage
+                    id="global-config-status-message"
+                    errorMessage={errorMessage}
+                    actionMessage={actionMessage}
+                />
 
                 {body}
             </div>

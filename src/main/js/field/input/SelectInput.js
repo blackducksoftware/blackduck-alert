@@ -60,7 +60,7 @@ SelectInput.propTypes = {
 };
 
 SelectInput.defaultProps = {
-    id: 'id',
+    id: 'selectInputId',
     placeholder: 'Choose a value',
     options: [],
     components: {},

@@ -298,6 +298,7 @@ class UserTable extends Component {
             <div>
                 <div>
                     <TableDisplay
+                        id="users"
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
                         clearModalFieldState={this.clearModalFieldState}
