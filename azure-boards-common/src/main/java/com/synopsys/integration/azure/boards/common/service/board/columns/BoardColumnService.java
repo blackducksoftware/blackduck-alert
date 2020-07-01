@@ -40,7 +40,7 @@ public class BoardColumnService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayWithCountResponseModel<NameModel> getColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
+    public AzureArrayWithCountResponseModel<NameModel> getBoardColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
