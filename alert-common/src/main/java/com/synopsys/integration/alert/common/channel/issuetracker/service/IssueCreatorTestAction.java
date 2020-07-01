@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerFieldException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueCreatorTestAction {
@@ -115,9 +115,9 @@ public abstract class IssueCreatorTestAction {
             if (transitionErrors.isEmpty()) {
                 return finalResult;
             } else {
-                throw new IssueTrackerFieldException(transitionErrors);
+                throw new AlertFieldException(transitionErrors);
             }
-        } catch (IssueTrackerFieldException fieldException) {
+        } catch (AlertFieldException fieldException) {
             safelyCleanUpIssue(issueTrackerContext, initialIssueKey);
             throw fieldException;
         } catch (IssueTrackerException exception) {
