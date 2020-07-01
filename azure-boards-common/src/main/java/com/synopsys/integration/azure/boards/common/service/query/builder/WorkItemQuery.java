@@ -23,9 +23,8 @@
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -45,15 +44,24 @@ public class WorkItemQuery {
     }
 
     public static WorkItemQuerySelect select(String field1, String... additionalFields) {
-        List<String> fields = Stream.of(field1, additionalFields)
-                                  .map(String.class::cast)
-                                  .collect(Collectors.toList());
+        List<String> fields;
+        if (additionalFields != null) {
+            fields = new ArrayList<>(List.of(additionalFields));
+            fields.add(0, field1);
+        } else {
+            fields = List.of(field1);
+        }
         return new WorkItemQuerySelect(fields);
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        StringBuilder queryStringBuilder = new StringBuilder();
+        queryStringBuilder.append(select.toString());
+        queryStringBuilder.append(' ');
+        queryStringBuilder.append(from.toString());
+        queryStringBuilder.append(' ');
+        return queryStringBuilder.toString();
     }
 
 }

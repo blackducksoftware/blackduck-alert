@@ -28,6 +28,10 @@ public class WorkItemQueryWhereCondition {
     private final String rhs;
     private final WorkItemQueryWhereConditionRHSType rhsType;
 
+    public static WorkItemQueryWhereCondition equals(String fieldName, String value) {
+        return new WorkItemQueryWhereCondition(fieldName, "=", value, WorkItemQueryWhereConditionRHSType.STRING);
+    }
+
     WorkItemQueryWhereCondition(String lhs, String operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
         this.lhs = lhs;
         this.operator = operator;

@@ -23,6 +23,7 @@
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WorkItemQuerySelect {
     private static final String FROM_WORK_ITEMS = "WorkItems";
@@ -44,6 +45,18 @@ public class WorkItemQuerySelect {
 
     /* package-private */ List<String> getFields() {
         return fields;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder selectBuilder = new StringBuilder();
+        selectBuilder.append("SELECT ");
+        String joinedFields = fields
+                                  .stream()
+                                  .map(field -> String.format("[%s]", field))
+                                  .collect(Collectors.joining(", "));
+        selectBuilder.append(joinedFields);
+        return selectBuilder.toString();
     }
 
 }

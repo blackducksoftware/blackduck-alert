@@ -43,4 +43,9 @@ public class WorkItemQueryFrom {
         return from;
     }
 
+    @Override
+    public String toString() {
+        return String.format("FROM %s", from);
+    }
+
 }
