@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.channel.issuetracker.config;
 
 import java.util.Optional;
 
+//TODO: determine if this can be used with Azure Boards or if a new design is needed
 public class IssueConfig {
     private String projectName;
     private String projectKey;
