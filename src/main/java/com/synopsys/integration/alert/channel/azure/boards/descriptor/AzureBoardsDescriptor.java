@@ -30,18 +30,20 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
 public class AzureBoardsDescriptor extends ChannelDescriptor {
-    public static final String KEY_AZURE_PROJECT = "channel.azure.boards.project";
-    public static final String KEY_AZURE_BOARD = "channel.azure.boards.board";
-    public static final String KEY_WORK_ITEM_TYPE = "channel.azure.boards.work.item.type";
-    public static final String KEY_WORK_ITEM_COMPLETED_STATE = "channel.azure.boards.work.item.completed.state";
-    public static final String KEY_WORK_ITEM_REOPEN_STATE = "channel.azure.boards.work.item.reopen.state";
+    public static final String AZURE_BOARDS_PREFIX = "azure.boards";
 
-    public static final String KEY_AZURE_BOARDS_URL = "azure.boards.url";
-    public static final String KEY_ORGANIZATION_NAME = "azure.boards.organization.name";
-    public static final String KEY_CONSUMER_KEY = "azure.boards.consumer.key";
-    public static final String KEY_PRIVATE_KEY = "azure.boards.private.key";
-    public static final String KEY_OAUTH = "azure.boards.oauth";
-    public static final String KEY_ACCESS_TOKEN = "azure.boards.access.token";
+    public static final String KEY_AZURE_PROJECT = "channel." + AZURE_BOARDS_PREFIX + ".project";
+    public static final String KEY_AZURE_BOARD = "channel." + AZURE_BOARDS_PREFIX + ".board";
+    public static final String KEY_WORK_ITEM_TYPE = "channel." + AZURE_BOARDS_PREFIX + ".work.item.type";
+    public static final String KEY_WORK_ITEM_COMPLETED_STATE = "channel." + AZURE_BOARDS_PREFIX + ".work.item.completed.state";
+    public static final String KEY_WORK_ITEM_REOPEN_STATE = "channel." + AZURE_BOARDS_PREFIX + ".work.item.reopen.state";
+
+    public static final String KEY_AZURE_BOARDS_URL = AZURE_BOARDS_PREFIX + ".url";
+    public static final String KEY_ORGANIZATION_NAME = AZURE_BOARDS_PREFIX + ".organization.name";
+    public static final String KEY_CONSUMER_KEY = AZURE_BOARDS_PREFIX + ".consumer.key";
+    public static final String KEY_PRIVATE_KEY = AZURE_BOARDS_PREFIX + ".private.key";
+    public static final String KEY_OAUTH = AZURE_BOARDS_PREFIX + ".oauth";
+    public static final String KEY_ACCESS_TOKEN = AZURE_BOARDS_PREFIX + ".access.token";
 
     public static final String AZURE_BOARDS_LABEL = "Azure Boards";
     public static final String AZURE_BOARDS_URL = "azure_boards";
