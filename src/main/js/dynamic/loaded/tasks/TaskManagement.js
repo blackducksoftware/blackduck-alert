@@ -164,7 +164,7 @@ class TaskManagement extends Component {
                     inProgress={fetching}
                     enableEdit
                     editColumnText="View"
-                    editColumnIcon="info"
+                    editColumnIcon="folder-open"
                     enableCopy={false}
                 />
             </div>
