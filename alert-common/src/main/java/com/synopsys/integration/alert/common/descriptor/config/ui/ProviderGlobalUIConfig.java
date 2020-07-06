@@ -24,11 +24,11 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Streams;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -66,7 +66,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
 
         List<ConfigField> providerCommonGlobalFields = List.of(providerConfigEnabled, providerConfigName);
         List<ConfigField> providerGlobalFields = createProviderGlobalFields();
-        return Streams.concat(providerCommonGlobalFields.stream(), providerGlobalFields.stream()).collect(Collectors.toList());
+        return Stream.concat(providerCommonGlobalFields.stream(), providerGlobalFields.stream()).collect(Collectors.toList());
     }
 
     public abstract List<ConfigField> createProviderGlobalFields();

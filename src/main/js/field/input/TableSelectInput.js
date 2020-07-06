@@ -306,7 +306,7 @@ class TableSelectInput extends Component {
             <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>
         );
 
-        const { paged, searchable } = this.props;
+        const { paged, searchable, fieldKey } = this.props;
 
         const displayTable = (this.state.progress) ?
             <div className="progressIcon">
@@ -337,7 +337,8 @@ class TableSelectInput extends Component {
             <div>
                 {displayTable}
                 <div>
-                    <GeneralButton className="tableSelectOkButton" onClick={okClicked}>OK</GeneralButton>
+                    <GeneralButton id={`${fieldKey}-confirmation`} className="tableSelectOkButton"
+                                   onClick={okClicked}>OK</GeneralButton>
                 </div>
             </div>);
     }
@@ -357,11 +358,14 @@ class TableSelectInput extends Component {
             MultiValueRemove: () => <div></div>
         };
         const { fieldKey } = this.props;
+        const selectFieldId = `${fieldKey}-selectField`;
         const selectButtonId = `${fieldKey}_select`;
         const clearButtonId = `${fieldKey}_clear`;
+        const confirmModalId = `${fieldKey}-confirmModal`;
         return (
             <div className="col-sm-8 d-inline-flex p-2">
                 <Select
+                    id={selectFieldId}
                     className="typeAheadField"
                     onChange={null}
                     options={[]}
@@ -382,7 +386,8 @@ class TableSelectInput extends Component {
                     Clear
                 </GeneralButton>
                 }
-                <ConfirmModal showModal={this.state.showClearConfirm}
+                <ConfirmModal id={confirmModalId}
+                              showModal={this.state.showClearConfirm}
                               title="Are you sure you want to clear all selected items?"
                               affirmativeAction={this.handleClearClick}
                               negativeAction={this.handleHideClearConfirm}

@@ -85,6 +85,7 @@ repositories {
 }
 
 dependencies {
+    implementation project(':azure-boards-common')
     implementation project(':alert-common')
     implementation project(':alert-database')
 

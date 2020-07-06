@@ -205,7 +205,8 @@ class DistributionConfiguration extends Component {
                     handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}
                 />
-                <p name="configurationMessage">{this.props.configurationMessage}</p>
+                <p id="distribution-configuration-message"
+                   name="configurationMessage">{this.props.configurationMessage}</p>
             </div>
         );
     }

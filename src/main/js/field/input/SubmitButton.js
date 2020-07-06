@@ -7,7 +7,7 @@ const SubmitButton = ({ children, id }) => (
 
 SubmitButton.defaultProps = {
     children: 'Submit',
-    id: 'id'
+    id: 'submitButtonId'
 };
 
 SubmitButton.propTypes = {

@@ -115,7 +115,7 @@ class EndpointButtonField extends Component {
                 </div>
                 }
                 {this.state.success &&
-                <StatusMessage actionMessage={statusMessage} />
+                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
 
             </div>
@@ -144,6 +144,7 @@ class EndpointButtonField extends Component {
 }
 
 EndpointButtonField.propTypes = {
+    id: PropTypes.string,
     endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
@@ -161,6 +162,7 @@ EndpointButtonField.propTypes = {
 };
 
 EndpointButtonField.defaultProps = {
+    id: 'endpointButtonFieldId',
     value: false,
     fields: [],
     requestedDataFieldKeys: [],
