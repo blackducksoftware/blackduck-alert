@@ -20,23 +20,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.model;
+package com.synopsys.integration.azure.boards.common.service.workitem;
 
-public class FieldReferenceModel {
-    private String referenceName;
+public class WorkItemCommentVersionRefModel {
+    private Integer commentId;
+    private String text;
+    private Integer version;
+    private Integer createdInRevision;
+    private Boolean isDeleted;
     private String url;
 
-    public FieldReferenceModel() {
+    public WorkItemCommentVersionRefModel() {
         // For serialization
     }
 
-    public FieldReferenceModel(String referenceName, String url) {
-        this.referenceName = referenceName;
+    public WorkItemCommentVersionRefModel(Integer commentId, String text, Integer version, Integer createdInRevision, Boolean isDeleted, String url) {
+        this.commentId = commentId;
+        this.text = text;
+        this.version = version;
+        this.createdInRevision = createdInRevision;
+        this.isDeleted = isDeleted;
         this.url = url;
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public Integer getCommentId() {
+        return commentId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public Integer getCreatedInRevision() {
+        return createdInRevision;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
     }
 
     public String getUrl() {

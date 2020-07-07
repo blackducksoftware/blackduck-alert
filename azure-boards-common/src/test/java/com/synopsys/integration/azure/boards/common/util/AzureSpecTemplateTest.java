@@ -1,10 +1,8 @@
-package com.synopsys.integration.azure.boards.common;
+package com.synopsys.integration.azure.boards.common.util;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
-
-import com.synopsys.integration.azure.boards.common.model.AzureSpecTemplate;
 
 public class AzureSpecTemplateTest {
     @Test

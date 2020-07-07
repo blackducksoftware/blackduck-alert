@@ -22,25 +22,19 @@
  */
 package com.synopsys.integration.azure.boards.common.model;
 
-public class FieldReferenceModel {
-    private String referenceName;
-    private String url;
+public class NameModel {
+    private String name;
 
-    public FieldReferenceModel() {
+    public NameModel() {
         // For serialization
     }
 
-    public FieldReferenceModel(String referenceName, String url) {
-        this.referenceName = referenceName;
-        this.url = url;
+    public NameModel(String name) {
+        this.name = name;
     }
 
-    public String getReferenceName() {
-        return referenceName;
-    }
-
-    public String getUrl() {
-        return url;
+    public String getName() {
+        return name;
     }
 
 }
