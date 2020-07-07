@@ -22,28 +22,30 @@
  */
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
+import javax.annotation.Nullable;
+
 public class WorkItemQueryWhereCondition {
     private final String lhs;
-    private final String operator;
+    private final WorkItemQueryWhereOperator operator;
     private final String rhs;
     private final WorkItemQueryWhereConditionRHSType rhsType;
+    private final WorkItemQueryWhereJunctionType junction;
+    private final boolean inGroup;
 
-    public static WorkItemQueryWhereCondition equals(String fieldName, String value) {
-        return new WorkItemQueryWhereCondition(fieldName, "=", value, WorkItemQueryWhereConditionRHSType.STRING);
-    }
-
-    WorkItemQueryWhereCondition(String lhs, String operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
+    /* package-private */ WorkItemQueryWhereCondition(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType, @Nullable WorkItemQueryWhereJunctionType junction, boolean inGroup) {
         this.lhs = lhs;
         this.operator = operator;
         this.rhs = rhs;
         this.rhsType = rhsType;
+        this.junction = junction;
+        this.inGroup = inGroup;
     }
 
     public String getLhs() {
         return lhs;
     }
 
-    public String getOperator() {
+    public WorkItemQueryWhereOperator getOperator() {
         return operator;
     }
 
@@ -53,6 +55,10 @@ public class WorkItemQueryWhereCondition {
 
     public WorkItemQueryWhereConditionRHSType getRhsType() {
         return rhsType;
+    }
+
+    public WorkItemQueryWhereJunctionType getJunction() {
+        return junction;
     }
 
 }

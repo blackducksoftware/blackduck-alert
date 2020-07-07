@@ -23,7 +23,8 @@
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
 public enum WorkItemQueryWhereConditionRHSType {
-    STRING,
+    FIELD,
+    LITERAL,
     MACRO
 
 }

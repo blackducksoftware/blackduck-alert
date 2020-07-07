@@ -57,6 +57,13 @@ public class WorkItemQuery {
         return new WorkItemQuerySelect(fields);
     }
 
+    /**
+     * Alias for {@link WorkItemQuery#toString}
+     */
+    public String rawQuery() {
+        return toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder queryStringBuilder = new StringBuilder();
