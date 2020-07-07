@@ -37,11 +37,11 @@ public class WorkItemQueryService {
 
     public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL
-                                 .defineReplacement("organization}", organizationName)
+                                 .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
-        WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.toString());
+        WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
         return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
     }
 
