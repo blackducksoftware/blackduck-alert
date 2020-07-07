@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-jira
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,11 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.jira.common;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.issuetracker.common.config.IssueConfig;
-import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 
 public abstract class JiraContextBuilder<T> {
     protected abstract String getProjectFieldKey();

@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-jira
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.jira.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,12 +31,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
 
 @Component
 public class JiraMessageParser extends ChannelMessageParser {

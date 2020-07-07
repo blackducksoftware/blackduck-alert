@@ -1,7 +1,6 @@
 ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
-    api 'com.synopsys.integration:issuetracker-jira:0.0.12'
     api 'com.synopsys.integration:blackduck-common:48.1.0'
 
     api 'org.springframework.boot:spring-boot-starter-activemq'

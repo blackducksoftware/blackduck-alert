@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-jira
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.jira.common;
 
 import java.util.Set;
 
@@ -29,6 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -36,13 +43,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
-import com.synopsys.integration.issuetracker.common.IssueOperation;
-import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
-import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.service.TestIssueRequestCreator;
+import com.synopsys.integration.alert.jira.common.util.JiraIssuePropertiesUtil;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
