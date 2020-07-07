@@ -26,21 +26,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorkItemQuerySelect {
-    private static final String FROM_WORK_ITEMS = "WorkItems";
-    private static final String FROM_WORK_ITEM_LINKS = "WorkItemLinks";
-
     private final List<String> fields;
 
     /* package-private */ WorkItemQuerySelect(List<String> fields) {
         this.fields = fields;
     }
 
+    public WorkItemQuerySelect andSelect(String field) {
+        fields.add(field);
+        return this;
+    }
+
     public WorkItemQueryFrom fromWorkItems() {
-        return new WorkItemQueryFrom(this, FROM_WORK_ITEMS);
+        return new WorkItemQueryFrom(this, WorkItemQueryFrom.FROM_WORK_ITEMS);
     }
 
     public WorkItemQueryFrom fromWorkItemLinks() {
-        return new WorkItemQueryFrom(this, FROM_WORK_ITEM_LINKS);
+        return new WorkItemQueryFrom(this, WorkItemQueryFrom.FROM_WORK_ITEM_LINKS);
     }
 
     /* package-private */ List<String> getFields() {

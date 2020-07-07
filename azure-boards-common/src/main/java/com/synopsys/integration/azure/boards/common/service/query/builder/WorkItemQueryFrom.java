@@ -23,6 +23,9 @@
 package com.synopsys.integration.azure.boards.common.service.query.builder;
 
 public class WorkItemQueryFrom {
+    /* package-private */ static final String FROM_WORK_ITEMS = "WorkItems";
+    /* package-private */ static final String FROM_WORK_ITEM_LINKS = "WorkItemLinks";
+
     private final WorkItemQuerySelect workItemQuerySelect;
     private final String from;
 

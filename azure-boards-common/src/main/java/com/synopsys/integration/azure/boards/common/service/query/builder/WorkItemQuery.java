@@ -29,6 +29,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+/**
+ * Based on the documentation found here: https://docs.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax
+ */
 public class WorkItemQuery {
     public static final int QUERY_CHAR_LIMIT = 32768;
     public static final DateTimeFormatter AS_OF_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -47,14 +50,9 @@ public class WorkItemQuery {
         this.asOf = asOf;
     }
 
-    public static WorkItemQuerySelect select(String field1, String... additionalFields) {
-        List<String> fields;
-        if (additionalFields != null) {
-            fields = new ArrayList<>(List.of(additionalFields));
-            fields.add(0, field1);
-        } else {
-            fields = List.of(field1);
-        }
+    public static WorkItemQuerySelect select(String field) {
+        List<String> fields = new ArrayList<>();
+        fields.add(field);
         return new WorkItemQuerySelect(fields);
     }
 

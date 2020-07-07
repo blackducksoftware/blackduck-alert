@@ -34,7 +34,6 @@ public class WorkItemQueryTest {
                                           .fromWorkItems()
                                           .whereGroup("Field", WorkItemQueryWhereOperator.EQ, "a value")
                                           .or("Other Field", WorkItemQueryWhereOperator.CONTAINS, "something else")
-                                          .endGroup()
                                           .orderBy("Other Field")
                                           .build();
         assertEquals(expectedQueryString, workItemQuery.toString());
