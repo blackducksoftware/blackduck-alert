@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
+//TODO perhaps this should change to an IssueQuery object that can be executed. Given Azure has a query you can build and IssueSearchProperties are used
+// to execute a query.
 public interface IssueSearchProperties {
 
 }
