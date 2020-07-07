@@ -9,6 +9,12 @@ public class WorkItemLinkModel {
         // For serialization
     }
 
+    public WorkItemLinkModel(String rel, WorkItemReferenceModel source, WorkItemReferenceModel target) {
+        this.rel = rel;
+        this.source = source;
+        this.target = target;
+    }
+
     public String getRel() {
         return rel;
     }
