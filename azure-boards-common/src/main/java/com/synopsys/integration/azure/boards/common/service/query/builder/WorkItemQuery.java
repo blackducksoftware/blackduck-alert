@@ -30,7 +30,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class WorkItemQuery {
-    private static final DateTimeFormatter AS_OF_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    public static final int QUERY_CHAR_LIMIT = 32768;
+    public static final DateTimeFormatter AS_OF_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final WorkItemQuerySelect select;
     private final WorkItemQueryFrom from;
@@ -55,6 +56,10 @@ public class WorkItemQuery {
             fields = List.of(field1);
         }
         return new WorkItemQuerySelect(fields);
+    }
+
+    public boolean exceedsCharLimit() {
+        return toString().length() > QUERY_CHAR_LIMIT;
     }
 
     /**
