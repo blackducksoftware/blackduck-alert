@@ -24,7 +24,7 @@ package com.synopsys.integration.azure.boards.common.service.query;
 
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.service.query.builder.WorkItemQuery;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class WorkItemQueryService {

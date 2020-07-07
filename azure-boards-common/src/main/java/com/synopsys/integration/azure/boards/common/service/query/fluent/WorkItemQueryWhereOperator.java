@@ -1,4 +1,4 @@
-package com.synopsys.integration.azure.boards.common.service.query.builder;
+package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
 public enum WorkItemQueryWhereOperator {
     EQ("="),

@@ -1,4 +1,4 @@
-package com.synopsys.integration.azure.boards.common.service.query.builder;
+package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
 import java.util.ArrayList;
 import java.util.List;

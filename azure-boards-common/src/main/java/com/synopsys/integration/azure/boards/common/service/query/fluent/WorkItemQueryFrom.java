@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.query.builder;
+package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
 public class WorkItemQueryFrom {
     /* package-private */ static final String FROM_WORK_ITEMS = "WorkItems";

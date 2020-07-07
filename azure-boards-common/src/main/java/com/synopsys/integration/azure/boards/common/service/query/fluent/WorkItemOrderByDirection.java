@@ -20,11 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.query.builder;
+package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
-public enum WorkItemQueryWhereConditionRHSType {
-    FIELD,
-    LITERAL,
-    MACRO
+public enum WorkItemOrderByDirection {
+    ASC,
+    DESC
 
 }

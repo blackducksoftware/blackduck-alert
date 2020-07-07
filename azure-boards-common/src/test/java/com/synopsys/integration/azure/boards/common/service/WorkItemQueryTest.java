@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.azure.boards.common.service.query.builder.WorkItemQuery;
-import com.synopsys.integration.azure.boards.common.service.query.builder.WorkItemQueryWhereOperator;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
 
 public class WorkItemQueryTest {
     @Test

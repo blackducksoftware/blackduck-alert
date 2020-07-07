@@ -20,10 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.query.builder;
+package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
-public enum WorkItemOrderByDirection {
-    ASC,
-    DESC
+import java.util.Optional;
+
+public class WorkItemOrderByField {
+    private final String fieldName;
+    private WorkItemOrderByDirection direction;
+
+    public WorkItemOrderByField(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public WorkItemOrderByField(String fieldName, WorkItemOrderByDirection direction) {
+        this.fieldName = fieldName;
+        this.direction = direction;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public Optional<WorkItemOrderByDirection> getDirection() {
+        return Optional.ofNullable(direction);
+    }
 
 }
