@@ -137,7 +137,9 @@ class TaskManagement extends Component {
     }
 
     render() {
-        const { label, description, fetching, errorMessage } = this.props;
+        const {
+            label, description, fetching, errorMessage
+        } = this.props;
         return (
             <div>
                 <ConfigurationLabel
@@ -160,7 +162,9 @@ class TaskManagement extends Component {
                     hasFieldErrors={false}
                     fetching={fetching}
                     inProgress={fetching}
-                    enableEdit={false}
+                    enableEdit
+                    editColumnText="View"
+                    editColumnIcon="folder-open"
                     enableCopy={false}
                 />
             </div>
