@@ -20,28 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.board.columns;
 
+import java.lang.reflect.Type;
+
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
+import com.synopsys.integration.azure.boards.common.model.NameModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
-public class AzureWorkItemService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workitemId}");
+public class BoardColumnService {
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS = new AzureSpecTemplate("/{organization}/{project}/_apis/work/boardcolumns");
 
     private final AzureHttpService azureHttpService;
 
-    public AzureWorkItemService(AzureHttpService azureHttpService) {
+    public BoardColumnService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 
-    public WorkItemResponseModel getWorkItem(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
+    public AzureArrayWithCountResponseModel<NameModel> getBoardColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{workitemId}", workItemId.toString())
                                  .populateSpec();
-        return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
+        Type responseType = new TypeToken<AzureArrayWithCountResponseModel<NameModel>>() {}.getType();
+        return azureHttpService.get(requestSpec, responseType);
     }
 
 }
