@@ -31,14 +31,15 @@ class TableDisplay extends Component {
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
         this.deleteItems = this.deleteItems.bind(this);
         this.editButtonClicked = this.editButtonClicked.bind(this);
-        this.editButtonClick = this.editButtonClick.bind(this);
+        this.editColumnFormatter = this.editColumnFormatter.bind(this);
         this.copyButtonClicked = this.copyButtonClicked.bind(this);
-        this.copyButtonClick = this.copyButtonClick.bind(this);
+        this.copyColumnFormatter = this.copyColumnFormatter.bind(this);
         this.isShowModal = this.isShowModal.bind(this);
         this.hideModal = this.hideModal.bind(this);
         this.handleInsertModalSubmit = this.handleInsertModalSubmit.bind(this);
         this.handleInsertModalTest = this.handleInsertModalTest.bind(this);
         this.onAutoRefresh = this.onAutoRefresh.bind(this);
+        this.createTableCellFormatter = this.createTableCellFormatter.bind(this);
         this.tablePopup = React.createRef();
         this.table = React.createRef();
         this.state = {
@@ -357,17 +358,25 @@ class TableDisplay extends Component {
         onEditState(currentRowSelected, callback);
     }
 
-    editButtonClick(cell, row) {
+    createTableCellFormatter(iconName, buttonText, clickFunction) {
         const { id } = this.props;
-        return (
-            <IconTableCellFormatter
-                id={`${id}-edit-cell`}
-                handleButtonClicked={this.editButtonClicked}
-                currentRowSelected={row}
-                buttonIconName="pencil-alt"
-                buttonText="Edit"
-            />
-        );
+        const buttonId = buttonText.toLowerCase();
+        return (cell, row) => {
+            return (
+                <IconTableCellFormatter
+                    id={`${id}-${buttonId}-cell`}
+                    handleButtonClicked={clickFunction}
+                    currentRowSelected={row}
+                    buttonIconName={iconName}
+                    buttonText={buttonText}
+                />
+            );
+        };
+    }
+
+    editColumnFormatter() {
+        const { editColumnIcon, editColumnText } = this.props;
+        return this.createTableCellFormatter(editColumnIcon, editColumnText, this.editButtonClicked);
     }
 
     copyButtonClicked(currentRowSelected) {
@@ -379,17 +388,9 @@ class TableDisplay extends Component {
         onConfigCopy(currentRowSelected, callback);
     }
 
-    copyButtonClick(cell, row) {
-        const { id } = this.props;
-        return (
-            <IconTableCellFormatter
-                id={`${id}-copy-cell`}
-                handleButtonClicked={this.copyButtonClicked}
-                currentRowSelected={row}
-                buttonIconName="copy"
-                buttonText="Copy"
-            />
-        );
+    copyColumnFormatter() {
+        const { copyColumnIcon, copyColumnText } = this.props;
+        return this.createTableCellFormatter(copyColumnIcon, copyColumnText, this.copyButtonClicked);
     }
 
     createIconTableHeader(dataFormat, text) {
@@ -410,15 +411,16 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showDelete } = this.state;
         const {
-            id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton, data,
-            tableSearchable, enableEdit, enableCopy, inProgress, tableRefresh, hasFieldErrors, errorDialogMessage
+            id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton,
+            data, tableSearchable, enableEdit, editColumnText, enableCopy, copyColumnText, inProgress,
+            tableRefresh, hasFieldErrors, errorDialogMessage
         } = this.props;
         if (enableEdit) {
-            const editColumn = this.createIconTableHeader(this.editButtonClick, 'Edit');
+            const editColumn = this.createIconTableHeader(this.editColumnFormatter(), editColumnText);
             tableColumns.push(editColumn);
         }
         if (enableCopy) {
-            const copyColumn = this.createIconTableHeader(this.copyButtonClick, 'Copy');
+            const copyColumn = this.createIconTableHeader(this.copyColumnFormatter(), copyColumnText);
             tableColumns.push(copyColumn);
         }
 
@@ -545,7 +547,11 @@ TableDisplay.propTypes = {
     actionMessage: PropTypes.string,
     nestedInAnotherModal: PropTypes.bool,
     enableEdit: PropTypes.bool,
+    editColumnText: PropTypes.string,
+    editColumnIcon: PropTypes.string,
     enableCopy: PropTypes.bool,
+    copyColumnText: PropTypes.string,
+    copyColumnIcon: PropTypes.string,
     testButtonLabel: PropTypes.string
 };
 
@@ -579,7 +585,11 @@ TableDisplay.defaultProps = {
     actionMessage: null,
     nestedInAnotherModal: false,
     enableEdit: true,
+    editColumnText: 'Edit',
+    editColumnIcon: 'pencil-alt',
     enableCopy: true,
+    copyColumnText: 'Copy',
+    copyColumnIcon: 'copy',
     testButtonLabel: 'Test Configuration'
 };
 
