@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
+import com.synopsys.integration.alert.jira.common.JiraConstants;
 
 @Component
 public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {

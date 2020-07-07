@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-jira
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.jira.common.util;
 
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
-import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.jira.common.JiraIssueSearchProperties;
 
 public class JiraIssuePropertiesUtil {
     private JiraIssuePropertiesUtil() {

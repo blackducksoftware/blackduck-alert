@@ -45,9 +45,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.jira.common.JiraConstants;
+import com.synopsys.integration.alert.jira.server.JiraServerProperties;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.rest.RestConstants;

@@ -28,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.jira.common.JiraConstants;
+import com.synopsys.integration.alert.jira.common.JiraGlobalTestAction;
+import com.synopsys.integration.alert.jira.server.JiraServerProperties;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
-import com.synopsys.integration.issuetracker.jira.server.JiraServerProperties;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
