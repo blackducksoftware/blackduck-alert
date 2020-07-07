@@ -77,12 +77,12 @@ public class WorkItemQuery {
         }
 
         if (null != orderBy) {
-            queryStringBuilder.append(" ASOF ");
+            queryStringBuilder.append(' ');
             queryStringBuilder.append(orderBy.toString());
         }
 
         if (null != asOf) {
-            queryStringBuilder.append(' ');
+            queryStringBuilder.append(" ASOF ");
             queryStringBuilder.append(AS_OF_FORMAT.format(asOf));
         }
 

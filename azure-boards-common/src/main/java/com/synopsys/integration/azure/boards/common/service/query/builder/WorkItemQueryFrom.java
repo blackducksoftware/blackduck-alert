@@ -31,8 +31,22 @@ public class WorkItemQueryFrom {
         this.from = from;
     }
 
-    public WorkItemQueryWhere where(WorkItemQueryWhereCondition condition) {
-        return new WorkItemQueryWhere(this, condition);
+    public WorkItemQueryWhere where(String lhs, WorkItemQueryWhereOperator operator, String rhs) {
+        return where(lhs, operator, rhs, WorkItemQueryWhereConditionRHSType.LITERAL);
+    }
+
+    public WorkItemQueryWhere where(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null, false);
+        return new WorkItemQueryWhere(false, this, condition);
+    }
+
+    public WorkItemQueryWhere whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs) {
+        return whereGroup(lhs, operator, rhs, WorkItemQueryWhereConditionRHSType.LITERAL);
+    }
+
+    public WorkItemQueryWhere whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null, true);
+        return new WorkItemQueryWhere(true, this, condition);
     }
 
     /* package-private */ WorkItemQuerySelect getWorkItemQuerySelect() {

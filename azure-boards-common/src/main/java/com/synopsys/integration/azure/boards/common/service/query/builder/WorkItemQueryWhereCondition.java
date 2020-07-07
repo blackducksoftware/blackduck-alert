@@ -61,4 +61,8 @@ public class WorkItemQueryWhereCondition {
         return junction;
     }
 
+    public boolean isInGroup() {
+        return inGroup;
+    }
+
 }
