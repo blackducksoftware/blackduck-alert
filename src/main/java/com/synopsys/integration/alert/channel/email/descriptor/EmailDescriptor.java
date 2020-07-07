@@ -30,12 +30,14 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
-    public static final String KEY_SUBJECT_LINE = "email.subject.line";
+    public static final String EMAIL_PREFIX = "email";
+
+    public static final String KEY_SUBJECT_LINE = EMAIL_PREFIX + ".subject.line";
     public static final String KEY_PROJECT_OWNER_ONLY = "project.owner.only";
-    public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
-    public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES = "email.additional.addresses";
-    public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY = "email.additional.addresses.only";
-    public static final String KEY_EMAIL_ATTACHMENT_FORMAT = "email.attachment.format";
+    public static final String KEY_EMAIL_ADDRESSES = EMAIL_PREFIX + ".addresses";
+    public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES = EMAIL_PREFIX + ".additional.addresses";
+    public static final String KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY = EMAIL_PREFIX + ".additional.addresses.only";
+    public static final String KEY_EMAIL_ATTACHMENT_FORMAT = EMAIL_PREFIX + ".attachment.format";
 
     public static final String EMAIL_LABEL = "Email";
     public static final String EMAIL_URL = "email";
