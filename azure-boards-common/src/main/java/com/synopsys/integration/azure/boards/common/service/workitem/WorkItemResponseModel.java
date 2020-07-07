@@ -20,65 +20,48 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.board;
+package com.synopsys.integration.azure.boards.common.service.workitem;
 
 import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
+import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
-public class BoardResponseModel {
-    private String id;
-    private String name;
-    private List<BoardColumnModel> columns;
-    private List<BoardRowModel> rows;
-    private BoardFieldsModel fields;
-    private JsonObject allowedMappings;
-    private Boolean canEdit;
-    private Boolean isValid;
-    private Integer revision;
+public class WorkItemResponseModel {
+    public static final List<AzureFieldDefinition> FIELD_DEFINITIONS = WorkItemResponseFields.list();
+
+    private Integer id;
+    private Integer rev;
+    private JsonObject fields;
+    private List<WorkItemRelationModel> relations;
+    private WorkItemCommentVersionRefModel commentVersionRef;
     private String url;
     private Map<String, ReferenceLinkModel> _links;
 
-    public BoardResponseModel() {
+    public WorkItemResponseModel() {
         // For serialization
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Integer getRev() {
+        return rev;
     }
 
-    public List<BoardColumnModel> getColumns() {
-        return columns;
-    }
-
-    public List<BoardRowModel> getRows() {
-        return rows;
-    }
-
-    public BoardFieldsModel getFields() {
+    public JsonObject getFields() {
         return fields;
     }
 
-    public JsonObject getAllowedMappings() {
-        return allowedMappings;
+    public List<WorkItemRelationModel> getRelations() {
+        return relations;
     }
 
-    public Boolean getCanEdit() {
-        return canEdit;
-    }
-
-    public Boolean getValid() {
-        return isValid;
-    }
-
-    public Integer getRevision() {
-        return revision;
+    public WorkItemCommentVersionRefModel getCommentVersionRef() {
+        return commentVersionRef;
     }
 
     public String getUrl() {

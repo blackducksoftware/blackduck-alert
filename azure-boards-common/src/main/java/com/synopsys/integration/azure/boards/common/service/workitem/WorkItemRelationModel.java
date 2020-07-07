@@ -20,23 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.model;
+package com.synopsys.integration.azure.boards.common.service.workitem;
 
-public class FieldReferenceModel {
-    private String referenceName;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
+public class WorkItemRelationModel {
+    private JsonObject attributes;
+    @SerializedName("rel")
+    private String relationType;
     private String url;
 
-    public FieldReferenceModel() {
+    public WorkItemRelationModel() {
         // For serialization
     }
 
-    public FieldReferenceModel(String referenceName, String url) {
-        this.referenceName = referenceName;
+    public WorkItemRelationModel(JsonObject attributes, String relationType, String url) {
+        this.attributes = attributes;
+        this.relationType = relationType;
         this.url = url;
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public JsonObject getAttributes() {
+        return attributes;
+    }
+
+    public String getRelationType() {
+        return relationType;
     }
 
     public String getUrl() {

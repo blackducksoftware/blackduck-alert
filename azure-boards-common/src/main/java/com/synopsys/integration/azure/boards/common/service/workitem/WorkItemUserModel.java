@@ -20,72 +20,60 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.board;
+package com.synopsys.integration.azure.boards.common.service.workitem;
 
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonObject;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 
-public class BoardResponseModel {
+public class WorkItemUserModel {
     private String id;
-    private String name;
-    private List<BoardColumnModel> columns;
-    private List<BoardRowModel> rows;
-    private BoardFieldsModel fields;
-    private JsonObject allowedMappings;
-    private Boolean canEdit;
-    private Boolean isValid;
-    private Integer revision;
+    private String displayName;
+    private String uniqueName;
+    private String descriptor;
+    private String imageUrl;
     private String url;
     private Map<String, ReferenceLinkModel> _links;
 
-    public BoardResponseModel() {
+    public WorkItemUserModel() {
         // For serialization
+    }
+
+    public WorkItemUserModel(String id, String displayName, String uniqueName, String descriptor, String imageUrl, String url, Map<String, ReferenceLinkModel> _links) {
+        this.id = id;
+        this.displayName = displayName;
+        this.uniqueName = uniqueName;
+        this.descriptor = descriptor;
+        this.imageUrl = imageUrl;
+        this.url = url;
+        this._links = _links;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public List<BoardColumnModel> getColumns() {
-        return columns;
+    public String getUniqueName() {
+        return uniqueName;
     }
 
-    public List<BoardRowModel> getRows() {
-        return rows;
+    public String getDescriptor() {
+        return descriptor;
     }
 
-    public BoardFieldsModel getFields() {
-        return fields;
-    }
-
-    public JsonObject getAllowedMappings() {
-        return allowedMappings;
-    }
-
-    public Boolean getCanEdit() {
-        return canEdit;
-    }
-
-    public Boolean getValid() {
-        return isValid;
-    }
-
-    public Integer getRevision() {
-        return revision;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public Map<String, ReferenceLinkModel> get_links() {
+    public Map<String, ReferenceLinkModel> getLinks() {
         return _links;
     }
 

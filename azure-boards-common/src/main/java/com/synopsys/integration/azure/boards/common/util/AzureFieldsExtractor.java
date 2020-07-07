@@ -20,27 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.model;
+package com.synopsys.integration.azure.boards.common.util;
 
-public class FieldReferenceModel {
-    private String referenceName;
-    private String url;
+import java.util.Optional;
 
-    public FieldReferenceModel() {
-        // For serialization
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+public class AzureFieldsExtractor {
+    private final Gson gson;
+
+    public AzureFieldsExtractor(Gson gson) {
+        this.gson = gson;
     }
 
-    public FieldReferenceModel(String referenceName, String url) {
-        this.referenceName = referenceName;
-        this.url = url;
-    }
-
-    public String getReferenceName() {
-        return referenceName;
-    }
-
-    public String getUrl() {
-        return url;
+    public <T> Optional<T> extractField(JsonObject fieldsObject, AzureFieldDefinition<T> fieldDefinition) {
+        JsonElement foundField = fieldsObject.get(fieldDefinition.getFieldName());
+        if (null != foundField) {
+            T fieldValue = gson.fromJson(foundField, fieldDefinition.getFieldType());
+            return Optional.of(fieldValue);
+        }
+        return Optional.empty();
     }
 
 }

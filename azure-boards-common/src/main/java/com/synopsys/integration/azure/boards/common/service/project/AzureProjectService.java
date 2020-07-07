@@ -28,15 +28,15 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
-import com.synopsys.integration.azure.boards.common.model.AzureSpecTemplate;
+import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
-public class AzureProjectsService {
+public class AzureProjectService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS = new AzureSpecTemplate("/{organization}/_apis/projects");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}");
 
     private final AzureHttpService azureHttpService;
 
-    public AzureProjectsService(AzureHttpService azureHttpService) {
+    public AzureProjectService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 
