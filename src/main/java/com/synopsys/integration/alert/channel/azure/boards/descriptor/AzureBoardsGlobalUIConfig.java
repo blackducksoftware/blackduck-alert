@@ -68,12 +68,13 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         ConfigField organizationName = new TextInputConfigField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME, LABEL_ORGANIZATION_NAME, DESCRIPTION_ORGANIZATION_NAME).applyRequired(true);
         ConfigField consumerKey = new PasswordConfigField(AzureBoardsDescriptor.KEY_CONSUMER_KEY, LABEL_CONSUMER_KEY, DESCRIPTION_CONSUMER_KEY, encryptionValidator).applyRequired(true);
         ConfigField privateKey = new PasswordConfigField(AzureBoardsDescriptor.KEY_PRIVATE_KEY, LABEL_PRIVATE_KEY, DESCRIPTION_PRIVATE_KEY, encryptionValidator).applyRequired(true);
+        ConfigField accessToken = new PasswordConfigField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new EndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CONSUMER_KEY)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_PRIVATE_KEY);
-        ConfigField accessToken = new PasswordConfigField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN, encryptionValidator).applyRequired(true);
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_PRIVATE_KEY)
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ACCESS_TOKEN);
 
         return List.of(azureBoardsUrlField, organizationName, consumerKey, privateKey, configureOAuth, accessToken);
     }
