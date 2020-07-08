@@ -32,7 +32,7 @@ public class AzureHttpServiceFactory {
     public static final String DEFAULT_BASE_URL = "https://dev.azure.com";
 
     public static AzureHttpService withCredentialNoProxy(Credential oAuthCredential, Gson gson) {
-        return withCredential(DEFAULT_BASE_URL, Proxy.NO_PROXY, oAuthCredential, gson);
+        return withCredentialNoProxy(DEFAULT_BASE_URL, oAuthCredential, gson);
     }
 
     public static AzureHttpService withCredentialNoProxy(String baseUrl, Credential oAuthCredential, Gson gson) {
@@ -40,10 +40,7 @@ public class AzureHttpServiceFactory {
     }
 
     public static AzureHttpService withCredential(Proxy proxy, Credential oAuthCredential, Gson gson) {
-        NetHttpTransport netHttpTransport = new NetHttpTransport.Builder()
-                                                .setProxy(proxy)
-                                                .build();
-        return new AzureHttpService(DEFAULT_BASE_URL, netHttpTransport.createRequestFactory(oAuthCredential), gson);
+        return withCredential(DEFAULT_BASE_URL, proxy, oAuthCredential, gson);
     }
 
     public static AzureHttpService withCredential(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
