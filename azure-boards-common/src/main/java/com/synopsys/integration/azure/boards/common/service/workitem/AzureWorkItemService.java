@@ -29,6 +29,8 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureWorkItemService {
@@ -50,17 +52,17 @@ public class AzureWorkItemService {
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
-    public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, List<WorkItemElementRequestModel> requestModel) throws HttpServiceException, IOException {
+    public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException, IOException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{type}", workItemType)
                                  .populateSpec();
-        HttpRequest httpRequest = buildRequest(requestSpec, requestModel);
+        HttpRequest httpRequest = buildRequest(requestSpec, workItemRequest.getElementOperationModels());
         return azureHttpService.post(httpRequest, WorkItemResponseModel.class);
     }
 
-    private HttpRequest buildRequest(String requestSpec, List<WorkItemElementRequestModel> requestModel) throws IOException {
+    private HttpRequest buildRequest(String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         HttpRequest httpRequest = azureHttpService.buildPostRequest(requestUrl, requestModel);
         httpRequest.getHeaders().setContentType("application/json-patch+json");

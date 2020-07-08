@@ -20,35 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.workitem.request;
 
-public class WorkItemElementRequestModel {
-    private final String op;
-    private final String path;
-    private final String from;
-    private final String value;
+import java.util.List;
 
-    public WorkItemElementRequestModel(String op, String path, String from, String value) {
-        this.op = op;
-        this.path = path;
-        this.from = from;
-        this.value = value;
+public class WorkItemRequest {
+    private final List<WorkItemElementOperationModel> elementOperationModels;
+
+    public WorkItemRequest(List<WorkItemElementOperationModel> elementOperationModels) {
+        this.elementOperationModels = elementOperationModels;
     }
 
-    public String getOp() {
-        return op;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public String getValue() {
-        return value;
+    public List<WorkItemElementOperationModel> getElementOperationModels() {
+        return elementOperationModels;
     }
 
 }
