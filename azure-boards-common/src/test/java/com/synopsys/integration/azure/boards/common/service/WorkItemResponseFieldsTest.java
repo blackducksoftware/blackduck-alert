@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemResponseFields;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class WorkItemResponseFieldsTest {

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.workitem.response;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemUserModel;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public final class WorkItemResponseFields {

@@ -25,6 +25,10 @@ package com.synopsys.integration.azure.boards.common.service.workitem;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
@@ -32,6 +36,9 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemCommentResponseModel;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemMultiCommentResponseModel;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureWorkItemService {
@@ -82,11 +89,35 @@ public class AzureWorkItemService {
         }
     }
 
-    public WorkItemCommentResponseModel commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
-        return commentOnWorkItem(organizationName, projectIdOrName, workItemId, List.of(commentText));
+    public WorkItemMultiCommentResponseModel getComments(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
+        return getComments(organizationName, projectIdOrName, workItemId, null);
     }
 
-    public WorkItemCommentResponseModel commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
+    public WorkItemMultiCommentResponseModel getComments(String organizationName, String projectIdOrName, Integer workItemId, @Nullable String continuationToken) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .populateSpec();
+        String apiVersionQueryParam = new AzureSpecTemplate("?{apiVersionParam}={apiVersion}")
+                                          .defineReplacement("{apiVersionParam}", AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME)
+                                          .defineReplacement("{apiVersion}", "5.1-preview.3")
+                                          .populateSpec();
+        requestSpec = requestSpec + apiVersionQueryParam;
+        if (StringUtils.isNotBlank(continuationToken)) {
+            String continuationTokenQueryParam = new AzureSpecTemplate("&continuationToken={continuationToken}")
+                                                     .defineReplacement("{continuationToken}", continuationToken)
+                                                     .populateSpec();
+            requestSpec = requestSpec + continuationTokenQueryParam;
+        }
+        return azureHttpService.get(requestSpec, WorkItemMultiCommentResponseModel.class);
+    }
+
+    public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
+        return addComment(organizationName, projectIdOrName, workItemId, List.of(commentText));
+    }
+
+    public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
