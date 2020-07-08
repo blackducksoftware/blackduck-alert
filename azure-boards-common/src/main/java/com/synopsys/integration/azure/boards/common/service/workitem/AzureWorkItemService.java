@@ -82,11 +82,11 @@ public class AzureWorkItemService {
         }
     }
 
-    public Object commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
+    public WorkItemCommentResponseModel commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
         return commentOnWorkItem(organizationName, projectIdOrName, workItemId, List.of(commentText));
     }
 
-    public Object commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
+    public WorkItemCommentResponseModel commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
@@ -96,7 +96,7 @@ public class AzureWorkItemService {
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         try {
             HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(HttpMethods.POST, requestUrl, commentTexts);
-            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemCommentResponseModel.class);
         } catch (IOException e) {
             throw HttpServiceException.internalServerError(e);
         }

@@ -33,19 +33,21 @@ public class WorkItemUserModel {
     private String descriptor;
     private String imageUrl;
     private String url;
+    private Boolean isDeletedInOrigin;
     private Map<String, ReferenceLinkModel> _links;
 
     public WorkItemUserModel() {
         // For serialization
     }
 
-    public WorkItemUserModel(String id, String displayName, String uniqueName, String descriptor, String imageUrl, String url, Map<String, ReferenceLinkModel> _links) {
+    public WorkItemUserModel(String id, String displayName, String uniqueName, String descriptor, String imageUrl, String url, Boolean isDeletedInOrigin, Map<String, ReferenceLinkModel> _links) {
         this.id = id;
         this.displayName = displayName;
         this.uniqueName = uniqueName;
         this.descriptor = descriptor;
         this.imageUrl = imageUrl;
         this.url = url;
+        this.isDeletedInOrigin = isDeletedInOrigin;
         this._links = _links;
     }
 
@@ -71,6 +73,10 @@ public class WorkItemUserModel {
 
     public String getUrl() {
         return url;
+    }
+
+    public Boolean getDeletedInOrigin() {
+        return isDeletedInOrigin;
     }
 
     public Map<String, ReferenceLinkModel> getLinks() {
