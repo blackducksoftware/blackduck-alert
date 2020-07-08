@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.azure.boards.common.service.query;
 
+import java.io.IOException;
+
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
@@ -42,7 +44,11 @@ public class WorkItemQueryService {
                                  .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
-        return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
+        try {
+            return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
     }
 
 }

@@ -20,27 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.workitem.request;
 
-public class WorkItemReferenceModel {
-    private Integer id;
-    private String url;
+import java.util.List;
 
-    public WorkItemReferenceModel() {
-        // For serialization
+public class WorkItemRequest {
+    private final List<WorkItemElementOperationModel> elementOperationModels;
+
+    public WorkItemRequest(List<WorkItemElementOperationModel> elementOperationModels) {
+        this.elementOperationModels = elementOperationModels;
     }
 
-    public WorkItemReferenceModel(Integer id, String url) {
-        this.id = id;
-        this.url = url;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getUrl() {
-        return url;
+    public List<WorkItemElementOperationModel> getElementOperationModels() {
+        return elementOperationModels;
     }
 
 }
