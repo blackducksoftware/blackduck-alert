@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -58,13 +59,24 @@ public class AzureWorkItemService {
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{type}", workItemType)
                                  .populateSpec();
-        HttpRequest httpRequest = buildRequest(requestSpec, workItemRequest.getElementOperationModels());
-        return azureHttpService.post(httpRequest, WorkItemResponseModel.class);
+        HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
+        return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
     }
 
-    private HttpRequest buildRequest(String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
+    public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException, IOException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .populateSpec();
+        HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
+        httpRequest.setRequestMethod(HttpMethods.PATCH);
+        return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+    }
+
+    private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
-        HttpRequest httpRequest = azureHttpService.buildPostRequest(requestUrl, requestModel);
+        HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
         httpRequest.getHeaders().setContentType("application/json-patch+json");
         return httpRequest;
     }
