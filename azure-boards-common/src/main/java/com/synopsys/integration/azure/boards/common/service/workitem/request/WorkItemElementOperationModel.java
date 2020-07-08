@@ -32,7 +32,7 @@ public class WorkItemElementOperationModel {
 
     public static WorkItemElementOperationModel fieldElement(WorkItemElementOperation operation, AzureFieldDefinition<?> fieldDefinition, Object value) {
         String fieldPath = String.format("/fields/%s", fieldDefinition.getFieldName());
-        return new WorkItemElementOperationModel(operation.toLowerCaseString(), null, fieldPath, value);
+        return new WorkItemElementOperationModel(operation.toLowerCaseString(), fieldPath, null, value);
     }
 
     public WorkItemElementOperationModel() {
