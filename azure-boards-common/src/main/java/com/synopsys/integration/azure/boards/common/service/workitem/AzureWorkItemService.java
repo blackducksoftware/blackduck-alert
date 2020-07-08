@@ -37,6 +37,7 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 public class AzureWorkItemService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workitemId}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{type}");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workItems/{workItemId}/comments");
 
     private final AzureHttpService azureHttpService;
 
@@ -75,6 +76,26 @@ public class AzureWorkItemService {
                                  .populateSpec();
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
+            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
+    }
+
+    public Object commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
+        return commentOnWorkItem(organizationName, projectIdOrName, workItemId, List.of(commentText));
+    }
+
+    public Object commentOnWorkItem(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .populateSpec();
+        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.3");
+        GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
+        try {
+            HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(HttpMethods.POST, requestUrl, commentTexts);
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
         } catch (IOException e) {
             throw HttpServiceException.internalServerError(e);
