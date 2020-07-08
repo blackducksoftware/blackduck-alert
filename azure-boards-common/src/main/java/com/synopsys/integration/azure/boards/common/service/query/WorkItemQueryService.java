@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.azure.boards.common.service.query;
 
+import java.io.IOException;
+
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
@@ -35,7 +37,7 @@ public class WorkItemQueryService {
         this.azureHttpService = azureHttpService;
     }
 
-    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException {
+    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException, IOException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)

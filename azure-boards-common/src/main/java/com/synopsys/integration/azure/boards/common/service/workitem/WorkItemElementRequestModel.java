@@ -22,25 +22,33 @@
  */
 package com.synopsys.integration.azure.boards.common.service.workitem;
 
-public class WorkItemReferenceModel {
-    private Integer id;
-    private String url;
+public class WorkItemElementRequestModel {
+    private final String op;
+    private final String path;
+    private final String from;
+    private final String value;
 
-    public WorkItemReferenceModel() {
-        // For serialization
+    public WorkItemElementRequestModel(String op, String path, String from, String value) {
+        this.op = op;
+        this.path = path;
+        this.from = from;
+        this.value = value;
     }
 
-    public WorkItemReferenceModel(Integer id, String url) {
-        this.id = id;
-        this.url = url;
+    public String getOp() {
+        return op;
     }
 
-    public Integer getId() {
-        return id;
+    public String getPath() {
+        return path;
     }
 
-    public String getUrl() {
-        return url;
+    public String getFrom() {
+        return from;
+    }
+
+    public String getValue() {
+        return value;
     }
 
 }

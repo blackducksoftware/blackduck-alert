@@ -22,12 +22,18 @@
  */
 package com.synopsys.integration.azure.boards.common.service.workitem;
 
+import java.io.IOException;
+import java.util.List;
+
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureWorkItemService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workitemId}");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{type}");
 
     private final AzureHttpService azureHttpService;
 
@@ -42,6 +48,23 @@ public class AzureWorkItemService {
                                  .defineReplacement("{workitemId}", workItemId.toString())
                                  .populateSpec();
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
+    }
+
+    public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, List<WorkItemElementRequestModel> requestModel) throws HttpServiceException, IOException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{type}", workItemType)
+                                 .populateSpec();
+        HttpRequest httpRequest = buildRequest(requestSpec, requestModel);
+        return azureHttpService.post(httpRequest, WorkItemResponseModel.class);
+    }
+
+    private HttpRequest buildRequest(String requestSpec, List<WorkItemElementRequestModel> requestModel) throws IOException {
+        GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
+        HttpRequest httpRequest = azureHttpService.buildPostRequest(requestUrl, requestModel);
+        httpRequest.getHeaders().setContentType("application/json-patch+json");
+        return httpRequest;
     }
 
 }

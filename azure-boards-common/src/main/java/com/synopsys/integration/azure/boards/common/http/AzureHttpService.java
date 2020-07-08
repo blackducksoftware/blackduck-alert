@@ -94,10 +94,16 @@ public class AzureHttpService {
         return postRequest.execute();
     }
 
-    public <T> T post(String urlEndpoint, Object requestBodyObject, Class<T> responseClass) throws HttpServiceException {
+    public <T> T post(String urlEndpoint, Object requestBodyObject, Class<T> responseClass) throws HttpServiceException, IOException {
+        GenericUrl url = constructRequestUrl(urlEndpoint);
+        HttpRequest postRequest = buildPostRequest(url, requestBodyObject);
+        return post(postRequest, responseClass);
+    }
+
+    public <T> T post(HttpRequest postRequest, Class<T> responseClass) throws HttpServiceException {
         HttpResponse httpResponse = null;
         try {
-            httpResponse = post(urlEndpoint, requestBodyObject);
+            httpResponse = postRequest.execute();
             if (!httpResponse.isSuccessStatusCode()) {
                 throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
             }
@@ -109,15 +115,7 @@ public class AzureHttpService {
         }
     }
 
-    protected String acceptHeader() {
-        return "application/json";
-    }
-
-    protected String contentType() {
-        return "application/json";
-    }
-
-    protected HttpRequest buildPostRequest(GenericUrl url, Object requestBodyObject) throws IOException {
+    public HttpRequest buildPostRequest(GenericUrl url, Object requestBodyObject) throws IOException {
         HttpContent requestContent = buildPostRequestContent(requestBodyObject);
         HttpRequest postRequest = httpRequestFactory.buildPostRequest(url, requestContent);
         postRequest.getHeaders().setAccept(acceptHeader());
@@ -125,28 +123,7 @@ public class AzureHttpService {
         return postRequest;
     }
 
-    protected HttpContent buildPostRequestContent(Object requestBodyObject) {
-        String objectJson = gson.toJson(requestBodyObject);
-        return ByteArrayContent.fromString(null, objectJson);
-    }
-
-    protected void disconnectResponse(HttpResponse response) throws HttpServiceException {
-        if (response == null) {
-            return;
-        }
-        try {
-            response.disconnect();
-        } catch (IOException e) {
-            throw HttpServiceException.internalServerError(e);
-        }
-    }
-
-    protected <T> T parseResponse(HttpResponse response, Type responseType) throws IOException {
-        String responseString = response.parseAsString();
-        return gson.fromJson(responseString, responseType);
-    }
-
-    private GenericUrl constructRequestUrl(String spec) {
+    public GenericUrl constructRequestUrl(String spec) {
         StringBuilder requestUrlBuilder = new StringBuilder();
 
         if (!StringUtils.startsWith(spec, baseUrl)) {
@@ -171,6 +148,35 @@ public class AzureHttpService {
         }
 
         return new GenericUrl(requestUrlBuilder.toString());
+    }
+
+    protected String acceptHeader() {
+        return "application/json";
+    }
+
+    protected String contentType() {
+        return "application/json";
+    }
+
+    protected HttpContent buildPostRequestContent(Object requestBodyObject) {
+        String objectJson = gson.toJson(requestBodyObject);
+        return ByteArrayContent.fromString(null, objectJson);
+    }
+
+    protected void disconnectResponse(HttpResponse response) throws HttpServiceException {
+        if (response == null) {
+            return;
+        }
+        try {
+            response.disconnect();
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
+    }
+
+    protected <T> T parseResponse(HttpResponse response, Type responseType) throws IOException {
+        String responseString = response.parseAsString();
+        return gson.fromJson(responseString, responseType);
     }
 
     private String sanitizeUrl(String url) {
