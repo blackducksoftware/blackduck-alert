@@ -37,14 +37,18 @@ public class WorkItemQueryService {
         this.azureHttpService = azureHttpService;
     }
 
-    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException, IOException {
+    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
-        return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
+        try {
+            return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
     }
 
 }

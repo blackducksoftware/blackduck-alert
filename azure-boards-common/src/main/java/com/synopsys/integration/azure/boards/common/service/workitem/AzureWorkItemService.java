@@ -53,25 +53,32 @@ public class AzureWorkItemService {
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
-    public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException, IOException {
+    public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{type}", workItemType)
                                  .populateSpec();
-        HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
-        return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+        try {
+            HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
+            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
     }
 
-    public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException, IOException {
+    public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{workitemId}", workItemId.toString())
                                  .populateSpec();
-        HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
-        httpRequest.setRequestMethod(HttpMethods.PATCH);
-        return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+        try {
+            HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
+            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        }
     }
 
     private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
