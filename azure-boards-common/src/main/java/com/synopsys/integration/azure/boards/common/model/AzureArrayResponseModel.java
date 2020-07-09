@@ -24,16 +24,16 @@ package com.synopsys.integration.azure.boards.common.model;
 
 import java.util.List;
 
-public class AzureArrayWithCountResponseModel<T> {
+public class AzureArrayResponseModel<T> {
     private final Integer count;
     private final List<T> value;
 
-    public AzureArrayWithCountResponseModel() {
+    public AzureArrayResponseModel() {
         count = 0;
         value = List.of();
     }
 
-    public AzureArrayWithCountResponseModel(Integer count, List<T> value) {
+    public AzureArrayResponseModel(Integer count, List<T> value) {
         this.count = count;
         this.value = value;
     }
