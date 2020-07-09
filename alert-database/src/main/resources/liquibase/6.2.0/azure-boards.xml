@@ -50,7 +50,7 @@
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.private.key</column>
-            <column name="SENSITIVE">false</column>
+            <column name="SENSITIVE">true</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.oauth</column>
@@ -58,7 +58,7 @@
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.access.token</column>
-            <column name="SENSITIVE">false</column>
+            <column name="SENSITIVE">true</column>
         </insert>
     </changeSet>
     <!-- Initialize descriptor fields -->
