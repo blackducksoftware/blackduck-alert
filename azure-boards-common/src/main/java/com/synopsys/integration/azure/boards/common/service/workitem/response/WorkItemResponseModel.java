@@ -20,13 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.workitem.response;
 
 import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
+import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
+import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemRelationModel;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class WorkItemResponseModel {

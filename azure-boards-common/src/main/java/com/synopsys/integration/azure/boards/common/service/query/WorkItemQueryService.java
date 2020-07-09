@@ -43,6 +43,7 @@ public class WorkItemQueryService {
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
+        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.0");
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
         try {
             return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);

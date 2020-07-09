@@ -20,63 +20,59 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem;
+package com.synopsys.integration.azure.boards.common.service.workitem.response;
 
+import java.util.List;
 import java.util.Map;
 
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 
-public class WorkItemUserModel {
-    private String id;
-    private String displayName;
-    private String uniqueName;
-    private String descriptor;
-    private String imageUrl;
+public class WorkItemMultiCommentResponseModel {
+    private Integer count;
+    private Integer totalCount;
+    private String continuationToken;
+    private String nextPage;
+    private List<WorkItemCommentResponseModel> comments;
     private String url;
-    private Boolean isDeletedInOrigin;
     private Map<String, ReferenceLinkModel> _links;
 
-    public WorkItemUserModel() {
+    public WorkItemMultiCommentResponseModel() {
         // For serialization
     }
 
-    public WorkItemUserModel(String id, String displayName, String uniqueName, String descriptor, String imageUrl, String url, Boolean isDeletedInOrigin, Map<String, ReferenceLinkModel> _links) {
-        this.id = id;
-        this.displayName = displayName;
-        this.uniqueName = uniqueName;
-        this.descriptor = descriptor;
-        this.imageUrl = imageUrl;
+    public WorkItemMultiCommentResponseModel(Integer count, Integer totalCount, String continuationToken, String nextPage,
+        List<WorkItemCommentResponseModel> comments, String url, Map<String, ReferenceLinkModel> _links) {
+        this.count = count;
+        this.totalCount = totalCount;
+        this.continuationToken = continuationToken;
+        this.nextPage = nextPage;
+        this.comments = comments;
         this.url = url;
-        this.isDeletedInOrigin = isDeletedInOrigin;
         this._links = _links;
     }
 
-    public String getId() {
-        return id;
+    public Integer getCount() {
+        return count;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public Integer getTotalCount() {
+        return totalCount;
     }
 
-    public String getUniqueName() {
-        return uniqueName;
+    public String getContinuationToken() {
+        return continuationToken;
     }
 
-    public String getDescriptor() {
-        return descriptor;
+    public String getNextPage() {
+        return nextPage;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<WorkItemCommentResponseModel> getComments() {
+        return comments;
     }
 
     public String getUrl() {
         return url;
-    }
-
-    public Boolean getDeletedInOrigin() {
-        return isDeletedInOrigin;
     }
 
     public Map<String, ReferenceLinkModel> getLinks() {
