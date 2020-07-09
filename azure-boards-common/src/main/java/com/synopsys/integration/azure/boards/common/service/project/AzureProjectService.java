@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureProjectService {
@@ -40,11 +40,11 @@ public class AzureProjectService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayWithCountResponseModel<TeamProjectReferenceResponseModel> getProjects(String organizationName) throws HttpServiceException {
+    public AzureArrayResponseModel<TeamProjectReferenceResponseModel> getProjects(String organizationName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECTS
                                  .defineReplacement("{organization}", organizationName)
                                  .populateSpec();
-        Type responseType = new TypeToken<AzureArrayWithCountResponseModel<TeamProjectReferenceResponseModel>>() {}.getType();
+        Type responseType = new TypeToken<AzureArrayResponseModel<TeamProjectReferenceResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 

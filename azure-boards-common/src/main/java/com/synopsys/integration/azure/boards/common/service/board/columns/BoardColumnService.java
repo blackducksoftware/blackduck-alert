@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.model.NameModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
@@ -40,12 +40,12 @@ public class BoardColumnService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayWithCountResponseModel<NameModel> getBoardColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
+    public AzureArrayResponseModel<NameModel> getBoardColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .populateSpec();
-        Type responseType = new TypeToken<AzureArrayWithCountResponseModel<NameModel>>() {}.getType();
+        Type responseType = new TypeToken<AzureArrayResponseModel<NameModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 

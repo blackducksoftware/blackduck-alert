@@ -20,30 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.model;
+package com.synopsys.integration.azure.boards.common.service.state;
 
-import java.util.List;
+public class WorkItemTypeStateCustomizationTypeModel {
+    private String custom;
+    private String inherited;
+    private String system;
 
-public class AzureArrayWithCountResponseModel<T> {
-    private final Integer count;
-    private final List<T> value;
-
-    public AzureArrayWithCountResponseModel() {
-        count = 0;
-        value = List.of();
+    public WorkItemTypeStateCustomizationTypeModel() {
+        // For serialization
     }
 
-    public AzureArrayWithCountResponseModel(Integer count, List<T> value) {
-        this.count = count;
-        this.value = value;
+    public WorkItemTypeStateCustomizationTypeModel(String custom, String inherited, String system) {
+        this.custom = custom;
+        this.inherited = inherited;
+        this.system = system;
     }
 
-    public Integer getCount() {
-        return count;
+    public String getCustom() {
+        return custom;
     }
 
-    public List<T> getValue() {
-        return value;
+    public String getInherited() {
+        return inherited;
+    }
+
+    public String getSystem() {
+        return system;
     }
 
 }
