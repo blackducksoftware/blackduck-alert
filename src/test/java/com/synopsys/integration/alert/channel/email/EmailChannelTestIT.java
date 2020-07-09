@@ -74,18 +74,17 @@ public class EmailChannelTestIT extends ChannelTest {
     }
 
     @Test
-    public void sendEmailNullGlobalTest() {
+    public void sendEmailNullGlobalTest() throws Exception {
+        EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(null, new MessageContentGroupCsvCreator(), gson);
+        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
+        LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        ProviderMessageContent content = new ProviderMessageContent.Builder()
+                                             .applyProvider("testProvider", 1L, "testProviderConfig")
+                                             .applyTopic("testTopic", "topic")
+                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .build();
         try {
-            EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
-            EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(null, new MessageContentGroupCsvCreator(), gson);
-            EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
-            LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-            ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                                 .applyProvider("testProvider", 1L, "testProviderConfig")
-                                                 .applyTopic("testTopic", "topic")
-                                                 .applySubTopic(subTopic.getName(), subTopic.getValue())
-                                                 .build();
-
             Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
             FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
             DistributionEvent event = new DistributionEvent(
