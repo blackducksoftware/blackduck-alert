@@ -32,6 +32,7 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class WorkItemTypeService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes/{type}");
 
     private final AzureHttpService azureHttpService;
 
@@ -46,6 +47,15 @@ public class WorkItemTypeService {
                                  .populateSpec();
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
+    }
+
+    public WorkItemTypeResponseModel getWorkItemType(String organizationName, String projectIdOrName, String workItemType) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES_INDIVIDUAL
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{type}", workItemType)
+                                 .populateSpec();
+        return azureHttpService.get(requestSpec, WorkItemTypeResponseModel.class);
     }
 
 }
