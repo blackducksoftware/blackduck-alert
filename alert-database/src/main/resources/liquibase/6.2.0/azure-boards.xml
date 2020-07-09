@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Initialize registered descriptors -->
+    <changeSet author="martinc" id="2020-07-08-13-41-52-507">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.REGISTERED_DESCRIPTORS where NAME = 'channel_azure_boards'</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="REGISTERED_DESCRIPTORS">
+            <column name="TYPE_ID" valueComputed="GET_DESCRIPTOR_TYPE_ID('CHANNEL')"/>
+            <column name="NAME">channel_azure_boards</column>
+        </insert>
+    </changeSet>
+    <!-- Initialize defined fields -->
+    <changeSet author="martinc" id="2020-07-08-13-42-13-225">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'azure.boards.project'</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.project</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.board</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.work.item.type</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.work.item.completed.state</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.work.item.reopen.state</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.url</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.organization.name</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.consumer.key</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.private.key</column>
+            <column name="SENSITIVE">true</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.oauth</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.access.token</column>
+            <column name="SENSITIVE">true</column>
+        </insert>
+    </changeSet>
+    <!-- Initialize descriptor fields -->
+    <changeSet author="martinc" id="2020-07-09-10-18-28-001">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DESCRIPTOR_FIELDS where DESCRIPTOR_ID = GET_DESCRIPTOR_ID('channel_azure_boards')</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.project')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.board')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.type')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.completed.state')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.reopen.state')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.url')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.organization.name')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.consumer.key')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.private.key')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.access.token')"/>
+        </insert>
+    </changeSet>
+    <!-- Initialize field contexts -->
+    <changeSet author="martinc" id="2020-07-09-10-18-36-708">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('channel.azure.boards.project')</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.project')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.board')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.type')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.completed.state')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.reopen.state')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.url')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.organization.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.consumer.key')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.private.key')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.access.token')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+    <!-- Initialize permissions matrix -->
+    <changeSet author="martinc" id="2020-07-09-10-18-43-687">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.PERMISSION_MATRIX where ROLE_ID = GET_ROLE_ID('ALERT_ADMIN') AND DESCRIPTOR_ID = GET_DESCRIPTOR_ID('channel_azure_boards')</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_ADMIN')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+                <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">20</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_JOB_MANAGER')"/>
+            <column name="OPERATIONS">255</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="PERMISSION_MATRIX">
+            <column name="ROLE_ID" valueComputed="GET_ROLE_ID('ALERT_USER')"/>
+            <column name="OPERATIONS">4</column>
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
