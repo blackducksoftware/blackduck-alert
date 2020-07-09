@@ -22,16 +22,16 @@
  */
 package com.synopsys.integration.azure.boards.common.service.state;
 
-public class WorkItemStateCustomizationTypeModel {
+public class WorkItemTypeStateCustomizationTypeModel {
     private String custom;
     private String inherited;
     private String system;
 
-    public WorkItemStateCustomizationTypeModel() {
+    public WorkItemTypeStateCustomizationTypeModel() {
         // For serialization
     }
 
-    public WorkItemStateCustomizationTypeModel(String custom, String inherited, String system) {
+    public WorkItemTypeStateCustomizationTypeModel(String custom, String inherited, String system) {
         this.custom = custom;
         this.inherited = inherited;
         this.system = system;

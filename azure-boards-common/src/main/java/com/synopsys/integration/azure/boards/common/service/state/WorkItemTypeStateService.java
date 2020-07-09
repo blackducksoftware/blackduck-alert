@@ -31,8 +31,9 @@ import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseMode
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class WorkItemTypeStateService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEM_STATES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEM_STATE_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states/{stateId}");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPE_STATES = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes/{type}/states");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATE_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states/{stateId}");
 
     private final AzureHttpService azureHttpService;
 
@@ -40,26 +41,37 @@ public class WorkItemTypeStateService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayResponseModel<WorkItemStateResponseModel> getStates(String organizationName, String processId, String workItemTypeRefName) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEM_STATES
+    public AzureArrayResponseModel<WorkItemTypeStateResponseModel> getStatesForProject(String organizationName, String projectIdOrName, String workItemType) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPE_STATES
+                                 .defineReplacement("{organization}", organizationName)
+                                 .defineReplacement("{project}", projectIdOrName)
+                                 .defineReplacement("{type}", workItemType)
+                                 .populateSpec();
+        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
+        Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeStateResponseModel>>() {}.getType();
+        return azureHttpService.get(requestSpec, responseType);
+    }
+
+    public AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel> getStatesForProcess(String organizationName, String processId, String workItemTypeRefName) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATES
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{processId}", processId)
                                  .defineReplacement("{witRefName}", workItemTypeRefName)
                                  .populateSpec();
         requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
-        Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemStateResponseModel>>() {}.getType();
+        Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
-    public WorkItemStateResponseModel getState(String organizationName, String processId, String workItemTypeRefName, String stateId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEM_STATE_INDIVIDUAL
+    public WorkItemTypeProcessStateResponseModel getStatesForProcess(String organizationName, String processId, String workItemTypeRefName, String stateId) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATE_INDIVIDUAL
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{processId}", processId)
                                  .defineReplacement("{witRefName}", workItemTypeRefName)
                                  .defineReplacement("{stateId}", stateId)
                                  .populateSpec();
         requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
-        return azureHttpService.get(requestSpec, WorkItemStateResponseModel.class);
+        return azureHttpService.get(requestSpec, WorkItemTypeProcessStateResponseModel.class);
     }
 
 }

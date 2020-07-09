@@ -22,21 +22,21 @@
  */
 package com.synopsys.integration.azure.boards.common.service.state;
 
-public class WorkItemStateResponseModel {
+public class WorkItemTypeProcessStateResponseModel {
     private String id;
     private String name;
     private Integer order;
     private String stateCategory;
     private String color;
-    private WorkItemStateCustomizationTypeModel customizationType;
+    private WorkItemTypeStateCustomizationTypeModel customizationType;
     private Boolean hidden;
     private String url;
 
-    public WorkItemStateResponseModel() {
+    public WorkItemTypeProcessStateResponseModel() {
         // For serialization
     }
 
-    public WorkItemStateResponseModel(String id, String name, Integer order, String stateCategory, String color, WorkItemStateCustomizationTypeModel customizationType, Boolean hidden, String url) {
+    public WorkItemTypeProcessStateResponseModel(String id, String name, Integer order, String stateCategory, String color, WorkItemTypeStateCustomizationTypeModel customizationType, Boolean hidden, String url) {
         this.id = id;
         this.name = name;
         this.order = order;
@@ -67,7 +67,7 @@ public class WorkItemStateResponseModel {
         return color;
     }
 
-    public WorkItemStateCustomizationTypeModel getCustomizationType() {
+    public WorkItemTypeStateCustomizationTypeModel getCustomizationType() {
         return customizationType;
     }
 
