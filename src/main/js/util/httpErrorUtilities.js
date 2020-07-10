@@ -24,6 +24,28 @@ export function createErrorObject(errorResponse) {
     };
 }
 
+export function combineErrorObjects(errorObject1, errorObject2) {
+    const message = errorObject2.message || errorObject1.message;
+    let fieldErrors = {};
+    if (errorObject1.fieldErrors) {
+        fieldErrors = {
+            ...errorObject1.fieldErrors
+        };
+    }
+
+    if (errorObject2.fieldErrors) {
+        fieldErrors = {
+            ...fieldErrors,
+            ...errorObject2.fieldErrors
+        };
+    }
+
+    return {
+        message,
+        fieldErrors
+    };
+}
+
 export function createStatusCodeHandler(statusCode, callback) {
     return {
         statusCode,
