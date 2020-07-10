@@ -143,18 +143,12 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
             return Object.assign({}, state, {
                 inProgress: false,
-                error: HTTPErrorUtils.createErrorObject({
-                    ...state.error,
-                    ...action.errors
-                })
+                error: HTTPErrorUtils.combineErrorObjects(state.error, HTTPErrorUtils.createErrorObject(action))
             });
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE:
             return Object.assign({}, state, {
                 inProgress: false,
-                error: HTTPErrorUtils.createErrorObject({
-                    ...state.error,
-                    ...action.errors
-                })
+                error: HTTPErrorUtils.combineErrorObjects(state.error, HTTPErrorUtils.createErrorObject(action))
             });
         case SERIALIZE:
             return initialState;
