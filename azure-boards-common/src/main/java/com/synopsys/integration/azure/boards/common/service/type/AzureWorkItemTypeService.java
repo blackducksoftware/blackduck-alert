@@ -30,13 +30,16 @@ import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
-public class WorkItemTypeService {
+/**
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20item%20types/list?view=azure-devops-rest-5.1">Documentation</a>
+ */
+public class AzureWorkItemTypeService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes/{type}");
 
     private final AzureHttpService azureHttpService;
 
-    public WorkItemTypeService(AzureHttpService azureHttpService) {
+    public AzureWorkItemTypeService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 

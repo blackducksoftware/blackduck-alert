@@ -41,6 +41,11 @@ import com.synopsys.integration.azure.boards.common.service.workitem.response.Wo
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
+/**
+ * Documentation:
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20items?view=azure-devops-rest-5.1">Work Items</a>
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/comments?view=azure-devops-rest-5.1">Work Item Comments</a>
+ */
 public class AzureWorkItemService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workitemId}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/${type}");

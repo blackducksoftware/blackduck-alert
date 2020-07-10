@@ -29,11 +29,14 @@ import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
-public class WorkItemQueryService {
+/**
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/wiql?view=azure-devops-rest-5.1">Documentation</a>
+ */
+public class AzureWorkItemQueryService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/wit/wiql");
     private final AzureHttpService azureHttpService;
 
-    public WorkItemQueryService(AzureHttpService azureHttpService) {
+    public AzureWorkItemQueryService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 
