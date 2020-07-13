@@ -72,19 +72,19 @@ class GlobalConfiguration extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { currentFields, currentConfig } = this.state;
+        const { currentFields, currentConfig, currentDescriptor } = this.state;
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
             return type !== 'EndpointButtonField';
         }).map(field => field.key);
-        const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentConfig.context, currentConfig.descriptorName);
+        const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentDescriptor.context, currentDescriptor.name);
         newConfig.id = currentConfig.id;
         Object.keys(currentConfig.keyToValues)
         .filter(key => filteredFieldKeys.includes(key))
         .forEach((key) => {
             newConfig.keyToValues[key] = currentConfig.keyToValues[key];
         });
-        this.props.updateConfig(currentConfig);
+        this.props.updateConfig(newConfig);
     }
 
     handleDelete() {
