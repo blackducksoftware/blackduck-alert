@@ -72,7 +72,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    public Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
         JiraCloudProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -87,6 +87,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
             if (!jiraPluginInstalled) {
                 return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server."));
             }
+            return Optional.empty();
         } catch (IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
             return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira Cloud: " + e.getMessage()));
@@ -95,8 +96,6 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
             Thread.currentThread().interrupt();
             return Optional.of(responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage()));
         }
-
-        return Optional.empty();
     }
 
     @Override
