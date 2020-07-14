@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
@@ -49,22 +50,22 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
-public class JiraServerService extends IssueTrackerService<JiraServerContext> {
-    private Logger logger = LoggerFactory.getLogger(JiraServerService.class);
+public class JiraServerService extends IssueTrackerService {
+    private final Logger logger = LoggerFactory.getLogger(JiraServerService.class);
 
     public JiraServerService(Gson gson) {
         super(gson);
     }
 
     @Override
-    public IssueTrackerResponse sendRequests(JiraServerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+    public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
         if (null == context) {
             throw new IssueTrackerException("Context missing. Cannot determine Jira Server instance.");
         }
         if (null == requests || requests.isEmpty()) {
             throw new IssueTrackerException("Requests missing. Require at least one request.");
         }
-        JiraServerProperties jiraProperties = context.getIssueTrackerConfig();
+        JiraServerProperties jiraProperties = (JiraServerProperties) context.getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira server...");
@@ -90,4 +91,5 @@ public class JiraServerService extends IssueTrackerService<JiraServerContext> {
         JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
+
 }

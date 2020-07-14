@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class IssueTrackerService<T extends IssueTrackerContext> {
-    private Gson gson;
+public abstract class IssueTrackerService {
+    private final Gson gson;
 
     public IssueTrackerService(Gson gson) {
         this.gson = gson;
@@ -44,9 +44,10 @@ public abstract class IssueTrackerService<T extends IssueTrackerContext> {
      * @return A response object containing the aggregate status of sending the requests passed.
      * @throws IntegrationException
      */
-    public abstract IssueTrackerResponse sendRequests(T context, List<IssueTrackerRequest> requests) throws IntegrationException;
+    public abstract IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException;
 
     protected Gson getGson() {
         return gson;
     }
+
 }

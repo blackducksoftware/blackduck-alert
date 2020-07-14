@@ -51,19 +51,20 @@ public class JiraChannel extends IssueTrackerChannel {
     }
 
     @Override
-    protected IssueTrackerService<?> getIssueTrackerService() {
+    protected IssueTrackerService getIssueTrackerService() {
         return new JiraCloudService(getGson());
     }
 
     @Override
-    protected IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event) {
+    protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
         return contextBuilder.build(fieldAccessor);
     }
 
     @Override
-    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException {
+    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
         return jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
     }
+
 }

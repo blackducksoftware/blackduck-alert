@@ -22,20 +22,21 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.config;
 
-public class IssueTrackerContext<T extends IssueTrackerServiceConfig> {
-    private T issueTrackerConfig;
-    private IssueConfig issueConfig;
+public class IssueTrackerContext {
+    private final IssueTrackerServiceConfig issueTrackerConfig;
+    private final IssueConfig issueConfig;
 
-    public IssueTrackerContext(T issueTrackerConfig, IssueConfig issueConfig) {
+    public IssueTrackerContext(IssueTrackerServiceConfig issueTrackerConfig, IssueConfig issueConfig) {
         this.issueTrackerConfig = issueTrackerConfig;
         this.issueConfig = issueConfig;
     }
 
-    public T getIssueTrackerConfig() {
+    public IssueTrackerServiceConfig getIssueTrackerConfig() {
         return issueTrackerConfig;
     }
 
     public IssueConfig getIssueConfig() {
         return issueConfig;
     }
+
 }

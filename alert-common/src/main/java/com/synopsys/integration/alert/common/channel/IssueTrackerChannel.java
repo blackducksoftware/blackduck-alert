@@ -47,11 +47,11 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         this.eventManager = eventManager;
     }
 
-    protected abstract IssueTrackerService<?> getIssueTrackerService();
+    protected abstract IssueTrackerService getIssueTrackerService();
 
-    protected abstract IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event);
+    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
 
-    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException;
+    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
 
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
