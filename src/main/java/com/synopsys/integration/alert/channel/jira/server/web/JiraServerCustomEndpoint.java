@@ -72,7 +72,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    public Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
         JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
@@ -92,15 +92,14 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
             if (!jiraPluginInstalled) {
                 return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server."));
             }
+            return Optional.empty();
         } catch (IntegrationException e) {
-            createBadRequestIntegrationException(e);
+            return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
             return Optional.of(responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage()));
         }
-
-        return Optional.empty();
     }
 
     @Override
