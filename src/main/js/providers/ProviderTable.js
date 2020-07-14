@@ -3,13 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
-import {
-    clearConfigFieldErrors,
-    deleteConfig,
-    getAllConfigs,
-    testConfig,
-    updateConfig
-} from 'store/actions/globalConfiguration';
+import { clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
@@ -280,6 +274,7 @@ class ProviderTable extends Component {
         const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
+        const providerActionMessage = actionMessage ? actionMessage : errorMessage;
         return (
             <div>
                 {descriptorHeader}
@@ -304,7 +299,7 @@ class ProviderTable extends Component {
                         saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
-                        actionMessage={actionMessage}
+                        actionMessage={providerActionMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                     />
