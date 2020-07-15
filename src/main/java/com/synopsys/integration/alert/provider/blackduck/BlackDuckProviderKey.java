@@ -31,14 +31,8 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 public final class BlackDuckProviderKey extends ProviderKey {
     private static final String COMPONENT_NAME = "provider_blackduck";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return BlackDuckDescriptor.BLACKDUCK_LABEL;
+    private BlackDuckProviderKey() {
+        super(COMPONENT_NAME, BlackDuckDescriptor.BLACKDUCK_LABEL);
     }
 
 }

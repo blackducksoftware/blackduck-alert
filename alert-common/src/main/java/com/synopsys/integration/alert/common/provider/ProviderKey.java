@@ -24,5 +24,29 @@ package com.synopsys.integration.alert.common.provider;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
-public abstract class ProviderKey extends DescriptorKey {
+public class ProviderKey extends DescriptorKey {
+    private final String universalKey;
+    private final String displayName;
+
+    private ProviderKey() {
+        // For serialization
+        this.universalKey = null;
+        this.displayName = null;
+    }
+
+    public ProviderKey(String universalKey, String displayName) {
+        this.universalKey = universalKey;
+        this.displayName = displayName;
+    }
+
+    @Override
+    public final String getUniversalKey() {
+        return universalKey;
+    }
+
+    @Override
+    public final String getDisplayName() {
+        return displayName;
+    }
+
 }

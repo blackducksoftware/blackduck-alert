@@ -55,7 +55,9 @@ public class BlackDuckProviderIssueHandler {
         IssueView issueRequestModel = createIssueRequestModel(issueModel);
         Function<String, Request.Builder> requestBuilderCreator;
         if (optionalExistingIssue.isPresent()) {
-            issueRequestModel.setIssueCreatedAt(optionalExistingIssue.get().getIssueCreatedAt());
+            IssueView existingIssue = optionalExistingIssue.get();
+            issueRequestModel.setIssueDescription(existingIssue.getIssueDescription());
+            issueRequestModel.setIssueCreatedAt(existingIssue.getIssueCreatedAt());
             issueRequestModel.setIssueUpdatedAt(currentDate);
             requestBuilderCreator = RequestFactory::createCommonPutRequestBuilder;
         } else {
