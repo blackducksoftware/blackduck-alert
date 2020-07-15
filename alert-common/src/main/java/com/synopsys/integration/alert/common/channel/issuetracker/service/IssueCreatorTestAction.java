@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -43,8 +44,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private IssueTrackerService issueTrackerService;
-    private TestIssueRequestCreator testIssueRequestCreator;
+    private final IssueTrackerService issueTrackerService;
+    private final TestIssueRequestCreator testIssueRequestCreator;
 
     public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueRequestCreator testIssueRequestCreator) {
         this.issueTrackerService = issueTrackerService;
@@ -55,9 +56,10 @@ public abstract class IssueCreatorTestAction {
         String messageId = UUID.randomUUID().toString();
 
         IssueTrackerResponse initialTestResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
-        String initialIssueKey = initialTestResult.getUpdatedIssueKeys()
+        String initialIssueKey = initialTestResult.getUpdatedIssues()
                                      .stream()
                                      .findFirst()
+                                     .map(IssueTrackerIssueResponseModel::getIssueKey)
                                      .orElseThrow(() -> new IssueTrackerException("Failed to create a new issue"));
 
         Optional<String> optionalResolveTransitionName = issueTrackerContext.getIssueConfig().getResolveTransition().filter(StringUtils::isNotBlank);
@@ -98,9 +100,10 @@ public abstract class IssueCreatorTestAction {
                 Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
                 IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
-                possibleSecondIssueKey = reopenResult.getUpdatedIssueKeys()
+                possibleSecondIssueKey = reopenResult.getUpdatedIssues()
                                              .stream()
                                              .findFirst()
+                                             .map(IssueTrackerIssueResponseModel::getIssueKey)
                                              .filter(secondIssueKey -> !StringUtils.equals(secondIssueKey, initialIssueKey));
 
                 if (!reopenError.isPresent()) {

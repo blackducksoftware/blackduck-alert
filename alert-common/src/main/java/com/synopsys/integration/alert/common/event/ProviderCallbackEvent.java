@@ -22,17 +22,20 @@
  */
 package com.synopsys.integration.alert.common.event;
 
+import java.util.Optional;
+
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
 
 public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;
     private final String notificationType;
 
-    // TODO consider splitting channelDestination out into something resembling "key" and "link"
-    private final LinkableItem channelDestination;
+    private final String channelDestinationId;
+    private final String channelDestinationLink;
+
     private final IssueOperation operation;
     private final String channelActionSummary;
 
@@ -40,19 +43,21 @@ public class ProviderCallbackEvent extends AlertEvent {
     private final ComponentItem componentItem;
 
     public ProviderCallbackEvent(
-        String destination,
+        ProviderKey providerKey,
         String callbackUrl,
         String notificationType,
-        LinkableItem channelDestination,
+        String channelDestinationId,
+        String channelDestinationLink,
         IssueOperation operation,
         String channelActionSummary,
         ContentKey providerContentKey,
         ComponentItem componentItem
     ) {
-        super(destination);
+        super(providerKey.getUniversalKey());
         this.callbackUrl = callbackUrl;
         this.notificationType = notificationType;
-        this.channelDestination = channelDestination;
+        this.channelDestinationId = channelDestinationId;
+        this.channelDestinationLink = channelDestinationLink;
         this.operation = operation;
         this.channelActionSummary = channelActionSummary;
         this.providerContentKey = providerContentKey;
@@ -67,8 +72,12 @@ public class ProviderCallbackEvent extends AlertEvent {
         return notificationType;
     }
 
-    public LinkableItem getChannelDestination() {
-        return channelDestination;
+    public String getChannelDestinationId() {
+        return channelDestinationId;
+    }
+
+    public Optional<String> getChannelDestinationLink() {
+        return Optional.ofNullable(channelDestinationLink);
     }
 
     public IssueOperation getOperation() {

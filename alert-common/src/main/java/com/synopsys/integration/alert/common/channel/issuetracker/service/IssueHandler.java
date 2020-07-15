@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,8 +38,10 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueCo
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.datastructure.SetMap;
@@ -53,39 +56,41 @@ public abstract class IssueHandler<R> {
     }
 
     public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueTrackerRequest> requests) throws IntegrationException {
-        Set<String> issueKeys = new HashSet<>();
+        Set<IssueTrackerIssueResponseModel> issueResponseModels = new HashSet<>();
         for (IssueTrackerRequest request : requests) {
-            Set<String> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, request);
-            issueKeys.addAll(issueKeysForMessage);
+            Set<IssueTrackerIssueResponseModel> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, request);
+            issueResponseModels.addAll(issueKeysForMessage);
         }
 
-        String statusMessage = createStatusMessage(issueKeys);
-        return new IssueTrackerResponse(statusMessage, issueKeys);
+        String statusMessage = createStatusMessage(issueResponseModels);
+        return new IssueTrackerResponse(statusMessage, issueResponseModels);
     }
 
-    protected Set<String> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueTrackerRequest request)
+    protected Set<IssueTrackerIssueResponseModel> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
-        Set<String> issueKeys = new HashSet<>();
+        Set<IssueTrackerIssueResponseModel> issueResponseModels = new HashSet<>();
         String projectName = issueConfig.getProjectName();
+
+        String issueTitle = request.getRequestContent().getTitle();
+        IssueOperation issueOperation = request.getOperation();
+        AlertIssueOrigin alertIssueOrigin = request.getAlertIssueOrigin();
 
         SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
         try {
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
-                IssueOperation operation = request.getOperation();
-
                 List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), request);
                 logIssueAction(projectName, request);
                 if (!existingIssues.isEmpty()) {
                     Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
                     updatedIssues
                         .stream()
-                        .map(this::getIssueKey)
-                        .forEach(issueKeys::add);
-                } else if (IssueOperation.OPEN == operation || IssueOperation.UPDATE == operation) {
+                        .map((R issueResponse) -> createResponseModel(alertIssueOrigin, issueTitle, issueOperation, issueResponse))
+                        .forEach(issueResponseModels::add);
+                } else if (IssueOperation.OPEN == issueOperation || IssueOperation.UPDATE == issueOperation) {
                     Optional<R> issueModel = createIssue(issueConfig, request);
                     issueModel
-                        .map(this::getIssueKey)
-                        .ifPresent(issueKeys::add);
+                        .map((R issueResponse) -> createResponseModel(alertIssueOrigin, issueTitle, issueOperation, issueResponse))
+                        .ifPresent(issueResponseModels::add);
                 } else {
                     logger.warn("Expected to find an existing issue, but none existed.");
                 }
@@ -104,7 +109,7 @@ public abstract class IssueHandler<R> {
             String errorMessage = String.format("For Project: %s. %s.", projectName, missingTransitions.toString());
             throw new IssueTrackerException(errorMessage);
         }
-        return issueKeys;
+        return issueResponseModels;
     }
 
     protected abstract Optional<R> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException;
@@ -116,6 +121,8 @@ public abstract class IssueHandler<R> {
     protected abstract void addComment(String issueKey, String comment) throws IntegrationException;
 
     protected abstract String getIssueKey(R issueModel);
+
+    protected abstract IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, R issueResponse);
 
     protected abstract String getIssueTrackerUrl();
 
@@ -144,11 +151,15 @@ public abstract class IssueHandler<R> {
         return updatedIssues;
     }
 
-    private String createStatusMessage(Collection<String> issueKeys) {
-        if (issueKeys.isEmpty()) {
+    private String createStatusMessage(Collection<IssueTrackerIssueResponseModel> issueResponseModels) {
+        if (issueResponseModels.isEmpty()) {
             return "Did not create any issues.";
         }
-        String concatenatedKeys = String.join(", ", issueKeys);
+
+        String concatenatedKeys = issueResponseModels
+                                      .stream()
+                                      .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                      .collect(Collectors.joining(", "));
         logger.debug("Issues updated: {}", concatenatedKeys);
         return String.format("Successfully created issue at %s. Issue Keys: (%s)", getIssueTrackerUrl(), concatenatedKeys);
     }

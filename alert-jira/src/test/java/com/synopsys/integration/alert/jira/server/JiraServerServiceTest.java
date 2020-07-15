@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
@@ -51,7 +52,7 @@ import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 public class JiraServerServiceTest {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     // mock services
     private PluginManagerService pluginManagerService;
     private ProjectService projectService;
@@ -116,9 +117,10 @@ public class JiraServerServiceTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = createSearchProperties();
-        requests.add(IssueCreationRequest.of(searchProperties, content));
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
         Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             service.sendRequests(createContext(), requests);
@@ -150,11 +152,12 @@ public class JiraServerServiceTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCreationRequest.of(searchProperties, content));
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
+        assertTrue(response.getUpdatedIssues().contains("project-1"));
     }
 
     @Test
@@ -182,13 +185,14 @@ public class JiraServerServiceTest {
         JiraServerService service = new JiraServerService(gson);
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
+        requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
+        assertTrue(response.getUpdatedIssues().contains("project-1"));
     }
 
     private JiraServerServiceFactory createMockServiceFactory() {

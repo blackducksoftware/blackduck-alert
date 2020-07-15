@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.jira.common.JiraIssueSearchProperties;
@@ -80,6 +83,11 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     @Override
     protected String getIssueKey(IssueResponseModel issueModel) {
         return issueModel.getKey();
+    }
+
+    @Override
+    protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, IssueResponseModel issueResponse) {
+        return new IssueTrackerIssueResponseModel(alertIssueOrigin, issueResponse.getKey(), issueResponse.getSelf(), issueTitle, issueOperation);
     }
 
     @Override

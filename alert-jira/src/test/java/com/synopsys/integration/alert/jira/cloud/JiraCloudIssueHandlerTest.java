@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.jira.JiraTestConfigHelper;
@@ -30,7 +31,7 @@ import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 
 public class JiraCloudIssueHandlerTest {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Ignore
     @Test
@@ -60,7 +61,8 @@ public class JiraCloudIssueHandlerTest {
         JiraIssueSearchProperties jiraIssueSearchProperties = new JiraIssueSearchProperties("Provider", "Provider Url", "Topic", "Topic Value",
             "Sub Topic", "Sub Topic Value", "Category", "Component Name", "Component Value", "Sub Component", "Sub Component Value", "");
         IssueContentModel issueContentModel = IssueContentModel.of("Test issue", "Attempting to create an issue to reproduce a bug", new ArrayList<>());
-        IssueTrackerRequest request = new IssueTrackerRequest(IssueOperation.OPEN, jiraIssueSearchProperties, issueContentModel);
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        IssueTrackerRequest request = new IssueTrackerRequest(IssueOperation.OPEN, jiraIssueSearchProperties, issueContentModel, alertIssueOrigin);
 
         Optional<IssueResponseModel> issueResponseModel = jiraCloudIssueHandler.testCreateIssue(issueConfig, request);
         assertTrue(issueResponseModel.isPresent());

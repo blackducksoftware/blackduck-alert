@@ -30,6 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.jira.common.util.JiraContentValidator;
@@ -101,6 +104,11 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     @Override
     protected String getIssueKey(IssueResponseModel issueModel) {
         return issueModel.getKey();
+    }
+
+    @Override
+    protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, IssueResponseModel issueResponse) {
+        return new IssueTrackerIssueResponseModel(alertIssueOrigin, issueResponse.getKey(), issueResponse.getSelf(), issueTitle, issueOperation);
     }
 
     @Override
