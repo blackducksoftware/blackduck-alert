@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 public final class BlackDuckProviderKey extends ProviderKey {
     private static final String COMPONENT_NAME = "provider_blackduck";
 
-    private BlackDuckProviderKey() {
+    public BlackDuckProviderKey() {
         super(COMPONENT_NAME, BlackDuckDescriptor.BLACKDUCK_LABEL);
     }
 

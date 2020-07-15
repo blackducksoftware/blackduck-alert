@@ -47,19 +47,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
     }
 
     private ProviderKey createProviderKey(String key) {
-        return new ProviderKey() {
-            private static final long serialVersionUID = 2052511010419848986L;
-
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        return new ProviderKey(key, key);
     }
 
     @Test
