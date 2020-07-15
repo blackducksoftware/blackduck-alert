@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
@@ -45,7 +44,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {
-    private final DescriptorKey channelKey;
+    private final ChannelKey channelKey;
     private final EventManager eventManager;
 
     public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, ChannelKey channelKey, EventManager eventManager) {

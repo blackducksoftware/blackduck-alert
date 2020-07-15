@@ -58,8 +58,8 @@ public abstract class IssueHandler<R> {
     public final IssueTrackerResponse createOrUpdateIssues(IssueConfig issueConfig, Collection<IssueTrackerRequest> requests) throws IntegrationException {
         Set<IssueTrackerIssueResponseModel> issueResponseModels = new HashSet<>();
         for (IssueTrackerRequest request : requests) {
-            Set<IssueTrackerIssueResponseModel> issueKeysForMessage = createOrUpdateIssuesPerComponent(issueConfig, request);
-            issueResponseModels.addAll(issueKeysForMessage);
+            Set<IssueTrackerIssueResponseModel> componentIssueResponseModels = createOrUpdateIssuesPerComponent(issueConfig, request);
+            issueResponseModels.addAll(componentIssueResponseModels);
         }
 
         String statusMessage = createStatusMessage(issueResponseModels);
