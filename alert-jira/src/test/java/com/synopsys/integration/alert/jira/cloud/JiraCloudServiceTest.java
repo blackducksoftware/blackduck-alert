@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueC
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.jira.cloud.model.TestIssueCreator;
@@ -158,7 +159,12 @@ public class JiraCloudServiceTest {
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssues().contains("project-1"));
+
+        boolean anyIssuesMatchKey = response.getUpdatedIssues()
+                                        .stream()
+                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                        .anyMatch("project-1"::equals);
+        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
     }
 
     @Test
@@ -195,7 +201,12 @@ public class JiraCloudServiceTest {
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssues().contains("project-1"));
+
+        boolean anyIssuesMatchKey = response.getUpdatedIssues()
+                                        .stream()
+                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                        .anyMatch("project-1"::equals);
+        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
     }
 
     private JiraCloudServiceFactory createMockServiceFactory() {
