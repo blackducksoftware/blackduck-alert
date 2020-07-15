@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
@@ -39,6 +40,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIs
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -65,6 +67,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
                                               .findAny()
                                               .orElseThrow(() -> new AlertException("No actionable component items were found. Cannot create test message content."));
 
+            ContentKey providerContentKey = providerMessageContent.getContentKey();
             String providerName = providerMessageContent.getProvider().getValue();
             String providerUrl = providerMessageContent.getProvider().getUrl()
                                      .map(JiraIssuePropertiesUtil::formatProviderUrl)
@@ -78,11 +81,11 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
 
             switch (operation) {
                 case RESOLVE:
-                    return createResolveIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
                 case OPEN:
                 case UPDATE:
                 default:
-                    return createCreateOrUpdateIssueRequest(providerName, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
             }
 
         } catch (AlertException ex) {
@@ -93,16 +96,18 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     }
 
     // TODO simplify the following 2 methods
-    private IssueTrackerRequest createResolveIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+    private IssueTrackerRequest createResolveIssueRequest(ContentKey providerContentKey, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
-        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-        return IssueResolutionRequest.of(issueSearchProperties, contentModel);
+        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey, null);
+        return IssueResolutionRequest.of(issueSearchProperties, contentModel, alertIssueOrigin);
     }
 
-    private IssueTrackerRequest createCreateOrUpdateIssueRequest(String providerName, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
+    private IssueTrackerRequest createCreateOrUpdateIssueRequest(ContentKey providerContentKey, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
-        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerName, IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-        return IssueCreationRequest.of(issueSearchProperties, contentModel);
+        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey, null);
+        return IssueCreationRequest.of(issueSearchProperties, contentModel, alertIssueOrigin);
     }
 
     private ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {

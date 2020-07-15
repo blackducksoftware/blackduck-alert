@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.jira.common.JiraConstants;
@@ -70,14 +70,14 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
-        String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         return new JiraCloudProperties(url, accessToken, username);
     }
 
     @Override
     protected String getChannelDisplayName() {
-        return JiraDescriptor.JIRA_LABEL;
+        return JiraCloudDescriptor.JIRA_LABEL;
     }
 }

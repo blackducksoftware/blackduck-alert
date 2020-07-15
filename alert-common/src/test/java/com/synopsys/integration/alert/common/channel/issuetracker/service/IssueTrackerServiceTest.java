@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
@@ -29,17 +30,17 @@ public class IssueTrackerServiceTest {
         IssueConfig issueConfig = new IssueConfig();
         TestContext context = new TestContext(serverConfig, issueConfig);
 
-        IssueTrackerService<TestContext> service = new IssueTrackerService<TestContext>(gson) {
+        IssueTrackerService service = new IssueTrackerService(gson) {
             @Override
-            public IssueTrackerResponse sendRequests(TestContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+            public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
                 return new IssueTrackerResponse(EXPECTED_STATUS, new ArrayList<>());
             }
         };
 
         List<IssueTrackerRequest> requests = new ArrayList<>();
-        requests.add(IssueCreationRequest.of(null, null));
-        requests.add(IssueCommentRequest.of(null, null));
-        requests.add(IssueResolutionRequest.of(null, null));
+        requests.add(IssueCreationRequest.of(null, null, null));
+        requests.add(IssueCommentRequest.of(null, null, null));
+        requests.add(IssueResolutionRequest.of(null, null, null));
 
         IssueTrackerResponse response = service.sendRequests(context, requests);
 
@@ -47,6 +48,7 @@ public class IssueTrackerServiceTest {
         assertEquals(issueConfig, context.getIssueConfig());
         assertEquals(gson, service.getGson());
         assertEquals(EXPECTED_STATUS, response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().isEmpty());
+        assertTrue(response.getUpdatedIssues().isEmpty());
     }
+
 }

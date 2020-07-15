@@ -127,6 +127,7 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
                    .applyPriority(oldItem.getPriority())
                    .applyComponentData(oldItem.getComponent())
                    .applySubComponent(oldItem.getSubComponent().orElse(null))
+                   .applyComponentItemCallbackInfo(oldItem.getCallbackInfo().orElse(null))
                    .applyCategoryItem(oldItem.getCategoryItem())
                    .applyCategoryGroupingAttribute(oldItem.getCategoryGroupingAttribute().orElse(null))
                    .applyCollapseOnCategory(oldItem.collapseOnCategory())

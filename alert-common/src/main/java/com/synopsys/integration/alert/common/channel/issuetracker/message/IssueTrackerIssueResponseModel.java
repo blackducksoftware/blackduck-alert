@@ -23,34 +23,41 @@
 package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueTrackerRequest {
-    private final IssueSearchProperties issueSearchProperties;
-    private final IssueOperation operation;
-    private final IssueContentModel requestContent;
+public class IssueTrackerIssueResponseModel extends AlertSerializableModel {
     private final AlertIssueOrigin alertIssueOrigin;
+    private final String issueKey;
+    private final String issueLink;
+    private final String issueTitle;
+    private final IssueOperation issueOperation;
 
-    public IssueTrackerRequest(IssueOperation operation, IssueSearchProperties issueSearchProperties, IssueContentModel requestContent, AlertIssueOrigin alertIssueOrigin) {
-        this.operation = operation;
-        this.issueSearchProperties = issueSearchProperties;
-        this.requestContent = requestContent;
+    public IssueTrackerIssueResponseModel(AlertIssueOrigin alertIssueOrigin, String issueKey, String issueLink, String issueTitle, IssueOperation issueOperation) {
         this.alertIssueOrigin = alertIssueOrigin;
-    }
-
-    public <T extends IssueSearchProperties> T getIssueSearchProperties() {
-        return (T) issueSearchProperties;
-    }
-
-    public IssueOperation getOperation() {
-        return operation;
-    }
-
-    public IssueContentModel getRequestContent() {
-        return requestContent;
+        this.issueKey = issueKey;
+        this.issueLink = issueLink;
+        this.issueTitle = issueTitle;
+        this.issueOperation = issueOperation;
     }
 
     public AlertIssueOrigin getAlertIssueOrigin() {
         return alertIssueOrigin;
+    }
+
+    public String getIssueKey() {
+        return issueKey;
+    }
+
+    public String getIssueLink() {
+        return issueLink;
+    }
+
+    public String getIssueTitle() {
+        return issueTitle;
+    }
+
+    public IssueOperation getIssueOperation() {
+        return issueOperation;
     }
 
 }

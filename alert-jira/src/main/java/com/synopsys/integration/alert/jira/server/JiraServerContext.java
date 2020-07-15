@@ -25,8 +25,9 @@ package com.synopsys.integration.alert.jira.server;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 
-public class JiraServerContext extends IssueTrackerContext<JiraServerProperties> {
+public class JiraServerContext extends IssueTrackerContext {
     public JiraServerContext(JiraServerProperties issueTrackerConfig, IssueConfig issueConfig) {
         super(issueTrackerConfig, issueConfig);
     }
+
 }

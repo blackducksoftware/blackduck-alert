@@ -27,11 +27,12 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 public class IssueResolutionRequest extends IssueTrackerRequest {
     public static final IssueOperation OPERATION = IssueOperation.RESOLVE;
 
-    private IssueResolutionRequest(IssueSearchProperties issueSearchProperties, IssueContentModel requestContent) {
-        super(OPERATION, issueSearchProperties, requestContent);
+    private IssueResolutionRequest(IssueSearchProperties issueSearchProperties, IssueContentModel requestContent, AlertIssueOrigin alertIssueOrigin) {
+        super(OPERATION, issueSearchProperties, requestContent, alertIssueOrigin);
     }
 
-    public static final IssueResolutionRequest of(IssueSearchProperties issueSearchProperties, IssueContentModel content) {
-        return new IssueResolutionRequest(issueSearchProperties, content);
+    public static final IssueResolutionRequest of(IssueSearchProperties issueSearchProperties, IssueContentModel content, AlertIssueOrigin alertIssueOrigin) {
+        return new IssueResolutionRequest(issueSearchProperties, content, alertIssueOrigin);
     }
+
 }

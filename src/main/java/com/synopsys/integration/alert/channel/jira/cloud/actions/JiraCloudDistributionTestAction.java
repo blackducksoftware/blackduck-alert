@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraChannel;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -41,12 +41,12 @@ import com.synopsys.integration.alert.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class JiraDistributionTestAction extends ChannelDistributionTestAction {
+public class JiraCloudDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
 
     @Autowired
-    public JiraDistributionTestAction(JiraChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraCloudDistributionTestAction(JiraCloudChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser) {
         super(jiraChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;

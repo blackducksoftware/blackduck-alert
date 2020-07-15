@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.jira.cloud.JiraCloudContext;
 import com.synopsys.integration.alert.jira.cloud.JiraCloudProperties;
@@ -31,37 +31,37 @@ import com.synopsys.integration.alert.jira.common.JiraContextBuilder;
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
     @Override
     protected String getProjectFieldKey() {
-        return JiraDescriptor.KEY_JIRA_PROJECT_NAME;
+        return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     protected String getIssueTypeFieldKey() {
-        return JiraDescriptor.KEY_ISSUE_TYPE;
+        return JiraCloudDescriptor.KEY_ISSUE_TYPE;
     }
 
     @Override
     protected String getIssueCreatorFieldKey() {
-        return JiraDescriptor.KEY_ISSUE_CREATOR;
+        return JiraCloudDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
     protected String getAddCommentsFieldKey() {
-        return JiraDescriptor.KEY_ADD_COMMENTS;
+        return JiraCloudDescriptor.KEY_ADD_COMMENTS;
     }
 
     @Override
     protected String getResolveTransitionFieldKey() {
-        return JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     protected String getOpenTransitionFieldKey() {
-        return JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     protected String getDefaultIssueCreatorFieldKey() {
-        return JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
+        return JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
     }
 
     @Override
@@ -70,9 +70,9 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     }
 
     private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
-        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
+        String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         return new JiraCloudProperties(url, accessToken, username);
     }
 }

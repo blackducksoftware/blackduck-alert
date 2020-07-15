@@ -28,20 +28,20 @@ import java.util.Collection;
 import com.synopsys.integration.util.Stringable;
 
 public class IssueTrackerResponse extends Stringable implements Serializable {
-    private String statusMessage;
-    private Collection<String> updatedIssueKeys;
+    private final String statusMessage;
+    private final Collection<IssueTrackerIssueResponseModel> updatedIssues;
 
-    public IssueTrackerResponse(String statusMessage, Collection<String> updatedIssueKeys) {
+    public IssueTrackerResponse(String statusMessage, Collection<IssueTrackerIssueResponseModel> updatedIssues) {
         this.statusMessage = statusMessage;
-        this.updatedIssueKeys = updatedIssueKeys;
+        this.updatedIssues = updatedIssues;
     }
 
     public String getStatusMessage() {
         return statusMessage;
     }
 
-    public Collection<String> getUpdatedIssueKeys() {
-        return updatedIssueKeys;
+    public Collection<IssueTrackerIssueResponseModel> getUpdatedIssues() {
+        return updatedIssues;
     }
 
 }

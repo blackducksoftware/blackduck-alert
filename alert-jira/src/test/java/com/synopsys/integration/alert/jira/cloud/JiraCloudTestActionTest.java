@@ -14,10 +14,12 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
@@ -48,7 +50,7 @@ import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public class JiraCloudTestActionTest {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     // mock services
     private PluginManagerService pluginManagerService;
     private ProjectService projectService;
@@ -101,17 +103,23 @@ public class JiraCloudTestActionTest {
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(service, gson, new TestIssueRequestCreator() {
             @Override
             public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
+                AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
                 if (operation == IssueOperation.RESOLVE) {
-                    return IssueResolutionRequest.of(searchProperties, content);
+                    return IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin);
                 }
-                return IssueCreationRequest.of(searchProperties, content);
+                return IssueCreationRequest.of(searchProperties, content, alertIssueOrigin);
             }
         });
 
         IssueTrackerResponse response = testAction.testConfig(createContext());
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
+
+        boolean anyIssuesMatchKey = response.getUpdatedIssues()
+                                        .stream()
+                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                        .anyMatch("project-1"::equals);
+        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
     }
 
     private JiraCloudServiceFactory createMockServiceFactory() {

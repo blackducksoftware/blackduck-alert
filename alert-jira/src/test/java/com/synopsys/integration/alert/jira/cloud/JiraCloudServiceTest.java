@@ -14,11 +14,13 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.jira.cloud.model.TestIssueCreator;
@@ -49,7 +51,7 @@ import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public class JiraCloudServiceTest {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     // mock services
     private PluginManagerService jiraAppService;
     private ProjectService projectService;
@@ -114,9 +116,10 @@ public class JiraCloudServiceTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = createSearchProperties();
-        requests.add(IssueCreationRequest.of(searchProperties, content));
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
         Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             service.sendRequests(createContext(), requests);
@@ -151,11 +154,17 @@ public class JiraCloudServiceTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCreationRequest.of(searchProperties, content));
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
+
+        boolean anyIssuesMatchKey = response.getUpdatedIssues()
+                                        .stream()
+                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                        .anyMatch("project-1"::equals);
+        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
     }
 
     @Test
@@ -186,12 +195,18 @@ public class JiraCloudServiceTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
+        requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(createContext(), requests);
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
+
+        boolean anyIssuesMatchKey = response.getUpdatedIssues()
+                                        .stream()
+                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                                        .anyMatch("project-1"::equals);
+        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
     }
 
     private JiraCloudServiceFactory createMockServiceFactory() {

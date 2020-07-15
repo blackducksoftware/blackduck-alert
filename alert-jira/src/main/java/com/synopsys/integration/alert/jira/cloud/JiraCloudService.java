@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
@@ -49,22 +50,22 @@ import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
-public class JiraCloudService extends IssueTrackerService<JiraCloudContext> {
-    private Logger logger = LoggerFactory.getLogger(JiraCloudService.class);
+public class JiraCloudService extends IssueTrackerService {
+    private final Logger logger = LoggerFactory.getLogger(JiraCloudService.class);
 
     public JiraCloudService(Gson gson) {
         super(gson);
     }
 
     @Override
-    public IssueTrackerResponse sendRequests(JiraCloudContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+    public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
         if (null == context) {
             throw new IssueTrackerException("Context missing. Cannot determine Jira Cloud instance.");
         }
         if (null == requests || requests.isEmpty()) {
-            throw new IssueTrackerException("Requests missing. Require at least one request.");
+            throw new IssueTrackerException("Requests missing. Requires at least one request.");
         }
-        JiraCloudProperties jiraProperties = context.getIssueTrackerConfig();
+        JiraCloudProperties jiraProperties = (JiraCloudProperties) context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
@@ -94,4 +95,5 @@ public class JiraCloudService extends IssueTrackerService<JiraCloudContext> {
         JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
+
 }
