@@ -63,7 +63,7 @@ public class JiraCloudService extends IssueTrackerService {
             throw new IssueTrackerException("Context missing. Cannot determine Jira Cloud instance.");
         }
         if (null == requests || requests.isEmpty()) {
-            throw new IssueTrackerException("Requests missing. Require at least one request.");
+            throw new IssueTrackerException("Requests missing. Requires at least one request.");
         }
         JiraCloudProperties jiraProperties = (JiraCloudProperties) context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
@@ -95,4 +95,5 @@ public class JiraCloudService extends IssueTrackerService {
         JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
+
 }

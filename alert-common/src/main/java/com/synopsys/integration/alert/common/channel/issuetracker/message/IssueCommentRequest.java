@@ -31,7 +31,8 @@ public class IssueCommentRequest extends IssueTrackerRequest {
         super(OPERATION, issueSearchProperties, requestContent);
     }
 
-    public static final IssueCommentRequest of(IssueSearchProperties issueSearchProperties, IssueContentModel content) {
+    public static IssueCommentRequest of(IssueSearchProperties issueSearchProperties, IssueContentModel content) {
         return new IssueCommentRequest(issueSearchProperties, content);
     }
+
 }

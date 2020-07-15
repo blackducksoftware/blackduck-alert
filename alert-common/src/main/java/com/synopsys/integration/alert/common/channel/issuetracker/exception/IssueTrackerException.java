@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.exception;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 
-public class IssueTrackerException extends IntegrationException {
+public class IssueTrackerException extends AlertException {
     private static final long serialVersionUID = -156290045811635478L;
 
     public IssueTrackerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {

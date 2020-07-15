@@ -43,8 +43,8 @@ public class JiraMessageParser extends ChannelMessageParser {
     private static final int TITLE_SIZE_LIMIT = 255;
     private static final int MESSAGE_SIZE_LIMIT = 30000;
 
-    public IssueContentModel createIssueContentModel(String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems,
-        ComponentItem arbitraryItem) {
+    public IssueContentModel createIssueContentModel(
+        String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
