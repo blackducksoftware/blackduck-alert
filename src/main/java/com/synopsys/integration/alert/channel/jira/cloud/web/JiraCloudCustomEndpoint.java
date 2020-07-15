@@ -34,8 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -54,17 +54,17 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.rest.response.Response;
 
 @Component
-public class JiraCustomEndpoint extends ButtonCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(JiraCustomEndpoint.class);
+public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
+    private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomEndpoint.class);
 
-    private final JiraChannelKey jiraChannelKey;
+    private final JiraCloudChannelKey jiraChannelKey;
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraCustomEndpoint(JiraChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
+    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+        super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
@@ -104,9 +104,9 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     private JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
-        String url = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_URL).orElse("");
-        String username = fieldModel.getFieldValue(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
-        String accessToken = fieldModel.getFieldValueModel(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
+        String url = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_URL).orElse("");
+        String username = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
+        String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
                                  .map(this::getAppropriateAccessToken)
                                  .orElse("");
 
@@ -121,7 +121,7 @@ public class JiraCustomEndpoint extends ButtonCustomEndpoint {
                 return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
                            .stream()
                            .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
+                           .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
                            .flatMap(ConfigurationFieldModel::getFieldValue)
                            .orElse("");
 

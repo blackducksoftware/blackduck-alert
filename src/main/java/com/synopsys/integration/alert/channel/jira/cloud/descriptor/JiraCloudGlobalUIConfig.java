@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validators.
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
-public class JiraGlobalUIConfig extends UIConfig {
+public class JiraCloudGlobalUIConfig extends UIConfig {
     public static final String LABEL_URL = "Url";
     public static final String LABEL_ADMIN_EMAIL_ADDRESS = "Admin Email Address";
     public static final String LABEL_ADMIN_API_TOKEN = "Admin API Token";
@@ -52,20 +52,20 @@ public class JiraGlobalUIConfig extends UIConfig {
     private final EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
-    public JiraGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
-        super(JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_DESCRIPTION, JiraDescriptor.JIRA_URL);
+    public JiraCloudGlobalUIConfig(EncryptionSettingsValidator encryptionValidator) {
+        super(JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_DESCRIPTION, JiraCloudDescriptor.JIRA_URL);
         this.encryptionValidator = encryptionValidator;
     }
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField jiraUrl = new URLInputConfigField(JiraDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL).applyRequired(true);
-        ConfigField jiraUserName = new TextInputConfigField(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME).applyRequired(true);
-        ConfigField jiraAccessToken = new PasswordConfigField(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN, encryptionValidator).applyRequired(true);
-        ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_URL)
-                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
-                                              .applyRequestedDataFieldKey(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        ConfigField jiraUrl = new URLInputConfigField(JiraCloudDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL).applyRequired(true);
+        ConfigField jiraUserName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME).applyRequired(true);
+        ConfigField jiraAccessToken = new PasswordConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN, encryptionValidator).applyRequired(true);
+        ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
+                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_URL)
+                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
+                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);
     }

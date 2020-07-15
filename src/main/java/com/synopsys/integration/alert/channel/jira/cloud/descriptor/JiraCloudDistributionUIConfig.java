@@ -27,7 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.jira.common.JiraConstants;
 
 @Component
-public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
+public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String LABEL_ADD_COMMENTS = "Add Comments";
     public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     public static final String LABEL_JIRA_PROJECT = "Jira Project";
@@ -53,21 +53,21 @@ public class JiraDistributionUIConfig extends ChannelDistributionUIConfig {
                                                                           + "Note: This must be in the 'To Do' status category.";
 
     @Autowired
-    public JiraDistributionUIConfig(JiraChannelKey jiraChannelKey) {
-        super(jiraChannelKey, JiraDescriptor.JIRA_LABEL, JiraDescriptor.JIRA_URL);
+    public JiraCloudDistributionUIConfig(JiraCloudChannelKey jiraChannelKey) {
+        super(jiraChannelKey, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
     }
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField addComments = new CheckboxConfigField(JiraDescriptor.KEY_ADD_COMMENTS, LABEL_ADD_COMMENTS, DESCRIPTION_ADD_COMMENTS);
-        ConfigField issueCreator = new TextInputConfigField(JiraDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
-        ConfigField jiraProjectName = new TextInputConfigField(JiraDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT).applyRequired(true);
+        ConfigField addComments = new CheckboxConfigField(JiraCloudDescriptor.KEY_ADD_COMMENTS, LABEL_ADD_COMMENTS, DESCRIPTION_ADD_COMMENTS);
+        ConfigField issueCreator = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
+        ConfigField jiraProjectName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT).applyRequired(true);
 
-        ConfigField issueType = new TextInputConfigField(JiraDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE)
+        ConfigField issueType = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE)
                                     .applyRequired(true)
                                     .applyDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
-        ConfigField resolveWorkflow = new TextInputConfigField(JiraDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        ConfigField openWorkflow = new TextInputConfigField(JiraDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
+        ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);

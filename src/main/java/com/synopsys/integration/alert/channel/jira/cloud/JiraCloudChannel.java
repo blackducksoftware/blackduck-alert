@@ -41,11 +41,11 @@ import com.synopsys.integration.alert.jira.common.JiraMessageContentConverter;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class JiraChannel extends IssueTrackerChannel {
+public class JiraCloudChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
-    public JiraChannel(JiraChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter, EventManager eventManager) {
+    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter, EventManager eventManager) {
         super(gson, auditUtility, jiraChannelKey, eventManager);
         this.jiraContentConverter = jiraContentConverter;
     }

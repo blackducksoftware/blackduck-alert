@@ -20,25 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud;
+package com.synopsys.integration.alert.channel.jira.cloud.actions;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
 @Component
-public final class JiraChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_jira_cloud";
-
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return JiraDescriptor.JIRA_LABEL;
+public class JiraCloudConfigurationAction extends ConfigurationAction {
+    @Autowired
+    public JiraCloudConfigurationAction(JiraCloudChannelKey jiraChannelKey, JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction) {
+        super(jiraChannelKey);
+        addGlobalTestAction(globalTestAction);
+        addDistributionTestAction(jiraDistributionTestAction);
     }
 
 }

@@ -25,11 +25,11 @@ package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraChannelKey;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
-public class JiraDescriptor extends ChannelDescriptor {
+public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_CLOUD_PREFIX = "jira.cloud.";
     public static final String JIRA_CLOUD_CHANNEL_PREFIX = "channel." + JIRA_CLOUD_PREFIX;
 
@@ -50,7 +50,7 @@ public class JiraDescriptor extends ChannelDescriptor {
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
     @Autowired
-    public JiraDescriptor(JiraChannelKey jiraChannelKey, JiraGlobalUIConfig globalUIConfig, JiraDistributionUIConfig distributionUIConfig) {
+    public JiraCloudDescriptor(JiraCloudChannelKey jiraChannelKey, JiraCloudGlobalUIConfig globalUIConfig, JiraCloudDistributionUIConfig distributionUIConfig) {
         super(jiraChannelKey, distributionUIConfig, globalUIConfig);
     }
 
