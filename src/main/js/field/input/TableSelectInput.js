@@ -67,6 +67,7 @@ class TableSelectInput extends Component {
         this.handleClearClick = this.handleClearClick.bind(this);
         this.handleShowClearConfirm = this.handleShowClearConfirm.bind(this);
         this.handleHideClearConfirm = this.handleHideClearConfirm.bind(this);
+        this.onHideTableSelectModal = this.onHideTableSelectModal.bind(this);
 
         this.state = {
             progress: false,
@@ -137,7 +138,8 @@ class TableSelectInput extends Component {
     handleClearClick() {
         this.setState({
             selectedData: [],
-            displayedData: []
+            displayedData: [],
+            showClearConfirm: false
         });
 
         this.props.onChange({
@@ -400,9 +402,16 @@ class TableSelectInput extends Component {
         );
     }
 
+    onHideTableSelectModal() {
+        this.setState({
+            showTable: false,
+            selectedData: this.state.displayedData
+        })
+    }
+
     render() {
         const tableModal = (
-            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
+            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={this.onHideTableSelectModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.label}</Modal.Title>
                 </Modal.Header>
