@@ -59,6 +59,7 @@ public class BlackDuckProviderIssueHandler {
             issueRequestModel.setIssueDescription(existingIssue.getIssueDescription());
             issueRequestModel.setIssueCreatedAt(existingIssue.getIssueCreatedAt());
             issueRequestModel.setIssueUpdatedAt(currentDate);
+            bomComponentVersionIssuesUrl = existingIssue.getMeta().getHref();
             requestBuilderCreator = RequestFactory::createCommonPutRequestBuilder;
         } else {
             issueRequestModel.setIssueCreatedAt(currentDate);

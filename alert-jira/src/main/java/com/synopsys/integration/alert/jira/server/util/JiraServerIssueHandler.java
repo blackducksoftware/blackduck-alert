@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertI
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.jira.server.JiraServerProperties;
@@ -108,7 +109,8 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
 
     @Override
     protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, IssueResponseModel issueResponse) {
-        return new IssueTrackerIssueResponseModel(alertIssueOrigin, issueResponse.getKey(), issueResponse.getSelf(), issueTitle, issueOperation);
+        String uiLink = JiraCallbackUtils.createUILink(issueResponse);
+        return new IssueTrackerIssueResponseModel(alertIssueOrigin, issueResponse.getKey(), uiLink, issueTitle, issueOperation);
     }
 
     @Override
