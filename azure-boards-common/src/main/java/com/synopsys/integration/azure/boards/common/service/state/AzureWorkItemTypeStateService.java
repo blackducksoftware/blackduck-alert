@@ -40,6 +40,13 @@ public class AzureWorkItemTypeStateService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATE_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/states/{stateId}");
 
+    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
+    public static final String PATH_PROJECT_REPLACEMENT = "{project}";
+    public static final String PATH_TYPE_REPLACEMENT = "{type}";
+    public static final String PATH_PROCESS_ID_REPLACEMENT = "{processId}";
+    public static final String PATH_WIT_REF_NAME_REPLACEMENT = "{witRefName}";
+    public static final String PATH_STATE_ID_REPLACEMENT = "{stateId}";
+
     private final AzureHttpService azureHttpService;
 
     public AzureWorkItemTypeStateService(AzureHttpService azureHttpService) {
@@ -48,9 +55,9 @@ public class AzureWorkItemTypeStateService {
 
     public AzureArrayResponseModel<WorkItemTypeStateResponseModel> getStatesForProject(String organizationName, String projectIdOrName, String workItemType) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPE_STATES
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{type}", workItemType)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_TYPE_REPLACEMENT, workItemType)
                                  .populateSpec();
         requestSpec = appendApiVersionQueryParam(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeStateResponseModel>>() {}.getType();
@@ -59,9 +66,9 @@ public class AzureWorkItemTypeStateService {
 
     public AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel> getStatesForProcess(String organizationName, String processId, String workItemTypeRefName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATES
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{processId}", processId)
-                                 .defineReplacement("{witRefName}", workItemTypeRefName)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
+                                 .defineReplacement(PATH_WIT_REF_NAME_REPLACEMENT, workItemTypeRefName)
                                  .populateSpec();
         requestSpec = appendApiVersionQueryParam(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel>>() {}.getType();
@@ -70,10 +77,10 @@ public class AzureWorkItemTypeStateService {
 
     public WorkItemTypeProcessStateResponseModel getStatesForProcess(String organizationName, String processId, String workItemTypeRefName, String stateId) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_STATE_INDIVIDUAL
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{processId}", processId)
-                                 .defineReplacement("{witRefName}", workItemTypeRefName)
-                                 .defineReplacement("{stateId}", stateId)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
+                                 .defineReplacement(PATH_WIT_REF_NAME_REPLACEMENT, workItemTypeRefName)
+                                 .defineReplacement(PATH_STATE_ID_REPLACEMENT, stateId)
                                  .populateSpec();
         requestSpec = appendApiVersionQueryParam(requestSpec);
         return azureHttpService.get(requestSpec, WorkItemTypeProcessStateResponseModel.class);
