@@ -52,7 +52,7 @@ public class AzureWorkItemTypeStateService {
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{type}", workItemType)
                                  .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
+        requestSpec = appendApiVersionQueryParam(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeStateResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
@@ -63,7 +63,7 @@ public class AzureWorkItemTypeStateService {
                                  .defineReplacement("{processId}", processId)
                                  .defineReplacement("{witRefName}", workItemTypeRefName)
                                  .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
+        requestSpec = appendApiVersionQueryParam(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
@@ -75,8 +75,12 @@ public class AzureWorkItemTypeStateService {
                                  .defineReplacement("{witRefName}", workItemTypeRefName)
                                  .defineReplacement("{stateId}", stateId)
                                  .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
+        requestSpec = appendApiVersionQueryParam(requestSpec);
         return azureHttpService.get(requestSpec, WorkItemTypeProcessStateResponseModel.class);
+    }
+
+    private String appendApiVersionQueryParam(String requestSpec) {
+        return String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
     }
 
 }
