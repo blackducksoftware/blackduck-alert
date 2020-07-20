@@ -20,18 +20,19 @@ class AutoRefresh extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        const { refresh } = this.state;
         const { autoRefresh, isEnabled } = this.props;
 
         if ((prevProps.autoRefresh !== autoRefresh)) {
             this.setState({
-                refresh: this.props.autoRefresh
+                refresh: autoRefresh
             });
             this.toggleTimer();
         }
 
-        if (prevState.refresh !== this.state.refresh) {
+        if (prevState.refresh !== refresh) {
             this.toggleTimer();
-            this.props.updateRefresh(this.state.refresh);
+            this.props.updateRefresh(refresh);
         }
 
         if (prevState.isEnabled !== isEnabled) {
@@ -44,10 +45,12 @@ class AutoRefresh extends Component {
     }
 
     toggleTimer() {
-        console.log("isEnabled(toggleTimer): ", this.props.isEnabled);
-        if (this.state.refresh && this.props.isEnabled) {
+        const { refresh } = this.state;
+        const { refreshRate, isEnabled } = this.props;
+
+        if (refresh && isEnabled) {
             clearInterval(this.timer);
-            this.timer = setInterval(() => this.props.startAutoReload(), this.props.refreshRate);
+            this.timer = setInterval(() => this.props.startAutoReload(), refreshRate);
         } else {
             clearInterval(this.timer);
         }
@@ -55,10 +58,11 @@ class AutoRefresh extends Component {
 
     render() {
         const { refresh } = this.state;
+        const { label } = this.props;
         return (
             <CheckboxInput
                 id="autoRefresh-id"
-                label={this.props.label}
+                label={label}
                 name="autoRefresh"
                 showDescriptionPlaceHolder={false}
                 labelClass="tableCheckbox"
