@@ -81,7 +81,7 @@ AutoRefresh.propTypes = {
 AutoRefresh.defaultProps = {
     autoRefresh: true,
     isEnabled: true,
-    refreshRate: 10000,
+    refreshRate: 30000,
     label: 'Enable Auto-Refresh'
 };
 
