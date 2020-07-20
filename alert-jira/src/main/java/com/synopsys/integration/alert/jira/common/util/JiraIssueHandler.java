@@ -109,53 +109,15 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return Optional.empty();
     }
 
-    private String createDescriptionText(String description) {
-        String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
-        return StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
-    }
-
     @Override
-    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
-        return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
-    }
-
-    private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
-        JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
-        List<String> responseErrors = new ArrayList<>();
-        if (null != responseContent) {
-            if (responseContent.has("errors")) {
-                JsonObject errors = responseContent.get("errors").getAsJsonObject();
-                if (errors.has("reporter")) {
-                    JsonElement reporterErrorMessage = errors.get("reporter");
-                    if (null != reporterErrorMessage) {
-                        return new AlertFieldException(Map.of(
-                            getIssueCreatorFieldKey(),
-                            String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, reporterErrorMessage)
-                        ));
-                    }
-                } else {
-                    Set<Map.Entry<String, JsonElement>> entries = errors.entrySet();
-                    List<String> fieldErrors = entries.stream()
-                                                   .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
-                                                   .collect(Collectors.toList());
-                    responseErrors.addAll(fieldErrors);
-                }
-
-            }
-            if (responseContent.has("errorMessages")) {
-                JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
-                for (JsonElement errorMessage : errorMessages) {
-                    responseErrors.add(errorMessage.getAsString());
-                }
-            }
-        }
-
-        String message = restException.getMessage();
-        if (!responseErrors.isEmpty()) {
-            message += " | Details: " + StringUtils.join(responseErrors, ", ");
-        }
-
-        return new AlertException(message, restException);
+    protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
+        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
+        String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
+        String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
+        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
+            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(),
+            issueProperties.getComponentValue(),
+            arbitraryItemSubComponent);
     }
 
     private void addIssueProperties(String issueKey, JiraIssueSearchProperties issueProperties) throws IntegrationException {
@@ -170,14 +132,64 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return fieldsBuilder;
     }
 
-    @Override
-    protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
-        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
-        String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(),
-            issueProperties.getComponentValue(),
-            arbitraryItemSubComponent);
+    private String createDescriptionText(String description) {
+        String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
+        return StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
     }
+
+    @Override
+    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
+        return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
+    }
+
+    private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
+        String message = restException.getMessage();
+        JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
+        if (null != responseContent) {
+            try {
+                List<String> responseErrors = extractErrorsFromResponseContent(responseContent, issueCreatorEmail);
+                if (!responseErrors.isEmpty()) {
+                    message += " | Details: " + StringUtils.join(responseErrors, ", ");
+                }
+            } catch (AlertFieldException reporterException) {
+                return reporterException;
+            }
+        }
+        return new AlertException(message, restException);
+    }
+
+    private List<String> extractErrorsFromResponseContent(JsonObject responseContent, String issueCreatorEmail) throws AlertFieldException {
+        List<String> responseErrors = new ArrayList<>();
+        if (responseContent.has("errors")) {
+            JsonObject errors = responseContent.get("errors").getAsJsonObject();
+            if (errors.has("reporter")) {
+                throwReporterException(errors, issueCreatorEmail);
+            } else {
+                Set<Map.Entry<String, JsonElement>> entries = errors.entrySet();
+                List<String> fieldErrors = entries.stream()
+                                               .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
+                                               .collect(Collectors.toList());
+                responseErrors.addAll(fieldErrors);
+            }
+
+        }
+        if (responseContent.has("errorMessages")) {
+            JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
+            for (JsonElement errorMessage : errorMessages) {
+                responseErrors.add(errorMessage.getAsString());
+            }
+        }
+        return responseErrors;
+    }
+
+    private void throwReporterException(JsonObject errors, String issueCreatorEmail) throws AlertFieldException {
+        JsonElement reporterErrorMessage = errors.get("reporter");
+        if (null != reporterErrorMessage) {
+            throw new AlertFieldException(Map.of(
+                getIssueCreatorFieldKey(),
+                String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, reporterErrorMessage)
+            ));
+        }
+    }
+
 }
