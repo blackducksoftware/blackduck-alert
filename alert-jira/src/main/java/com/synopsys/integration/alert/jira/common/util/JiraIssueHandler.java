@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -144,52 +143,51 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
         String message = restException.getMessage();
-        JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
-        if (null != responseContent) {
-            try {
-                List<String> responseErrors = extractErrorsFromResponseContent(responseContent, issueCreatorEmail);
-                if (!responseErrors.isEmpty()) {
-                    message += " | Details: " + StringUtils.join(responseErrors, ", ");
-                }
-            } catch (AlertFieldException reporterException) {
-                return reporterException;
+        try {
+            List<String> responseErrors = extractErrorsFromResponseContent(restException.getHttpResponseContent(), issueCreatorEmail);
+            if (!responseErrors.isEmpty()) {
+                message += " | Details: " + StringUtils.join(responseErrors, ", ");
             }
+        } catch (AlertFieldException reporterException) {
+            return reporterException;
         }
         return new AlertException(message, restException);
     }
 
-    private List<String> extractErrorsFromResponseContent(JsonObject responseContent, String issueCreatorEmail) throws AlertFieldException {
-        List<String> responseErrors = new ArrayList<>();
-        if (responseContent.has("errors")) {
-            JsonObject errors = responseContent.get("errors").getAsJsonObject();
-            if (errors.has("reporter")) {
-                throwReporterException(errors, issueCreatorEmail);
-            } else {
-                Set<Map.Entry<String, JsonElement>> entries = errors.entrySet();
-                List<String> fieldErrors = entries.stream()
-                                               .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
-                                               .collect(Collectors.toList());
-                responseErrors.addAll(fieldErrors);
-            }
-
+    private List<String> extractErrorsFromResponseContent(String httpResponseContent, String issueCreatorEmail) throws AlertFieldException {
+        JsonObject nullableResponseContent = gson.fromJson(httpResponseContent, JsonObject.class);
+        Optional<JsonObject> optionalErrors = Optional.ofNullable(nullableResponseContent)
+                                                  .filter(content -> content.has("errors"))
+                                                  .map(content -> content.get("errors"))
+                                                  .map(JsonElement::getAsJsonObject);
+        if (optionalErrors.isPresent()) {
+            return extractSpecificErrorsFromErrorsObject(optionalErrors.get(), issueCreatorEmail);
         }
-        if (responseContent.has("errorMessages")) {
-            JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
+        return List.of();
+    }
+
+    private List<String> extractSpecificErrorsFromErrorsObject(JsonObject errors, String issueCreatorEmail) throws AlertFieldException {
+        List<String> responseErrors = new ArrayList<>();
+        if (errors.has("reporter")) {
+            throw new AlertFieldException(Map.of(
+                getIssueCreatorFieldKey(),
+                String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, errors.get("reporter"))
+            ));
+        } else {
+            List<String> fieldErrors = errors.entrySet()
+                                           .stream()
+                                           .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
+                                           .collect(Collectors.toList());
+            responseErrors.addAll(fieldErrors);
+        }
+
+        if (errors.has("errorMessages")) {
+            JsonArray errorMessages = errors.getAsJsonArray("errorMessages");
             for (JsonElement errorMessage : errorMessages) {
                 responseErrors.add(errorMessage.getAsString());
             }
         }
         return responseErrors;
-    }
-
-    private void throwReporterException(JsonObject errors, String issueCreatorEmail) throws AlertFieldException {
-        JsonElement reporterErrorMessage = errors.get("reporter");
-        if (null != reporterErrorMessage) {
-            throw new AlertFieldException(Map.of(
-                getIssueCreatorFieldKey(),
-                String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, reporterErrorMessage)
-            ));
-        }
     }
 
 }
