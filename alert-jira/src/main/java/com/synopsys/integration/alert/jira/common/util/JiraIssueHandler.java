@@ -155,13 +155,9 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     }
 
     private List<String> extractErrorsFromResponseContent(String httpResponseContent, String issueCreatorEmail) throws AlertFieldException {
-        JsonObject nullableResponseContent = gson.fromJson(httpResponseContent, JsonObject.class);
-        Optional<JsonObject> optionalErrors = Optional.ofNullable(nullableResponseContent)
-                                                  .filter(content -> content.has("errors"))
-                                                  .map(content -> content.get("errors"))
-                                                  .map(JsonElement::getAsJsonObject);
-        if (optionalErrors.isPresent()) {
-            return extractSpecificErrorsFromErrorsObject(optionalErrors.get(), issueCreatorEmail);
+        JsonObject responseContentObject = gson.fromJson(httpResponseContent, JsonObject.class);
+        if (null != responseContentObject && responseContentObject.has("errors")) {
+            return extractSpecificErrorsFromErrorsObject(responseContentObject.getAsJsonObject("errors"), issueCreatorEmail);
         }
         return List.of();
     }
