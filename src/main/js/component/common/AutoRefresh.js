@@ -20,7 +20,8 @@ class AutoRefresh extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const { autoRefresh } = this.props;
+        const { autoRefresh, isEnabled } = this.props;
+
         if ((prevProps.autoRefresh !== autoRefresh)) {
             this.setState({
                 refresh: this.props.autoRefresh
@@ -32,6 +33,10 @@ class AutoRefresh extends Component {
             this.toggleTimer();
             this.props.updateRefresh(this.state.refresh);
         }
+
+        if (prevState.isEnabled !== isEnabled) {
+            this.toggleTimer();
+        }
     }
 
     componentWillUnmount() {
@@ -39,7 +44,8 @@ class AutoRefresh extends Component {
     }
 
     toggleTimer() {
-        if (this.state.refresh) {
+        console.log("isEnabled(toggleTimer): ", this.props.isEnabled);
+        if (this.state.refresh && this.props.isEnabled) {
             clearInterval(this.timer);
             this.timer = setInterval(() => this.props.startAutoReload(), this.props.refreshRate);
         } else {
@@ -67,12 +73,14 @@ AutoRefresh.propTypes = {
     startAutoReload: PropTypes.func.isRequired,
     updateRefresh: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
+    isEnabled: PropTypes.bool,
     refreshRate: PropTypes.number,
     label: PropTypes.string
 };
 
 AutoRefresh.defaultProps = {
     autoRefresh: true,
+    isEnabled: true,
     refreshRate: 10000,
     label: 'Enable Auto-Refresh'
 };
