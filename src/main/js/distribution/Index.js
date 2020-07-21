@@ -11,13 +11,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import DistributionConfiguration, {
-    KEY_CHANNEL_NAME,
-    KEY_ENABLED,
-    KEY_FREQUENCY,
-    KEY_NAME,
-    KEY_PROVIDER_NAME
-} from 'dynamic/DistributionConfiguration';
+import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
 import StatusMessage from 'field/StatusMessage';
 
 /**
@@ -347,6 +341,10 @@ class Index extends Component {
         const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
 
+        //TODO: Refresh is enabled on insert, but disabled on edit and delete modals
+        //TODO: Convert to TableDisplay to resolve autoRefresh issues
+        const shouldRefresh = !this.state.currentRowSelected && !this.state.showDeleteModal;
+
         const content = (
             <div>
                 {this.getCurrentJobConfig()}
@@ -417,7 +415,7 @@ class Index extends Component {
 
                 <ConfigurationLabel configurationName="Distribution" description="Create jobs from the channels Alert provides. Double click the row to edit that job." />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} />
+                    <AutoRefresh startAutoReload={this.reloadJobs} autoRefresh={this.props.autoRefresh} isEnabled={shouldRefresh} />
                 </div>
                 {content}
             </div>

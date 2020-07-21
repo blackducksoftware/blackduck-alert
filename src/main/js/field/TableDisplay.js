@@ -409,7 +409,7 @@ class TableDisplay extends Component {
 
     render() {
         const tableColumns = this.createTableColumns();
-        const { showDelete } = this.state;
+        const { showConfiguration, showDelete } = this.state;
         const {
             id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton,
             data, tableSearchable, enableEdit, editColumnText, enableCopy, copyColumnText, inProgress,
@@ -492,9 +492,11 @@ class TableDisplay extends Component {
             </div>
         );
 
+        const shouldRefresh = !showConfiguration && !showDelete;
+
         const refresh = tableRefresh && (
             <div className="pull-right">
-                <AutoRefresh startAutoReload={this.onAutoRefresh} autoRefresh={autoRefresh} />
+                <AutoRefresh startAutoReload={this.onAutoRefresh} autoRefresh={autoRefresh} isEnabled={shouldRefresh} />
             </div>
         );
         return (

@@ -47,9 +47,13 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/comments?view=azure-devops-rest-5.1">Work Item Comments</a>
  */
 public class AzureWorkItemService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workitemId}");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workItemId}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/${type}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workItems/{workItemId}/comments");
+    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
+    public static final String PATH_PROJECT_REPLACEMENT = "{project}";
+    public static final String PATH_WORK_ITEM_ID_REPLACEMENT = "{workItemId}";
+    public static final String PATH_TYPE_REPLACEMENT = "{type}";
 
     private final AzureHttpService azureHttpService;
 
@@ -59,18 +63,18 @@ public class AzureWorkItemService {
 
     public WorkItemResponseModel getWorkItem(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
                                  .populateSpec();
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
     public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{type}", workItemType)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_TYPE_REPLACEMENT, workItemType)
                                  .populateSpec();
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
@@ -82,9 +86,9 @@ public class AzureWorkItemService {
 
     public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
                                  .populateSpec();
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
@@ -100,9 +104,9 @@ public class AzureWorkItemService {
 
     public WorkItemMultiCommentResponseModel getComments(String organizationName, String projectIdOrName, Integer workItemId, @Nullable String continuationToken) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
                                  .populateSpec();
         String apiVersionQueryParam = new AzureSpecTemplate("?{apiVersionParam}={apiVersion}")
                                           .defineReplacement("{apiVersionParam}", AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME)
@@ -124,9 +128,9 @@ public class AzureWorkItemService {
 
     public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{workitemId}", workItemId.toString())
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
                                  .populateSpec();
         requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.3");
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
