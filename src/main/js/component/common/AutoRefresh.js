@@ -20,17 +20,23 @@ class AutoRefresh extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const { autoRefresh } = this.props;
+        const { refresh } = this.state;
+        const { autoRefresh, isEnabled } = this.props;
+
         if ((prevProps.autoRefresh !== autoRefresh)) {
             this.setState({
-                refresh: this.props.autoRefresh
+                refresh: autoRefresh
             });
             this.toggleTimer();
         }
 
-        if (prevState.refresh !== this.state.refresh) {
+        if (prevState.refresh !== refresh) {
             this.toggleTimer();
-            this.props.updateRefresh(this.state.refresh);
+            this.props.updateRefresh(refresh);
+        }
+
+        if (prevState.isEnabled !== isEnabled) {
+            this.toggleTimer();
         }
     }
 
@@ -39,9 +45,12 @@ class AutoRefresh extends Component {
     }
 
     toggleTimer() {
-        if (this.state.refresh) {
+        const { refresh } = this.state;
+        const { refreshRate, isEnabled } = this.props;
+
+        if (refresh && isEnabled) {
             clearInterval(this.timer);
-            this.timer = setInterval(() => this.props.startAutoReload(), this.props.refreshRate);
+            this.timer = setInterval(() => this.props.startAutoReload(), refreshRate);
         } else {
             clearInterval(this.timer);
         }
@@ -49,10 +58,11 @@ class AutoRefresh extends Component {
 
     render() {
         const { refresh } = this.state;
+        const { label } = this.props;
         return (
             <CheckboxInput
                 id="autoRefresh-id"
-                label={this.props.label}
+                label={label}
                 name="autoRefresh"
                 showDescriptionPlaceHolder={false}
                 labelClass="tableCheckbox"
@@ -67,13 +77,15 @@ AutoRefresh.propTypes = {
     startAutoReload: PropTypes.func.isRequired,
     updateRefresh: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
+    isEnabled: PropTypes.bool,
     refreshRate: PropTypes.number,
     label: PropTypes.string
 };
 
 AutoRefresh.defaultProps = {
     autoRefresh: true,
-    refreshRate: 10000,
+    isEnabled: true,
+    refreshRate: 30000,
     label: 'Enable Auto-Refresh'
 };
 

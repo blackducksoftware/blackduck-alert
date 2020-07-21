@@ -304,11 +304,13 @@ class AuditPage extends Component {
         };
         const { label, description } = this.props;
 
+        const shouldRefresh = !this.state.showDetailModal;
+
         return (
             <div>
                 <ConfigurationLabel configurationName={label} description={description} />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} />
+                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} isEnabled={shouldRefresh} />
                 </div>
                 <div className="pull-right">
                     <CheckboxInput
