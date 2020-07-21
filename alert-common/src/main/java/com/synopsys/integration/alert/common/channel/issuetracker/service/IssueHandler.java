@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +65,7 @@ public abstract class IssueHandler<R> {
         return new IssueTrackerResponse(statusMessage, issueResponseModels);
     }
 
-    protected Set<IssueTrackerIssueResponseModel> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueTrackerRequest request)
-        throws IntegrationException {
+    protected Set<IssueTrackerIssueResponseModel> createOrUpdateIssuesPerComponent(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         Set<IssueTrackerIssueResponseModel> issueResponseModels = new HashSet<>();
         String projectName = issueConfig.getProjectName();
 
@@ -75,7 +73,7 @@ public abstract class IssueHandler<R> {
         IssueOperation issueOperation = request.getOperation();
         AlertIssueOrigin alertIssueOrigin = request.getAlertIssueOrigin();
 
-        SetMap<String, String> missingTransitionToIssues = SetMap.createDefault();
+        SetMap<String, IssueMissingTransitionException> missingTransitionToExceptions = SetMap.createDefault();
         try {
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
                 List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), request);
@@ -96,14 +94,17 @@ public abstract class IssueHandler<R> {
                 }
             }
         } catch (IssueMissingTransitionException e) {
-            missingTransitionToIssues.add(e.getTransition(), e.getIssueKey());
+            missingTransitionToExceptions.add(e.getMissingTransition(), e);
         }
 
-        if (!missingTransitionToIssues.isEmpty()) {
+        if (!missingTransitionToExceptions.isEmpty()) {
             StringBuilder missingTransitions = new StringBuilder();
-            for (Map.Entry<String, Set<String>> entry : missingTransitionToIssues.entrySet()) {
-                String issues = StringUtils.join(entry.getValue(), ", ");
-                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issues));
+            for (Map.Entry<String, Set<IssueMissingTransitionException>> entry : missingTransitionToExceptions.entrySet()) {
+                String issueTransitions = entry.getValue()
+                                              .stream()
+                                              .map(exception -> String.format("%s (Valid Transitions: %s)", exception.getIssueKey(), exception.getValidTransitions()))
+                                              .collect(Collectors.joining(" | "));
+                missingTransitions.append(String.format("Unable to find the transition: %s, for the issue(s): %s", entry.getKey(), issueTransitions));
             }
 
             String errorMessage = String.format("For Project: %s. %s.", projectName, missingTransitions.toString());
@@ -128,8 +129,7 @@ public abstract class IssueHandler<R> {
 
     protected abstract void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request);
 
-    protected Set<R> updateExistingIssues(List<R> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request)
-        throws IntegrationException {
+    protected Set<R> updateExistingIssues(List<R> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         Set<R> updatedIssues = new HashSet<>();
         for (R issue : issuesToUpdate) {
             String issueKey = getIssueKey(issue);

@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTr
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueCreatorTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
-import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionValidator;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionHandler;
 import com.synopsys.integration.alert.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
@@ -40,7 +40,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 
 public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(JiraServerCreateIssueTestAction.class);
-    private Gson gson;
+    private final Gson gson;
 
     public JiraServerCreateIssueTestAction(IssueTrackerService issueTrackerService, Gson gson, TestIssueRequestCreator testIssueRequestCreator) {
         super(issueTrackerService, testIssueRequestCreator);
@@ -68,7 +68,7 @@ public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
     }
 
     @Override
-    protected TransitionValidator<TransitionComponent> createTransitionValidator(IssueTrackerContext context) throws IntegrationException {
+    protected TransitionHandler<TransitionComponent> createTransitionHandler(IssueTrackerContext context) throws IntegrationException {
         JiraServerProperties jiraProperties = createJiraProperties(context);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         IssueService issueService = jiraServerServiceFactory.createIssueService();
@@ -91,4 +91,5 @@ public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
     private JiraServerProperties createJiraProperties(IssueTrackerContext context) {
         return (JiraServerProperties) context.getIssueTrackerConfig();
     }
+
 }

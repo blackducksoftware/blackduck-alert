@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.service;
 
-import java.util.Optional;
-
 import com.synopsys.integration.exception.IntegrationException;
 
 /**
@@ -31,7 +29,5 @@ import com.synopsys.integration.exception.IntegrationException;
  */
 public interface TransitionValidator<T> {
     boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
-
-    Optional<T> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException;
 
 }

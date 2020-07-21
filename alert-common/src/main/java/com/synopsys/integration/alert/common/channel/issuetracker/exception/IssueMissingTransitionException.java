@@ -22,22 +22,29 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.exception;
 
-public class IssueMissingTransitionException extends IssueTrackerException {
-    private static final long serialVersionUID = 9152514378880170516L;
-    private final String issueKey;
-    private final String transition;
+import java.util.List;
 
-    public IssueMissingTransitionException(String issueKey, String transition) {
+public class IssueMissingTransitionException extends IssueTrackerException {
+    private final String issueKey;
+    private final String missingTransition;
+    private final List<String> validTransitions;
+
+    public IssueMissingTransitionException(String issueKey, String missingTransition, List<String> validTransitions) {
         this.issueKey = issueKey;
-        this.transition = transition;
+        this.missingTransition = missingTransition;
+        this.validTransitions = validTransitions;
     }
 
     public String getIssueKey() {
         return issueKey;
     }
 
-    public String getTransition() {
-        return transition;
+    public String getMissingTransition() {
+        return missingTransition;
+    }
+
+    public List<String> getValidTransitions() {
+        return validTransitions;
     }
 
 }

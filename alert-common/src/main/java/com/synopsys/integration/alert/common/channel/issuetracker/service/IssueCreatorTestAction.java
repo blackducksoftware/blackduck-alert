@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -78,12 +79,12 @@ public abstract class IssueCreatorTestAction {
 
     protected abstract String getDoneStatusFieldKey();
 
-    protected abstract <T> TransitionValidator<T> createTransitionValidator(IssueTrackerContext issueTrackerContext) throws IntegrationException;
+    protected abstract <T> TransitionHandler<T> createTransitionHandler(IssueTrackerContext issueTrackerContext) throws IntegrationException;
 
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
     private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
+        TransitionHandler<T> transitionValidator = createTransitionHandler(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
@@ -106,7 +107,7 @@ public abstract class IssueCreatorTestAction {
                                              .map(IssueTrackerIssueResponseModel::getIssueKey)
                                              .filter(secondIssueKey -> !StringUtils.equals(secondIssueKey, initialIssueKey));
 
-                if (!reopenError.isPresent()) {
+                if (reopenError.isEmpty()) {
                     fromStatus = toStatus;
                     toStatus = "Resolve";
                     Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
@@ -141,15 +142,23 @@ public abstract class IssueCreatorTestAction {
         return messageResult;
     }
 
-    private <T> Optional<String> validateTransition(TransitionValidator<T> transitionValidator, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
-        Optional<T> transitionComponent = transitionValidator.retrieveIssueTransition(issueKey, transitionName);
-        if (transitionComponent.isPresent()) {
-            boolean isValidTransition = transitionValidator.doesTransitionToExpectedStatusCategory(transitionComponent.get(), statusCategoryKey);
+    private <T> Optional<String> validateTransition(TransitionHandler<T> transitionHandler, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
+        List<T> transitions = transitionHandler.retrieveIssueTransitions(issueKey);
+        String validTransitions = transitions
+                                      .stream()
+                                      .map(transitionHandler::extractTransitionName)
+                                      .collect(Collectors.joining(", "));
+        Optional<T> optionalTransition = transitions
+                                             .stream()
+                                             .filter(transition -> transitionHandler.extractTransitionName(transition).equals(transitionName))
+                                             .findFirst();
+        if (optionalTransition.isPresent()) {
+            boolean isValidTransition = transitionHandler.doesTransitionToExpectedStatusCategory(optionalTransition.get(), statusCategoryKey);
             if (!isValidTransition) {
-                return Optional.of("The provided transition would not result in an allowed status category.");
+                return Optional.of(String.format("The provided transition would not result in an allowed status category. Valid transition names: %s", validTransitions));
             }
         } else {
-            return Optional.of("The provided transition is not possible from the issue state that it would transition from.");
+            return Optional.of(String.format("The provided transition is not possible from the issue state that it would transition from. Valid transition names: %s", validTransitions));
         }
         return Optional.empty();
     }

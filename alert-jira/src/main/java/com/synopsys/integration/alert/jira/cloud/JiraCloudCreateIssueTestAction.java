@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTr
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueCreatorTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
-import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionValidator;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionHandler;
 import com.synopsys.integration.alert.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
@@ -40,7 +40,7 @@ import com.synopsys.integration.jira.common.model.components.TransitionComponent
 
 public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCreateIssueTestAction.class);
-    private Gson gson;
+    private final Gson gson;
 
     public JiraCloudCreateIssueTestAction(IssueTrackerService issueTrackerService, Gson gson, TestIssueRequestCreator testIssueRequestCreator) {
         super(issueTrackerService, testIssueRequestCreator);
@@ -68,7 +68,7 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
     }
 
     @Override
-    protected TransitionValidator<TransitionComponent> createTransitionValidator(IssueTrackerContext context) throws IntegrationException {
+    protected TransitionHandler<TransitionComponent> createTransitionHandler(IssueTrackerContext context) throws IntegrationException {
         JiraCloudProperties jiraProperties = createJiraProperties(context);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
@@ -91,4 +91,5 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
     private JiraCloudProperties createJiraProperties(IssueTrackerContext context) {
         return (JiraCloudProperties) context.getIssueTrackerConfig();
     }
+
 }
