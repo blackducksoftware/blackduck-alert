@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
-import { clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig } from 'store/actions/globalConfiguration';
+import {
+    clearConfigFieldErrors,
+    deleteConfig,
+    getAllConfigs,
+    testConfig,
+    updateConfig
+} from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
@@ -39,14 +45,15 @@ class ProviderTable extends Component {
     }
 
     componentDidMount() {
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const { descriptors, descriptorName, clearFieldErrors, getAllConfigs } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        clearFieldErrors();
         if (descriptor) {
             const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
             this.setState({
                 providerConfig: emptyConfig
             });
-            this.props.getAllConfigs(descriptor.name);
+            getAllConfigs(descriptor.name);
         }
     }
 
