@@ -84,13 +84,13 @@ public abstract class IssueCreatorTestAction {
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
     private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        TransitionHandler<T> transitionValidator = createTransitionHandler(issueTrackerContext);
+        TransitionHandler<T> transitionHandler = createTransitionHandler(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
         try {
             Map<String, String> transitionErrors = new HashMap<>();
-            Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
+            Optional<String> resolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
             IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
 
@@ -98,7 +98,7 @@ public abstract class IssueCreatorTestAction {
             if (optionalReopenTransitionName.isPresent()) {
                 fromStatus = toStatus;
                 toStatus = "Reopen";
-                Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
+                Optional<String> reopenError = validateTransition(transitionHandler, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
                 IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssues()
@@ -110,7 +110,7 @@ public abstract class IssueCreatorTestAction {
                 if (reopenError.isEmpty()) {
                     fromStatus = toStatus;
                     toStatus = "Resolve";
-                    Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
+                    Optional<String> reResolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
                     reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
                     finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
                 }
@@ -155,10 +155,10 @@ public abstract class IssueCreatorTestAction {
         if (optionalTransition.isPresent()) {
             boolean isValidTransition = transitionHandler.doesTransitionToExpectedStatusCategory(optionalTransition.get(), statusCategoryKey);
             if (!isValidTransition) {
-                return Optional.of(String.format("The provided transition would not result in an allowed status category. Valid transition names: %s", validTransitions));
+                return Optional.of(String.format("The provided transition would not result in an allowed status category. Available transitions: %s", validTransitions));
             }
         } else {
-            return Optional.of(String.format("The provided transition is not possible from the issue state that it would transition from. Valid transition names: %s", validTransitions));
+            return Optional.of(String.format("The provided transition is not possible from the issue state that it would transition from. Available transitions: %s", validTransitions));
         }
         return Optional.empty();
     }
