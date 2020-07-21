@@ -21,6 +21,7 @@ export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
+export const KEY_PROVIDER_CONFIG_NAME = 'provider.common.config.name';
 
 export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 
@@ -31,6 +32,7 @@ class DistributionConfiguration extends Component {
 
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.renderProviderConfigNameForm = this.renderProviderConfigNameForm.bind(this);
         this.renderProviderForm = this.renderProviderForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
@@ -168,6 +170,24 @@ class DistributionConfiguration extends Component {
         }
     }
 
+    renderProviderConfigNameForm() {
+        const {
+            providerConfig, channelConfig, currentProvider
+        } = this.state;
+        const configNameFields = currentProvider.fields.filter(field => field.key === KEY_PROVIDER_CONFIG_NAME);
+        return (
+            <div>
+                <FieldsPanel
+                    descriptorFields={configNameFields}
+                    metadata={{ additionalFields: channelConfig.keyToValues }}
+                    currentConfig={providerConfig}
+                    fieldErrors={this.props.fieldErrors}
+                    self={this}
+                    stateName="providerConfig"
+                />
+            </div>);
+    }
+
     renderProviderForm() {
         const {
             providerConfig, channelConfig, currentChannel, currentProvider
@@ -175,11 +195,11 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const channelDescriptorName = channelConfig && channelConfig.descriptorName;
-
+        const providerFields = currentProvider.fields.filter(field => field.key !== KEY_PROVIDER_CONFIG_NAME);
         return (
             <div>
                 <FieldsPanel
-                    descriptorFields={currentProvider.fields}
+                    descriptorFields={providerFields}
                     metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={this.props.fieldErrors}
@@ -223,7 +243,7 @@ class DistributionConfiguration extends Component {
 
 
         const commonFields = currentChannel.fields.filter(field => COMMON_KEYS.includes(field.key));
-        const channelFields = currentChannel.fields.filter(field => !COMMON_KEYS.includes(field.key));
+        const channelFields = currentChannel.fields.filter(field => field.key !== KEY_PROVIDER_NAME && !COMMON_KEYS.includes(field.key));
 
         return (
             <div
@@ -245,6 +265,7 @@ class DistributionConfiguration extends Component {
                                 self={this}
                                 stateName="channelConfig"
                             />
+                            {currentChannel && selectedProvider && this.renderProviderConfigNameForm()}
                             {currentChannel && selectedProvider &&
                             <FieldsPanel
                                 descriptorFields={channelFields}
