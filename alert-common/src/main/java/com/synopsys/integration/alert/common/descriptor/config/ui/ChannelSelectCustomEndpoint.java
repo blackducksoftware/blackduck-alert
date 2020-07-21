@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
@@ -39,25 +40,33 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class ChannelSelectCustomEndpoint extends SelectCustomEndpoint {
     private DescriptorMap descriptorMap;
+    private AuthorizationManager authorizationManager;
 
     @Autowired
-    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, DescriptorMap descriptorMap) throws AlertException {
+    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, DescriptorMap descriptorMap, AuthorizationManager authorizationManager) throws AlertException {
         super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager, responseFactory, gson);
         this.descriptorMap = descriptorMap;
+        this.authorizationManager = authorizationManager;
     }
 
     @Override
     protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
         return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
+                   .filter(this::hasPermission)
                    .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
                    .flatMap(Optional::stream)
                    .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
                    .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
                    .sorted()
                    .collect(Collectors.toList());
+    }
+
+    private boolean hasPermission(Descriptor descriptor) {
+        return authorizationManager.hasPermissions(ConfigContextEnum.DISTRIBUTION.name(), descriptor.getDescriptorKey().getUniversalKey());
     }
 }
