@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.jira.common.util;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,21 +33,17 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionValidator;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 
-public abstract class JiraTransitionHandler implements TransitionValidator<TransitionComponent> {
+public abstract class JiraTransitionHandler implements TransitionHandler<TransitionComponent> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    protected abstract void performTransition(String issueKey, IdComponent transitionId) throws IntegrationException;
-
-    protected abstract StatusDetailsComponent getStatusDetails(String issueKey) throws IntegrationException;
 
     @Override
     public boolean doesTransitionToExpectedStatusCategory(TransitionComponent transition, String expectedStatusCategoryKey) {
@@ -75,6 +73,10 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         return false;
     }
 
+    protected abstract void performTransition(String issueKey, IdComponent transitionId) throws IntegrationException;
+
+    protected abstract StatusDetailsComponent getStatusDetails(String issueKey) throws IntegrationException;
+
     private boolean isTransitionRequired(IssueOperation operation, StatusDetailsComponent statusDetailsComponent) throws IntegrationException {
         StatusCategory statusCategory = statusDetailsComponent.getStatusCategory();
         if (IssueOperation.OPEN.equals(operation)) {
@@ -89,12 +91,20 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
 
     private void performTransition(String issueKey, String transitionName) throws IntegrationException {
         logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
-        Optional<TransitionComponent> firstTransitionByName = retrieveIssueTransition(issueKey, transitionName);
-        if (firstTransitionByName.isPresent()) {
-            String transitionId = firstTransitionByName.map(TransitionComponent::getId).get();
-            performTransition(issueKey, new IdComponent(transitionId));
+        List<TransitionComponent> issueTransitions = retrieveIssueTransitions(issueKey);
+        Optional<TransitionComponent> optionalTransitionByName = issueTransitions
+                                                                     .stream()
+                                                                     .filter(transitionComp -> transitionComp.getName().equals(transitionName))
+                                                                     .findFirst();
+        if (optionalTransitionByName.isPresent()) {
+            TransitionComponent transitionByName = optionalTransitionByName.get();
+            performTransition(issueKey, new IdComponent(transitionByName.getId()));
         } else {
-            throw new IssueMissingTransitionException(issueKey, transitionName);
+            List<String> validTransitions = issueTransitions
+                                                .stream()
+                                                .map(TransitionComponent::getName)
+                                                .collect(Collectors.toList());
+            throw new IssueMissingTransitionException(issueKey, transitionName, validTransitions);
         }
     }
 
@@ -108,4 +118,5 @@ public abstract class JiraTransitionHandler implements TransitionValidator<Trans
         }
         return Optional.empty();
     }
+
 }

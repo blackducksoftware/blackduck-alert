@@ -22,12 +22,13 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.service;
 
+import java.util.List;
+
 import com.synopsys.integration.exception.IntegrationException;
 
-/**
- * @param <T> A class that represents a transition.
- */
-public interface TransitionValidator<T> {
-    boolean doesTransitionToExpectedStatusCategory(T transition, String expectedStatusCategoryKey) throws IntegrationException;
+public interface TransitionHandler<T> extends TransitionValidator<T> {
+    List<T> retrieveIssueTransitions(String issueKey) throws IntegrationException;
+
+    String extractTransitionName(T transition);
 
 }

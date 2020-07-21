@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -78,18 +79,18 @@ public abstract class IssueCreatorTestAction {
 
     protected abstract String getDoneStatusFieldKey();
 
-    protected abstract <T> TransitionValidator<T> createTransitionValidator(IssueTrackerContext issueTrackerContext) throws IntegrationException;
+    protected abstract <T> TransitionHandler<T> createTransitionHandler(IssueTrackerContext issueTrackerContext) throws IntegrationException;
 
     protected abstract void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey);
 
     private <T> IssueTrackerResponse testTransitions(IssueTrackerContext issueTrackerContext, String messageId, String resolveTransitionName, String initialIssueKey) throws IntegrationException {
-        TransitionValidator<T> transitionValidator = createTransitionValidator(issueTrackerContext);
+        TransitionHandler<T> transitionHandler = createTransitionHandler(issueTrackerContext);
         String fromStatus = "Initial";
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
         try {
             Map<String, String> transitionErrors = new HashMap<>();
-            Optional<String> resolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
+            Optional<String> resolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
             resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
             IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
 
@@ -97,7 +98,7 @@ public abstract class IssueCreatorTestAction {
             if (optionalReopenTransitionName.isPresent()) {
                 fromStatus = toStatus;
                 toStatus = "Reopen";
-                Optional<String> reopenError = validateTransition(transitionValidator, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
+                Optional<String> reopenError = validateTransition(transitionHandler, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
                 reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
                 IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssues()
@@ -106,10 +107,10 @@ public abstract class IssueCreatorTestAction {
                                              .map(IssueTrackerIssueResponseModel::getIssueKey)
                                              .filter(secondIssueKey -> !StringUtils.equals(secondIssueKey, initialIssueKey));
 
-                if (!reopenError.isPresent()) {
+                if (reopenError.isEmpty()) {
                     fromStatus = toStatus;
                     toStatus = "Resolve";
-                    Optional<String> reResolveError = validateTransition(transitionValidator, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
+                    Optional<String> reResolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
                     reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
                     finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
                 }
@@ -141,15 +142,23 @@ public abstract class IssueCreatorTestAction {
         return messageResult;
     }
 
-    private <T> Optional<String> validateTransition(TransitionValidator<T> transitionValidator, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
-        Optional<T> transitionComponent = transitionValidator.retrieveIssueTransition(issueKey, transitionName);
-        if (transitionComponent.isPresent()) {
-            boolean isValidTransition = transitionValidator.doesTransitionToExpectedStatusCategory(transitionComponent.get(), statusCategoryKey);
+    private <T> Optional<String> validateTransition(TransitionHandler<T> transitionHandler, String issueKey, String transitionName, String statusCategoryKey) throws IntegrationException {
+        List<T> transitions = transitionHandler.retrieveIssueTransitions(issueKey);
+        String validTransitions = transitions
+                                      .stream()
+                                      .map(transitionHandler::extractTransitionName)
+                                      .collect(Collectors.joining(", "));
+        Optional<T> optionalTransition = transitions
+                                             .stream()
+                                             .filter(transition -> transitionHandler.extractTransitionName(transition).equals(transitionName))
+                                             .findFirst();
+        if (optionalTransition.isPresent()) {
+            boolean isValidTransition = transitionHandler.doesTransitionToExpectedStatusCategory(optionalTransition.get(), statusCategoryKey);
             if (!isValidTransition) {
-                return Optional.of("The provided transition would not result in an allowed status category.");
+                return Optional.of(String.format("The provided transition would not result in an allowed status category. Available transitions: %s", validTransitions));
             }
         } else {
-            return Optional.of("The provided transition is not possible from the issue state that it would transition from.");
+            return Optional.of(String.format("The provided transition is not possible from the issue state that it would transition from. Available transitions: %s", validTransitions));
         }
         return Optional.empty();
     }

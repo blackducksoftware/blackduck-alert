@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.jira.server.util;
 
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 import com.synopsys.integration.alert.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.exception.IntegrationException;
@@ -31,21 +31,24 @@ import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 
 public class JiraServerTransitionHandler extends JiraTransitionHandler {
-    private IssueService issueService;
+    private final IssueService issueService;
 
     public JiraServerTransitionHandler(IssueService issueService) {
         this.issueService = issueService;
     }
 
     @Override
-    public Optional<TransitionComponent> retrieveIssueTransition(String issueKey, String transitionName) throws IntegrationException {
-        TransitionsResponseModel transitions = issueService.getTransitions(issueKey);
-        return transitions.findFirstTransitionByName(transitionName);
+    public List<TransitionComponent> retrieveIssueTransitions(String issueKey) throws IntegrationException {
+        return issueService.getTransitions(issueKey).getTransitions();
+    }
+
+    @Override
+    public String extractTransitionName(TransitionComponent transition) {
+        return transition.getName();
     }
 
     @Override
@@ -58,4 +61,5 @@ public class JiraServerTransitionHandler extends JiraTransitionHandler {
     protected StatusDetailsComponent getStatusDetails(String issueKey) throws IntegrationException {
         return issueService.getStatus(issueKey);
     }
+
 }
