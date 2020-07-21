@@ -171,6 +171,8 @@ class DistributionConfiguration extends Component {
     }
 
     renderProviderConfigNameForm() {
+        // TODO: Find a better way to order fields.
+        // TODO: Perhaps have a config name key such as common, channel, and provider to create the config objects and some ordering attributes.
         const {
             providerConfig, channelConfig, currentProvider
         } = this.state;
