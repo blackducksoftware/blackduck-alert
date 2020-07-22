@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -89,8 +88,8 @@ public class BlackDuckAccumulatorTest {
             }
         };
 
-        SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        blackDuckValidator = new BlackDuckValidator(systemMessageUtility);
+        blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
+        Mockito.when(blackDuckValidator.validate(Mockito.any())).thenReturn(true);
     }
 
     @AfterEach
@@ -158,6 +157,15 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
+    }
+
+    @Test
+    public void testRunVerifyFalse() {
+        Mockito.when(blackDuckValidator.validate(Mockito.any())).thenReturn(false);
+        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
+        BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        spiedAccumulator.run();
+        Mockito.verify(spiedAccumulator, Mockito.times(0)).accumulate(Mockito.any());
     }
 
     @Test

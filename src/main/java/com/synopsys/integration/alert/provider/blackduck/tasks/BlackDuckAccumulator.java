@@ -80,8 +80,9 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     @Override
     public void runProviderTask() {
-        blackDuckValidator.validate(getProviderProperties());
-        accumulate();
+        if (blackDuckValidator.validate(getProviderProperties())) {
+            accumulate();
+        }
     }
 
     @Override
