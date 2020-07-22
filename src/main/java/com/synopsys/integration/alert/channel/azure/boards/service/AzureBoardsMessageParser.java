@@ -20,25 +20,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards;
+package com.synopsys.integration.alert.channel.azure.boards.service;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
 
 @Component
-public class AzureBoardsChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_azure_boards";
-
+public class AzureBoardsMessageParser extends ChannelMessageParser {
     @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
+    protected String encodeString(String txt) {
+        try {
+            return URLEncoder.encode(txt, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return txt;
+        }
     }
 
     @Override
-    public String getDisplayName() {
-        return AzureBoardsDescriptor.AZURE_BOARDS_LABEL;
+    protected String emphasize(String txt) {
+        return String.format("<b>%s</b>", txt);
+    }
+
+    @Override
+    protected String createLink(String txt, String url) {
+        return String.format("<a href=\"%s\">%s</a>", url, txt);
+    }
+
+    @Override
+    protected String getLineSeparator() {
+        return "<br>";
     }
 
 }

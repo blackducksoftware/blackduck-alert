@@ -22,23 +22,13 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsServiceConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-
-@Component
-public class AzureBoardsChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_azure_boards";
-
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return AzureBoardsDescriptor.AZURE_BOARDS_LABEL;
+public class AzureBoardsContext extends IssueTrackerContext {
+    public AzureBoardsContext(AzureBoardsServiceConfig serviceConfig, IssueConfig issueConfig) {
+        super(serviceConfig, issueConfig);
     }
 
 }

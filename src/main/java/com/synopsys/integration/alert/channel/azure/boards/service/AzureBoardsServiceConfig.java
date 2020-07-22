@@ -20,25 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards;
+package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-
-@Component
-public class AzureBoardsChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_azure_boards";
-
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return AzureBoardsDescriptor.AZURE_BOARDS_LABEL;
+public class AzureBoardsServiceConfig implements IssueTrackerServiceConfig {
+    public static AzureBoardsServiceConfig fromFieldAccessor(FieldAccessor fieldAccessor) {
+        // FIXME implement
+        return null;
     }
 
 }
