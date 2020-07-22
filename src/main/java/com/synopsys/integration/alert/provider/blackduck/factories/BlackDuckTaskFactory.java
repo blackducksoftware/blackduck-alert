@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckValidatorTask;
 import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 
 @Component
@@ -65,9 +64,8 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
 
     @Override
     public List<ProviderTask> createTasks(ProviderProperties providerProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationManager, providerTaskPropertiesAccessor, providerProperties);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationManager, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator);
         BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, configurationAccessor, providerProperties);
-        BlackDuckValidatorTask validatorTask = new BlackDuckValidatorTask(blackDuckProviderKey, taskScheduler, providerProperties, blackDuckValidator);
-        return List.of(accumulator, syncTask, validatorTask);
+        return List.of(accumulator, syncTask);
     }
 }

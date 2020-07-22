@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -37,6 +38,7 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -56,6 +58,7 @@ public class BlackDuckAccumulatorTest {
     private DefaultNotificationManager notificationManager;
     private TaskScheduler taskScheduler;
     private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
+    private BlackDuckValidator blackDuckValidator;
 
     @BeforeEach
     public void init() throws Exception {
@@ -73,7 +76,7 @@ public class BlackDuckAccumulatorTest {
         taskScheduler = Mockito.mock(TaskScheduler.class);
 
         providerTaskPropertiesAccessor = new ProviderTaskPropertiesAccessor() {
-            Map<String, String> properties = new HashMap<>();
+            final Map<String, String> properties = new HashMap<>();
 
             @Override
             public Optional<String> getTaskProperty(String taskName, String propertyKey) {
@@ -85,6 +88,9 @@ public class BlackDuckAccumulatorTest {
                 properties.put(taskName + propertyKey, propertyValue);
             }
         };
+
+        SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
+        blackDuckValidator = new BlackDuckValidator(systemMessageUtility);
     }
 
     @AfterEach
@@ -334,7 +340,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(BlackDuckProperties blackDuckProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties, blackDuckValidator);
         return accumulator;
     }
 
