@@ -52,7 +52,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
-public class JiraServerServiceTest {
+public class JiraServerRequestDelegatorTest {
     private final Gson gson = new Gson();
     // mock services
     private PluginManagerService pluginManagerService;

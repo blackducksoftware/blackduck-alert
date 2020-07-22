@@ -50,7 +50,7 @@ import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
-public class JiraCloudServiceTest {
+public class JiraCloudRequestDelegatorTest {
     private final Gson gson = new Gson();
     // mock services
     private PluginManagerService jiraAppService;
