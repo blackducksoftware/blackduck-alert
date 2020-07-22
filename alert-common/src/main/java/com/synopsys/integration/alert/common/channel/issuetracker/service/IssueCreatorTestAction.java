@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
@@ -45,11 +46,11 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final IssueTrackerService issueTrackerService;
+    private final IssueTrackerChannel issueTrackerChannel;
     private final TestIssueRequestCreator testIssueRequestCreator;
 
-    public IssueCreatorTestAction(IssueTrackerService issueTrackerService, TestIssueRequestCreator testIssueRequestCreator) {
-        this.issueTrackerService = issueTrackerService;
+    public IssueCreatorTestAction(IssueTrackerChannel issueTrackerChannel, TestIssueRequestCreator testIssueRequestCreator) {
+        this.issueTrackerChannel = issueTrackerChannel;
         this.testIssueRequestCreator = testIssueRequestCreator;
     }
 
@@ -137,7 +138,7 @@ public abstract class IssueCreatorTestAction {
         IssueTrackerRequest request = testIssueRequestCreator.createRequest(operation, messageId);
         List<IssueTrackerRequest> requests = new ArrayList<>(1);
         requests.add(request);
-        IssueTrackerResponse messageResult = this.issueTrackerService.sendRequests(issueTrackerContext, requests);
+        IssueTrackerResponse messageResult = issueTrackerChannel.sendRequests(issueTrackerContext, requests);
         logger.debug("{} test message sent!", operation.name());
         return messageResult;
     }

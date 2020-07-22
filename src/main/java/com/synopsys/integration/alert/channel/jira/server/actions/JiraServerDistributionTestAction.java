@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
@@ -34,10 +36,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.jira.common.JiraMessageParser;
-import com.synopsys.integration.alert.jira.common.JiraTestIssueRequestCreator;
-import com.synopsys.integration.alert.jira.server.JiraServerCreateIssueTestAction;
-import com.synopsys.integration.alert.jira.server.JiraServerService;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -46,8 +44,8 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
     private final JiraMessageParser jiraMessageParser;
 
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel, Gson gson, JiraMessageParser jiraMessageParser) {
-        super(distributionChannel);
+    public JiraServerDistributionTestAction(JiraServerChannel jiraServerChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+        super(jiraServerChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
     }
@@ -56,10 +54,10 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
     public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
         IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
-        JiraServerService jiraService = new JiraServerService(gson);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
-        JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraService, gson, issueCreator);
+        JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction((JiraServerChannel) getDistributionChannel(), gson, issueCreator);
         IssueTrackerResponse result = testAction.testConfig(context);
         return new MessageResult(result.getStatusMessage());
     }
+
 }

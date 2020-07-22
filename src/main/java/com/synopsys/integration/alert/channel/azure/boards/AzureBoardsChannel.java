@@ -28,15 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsIssueTrackerService;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsServiceConfig;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
@@ -54,11 +54,6 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     }
 
     @Override
-    protected IssueTrackerService getIssueTrackerService() {
-        return new AzureBoardsIssueTrackerService(getGson());
-    }
-
-    @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         AzureBoardsServiceConfig serviceConfig = AzureBoardsServiceConfig.fromFieldAccessor(fieldAccessor);
@@ -70,6 +65,12 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
         AzureBoardsRequestCreator requestCreator = new AzureBoardsRequestCreator(azureBoardsMessageParser, context.getIssueConfig());
         return requestCreator.createRequests(event.getContent());
+    }
+
+    @Override
+    public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), context);
+        return issueTrackerService.sendRequests(requests);
     }
 
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {

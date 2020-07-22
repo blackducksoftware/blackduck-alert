@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertI
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -53,22 +52,15 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         this.eventManager = eventManager;
     }
 
-    protected abstract IssueTrackerService getIssueTrackerService();
-
-    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
-
-    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
-
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         IssueTrackerContext context = getIssueTrackerContext(event);
-        IssueTrackerService service = getIssueTrackerService();
         List<IssueTrackerRequest> requests = createRequests(context, event);
         String statusMessage;
         if (requests.isEmpty()) {
             statusMessage = String.format("No requests to send to issue tracker: %s", channelKey.getDisplayName());
         } else {
-            IssueTrackerResponse result = service.sendRequests(context, requests);
+            IssueTrackerResponse result = sendRequests(context, requests);
             statusMessage = result.getStatusMessage();
 
             List<ProviderCallbackEvent> callbackEvents = createCallbackEvents(result);
@@ -78,7 +70,7 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
     }
 
     @Override
-    public String getDestinationName() {
+    public final String getDestinationName() {
         return channelKey.getUniversalKey();
     }
 
@@ -86,6 +78,19 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
     public final void sendProviderCallbackEvents(List<ProviderCallbackEvent> callbackEvents) {
         eventManager.sendEvents(callbackEvents);
     }
+
+    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
+
+    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
+
+    /**
+     * This method will send requests to an Issue Tracker to create, update, or resolve issues.
+     * @param context  The object containing the configuration of the issue tracker server and the configuration of how to map and manage issues.
+     * @param requests The list of requests to submit to the issue tracker.  Must be a list because the order requests are added matter.
+     * @return A response object containing the aggregate status of sending the requests passed.
+     * @throws IntegrationException
+     */
+    public abstract IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException;
 
     private List<ProviderCallbackEvent> createCallbackEvents(IssueTrackerResponse issueTrackerResponse) {
         List<ProviderCallbackEvent> callbackEvents = new ArrayList<>();

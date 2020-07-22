@@ -22,11 +22,11 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContext;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.jira.cloud.JiraCloudContext;
-import com.synopsys.integration.alert.jira.cloud.JiraCloudProperties;
-import com.synopsys.integration.alert.jira.common.JiraContextBuilder;
 
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
     @Override
