@@ -74,15 +74,6 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         return channelKey.getUniversalKey();
     }
 
-    @Override
-    public final void sendProviderCallbackEvents(List<ProviderCallbackEvent> callbackEvents) {
-        eventManager.sendEvents(callbackEvents);
-    }
-
-    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
-
-    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
-
     /**
      * This method will send requests to an Issue Tracker to create, update, or resolve issues.
      * @param context  The object containing the configuration of the issue tracker server and the configuration of how to map and manage issues.
@@ -91,6 +82,15 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
      * @throws IntegrationException
      */
     public abstract IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException;
+
+    @Override
+    public final void sendProviderCallbackEvents(List<ProviderCallbackEvent> callbackEvents) {
+        eventManager.sendEvents(callbackEvents);
+    }
+
+    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
+
+    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
 
     private List<ProviderCallbackEvent> createCallbackEvents(IssueTrackerResponse issueTrackerResponse) {
         List<ProviderCallbackEvent> callbackEvents = new ArrayList<>();
