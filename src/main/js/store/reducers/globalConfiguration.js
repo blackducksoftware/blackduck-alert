@@ -3,9 +3,11 @@ import {
     CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
+    CONFIG_FETCH_ERROR,
     CONFIG_FETCHED,
     CONFIG_FETCHING,
     CONFIG_REFRESH,
+    CONFIG_REFRESH_ERROR,
     CONFIG_REFRESHING,
     CONFIG_TEST_FAILED,
     CONFIG_TEST_SUCCESS,
@@ -52,7 +54,11 @@ const globalConfiguration = (state = initialState, action) => {
                 config: action.config,
                 error: HTTPErrorUtils.createEmptyErrorObject()
             });
-
+        case CONFIG_FETCH_ERROR:
+        case CONFIG_REFRESH_ERROR:
+            return Object.assign({}, state, {
+                error: HTTPErrorUtils.createErrorObject(action)
+            });
         case CONFIG_REFRESHING:
             return Object.assign({}, state, {
                 fetching: true,
