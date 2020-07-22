@@ -3,6 +3,7 @@ import {
     CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
+    CONFIG_FETCH_ALL_ERROR,
     CONFIG_FETCH_ERROR,
     CONFIG_FETCHED,
     CONFIG_FETCHING,
@@ -89,6 +90,13 @@ function configError(message, errors) {
         type: CONFIG_UPDATE_ERROR,
         message,
         errors
+    };
+}
+
+function configFetchAllError(message) {
+    return {
+        type: CONFIG_FETCH_ALL_ERROR,
+        message
     };
 }
 
@@ -193,7 +201,7 @@ export function getAllConfigs(descriptorName) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchAllError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             response.json()
