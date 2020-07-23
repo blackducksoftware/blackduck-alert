@@ -38,17 +38,13 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String LABEL_AZURE_BOARDS_URL = "Url";
     public static final String LABEL_ORGANIZATION_NAME = "Organization Name";
     public static final String LABEL_CLIENT_ID = "Client Id";
-    public static final String LABEL_CONSUMER_KEY = "Consumer Key";
-    public static final String LABEL_PRIVATE_KEY = "Private Key";
     public static final String LABEL_OAUTH = "Microsoft OAuth";
     public static final String LABEL_ACCESS_TOKEN = "Access Token";
 
     //FIXME assign values for the descriptions
-    public static final String DESCRIPTION_AZURE_BOARDS_URL = "FILL OUT THIS DESCRIPTION";
-    public static final String DESCRIPTION_ORGANIZATION_NAME = "FILL OUT THIS DESCRIPTION";
-    public static final String DESCRIPTION_CLIENT_ID = "FILL OUT THIS DESCRIPTION";
-    public static final String DESCRIPTION_CONSUMER_KEY = "FILL OUT THIS DESCRIPTION";
-    public static final String DESCRIPTION_PRIVATE_KEY = "FILL OUT THIS DESCRIPTION";
+    public static final String DESCRIPTION_AZURE_BOARDS_URL = "If your Azure DevOps instance is \"on-prem\", this field can be used to set that address.";
+    public static final String DESCRIPTION_ORGANIZATION_NAME = "The name of the Azure DevOps organization.";
+    public static final String DESCRIPTION_CLIENT_ID = "The Client Id created for Alert through your Azure Active Directory";
     public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.";
     public static final String DESCRIPTION_ACCESS_TOKEN = "FILL OUT THIS DESCRIPTION";
 
@@ -67,15 +63,11 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         //        ConfigField azureBoardsUrlField = new URLInputConfigField(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL, LABEL_AZURE_BOARDS_URL, DESCRIPTION_AZURE_BOARDS_URL).applyRequired(true);
         ConfigField organizationName = new TextInputConfigField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME, LABEL_ORGANIZATION_NAME, DESCRIPTION_ORGANIZATION_NAME).applyRequired(true);
         ConfigField clientId = new TextInputConfigField(AzureBoardsDescriptor.KEY_CLIENT_ID, LABEL_CLIENT_ID, DESCRIPTION_CLIENT_ID).applyRequired(true);
-        //        ConfigField consumerKey = new PasswordConfigField(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, LABEL_CONSUMER_KEY, DESCRIPTION_CONSUMER_KEY, encryptionValidator).applyRequired(true);
-        //        ConfigField privateKey = new PasswordConfigField(AzureBoardsDescriptor.KEY_PRIVATE_KEY, LABEL_PRIVATE_KEY, DESCRIPTION_PRIVATE_KEY, encryptionValidator).applyRequired(true);
         //        ConfigField accessToken = new PasswordConfigField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, LABEL_ACCESS_TOKEN, DESCRIPTION_ACCESS_TOKEN, encryptionValidator).applyRequired(true);
 
-        ConfigField configureOAuth = new EndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH);
-        //                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL)
-        //                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
-        //                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL)
-        //                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_PRIVATE_KEY)
+        ConfigField configureOAuth = new EndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
         //                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ACCESS_TOKEN);
 
         //return List.of(azureBoardsUrlField, organizationName, consumerKey, privateKey, configureOAuth, accessToken);

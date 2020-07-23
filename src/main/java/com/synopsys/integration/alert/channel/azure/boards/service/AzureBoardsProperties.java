@@ -48,25 +48,32 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
-    private final String userId;
-    private final String accessToken;
-    private final Integer timeoutInSeconds;
+    private final String oAuthUserEmail;
 
     public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, FieldAccessor fieldAccessor) {
-        // FIXME implement
         String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-        String accessToken = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ACCESS_TOKEN);
-        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, null, null, accessToken, 120);
+        String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        String oAuthUserEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, oAuthUserEmail);
     }
 
-    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String userId, String accessToken,
-        Integer timeoutInSeconds) {
+    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String oAuthUserEmail) {
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
-        this.userId = userId;
-        this.accessToken = accessToken;
-        this.timeoutInSeconds = timeoutInSeconds;
+        this.oAuthUserEmail = oAuthUserEmail;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getoAuthUserEmail() {
+        return oAuthUserEmail;
     }
 
     public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson) throws AlertException {
@@ -74,7 +81,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", userId)));
+                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", oAuthUserEmail)));
             return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credential");
@@ -84,7 +91,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     public AuthorizationCodeFlow createOAuthFlow(NetHttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
                    .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
-                   .addRefreshListener(new DataStoreCredentialRefreshListener(userId, credentialDataStoreFactory))
+                   .addRefreshListener(new DataStoreCredentialRefreshListener(oAuthUserEmail, credentialDataStoreFactory))
                    .build();
     }
 
@@ -111,7 +118,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
-        Credential storedCredential = authorizationCodeFlow.loadCredential(userId);
+        Credential storedCredential = authorizationCodeFlow.loadCredential(oAuthUserEmail);
         return Optional.ofNullable(storedCredential);
     }
 
