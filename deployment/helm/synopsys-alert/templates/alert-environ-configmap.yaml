@@ -4,7 +4,7 @@ data:
   {{- if .Values.alert.hostname }}
   ALERT_HOSTNAME: {{ .Values.alert.hostname | quote }}
   {{- else }}
-  ALERT_HOSTNAME: {{ .Release.Name | quote }}-alert
+  ALERT_HOSTNAME: {{ .Release.Name | quote }}
   {{- end}}
   {{- if .Values.alert.port }}
   ALERT_SERVER_PORT: {{ .Values.alert.port | quote }}
