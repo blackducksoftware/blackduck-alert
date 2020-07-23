@@ -29,6 +29,7 @@ import java.util.Optional;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -36,7 +37,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsAccessTokenDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -44,23 +45,23 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 
 public class AzureBoardsProperties implements IssueTrackerServiceConfig {
-    private final AzureBoardsAccessTokenDataStoreFactory tokenDataStoreFactory;
+    private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
     private final String userId;
     private final String accessToken;
     private final Integer timeoutInSeconds;
 
-    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsAccessTokenDataStoreFactory tokenDataStoreFactory, FieldAccessor fieldAccessor) {
+    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, FieldAccessor fieldAccessor) {
         // FIXME implement
         String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String accessToken = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ACCESS_TOKEN);
-        return new AzureBoardsProperties(tokenDataStoreFactory, organizationName, null, null, accessToken, 120);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, null, null, accessToken, 120);
     }
 
-    public AzureBoardsProperties(AzureBoardsAccessTokenDataStoreFactory tokenDataStoreFactory, String organizationName, String clientId, String userId, String accessToken,
+    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String userId, String accessToken,
         Integer timeoutInSeconds) {
-        this.tokenDataStoreFactory = tokenDataStoreFactory;
+        this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
         this.userId = userId;
@@ -82,7 +83,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public AuthorizationCodeFlow createOAuthFlow(NetHttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
-                   .setCredentialDataStore(StoredCredential.getDefaultDataStore(tokenDataStoreFactory))
+                   .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
+                   .addRefreshListener(new DataStoreCredentialRefreshListener(userId, credentialDataStoreFactory))
                    .build();
     }
 

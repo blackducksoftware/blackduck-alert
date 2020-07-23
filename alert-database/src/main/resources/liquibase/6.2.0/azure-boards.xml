@@ -40,6 +40,7 @@
             <column name="SOURCE_KEY">channel.azure.boards.work.item.reopen.state</column>
             <column name="SENSITIVE">false</column>
         </insert>
+        <!-- GLOBAL -->
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.url</column>
             <column name="SENSITIVE">false</column>
@@ -49,12 +50,12 @@
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">azure.boards.consumer.key</column>
-            <column name="SENSITIVE">false</column>
+            <column name="SOURCE_KEY">azure.boards.client.id</column>
+            <column name="SENSITIVE">true</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">azure.boards.private.key</column>
-            <column name="SENSITIVE">true</column>
+            <column name="SOURCE_KEY">azure.boards.oauth.user.email</column>
+            <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.oauth</column>
@@ -63,6 +64,14 @@
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.access.token</column>
             <column name="SENSITIVE">true</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.refresh.token</column>
+            <column name="SENSITIVE">true</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.token.expiration.millis</column>
+            <column name="SENSITIVE">false</column>
         </insert>
     </changeSet>
     <!-- Initialize descriptor fields -->
@@ -90,6 +99,7 @@
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.reopen.state')"/>
         </insert>
+        <!-- GLOBAL -->
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.url')"/>
@@ -100,11 +110,11 @@
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.consumer.key')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.client.id')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.private.key')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth.user.email')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
@@ -113,6 +123,14 @@
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.access.token')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.refresh.token')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.token.expiration.millis')"/>
         </insert>
     </changeSet>
     <!-- Initialize field contexts -->
@@ -148,16 +166,17 @@
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.url')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
+        <!-- GLOBAL -->
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.organization.name')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.consumer.key')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.client.id')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.private.key')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth.user.email')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
@@ -166,6 +185,14 @@
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.access.token')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.refresh.token')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.token.expiration.millis')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
     </changeSet>
