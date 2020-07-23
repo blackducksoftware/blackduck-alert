@@ -49,12 +49,12 @@ public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCa
         this.configurationAccessor = configurationAccessor;
     }
 
-    public ProviderKey getProviderKey() {
+    public final ProviderKey getProviderKey() {
         return provider.getKey();
     }
 
     @Override
-    public void handleEvent(ProviderCallbackEvent event) {
+    public final void handleEvent(ProviderCallbackEvent event) {
         if (event.getDestination().equals(getProviderKey().getUniversalKey())) {
             try {
                 Optional<StatefulProvider> optionalStatefulProvider = validateAndRetrieveStatefulProvider(event);
@@ -72,7 +72,7 @@ public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCa
     }
 
     @Override
-    public String getDestinationName() {
+    public final String getDestinationName() {
         return getProviderKey().getUniversalKey();
     }
 
