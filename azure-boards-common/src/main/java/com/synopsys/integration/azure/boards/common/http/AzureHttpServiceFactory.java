@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 
 public class AzureHttpServiceFactory {
     public static final String DEFAULT_BASE_URL = "https://dev.azure.com";
+    // TODO consider the tradeoffs of extracting the common base url vs readability
     public static final String DEFAULT_AUTHORIZATION_URL = "https://app.vssps.visualstudio.com/oauth2/authorize&response_type=Assertion";
     public static final String DEFAULT_TOKEN_URL = "https://app.vssps.visualstudio.com/oauth2/token?client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer";
 
