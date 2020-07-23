@@ -81,7 +81,15 @@
         </preConditions>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.comment')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.project')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.creator.email')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>

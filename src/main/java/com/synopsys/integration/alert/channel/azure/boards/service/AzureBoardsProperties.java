@@ -84,7 +84,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
                                              .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", oAuthUserEmail)));
             return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
-            throw new AlertException("Cannot read OAuth credential");
+            throw new AlertException("Cannot read OAuth credentials", e);
         }
     }
 

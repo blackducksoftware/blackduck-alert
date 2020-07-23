@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMe
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
+import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -46,18 +47,21 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
+    private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, AzureBoardsMessageParser azureBoardsMessageParser) {
+    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager,
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsMessageParser azureBoardsMessageParser) {
         super(gson, auditUtility, channelKey, eventManager);
+        this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(fieldAccessor);
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, fieldAccessor);
         IssueConfig issueConfig = createIssueConfig(fieldAccessor);
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }

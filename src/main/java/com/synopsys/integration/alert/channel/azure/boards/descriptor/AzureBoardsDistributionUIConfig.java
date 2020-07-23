@@ -35,14 +35,14 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 
 @Component
 public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig {
-    private static final String LABEL_WORK_ITEM_COMMENTS = "Comment on Work Items";
+    private static final String LABEL_WORK_ITEM_COMMENT = "Comment on Work Items";
     private static final String LABEL_AZURE_PROJECT = "Azure Project";
     private static final String LABEL_AZURE_CREATOR_EMAIL = "Work Item Creator Email";
     private static final String LABEL_WORK_ITEM_TYPE = "Work Item Type";
     private static final String LABEL_WORK_ITEM_COMPLETED_STATE = "Work Item Completed State";
     private static final String LABEL_WORK_ITEM_REOPEN_STATE = "Work Item Reopen State";
 
-    private static final String DESCRIPTION_WORK_ITEM_COMMENTS = "If selected, Alert will comment on Work Items it created with updates.";
+    private static final String DESCRIPTION_WORK_ITEM_COMMENT = "If selected, Alert will comment on Work Items it created when updates occur.";
     private static final String DESCRIPTION_AZURE_PROJECT = "The project name or id in Azure Boards.";
     private static final String DESCRIPTION_AZURE_CREATOR_EMAIL = "The email address of the Azure Boards user who should appear as the work item creator.";
     private static final String DESCRIPTION_WORK_ITEM_TYPE = "The work item type in Azure Boards.";
@@ -56,7 +56,7 @@ public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField azureWorkItemComments = new CheckboxConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, LABEL_WORK_ITEM_COMMENTS, DESCRIPTION_WORK_ITEM_COMMENTS);
+        ConfigField azureWorkItemComments = new CheckboxConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, LABEL_WORK_ITEM_COMMENT, DESCRIPTION_WORK_ITEM_COMMENT);
         ConfigField azureProject = new TextInputConfigField(AzureBoardsDescriptor.KEY_AZURE_PROJECT, LABEL_AZURE_PROJECT, DESCRIPTION_AZURE_PROJECT).applyRequired(true);
         ConfigField azureBoard = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL, LABEL_AZURE_CREATOR_EMAIL, DESCRIPTION_AZURE_CREATOR_EMAIL);
         ConfigField workItemType = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, LABEL_WORK_ITEM_TYPE, DESCRIPTION_WORK_ITEM_TYPE);
