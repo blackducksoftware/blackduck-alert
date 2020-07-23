@@ -88,7 +88,6 @@ dependencies {
     implementation project(':azure-boards-common')
     implementation project(':alert-common')
     implementation project(':alert-database')
-    implementation project(':alert-jira')
 
     // Spring
     implementation 'org.springframework:spring-webmvc'

@@ -40,4 +40,5 @@ public class AzureBoardsChannelKey extends ChannelKey {
     public String getDisplayName() {
         return AzureBoardsDescriptor.AZURE_BOARDS_LABEL;
     }
+
 }
