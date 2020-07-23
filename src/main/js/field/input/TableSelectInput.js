@@ -67,6 +67,7 @@ class TableSelectInput extends Component {
         this.handleClearClick = this.handleClearClick.bind(this);
         this.handleShowClearConfirm = this.handleShowClearConfirm.bind(this);
         this.handleHideClearConfirm = this.handleHideClearConfirm.bind(this);
+        this.onHideTableSelectModal = this.onHideTableSelectModal.bind(this);
 
         this.state = {
             progress: false,
@@ -137,7 +138,8 @@ class TableSelectInput extends Component {
     handleClearClick() {
         this.setState({
             selectedData: [],
-            displayedData: []
+            displayedData: [],
+            showClearConfirm: false
         });
 
         this.props.onChange({
@@ -364,41 +366,52 @@ class TableSelectInput extends Component {
         const confirmModalId = `${fieldKey}-confirmModal`;
         return (
             <div className="col-sm-8 d-inline-flex p-2">
-                <Select
-                    id={selectFieldId}
-                    className="typeAheadField"
-                    onChange={null}
-                    options={[]}
-                    isMulti
-                    components={components}
-                    noOptionsMessage={null}
-                    isDisabled
-                    clearable={false}
-                    value={this.state.displayedData}
-                />
-                <GeneralButton id={selectButtonId} className="selectButton" onClick={this.selectOnClick}
-                               disabled={this.state.showTable || this.props.readOnly}>
-                    Select
-                </GeneralButton>
-                {this.state.selectedData && this.state.selectedData.length > 0 &&
-                <GeneralButton id={clearButtonId} className="selectClearButton"
-                               onClick={this.handleShowClearConfirm}>
-                    Clear
-                </GeneralButton>
-                }
-                <ConfirmModal id={confirmModalId}
-                              showModal={this.state.showClearConfirm}
-                              title="Are you sure you want to clear all selected items?"
-                              affirmativeAction={this.handleClearClick}
-                              negativeAction={this.handleHideClearConfirm}
-                />
+                <div className="d-block typeAheadField">
+                    <Select
+                        id={selectFieldId}
+                        className="typeAheadField"
+                        onChange={null}
+                        options={[]}
+                        isMulti
+                        components={components}
+                        noOptionsMessage={null}
+                        isDisabled
+                        clearable={false}
+                        value={this.state.displayedData}
+                    />
+                    <div className="d-inline-flex float-right">
+                        <GeneralButton id={selectButtonId} className="selectButton" onClick={this.selectOnClick}
+                                       disabled={this.state.showTable || this.props.readOnly}>
+                            Select
+                        </GeneralButton>
+                        {this.state.selectedData && this.state.selectedData.length > 0 &&
+                        <GeneralButton id={clearButtonId} className="selectClearButton"
+                                       onClick={this.handleShowClearConfirm}>
+                            Clear
+                        </GeneralButton>
+                        }
+                    </div>
+                    <ConfirmModal id={confirmModalId}
+                                  showModal={this.state.showClearConfirm}
+                                  title="Are you sure you want to clear all selected items?"
+                                  affirmativeAction={this.handleClearClick}
+                                  negativeAction={this.handleHideClearConfirm}
+                    />
+                </div>
             </div>
         );
     }
 
+    onHideTableSelectModal() {
+        this.setState({
+            showTable: false,
+            selectedData: this.state.displayedData
+        })
+    }
+
     render() {
         const tableModal = (
-            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={() => this.setState({ showTable: false })}>
+            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={this.onHideTableSelectModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.label}</Modal.Title>
                 </Modal.Header>

@@ -27,9 +27,12 @@ import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
+/**
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/work/boards?view=azure-devops-rest-5.1">Documentation</a>
+ */
 public class AzureBoardService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_BOARDS = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/work/boards");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_BOARDS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/work/boards/{boardId}");
@@ -40,13 +43,13 @@ public class AzureBoardService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayWithCountResponseModel<BoardReferenceResponseModel> getBoards(String organizationName, String projectIdOrName, String teamIdOrName) throws HttpServiceException {
+    public AzureArrayResponseModel<BoardReferenceResponseModel> getBoards(String organizationName, String projectIdOrName, String teamIdOrName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_BOARDS
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
                                  .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
-        Type responseType = new TypeToken<AzureArrayWithCountResponseModel<BoardReferenceResponseModel>>() {}.getType();
+        Type responseType = new TypeToken<AzureArrayResponseModel<BoardReferenceResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 

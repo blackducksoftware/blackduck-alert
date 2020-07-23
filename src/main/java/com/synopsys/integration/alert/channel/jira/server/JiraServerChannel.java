@@ -28,17 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.jira.common.JiraMessageContentConverter;
+import com.synopsys.integration.alert.jira.server.JiraServerService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.service.IssueTrackerService;
-import com.synopsys.integration.issuetracker.jira.server.JiraServerService;
 
 @Component
 public class JiraServerChannel extends IssueTrackerChannel {
@@ -51,19 +51,20 @@ public class JiraServerChannel extends IssueTrackerChannel {
     }
 
     @Override
-    protected IssueTrackerService<?> getIssueTrackerService() {
+    protected IssueTrackerService getIssueTrackerService() {
         return new JiraServerService(getGson());
     }
 
     @Override
-    protected IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event) {
+    protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
         return contextBuilder.build(fieldAccessor);
     }
 
     @Override
-    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException {
+    protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
         return jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
     }
+
 }

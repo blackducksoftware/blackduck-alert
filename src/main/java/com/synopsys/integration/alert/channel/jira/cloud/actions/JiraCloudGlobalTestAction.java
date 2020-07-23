@@ -28,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraDescriptor;
-import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.jira.common.JiraConstants;
+import com.synopsys.integration.alert.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.jira.cloud.JiraCloudProperties;
-import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
@@ -70,14 +70,14 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_URL);
-        String accessToken = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        String username = fieldAccessor.getStringOrNull(JiraDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         return new JiraCloudProperties(url, accessToken, username);
     }
 
     @Override
     protected String getChannelDisplayName() {
-        return JiraDescriptor.JIRA_LABEL;
+        return JiraCloudDescriptor.JIRA_LABEL;
     }
 }

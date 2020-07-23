@@ -52,18 +52,25 @@ public class BlackDuckProviderIssueHandler {
         Optional<IssueView> optionalExistingIssue = retrieveExistingIssue(bomComponentVersionIssuesUrl, issueModel.getKey());
 
         Date currentDate = Date.from(Instant.now());
+        String requestUri = bomComponentVersionIssuesUrl;
         IssueView issueRequestModel = createIssueRequestModel(issueModel);
+
         Function<String, Request.Builder> requestBuilderCreator;
         if (optionalExistingIssue.isPresent()) {
-            issueRequestModel.setIssueCreatedAt(optionalExistingIssue.get().getIssueCreatedAt());
+            IssueView existingIssue = optionalExistingIssue.get();
+            issueRequestModel.setIssueDescription(existingIssue.getIssueDescription());
+            issueRequestModel.setIssueCreatedAt(existingIssue.getIssueCreatedAt());
             issueRequestModel.setIssueUpdatedAt(currentDate);
+
+            // The request uri should point at the specific issue for PUT requests
+            requestUri = existingIssue.getMeta().getHref();
             requestBuilderCreator = RequestFactory::createCommonPutRequestBuilder;
         } else {
             issueRequestModel.setIssueCreatedAt(currentDate);
             issueRequestModel.setIssueUpdatedAt(null);
             requestBuilderCreator = RequestFactory::createCommonPostRequestBuilder;
         }
-        performRequest(bomComponentVersionIssuesUrl, issueRequestModel, requestBuilderCreator);
+        performRequest(requestUri, issueRequestModel, requestBuilderCreator);
     }
 
     // TODO fix this logic once the bomComponentVersionIssuesUrl supports GET requests directly

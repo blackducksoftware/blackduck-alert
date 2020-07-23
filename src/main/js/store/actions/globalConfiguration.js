@@ -3,9 +3,12 @@ import {
     CONFIG_CLEAR_FIELD_ERRORS,
     CONFIG_DELETED,
     CONFIG_DELETING,
+    CONFIG_FETCH_ALL_ERROR,
+    CONFIG_FETCH_ERROR,
     CONFIG_FETCHED,
     CONFIG_FETCHING,
     CONFIG_REFRESH,
+    CONFIG_REFRESH_ERROR,
     CONFIG_REFRESHING,
     CONFIG_TEST_FAILED,
     CONFIG_TEST_SUCCESS,
@@ -90,6 +93,27 @@ function configError(message, errors) {
     };
 }
 
+function configFetchAllError(message) {
+    return {
+        type: CONFIG_FETCH_ALL_ERROR,
+        message
+    };
+}
+
+function configFetchError(message) {
+    return {
+        type: CONFIG_FETCH_ERROR,
+        message
+    };
+}
+
+function configRefreshError(message) {
+    return {
+        type: CONFIG_REFRESH_ERROR,
+        message
+    };
+}
+
 function testingConfig() {
     return {
         type: CONFIG_TESTING
@@ -150,7 +174,7 @@ export function refreshConfig(id) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configRefreshError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             response.json()
@@ -177,7 +201,7 @@ export function getAllConfigs(descriptorName) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchAllError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             response.json()
@@ -203,7 +227,7 @@ export function getConfig(descriptorName) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             response.json()

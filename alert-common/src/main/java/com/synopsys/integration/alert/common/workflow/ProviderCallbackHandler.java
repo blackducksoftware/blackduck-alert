@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -37,7 +38,7 @@ import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCallbackEvent> {
+public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCallbackEvent> implements AlertEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Provider provider;
     private final ConfigurationAccessor configurationAccessor;
@@ -68,6 +69,11 @@ public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCa
         } else {
             logger.warn("Received an event for provider '{}', but this provider is '{}' with key '{}'.", event.getDestination(), getProviderKey().getDisplayName(), getProviderKey().getUniversalKey());
         }
+    }
+
+    @Override
+    public String getDestinationName() {
+        return getProviderKey().getUniversalKey();
     }
 
     protected abstract void performProviderCallback(ProviderCallbackEvent event, StatefulProvider statefulProvider) throws IntegrationException;

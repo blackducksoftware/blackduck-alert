@@ -27,9 +27,12 @@ import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayWithCountResponseModel;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
+/**
+ * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects?view=azure-devops-rest-5.1">Documentation</a>
+ */
 public class AzureProjectService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS = new AzureSpecTemplate("/{organization}/_apis/projects");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}");
@@ -40,11 +43,11 @@ public class AzureProjectService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayWithCountResponseModel<TeamProjectReferenceResponseModel> getProjects(String organizationName) throws HttpServiceException {
+    public AzureArrayResponseModel<TeamProjectReferenceResponseModel> getProjects(String organizationName) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECTS
                                  .defineReplacement("{organization}", organizationName)
                                  .populateSpec();
-        Type responseType = new TypeToken<AzureArrayWithCountResponseModel<TeamProjectReferenceResponseModel>>() {}.getType();
+        Type responseType = new TypeToken<AzureArrayResponseModel<TeamProjectReferenceResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 

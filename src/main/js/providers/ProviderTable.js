@@ -45,14 +45,15 @@ class ProviderTable extends Component {
     }
 
     componentDidMount() {
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const { descriptors, descriptorName, clearFieldErrors, getAllConfigs } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        clearFieldErrors();
         if (descriptor) {
             const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
             this.setState({
                 providerConfig: emptyConfig
             });
-            this.props.getAllConfigs(descriptor.name);
+            getAllConfigs(descriptor.name);
         }
     }
 
@@ -238,7 +239,7 @@ class ProviderTable extends Component {
 
     createTableData(providerConfigs) {
         if (!providerConfigs || providerConfigs.length <= 0) {
-            return null;
+            return [];
         }
         const tableData = [];
         providerConfigs.forEach((providerConfig) => {
@@ -280,6 +281,7 @@ class ProviderTable extends Component {
         const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
+        const providerActionMessage = actionMessage ? actionMessage : null;
         return (
             <div>
                 {descriptorHeader}
@@ -304,7 +306,7 @@ class ProviderTable extends Component {
                         saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
-                        actionMessage={actionMessage}
+                        actionMessage={providerActionMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                     />

@@ -22,36 +22,42 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerService;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.issuetracker.common.config.IssueTrackerContext;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
-import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
-import com.synopsys.integration.issuetracker.common.service.IssueTrackerService;
 
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {
-    private final DescriptorKey descriptorKey;
+    private final ChannelKey channelKey;
     private final EventManager eventManager;
 
-    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, DescriptorKey descriptorKey, EventManager eventManager) {
+    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, ChannelKey channelKey, EventManager eventManager) {
         super(gson, auditUtility);
-        this.descriptorKey = descriptorKey;
+        this.channelKey = channelKey;
         this.eventManager = eventManager;
     }
 
-    protected abstract IssueTrackerService<?> getIssueTrackerService();
+    protected abstract IssueTrackerService getIssueTrackerService();
 
-    protected abstract IssueTrackerContext<?> getIssueTrackerContext(DistributionEvent event);
+    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
 
-    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext<?> context, DistributionEvent event) throws IntegrationException;
+    protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
 
     @Override
     public MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
@@ -60,11 +66,11 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         List<IssueTrackerRequest> requests = createRequests(context, event);
         String statusMessage;
         if (requests.isEmpty()) {
-            statusMessage = String.format("No requests to send to issue tracker: %s", descriptorKey.getDisplayName());
+            statusMessage = String.format("No requests to send to issue tracker: %s", channelKey.getDisplayName());
         } else {
             IssueTrackerResponse result = service.sendRequests(context, requests);
             statusMessage = result.getStatusMessage();
-            
+
             List<ProviderCallbackEvent> callbackEvents = createCallbackEvents(result);
             sendProviderCallbackEvents(callbackEvents);
         }
@@ -73,7 +79,7 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
 
     @Override
     public String getDestinationName() {
-        return descriptorKey.getUniversalKey();
+        return channelKey.getUniversalKey();
     }
 
     @Override
@@ -82,8 +88,32 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
     }
 
     private List<ProviderCallbackEvent> createCallbackEvents(IssueTrackerResponse issueTrackerResponse) {
-        // FIXME release an update to issuetracker-common
-        return List.of();
+        List<ProviderCallbackEvent> callbackEvents = new ArrayList<>();
+        for (IssueTrackerIssueResponseModel issueResponseModel : issueTrackerResponse.getUpdatedIssues()) {
+            AlertIssueOrigin alertIssueOrigin = issueResponseModel.getAlertIssueOrigin();
+
+            Optional<ComponentItem> optionalComponentItem = alertIssueOrigin.getComponentItem();
+            if (optionalComponentItem.isPresent()) {
+                ComponentItem componentItem = optionalComponentItem.get();
+                Optional<ComponentItemCallbackInfo> optionalCallbackInfo = componentItem.getCallbackInfo();
+                if (optionalCallbackInfo.isPresent()) {
+                    ComponentItemCallbackInfo callbackInfo = optionalCallbackInfo.get();
+                    ProviderCallbackEvent issueCallback = new ProviderCallbackEvent(
+                        callbackInfo.getProviderKey(),
+                        callbackInfo.getCallbackUrl(),
+                        callbackInfo.getNotificationType(),
+                        issueResponseModel.getIssueKey(),
+                        issueResponseModel.getIssueLink(),
+                        issueResponseModel.getIssueOperation(),
+                        issueResponseModel.getIssueTitle(),
+                        alertIssueOrigin.getProviderContentKey(),
+                        componentItem
+                    );
+                    callbackEvents.add(issueCallback);
+                }
+            }
+        }
+        return callbackEvents;
     }
 
 }

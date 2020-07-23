@@ -467,10 +467,10 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void updateConfigurationWithInvalidFieldKeyTest() {
+    public void updateConfigurationWithInvalidFieldKeyTest() throws Exception {
+        DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
         try {
-            DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-            ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
             ConfigurationFieldModel field = ConfigurationFieldModel.create(null);
             configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), Arrays.asList(field));
             fail("Expected exception to be thrown");

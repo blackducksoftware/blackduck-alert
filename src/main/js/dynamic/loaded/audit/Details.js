@@ -49,7 +49,7 @@ class Details extends Component {
         let errorStackTrace = null;
         if (row.errorStackTrace) {
             errorStackTrace =
-                <TextArea id="auditDetailStackTrace" inputClass="auditJobDetails" sizeClass="col-sm-12"
+                <TextArea id="auditDetailStackTrace" inputClass="auditJobDetails" sizeClass="col-sm-8"
                           label="Stack Trace" readOnly
                           name="errorStackTrace"
                           value={row.errorStackTrace} cols={'auto'} />;

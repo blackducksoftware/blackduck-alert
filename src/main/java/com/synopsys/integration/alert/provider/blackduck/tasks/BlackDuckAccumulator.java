@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
@@ -62,13 +63,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationManager notificationManager;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
+    private final BlackDuckValidator blackDuckValidator;
 
     public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
-        ProviderProperties providerProperties) {
+        ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationManager = notificationManager;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
+        this.blackDuckValidator = blackDuckValidator;
     }
 
     public String formatDate(OffsetDateTime date) {
@@ -77,7 +80,9 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     @Override
     public void runProviderTask() {
-        accumulate();
+        if (blackDuckValidator.validate(getProviderProperties())) {
+            accumulate();
+        }
     }
 
     @Override
