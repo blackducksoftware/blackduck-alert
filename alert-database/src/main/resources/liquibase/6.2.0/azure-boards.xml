@@ -17,11 +17,15 @@
             <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'azure.boards.project'</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.azure.boards.work.item.comment</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">channel.azure.boards.project</column>
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">channel.azure.boards.board</column>
+            <column name="SOURCE_KEY">channel.azure.boards.work.item.creator.email</column>
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
@@ -117,11 +121,15 @@
             <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('channel.azure.boards.project')</sqlCheck>
         </preConditions>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.comment')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.project')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.board')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.creator.email')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">

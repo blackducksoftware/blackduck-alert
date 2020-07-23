@@ -30,6 +30,8 @@ import com.google.gson.Gson;
 
 public class AzureHttpServiceFactory {
     public static final String DEFAULT_BASE_URL = "https://dev.azure.com";
+    public static final String DEFAULT_AUTHORIZATION_URL = "https://app.vssps.visualstudio.com/oauth2/authorize&response_type=Assertion";
+    public static final String DEFAULT_TOKEN_URL = "https://app.vssps.visualstudio.com/oauth2/token?client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer";
 
     public static AzureHttpService withCredentialNoProxy(Credential oAuthCredential, Gson gson) {
         return withCredentialNoProxy(DEFAULT_BASE_URL, oAuthCredential, gson);
@@ -44,10 +46,21 @@ public class AzureHttpServiceFactory {
     }
 
     public static AzureHttpService withCredential(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
-        NetHttpTransport netHttpTransport = new NetHttpTransport.Builder()
-                                                .setProxy(proxy)
-                                                .build();
-        return new AzureHttpService(baseUrl, netHttpTransport.createRequestFactory(oAuthCredential), gson);
+        return withCredential(baseUrl, defaultHttpTransport(proxy), oAuthCredential, gson);
+    }
+
+    public static AzureHttpService withCredential(NetHttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+        return withCredential(DEFAULT_BASE_URL, httpTransport, oAuthCredential, gson);
+    }
+
+    public static AzureHttpService withCredential(String baseUrl, NetHttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+        return new AzureHttpService(baseUrl, httpTransport.createRequestFactory(oAuthCredential), gson);
+    }
+
+    private static NetHttpTransport defaultHttpTransport(Proxy proxy) {
+        return new NetHttpTransport.Builder()
+                   .setProxy(proxy)
+                   .build();
     }
 
 }

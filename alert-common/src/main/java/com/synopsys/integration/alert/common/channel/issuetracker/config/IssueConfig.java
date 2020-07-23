@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.common.channel.issuetracker.config;
 
 import java.util.Optional;
 
-//TODO: determine if this can be used with Azure Boards or if a new design is needed
 public class IssueConfig {
     private String projectName;
     private String projectKey;
@@ -34,6 +33,30 @@ public class IssueConfig {
     private boolean commentOnIssues;
     private String resolveTransition;
     private String openTransition;
+
+    public IssueConfig() {
+        // For serialization
+    }
+
+    public IssueConfig(
+        String projectName
+        , String projectKey
+        , String projectId
+        , String issueCreator
+        , String issueType
+        , boolean commentOnIssues
+        , String resolveTransition
+        , String openTransition
+    ) {
+        this.projectName = projectName;
+        this.projectKey = projectKey;
+        this.projectId = projectId;
+        this.issueCreator = issueCreator;
+        this.issueType = issueType;
+        this.commentOnIssues = commentOnIssues;
+        this.resolveTransition = resolveTransition;
+        this.openTransition = openTransition;
+    }
 
     public String getProjectName() {
         return projectName;

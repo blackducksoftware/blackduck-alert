@@ -28,10 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsServiceConfig;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -56,7 +57,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        AzureBoardsServiceConfig serviceConfig = AzureBoardsServiceConfig.fromFieldAccessor(fieldAccessor);
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(fieldAccessor);
         IssueConfig issueConfig = createIssueConfig(fieldAccessor);
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
@@ -74,8 +75,22 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     }
 
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
-        // FIXME implement
-        return null;
+        String azureProjectName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
+        String workItemCreatorEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
+        String workItemTypeName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
+        boolean commentOnWorkItems = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
+        String completedStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
+        String reopenStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
+        return new IssueConfig(
+            azureProjectName,
+            azureProjectName,
+            null,
+            workItemCreatorEmail,
+            workItemTypeName,
+            commentOnWorkItems,
+            completedStateName,
+            reopenStateName
+        );
     }
 
 }
