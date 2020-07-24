@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
@@ -48,14 +47,14 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
-    private final AzureBoardsMessageParser azureBoardsMessageParser;
+    private final AzureBoardsRequestCreator azureBoardsRequestCreator;
 
     @Autowired
     public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager,
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsMessageParser azureBoardsMessageParser) {
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator) {
         super(gson, auditUtility, channelKey, eventManager);
         this.credentialDataStoreFactory = credentialDataStoreFactory;
-        this.azureBoardsMessageParser = azureBoardsMessageParser;
+        this.azureBoardsRequestCreator = azureBoardsRequestCreator;
     }
 
     @Override
@@ -68,8 +67,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
-        AzureBoardsRequestCreator requestCreator = new AzureBoardsRequestCreator(azureBoardsMessageParser, context.getIssueConfig());
-        return requestCreator.createRequests(event.getContent());
+        return azureBoardsRequestCreator.createRequests(context.getIssueConfig(), event.getContent());
     }
 
     @Override

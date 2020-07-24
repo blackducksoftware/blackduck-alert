@@ -22,22 +22,23 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import org.springframework.stereotype.Component;
 
-public class AzureBoardsRequestCreator {
-    private final AzureBoardsMessageParser messageParser;
-    private final IssueConfig issueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerRequestCreator;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-    public AzureBoardsRequestCreator(AzureBoardsMessageParser messageParser, IssueConfig issueConfig) {
-        this.messageParser = messageParser;
-        this.issueConfig = issueConfig;
+@Component
+public class AzureBoardsRequestCreator extends IssueTrackerRequestCreator {
+    public AzureBoardsRequestCreator(AzureBoardsMessageParser messageParser) {
+        super(messageParser);
     }
 
-    public List<IssueTrackerRequest> createRequests(MessageContentGroup messageContentGroup) {
+    @Override
+    protected IssueSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalInfo) {
         // FIXME implement
         return null;
     }
