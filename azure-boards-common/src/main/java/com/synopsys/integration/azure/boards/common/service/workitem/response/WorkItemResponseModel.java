@@ -70,7 +70,7 @@ public class WorkItemResponseModel {
         return url;
     }
 
-    public Map<String, ReferenceLinkModel> get_links() {
+    public Map<String, ReferenceLinkModel> getLinks() {
         return _links;
     }
 

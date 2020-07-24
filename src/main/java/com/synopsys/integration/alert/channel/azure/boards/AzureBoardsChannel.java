@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsIssueConfig;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
@@ -76,17 +77,17 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
         return issueTrackerService.sendRequests(requests);
     }
 
-    private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
+    private AzureBoardsIssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
+        String azureOrganizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String azureProjectName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
         String workItemCreatorEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
         String workItemTypeName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
         boolean commentOnWorkItems = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
         String completedStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
         String reopenStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
-        return new IssueConfig(
+        return new AzureBoardsIssueConfig(
+            azureOrganizationName,
             azureProjectName,
-            azureProjectName,
-            null,
             workItemCreatorEmail,
             workItemTypeName,
             commentOnWorkItems,

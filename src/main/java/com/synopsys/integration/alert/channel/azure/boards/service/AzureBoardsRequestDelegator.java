@@ -41,7 +41,11 @@ public class AzureBoardsRequestDelegator {
 
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
         // FIXME implement
-        return null;
+
+        // TODO create Alert custom field if one does not exist
+
+        AzureBoardsIssueHandler issueHandler = null;
+        return issueHandler.createOrUpdateIssues(context.getIssueConfig(), requests);
     }
 
 }

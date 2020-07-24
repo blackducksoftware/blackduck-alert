@@ -42,6 +42,7 @@ public final class WorkItemResponseFields {
     public static final AzureFieldDefinition<String> System_CreatedDate = AzureFieldDefinition.stringField("System.CreatedDate");
     public static final AzureFieldDefinition<String> System_ChangedDate = AzureFieldDefinition.stringField("System.ChangedDate");
     public static final AzureFieldDefinition<String> System_Title = AzureFieldDefinition.stringField("System.Title");
+    public static final AzureFieldDefinition<String> System_Description = AzureFieldDefinition.stringField("System.Description");
 
     public static final AzureFieldDefinition<String> Microsoft_VSTS_Common_StateChangeDate = AzureFieldDefinition.stringField("Microsoft.VSTS.Common.StateChangeDate");
     public static final AzureFieldDefinition<String> Microsoft_VSTS_CMMI_Blocked = AzureFieldDefinition.stringField("Microsoft.VSTS.CMMI.Blocked");
