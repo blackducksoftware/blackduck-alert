@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsIssueConfig;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
@@ -43,19 +44,24 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
+    private final ProxyManager proxyManager;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
+    private final AzureBoardsMessageParser azureBoardsMessageParser;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager,
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator) {
+    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, ProxyManager proxyManager,
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
         super(gson, auditUtility, channelKey, eventManager);
+        this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;
+        this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
     @Override
@@ -73,7 +79,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
-        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), context);
+        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), proxyManager, (AzureBoardsContext) context, azureBoardsMessageParser);
         return issueTrackerService.sendRequests(requests);
     }
 
