@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -31,6 +32,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.api.client.http.GenericUrl;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsIssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -41,6 +43,8 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
@@ -60,11 +64,13 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT
     );
 
+    private final AzureBoardsProperties azureBoardsProperties;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
     private final AzureWorkItemService azureWorkItemService;
 
-    public AzureBoardsIssueHandler(AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService) {
+    public AzureBoardsIssueHandler(AzureBoardsProperties azureBoardsProperties, AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService) {
         super(CONTENT_LENGTH_VALIDATOR);
+        this.azureBoardsProperties = azureBoardsProperties;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
         this.azureWorkItemService = azureWorkItemService;
     }
@@ -128,14 +134,19 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
     @Override
     protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, WorkItemResponseModel issueResponse) {
-        // FIXME implement
-        return null;
+        Integer workItemId = issueResponse.getId();
+        Map<String, ReferenceLinkModel> issueLinks = issueResponse.getLinks();
+        ReferenceLinkModel htmlLink = issueLinks.get("html");
+        String uiLink = Optional.ofNullable(htmlLink)
+                            .map(ReferenceLinkModel::getHref)
+                            .orElseGet(this::getIssueTrackerUrl);
+        return new IssueTrackerIssueResponseModel(alertIssueOrigin, workItemId.toString(), uiLink, issueTitle, issueOperation);
     }
 
     @Override
     protected String getIssueTrackerUrl() {
-        // FIXME implement
-        return null;
+        String url = String.format("%s/%s", AzureHttpServiceFactory.DEFAULT_BASE_URL, azureBoardsProperties.getOrganizationName());
+        return new GenericUrl(url).build();
     }
 
     @Override

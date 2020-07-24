@@ -71,7 +71,7 @@ public class AzureBoardsRequestDelegator {
 
         // TODO consider creating an Alert custom field if one does not exist for issue lookup
 
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsMessageParser, azureWorkItemService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);
         return issueHandler.createOrUpdateIssues(context.getIssueConfig(), requests);
     }
 
