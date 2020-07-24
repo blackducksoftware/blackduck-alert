@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.http.GenericUrl;
-import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsIssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -77,24 +76,23 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
     @Override
     protected Optional<WorkItemResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
-        AzureBoardsIssueConfig azureBoardsIssueConfig = (AzureBoardsIssueConfig) issueConfig;
-        String azureOrganizationName = azureBoardsIssueConfig.getOrganizationName();
-        String azureProjectName = azureBoardsIssueConfig.getProjectName();
+        String azureOrganizationName = azureBoardsProperties.getOrganizationName();
+        String azureProjectName = issueConfig.getProjectName();
 
         IssueSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel issueContentModel = request.getRequestContent();
-        if (!issueContentModel.getDescriptionComments().isEmpty() && !azureBoardsIssueConfig.getCommentOnIssues()) {
+        if (!issueContentModel.getDescriptionComments().isEmpty() && !issueConfig.getCommentOnIssues()) {
             String description = truncateDescription(issueContentModel.getDescription());
             issueContentModel = IssueContentModel.of(issueContentModel.getTitle(), description, List.of());
         }
 
         WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel);
         try {
-            WorkItemResponseModel workItemResponseModel = azureWorkItemService.createWorkItem(azureOrganizationName, azureProjectName, azureBoardsIssueConfig.getIssueType(), workItemRequest);
+            WorkItemResponseModel workItemResponseModel = azureWorkItemService.createWorkItem(azureOrganizationName, azureProjectName, issueConfig.getIssueType(), workItemRequest);
             Integer workItemId = workItemResponseModel.getId();
             logger.debug("Created new Azure Boards work item: {}", workItemId);
             addWorkItemProperties(workItemId, issueProperties);
-            if (azureBoardsIssueConfig.getCommentOnIssues()) {
+            if (issueConfig.getCommentOnIssues()) {
                 addComment(azureOrganizationName, azureProjectName, workItemId, "This issue was automatically created by Alert.");
                 for (String additionalComment : issueContentModel.getDescriptionComments()) {
                     String comment = String.format("%s %s %s", DESCRIPTION_CONTINUED_TEXT, azureBoardsMessageParser.getLineSeparator(), additionalComment);
@@ -122,9 +120,8 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
     @Override
     protected void addComment(IssueConfig issueConfig, String workItemIdString, String comment) throws IntegrationException {
-        AzureBoardsIssueConfig azureBoardsIssueConfig = (AzureBoardsIssueConfig) issueConfig;
         Integer workItemId = Integer.valueOf(workItemIdString);
-        addComment(azureBoardsIssueConfig.getOrganizationName(), azureBoardsIssueConfig.getProjectName(), workItemId, comment);
+        addComment(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemId, comment);
     }
 
     @Override
