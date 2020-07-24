@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.channel.issuetracker.config;
 import java.util.Optional;
 
 public class IssueConfig {
+    // TODO figure out if we need all of these fields for projects
     private String projectName;
     private String projectKey;
     private String projectId;
