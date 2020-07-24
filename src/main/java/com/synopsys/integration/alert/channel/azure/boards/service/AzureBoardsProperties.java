@@ -77,7 +77,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     }
 
     public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson) throws AlertException {
-        NetHttpTransport httpTransport = createTransport(proxy);
+        NetHttpTransport httpTransport = createHttpTransport(proxy);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
@@ -111,7 +111,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         );
     }
 
-    public NetHttpTransport createTransport(Proxy proxy) {
+    public NetHttpTransport createHttpTransport(Proxy proxy) {
         return new NetHttpTransport.Builder()
                    .setProxy(proxy)
                    .build();

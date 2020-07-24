@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.util.Stringable;
 
 public class JiraIssueSearchProperties extends Stringable implements Serializable, IssueSearchProperties {
-    private static final long serialVersionUID = -7384976347665315153L;
     private String provider;
     private String providerUrl;
     private String topicName;

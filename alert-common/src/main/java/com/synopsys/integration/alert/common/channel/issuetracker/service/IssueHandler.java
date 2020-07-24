@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,11 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.exception.IntegrationException;
 
+// TODO consider an additional generic for id type
 public abstract class IssueHandler<R> {
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
+    public static final String DESCRIPTION_TRUNCATED_TEXT = "... (Comments are disabled.  Description data will be lost. See project information for more data.)";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueContentLengthValidator contentLengthValidator;
 
@@ -119,7 +124,7 @@ public abstract class IssueHandler<R> {
 
     protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException;
 
-    protected abstract void addComment(String issueKey, String comment) throws IntegrationException;
+    protected abstract void addComment(IssueConfig issueConfig, String issueKey, String comment) throws IntegrationException;
 
     protected abstract String getIssueKey(R issueModel);
 
@@ -129,6 +134,11 @@ public abstract class IssueHandler<R> {
 
     protected abstract void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request);
 
+    protected final String truncateDescription(String description) {
+        String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
+        return StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
+    }
+
     protected Set<R> updateExistingIssues(List<R> issuesToUpdate, IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         Set<R> updatedIssues = new HashSet<>();
         for (R issue : issuesToUpdate) {
@@ -137,7 +147,7 @@ public abstract class IssueHandler<R> {
                 IssueContentModel contentModel = request.getRequestContent();
                 Collection<String> operationComments = contentModel.getAdditionalComments();
                 for (String operationComment : operationComments) {
-                    addComment(issueKey, operationComment);
+                    addComment(issueConfig, issueKey, operationComment);
                 }
 
                 updatedIssues.add(issue);

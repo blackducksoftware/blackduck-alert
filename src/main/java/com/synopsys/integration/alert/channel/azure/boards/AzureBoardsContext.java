@@ -31,4 +31,9 @@ public class AzureBoardsContext extends IssueTrackerContext {
         super(serviceConfig, issueConfig);
     }
 
+    @Override
+    public AzureBoardsProperties getIssueTrackerConfig() {
+        return (AzureBoardsProperties) super.getIssueTrackerConfig();
+    }
+
 }

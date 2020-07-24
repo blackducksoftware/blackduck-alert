@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.channel.jira.common.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,9 +51,6 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
-    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
-    public static final String DESCRIPTION_TRUNCATED_TEXT = "... (Comments are disabled.  Description data will be lost. See project information for more data.)";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
@@ -80,8 +76,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
 
         IssueContentModel issueContentModel = contentModel;
         if (!contentModel.getDescriptionComments().isEmpty() && !issueConfig.getCommentOnIssues()) {
-            String description = createDescriptionText(contentModel.getDescription());
-            issueContentModel = IssueContentModel.of(contentModel.getTitle(), description, Collections.emptyList());
+            String description = truncateDescription(contentModel.getDescription());
+            issueContentModel = IssueContentModel.of(contentModel.getTitle(), description, List.of());
         }
 
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(issueContentModel);
@@ -95,13 +91,13 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             String issueKey = issue.getKey();
             addIssueProperties(issueKey, issueProperties);
             if (issueConfig.getCommentOnIssues()) {
-                addComment(issueKey, "This issue was automatically created by Alert.");
+                addComment(issueConfig, issueKey, "This issue was automatically created by Alert.");
                 for (String additionalComment : issueContentModel.getDescriptionComments()) {
                     String comment = String.format("%s \n %s", DESCRIPTION_CONTINUED_TEXT, additionalComment);
-                    addComment(issueKey, comment);
+                    addComment(issueConfig, issueKey, comment);
                 }
             }
-            return Optional.ofNullable(issue);
+            return Optional.of(issue);
         } catch (IntegrationRestException e) {
             logger.error("Error creating issue", improveRestException(e, issueCreator));
         }
@@ -129,11 +125,6 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         fieldsBuilder.setDescription(contentModel.getDescription());
 
         return fieldsBuilder;
-    }
-
-    private String createDescriptionText(String description) {
-        String truncatedDescription = StringUtils.substring(description, 0, description.length() - DESCRIPTION_TRUNCATED_TEXT.length());
-        return StringUtils.join(truncatedDescription, DESCRIPTION_TRUNCATED_TEXT);
     }
 
     @Override

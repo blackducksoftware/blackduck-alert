@@ -43,18 +43,23 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
+    private final ProxyManager proxyManager;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
+    private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager,
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsMessageParser azureBoardsMessageParser) {
+    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, ProxyManager proxyManager,
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
         super(gson, auditUtility, channelKey, eventManager);
+        this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
+        this.azureBoardsRequestCreator = azureBoardsRequestCreator;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
@@ -68,13 +73,12 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
-        AzureBoardsRequestCreator requestCreator = new AzureBoardsRequestCreator(azureBoardsMessageParser, context.getIssueConfig());
-        return requestCreator.createRequests(event.getContent());
+        return azureBoardsRequestCreator.createRequests(context.getIssueConfig(), event.getContent());
     }
 
     @Override
     public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
-        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), context);
+        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), proxyManager, (AzureBoardsContext) context, azureBoardsMessageParser);
         return issueTrackerService.sendRequests(requests);
     }
 
@@ -87,7 +91,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
         String reopenStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
         return new IssueConfig(
             azureProjectName,
-            azureProjectName,
+            null,
             null,
             workItemCreatorEmail,
             workItemTypeName,
