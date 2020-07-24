@@ -28,10 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsServiceConfig;
+import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -45,18 +47,21 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
+    private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, AzureBoardsMessageParser azureBoardsMessageParser) {
+    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager,
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsMessageParser azureBoardsMessageParser) {
         super(gson, auditUtility, channelKey, eventManager);
+        this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        AzureBoardsServiceConfig serviceConfig = AzureBoardsServiceConfig.fromFieldAccessor(fieldAccessor);
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, fieldAccessor);
         IssueConfig issueConfig = createIssueConfig(fieldAccessor);
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
@@ -74,8 +79,22 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     }
 
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
-        // FIXME implement
-        return null;
+        String azureProjectName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
+        String workItemCreatorEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
+        String workItemTypeName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
+        boolean commentOnWorkItems = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
+        String completedStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
+        String reopenStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
+        return new IssueConfig(
+            azureProjectName,
+            azureProjectName,
+            null,
+            workItemCreatorEmail,
+            workItemTypeName,
+            commentOnWorkItems,
+            completedStateName,
+            reopenStateName
+        );
     }
 
 }

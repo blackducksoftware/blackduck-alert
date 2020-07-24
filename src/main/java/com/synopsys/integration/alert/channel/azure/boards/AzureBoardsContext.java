@@ -22,12 +22,12 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards;
 
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsServiceConfig;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 
 public class AzureBoardsContext extends IssueTrackerContext {
-    public AzureBoardsContext(AzureBoardsServiceConfig serviceConfig, IssueConfig issueConfig) {
+    public AzureBoardsContext(AzureBoardsProperties serviceConfig, IssueConfig issueConfig) {
         super(serviceConfig, issueConfig);
     }
 
