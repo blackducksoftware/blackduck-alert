@@ -38,8 +38,11 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 public class AzureProcessService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_FIELDS = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/fields");
+
     public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
     public static final String PATH_PROCESS_ID_REPLACEMENT = "{processId}";
+
+    public static final String WORKITEMTYPES_ENDPOINT_API_VERSION = "5.1-preview.2";
 
     private final AzureHttpService azureHttpService;
 
@@ -68,7 +71,7 @@ public class AzureProcessService {
     }
 
     private String appendApiVersionQueryParam(String requestSpec) {
-        return String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.2");
+        return String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, WORKITEMTYPES_ENDPOINT_API_VERSION);
     }
 
 }

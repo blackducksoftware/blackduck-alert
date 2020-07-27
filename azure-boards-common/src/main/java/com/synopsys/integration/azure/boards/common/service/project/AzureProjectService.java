@@ -46,6 +46,8 @@ public class AzureProjectService {
     public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
     public static final String PATH_PROJECT_ID_REPLACEMENT = "{projectId}";
 
+    public static final String PROPERTIES_ENDPOINT_API_VERSION = "5.1-preview.1";
+
     private final AzureHttpService azureHttpService;
 
     public AzureProjectService(AzureHttpService azureHttpService) {
@@ -74,7 +76,7 @@ public class AzureProjectService {
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement(PATH_PROJECT_ID_REPLACEMENT, projectId)
                                  .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.1-preview.1");
+        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, PROPERTIES_ENDPOINT_API_VERSION);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProjectPropertyResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
