@@ -281,7 +281,6 @@ class ProviderTable extends Component {
         const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
-        const providerActionMessage = actionMessage ? actionMessage : null;
         return (
             <div>
                 {descriptorHeader}
@@ -306,7 +305,7 @@ class ProviderTable extends Component {
                         saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
-                        actionMessage={providerActionMessage}
+                        actionMessage={actionMessage}
                         inProgress={inProgress}
                         fetching={fetching}
                     />
