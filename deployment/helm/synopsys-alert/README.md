@@ -174,6 +174,7 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `environs` | Environment variables for the Alert container | `[]` |
 | `exposeui` | If true, a Service to expose the UI will be created | `true` |
 | `exposedServiceType` | Type of exposed Service | `NodePort` |
+| `exposedNodePort` | The exposed NodePort | `` |
 | `imagePullSecrets` | Pull secrets to download images | `[]` |
 | `javaKeystoreSecretName` | (deprecated) The name of the secret for the Java certificate truststore | `""` |
 | `pvcSize` | Persistent Volume Claim claim size | `5G` |

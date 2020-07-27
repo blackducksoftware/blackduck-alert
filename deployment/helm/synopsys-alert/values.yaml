@@ -73,6 +73,8 @@ status: Running
 # Expose Alert's User Interface
 exposeui: true
 exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
+# custom port to expose the NodePort service on
+exposedNodePort: ""
 
 # environs is a map of *additional* environs to add to the Alert's ConfigMap
 # The follwing environs are already set in the ConfigMap
