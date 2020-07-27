@@ -38,6 +38,8 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 public class AzureProcessService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_FIELDS = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/fields");
+    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
+    public static final String PATH_PROCESS_ID_REPLACEMENT = "{processId}";
 
     private final AzureHttpService azureHttpService;
 
@@ -45,20 +47,20 @@ public class AzureProcessService {
         this.azureHttpService = azureHttpService;
     }
 
-    public AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> getWorkItemTypes(String organization, String processId) throws HttpServiceException {
+    public AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> getWorkItemTypes(String organizationName, String processId) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES
-                                 .defineReplacement("{organization}", organization)
-                                 .defineReplacement("{processId}", processId)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
                                  .populateSpec();
         requestSpec = appendApiVersionQueryParam(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProcessWorkItemTypesResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
-    public ProcessFieldResponseModel addFieldToWorkItemType(String organization, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
+    public ProcessFieldResponseModel addFieldToWorkItemType(String organizationName, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_FIELDS
-                                 .defineReplacement("{organization}", organization)
-                                 .defineReplacement("{processId}", processId)
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
                                  .defineReplacement("{witRefName}", workItemTypeRefName)
                                  .populateSpec();
         requestSpec = appendApiVersionQueryParam(requestSpec);
