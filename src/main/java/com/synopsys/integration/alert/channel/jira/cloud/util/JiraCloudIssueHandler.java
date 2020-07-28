@@ -68,10 +68,10 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException {
+    protected List<IssueResponseModel> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         return jiraIssuePropertyHandler
-                   .findIssues(projectSearchIdentifier, issueProperties)
+                   .findIssues(issueConfig.getProjectKey(), issueProperties)
                    .map(IssueSearchResponseModel::getIssues)
                    .orElse(Collections.emptyList());
     }

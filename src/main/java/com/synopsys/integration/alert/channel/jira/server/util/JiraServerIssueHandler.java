@@ -76,11 +76,11 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request)
+    protected List<IssueResponseModel> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         List<IssueSearchIssueComponent> searchIssueModels = jiraIssuePropertyHelper
-                                                                .findIssues(projectSearchIdentifier, issueProperties)
+                                                                .findIssues(issueConfig.getProjectKey(), issueProperties)
                                                                 .map(IssueSearchResponseModel::getIssues)
                                                                 .orElse(Collections.emptyList());
         List<IssueResponseModel> issues = new LinkedList<>();

@@ -33,6 +33,7 @@ import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemUse
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public final class WorkItemResponseFields {
+    public static final AzureFieldDefinition<String> System_Id = AzureFieldDefinition.stringField("System.Id");
     public static final AzureFieldDefinition<String> System_AreaPath = AzureFieldDefinition.stringField("System.AreaPath");
     public static final AzureFieldDefinition<String> System_TeamProject = AzureFieldDefinition.stringField("System.TeamProject");
     public static final AzureFieldDefinition<String> System_IterationPath = AzureFieldDefinition.stringField("System.IterationPath");

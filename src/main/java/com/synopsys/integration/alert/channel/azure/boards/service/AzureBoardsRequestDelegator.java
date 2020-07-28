@@ -42,6 +42,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -81,7 +82,8 @@ public class AzureBoardsRequestDelegator {
         }
 
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);
+        AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
 

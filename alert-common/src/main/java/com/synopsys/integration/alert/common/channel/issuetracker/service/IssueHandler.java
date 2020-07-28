@@ -81,7 +81,7 @@ public abstract class IssueHandler<R> {
         SetMap<String, IssueMissingTransitionException> missingTransitionToExceptions = SetMap.createDefault();
         try {
             if (contentLengthValidator.validateContentLength(request.getRequestContent())) {
-                List<R> existingIssues = retrieveExistingIssues(issueConfig.getProjectKey(), request);
+                List<R> existingIssues = retrieveExistingIssues(issueConfig, request);
                 logIssueAction(projectName, request);
                 if (!existingIssues.isEmpty()) {
                     Set<R> updatedIssues = updateExistingIssues(existingIssues, issueConfig, request);
@@ -120,7 +120,7 @@ public abstract class IssueHandler<R> {
 
     protected abstract Optional<R> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException;
 
-    protected abstract List<R> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException;
+    protected abstract List<R> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException;
 
     protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException;
 

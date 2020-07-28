@@ -23,7 +23,10 @@
 package com.synopsys.integration.azure.boards.common.service.workitem;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -32,8 +35,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemCommentResponseModel;
@@ -47,6 +52,7 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/comments?view=azure-devops-rest-5.1">Work Item Comments</a>
  */
 public class AzureWorkItemService {
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems?ids={ids}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workItemId}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/${type}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workItems/{workItemId}/comments");
@@ -59,6 +65,20 @@ public class AzureWorkItemService {
 
     public AzureWorkItemService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
+    }
+
+    public AzureArrayResponseModel<WorkItemResponseModel> getWorkItems(String organizationName, String projectIdOrName, Collection<Integer> workItemIds) throws HttpServiceException {
+        String joinedWorkItemIds = workItemIds
+                                       .stream()
+                                       .map(Number::toString)
+                                       .collect(Collectors.joining(","));
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, joinedWorkItemIds)
+                                 .populateSpec();
+        Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemResponseModel>>() {}.getType();
+        return azureHttpService.get(requestSpec, responseType);
     }
 
     public WorkItemResponseModel getWorkItem(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
