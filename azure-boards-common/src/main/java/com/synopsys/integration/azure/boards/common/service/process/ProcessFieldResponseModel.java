@@ -22,10 +22,12 @@
  */
 package com.synopsys.integration.azure.boards.common.service.process;
 
+import com.google.gson.JsonObject;
+
 public class ProcessFieldResponseModel {
     private Boolean allowGroups;
     private String customization;
-    private Object defaultValue;
+    private JsonObject defaultValue;
     private String description;
     private String name;
     private Boolean readOnly;
@@ -38,7 +40,7 @@ public class ProcessFieldResponseModel {
         // For serialization
     }
 
-    public ProcessFieldResponseModel(Boolean allowGroups, String customization, Object defaultValue, String description, String name, Boolean readOnly, String referenceName, Boolean required, String type, String url) {
+    public ProcessFieldResponseModel(Boolean allowGroups, String customization, JsonObject defaultValue, String description, String name, Boolean readOnly, String referenceName, Boolean required, String type, String url) {
         this.allowGroups = allowGroups;
         this.customization = customization;
         this.defaultValue = defaultValue;
@@ -59,8 +61,16 @@ public class ProcessFieldResponseModel {
         return customization;
     }
 
-    public Object getDefaultValue() {
+    public JsonObject getDefaultValue() {
         return defaultValue;
+    }
+
+    public boolean isDefaultValueAString() {
+        return defaultValue.isJsonPrimitive() && defaultValue.getAsJsonPrimitive().isString();
+    }
+
+    public String getDefaultValueAsString() {
+        return defaultValue.getAsJsonPrimitive().getAsString();
     }
 
     public String getDescription() {
