@@ -33,12 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.http.GenericUrl;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
@@ -79,19 +79,18 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         String azureOrganizationName = azureBoardsProperties.getOrganizationName();
         String azureProjectName = issueConfig.getProjectName();
 
-        IssueSearchProperties issueProperties = request.getIssueSearchProperties();
+        AzureBoardsSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel issueContentModel = request.getRequestContent();
         if (!issueContentModel.getDescriptionComments().isEmpty() && !issueConfig.getCommentOnIssues()) {
             String description = truncateDescription(issueContentModel.getDescription());
             issueContentModel = IssueContentModel.of(issueContentModel.getTitle(), description, List.of());
         }
 
-        WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel);
+        WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel, issueProperties);
         try {
             WorkItemResponseModel workItemResponseModel = azureWorkItemService.createWorkItem(azureOrganizationName, azureProjectName, issueConfig.getIssueType(), workItemRequest);
             Integer workItemId = workItemResponseModel.getId();
             logger.debug("Created new Azure Boards work item: {}", workItemId);
-            addWorkItemProperties(workItemId, issueProperties);
             if (issueConfig.getCommentOnIssues()) {
                 addComment(azureOrganizationName, azureProjectName, workItemId, "This issue was automatically created by Alert.");
                 for (String additionalComment : issueContentModel.getDescriptionComments()) {
@@ -151,7 +150,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         // FIXME implement or remove abstraction
     }
 
-    private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel) {
+    private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel, AzureBoardsSearchProperties issueSearchProperties) {
         List<WorkItemElementOperationModel> requestElementOps = new ArrayList<>();
 
         WorkItemElementOperationModel titleField = createAddFieldModel(WorkItemResponseFields.System_Title, issueContentModel.getTitle());
@@ -160,17 +159,24 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
 
-        // FIXME determine if we can support this
+        AzureFieldDefinition<String> alertTopLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldInstaller.ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME);
+        WorkItemElementOperationModel alertTopLevelKey = createAddFieldModel(alertTopLevelKeyFieldDefinition, issueSearchProperties.getTopLevelKey());
+        requestElementOps.add(alertTopLevelKey);
+
+        Optional<String> optionalComponentLevelKey = issueSearchProperties.getComponentLevelKey();
+        if (optionalComponentLevelKey.isPresent()) {
+            AzureFieldDefinition<String> alertComponentLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldInstaller.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME);
+            WorkItemElementOperationModel alertComponentLevelKeyField = createAddFieldModel(alertComponentLevelKeyFieldDefinition, optionalComponentLevelKey.get());
+            requestElementOps.add(alertComponentLevelKeyField);
+        }
+
+        // TODO determine if we can support this
         // if (StringUtils.isNotBlank(issueCreatorUniqueName)) {
         // WorkItemUserModel workItemUserModel = new WorkItemUserModel(null, null, issueConfig.getIssueCreator(), null, null, null, null, null);
         // WorkItemElementOperationModel createdByField = createAddFieldModel(WorkItemResponseFields.System_CreatedBy, workItemUserModel);
         // requestElementOps.add(createdByField);
         // }
         return new WorkItemRequest(requestElementOps);
-    }
-
-    private void addWorkItemProperties(Integer workItemId, IssueSearchProperties issueSearchProperties) {
-        // FIXME implement
     }
 
     private <T> WorkItemElementOperationModel createAddFieldModel(AzureFieldDefinition<T> field, T value) {

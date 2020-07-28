@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.channel.azure.boards.service;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
@@ -57,7 +59,9 @@ public class AzureBoardsRequestDelegator {
     }
 
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
+        IssueConfig azureIssueConfig = context.getIssueConfig();
         AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
+
         NetHttpTransport httpTransport = azureBoardsProperties.createHttpTransport(createJavaProxy());
         Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
         AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
@@ -66,10 +70,15 @@ public class AzureBoardsRequestDelegator {
 
         AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
         AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
-        AzureCustomFieldInstaller azureCustomFieldInstaller = new AzureCustomFieldInstaller(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService);
 
-        IssueConfig azureIssueConfig = context.getIssueConfig();
-        azureCustomFieldInstaller.installCustomField(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        AzureCustomFieldInstaller azureCustomFieldInstaller =
+            new AzureCustomFieldInstaller(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService, executorService);
+        try {
+            azureCustomFieldInstaller.installCustomFields(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+        } finally {
+            executorService.isShutdown();
+        }
 
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
         AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);

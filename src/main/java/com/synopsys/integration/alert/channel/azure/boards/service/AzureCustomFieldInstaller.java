@@ -24,9 +24,8 @@ package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -46,36 +45,50 @@ import com.synopsys.integration.azure.boards.common.service.project.ProjectWorkI
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 public class AzureCustomFieldInstaller {
-    public static final String ALERT_KEY_FIELD_NAME = "Alert Key";
-    public static final String ALERT_KEY_FIELD_REFERENCE_NAME = "Custom.AlertKey";
-    public static final String ALERT_KEY_FIELD_DESCRIPTION = "A tracking key for Alert";
+    public static final String ALERT_TOP_LEVEL_KEY_FIELD_NAME = "Alert Top Level Key";
+    public static final String ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertTopLevelKey";
+    public static final String ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION = "A top-level tracking key for Alert";
+
+    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME = "Alert Component Level Key";
+    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertComponentLevelKey";
+    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION = "A component-level tracking key for Alert";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String organizationName;
     private final AzureProjectService projectService;
     private final AzureProcessService processService;
+    private final ExecutorService executorService;
 
-    public AzureCustomFieldInstaller(String organizationName, AzureProjectService projectService, AzureProcessService processService) {
+    public AzureCustomFieldInstaller(String organizationName, AzureProjectService projectService, AzureProcessService processService, ExecutorService executorService) {
         this.organizationName = organizationName;
         this.projectService = projectService;
         this.processService = processService;
+        this.executorService = executorService;
     }
 
-    public ProcessFieldResponseModel installCustomField(String projectName, String workItemTypeName) throws AlertException {
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        Future<ProjectWorkItemFieldModel> projectFieldCreationResultHolder = executorService.submit(() -> createAlertCustomProjectField(projectName));
+    public void installCustomFields(String projectName, String workItemTypeName) throws AlertException {
+        Future<ProjectWorkItemFieldModel> topLevelKeyFieldCreationResultHolder =
+            executorService.submit(() -> createAlertCustomProjectField(projectName, ALERT_TOP_LEVEL_KEY_FIELD_NAME, ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION));
+        Future<ProjectWorkItemFieldModel> componentLevelKeyFieldCreationResultHolder =
+            executorService.submit(() -> createAlertCustomProjectField(projectName, ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION));
 
         TeamProjectReferenceResponseModel project = getProject(projectName);
         String processId = getProjectPropertyValue(project, ProjectPropertyResponseModel.COMMON_PROPERTIES_PROCESS_ID);
         String workItemTypeRefName = getWorkItemTypeRefName(processId, workItemTypeName);
 
-        ProjectWorkItemFieldModel alertProjectField = getFieldCreationResult(projectFieldCreationResultHolder);
-        return addAlertCustomFieldToProcess(processId, workItemTypeRefName, alertProjectField);
+        ProjectWorkItemFieldModel topLevelKeyField = extractFutureResult(topLevelKeyFieldCreationResultHolder);
+        Future<ProcessFieldResponseModel> processTopLevelFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, topLevelKeyField));
+
+        ProjectWorkItemFieldModel componentLevelKeyField = extractFutureResult(componentLevelKeyFieldCreationResultHolder);
+        Future<ProcessFieldResponseModel> processComponentLevelFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, componentLevelKeyField));
+
+        extractFutureResult(processTopLevelFieldKeyResultHolder);
+        extractFutureResult(processComponentLevelFieldKeyResultHolder);
     }
 
-    private ProjectWorkItemFieldModel createAlertCustomProjectField(String projectName) throws AlertException {
-        ProjectWorkItemFieldModel fieldRequestModel = ProjectWorkItemFieldModel.workItemStringField(ALERT_KEY_FIELD_NAME, ALERT_KEY_FIELD_REFERENCE_NAME, ALERT_KEY_FIELD_DESCRIPTION);
+    private ProjectWorkItemFieldModel createAlertCustomProjectField(String projectName, String fieldName, String fieldReferenceName, String fieldDescription) throws AlertException {
+        ProjectWorkItemFieldModel fieldRequestModel = ProjectWorkItemFieldModel.workItemStringField(fieldName, fieldReferenceName, fieldDescription);
         try {
             return projectService.createProjectField(organizationName, projectName, fieldRequestModel);
         } catch (IOException e) {
@@ -139,11 +152,11 @@ public class AzureCustomFieldInstaller {
         }
     }
 
-    private ProjectWorkItemFieldModel getFieldCreationResult(Future<ProjectWorkItemFieldModel> projectFieldCreationResult) throws AlertException {
+    private <T> T extractFutureResult(Future<T> projectFieldCreationResult) throws AlertException {
         try {
             return projectFieldCreationResult.get(10L, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            String interruptedMessage = "The thread creating the Azure project field was interrupted";
+            String interruptedMessage = "The thread handling Azure field creation was interrupted";
             logger.warn(interruptedMessage, e);
             Thread.currentThread().interrupt();
             throw new AlertException(interruptedMessage, e);
@@ -151,7 +164,7 @@ public class AzureCustomFieldInstaller {
             // This will already wrap an Alert exception
             throw new AlertException(e);
         } catch (TimeoutException e) {
-            throw new AlertException("The request to create the Azure project field timed out", e);
+            throw new AlertException("The request to create the Azure field timed out", e);
         }
     }
 
