@@ -18,7 +18,6 @@ const initialState = {
     fetching: false,
     deleteSuccess: false,
     data: [],
-    roleFetchError: '',
     roleError: null,
     error: HTTPErrorUtils.createEmptyErrorObject(),
     saveStatus: ''
@@ -51,7 +50,6 @@ const roles = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                roleFetchError: action.roleFetchError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
