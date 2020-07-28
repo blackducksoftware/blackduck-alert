@@ -30,7 +30,7 @@ function fetchedAllUsers(users) {
 function fetchingAllUsersError(message) {
     return {
         type: USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
-        userFetchError: message
+        message
     };
 }
 

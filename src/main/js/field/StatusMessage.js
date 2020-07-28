@@ -17,8 +17,7 @@ class StatusMessage extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.errorMessage !== prevProps.errorMessage && !this.state.showError) {
             this.setState({ showError: true });
-        }
-        if (this.props.actionMessage !== prevProps.actionMessage && !this.state.showMessage) {
+        } else if (this.props.actionMessage !== prevProps.actionMessage && !this.state.showMessage) {
             this.setState({ showMessage: true });
         }
     }
