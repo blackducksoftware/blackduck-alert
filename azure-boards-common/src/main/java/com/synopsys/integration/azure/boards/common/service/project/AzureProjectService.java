@@ -25,7 +25,6 @@ package com.synopsys.integration.azure.boards.common.service.project;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -81,12 +80,12 @@ public class AzureProjectService {
         return azureHttpService.get(requestSpec, responseType);
     }
 
-    public ProjectWorkItemFieldResponseModel createProjectField(String organizationName, String projectNameOrId, JsonObject requestModel) throws IOException, HttpServiceException {
+    public ProjectWorkItemFieldModel createProjectField(String organizationName, String projectNameOrId, ProjectWorkItemFieldModel requestModel) throws IOException, HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_FIELDS
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement("{project}", projectNameOrId)
                                  .populateSpec();
-        return azureHttpService.post(requestSpec, requestModel, ProjectWorkItemFieldResponseModel.class);
+        return azureHttpService.post(requestSpec, requestModel, ProjectWorkItemFieldModel.class);
     }
 
 }
