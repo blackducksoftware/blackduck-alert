@@ -118,7 +118,7 @@ public class FieldModelProcessor {
         return currentFieldModel;
     }
 
-    public Map<String, String> validateFieldModel(FieldModel fieldModel) {
+    public Map<String, String> validateFieldModel(FieldModel fieldModel) { //TODO return a validationResult with warnings & errors
         Map<String, String> fieldErrors = new HashMap<>();
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
