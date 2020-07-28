@@ -17,7 +17,9 @@ class StatusMessage extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.errorMessage !== prevProps.errorMessage && !this.state.showError) {
             this.setState({ showError: true });
-        } else if (this.props.actionMessage !== prevProps.actionMessage && !this.state.showMessage) {
+        }
+
+        if (this.props.actionMessage !== prevProps.actionMessage && !this.state.showMessage) {
             this.setState({ showMessage: true });
         }
     }
@@ -36,7 +38,7 @@ class StatusMessage extends Component {
                 <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose}
                        variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
 
-                {actionMessage && this.state.showMessage &&
+                {actionMessage && !errorMessage && this.state.showMessage &&
                 <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose}
                                   variant="success">{actionMessage}</Alert></FadeField>}
             </div>
