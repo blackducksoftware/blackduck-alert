@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerRequestCreator;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -38,7 +38,7 @@ public class AzureBoardsRequestCreator extends IssueTrackerRequestCreator {
     }
 
     @Override
-    protected IssueSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalInfo) {
+    protected AzureBoardsSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalInfo) {
         // FIXME implement
         return null;
     }

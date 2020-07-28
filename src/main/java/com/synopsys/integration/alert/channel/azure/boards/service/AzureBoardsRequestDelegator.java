@@ -31,12 +31,15 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
+import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -56,23 +59,31 @@ public class AzureBoardsRequestDelegator {
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
         AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
         NetHttpTransport httpTransport = azureBoardsProperties.createHttpTransport(createJavaProxy());
+        Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
+        AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
 
-        Credential oAuthCredential;
+        // TODO validate configuration
+
+        AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
+        AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
+        AzureCustomFieldInstaller azureCustomFieldInstaller = new AzureCustomFieldInstaller(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService);
+
+        IssueConfig azureIssueConfig = context.getIssueConfig();
+        azureCustomFieldInstaller.installCustomField(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+
+        AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);
+        return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
+    }
+
+    private Credential retrieveOAuthCredential(AzureBoardsProperties azureBoardsProperties, NetHttpTransport httpTransport) throws IntegrationException {
         try {
             AuthorizationCodeFlow oAuthFlow = azureBoardsProperties.createOAuthFlow(httpTransport);
-            oAuthCredential = azureBoardsProperties.getExistingOAuthCredential(oAuthFlow)
-                                  .orElseThrow(() -> new AlertException("No stored OAuth credential for Azure Boards exists"));
+            return azureBoardsProperties.getExistingOAuthCredential(oAuthFlow)
+                       .orElseThrow(() -> new AlertException("No stored OAuth credential for Azure Boards exists"));
         } catch (IOException e) {
             throw new IntegrationException("Cannot initialize OAuth for Azure Boards", e);
         }
-
-        AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
-        AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-
-        // TODO consider creating an Alert custom field if one does not exist for issue lookup
-
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);
-        return issueHandler.createOrUpdateIssues(context.getIssueConfig(), requests);
     }
 
     private Proxy createJavaProxy() {
