@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -72,7 +73,7 @@ public class RoleActions {
 
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         validateCreationRoleName(fieldErrors, roleName);
 
         if (!fieldErrors.isEmpty()) {
@@ -171,17 +172,17 @@ public class RoleActions {
         return new PermissionMatrixModel(permissionMatrix);
     }
 
-    private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
+    private void validateRequiredField(String fieldKey, Map<String, AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
-            fieldErrors.put(fieldKey, "This field is required.");
+            fieldErrors.put(fieldKey, AlertFieldStatus.error("This field is required."));
         }
     }
 
-    private void validateCreationRoleName(Map<String, String> fieldErrors, String roleName) {
+    private void validateCreationRoleName(Map<String, AlertFieldStatus> fieldErrors, String roleName) {
         validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
-            fieldErrors.put(FIELD_KEY_ROLE_NAME, "A user with that role name already exists.");
+            fieldErrors.put(FIELD_KEY_ROLE_NAME, AlertFieldStatus.error("A user with that role name already exists."));
         }
     }
 

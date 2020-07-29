@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -105,7 +106,7 @@ public class UserActions {
             String password = passwordMissing ? existingUser.getPassword() : userConfig.getPassword();
             String emailAddress = userConfig.getEmailAddress();
 
-            Map<String, String> fieldErrors = new HashMap<>();
+            Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
 
             validateUserExistsById(fieldErrors, userId, userName);
             if (!existingUser.isExternal()) {
@@ -166,7 +167,7 @@ public class UserActions {
         String password = userConfig.getPassword();
         String emailAddress = userConfig.getEmailAddress();
 
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         validateUserExistsByName(fieldErrors, userName);
         validatePasswordLength(fieldErrors, password);
         validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
@@ -175,29 +176,29 @@ public class UserActions {
         }
     }
 
-    private void validateRequiredField(String fieldKey, Map<String, String> fieldErrors, String fieldValue) {
+    private void validateRequiredField(String fieldKey, Map<String, AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
-            fieldErrors.put(fieldKey, "This field is required.");
+            fieldErrors.put(fieldKey, AlertFieldStatus.error("This field is required."));
         }
     }
 
-    private void validateUserExistsByName(Map<String, String> fieldErrors, String userName) {
+    private void validateUserExistsByName(Map<String, AlertFieldStatus> fieldErrors, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
-        userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
+        userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, AlertFieldStatus.error("A user with that username already exists.")));
     }
 
-    private void validateUserExistsById(Map<String, String> fieldErrors, Long userId, String userName) {
+    private void validateUserExistsById(Map<String, AlertFieldStatus> fieldErrors, Long userId, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         userModel.filter(user -> !user.getId().equals(userId))
-            .ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
+            .ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, AlertFieldStatus.error("A user with that username already exists.")));
     }
 
-    private void validatePasswordLength(Map<String, String> fieldErrors, String passwordValue) {
+    private void validatePasswordLength(Map<String, AlertFieldStatus> fieldErrors, String passwordValue) {
         validateRequiredField(FIELD_KEY_USER_MGMT_PASSWORD, fieldErrors, passwordValue);
         if (fieldErrors.isEmpty() && DEFAULT_PASSWORD_LENGTH > passwordValue.length()) {
-            fieldErrors.put(FIELD_KEY_USER_MGMT_PASSWORD, "The password need to be at least 8 characters long.");
+            fieldErrors.put(FIELD_KEY_USER_MGMT_PASSWORD, AlertFieldStatus.error("The password need to be at least 8 characters long."));
         }
     }
 
