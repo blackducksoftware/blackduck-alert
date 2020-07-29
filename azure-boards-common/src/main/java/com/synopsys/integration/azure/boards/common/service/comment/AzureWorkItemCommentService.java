@@ -34,8 +34,8 @@ import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemCommentResponseModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemMultiCommentResponseModel;
+import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemCommentResponseModel;
+import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemMultiCommentResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureWorkItemCommentService {
