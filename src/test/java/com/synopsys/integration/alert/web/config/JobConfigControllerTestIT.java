@@ -57,6 +57,7 @@ import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
 @Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
+    private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String url = JobConfigController.JOB_CONFIGURATION_PATH;
 
@@ -152,6 +153,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         }
         ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         String configId = String.valueOf(emptyConfigurationModel.getJobId());
@@ -174,6 +176,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
@@ -196,6 +199,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testValidateConfig() throws Exception {
         final String urlPath = url + "/validate";
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
@@ -214,7 +218,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String descriptorName = slackChannelKey.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
-        FieldValueModel providerConfig = new FieldValueModel(List.of("Default Black Duck Config"), true);
+        FieldValueModel providerConfig = new FieldValueModel(List.of(DEFAULT_BLACK_DUCK_CONFIG), true);
         FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
         FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         FieldValueModel name = new FieldValueModel(List.of("name"), true);

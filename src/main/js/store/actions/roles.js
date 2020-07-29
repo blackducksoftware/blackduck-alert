@@ -30,7 +30,7 @@ function fetchedAllRoles(roles) {
 function fetchingAllRolesError(message) {
     return {
         type: USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
-        roleFetchError: message
+        message
     };
 }
 
