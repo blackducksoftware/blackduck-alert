@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueCreatorTestAction {
@@ -90,9 +91,9 @@ public abstract class IssueCreatorTestAction {
         String toStatus = "Resolve";
         Optional<String> possibleSecondIssueKey = Optional.empty();
         try {
-            Map<String, String> transitionErrors = new HashMap<>();
+            Map<String, AlertFieldStatus> transitionErrors = new HashMap<>();
             Optional<String> resolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
-            resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
+            resolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), AlertFieldStatus.error(message)));
             IssueTrackerResponse finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
 
             Optional<String> optionalReopenTransitionName = issueTrackerContext.getIssueConfig().getOpenTransition().filter(StringUtils::isNotBlank);
@@ -100,7 +101,7 @@ public abstract class IssueCreatorTestAction {
                 fromStatus = toStatus;
                 toStatus = "Reopen";
                 Optional<String> reopenError = validateTransition(transitionHandler, initialIssueKey, optionalReopenTransitionName.get(), getTodoStatusFieldKey());
-                reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), message));
+                reopenError.ifPresent(message -> transitionErrors.put(getOpenTransitionFieldKey(), AlertFieldStatus.error(message)));
                 IssueTrackerResponse reopenResult = createAndSendMessage(issueTrackerContext, IssueOperation.OPEN, messageId);
                 possibleSecondIssueKey = reopenResult.getUpdatedIssues()
                                              .stream()
@@ -112,7 +113,7 @@ public abstract class IssueCreatorTestAction {
                     fromStatus = toStatus;
                     toStatus = "Resolve";
                     Optional<String> reResolveError = validateTransition(transitionHandler, initialIssueKey, resolveTransitionName, getDoneStatusFieldKey());
-                    reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), message));
+                    reResolveError.ifPresent(message -> transitionErrors.put(getResolveTransitionFieldKey(), AlertFieldStatus.error(message)));
                     finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
                 }
             }
