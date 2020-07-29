@@ -22,29 +22,27 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 
 public class AzureBoardsSearchProperties implements IssueSearchProperties {
-    private final String azureProjectName;
-    private final String azureWorkItemType;
-    private final String alertKey;
+    private final String topLevelKey;
+    private final String componentLevelKey;
 
-    public AzureBoardsSearchProperties(String azureProjectName, String azureWorkItemType, String alertKey) {
-        this.azureProjectName = azureProjectName;
-        this.azureWorkItemType = azureWorkItemType;
-        this.alertKey = alertKey;
+    public AzureBoardsSearchProperties(String topLevelKey, @Nullable String componentLevelKey) {
+        this.topLevelKey = topLevelKey;
+        this.componentLevelKey = componentLevelKey;
     }
 
-    public String getAzureProjectName() {
-        return azureProjectName;
+    public String getTopLevelKey() {
+        return topLevelKey;
     }
 
-    public String getAzureWorkItemType() {
-        return azureWorkItemType;
-    }
-
-    public String getAlertKey() {
-        return alertKey;
+    public Optional<String> getComponentLevelKey() {
+        return Optional.ofNullable(componentLevelKey);
     }
 
 }

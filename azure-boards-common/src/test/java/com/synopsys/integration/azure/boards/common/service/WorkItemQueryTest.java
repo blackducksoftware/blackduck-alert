@@ -56,7 +56,7 @@ public class WorkItemQueryTest {
                                           .and("Thing", WorkItemQueryWhereOperator.WAS_EVER, "not a thing")
                                           .beginGroup()
                                           .and("Something", WorkItemQueryWhereOperator.DOES_NOT_CONTAIN, "forbidden phrase")
-                                          .and("Something Else", WorkItemQueryWhereOperator.ANY_VALUE, null)
+                                          .and("Something Else", WorkItemQueryWhereOperator.NOT_EQUALS, null)
                                           .orderBy("Other Field")
                                           .build();
         assertEquals(expectedQueryString, workItemQuery.toString());

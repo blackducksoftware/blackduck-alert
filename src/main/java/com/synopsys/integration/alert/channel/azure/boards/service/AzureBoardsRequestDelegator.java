@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.channel.azure.boards.service;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
@@ -32,6 +34,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -40,6 +43,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -57,7 +61,9 @@ public class AzureBoardsRequestDelegator {
     }
 
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
+        IssueConfig azureIssueConfig = context.getIssueConfig();
         AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
+
         NetHttpTransport httpTransport = azureBoardsProperties.createHttpTransport(createJavaProxy());
         Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
         AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
@@ -66,13 +72,21 @@ public class AzureBoardsRequestDelegator {
 
         AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
         AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
-        AzureCustomFieldInstaller azureCustomFieldInstaller = new AzureCustomFieldInstaller(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService);
 
-        IssueConfig azureIssueConfig = context.getIssueConfig();
-        azureCustomFieldInstaller.installCustomField(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        AzureCustomFieldManager azureCustomFieldInstaller =
+            new AzureCustomFieldManager(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService, executorService);
+        try {
+            azureCustomFieldInstaller.installCustomFields(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+        } finally {
+            executorService.isShutdown();
+        }
 
+        IssueContentLengthValidator workItemContentLengthValidator =
+            new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService);
+        AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
 

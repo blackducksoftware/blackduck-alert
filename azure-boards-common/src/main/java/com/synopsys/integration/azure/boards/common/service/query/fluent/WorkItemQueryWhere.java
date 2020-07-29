@@ -131,7 +131,7 @@ public class WorkItemQueryWhere {
 
     private String formatCondition(WorkItemQueryWhereCondition condition) {
         String rhs;
-        if (WorkItemQueryWhereOperator.ANY_VALUE.equals(condition.getOperator())) {
+        if (WorkItemQueryWhereOperator.NOT_EQUALS.equals(condition.getOperator())) {
             rhs = "''";
         } else {
             rhs = formatRhs(condition.getRhs(), condition.getRhsType());

@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -33,18 +35,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.http.GenericUrl;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.synopsys.integration.azure.boards.common.service.query.WorkItemQueryResultResponseModel;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhere;
+import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemReferenceModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
@@ -57,21 +66,18 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final IssueContentLengthValidator CONTENT_LENGTH_VALIDATOR = new IssueContentLengthValidator(
-        AzureBoardsMessageParser.TITLE_SIZE_LIMIT,
-        AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT,
-        AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT
-    );
-
     private final AzureBoardsProperties azureBoardsProperties;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
     private final AzureWorkItemService azureWorkItemService;
+    private final AzureWorkItemQueryService azureWorkItemQueryService;
 
-    public AzureBoardsIssueHandler(AzureBoardsProperties azureBoardsProperties, AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService) {
-        super(CONTENT_LENGTH_VALIDATOR);
+    public AzureBoardsIssueHandler(IssueContentLengthValidator issueContentLengthValidator, AzureBoardsProperties azureBoardsProperties,
+        AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService, AzureWorkItemQueryService azureWorkItemQueryService) {
+        super(issueContentLengthValidator);
         this.azureBoardsProperties = azureBoardsProperties;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
         this.azureWorkItemService = azureWorkItemService;
+        this.azureWorkItemQueryService = azureWorkItemQueryService;
     }
 
     @Override
@@ -79,19 +85,18 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         String azureOrganizationName = azureBoardsProperties.getOrganizationName();
         String azureProjectName = issueConfig.getProjectName();
 
-        IssueSearchProperties issueProperties = request.getIssueSearchProperties();
+        AzureBoardsSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel issueContentModel = request.getRequestContent();
         if (!issueContentModel.getDescriptionComments().isEmpty() && !issueConfig.getCommentOnIssues()) {
             String description = truncateDescription(issueContentModel.getDescription());
             issueContentModel = IssueContentModel.of(issueContentModel.getTitle(), description, List.of());
         }
 
-        WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel);
+        WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel, issueProperties);
         try {
             WorkItemResponseModel workItemResponseModel = azureWorkItemService.createWorkItem(azureOrganizationName, azureProjectName, issueConfig.getIssueType(), workItemRequest);
             Integer workItemId = workItemResponseModel.getId();
             logger.debug("Created new Azure Boards work item: {}", workItemId);
-            addWorkItemProperties(workItemId, issueProperties);
             if (issueConfig.getCommentOnIssues()) {
                 addComment(azureOrganizationName, azureProjectName, workItemId, "This issue was automatically created by Alert.");
                 for (String additionalComment : issueContentModel.getDescriptionComments()) {
@@ -107,9 +112,27 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     }
 
     @Override
-    protected List<WorkItemResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request) throws IntegrationException {
-        // FIXME implement
-        return null;
+    protected List<WorkItemResponseModel> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
+        AzureBoardsSearchProperties searchProperties = request.getIssueSearchProperties();
+        String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
+        WorkItemQueryWhere queryBuilder = WorkItemQuery
+                                              .select(systemIdFieldName)
+                                              .fromWorkItems()
+                                              .whereGroup(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopLevelKey());
+        Optional<String> optionalComponentLevelKey = searchProperties.getComponentLevelKey();
+        if (optionalComponentLevelKey.isPresent()) {
+            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
+        }
+
+        WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
+        WorkItemQueryResultResponseModel workItemQueryResultResponseModel = azureWorkItemQueryService.queryForWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), query);
+
+        Set<Integer> workItemIds = workItemQueryResultResponseModel.getWorkItems()
+                                       .stream()
+                                       .map(WorkItemReferenceModel::getId)
+                                       .collect(Collectors.toSet());
+        AzureArrayResponseModel<WorkItemResponseModel> workItemArrayResponse = azureWorkItemService.getWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemIds);
+        return workItemArrayResponse.getValue();
     }
 
     @Override
@@ -148,10 +171,13 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
     @Override
     protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
-        // FIXME implement or remove abstraction
+        AzureBoardsSearchProperties issueProperties = request.getIssueSearchProperties();
+        String topLevelKey = issueProperties.getTopLevelKey();
+        String componentLevelKey = issueProperties.getComponentLevelKey().orElse("Absent");
+        logger.debug("Attempting the {} action in Azure Boards. Top Level Key: {}. Component Level Key: {}", request.getOperation().name(), topLevelKey, componentLevelKey);
     }
 
-    private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel) {
+    private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel, AzureBoardsSearchProperties issueSearchProperties) {
         List<WorkItemElementOperationModel> requestElementOps = new ArrayList<>();
 
         WorkItemElementOperationModel titleField = createAddFieldModel(WorkItemResponseFields.System_Title, issueContentModel.getTitle());
@@ -160,17 +186,24 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
 
-        // FIXME determine if we can support this
+        AzureFieldDefinition<String> alertTopLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME);
+        WorkItemElementOperationModel alertTopLevelKey = createAddFieldModel(alertTopLevelKeyFieldDefinition, issueSearchProperties.getTopLevelKey());
+        requestElementOps.add(alertTopLevelKey);
+
+        Optional<String> optionalComponentLevelKey = issueSearchProperties.getComponentLevelKey();
+        if (optionalComponentLevelKey.isPresent()) {
+            AzureFieldDefinition<String> alertComponentLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME);
+            WorkItemElementOperationModel alertComponentLevelKeyField = createAddFieldModel(alertComponentLevelKeyFieldDefinition, optionalComponentLevelKey.get());
+            requestElementOps.add(alertComponentLevelKeyField);
+        }
+
+        // TODO determine if we can support this
         // if (StringUtils.isNotBlank(issueCreatorUniqueName)) {
         // WorkItemUserModel workItemUserModel = new WorkItemUserModel(null, null, issueConfig.getIssueCreator(), null, null, null, null, null);
         // WorkItemElementOperationModel createdByField = createAddFieldModel(WorkItemResponseFields.System_CreatedBy, workItemUserModel);
         // requestElementOps.add(createdByField);
         // }
         return new WorkItemRequest(requestElementOps);
-    }
-
-    private void addWorkItemProperties(Integer workItemId, IssueSearchProperties issueSearchProperties) {
-        // FIXME implement
     }
 
     private <T> WorkItemElementOperationModel createAddFieldModel(AzureFieldDefinition<T> field, T value) {
