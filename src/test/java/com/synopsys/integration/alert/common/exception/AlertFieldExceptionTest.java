@@ -74,8 +74,8 @@ public class AlertFieldExceptionTest {
         final String key1 = "key1";
         final String key2 = "key2";
 
-        AlertFieldStatus value1 = new AlertFieldStatus(FieldErrorSeverity.WARNING, "value1");
-        AlertFieldStatus value2 = new AlertFieldStatus(FieldErrorSeverity.ERROR, "value2");
+        AlertFieldStatus value1 = AlertFieldStatus.warning("value1");
+        AlertFieldStatus value2 = AlertFieldStatus.error("value2");
 
         Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         fieldErrors.put(key1, value1);
