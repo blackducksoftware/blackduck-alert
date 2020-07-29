@@ -26,15 +26,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionHandler;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldsExtractor;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class AzureTransitionHandler implements TransitionHandler<WorkItemTypeStateResponseModel> {
@@ -43,16 +41,16 @@ public class AzureTransitionHandler implements TransitionHandler<WorkItemTypeSta
     public static final String WORK_ITEM_STATE_CATEGORY_RESOLVED = "Resolved";
     public static final String WORK_ITEM_STATE_CATEGORY_COMPLETED = "Completed";
 
+    private final Gson gson;
     private final AzureBoardsProperties azureBoardsProperties;
     private final AzureWorkItemService azureWorkItemService;
     private final AzureWorkItemTypeStateService azureWorkItemTypeStateService;
-    private final AzureFieldsExtractor azureFieldsExtractor;
 
     public AzureTransitionHandler(Gson gson, AzureBoardsProperties azureBoardsProperties, AzureWorkItemService azureWorkItemService, AzureWorkItemTypeStateService azureWorkItemTypeStateService) {
+        this.gson = gson;
         this.azureBoardsProperties = azureBoardsProperties;
         this.azureWorkItemService = azureWorkItemService;
         this.azureWorkItemTypeStateService = azureWorkItemTypeStateService;
-        this.azureFieldsExtractor = new AzureFieldsExtractor(gson);
     }
 
     @Override
@@ -66,9 +64,9 @@ public class AzureTransitionHandler implements TransitionHandler<WorkItemTypeSta
         Integer workItemId = Integer.parseInt(workItemIdString);
         WorkItemResponseModel workItem = azureWorkItemService.getWorkItem(organizationName, workItemId);
 
-        JsonObject workItemFields = workItem.getFields();
-        Optional<String> optionalWorkItemProject = azureFieldsExtractor.extractField(workItemFields, WorkItemResponseFields.System_TeamProject);
-        Optional<String> optionalWorkItemType = azureFieldsExtractor.extractField(workItemFields, WorkItemResponseFields.System_WorkItemType);
+        WorkItemFieldsWrapper fieldsWrapper = workItem.createFieldsWrapper(gson);
+        Optional<String> optionalWorkItemProject = fieldsWrapper.getTeamProject();
+        Optional<String> optionalWorkItemType = fieldsWrapper.getWorkItemType();
         if (optionalWorkItemProject.isPresent() && optionalWorkItemType.isPresent()) {
             AzureArrayResponseModel<WorkItemTypeStateResponseModel> workItemTypeStates = azureWorkItemTypeStateService.getStatesForProject(organizationName, optionalWorkItemProject.get(), optionalWorkItemType.get());
             return workItemTypeStates.getValue();
