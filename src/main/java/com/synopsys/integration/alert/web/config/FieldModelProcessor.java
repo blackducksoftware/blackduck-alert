@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -118,8 +119,8 @@ public class FieldModelProcessor {
         return currentFieldModel;
     }
 
-    public Map<String, String> validateFieldModel(FieldModel fieldModel) { //TODO return a validationResult with warnings & errors
-        Map<String, String> fieldErrors = new HashMap<>();
+    public Map<String, AlertFieldStatus> validateFieldModel(FieldModel fieldModel) { //TODO return a validationResult with warnings & errors
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);

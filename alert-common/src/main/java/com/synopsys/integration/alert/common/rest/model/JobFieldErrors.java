@@ -24,19 +24,21 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Map;
 
-public class JobFieldErrors extends Config {
-    private final Map<String, String> fieldErrors;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 
-    public JobFieldErrors(Map<String, String> fieldErrors) {
+public class JobFieldErrors extends Config {
+    private final Map<String, AlertFieldStatus> fieldErrors;
+
+    public JobFieldErrors(Map<String, AlertFieldStatus> fieldErrors) {
         this.fieldErrors = fieldErrors;
     }
 
-    public JobFieldErrors(String id, Map<String, String> fieldErrors) {
+    public JobFieldErrors(String id, Map<String, AlertFieldStatus> fieldErrors) {
         super(id);
         this.fieldErrors = fieldErrors;
     }
 
-    public Map<String, String> getFieldErrors() {
+    public Map<String, AlertFieldStatus> getFieldErrors() {
         return fieldErrors;
     }
 }
