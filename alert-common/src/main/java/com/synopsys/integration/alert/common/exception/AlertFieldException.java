@@ -77,7 +77,7 @@ public class AlertFieldException extends AlertException {
     }*/
 
     private AlertFieldStatus createAlertFieldError(String errorMessage) {
-        return new AlertFieldStatus(FieldErrorSeverity.ERROR, errorMessage);
+        return AlertFieldStatus.error(errorMessage);
     }
 
 }

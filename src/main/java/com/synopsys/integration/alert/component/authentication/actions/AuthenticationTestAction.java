@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -49,9 +50,9 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AuthenticationTestAction extends TestAction {
-    private Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
-    private LdapManager ldapManager;
-    private SAMLManager samlManager;
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
+    private final LdapManager ldapManager;
+    private final SAMLManager samlManager;
 
     @Autowired
     public AuthenticationTestAction(LdapManager ldapManager, SAMLManager samlManager) {
@@ -66,9 +67,9 @@ public class AuthenticationTestAction extends TestAction {
         boolean samlEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED);
         if (!ldapEnabled && !samlEnabled) {
             String errorMessage = "Enable LDAP or SAML authentication.";
-            Map<String, String> errorsMap = Map.of(
-                AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage,
-                AuthenticationDescriptor.KEY_SAML_ENABLED, errorMessage);
+            Map<String, AlertFieldStatus> errorsMap = Map.of(
+                AuthenticationDescriptor.KEY_LDAP_ENABLED, AlertFieldStatus.error(errorMessage),
+                AuthenticationDescriptor.KEY_SAML_ENABLED, AlertFieldStatus.error(errorMessage));
             throw new AlertFieldException(errorsMap);
         }
 
@@ -88,15 +89,15 @@ public class AuthenticationTestAction extends TestAction {
         String userName = fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_USERNAME).orElse("");
         Optional<LdapAuthenticationProvider> ldapProvider = ldapManager.createAuthProvider(registeredFieldValues);
         String errorMessage = String.format("Ldap Authentication test failed for the test user %s.  Please check the LDAP configuration.", userName);
-        Map<String, String> errorsMap = new HashMap<>();
+        Map<String, AlertFieldStatus> errorsMap = new HashMap<>();
         if (!ldapProvider.isPresent()) {
-            errorsMap.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage);
+            errorsMap.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, AlertFieldStatus.error(errorMessage));
         } else {
             Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(userName,
                 fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_PASSWORD).orElse(""));
             Authentication authentication = ldapProvider.get().authenticate(pendingAuthentication);
             if (!authentication.isAuthenticated()) {
-                errorsMap.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage);
+                errorsMap.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, AlertFieldStatus.error(errorMessage));
             }
             authentication.setAuthenticated(false);
         }
@@ -111,7 +112,7 @@ public class AuthenticationTestAction extends TestAction {
         Optional<ConfigurationFieldModel> metaDataFileField = registeredFieldValues.getField(AuthenticationDescriptor.KEY_SAML_METADATA_FILE);
         boolean testMetaDataURL = metaDataURLField.map(ConfigurationFieldModel::isSet).orElse(false);
         boolean testMetaDataFile = metaDataFileField.map(ConfigurationFieldModel::isSet).orElse(false);
-        Map<String, String> errorsMap = new HashMap<>();
+        Map<String, AlertFieldStatus> errorsMap = new HashMap<>();
         if (testMetaDataURL) {
             logger.info("Testing SAML Metadata URL...");
             try {
@@ -121,7 +122,7 @@ public class AuthenticationTestAction extends TestAction {
                 }
             } catch (Exception ex) {
                 logger.error("Testing SAML Metadata URL error: ", ex);
-                errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_URL, ex.getMessage());
+                errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_URL, AlertFieldStatus.error(ex.getMessage()));
             }
         }
 
@@ -134,7 +135,7 @@ public class AuthenticationTestAction extends TestAction {
                 }
             } catch (Exception ex) {
                 logger.error("Testing SAML Metadata File error: ", ex);
-                errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ex.getMessage());
+                errorsMap.put(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AlertFieldStatus.error(ex.getMessage()));
             }
         }
         samlManager.initializeConfiguration();
