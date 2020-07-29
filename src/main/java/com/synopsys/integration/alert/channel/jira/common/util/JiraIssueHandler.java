@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -167,7 +168,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         if (errors.has("reporter")) {
             throw new AlertFieldException(Map.of(
                 getIssueCreatorFieldKey(),
-                String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, errors.get("reporter"))
+                AlertFieldStatus.error(
+                    String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, errors.get("reporter")))
             ));
         } else {
             List<String> fieldErrors = errors.entrySet()
