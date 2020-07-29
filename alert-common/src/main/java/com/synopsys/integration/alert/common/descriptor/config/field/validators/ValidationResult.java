@@ -39,11 +39,11 @@ public class ValidationResult {
     }
 
     public static ValidationResult errors(Collection<String> errors) {
-        return new ValidationResult(errors);
+        return new ValidationResult(errors, List.of());
     }
 
     public static ValidationResult errors(String... errors) {
-        return new ValidationResult(Arrays.asList(errors));
+        return new ValidationResult(Arrays.asList(errors), List.of());
     }
 
     public static ValidationResult warnings(Collection<String> warnings) {
@@ -68,11 +68,6 @@ public class ValidationResult {
 
     private ValidationResult() {
         this.errors = List.of();
-        this.warnings = List.of();
-    }
-
-    private ValidationResult(Collection<String> errors) {
-        this.errors = errors;
         this.warnings = List.of();
     }
 
