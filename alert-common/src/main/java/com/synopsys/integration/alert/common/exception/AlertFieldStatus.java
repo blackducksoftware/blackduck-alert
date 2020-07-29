@@ -34,7 +34,7 @@ public class AlertFieldStatus {
         return new AlertFieldStatus(FieldErrorSeverity.WARNING, fieldErrorMessage);
     }
 
-    public AlertFieldStatus(FieldErrorSeverity severity, String fieldErrorMessage) {
+    private AlertFieldStatus(FieldErrorSeverity severity, String fieldErrorMessage) {
         this.severity = severity;
         this.fieldErrorMessage = fieldErrorMessage;
     }
