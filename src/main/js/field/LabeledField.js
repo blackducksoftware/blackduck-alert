@@ -51,6 +51,7 @@ class LabeledField extends Component {
             descriptionField = (<div className="descriptionPlaceHolder" />);
         }
 
+        //TODO: Update the rendering of the errors since it is now an object and not just a string.
         return (
             <div key={label} className="form-group">
                 <label id={`${id}-label`} className={labelClasses}>{label}</label>
