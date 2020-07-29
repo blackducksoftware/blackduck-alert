@@ -21,6 +21,6 @@ public class AlertFieldStatusTest {
     public void getFieldErrorMessage() {
         AlertFieldStatus alertFieldStatus = new AlertFieldStatus(FieldErrorSeverity.ERROR, FIELD_ERROR_MESSAGE);
 
-        assertEquals(FIELD_ERROR_MESSAGE, alertFieldStatus.getFieldErrorMessage());
+        assertEquals(FIELD_ERROR_MESSAGE, alertFieldStatus.getFieldMessage());
     }
 }

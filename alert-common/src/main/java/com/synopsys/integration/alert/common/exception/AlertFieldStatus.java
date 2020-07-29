@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.exception;
 
 public class AlertFieldStatus {
     private final FieldErrorSeverity severity;
-    private final String fieldErrorMessage;
+    private final String fieldMessage;
 
     public static AlertFieldStatus error(String fieldErrorMessage) {
         return new AlertFieldStatus(FieldErrorSeverity.ERROR, fieldErrorMessage);
@@ -34,17 +34,17 @@ public class AlertFieldStatus {
         return new AlertFieldStatus(FieldErrorSeverity.WARNING, fieldErrorMessage);
     }
 
-    public AlertFieldStatus(FieldErrorSeverity severity, String fieldErrorMessage) {
+    public AlertFieldStatus(FieldErrorSeverity severity, String fieldMessage) {
         this.severity = severity;
-        this.fieldErrorMessage = fieldErrorMessage;
+        this.fieldMessage = fieldMessage;
     }
 
     public FieldErrorSeverity getSeverity() {
         return severity;
     }
 
-    public String getFieldErrorMessage() {
-        return fieldErrorMessage;
+    public String getFieldMessage() {
+        return fieldMessage;
 
     }
 }
