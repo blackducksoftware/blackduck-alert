@@ -26,8 +26,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 
 public class ResponseBodyBuilder {
+    private static final String PROPERTY_KEY_ID = "id";
+    private static final String PROPERTY_KEY_MESSAGE = "message";
+    private static final String PROPERTY_KEY_SEVERITY = "severity";
+    private static final String PROPERTY_KEY_FIELD_MESSAGE = "fieldMessage";
+    private static final String PROPERTY_KEY_ERRORS = "errors";
+    
     private final JsonObject map;
 
     public ResponseBodyBuilder() {
@@ -37,9 +44,9 @@ public class ResponseBodyBuilder {
     public ResponseBodyBuilder(String id, String message) {
         this();
         if (!ResponseFactory.EMPTY_ID.equals(id)) {
-            map.addProperty("id", id);
+            map.addProperty(PROPERTY_KEY_ID, id);
         }
-        map.addProperty("message", message);
+        map.addProperty(PROPERTY_KEY_MESSAGE, message);
     }
 
     public ResponseBodyBuilder(String message) {
@@ -61,12 +68,16 @@ public class ResponseBodyBuilder {
         return this;
     }
 
-    public ResponseBodyBuilder putErrors(Map<String, String> errors) {
+    public ResponseBodyBuilder putErrors(Map<String, AlertFieldStatus> errors) {
         JsonObject element = new JsonObject();
-        for (Entry<String, String> entry : errors.entrySet()) {
-            element.addProperty(entry.getKey(), entry.getValue());
+        for (Entry<String, AlertFieldStatus> entry : errors.entrySet()) {
+            AlertFieldStatus alertFieldStatus = entry.getValue();
+            JsonObject statusObject = new JsonObject();
+            statusObject.addProperty(PROPERTY_KEY_SEVERITY, alertFieldStatus.getSeverity().name());
+            statusObject.addProperty(PROPERTY_KEY_FIELD_MESSAGE, alertFieldStatus.getFieldMessage());
+            element.add(entry.getKey(), statusObject);
         }
-        map.add("errors", element);
+        map.add(PROPERTY_KEY_ERRORS, element);
         return this;
     }
 
