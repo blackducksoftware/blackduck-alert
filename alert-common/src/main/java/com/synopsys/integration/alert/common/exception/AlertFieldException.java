@@ -71,6 +71,7 @@ public class AlertFieldException extends AlertException {
         return fieldErrorsMap;
     }
 
+    //TODO Remove convertToAlertFieldStatus in the future once AlertFieldException has been refactored
     private Map<String, AlertFieldStatus> convertToAlertFieldStatus(Map<String, String> fieldErrors) {
         Map<String, AlertFieldStatus> fieldErrorsMap = new HashMap<>();
         for (Map.Entry<String, String> entry : fieldErrors.entrySet()) {
