@@ -72,7 +72,7 @@ public class AzureWorkItemService {
                                        .stream()
                                        .map(Number::toString)
                                        .collect(Collectors.joining(","));
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
                                  .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, joinedWorkItemIds)

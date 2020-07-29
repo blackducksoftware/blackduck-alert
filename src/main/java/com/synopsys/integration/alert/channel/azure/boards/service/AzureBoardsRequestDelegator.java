@@ -34,6 +34,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -73,17 +74,19 @@ public class AzureBoardsRequestDelegator {
         AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        AzureCustomFieldInstaller azureCustomFieldInstaller =
-            new AzureCustomFieldInstaller(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService, executorService);
+        AzureCustomFieldManager azureCustomFieldInstaller =
+            new AzureCustomFieldManager(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService, executorService);
         try {
             azureCustomFieldInstaller.installCustomFields(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
         } finally {
             executorService.isShutdown();
         }
 
+        IssueContentLengthValidator workItemContentLengthValidator =
+            new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
         AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemQueryService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
 

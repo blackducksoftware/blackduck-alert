@@ -66,20 +66,14 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final IssueContentLengthValidator CONTENT_LENGTH_VALIDATOR = new IssueContentLengthValidator(
-        AzureBoardsMessageParser.TITLE_SIZE_LIMIT,
-        AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT,
-        AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT
-    );
-
     private final AzureBoardsProperties azureBoardsProperties;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
     private final AzureWorkItemService azureWorkItemService;
     private final AzureWorkItemQueryService azureWorkItemQueryService;
 
-    public AzureBoardsIssueHandler(AzureBoardsProperties azureBoardsProperties, AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService,
-        AzureWorkItemQueryService azureWorkItemQueryService) {
-        super(CONTENT_LENGTH_VALIDATOR);
+    public AzureBoardsIssueHandler(IssueContentLengthValidator issueContentLengthValidator, AzureBoardsProperties azureBoardsProperties,
+        AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService, AzureWorkItemQueryService azureWorkItemQueryService) {
+        super(issueContentLengthValidator);
         this.azureBoardsProperties = azureBoardsProperties;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
         this.azureWorkItemService = azureWorkItemService;
@@ -124,10 +118,10 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemQueryWhere queryBuilder = WorkItemQuery
                                               .select(systemIdFieldName)
                                               .fromWorkItems()
-                                              .whereGroup(AzureCustomFieldInstaller.ALERT_TOP_LEVEL_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopLevelKey());
+                                              .whereGroup(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopLevelKey());
         Optional<String> optionalComponentLevelKey = searchProperties.getComponentLevelKey();
         if (optionalComponentLevelKey.isPresent()) {
-            queryBuilder = queryBuilder.and(AzureCustomFieldInstaller.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
+            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
         }
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
@@ -192,13 +186,13 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
 
-        AzureFieldDefinition<String> alertTopLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldInstaller.ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME);
+        AzureFieldDefinition<String> alertTopLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME);
         WorkItemElementOperationModel alertTopLevelKey = createAddFieldModel(alertTopLevelKeyFieldDefinition, issueSearchProperties.getTopLevelKey());
         requestElementOps.add(alertTopLevelKey);
 
         Optional<String> optionalComponentLevelKey = issueSearchProperties.getComponentLevelKey();
         if (optionalComponentLevelKey.isPresent()) {
-            AzureFieldDefinition<String> alertComponentLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldInstaller.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME);
+            AzureFieldDefinition<String> alertComponentLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME);
             WorkItemElementOperationModel alertComponentLevelKeyField = createAddFieldModel(alertComponentLevelKeyFieldDefinition, optionalComponentLevelKey.get());
             requestElementOps.add(alertComponentLevelKeyField);
         }

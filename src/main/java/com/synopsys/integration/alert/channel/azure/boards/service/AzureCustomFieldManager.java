@@ -44,7 +44,7 @@ import com.synopsys.integration.azure.boards.common.service.project.ProjectPrope
 import com.synopsys.integration.azure.boards.common.service.project.ProjectWorkItemFieldModel;
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
-public class AzureCustomFieldInstaller {
+public class AzureCustomFieldManager {
     public static final String ALERT_TOP_LEVEL_KEY_FIELD_NAME = "Alert Top Level Key";
     public static final String ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertTopLevelKey";
     public static final String ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION = "A top-level tracking key for Alert";
@@ -60,7 +60,7 @@ public class AzureCustomFieldInstaller {
     private final AzureProcessService processService;
     private final ExecutorService executorService;
 
-    public AzureCustomFieldInstaller(String organizationName, AzureProjectService projectService, AzureProcessService processService, ExecutorService executorService) {
+    public AzureCustomFieldManager(String organizationName, AzureProjectService projectService, AzureProcessService processService, ExecutorService executorService) {
         this.organizationName = organizationName;
         this.projectService = projectService;
         this.processService = processService;
