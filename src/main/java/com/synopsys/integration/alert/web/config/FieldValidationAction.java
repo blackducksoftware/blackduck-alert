@@ -63,6 +63,9 @@ public class FieldValidationAction {
                 if (validationResult.hasErrors()) {
                     fieldErrors.put(key, validationResult.combineErrorMessages());
                 }
+                if (validationResult.hasWarnings()) {
+                    fieldErrors.put(key, validationResult.combineWarningMessages());
+                }
             }
         }
         logger.debug("Finished validating fields in configuration field model.");
