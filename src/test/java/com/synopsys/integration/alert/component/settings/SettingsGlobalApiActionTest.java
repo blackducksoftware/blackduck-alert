@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -104,7 +105,7 @@ public class SettingsGlobalApiActionTest {
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
@@ -117,7 +118,7 @@ public class SettingsGlobalApiActionTest {
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
@@ -130,22 +131,22 @@ public class SettingsGlobalApiActionTest {
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD).getFieldMessage());
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).getFieldMessage());
 
         fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldErrors.clear();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD).getFieldMessage());
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).getFieldMessage());
     }
 
     @Test
@@ -153,14 +154,14 @@ public class SettingsGlobalApiActionTest {
         FieldModel fieldModel = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of("    "), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("      "), false));
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(settingsUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PWD).getFieldMessage());
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).getFieldMessage());
     }
 
     private void assertFieldsMissing(FieldModel fieldModel) {

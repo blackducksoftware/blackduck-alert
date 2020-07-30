@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -59,13 +60,13 @@ public class EmailGlobalTestActionTest {
         uiConfig.setConfigFields();
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
 
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).getFieldMessage());
     }
 
     @Test
@@ -82,13 +83,13 @@ public class EmailGlobalTestActionTest {
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "notInt");
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()));
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).getFieldMessage());
     }
 
     @Test
@@ -105,16 +106,16 @@ public class EmailGlobalTestActionTest {
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "30");
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
 
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()));
-        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()));
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()).getFieldMessage());
+        assertEquals(NumberConfigField.NOT_AN_INTEGER_VALUE, fieldErrors.get(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()).getFieldMessage());
     }
 
     @Test
