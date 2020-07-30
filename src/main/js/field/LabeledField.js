@@ -21,7 +21,14 @@ class LabeledField extends Component {
 
         const baseClasses = `${labelClass} text-right`;
         const labelClasses = (required) ? `${baseClasses} required` : baseClasses;
-
+        let severity = 'ERROR';
+        let fieldMessage = '';
+        if (errorValue) {
+            severity = errorValue.severity;
+            fieldMessage = errorValue.fieldMessage;
+        }
+        const fieldErrorClass = severity === 'ERROR' ? 'fieldError' : 'fieldWarning';
+        const errorMessage = severity === 'WARNING' ? `Warning: ${fieldMessage}` : fieldMessage;
         let descriptionField = null;
         if (description) {
             descriptionField = (<div className="d-inline-flex">
@@ -51,7 +58,6 @@ class LabeledField extends Component {
             descriptionField = (<div className="descriptionPlaceHolder" />);
         }
 
-        //TODO: Update the rendering of the errors since it is now an object and not just a string.
         return (
             <div key={label} className="form-group">
                 <label id={`${id}-label`} className={labelClasses}>{label}</label>
@@ -59,7 +65,7 @@ class LabeledField extends Component {
                 {field}
                 {errorName && errorValue &&
                 <div className="offset-sm-3 col-sm-8">
-                    <p id={`${id}-fieldError`} className="fieldError" name={errorName}>{errorValue}</p>
+                    <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>
                 </div>
                 }
             </div>

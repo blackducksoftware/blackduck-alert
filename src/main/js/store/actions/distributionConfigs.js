@@ -92,7 +92,7 @@ function checkingDescriptorGlobalConfig() {
 
 function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
     const errors = {};
-    errors[errorFieldName] = '';
+    errors[errorFieldName] = {};
     return {
         type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS,
         errors
@@ -101,7 +101,10 @@ function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
 
 function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     const errors = {};
-    errors[errorFieldName] = response;
+    errors[errorFieldName] = {
+        severity: 'WARNING',
+        fieldMessage: response
+    };
     return {
         type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE,
         errors
