@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueH
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
+import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.query.WorkItemQueryResultResponseModel;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
@@ -69,14 +70,17 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     private final AzureBoardsProperties azureBoardsProperties;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
     private final AzureWorkItemService azureWorkItemService;
+    private final AzureWorkItemCommentService azureWorkItemCommentService;
     private final AzureWorkItemQueryService azureWorkItemQueryService;
 
     public AzureBoardsIssueHandler(IssueContentLengthValidator issueContentLengthValidator, AzureBoardsProperties azureBoardsProperties,
-        AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService, AzureWorkItemQueryService azureWorkItemQueryService) {
+        AzureBoardsMessageParser azureBoardsMessageParser, AzureWorkItemService azureWorkItemService, AzureWorkItemCommentService azureWorkItemCommentService,
+        AzureWorkItemQueryService azureWorkItemQueryService) {
         super(issueContentLengthValidator);
         this.azureBoardsProperties = azureBoardsProperties;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
         this.azureWorkItemService = azureWorkItemService;
+        this.azureWorkItemCommentService = azureWorkItemCommentService;
         this.azureWorkItemQueryService = azureWorkItemQueryService;
     }
 
@@ -211,7 +215,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     }
 
     private void addComment(String azureOrganizationName, String azureProjectName, Integer workItemId, String comment) throws IntegrationException {
-        azureWorkItemService.addComment(azureOrganizationName, azureProjectName, workItemId, comment);
+        azureWorkItemCommentService.addComment(azureOrganizationName, azureProjectName, workItemId, comment);
     }
 
 }

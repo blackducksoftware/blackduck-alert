@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
@@ -86,7 +87,8 @@ public class AzureBoardsRequestDelegator {
             new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
         AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
-        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemQueryService);
+        AzureWorkItemCommentService azureWorkItemCommentService = new AzureWorkItemCommentService(azureHttpService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemCommentService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
 
