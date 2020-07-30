@@ -28,12 +28,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerContentLengthException;
 
-public abstract class IssueContentLengthValidator {
-    protected abstract int getTitleLength();
+public class IssueContentLengthValidator {
+    private final int titleLength;
+    private final int descriptionLength;
+    private final int commentLength;
 
-    protected abstract int getDescriptionLength();
-
-    protected abstract int getCommentLength();
+    public IssueContentLengthValidator(int titleLength, int descriptionLength, int commentLength) {
+        this.titleLength = titleLength;
+        this.descriptionLength = descriptionLength;
+        this.commentLength = commentLength;
+    }
 
     public boolean validateContentLength(IssueContentModel issueContent) throws IssueTrackerContentLengthException {
         StringBuilder errors = new StringBuilder();
@@ -66,6 +70,18 @@ public abstract class IssueContentLengthValidator {
         }
 
         return true;
+    }
+
+    public int getTitleLength() {
+        return titleLength;
+    }
+
+    public int getDescriptionLength() {
+        return descriptionLength;
+    }
+
+    public int getCommentLength() {
+        return commentLength;
     }
 
 }

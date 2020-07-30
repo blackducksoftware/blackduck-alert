@@ -22,26 +22,90 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
+import java.io.IOException;
+import java.net.Proxy;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContext;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
+import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class AzureBoardsRequestDelegator {
     private final Gson gson;
-    private final IssueTrackerContext context;
+    private final ProxyManager proxyManager;
+    private final AzureBoardsContext context;
+    private final AzureBoardsMessageParser azureBoardsMessageParser;
 
-    public AzureBoardsRequestDelegator(Gson gson, IssueTrackerContext context) {
+    public AzureBoardsRequestDelegator(Gson gson, ProxyManager proxyManager, AzureBoardsContext context, AzureBoardsMessageParser azureBoardsMessageParser) {
         this.gson = gson;
+        this.proxyManager = proxyManager;
         this.context = context;
+        this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
-        // FIXME implement
-        return null;
+        IssueConfig azureIssueConfig = context.getIssueConfig();
+        AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
+
+        NetHttpTransport httpTransport = azureBoardsProperties.createHttpTransport(createJavaProxy());
+        Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
+        AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
+
+        // TODO validate configuration
+
+        AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
+        AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        AzureCustomFieldManager azureCustomFieldInstaller =
+            new AzureCustomFieldManager(azureBoardsProperties.getOrganizationName(), azureProjectService, azureProcessService, executorService);
+        try {
+            azureCustomFieldInstaller.installCustomFields(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
+        } finally {
+            executorService.isShutdown();
+        }
+
+        IssueContentLengthValidator workItemContentLengthValidator =
+            new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
+        AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
+        AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
+        AzureWorkItemCommentService azureWorkItemCommentService = new AzureWorkItemCommentService(azureHttpService);
+        AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemCommentService, azureWorkItemQueryService);
+        return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
+    }
+
+    private Credential retrieveOAuthCredential(AzureBoardsProperties azureBoardsProperties, NetHttpTransport httpTransport) throws IntegrationException {
+        try {
+            AuthorizationCodeFlow oAuthFlow = azureBoardsProperties.createOAuthFlow(httpTransport);
+            return azureBoardsProperties.getExistingOAuthCredential(oAuthFlow)
+                       .orElseThrow(() -> new AlertException("No stored OAuth credential for Azure Boards exists"));
+        } catch (IOException e) {
+            throw new IntegrationException("Cannot initialize OAuth for Azure Boards", e);
+        }
+    }
+
+    private Proxy createJavaProxy() {
+        return proxyManager.createProxyInfo()
+                   .getProxy()
+                   .orElse(Proxy.NO_PROXY);
     }
 
 }

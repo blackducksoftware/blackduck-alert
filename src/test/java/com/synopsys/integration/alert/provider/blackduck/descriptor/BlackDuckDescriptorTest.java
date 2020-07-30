@@ -22,7 +22,7 @@ public class BlackDuckDescriptorTest {
         Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.success());
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         BlackDuckContent blackDuckContent = new BlackDuckContent();
-        BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent);
+        BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent, configurationAccessor);
         blackDuckDistributionUIConfig.setConfigFields();
         BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig(blackDuckProviderKey, encryptionValidator, configurationAccessor);
         blackDuckProviderUIConfig.setConfigFields();

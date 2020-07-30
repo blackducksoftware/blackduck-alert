@@ -33,18 +33,17 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/wiql?view=azure-devops-rest-5.1">Documentation</a>
  */
 public class AzureWorkItemQueryService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL = new AzureSpecTemplate("/{organization}/{project}/{team}/_apis/wit/wiql");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/wiql");
     private final AzureHttpService azureHttpService;
 
     public AzureWorkItemQueryService(AzureHttpService azureHttpService) {
         this.azureHttpService = azureHttpService;
     }
 
-    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String teamIdOrName, WorkItemQuery query) throws HttpServiceException {
+    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, WorkItemQuery query) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL
                                  .defineReplacement("{organization}", organizationName)
                                  .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{team}", teamIdOrName)
                                  .populateSpec();
         requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.0");
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());

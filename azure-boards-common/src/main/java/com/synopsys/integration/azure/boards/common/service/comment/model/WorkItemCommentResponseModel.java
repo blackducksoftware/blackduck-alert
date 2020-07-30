@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.workitem.response;
+package com.synopsys.integration.azure.boards.common.service.comment.model;
 
 import java.util.List;
 import java.util.Map;

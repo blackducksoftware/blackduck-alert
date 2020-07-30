@@ -36,7 +36,7 @@ public class JiraIssuePropertiesUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
+    public static IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
         Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
         String category = componentItem != null ? componentItem.getCategory() : null;
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
@@ -48,7 +48,7 @@ public class JiraIssuePropertiesUtil {
             category, componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
 
-    public static final String formatProviderUrl(String originalUrl) {
+    public static String formatProviderUrl(String originalUrl) {
         String correctedUrl = "";
         if (StringUtils.isNotBlank(originalUrl)) {
             correctedUrl = originalUrl.trim();
@@ -58,4 +58,5 @@ public class JiraIssuePropertiesUtil {
         }
         return correctedUrl;
     }
+
 }

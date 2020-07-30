@@ -89,20 +89,20 @@ public class AzureHttpService {
         return postRequest.execute();
     }
 
-    public <T> T post(String urlEndpoint, Object requestBodyObject, Class<T> responseClass) throws HttpServiceException, IOException {
+    public <T> T post(String urlEndpoint, Object requestBodyObject, Type responseType) throws HttpServiceException, IOException {
         GenericUrl url = constructRequestUrl(urlEndpoint);
         HttpRequest postRequest = buildRequestWithDefaultHeaders(HttpMethods.POST, url, requestBodyObject);
-        return executeRequestAndParseResponse(postRequest, responseClass);
+        return executeRequestAndParseResponse(postRequest, responseType);
     }
 
-    public <T> T executeRequestAndParseResponse(HttpRequest httpRequest, Class<T> responseClass) throws HttpServiceException {
+    public <T> T executeRequestAndParseResponse(HttpRequest httpRequest, Type responseType) throws HttpServiceException {
         HttpResponse httpResponse = null;
         try {
             httpResponse = httpRequest.execute();
             if (!httpResponse.isSuccessStatusCode()) {
                 throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
             }
-            return parseResponse(httpResponse, responseClass);
+            return parseResponse(httpResponse, responseType);
         } catch (IOException e) {
             throw HttpServiceException.internalServerError(e);
         } finally {

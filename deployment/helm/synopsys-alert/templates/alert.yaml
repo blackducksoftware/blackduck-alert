@@ -219,6 +219,10 @@ spec:
       port: {{ .Values.alert.port }}
       protocol: TCP
       targetPort: {{ .Values.alert.port }}
+      {{ if and .Values.exposedNodePort (eq .Values.exposedServiceType "NodePort") }}
+      nodePort: {{ .Values.exposedNodePort }}
+      {{ end }}
+
   selector:
     app: alert
     component: alert
