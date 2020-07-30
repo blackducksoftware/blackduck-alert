@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
+
 public class ResponseBodyBuilderTest {
 
     @Test
@@ -42,11 +44,11 @@ public class ResponseBodyBuilderTest {
     public void testResponseBodyBuilderErrors() {
         ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
 
-        Map<String, String> errors = new HashMap<>();
-        errors.put("Field", "Terrible error");
+        Map<String, AlertFieldStatus> errors = new HashMap<>();
+        errors.put("Field", AlertFieldStatus.error("Terrible error"));
 
         responseBodyBuilder.putErrors(errors);
 
-        assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":\"Terrible error\"}}", responseBodyBuilder.build());
+        assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":{\"severity\":\"ERROR\",\"fieldMessage\":\"Terrible error\"}}}", responseBodyBuilder.build());
     }
 }

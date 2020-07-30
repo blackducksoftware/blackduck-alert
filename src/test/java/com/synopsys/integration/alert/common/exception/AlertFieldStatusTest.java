@@ -10,8 +10,8 @@ public class AlertFieldStatusTest {
 
     @Test
     public void getSeverityTest() {
-        AlertFieldStatus alertFieldStatusError = new AlertFieldStatus(FieldErrorSeverity.ERROR, FIELD_ERROR_MESSAGE);
-        AlertFieldStatus alertFieldStatusWarning = new AlertFieldStatus(FieldErrorSeverity.WARNING, FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatusError = AlertFieldStatus.error(FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatusWarning = AlertFieldStatus.warning(FIELD_ERROR_MESSAGE);
 
         assertEquals(FieldErrorSeverity.ERROR, alertFieldStatusError.getSeverity());
         assertEquals(FieldErrorSeverity.WARNING, alertFieldStatusWarning.getSeverity());
@@ -19,8 +19,8 @@ public class AlertFieldStatusTest {
 
     @Test
     public void getFieldErrorMessage() {
-        AlertFieldStatus alertFieldStatus = new AlertFieldStatus(FieldErrorSeverity.ERROR, FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatus = AlertFieldStatus.error(FIELD_ERROR_MESSAGE);
 
-        assertEquals(FIELD_ERROR_MESSAGE, alertFieldStatus.getFieldErrorMessage());
+        assertEquals(FIELD_ERROR_MESSAGE, alertFieldStatus.getFieldMessage());
     }
 }

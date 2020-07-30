@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -146,7 +147,7 @@ public class SystemActionsTest {
 
         Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(false);
 
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         systemActions.saveRequiredInformation(model, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }

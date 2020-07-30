@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -243,7 +244,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
         FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
@@ -253,7 +254,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     @Test
     public void testDistributionValidateWithFieldErrors() {
         FieldModel restModel = createInvalidDistributionFieldModel();
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
@@ -266,7 +267,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     @Test
     public void testGlobalValidate() {
         FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
@@ -281,7 +282,7 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public void testGlobalValidateWithFieldErrors() {
         // descriptor has a global configuration therefore continue testing
         FieldModel restModel = createInvalidGlobalFieldModel();
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);

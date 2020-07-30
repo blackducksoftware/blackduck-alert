@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -141,7 +142,7 @@ public class ConfigActions {
         return dbSavedModel.fill(afterUpdateAction);
     }
 
-    public String validateConfig(FieldModel fieldModel, Map<String, String> fieldErrors) throws AlertFieldException {
+    public String validateConfig(FieldModel fieldModel, Map<String, AlertFieldStatus> fieldErrors) throws AlertFieldException {
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

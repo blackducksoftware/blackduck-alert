@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
@@ -49,8 +50,8 @@ public class SystemActions {
 
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private FieldModelProcessor fieldModelProcessor;
-    private SettingsUtility settingsUtility;
+    private final FieldModelProcessor fieldModelProcessor;
+    private final SettingsUtility settingsUtility;
 
     @Autowired
     public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
@@ -97,7 +98,7 @@ public class SystemActions {
         return null;
     }
 
-    public FieldModel saveRequiredInformation(FieldModel settingsToSave, Map<String, String> fieldErrors) throws AlertException {
+    public FieldModel saveRequiredInformation(FieldModel settingsToSave, Map<String, AlertFieldStatus> fieldErrors) throws AlertException {
         FieldModel systemSettings = settingsToSave;
         fieldErrors.putAll(fieldModelProcessor.validateFieldModel(systemSettings));
         if (fieldErrors.isEmpty()) {

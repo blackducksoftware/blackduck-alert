@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -152,7 +153,7 @@ public class JobConfigActions {
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
         validateJobNameUnique(id, jobFieldModel);
-        
+
         ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
                                                 .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
         Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
@@ -212,7 +213,7 @@ public class JobConfigActions {
             }
         }
         if (StringUtils.isNotBlank(error)) {
-            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
+            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, AlertFieldStatus.error(error));
         }
     }
 
@@ -225,7 +226,7 @@ public class JobConfigActions {
     }
 
     public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
@@ -240,7 +241,7 @@ public class JobConfigActions {
         List<JobFieldErrors> errorsList = new LinkedList<>();
         List<JobFieldModel> jobFieldModels = getAllJobs();
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            Map<String, String> fieldErrors = new HashMap<>();
+            Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
                 fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
             }

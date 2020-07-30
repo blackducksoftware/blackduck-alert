@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.exception;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class AlertFieldException extends AlertException {
@@ -30,58 +29,55 @@ public class AlertFieldException extends AlertException {
 
     private final Map<String, AlertFieldStatus> fieldErrors;
 
-    public static AlertFieldException singleFieldError(String fieldKey, String fieldError) {
+    public static AlertFieldException singleFieldError(String fieldKey, AlertFieldStatus fieldError) {
         return new AlertFieldException(Map.of(fieldKey, fieldError));
     }
 
-    public static AlertFieldException singleFieldError(String message, String fieldKey, String fieldError) {
+    public static AlertFieldException singleFieldError(String message, String fieldKey, AlertFieldStatus fieldError) {
         return new AlertFieldException(message, Map.of(fieldKey, fieldError));
     }
 
-    public AlertFieldException(Map<String, String> fieldErrors) {
+    public AlertFieldException(Map<String, AlertFieldStatus> fieldErrors) {
         super();
-        this.fieldErrors = convertToAlertFieldStatus(fieldErrors);
+        this.fieldErrors = fieldErrors;
     }
 
-    public AlertFieldException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, Map<String, String> fieldErrors) {
+    public AlertFieldException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, Map<String, AlertFieldStatus> fieldErrors) {
         super(message, cause, enableSuppression, writableStackTrace);
-        this.fieldErrors = convertToAlertFieldStatus(fieldErrors);
+        this.fieldErrors = fieldErrors;
     }
 
-    public AlertFieldException(String message, Throwable cause, Map<String, String> fieldErrors) {
+    public AlertFieldException(String message, Throwable cause, Map<String, AlertFieldStatus> fieldErrors) {
         super(message, cause);
-        this.fieldErrors = convertToAlertFieldStatus(fieldErrors);
+        this.fieldErrors = fieldErrors;
     }
 
-    public AlertFieldException(String message, Map<String, String> fieldErrors) {
+    public AlertFieldException(String message, Map<String, AlertFieldStatus> fieldErrors) {
         super(message);
-        this.fieldErrors = convertToAlertFieldStatus(fieldErrors);
+        this.fieldErrors = fieldErrors;
     }
 
-    public AlertFieldException(Throwable cause, Map<String, String> fieldErrors) {
+    public AlertFieldException(Throwable cause, Map<String, AlertFieldStatus> fieldErrors) {
         super(cause);
-        this.fieldErrors = convertToAlertFieldStatus(fieldErrors);
+        this.fieldErrors = fieldErrors;
     }
 
-    public Map<String, String> getFieldErrors() {
-        Map<String, String> fieldErrorsMap = new HashMap<>();
-        for (Map.Entry<String, AlertFieldStatus> entry : fieldErrors.entrySet()) {
-            fieldErrorsMap.put(entry.getKey(), entry.getValue().getFieldErrorMessage());
-        }
-        return fieldErrorsMap;
+    public Map<String, AlertFieldStatus> getFieldErrors() {
+        return fieldErrors;
     }
 
     //TODO Remove convertToAlertFieldStatus in the future once AlertFieldException has been refactored
+    /*
     private Map<String, AlertFieldStatus> convertToAlertFieldStatus(Map<String, String> fieldErrors) {
         Map<String, AlertFieldStatus> fieldErrorsMap = new HashMap<>();
         for (Map.Entry<String, String> entry : fieldErrors.entrySet()) {
             fieldErrorsMap.put(entry.getKey(), createAlertFieldError(entry.getValue()));
         }
         return fieldErrorsMap;
-    }
+    }*/
 
     private AlertFieldStatus createAlertFieldError(String errorMessage) {
-        return new AlertFieldStatus(FieldErrorSeverity.ERROR, errorMessage);
+        return AlertFieldStatus.error(errorMessage);
     }
 
 }
