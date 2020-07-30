@@ -22,22 +22,25 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.message.ChannelMessageParser;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageParser;
 
 @Component
-public class AzureBoardsMessageParser extends ChannelMessageParser {
+public class AzureBoardsMessageParser extends IssueTrackerMessageParser {
+    public static final int TITLE_SIZE_LIMIT = 255;
+    public static final int MESSAGE_SIZE_LIMIT = 30000;
+
+    public AzureBoardsMessageParser() {
+        super(TITLE_SIZE_LIMIT, MESSAGE_SIZE_LIMIT);
+    }
+
     @Override
     protected String encodeString(String txt) {
-        try {
-            return URLEncoder.encode(txt, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return txt;
-        }
+        return URLEncoder.encode(txt, StandardCharsets.UTF_8);
     }
 
     @Override

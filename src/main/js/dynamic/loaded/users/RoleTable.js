@@ -292,7 +292,7 @@ RoleTable.propTypes = {
 const mapStateToProps = (state) => ({
     roles: state.roles.data,
     descriptors: state.descriptors.items,
-    roleError: state.roles.roleError,
+    roleError: state.roles.error.message,
     fieldErrors: state.roles.error.fieldErrors,
     inProgress: state.roles.inProgress,
     fetching: state.roles.fetching,

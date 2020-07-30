@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -75,11 +76,11 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected List<IssueResponseModel> retrieveExistingIssues(String projectSearchIdentifier, IssueTrackerRequest request)
+    protected List<IssueResponseModel> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request)
         throws IntegrationException {
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         List<IssueSearchIssueComponent> searchIssueModels = jiraIssuePropertyHelper
-                                                                .findIssues(projectSearchIdentifier, issueProperties)
+                                                                .findIssues(issueConfig.getProjectKey(), issueProperties)
                                                                 .map(IssueSearchResponseModel::getIssues)
                                                                 .orElse(Collections.emptyList());
         List<IssueResponseModel> issues = new LinkedList<>();
@@ -97,7 +98,7 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    protected void addComment(String issueKey, String comment) throws IntegrationException {
+    protected void addComment(IssueConfig issueConfig, String issueKey, String comment) throws IntegrationException {
         IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
         issueService.addComment(issueCommentRequestModel);
     }

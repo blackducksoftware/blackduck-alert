@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudRequestDelegator;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageContentConverter;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -59,7 +58,7 @@ public class JiraCloudChannel extends IssueTrackerChannel {
 
     @Override
     protected List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException {
-        return jiraContentConverter.convertMessageContents(context.getIssueConfig(), event.getContent());
+        return jiraContentConverter.createRequests(context.getIssueConfig(), event.getContent());
     }
 
     @Override
