@@ -24,7 +24,7 @@ package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
 public enum WorkItemQueryWhereOperator {
     EQ("="),
-    ANY_VALUE("<>"),
+    NOT_EQUALS("<>"),
     GT(">"),
     GT_EQ(">="),
     LT("<"),

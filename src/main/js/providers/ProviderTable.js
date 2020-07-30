@@ -281,7 +281,7 @@ class ProviderTable extends Component {
         const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
-        const providerActionMessage = actionMessage ? actionMessage : null;
+        const providerActionMessage = actionMessage ? actionMessage : errorMessage;
         return (
             <div>
                 {descriptorHeader}

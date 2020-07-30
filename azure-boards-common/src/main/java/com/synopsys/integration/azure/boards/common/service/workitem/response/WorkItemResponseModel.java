@@ -25,11 +25,13 @@ package com.synopsys.integration.azure.boards.common.service.workitem.response;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemRelationModel;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
+import com.synopsys.integration.azure.boards.common.util.AzureFieldsExtractor;
 
 public class WorkItemResponseModel {
     public static final List<AzureFieldDefinition> FIELD_DEFINITIONS = WorkItemResponseFields.list();
@@ -58,6 +60,11 @@ public class WorkItemResponseModel {
         return fields;
     }
 
+    public WorkItemFieldsWrapper createFieldsWrapper(Gson gson) {
+        AzureFieldsExtractor azureFieldsExtractor = new AzureFieldsExtractor(gson);
+        return new WorkItemFieldsWrapper(azureFieldsExtractor, fields);
+    }
+
     public List<WorkItemRelationModel> getRelations() {
         return relations;
     }
@@ -70,7 +77,7 @@ public class WorkItemResponseModel {
         return url;
     }
 
-    public Map<String, ReferenceLinkModel> get_links() {
+    public Map<String, ReferenceLinkModel> getLinks() {
         return _links;
     }
 

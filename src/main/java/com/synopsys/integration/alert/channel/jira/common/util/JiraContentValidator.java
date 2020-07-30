@@ -24,22 +24,13 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 
+// TODO remove this unnecessary abstraction
 public class JiraContentValidator extends IssueContentLengthValidator {
     public static final int CONTENT_LENGTH = 30000;
     public static final int TITLE_LENGTH = 255;
 
-    @Override
-    public int getTitleLength() {
-        return TITLE_LENGTH;
+    public JiraContentValidator() {
+        super(TITLE_LENGTH, CONTENT_LENGTH, CONTENT_LENGTH);
     }
 
-    @Override
-    public int getDescriptionLength() {
-        return CONTENT_LENGTH;
-    }
-
-    @Override
-    public int getCommentLength() {
-        return CONTENT_LENGTH;
-    }
 }

@@ -22,24 +22,93 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import java.util.List;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import javax.annotation.Nullable;
 
-public class AzureBoardsRequestCreator {
-    private final AzureBoardsMessageParser messageParser;
-    private final IssueConfig issueConfig;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
-    public AzureBoardsRequestCreator(AzureBoardsMessageParser messageParser, IssueConfig issueConfig) {
-        this.messageParser = messageParser;
-        this.issueConfig = issueConfig;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
+import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerRequestCreator;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+
+@Component
+public class AzureBoardsRequestCreator extends IssueTrackerRequestCreator {
+    public AzureBoardsRequestCreator(AzureBoardsMessageParser messageParser) {
+        super(messageParser);
     }
 
-    public List<IssueTrackerRequest> createRequests(MessageContentGroup messageContentGroup) {
-        // FIXME implement
-        return null;
+    @Override
+    protected AzureBoardsSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalInfo) {
+        String topLevelKey = createTopLevelKey(providerName, providerUrl, topic, subTopic);
+        String componentLevelKey = createComponentLevelKey(componentItem, additionalInfo);
+        return new AzureBoardsSearchProperties(topLevelKey, componentLevelKey);
+    }
+
+    private String createTopLevelKey(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic) {
+        StringBuilder topLevelKeyBuilder = new StringBuilder();
+
+        topLevelKeyBuilder.append("Provider=(");
+        topLevelKeyBuilder.append(providerName);
+        topLevelKeyBuilder.append(", ");
+        topLevelKeyBuilder.append(providerUrl);
+        topLevelKeyBuilder.append(')');
+
+        topLevelKeyBuilder.append("Topic=(");
+        appendLinkableItem(topLevelKeyBuilder, topic);
+        topLevelKeyBuilder.append(')');
+
+        if (null != subTopic) {
+            topLevelKeyBuilder.append("SubTopic=(");
+            appendLinkableItem(topLevelKeyBuilder, subTopic);
+            topLevelKeyBuilder.append(')');
+        }
+
+        return topLevelKeyBuilder.toString();
+    }
+
+    private String createComponentLevelKey(@Nullable ComponentItem componentItem, String additionalInfo) {
+        if (null == componentItem) {
+            return null;
+        }
+
+        StringBuilder componentLevelKeyBuilder = new StringBuilder();
+
+        componentLevelKeyBuilder.append("Category=(");
+        componentLevelKeyBuilder.append(componentItem.getCategory());
+        componentLevelKeyBuilder.append(')');
+
+        componentLevelKeyBuilder.append("Component=(");
+        appendLinkableItem(componentLevelKeyBuilder, componentItem.getComponent());
+        componentLevelKeyBuilder.append(')');
+
+        Optional<LinkableItem> subComponent = componentItem.getSubComponent();
+        if (subComponent.isPresent()) {
+            componentLevelKeyBuilder.append("SubComponent=(");
+            appendLinkableItem(componentLevelKeyBuilder, subComponent.get());
+            componentLevelKeyBuilder.append(')');
+        }
+
+        if (StringUtils.isNotBlank(additionalInfo)) {
+            componentLevelKeyBuilder.append("AdditionalInfo=(");
+            componentLevelKeyBuilder.append(additionalInfo);
+            componentLevelKeyBuilder.append(')');
+        }
+
+        return componentLevelKeyBuilder.toString();
+    }
+
+    private void appendLinkableItem(StringBuilder stringBuilder, LinkableItem linkableItem) {
+        stringBuilder.append(linkableItem.getName());
+        stringBuilder.append(", ");
+        stringBuilder.append(linkableItem.getValue());
+        linkableItem.getUrl()
+            .ifPresent(url -> {
+                stringBuilder.append(", ");
+                stringBuilder.append(url);
+            });
     }
 
 }

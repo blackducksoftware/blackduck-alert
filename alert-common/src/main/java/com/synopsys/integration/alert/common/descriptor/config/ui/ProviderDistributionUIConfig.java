@@ -44,6 +44,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -69,16 +72,19 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_PROCESSING = "Select the way messages will be processed: ";
 
     private final ProviderContent providerContent;
+    private final ConfigurationAccessor configurationAccessor;
 
-    public ProviderDistributionUIConfig(String label, String urlName, ProviderContent providerContent) {
+    public ProviderDistributionUIConfig(String label, String urlName, ProviderContent providerContent, ConfigurationAccessor configurationAccessor) {
         super(label, label + " provider distribution setup.", urlName);
         this.providerContent = providerContent;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     public List<ConfigField> createFields() {
         ConfigField providerConfigNameField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
                                                   .applyClearable(false)
+                                                  .applyValidationFunctions(this::validateConfigExists)
                                                   .applyRequired(true);
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
@@ -140,6 +146,23 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         }
 
         return formatDescription.toString();
+    }
+
+    private ValidationResult validateConfigExists(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        Optional<String> providerConfigName = fieldToValidate.getValue();
+        Optional<ConfigurationModel> configModel = providerConfigName.flatMap(this::readConfiguration);
+        if (!configModel.isPresent()) {
+            return ValidationResult.errors("Provider configuration missing.");
+        }
+        return ValidationResult.success();
+    }
+
+    private Optional<ConfigurationModel> readConfiguration(String configName) {
+        try {
+            return configurationAccessor.getProviderConfigurationByName(configName);
+        } catch (AlertDatabaseConstraintException ex) {
+            return Optional.empty();
+        }
     }
 
     private ValidationResult validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {

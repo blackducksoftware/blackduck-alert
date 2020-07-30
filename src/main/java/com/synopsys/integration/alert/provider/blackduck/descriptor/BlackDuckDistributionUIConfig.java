@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
@@ -46,8 +47,8 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
     private static final String PANEL_NOTIFICATION_FILTERING = "Black Duck Notification Filtering";
 
     @Autowired
-    public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent) {
-        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, blackDuckContent);
+    public BlackDuckDistributionUIConfig(BlackDuckContent blackDuckContent, ConfigurationAccessor configurationAccessor) {
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, blackDuckContent, configurationAccessor);
     }
 
     @Override
