@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -40,11 +41,11 @@ public class AuthenticationApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
-        HashMap<String, String> fieldErrors = new HashMap<>();
+        HashMap<String, AlertFieldStatus> fieldErrors = new HashMap<>();
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(AuthenticationDescriptor.KEY_LDAP_SERVER));
+        assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(AuthenticationDescriptor.KEY_LDAP_SERVER).getFieldMessage());
     }
 }
