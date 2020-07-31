@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -57,6 +59,7 @@ import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
 import org.springframework.security.saml.SAMLProcessingFilter;
 import org.springframework.security.saml.key.EmptyKeyManager;
+import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
@@ -87,9 +90,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
@@ -119,11 +124,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final AuthenticationEventManager authenticationEventManager;
+    private final CertificateUtility certificateUtility;
 
     @Autowired
     AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, AuthorizationUtility authorizationUtility,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator,
-        ConfigurationAccessor configurationAccessor, AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
+        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager, CertificateUtility certificateUtility) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
@@ -133,6 +139,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.configurationAccessor = configurationAccessor;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.authenticationEventManager = authenticationEventManager;
+        this.certificateUtility = certificateUtility;
     }
 
     @Override
@@ -358,7 +365,14 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public KeyManager keyManager() {
-        return new EmptyKeyManager();
+        KeyManager keyManager;
+        try {
+            FileSystemResource storeFile = new FileSystemResource(certificateUtility.getAndValidateTrustStoreFile());
+            keyManager = new JKSKeyManager(storeFile, alertProperties.getTrustStorePass().orElse(null), Map.of(), null);
+        } catch (AlertConfigurationException ex) {
+            keyManager = new EmptyKeyManager();
+        }
+        return keyManager;
     }
 
     @Bean
