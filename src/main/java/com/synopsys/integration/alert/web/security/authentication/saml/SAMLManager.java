@@ -114,6 +114,7 @@ public class SAMLManager {
                                                .flatMap(Optional::stream)
                                                .collect(Collectors.toList());
         metadataManager.setProviders(providers);
+        metadataManager.setHostedSPName(entityId);
         metadataManager.afterPropertiesSet();
     }
 
@@ -144,7 +145,7 @@ public class SAMLManager {
 
     private ExtendedMetadataDelegate createDelegate(MetadataProvider provider) {
         ExtendedMetadataDelegate delegate = new ExtendedMetadataDelegate(provider, extendedMetadata);
-        delegate.setMetadataTrustCheck(true);
+        delegate.setMetadataTrustCheck(false);
         delegate.setMetadataRequireSignature(false);
         return delegate;
     }
