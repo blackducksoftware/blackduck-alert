@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 public class ResponseBodyBuilder {
     private static final String PROPERTY_KEY_ID = "id";
@@ -34,7 +34,7 @@ public class ResponseBodyBuilder {
     private static final String PROPERTY_KEY_SEVERITY = "severity";
     private static final String PROPERTY_KEY_FIELD_MESSAGE = "fieldMessage";
     private static final String PROPERTY_KEY_ERRORS = "errors";
-    
+
     private final JsonObject map;
 
     public ResponseBodyBuilder() {

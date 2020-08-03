@@ -34,10 +34,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
@@ -49,9 +49,9 @@ import com.synopsys.integration.util.IntegrationEscapeUtil;
 public class CertificateActions {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
-    private CertificateUtility certificateUtility;
-    private CustomCertificateAccessor certificateAccessor;
-    private IntegrationEscapeUtil escapeUtil;
+    private final CertificateUtility certificateUtility;
+    private final CustomCertificateAccessor certificateAccessor;
+    private final IntegrationEscapeUtil escapeUtil;
 
     @Autowired
     public CertificateActions(CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {

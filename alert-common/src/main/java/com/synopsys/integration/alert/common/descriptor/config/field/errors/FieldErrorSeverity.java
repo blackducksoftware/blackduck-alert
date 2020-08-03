@@ -20,25 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
-import java.util.Map;
-
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-
-public class JobFieldErrors extends Config {
-    private final Map<String, AlertFieldStatus> fieldErrors;
-
-    public JobFieldErrors(Map<String, AlertFieldStatus> fieldErrors) {
-        this.fieldErrors = fieldErrors;
-    }
-
-    public JobFieldErrors(String id, Map<String, AlertFieldStatus> fieldErrors) {
-        super(id);
-        this.fieldErrors = fieldErrors;
-    }
-
-    public Map<String, AlertFieldStatus> getFieldErrors() {
-        return fieldErrors;
-    }
+public enum FieldErrorSeverity {
+    WARNING,
+    ERROR
 }

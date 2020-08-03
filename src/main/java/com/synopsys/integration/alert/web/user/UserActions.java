@@ -36,9 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -56,11 +56,11 @@ public class UserActions {
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
-    private UserAccessor userAccessor;
-    private AuthorizationUtility authorizationUtility;
-    private AuthorizationManager authorizationManager;
-    private AuthenticationTypeAccessor authenticationTypeAccessor;
-    private UserSystemValidator userSystemValidator;
+    private final UserAccessor userAccessor;
+    private final AuthorizationUtility authorizationUtility;
+    private final AuthorizationManager authorizationManager;
+    private final AuthenticationTypeAccessor authenticationTypeAccessor;
+    private final UserSystemValidator userSystemValidator;
 
     @Autowired
     public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor,

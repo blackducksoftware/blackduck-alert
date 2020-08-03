@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.exception;
 
 import java.util.Map;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+
 public class AlertFieldException extends AlertException {
     private static final long serialVersionUID = 7993564907680483145L;
 

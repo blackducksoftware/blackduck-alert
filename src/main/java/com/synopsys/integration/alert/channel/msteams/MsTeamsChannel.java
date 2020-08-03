@@ -35,18 +35,18 @@ import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
-    private RestChannelUtility restChannelUtility;
-    private MsTeamsEventParser msTeamsEventParser;
-    private MsTeamsMessageParser msTeamsMessageParser;
+    private final RestChannelUtility restChannelUtility;
+    private final MsTeamsEventParser msTeamsEventParser;
+    private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
     public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,

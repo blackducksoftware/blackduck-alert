@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldErrorSeverity;
+
 public class AlertFieldStatusTest {
 
     private final String FIELD_ERROR_MESSAGE = "Test Field Error Message";
