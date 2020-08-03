@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -102,18 +103,29 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
     }
 
     private List<NotificationFilterModel> retrieveBlackDuckPolicyOptions(FieldModel fieldModel) throws IntegrationException {
-        Optional<BlackDuckProperties> blackDuckProperties = createProviderFieldAccessor(fieldModel);
-        Optional<BlackDuckHttpClient> blackDuckHttpClient = blackDuckProperties.flatMap(this::createHttpClient);
-        if (blackDuckProperties.isPresent() && blackDuckHttpClient.isPresent()) {
-            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.get().createBlackDuckServicesFactory(blackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-            PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
-            return policyRuleService.getAllPolicyRules()
+        Optional<PolicyRuleService> optionalPolicyRuleService = createPolicyRuleService(fieldModel);
+        if (optionalPolicyRuleService.isPresent()) {
+            return optionalPolicyRuleService.get()
+                       .getAllPolicyRules()
                        .stream()
-                       .map(policyRuleView -> new NotificationFilterModel(policyRuleView.getName()))
+                       .filter(PolicyRuleView::getEnabled)
+                       .map(PolicyRuleView::getName)
+                       .map(NotificationFilterModel::new)
                        .collect(Collectors.toList());
         }
-
         return List.of();
+    }
+
+    private Optional<PolicyRuleService> createPolicyRuleService(FieldModel fieldModel) throws IntegrationException {
+        Optional<BlackDuckProperties> optionalBlackDuckProperties = createBlackDuckProperties(fieldModel);
+        if (optionalBlackDuckProperties.isPresent()) {
+            Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+            BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
+            return createHttpClient(blackDuckProperties)
+                       .map(client -> blackDuckProperties.createBlackDuckServicesFactory(client, intLogger))
+                       .map(BlackDuckServicesFactory::createPolicyRuleService);
+        }
+        return Optional.empty();
     }
 
     private Optional<BlackDuckHttpClient> createHttpClient(BlackDuckProperties blackDuckProperties) {
@@ -125,7 +137,7 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
         }
     }
 
-    private Optional<BlackDuckProperties> createProviderFieldAccessor(FieldModel fieldModel) throws IntegrationException {
+    private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
         FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
         Optional<ConfigurationModel> configurationModel = configurationAccessor.getProviderConfigurationByName(fieldAccessor.getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME));
         Optional<FieldAccessor> providerFieldAccessor = configurationModel
@@ -136,7 +148,6 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
             ConfigurationModel configModel = configurationModel.get();
             return Optional.of(blackDuckPropertiesFactory.createProperties(configModel.getConfigurationId(), providerFieldAccessor.get()));
         }
-
         return Optional.empty();
     }
 
