@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-public class ValidationResultTest { //TODO add new tests
+public class ValidationResultTest {
     private final String ERROR_MESSAGE_1 = "Error Message 1";
     private final String ERROR_MESSAGE_2 = "Error Message 2";
     private final String WARNING_MESSAGE_1 = "Warning Message 1";
