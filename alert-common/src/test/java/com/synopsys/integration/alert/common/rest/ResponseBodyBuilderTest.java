@@ -13,8 +13,8 @@ package com.synopsys.integration.alert.common.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +44,8 @@ public class ResponseBodyBuilderTest {
     public void testResponseBodyBuilderErrors() {
         ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
 
-        Map<String, AlertFieldStatus> errors = new HashMap<>();
-        errors.put("Field", AlertFieldStatus.error("Terrible error"));
+        List<AlertFieldStatus> errors = new ArrayList<>();
+        errors.add(AlertFieldStatus.error("Field", "Terrible error"));
 
         responseBodyBuilder.putErrors(errors);
 

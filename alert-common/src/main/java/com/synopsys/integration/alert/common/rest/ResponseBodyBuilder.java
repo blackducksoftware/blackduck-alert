@@ -22,8 +22,7 @@
  */
 package com.synopsys.integration.alert.common.rest;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -68,14 +67,13 @@ public class ResponseBodyBuilder {
         return this;
     }
 
-    public ResponseBodyBuilder putErrors(Map<String, AlertFieldStatus> errors) {
+    public ResponseBodyBuilder putErrors(List<AlertFieldStatus> errors) {
         JsonObject element = new JsonObject();
-        for (Entry<String, AlertFieldStatus> entry : errors.entrySet()) {
-            AlertFieldStatus alertFieldStatus = entry.getValue();
+        for (AlertFieldStatus alertFieldStatus : errors) {
             JsonObject statusObject = new JsonObject();
             statusObject.addProperty(PROPERTY_KEY_SEVERITY, alertFieldStatus.getSeverity().name());
             statusObject.addProperty(PROPERTY_KEY_FIELD_MESSAGE, alertFieldStatus.getFieldMessage());
-            element.add(entry.getKey(), statusObject);
+            element.add(alertFieldStatus.getFieldName(), statusObject);
         }
         map.add(PROPERTY_KEY_ERRORS, element);
         return this;

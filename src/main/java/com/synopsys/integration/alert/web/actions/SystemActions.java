@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.web.actions;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +97,9 @@ public class SystemActions {
         return null;
     }
 
-    public FieldModel saveRequiredInformation(FieldModel settingsToSave, Map<String, AlertFieldStatus> fieldErrors) throws AlertException {
+    public FieldModel saveRequiredInformation(FieldModel settingsToSave, List<AlertFieldStatus> fieldErrors) throws AlertException {
         FieldModel systemSettings = settingsToSave;
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(systemSettings));
+        fieldErrors.addAll(fieldModelProcessor.validateFieldModel(systemSettings));
         if (fieldErrors.isEmpty()) {
             if (settingsUtility.doesConfigurationExist()) {
                 systemSettings = settingsUtility.updateSettings(Long.valueOf(settingsToSave.getId()), settingsToSave);

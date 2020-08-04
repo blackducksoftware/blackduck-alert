@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -119,8 +120,8 @@ public class FieldModelProcessor {
         return currentFieldModel;
     }
 
-    public Map<String, AlertFieldStatus> validateFieldModel(FieldModel fieldModel) { //TODO return a validationResult with warnings & errors
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+    public List<AlertFieldStatus> validateFieldModel(FieldModel fieldModel) {
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);

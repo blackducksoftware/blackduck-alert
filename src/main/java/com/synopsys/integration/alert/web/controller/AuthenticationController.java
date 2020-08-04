@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -113,7 +113,7 @@ public class AuthenticationController extends BaseController {
             passwordResetService.resetPassword(username);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Password reset email sent");
         } catch (AlertDatabaseConstraintException databaseException) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", Map.of("username", AlertFieldStatus.error(databaseException.getMessage())));
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", List.of(AlertFieldStatus.error("username", databaseException.getMessage())));
         } catch (AlertException e) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + e.getMessage());
         }

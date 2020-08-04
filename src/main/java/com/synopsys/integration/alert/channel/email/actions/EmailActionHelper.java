@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -124,7 +123,7 @@ public class EmailActionHelper {
             if (!filterByProject) {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }
-            throw AlertFieldException.singleFieldError(errorField, AlertFieldStatus.error(errorMessage));
+            throw AlertFieldException.singleFieldError(errorField, errorMessage);
         }
         return emailAddresses;
     }

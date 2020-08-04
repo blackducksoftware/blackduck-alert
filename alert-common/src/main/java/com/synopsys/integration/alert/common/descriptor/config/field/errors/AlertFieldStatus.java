@@ -23,20 +23,26 @@
 package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
 public class AlertFieldStatus {
+    private final String fieldName;
     private final FieldErrorSeverity severity;
     private final String fieldMessage;
 
-    public static AlertFieldStatus error(String fieldErrorMessage) {
-        return new AlertFieldStatus(FieldErrorSeverity.ERROR, fieldErrorMessage);
+    public static AlertFieldStatus error(String fieldName, String fieldErrorMessage) {
+        return new AlertFieldStatus(fieldName, FieldErrorSeverity.ERROR, fieldErrorMessage);
     }
 
-    public static AlertFieldStatus warning(String fieldErrorMessage) {
-        return new AlertFieldStatus(FieldErrorSeverity.WARNING, fieldErrorMessage);
+    public static AlertFieldStatus warning(String fieldName, String fieldErrorMessage) {
+        return new AlertFieldStatus(fieldName, FieldErrorSeverity.WARNING, fieldErrorMessage);
     }
 
-    private AlertFieldStatus(FieldErrorSeverity severity, String fieldMessage) {
+    private AlertFieldStatus(String fieldName, FieldErrorSeverity severity, String fieldMessage) {
+        this.fieldName = fieldName;
         this.severity = severity;
         this.fieldMessage = fieldMessage;
+    }
+
+    public String getFieldName() {
+        return fieldName;
     }
 
     public FieldErrorSeverity getSeverity() {
@@ -45,6 +51,5 @@ public class AlertFieldStatus {
 
     public String getFieldMessage() {
         return fieldMessage;
-
     }
 }

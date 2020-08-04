@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.web.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,7 +106,7 @@ public class UserActions {
             String password = passwordMissing ? existingUser.getPassword() : userConfig.getPassword();
             String emailAddress = userConfig.getEmailAddress();
 
-            Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
             validateUserExistsById(fieldErrors, userId, userName);
             if (!existingUser.isExternal()) {
@@ -167,7 +167,7 @@ public class UserActions {
         String password = userConfig.getPassword();
         String emailAddress = userConfig.getEmailAddress();
 
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         validateUserExistsByName(fieldErrors, userName);
         validatePasswordLength(fieldErrors, password);
         validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
@@ -176,29 +176,29 @@ public class UserActions {
         }
     }
 
-    private void validateRequiredField(String fieldKey, Map<String, AlertFieldStatus> fieldErrors, String fieldValue) {
+    private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
-            fieldErrors.put(fieldKey, AlertFieldStatus.error("This field is required."));
+            fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
         }
     }
 
-    private void validateUserExistsByName(Map<String, AlertFieldStatus> fieldErrors, String userName) {
+    private void validateUserExistsByName(List<AlertFieldStatus> fieldErrors, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
-        userModel.ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, AlertFieldStatus.error("A user with that username already exists.")));
+        userModel.ifPresent(user -> fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists.")));
     }
 
-    private void validateUserExistsById(Map<String, AlertFieldStatus> fieldErrors, Long userId, String userName) {
+    private void validateUserExistsById(List<AlertFieldStatus> fieldErrors, Long userId, String userName) {
         validateRequiredField(FIELD_KEY_USER_MGMT_USERNAME, fieldErrors, userName);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         userModel.filter(user -> !user.getId().equals(userId))
-            .ifPresent(user -> fieldErrors.put(FIELD_KEY_USER_MGMT_USERNAME, AlertFieldStatus.error("A user with that username already exists.")));
+            .ifPresent(user -> fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists.")));
     }
 
-    private void validatePasswordLength(Map<String, AlertFieldStatus> fieldErrors, String passwordValue) {
+    private void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {
         validateRequiredField(FIELD_KEY_USER_MGMT_PASSWORD, fieldErrors, passwordValue);
         if (fieldErrors.isEmpty() && DEFAULT_PASSWORD_LENGTH > passwordValue.length()) {
-            fieldErrors.put(FIELD_KEY_USER_MGMT_PASSWORD, AlertFieldStatus.error("The password need to be at least 8 characters long."));
+            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password need to be at least 8 characters long."));
         }
     }
 

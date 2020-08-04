@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +15,9 @@ public class JobFieldErrorsTest {
         String fieldErrorKey = "key";
         String fieldErrorValue = "value";
 
-        Map<String, AlertFieldStatus> fieldError = new HashMap<>();
-        fieldError.put(fieldErrorKey, AlertFieldStatus.error(fieldErrorValue));
-        Map<String, AlertFieldStatus> testResult = new JobFieldErrors(fieldError).getFieldErrors();
+        List<AlertFieldStatus> fieldError = new ArrayList<>();
+        fieldError.add(AlertFieldStatus.error(fieldErrorKey, fieldErrorValue));
+        List<AlertFieldStatus> testResult = new JobFieldErrors(fieldError).getFieldErrors();
 
         assertEquals(fieldError, testResult);
     }
@@ -29,10 +29,10 @@ public class JobFieldErrorsTest {
         String configId = "testID";
         String newConfigId = "newTestID";
 
-        Map<String, AlertFieldStatus> fieldError = new HashMap<>();
-        fieldError.put(fieldErrorKey, AlertFieldStatus.error(fieldErrorValue));
+        List<AlertFieldStatus> fieldError = new ArrayList<>();
+        fieldError.add(AlertFieldStatus.error(fieldErrorKey, fieldErrorValue));
         JobFieldErrors jobFieldError = new JobFieldErrors(configId, fieldError);
-        Map<String, AlertFieldStatus> testResult = jobFieldError.getFieldErrors();
+        List<AlertFieldStatus> testResult = jobFieldError.getFieldErrors();
 
         assertEquals(testResult, fieldError);
         assertEquals(configId, jobFieldError.getId());

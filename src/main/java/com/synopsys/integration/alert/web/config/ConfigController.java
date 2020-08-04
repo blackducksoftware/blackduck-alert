@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +66,7 @@ public class ConfigController extends BaseController {
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
-    private PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public ConfigController(ConfigActions configActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager,
@@ -199,7 +199,7 @@ public class ConfigController extends BaseController {
         }
         String id = restModel.getId();
         try {
-            String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
+            String responseMessage = configActions.validateConfig(restModel, new ArrayList<>());
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());

@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -91,7 +90,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
             Exception errorException = connectionResult.getException().orElse(null);
             if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
                 throw AlertFieldException
-                          .singleFieldError(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, AlertFieldStatus.error("This API Key isn't valid, try a different one."));
+                          .singleFieldError(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
             } else if (connectionResult.getHttpStatusCode() > 0) {
                 throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, failureMessage, errorException);
             }
@@ -100,7 +99,7 @@ public class BlackDuckGlobalTestAction extends TestAction {
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-            throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, AlertFieldStatus.error("User permission failed, cannot read notifications from Black Duck."));
+            throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed, cannot read notifications from Black Duck.");
         }
         return new MessageResult("Successfully connected to BlackDuck server.");
     }
