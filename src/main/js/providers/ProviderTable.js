@@ -307,6 +307,7 @@ class ProviderTable extends Component {
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
                         actionMessage={providerActionMessage}
+                        ignoredActionMessages={['Delete successful']}
                         inProgress={inProgress}
                         fetching={fetching}
                     />
