@@ -245,7 +245,7 @@ class Index extends Component {
         const { jobsValidationResults } = this.props;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
             const jobErrors = jobsValidationResults.filter(item => item.id === row.id);
-            if (jobErrors) {
+            if (jobErrors && jobErrors.length > 0) {
                 return (
                     <span className="missingData" title={cell}>
                         <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" title={cell} />
