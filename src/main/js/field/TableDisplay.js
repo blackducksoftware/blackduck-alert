@@ -250,9 +250,10 @@ class TableDisplay extends Component {
         const { currentRowSelected, isInsertModal } = this.state;
         const {
             id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
-            actionMessage, hasFieldErrors
+            actionMessage, hasFieldErrors, ignoredActionMessages
         } = this.props;
-        const popupActionMessage = (hasFieldErrors && errorDialogMessage) || actionMessage;
+        //TODO have a better way of displaying action messages for the dialog versus the table. The ignoredActionMessages is to fix an issue with the provider table in a generic way.
+        const popupActionMessage = (hasFieldErrors && errorDialogMessage) || (!ignoredActionMessages.includes(actionMessage) && actionMessage);
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
         const popupAssignmentFunction = (functionToTest, defaultFunction) => {
             if (tablePopupRef && functionToTest) {
@@ -546,7 +547,8 @@ TableDisplay.propTypes = {
     nestedInAnotherModal: PropTypes.bool,
     enableEdit: PropTypes.bool,
     enableCopy: PropTypes.bool,
-    testButtonLabel: PropTypes.string
+    testButtonLabel: PropTypes.string,
+    ignoredActionMessages: PropTypes.arrayOf(PropTypes.string)
 };
 
 TableDisplay.defaultProps = {
@@ -580,7 +582,8 @@ TableDisplay.defaultProps = {
     nestedInAnotherModal: false,
     enableEdit: true,
     enableCopy: true,
-    testButtonLabel: 'Test Configuration'
+    testButtonLabel: 'Test Configuration',
+    ignoredActionMessages: []
 };
 
 const mapStateToProps = (state) => ({
