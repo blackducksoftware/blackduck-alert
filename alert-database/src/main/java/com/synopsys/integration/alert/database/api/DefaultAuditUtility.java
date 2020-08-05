@@ -137,9 +137,11 @@ public class DefaultAuditUtility implements AuditUtility {
         for (Long notificationId : allMessageNotificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, null, null, null);
 
+            boolean didAuditEntryExist = false;
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
-                if (null != auditEntryId) {
+                didAuditEntryExist = null != auditEntryId;
+                if (didAuditEntryExist) {
                     auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
                 }
             }
@@ -148,8 +150,10 @@ public class DefaultAuditUtility implements AuditUtility {
             AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
-            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-            auditNotificationRepository.save(auditNotificationRelation);
+            if (!didAuditEntryExist) {
+                AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                auditNotificationRepository.save(auditNotificationRelation);
+            }
         }
         return notificationIdToAuditId;
     }
