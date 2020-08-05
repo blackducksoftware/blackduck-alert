@@ -140,7 +140,8 @@ public class DefaultAuditUtility implements AuditUtility {
             boolean didAuditEntryExist = false;
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
-                if (didAuditEntryExist = null != auditEntryId) {
+                didAuditEntryExist = null != auditEntryId;
+                if (didAuditEntryExist) {
                     auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
                 }
             }
