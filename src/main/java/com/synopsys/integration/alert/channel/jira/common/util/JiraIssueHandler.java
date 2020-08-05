@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -157,9 +156,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     private List<String> extractSpecificErrorsFromErrorsObject(JsonObject errors, String issueCreatorEmail) throws AlertFieldException {
         List<String> responseErrors = new ArrayList<>();
         if (errors.has("reporter")) {
-            throw new AlertFieldException(Map.of(
-                getIssueCreatorFieldKey(),
-                AlertFieldStatus.error(
+            throw new AlertFieldException(List.of(
+                AlertFieldStatus.error(getIssueCreatorFieldKey(),
                     String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, errors.get("reporter")))
             ));
         } else {
