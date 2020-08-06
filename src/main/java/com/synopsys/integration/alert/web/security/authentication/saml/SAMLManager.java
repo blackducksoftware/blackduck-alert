@@ -147,6 +147,8 @@ public class SAMLManager {
         return Optional.of(createDelegate(provider));
     }
 
+    // This needs to be created in order for Azure AD SAML configuration to work. The entity id in the metadata is different
+    // than the entity id configured in Azure.  This allows the the entity id to get mapped and found correctly for the application.
     private Optional<ExtendedMetadataDelegate> createMemoryProvider() throws MetadataProviderException {
         EntityDescriptor descriptor = metadataGenerator.generateMetadata();
         MetadataMemoryProvider provider = new MetadataMemoryProvider(descriptor);
