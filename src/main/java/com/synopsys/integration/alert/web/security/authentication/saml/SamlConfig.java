@@ -46,7 +46,9 @@ public class SamlConfig {
 
     @Bean
     public SAMLDefaultLogger samlLogger() {
-        return new SAMLDefaultLogger();
+        SAMLDefaultLogger logger = new SAMLDefaultLogger();
+        logger.setLogErrors(true);
+        return logger;
     }
 
     @Bean
