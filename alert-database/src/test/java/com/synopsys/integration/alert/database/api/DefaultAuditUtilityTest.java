@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 
 public class DefaultAuditUtilityTest {
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Test
     public void findMatchingAuditIdTest() {
@@ -257,7 +257,7 @@ public class DefaultAuditUtilityTest {
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
         assertEquals(AuditEntryStatus.PENDING.toString(), savedAuditEntryEntity.getStatus());
         Mockito.verify(auditEntryRepository).findById(Mockito.anyLong());
-        Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
+        Mockito.verify(auditNotificationRepository, Mockito.times(existingNotificationIdToAuditId.size())).save(Mockito.any(AuditNotificationRelation.class));
     }
 
     @Test
