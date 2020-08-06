@@ -28,16 +28,16 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SimpleCustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
-public abstract class TableSelectCustomEndpoint extends CustomEndpoint<List<?>> {
-    private ResponseFactory responseFactory;
-    private Gson gson;
+public abstract class TableSelectCustomEndpoint extends SimpleCustomEndpoint<List<?>> {
+    private final ResponseFactory responseFactory;
+    private final Gson gson;
 
     protected TableSelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
-        super(fieldKey, customEndpointManager);
+        super(fieldKey, customEndpointManager, responseFactory);
         this.responseFactory = responseFactory;
         this.gson = gson;
     }

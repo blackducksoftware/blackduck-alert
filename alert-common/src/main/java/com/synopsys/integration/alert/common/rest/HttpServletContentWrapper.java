@@ -20,14 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
+package com.synopsys.integration.alert.common.rest;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
-    public ButtonCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
+public class HttpServletContentWrapper {
+    private final HttpServletRequest httpRequest;
+    private final HttpServletResponse httpResponse;
+
+    public HttpServletContentWrapper(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        this.httpRequest = httpRequest;
+        this.httpResponse = httpResponse;
+    }
+
+    public HttpServletRequest getHttpRequest() {
+        return httpRequest;
+    }
+
+    public HttpServletResponse getHttpResponse() {
+        return httpResponse;
     }
 
 }

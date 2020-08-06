@@ -32,12 +32,12 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
-public abstract class SelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
-    private ResponseFactory responseFactory;
-    private Gson gson;
+public abstract class SelectCustomEndpoint extends SimpleCustomEndpoint<List<LabelValueSelectOption>> {
+    private final ResponseFactory responseFactory;
+    private final Gson gson;
 
     public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
-        super(fieldKey, customEndpointManager);
+        super(fieldKey, customEndpointManager, responseFactory);
         this.responseFactory = responseFactory;
         this.gson = gson;
     }
@@ -49,8 +49,8 @@ public abstract class SelectCustomEndpoint extends CustomEndpoint<List<LabelValu
 
     @Override
     protected ResponseEntity<String> createSuccessResponse(List<LabelValueSelectOption> response) {
-        String providerOptionsConverted = gson.toJson(response);
-        return responseFactory.createOkContentResponse(providerOptionsConverted);
+        String optionsAsJson = gson.toJson(response);
+        return responseFactory.createOkContentResponse(optionsAsJson);
     }
 
 }
