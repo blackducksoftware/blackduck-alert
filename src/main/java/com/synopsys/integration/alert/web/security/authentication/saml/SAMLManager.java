@@ -29,7 +29,9 @@ import java.util.Timer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
@@ -41,6 +43,7 @@ import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
+import org.springframework.security.saml.metadata.MetadataMemoryProvider;
 
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -110,7 +113,8 @@ public class SAMLManager {
 
         Optional<ExtendedMetadataDelegate> httpProvider = createHttpProvider(metadataURL);
         Optional<ExtendedMetadataDelegate> fileProvider = createFileProvider();
-        List<MetadataProvider> providers = List.of(httpProvider, fileProvider).stream()
+        Optional<ExtendedMetadataDelegate> memoryProvider = createMemoryProvider();
+        List<MetadataProvider> providers = List.of(httpProvider, fileProvider, memoryProvider).stream()
                                                .flatMap(Optional::stream)
                                                .collect(Collectors.toList());
         metadataManager.setProviders(providers);
@@ -126,7 +130,7 @@ public class SAMLManager {
         // The URL can not end in a '/' because it messes with the paths for saml
         String correctedMetadataURL = StringUtils.removeEnd(metadataUrl, "/");
         Timer backgroundTaskTimer = new Timer(true);
-        HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, new HttpClient(), correctedMetadataURL);
+        HTTPMetadataProvider provider = new HTTPMetadataProvider(backgroundTaskTimer, httpClient(), correctedMetadataURL);
         provider.setParserPool(parserPool);
         return Optional.of(createDelegate(provider));
     }
@@ -143,10 +147,21 @@ public class SAMLManager {
         return Optional.of(createDelegate(provider));
     }
 
+    private Optional<ExtendedMetadataDelegate> createMemoryProvider() throws MetadataProviderException {
+        EntityDescriptor descriptor = metadataGenerator.generateMetadata();
+        MetadataMemoryProvider provider = new MetadataMemoryProvider(descriptor);
+        provider.initialize();
+        return Optional.of(createDelegate(provider));
+    }
+
     private ExtendedMetadataDelegate createDelegate(MetadataProvider provider) {
         ExtendedMetadataDelegate delegate = new ExtendedMetadataDelegate(provider, extendedMetadata);
         delegate.setMetadataTrustCheck(false);
         delegate.setMetadataRequireSignature(false);
         return delegate;
+    }
+
+    private HttpClient httpClient() {
+        return new HttpClient(new MultiThreadedHttpConnectionManager());
     }
 }
