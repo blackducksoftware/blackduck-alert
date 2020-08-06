@@ -95,7 +95,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUt
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
@@ -125,12 +124,11 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final ConfigurationAccessor configurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final AuthenticationEventManager authenticationEventManager;
-    private final CertificateUtility certificateUtility;
 
     @Autowired
     AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, AuthorizationUtility authorizationUtility,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
-        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager, CertificateUtility certificateUtility) {
+        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
@@ -140,7 +138,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.configurationAccessor = configurationAccessor;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.authenticationEventManager = authenticationEventManager;
-        this.certificateUtility = certificateUtility;
     }
 
     @Override
