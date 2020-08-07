@@ -19,7 +19,6 @@ public class AlertFieldStatusTest {
 
         assertEquals(FIELD_NAME, alertFieldStatusError.getFieldName());
         assertEquals(FIELD_NAME, alertFieldStatusWarning.getFieldName());
-
     }
 
     @Test

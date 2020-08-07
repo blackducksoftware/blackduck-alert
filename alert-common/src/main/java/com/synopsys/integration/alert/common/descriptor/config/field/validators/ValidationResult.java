@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field.validators
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,14 +56,9 @@ public class ValidationResult {
     }
 
     public static ValidationResult of(ValidationResult... validationResults) {
-        Collection<String> validationErrors = Arrays.stream(validationResults)
-                                                  .map(ValidationResult::getErrors)
-                                                  .flatMap(Collection::stream)
-                                                  .collect(Collectors.toList());
-        Collection<String> validationWarnings = Arrays.stream(validationResults)
-                                                    .map(ValidationResult::getWarnings)
-                                                    .flatMap(Collection::stream)
-                                                    .collect(Collectors.toList());
+        Collection<String> validationErrors = getStatus(ValidationResult::getErrors, validationResults);
+        Collection<String> validationWarnings = getStatus(ValidationResult::getWarnings, validationResults);
+
         return new ValidationResult(validationErrors, validationWarnings);
     }
 
@@ -102,5 +98,12 @@ public class ValidationResult {
 
     private String combineMessages(Collection<String> messages) {
         return StringUtils.join(messages, ", ");
+    }
+
+    private static Collection<String> getStatus(Function<ValidationResult, Collection<String>> mapResults, ValidationResult... validationResults) {
+        return Arrays.stream(validationResults)
+                   .map(mapResults::apply)
+                   .flatMap(Collection::stream)
+                   .collect(Collectors.toList());
     }
 }
