@@ -69,3 +69,19 @@ task helmPushChart(type: Exec) {
     }
 }
 
+/**
+ * If the build fails with this error, check Artifactory helm repo
+ *
+ * > Task :helmPushChart FAILED
+ * Caching disabled for task ':helmPushChart' because:
+ *   Build cache is disabled
+ * Task ':helmPushChart' is not up-to-date because:
+ *   Task has not declared any outputs despite executing actions.
+ * :helmPushChart (Thread[Execution worker for ':' Thread 2,5,main]) completed. Took 0.003 secs.
+ *
+ * FAILURE: Build failed with an exception.
+ *
+ * * What went wrong:
+ * Execution failed for task ':helmPushChart'.
+ * > execCommand == null!
+ **/
