@@ -21,12 +21,8 @@ class LabeledField extends Component {
 
         const baseClasses = `${labelClass} text-right`;
         const labelClasses = (required) ? `${baseClasses} required` : baseClasses;
-        let severity = 'ERROR';
-        let fieldMessage = '';
-        if (errorValue) {
-            severity = errorValue.severity;
-            fieldMessage = errorValue.fieldMessage;
-        }
+        const severity = errorValue ? errorValue.severity : 'ERROR';
+        const fieldMessage = errorValue ? errorValue.fieldMessage : '';
         const fieldErrorClass = severity === 'ERROR' ? 'fieldError' : 'fieldWarning';
         const errorMessage = severity === 'WARNING' ? `Warning: ${fieldMessage}` : fieldMessage;
         let descriptionField = null;
