@@ -34,6 +34,7 @@ import org.springframework.security.saml.websso.WebSSOProfile;
 import org.springframework.security.saml.websso.WebSSOProfileConsumer;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
+import org.springframework.security.saml.websso.WebSSOProfileECPImpl;
 import org.springframework.security.saml.websso.WebSSOProfileImpl;
 
 @Configuration
@@ -45,7 +46,9 @@ public class SamlConfig {
 
     @Bean
     public SAMLDefaultLogger samlLogger() {
-        return new SAMLDefaultLogger();
+        SAMLDefaultLogger logger = new SAMLDefaultLogger();
+        logger.setLogErrors(true);
+        return logger;
     }
 
     @Bean
@@ -79,6 +82,12 @@ public class SamlConfig {
     @Bean
     public WebSSOProfileConsumerHoKImpl hokWebSSOProfile() {
         return new WebSSOProfileConsumerHoKImpl();
+    }
+
+    // SAML 2.0 ECP profile
+    @Bean
+    public WebSSOProfileECPImpl ecpprofile() {
+        return new WebSSOProfileECPImpl();
     }
 
     @Bean

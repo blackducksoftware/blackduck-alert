@@ -37,6 +37,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,12 +63,16 @@ import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+import org.springframework.security.saml.processor.HTTPArtifactBinding;
+import org.springframework.security.saml.processor.HTTPPAOS11Binding;
 import org.springframework.security.saml.processor.HTTPPostBinding;
 import org.springframework.security.saml.processor.HTTPRedirectDeflateBinding;
+import org.springframework.security.saml.processor.HTTPSOAP11Binding;
 import org.springframework.security.saml.processor.SAMLBinding;
 import org.springframework.security.saml.processor.SAMLProcessorImpl;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.security.saml.util.VelocityFactory;
+import org.springframework.security.saml.websso.ArtifactResolutionProfileImpl;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
@@ -122,8 +127,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Autowired
     AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, AuthorizationUtility authorizationUtility,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator,
-        ConfigurationAccessor configurationAccessor, AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
+        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
@@ -398,6 +403,23 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         return new HTTPPostBinding(parserPool(), velocityEngine());
     }
 
+    @Bean
+    public HTTPArtifactBinding artifactBinding(ParserPool parserPool, VelocityEngine velocityEngine) {
+        ArtifactResolutionProfileImpl profileImpl = new ArtifactResolutionProfileImpl(new HttpClient(new MultiThreadedHttpConnectionManager()));
+        profileImpl.setProcessor(new SAMLProcessorImpl(soapBinding()));
+        return new HTTPArtifactBinding(parserPool, velocityEngine, profileImpl);
+    }
+
+    @Bean
+    public HTTPSOAP11Binding soapBinding() {
+        return new HTTPSOAP11Binding(parserPool());
+    }
+
+    @Bean
+    public HTTPPAOS11Binding paosBinding() {
+        return new HTTPPAOS11Binding(parserPool());
+    }
+
     @Bean(initMethod = "initialize")
     public StaticBasicParserPool parserPool() {
         return new StaticBasicParserPool();
@@ -413,6 +435,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         Collection<SAMLBinding> bindings = new ArrayList<>();
         bindings.add(httpRedirectDeflateBinding());
         bindings.add(httpPostBinding());
+        bindings.add(artifactBinding(parserPool(), velocityEngine()));
+        bindings.add(soapBinding());
+        bindings.add(paosBinding());
         return new SAMLProcessorImpl(bindings);
     }
 
