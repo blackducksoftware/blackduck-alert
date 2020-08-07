@@ -23,12 +23,12 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
@@ -43,30 +43,23 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoint {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
-    private ProviderDataAccessor providerDataAccessor;
-    private ResponseFactory responseFactory;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
     public ProviderDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor, ResponseFactory responseFactory, Gson gson) throws AlertException {
         super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, customEndpointManager, responseFactory, gson);
         this.providerDataAccessor = providerDataAccessor;
-        this.responseFactory = responseFactory;
     }
 
     @Override
-    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+    protected List<?> createData(FieldModel fieldModel) throws ResponseStatusException {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
-
         if (StringUtils.isBlank(providerName)) {
-            return Optional.of(responseFactory.createBadRequestResponse("", MISSING_PROVIDER_ERROR));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
-        return Optional.empty();
-    }
-
-    @Override
-    protected List<?> createData(FieldModel fieldModel) throws AlertException {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
     }
+
 }

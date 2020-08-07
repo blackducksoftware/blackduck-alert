@@ -25,12 +25,14 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
@@ -39,15 +41,18 @@ public class AzureBoardsCustomEndpoint extends ButtonCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomEndpoint.class);
 
     private final AzureBoardsChannelKey azureBoardsChannelKey;
+    private final ResponseFactory responseFactory;
 
     @Autowired
     public AzureBoardsCustomEndpoint(AzureBoardsChannelKey azureBoardsChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory) throws Exception {
-        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager, responseFactory);
+        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager);
         this.azureBoardsChannelKey = azureBoardsChannelKey;
+        this.responseFactory = responseFactory;
     }
 
     @Override
-    protected String createData(FieldModel fieldModel) {
-        return "Placeholder Message"; //FIXME this message should fixed once the Oauth is implemented.
+    public ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        return responseFactory.createOkResponse("", "Placeholder Message"); //FIXME this message should fixed once the Oauth is implemented.
     }
+
 }

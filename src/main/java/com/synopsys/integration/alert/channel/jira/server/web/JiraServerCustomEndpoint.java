@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.web;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +43,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -64,7 +64,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
 
     @Autowired
     public JiraServerCustomEndpoint(JiraServerChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager, responseFactory);
+        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
@@ -72,7 +72,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    protected Optional<ResponseEntity<String>> preprocessRequest(FieldModel fieldModel) {
+    public ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
@@ -83,28 +83,23 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
                 jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
-                    return Optional.of(responseFactory.createNotFoundResponse(
-                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage()));
+                    return responseFactory.createNotFoundResponse(
+                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage());
                 }
                 createBadRequestIntegrationException(e);
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return Optional.of(responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server."));
+                return responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
             }
-            return Optional.empty();
+            return responseFactory.createOkResponse("", "Successfully installed the Alert plugin on Jira server.");
         } catch (IntegrationException e) {
             return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return Optional.of(responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage()));
+            return responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
         }
-    }
-
-    @Override
-    protected String createData(FieldModel fieldModel) throws AlertException {
-        return "Successfully created Alert plugin on Jira server.";
     }
 
     private JiraServerProperties createJiraProperties(FieldModel fieldModel) {
@@ -153,8 +148,9 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
         return false;
     }
 
-    private Optional<ResponseEntity<String>> createBadRequestIntegrationException(IntegrationException error) {
+    private ResponseEntity<String> createBadRequestIntegrationException(IntegrationException error) {
         logger.error("There was an issue connecting to Jira server", error);
-        return Optional.of(responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira server: " + error.getMessage()));
+        return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira server: " + error.getMessage());
     }
+
 }
