@@ -53,7 +53,7 @@ public abstract class SimpleCustomEndpoint<R> extends CustomEndpoint<R> {
         } catch (Exception e) {
             if (e instanceof ResponseStatusException) {
                 ResponseStatusException responseStatusException = (ResponseStatusException) e;
-                return responseFactory.createMessageResponse(responseStatusException.getStatus(), responseStatusException.getMessage());
+                return responseFactory.createMessageResponse(responseStatusException.getStatus(), responseStatusException.getReason());
             }
             return createErrorResponse(e);
         }

@@ -44,17 +44,15 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
-    private final ResponseFactory responseFactory;
 
     @Autowired
     public ProviderDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor, ResponseFactory responseFactory, Gson gson) throws AlertException {
         super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, customEndpointManager, responseFactory, gson);
         this.providerDataAccessor = providerDataAccessor;
-        this.responseFactory = responseFactory;
     }
 
     @Override
-    protected List<?> createData(FieldModel fieldModel) throws AlertException, ResponseStatusException {
+    protected List<?> createData(FieldModel fieldModel) throws ResponseStatusException {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
@@ -63,4 +61,5 @@ public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoin
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
     }
+
 }
