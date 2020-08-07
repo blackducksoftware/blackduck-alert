@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -147,7 +148,7 @@ public class SystemActionsTest {
 
         Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(false);
 
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         systemActions.saveRequiredInformation(model, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }

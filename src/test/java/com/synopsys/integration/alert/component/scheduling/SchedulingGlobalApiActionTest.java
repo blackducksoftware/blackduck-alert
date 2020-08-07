@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.component.scheduling.actions.SchedulingGlo
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingUIConfig;
+import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.web.config.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -47,7 +48,7 @@ public class SchedulingGlobalApiActionTest {
 
     @Test
     public void validateConfigWithNoErrorsTest() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
         schedulingUIConfig.setConfigFields();
 
@@ -56,13 +57,15 @@ public class SchedulingGlobalApiActionTest {
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
-        assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
+
+        Map<String, String> fieldErrorsMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
+        assertEquals(null, fieldErrorsMap.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
+        assertEquals(null, fieldErrorsMap.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
     public void validateConfigHasErrorWhenEmptyStringTest() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
         schedulingUIConfig.setConfigFields();
 
@@ -71,13 +74,15 @@ public class SchedulingGlobalApiActionTest {
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).getFieldMessage());
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).getFieldMessage());
+
+        Map<String, String> fieldErrorsMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrorsMap.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrorsMap.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
     public void validateConfigHasErrorWhenValuesNotNumericTest() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
         schedulingUIConfig.setConfigFields();
 
@@ -87,17 +92,17 @@ public class SchedulingGlobalApiActionTest {
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        String actualDailyProcessorError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).getFieldMessage();
+        String actualDailyProcessorError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualDailyProcessorError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualDailyProcessorError);
 
-        String actualPurgeDataError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).getFieldMessage();
+        String actualPurgeDataError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualPurgeDataError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualPurgeDataError);
 
     }
 
     @Test
     public void validateConfigHasErrorWhenHourOutOfRangeTest() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
         schedulingUIConfig.setConfigFields();
 
@@ -106,20 +111,20 @@ public class SchedulingGlobalApiActionTest {
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        String actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).getFieldMessage();
+        String actualError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_HOUR_OF_DAY.setValue("24");
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).getFieldMessage();
+        actualError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
     }
 
     @Test
     public void validateConfigHasErrorWhenPurgeFrequencyOutOfRangeTest() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
         schedulingUIConfig.setConfigFields();
 
@@ -127,14 +132,14 @@ public class SchedulingGlobalApiActionTest {
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        String actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).getFieldMessage();
+        String actualError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_PURGE_FREQUENCY.setValue("8");
         fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).getFieldMessage();
+        actualError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
     }
 
@@ -184,5 +189,4 @@ public class SchedulingGlobalApiActionTest {
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(DailyTask.class)));
         Mockito.verify(taskManager).scheduleCronTask(Mockito.anyString(), Mockito.eq(ScheduledTask.computeTaskName(PurgeTask.class)));
     }
-
 }

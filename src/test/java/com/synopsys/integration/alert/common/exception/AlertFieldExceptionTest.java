@@ -13,9 +13,10 @@ package com.synopsys.integration.alert.common.exception;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ public class AlertFieldExceptionTest {
 
     @Test
     public void testBaseConstructor() {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
         AlertFieldException alertFieldException = new AlertFieldException(fieldErrors);
         assertNotNull(alertFieldException);
@@ -37,7 +38,7 @@ public class AlertFieldExceptionTest {
         Throwable cause = new Throwable();
         final boolean enableSuppression = true;
         final boolean writableStackTrace = true;
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
         AlertFieldException alertFieldException = new AlertFieldException(message, cause, enableSuppression, writableStackTrace, fieldErrors);
         assertNotNull(alertFieldException);
@@ -47,7 +48,7 @@ public class AlertFieldExceptionTest {
     public void testMessageAndCauseConstructor() {
         final String message = "Exception Message";
         Throwable cause = new Throwable();
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
         AlertFieldException alertFieldException = new AlertFieldException(message, cause, fieldErrors);
         assertNotNull(alertFieldException);
@@ -56,7 +57,7 @@ public class AlertFieldExceptionTest {
     @Test
     public void testMessageOnlyConstructor() {
         final String message = "Exception Message";
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
         AlertFieldException alertFieldException = new AlertFieldException(message, fieldErrors);
         assertNotNull(alertFieldException);
@@ -65,7 +66,7 @@ public class AlertFieldExceptionTest {
     @Test
     public void testCauseOnlyConstructor() {
         Throwable cause = new Throwable();
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
 
         AlertFieldException alertFieldException = new AlertFieldException(cause, fieldErrors);
         assertNotNull(alertFieldException);
@@ -76,18 +77,18 @@ public class AlertFieldExceptionTest {
         final String key1 = "key1";
         final String key2 = "key2";
 
-        AlertFieldStatus value1 = AlertFieldStatus.warning("value1");
-        AlertFieldStatus value2 = AlertFieldStatus.error("value2");
+        AlertFieldStatus value1 = AlertFieldStatus.warning(key1, "value1");
+        AlertFieldStatus value2 = AlertFieldStatus.error(key2, "value2");
 
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
-        fieldErrors.put(key1, value1);
-        fieldErrors.put(key2, value2);
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
+        fieldErrors.add(value1);
+        fieldErrors.add(value2);
 
         AlertFieldException alertFieldException = new AlertFieldException(fieldErrors);
 
         assertEquals(2, alertFieldException.getFieldErrors().size());
-        assertEquals(value1, alertFieldException.getFieldErrors().get(key1));
-        assertEquals(value2, alertFieldException.getFieldErrors().get(key2));
+        assertTrue(alertFieldException.getFieldErrors().contains(value1));
+        assertTrue(alertFieldException.getFieldErrors().contains(value2));
     }
 
 }

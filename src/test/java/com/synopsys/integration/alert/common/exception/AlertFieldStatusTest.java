@@ -8,13 +8,24 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldErrorSeverity;
 
 public class AlertFieldStatusTest {
-
+    private final String FIELD_NAME = "FieldName";
     private final String FIELD_ERROR_MESSAGE = "Test Field Error Message";
+    private final String FIELD_WARNING_MESSAGE = "Test Field Warning Message";
+
+    @Test
+    public void getFieldNameTest() {
+        AlertFieldStatus alertFieldStatusError = AlertFieldStatus.error(FIELD_NAME, FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatusWarning = AlertFieldStatus.warning(FIELD_NAME, FIELD_WARNING_MESSAGE);
+
+        assertEquals(FIELD_NAME, alertFieldStatusError.getFieldName());
+        assertEquals(FIELD_NAME, alertFieldStatusWarning.getFieldName());
+
+    }
 
     @Test
     public void getSeverityTest() {
-        AlertFieldStatus alertFieldStatusError = AlertFieldStatus.error(FIELD_ERROR_MESSAGE);
-        AlertFieldStatus alertFieldStatusWarning = AlertFieldStatus.warning(FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatusError = AlertFieldStatus.error(FIELD_NAME, FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatusWarning = AlertFieldStatus.warning(FIELD_NAME, FIELD_WARNING_MESSAGE);
 
         assertEquals(FieldErrorSeverity.ERROR, alertFieldStatusError.getSeverity());
         assertEquals(FieldErrorSeverity.WARNING, alertFieldStatusWarning.getSeverity());
@@ -22,7 +33,7 @@ public class AlertFieldStatusTest {
 
     @Test
     public void getFieldErrorMessage() {
-        AlertFieldStatus alertFieldStatus = AlertFieldStatus.error(FIELD_ERROR_MESSAGE);
+        AlertFieldStatus alertFieldStatus = AlertFieldStatus.error(FIELD_NAME, FIELD_ERROR_MESSAGE);
 
         assertEquals(FIELD_ERROR_MESSAGE, alertFieldStatus.getFieldMessage());
     }
