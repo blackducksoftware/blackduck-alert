@@ -45,10 +45,7 @@ public class CustomEndpointManager {
     }
 
     public void registerFunction(String functionKey, Function<FieldModel, ResponseEntity<String>> endpointFunction) throws AlertException {
-        if (containsFunction(functionKey)) {
-            throw new AlertException("A custom endpoint is already registered for " + functionKey);
-        }
-        endpointFunctions.put(functionKey, (fieldModel, ignoredServletContent) -> endpointFunction.apply(fieldModel));
+        registerFunction(functionKey, (fieldModel, ignoredServletContent) -> endpointFunction.apply(fieldModel));
     }
 
     public void registerFunction(String functionKey, BiFunction<FieldModel, HttpServletContentWrapper, ResponseEntity<String>> endpointFunction) throws AlertException {
