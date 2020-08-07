@@ -32,12 +32,10 @@ public class AlertFieldException extends AlertException {
     private final List<AlertFieldStatus> fieldErrors;
 
     public static AlertFieldException singleFieldError(String fieldKey, String fieldError) {
-        //return new AlertFieldException(Map.of(fieldKey, fieldError));
         return new AlertFieldException(List.of(AlertFieldStatus.error(fieldKey, fieldError)));
     }
 
     public static AlertFieldException singleFieldError(String message, String fieldKey, String fieldError) {
-        //return new AlertFieldException(message, Map.of(fieldKey, fieldError));
         return new AlertFieldException(message, List.of(AlertFieldStatus.error(fieldKey, fieldError)));
     }
 

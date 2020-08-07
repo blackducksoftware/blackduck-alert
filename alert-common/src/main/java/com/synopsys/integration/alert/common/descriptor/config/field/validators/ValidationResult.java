@@ -100,9 +100,9 @@ public class ValidationResult {
         return StringUtils.join(messages, ", ");
     }
 
-    private static Collection<String> getStatus(Function<ValidationResult, Collection<String>> mapResults, ValidationResult... validationResults) {
+    private static Collection<String> getStatus(Function<ValidationResult, Collection<String>> extractValidationResults, ValidationResult... validationResults) {
         return Arrays.stream(validationResults)
-                   .map(mapResults::apply)
+                   .map(extractValidationResults::apply)
                    .flatMap(Collection::stream)
                    .collect(Collectors.toList());
     }
