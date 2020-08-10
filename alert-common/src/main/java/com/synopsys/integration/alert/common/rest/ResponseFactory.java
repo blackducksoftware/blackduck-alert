@@ -120,4 +120,10 @@ public class ResponseFactory {
         return createContentResponse(HttpStatus.OK, jsonContent);
     }
 
+    public ResponseEntity<String> createFoundRedirectResponse(String location) {
+        HttpHeaders header = new HttpHeaders();
+        header.add("Location", location);
+        return new ResponseEntity<>(header, HttpStatus.FOUND);
+    }
+
 }
