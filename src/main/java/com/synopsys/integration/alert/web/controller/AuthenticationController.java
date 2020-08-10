@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,9 +43,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
@@ -113,7 +113,7 @@ public class AuthenticationController extends BaseController {
             passwordResetService.resetPassword(username);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Password reset email sent");
         } catch (AlertDatabaseConstraintException databaseException) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", Map.of("username", AlertFieldStatus.error(databaseException.getMessage())));
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", List.of(AlertFieldStatus.error("username", databaseException.getMessage())));
         } catch (AlertException e) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + e.getMessage());
         }

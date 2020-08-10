@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
 public enum FieldErrorSeverity {
     WARNING,

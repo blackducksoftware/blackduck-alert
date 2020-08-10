@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.slack.parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +36,9 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.message.MessageSplitter;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -64,12 +65,12 @@ public class SlackChannelEventParser {
         String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
         String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
 
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         if (StringUtils.isBlank(webhook)) {
-            fieldErrors.put(SlackDescriptor.KEY_WEBHOOK, AlertFieldStatus.error("Missing Webhook URL"));
+            fieldErrors.add(AlertFieldStatus.error(SlackDescriptor.KEY_WEBHOOK, "Missing Webhook URL"));
         }
         if (StringUtils.isBlank(channelName)) {
-            fieldErrors.put(SlackDescriptor.KEY_CHANNEL_NAME, AlertFieldStatus.error("Missing channel name"));
+            fieldErrors.add(AlertFieldStatus.error(SlackDescriptor.KEY_CHANNEL_NAME, "Missing channel name"));
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

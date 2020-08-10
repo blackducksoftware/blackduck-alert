@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,10 +37,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -119,7 +120,7 @@ public class ConfigActions {
     }
 
     public FieldModel saveConfig(FieldModel fieldModel, DescriptorKey descriptorKey) throws AlertException {
-        validateConfig(fieldModel, new HashMap<>());
+        validateConfig(fieldModel, new ArrayList<>());
         FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
         String context = modifiedFieldModel.getContext();
         Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
@@ -130,7 +131,7 @@ public class ConfigActions {
     }
 
     public FieldModel updateConfig(Long id, FieldModel fieldModel) throws AlertException {
-        validateConfig(fieldModel, new HashMap<>());
+        validateConfig(fieldModel, new ArrayList<>());
         Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
         FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
 
@@ -142,8 +143,8 @@ public class ConfigActions {
         return dbSavedModel.fill(afterUpdateAction);
     }
 
-    public String validateConfig(FieldModel fieldModel, Map<String, AlertFieldStatus> fieldErrors) throws AlertFieldException {
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+    public String validateConfig(FieldModel fieldModel, List<AlertFieldStatus> fieldErrors) throws AlertFieldException {
+        fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -151,7 +152,7 @@ public class ConfigActions {
     }
 
     public String testConfig(FieldModel restModel) throws IntegrationException {
-        validateConfig(restModel, new HashMap<>());
+        validateConfig(restModel, new ArrayList<>());
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(restModel);
         if (testActionOptional.isPresent()) {
             FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(restModel);

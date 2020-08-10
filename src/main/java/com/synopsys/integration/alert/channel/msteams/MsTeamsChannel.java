@@ -37,16 +37,15 @@ import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
-    private RestChannelUtility restChannelUtility;
-    private MsTeamsEventParser msTeamsEventParser;
-    private MsTeamsMessageParser msTeamsMessageParser;
+    private final RestChannelUtility restChannelUtility;
+    private final MsTeamsEventParser msTeamsEventParser;
+    private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
     public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
@@ -61,7 +60,7 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
         FieldAccessor fields = event.getFieldAccessor();
         String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
-                             .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, AlertFieldStatus.error("MS Teams missing the required webhook field - the distribution configuration is likely invalid.")));
+                             .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         MsTeamsMessage msTeamsMessage = msTeamsMessageParser.createMsTeamsMessage(event.getContent());
         List<Request> teamsRequests = new LinkedList<>();

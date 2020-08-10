@@ -22,14 +22,14 @@
  */
 package com.synopsys.integration.alert.common.rest;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 @Component
 public class ResponseFactory {
@@ -100,7 +100,7 @@ public class ResponseFactory {
         return createMessageResponse(HttpStatus.CONFLICT, id, message);
     }
 
-    public ResponseEntity<String> createFieldErrorResponse(String id, String message, Map<String, AlertFieldStatus> fieldErrors) {
+    public ResponseEntity<String> createFieldErrorResponse(String id, String message, List<AlertFieldStatus> fieldErrors) {
         ResponseBodyBuilder responseBody = new ResponseBodyBuilder(id, message);
         responseBody.putErrors(fieldErrors);
         return new ResponseEntity<>(responseBody.build(), HttpStatus.BAD_REQUEST);

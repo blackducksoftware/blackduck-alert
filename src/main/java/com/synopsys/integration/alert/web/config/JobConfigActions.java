@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,13 +44,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -213,7 +214,7 @@ public class JobConfigActions {
             }
         }
         if (StringUtils.isNotBlank(error)) {
-            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, AlertFieldStatus.error(error));
+            throw AlertFieldException.singleFieldError(ChannelDistributionUIConfig.KEY_NAME, error);
         }
     }
 
@@ -226,9 +227,9 @@ public class JobConfigActions {
     }
 
     public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
 
         if (!fieldErrors.isEmpty()) {
@@ -241,9 +242,9 @@ public class JobConfigActions {
         List<JobFieldErrors> errorsList = new LinkedList<>();
         List<JobFieldModel> jobFieldModels = getAllJobs();
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-                fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+                fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
             }
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldErrors(jobFieldModel.getJobId(), fieldErrors));

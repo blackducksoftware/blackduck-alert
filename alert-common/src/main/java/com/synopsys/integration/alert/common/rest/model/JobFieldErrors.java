@@ -22,23 +22,23 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Map;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 public class JobFieldErrors extends Config {
-    private final Map<String, AlertFieldStatus> fieldErrors;
+    private final List<AlertFieldStatus> fieldErrors;
 
-    public JobFieldErrors(Map<String, AlertFieldStatus> fieldErrors) {
+    public JobFieldErrors(List<AlertFieldStatus> fieldErrors) {
         this.fieldErrors = fieldErrors;
     }
 
-    public JobFieldErrors(String id, Map<String, AlertFieldStatus> fieldErrors) {
+    public JobFieldErrors(String id, List<AlertFieldStatus> fieldErrors) {
         super(id);
         this.fieldErrors = fieldErrors;
     }
 
-    public Map<String, AlertFieldStatus> getFieldErrors() {
+    public List<AlertFieldStatus> getFieldErrors() {
         return fieldErrors;
     }
 }

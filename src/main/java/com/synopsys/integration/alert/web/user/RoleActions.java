@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,11 +38,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -73,7 +74,7 @@ public class RoleActions {
 
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         validateCreationRoleName(fieldErrors, roleName);
 
         if (!fieldErrors.isEmpty()) {
@@ -172,17 +173,17 @@ public class RoleActions {
         return new PermissionMatrixModel(permissionMatrix);
     }
 
-    private void validateRequiredField(String fieldKey, Map<String, AlertFieldStatus> fieldErrors, String fieldValue) {
+    private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
-            fieldErrors.put(fieldKey, AlertFieldStatus.error("This field is required."));
+            fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
         }
     }
 
-    private void validateCreationRoleName(Map<String, AlertFieldStatus> fieldErrors, String roleName) {
+    private void validateCreationRoleName(List<AlertFieldStatus> fieldErrors, String roleName) {
         validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
-            fieldErrors.put(FIELD_KEY_ROLE_NAME, AlertFieldStatus.error("A user with that role name already exists."));
+            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A user with that role name already exists."));
         }
     }
 

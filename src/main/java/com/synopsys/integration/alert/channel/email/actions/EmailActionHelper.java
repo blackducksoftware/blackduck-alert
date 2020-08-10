@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -46,8 +45,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailActionHelper {
-    private EmailAddressHandler emailAddressHandler;
-    private ProviderDataAccessor providerDataAccessor;
+    private final EmailAddressHandler emailAddressHandler;
+    private final ProviderDataAccessor providerDataAccessor;
 
     public EmailActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
         this.emailAddressHandler = emailAddressHandler;
@@ -124,7 +123,7 @@ public class EmailActionHelper {
             if (!filterByProject) {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }
-            throw AlertFieldException.singleFieldError(errorField, AlertFieldStatus.error(errorMessage));
+            throw AlertFieldException.singleFieldError(errorField, errorMessage);
         }
         return emailAddresses;
     }

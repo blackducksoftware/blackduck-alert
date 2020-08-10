@@ -29,11 +29,15 @@ import java.util.stream.Collectors;
 
 public final class DataStructureUtils {
     public static <K, V> Map<K, V> mapToValues(Collection<V> valueCollection, Function<V, K> keyExtractor) {
-        return valueCollection.stream().collect(Collectors.toMap(keyExtractor::apply, Function.identity()));
+        return mapToMap(valueCollection, keyExtractor, Function.identity());
     }
 
     public static <K, V> Map<K, V> mapToKeys(Collection<K> valueCollection, Function<K, V> valueExtractor) {
-        return valueCollection.stream().collect(Collectors.toMap(Function.identity(), valueExtractor::apply));
+        return mapToMap(valueCollection, Function.identity(), valueExtractor);
+    }
+
+    public static <K, V, C> Map<K, V> mapToMap(Collection<C> valueCollection, Function<C, K> keyExtractor, Function<C, V> valueExtractor) {
+        return valueCollection.stream().collect(Collectors.toMap(keyExtractor::apply, valueExtractor::apply));
     }
 
     private DataStructureUtils() {

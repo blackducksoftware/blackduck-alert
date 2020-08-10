@@ -22,9 +22,8 @@
  */
 package com.synopsys.integration.alert.web.certificates;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,10 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
@@ -49,9 +48,9 @@ import com.synopsys.integration.util.IntegrationEscapeUtil;
 public class CertificateActions {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
-    private CertificateUtility certificateUtility;
-    private CustomCertificateAccessor certificateAccessor;
-    private IntegrationEscapeUtil escapeUtil;
+    private final CertificateUtility certificateUtility;
+    private final CustomCertificateAccessor certificateAccessor;
+    private final IntegrationEscapeUtil escapeUtil;
 
     @Autowired
     public CertificateActions(CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {
@@ -138,32 +137,32 @@ public class CertificateActions {
 
     private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
         CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
-        Map<String, AlertFieldStatus> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         if (StringUtils.isBlank(certificateModel.getAlias())) {
-            fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, AlertFieldStatus.error("Alias cannot be empty."));
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty."));
         } else {
             List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
                                                                      .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
                                                                      .collect(Collectors.toList());
             if (duplicateCertificates.size() > 1) {
-                fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, AlertFieldStatus.error(ERROR_DUPLICATE_ALIAS));
+                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
             } else if (duplicateCertificates.size() == 1) {
                 boolean sameConfig = convertedModel.getNullableId() != null
                                          && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
                 if (!sameConfig) {
-                    fieldErrors.put(CertificatesDescriptor.KEY_ALIAS, AlertFieldStatus.error(ERROR_DUPLICATE_ALIAS));
+                    fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
                 }
             }
         }
 
         if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
-            fieldErrors.put(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, AlertFieldStatus.error("Certification content cannot be empty."));
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certification content cannot be empty."));
         } else {
             try {
                 certificateUtility.validateCertificateContent(convertedModel);
             } catch (AlertException ex) {
                 logger.error(ex.getMessage(), ex);
-                fieldErrors.put(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, AlertFieldStatus.error(String.format("Certificate content not valid: %s", ex.getMessage())));
+                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage())));
             }
         }
 
