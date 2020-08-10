@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -60,7 +61,7 @@ public class AuthenticationController extends BaseController {
     private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationController(LoginActions loginActions, PasswordResetService passwordResetService, ResponseFactory responseFactory, CsrfTokenRepository csrfTokenRepository) {
         this.loginActions = loginActions;
         this.passwordResetService = passwordResetService;
         this.responseFactory = responseFactory;
@@ -68,33 +69,33 @@ public class AuthenticationController extends BaseController {
     }
 
     @PostMapping(value = "/logout")
-    public ResponseEntity<String> logout(final HttpServletRequest request) {
-        final HttpSession session = request.getSession(false);
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
         SecurityContextHolder.clearContext();
 
-        final HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/");
 
         return responseFactory.createResponse(HttpStatus.NO_CONTENT, headers, "{\"message\":\"Success\"}");
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginConfig loginConfig) {
+    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
         try {
             if (loginActions.authenticateUser(loginConfig)) {
-                final CsrfToken token = csrfTokenRepository.generateToken(request);
+                CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());
                 return responseFactory.createMessageResponse(HttpStatus.OK, "Success");
             } else {
                 return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
             }
-        } catch (final BadCredentialsException ex) {
+        } catch (BadCredentialsException ex) {
             return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
@@ -106,14 +107,14 @@ public class AuthenticationController extends BaseController {
     }
 
     @PostMapping(value = "/resetPassword/{username}")
-    public ResponseEntity<String> resetPassword(@PathVariable final String username) {
+    public ResponseEntity<String> resetPassword(@PathVariable String username) {
         final String errorPrefix = "Password Reset Error: ";
         try {
             passwordResetService.resetPassword(username);
             return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Password reset email sent");
-        } catch (final AlertDatabaseConstraintException databaseException) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", Map.of("username", databaseException.getMessage()));
-        } catch (final AlertException e) {
+        } catch (AlertDatabaseConstraintException databaseException) {
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", List.of(AlertFieldStatus.error("username", databaseException.getMessage())));
+        } catch (AlertException e) {
             return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + e.getMessage());
         }
     }

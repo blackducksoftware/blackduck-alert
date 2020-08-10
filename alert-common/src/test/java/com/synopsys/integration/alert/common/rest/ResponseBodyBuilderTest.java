@@ -13,10 +13,12 @@ package com.synopsys.integration.alert.common.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 public class ResponseBodyBuilderTest {
 
@@ -42,11 +44,11 @@ public class ResponseBodyBuilderTest {
     public void testResponseBodyBuilderErrors() {
         ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
 
-        Map<String, String> errors = new HashMap<>();
-        errors.put("Field", "Terrible error");
+        List<AlertFieldStatus> errors = new ArrayList<>();
+        errors.add(AlertFieldStatus.error("Field", "Terrible error"));
 
         responseBodyBuilder.putErrors(errors);
 
-        assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":\"Terrible error\"}}", responseBodyBuilder.build());
+        assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":{\"severity\":\"ERROR\",\"fieldMessage\":\"Terrible error\"}}}", responseBodyBuilder.build());
     }
 }

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -152,7 +154,7 @@ public class JobConfigActions {
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         validateJob(jobFieldModel);
         validateJobNameUnique(id, jobFieldModel);
-        
+
         ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
                                                 .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
         Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
@@ -225,9 +227,9 @@ public class JobConfigActions {
     }
 
     public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
 
         if (!fieldErrors.isEmpty()) {
@@ -240,9 +242,9 @@ public class JobConfigActions {
         List<JobFieldErrors> errorsList = new LinkedList<>();
         List<JobFieldModel> jobFieldModels = getAllJobs();
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            Map<String, String> fieldErrors = new HashMap<>();
+            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-                fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+                fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
             }
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldErrors(jobFieldModel.getJobId(), fieldErrors));
