@@ -110,6 +110,7 @@ public class AzureBoardsCustomEndpoint extends ButtonCustomEndpoint {
         authUrlBuilder.append(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL);
         authUrlBuilder.append("&client_id=");
         authUrlBuilder.append(clientId);
+        //TODO add a GUID here and store the GUID to validate in the callback that this is a good request.
         authUrlBuilder.append("&state=alertAuth");
         authUrlBuilder.append("&scope=vso.work%20vso.code_write");
         authUrlBuilder.append("&redirect_uri=");
