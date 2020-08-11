@@ -45,8 +45,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailActionHelper {
-    private EmailAddressHandler emailAddressHandler;
-    private ProviderDataAccessor providerDataAccessor;
+    private final EmailAddressHandler emailAddressHandler;
+    private final ProviderDataAccessor providerDataAccessor;
 
     public EmailActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
         this.emailAddressHandler = emailAddressHandler;

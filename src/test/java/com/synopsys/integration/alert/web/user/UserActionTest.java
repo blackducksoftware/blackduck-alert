@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
+import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.web.model.UserConfig;
 
 public class UserActionTest {
@@ -50,9 +51,9 @@ public class UserActionTest {
         UserActions userActions = new UserActions(userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         try {
             UserConfig newConfig = userActions.updateUser(id, userConfig);
-            fail("Email adress is missing and should be validated.");
+            fail("Email address is missing and should be validated.");
         } catch (AlertFieldException ex) {
-            assertTrue(ex.getFieldErrors().containsKey(UserActions.FIELD_KEY_USER_MGMT_EMAILADDRESS));
+            assertTrue(AlertFieldStatusConverter.convertToStringMap(ex.getFieldErrors()).containsKey(UserActions.FIELD_KEY_USER_MGMT_EMAILADDRESS));
         }
     }
 

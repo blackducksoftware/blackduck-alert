@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -118,8 +120,8 @@ public class FieldModelProcessor {
         return currentFieldModel;
     }
 
-    public Map<String, String> validateFieldModel(FieldModel fieldModel) {
-        Map<String, String> fieldErrors = new HashMap<>();
+    public List<AlertFieldStatus> validateFieldModel(FieldModel fieldModel) {
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         fieldValidationAction.validateConfig(configFields, fieldModel, fieldErrors);

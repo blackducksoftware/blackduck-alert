@@ -21,7 +21,10 @@ class LabeledField extends Component {
 
         const baseClasses = `${labelClass} text-right`;
         const labelClasses = (required) ? `${baseClasses} required` : baseClasses;
-
+        const severity = errorValue ? errorValue.severity : 'ERROR';
+        const fieldMessage = errorValue ? errorValue.fieldMessage : '';
+        const fieldErrorClass = severity === 'ERROR' ? 'fieldError' : 'fieldWarning';
+        const errorMessage = severity === 'WARNING' ? `Warning: ${fieldMessage}` : fieldMessage;
         let descriptionField = null;
         if (description) {
             descriptionField = (<div className="d-inline-flex">
@@ -58,7 +61,7 @@ class LabeledField extends Component {
                 {field}
                 {errorName && errorValue &&
                 <div className="offset-sm-3 col-sm-8">
-                    <p id={`${id}-fieldError`} className="fieldError" name={errorName}>{errorValue}</p>
+                    <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>
                 </div>
                 }
             </div>
