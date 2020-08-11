@@ -12,6 +12,7 @@ import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
 import UploadFileButtonField from 'field/UploadFileButtonField';
+import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -207,6 +208,32 @@ function buildUploadFileButtonField(items, field) {
     />);
 }
 
+function buildOAuthEndpointField(items, field) {
+    const { value } = items;
+    const {
+        buttonLabel, url, successBox, subFields, key, requestedDataFieldKeys
+    } = field;
+    const checkedValue = convertStringToBoolean(value);
+    const { readOnly } = field;
+    const isReadOnly = convertStringToBoolean(readOnly);
+    Object.assign(items, {
+        value: checkedValue,
+        className: 'form-control',
+        readOnly: isReadOnly
+    });
+    return (
+        <OAuthEndpointButtonField
+            fields={subFields}
+            requestedDataFieldKeys={requestedDataFieldKeys}
+            buttonLabel={buttonLabel}
+            endpoint={url}
+            successBox={successBox}
+            fieldKey={key}
+            {...items}
+        />
+    );
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -220,7 +247,8 @@ export const FIELDS = {
     CountdownField: buildCounterField,
     TableSelectInput: buildTableSelectInput,
     EndpointButtonField: buildEndpointField,
-    UploadFileButtonField: buildUploadFileButtonField
+    UploadFileButtonField: buildUploadFileButtonField,
+    OAuthEndpointButtonField: buildOAuthEndpointField
 };
 
 export function getField(fieldType, props, field) {
