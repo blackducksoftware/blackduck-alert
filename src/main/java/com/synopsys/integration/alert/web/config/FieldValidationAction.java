@@ -54,7 +54,8 @@ public class FieldValidationAction {
             }
 
             boolean containsKey = fieldErrors.stream()
-                                      .anyMatch(fieldErrorName -> key.equals(fieldErrorName.getFieldName()));
+                                      .map(AlertFieldStatus::getFieldName)
+                                      .anyMatch(key::equals);
             if (!containsKey && optionalFieldValue.isPresent()) {
                 // field is present now validate the field
                 logger.debug("FieldModel contains '{}'", key);
