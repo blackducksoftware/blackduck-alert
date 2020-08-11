@@ -60,10 +60,6 @@ class EndpointButtonField extends Component {
                 this.setState({
                     success: true
                 });
-            } else if (response.redirected) {
-                console.log('Response headers: ', response.headers);
-                window.location.replace(response.headers.location);
-                console.log('Button redirected.');
             } else {
                 response.json()
                 .then((data) => {
