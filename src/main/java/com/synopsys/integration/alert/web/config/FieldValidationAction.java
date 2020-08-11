@@ -53,7 +53,9 @@ public class FieldValidationAction {
                 fieldErrors.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
             }
 
-            if (!fieldErrors.contains(key) && optionalFieldValue.isPresent()) {
+            boolean containsKey = fieldErrors.stream()
+                                      .anyMatch(fieldErrorName -> key.equals(fieldErrorName.getFieldName()));
+            if (!containsKey && optionalFieldValue.isPresent()) {
                 // field is present now validate the field
                 logger.debug("FieldModel contains '{}'", key);
                 FieldValueModel fieldValueModel = optionalFieldValue.get();
