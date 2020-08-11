@@ -30,13 +30,15 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -50,44 +52,44 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 
 @Component
-public class AzureBoardsCustomEndpoint extends ButtonCustomEndpoint {
+public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomEndpoint.class);
 
-    private final ResponseFactory responseFactory;
     private final AlertProperties alertProperties;
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
 
-    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
+    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter)
         throws AlertException {
-        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager);
-        this.responseFactory = responseFactory;
+        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager, responseFactory, gson);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
     }
 
     @Override
-    public ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    protected OAuthEndpointResponse createOAuthResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
             FieldAccessor fieldAccessor = createFieldAccessor(fieldModel);
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return responseFactory.createBadRequestResponse("", "client id not found.");
+                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "client id not found.");
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
             if (!alertServerUrl.isPresent()) {
-                return responseFactory.createBadRequestResponse("", "Could not determine the alert server url for the callback.");
+                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
             }
             String authUrl = createAuthURL(clientId.get(), alertServerUrl.get());
             logger.info("Authenticating Azure OAuth URL: " + authUrl);
-            return responseFactory.createFoundRedirectResponse(authUrl);
+
+            //TODO add code to check if Alert has already been authorized
+            return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, authUrl, "");
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            return responseFactory.createInternalServerErrorResponse("", "Error activating azure oauth.");
+            return new OAuthEndpointResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", "Error activating azure oauth.");
         }
     }
 
