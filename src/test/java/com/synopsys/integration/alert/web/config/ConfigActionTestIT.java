@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,34 +39,34 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
 
     @Test
     public void deleteSensitiveFieldFromConfig() throws AlertException, AlertFieldException {
-        final FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
-        Mockito.doReturn(Map.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
-        final ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter);
-        final ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
+        FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
+        Mockito.doReturn(List.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
+        ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter);
+        ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
-        final ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);
+        ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);
         proxyPort.setFieldValue("80");
-        final ConfigurationFieldModel proxyUsername = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_USERNAME);
+        ConfigurationFieldModel proxyUsername = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_USERNAME);
         proxyUsername.setFieldValue("username");
-        final ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(ProxyManager.KEY_PROXY_PWD);
+        ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(ProxyManager.KEY_PROXY_PWD);
         proxyPassword.setFieldValue("somestuff");
-        final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
 
-        final FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
-        final FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
+        FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
+        FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
         final String newUsername = "Hello";
-        final FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(newUsername), true);
-        final FieldValueModel proxyPasswordFieldValue = new FieldValueModel(Set.of(), false);
+        FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(newUsername), true);
+        FieldValueModel proxyPasswordFieldValue = new FieldValueModel(Set.of(), false);
 
-        final Long longConfigId = configurationModel.getConfigurationId();
-        final String configId = String.valueOf(longConfigId);
+        Long longConfigId = configurationModel.getConfigurationId();
+        String configId = String.valueOf(longConfigId);
 
-        final FieldModel fieldModel = new FieldModel(configId, settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(),
+        FieldModel fieldModel = new FieldModel(configId, settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(),
             new HashMap<>(Map.of(ProxyManager.KEY_PROXY_HOST, proxyHostFieldValue, ProxyManager.KEY_PROXY_PORT, proxyPortFieldValue,
                 ProxyManager.KEY_PROXY_USERNAME, proxyUsernameFieldValue, ProxyManager.KEY_PROXY_PWD, proxyPasswordFieldValue)));
-        final FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);
+        FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);
 
-        final Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
+        Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
         assertEquals(newUsername, updatedValues.get(ProxyManager.KEY_PROXY_USERNAME).getValue().orElse(""));
         assertNull(updatedValues.get(ProxyManager.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
