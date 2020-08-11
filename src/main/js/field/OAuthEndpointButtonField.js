@@ -174,4 +174,4 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-export default connect(mapStateToProps, null)(EndpointButtonField);
+export default connect(mapStateToProps, null)(OAuthEndpointButtonField);
