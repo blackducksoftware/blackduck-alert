@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -110,12 +111,18 @@ public class AzureBoardsCustomEndpoint extends ButtonCustomEndpoint {
         authUrlBuilder.append(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL);
         authUrlBuilder.append("&client_id=");
         authUrlBuilder.append(clientId);
-        //TODO add a GUID here and store the GUID to validate in the callback that this is a good request.
-        authUrlBuilder.append("&state=alertAuth");
+        //TODO have an object that stores the request keys and purges them after some amount of time.
+        authUrlBuilder.append("&state=");
+        authUrlBuilder.append(createRequestKey());
         authUrlBuilder.append("&scope=vso.work%20vso.code_write");
         authUrlBuilder.append("&redirect_uri=");
         authUrlBuilder.append(alertServerUrl);
         authUrlBuilder.append(AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
         return authUrlBuilder.toString();
+    }
+
+    private String createRequestKey() {
+        UUID requestID = UUID.randomUUID();
+        return String.format("%s-%s", "alert-auth-request", requestID.toString());
     }
 }
