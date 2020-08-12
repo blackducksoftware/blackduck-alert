@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -89,11 +90,14 @@ public class AzureOauthCallbackController {
                 AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, fieldAccessor);
                 Proxy proxy = proxyManager.createProxy();
                 AzureHttpService azureService = properties.createAzureHttpService(proxy, gson);
+                // TODO store the tokens
+                // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
                 logger.info("Azure Service created with the oauth parameters.");
             }
         } catch (AlertException ex) {
             logger.error("Error in azure oauth callback ", ex);
         }
-        return responseFactory.createOkContentResponse("");
+        // redirect back to the global channel configuration URL in the Alert UI.
+        return responseFactory.createFoundRedirectResponse("channels/" + AzureBoardsDescriptor.AZURE_BOARDS_URL);
     }
 }

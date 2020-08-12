@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -111,16 +113,23 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private String createAuthURL(String clientId, String alertServerUrl) {
         StringBuilder authUrlBuilder = new StringBuilder(300);
         authUrlBuilder.append(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL);
-        authUrlBuilder.append("&client_id=");
-        authUrlBuilder.append(clientId);
-        //TODO have an object that stores the request keys and purges them after some amount of time.
-        authUrlBuilder.append("&state=");
-        authUrlBuilder.append(createRequestKey());
-        authUrlBuilder.append("&scope=vso.work%20vso.code_write");
-        authUrlBuilder.append("&redirect_uri=");
-        authUrlBuilder.append(alertServerUrl);
-        authUrlBuilder.append(AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
+        authUrlBuilder.append(createQueryString(clientId, alertServerUrl));
         return authUrlBuilder.toString();
+    }
+
+    private String createQueryString(String clientId, String alertServerUrl) {
+        String authorizationUrl = String.format("%s%s", alertServerUrl, AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
+        StringBuilder queryBuilder = new StringBuilder(250);
+        queryBuilder.append("&client_id=");
+        queryBuilder.append(clientId);
+        //TODO have an object that stores the request keys and purges them after some amount of time.
+        //TODO also store a redirect URL if possible
+        queryBuilder.append("&state=");
+        queryBuilder.append(createRequestKey());
+        queryBuilder.append("&scope=vso.work%20vso.code_write");
+        queryBuilder.append("&redirect_uri=");
+        queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
+        return queryBuilder.toString();
     }
 
     private String createRequestKey() {
