@@ -8,6 +8,7 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTErrorUtils from 'util/httpErrorUtilities';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class OAuthEndpointButtonField extends Component {
     constructor(props) {
@@ -20,7 +21,8 @@ class OAuthEndpointButtonField extends Component {
             showModal: false,
             fieldError: this.props.errorValue,
             success: false,
-            progress: false
+            progress: false,
+            authenticated: false
         };
     }
 
@@ -60,13 +62,12 @@ class OAuthEndpointButtonField extends Component {
                     checked: true,
                     type: 'checkbox'
                 };
-                debugger;
                 onChange({ target });
                 const okRequest = HTTErrorUtils.isOk(httpStatus);
                 this.setState({
-                    success: okRequest
+                    success: okRequest,
+                    authenticated
                 });
-
                 if (okRequest) {
                     window.location.replace(authorizationUrl);
                 } else {
@@ -96,6 +97,9 @@ class OAuthEndpointButtonField extends Component {
         const {
             buttonLabel, fields, fieldKey, readOnly, statusMessage
         } = this.props;
+        const {
+            authenticated, progress, success
+        } = this.state;
 
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">
@@ -103,10 +107,13 @@ class OAuthEndpointButtonField extends Component {
                     id={fieldKey}
                     onClick={this.flipShowModal}
                     disabled={readOnly}
-                    performingAction={this.state.progress}
+                    performingAction={progress}
                 >{buttonLabel}
                 </GeneralButton>
-                {this.state.success &&
+                {authenticated &&
+                <FontAwesomeIcon icon="check" className="alert-icon synopsysGreen" size="2x"
+                                 title="authenticated" />}
+                {success &&
                 <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
 

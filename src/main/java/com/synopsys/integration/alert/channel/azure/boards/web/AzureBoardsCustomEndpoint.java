@@ -85,9 +85,9 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             }
             String authUrl = createAuthURL(clientId.get(), alertServerUrl.get());
             logger.info("Authenticating Azure OAuth URL: " + authUrl);
+            //TODO add code to check if Alert has already been authorized to set the authenticated flag.
 
-            //TODO add code to check if Alert has already been authorized
-            return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, authUrl, "");
+            return new OAuthEndpointResponse(HttpStatus.OK.value(), false, authUrl, "");
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
