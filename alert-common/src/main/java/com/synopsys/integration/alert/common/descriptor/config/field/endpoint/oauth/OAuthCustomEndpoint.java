@@ -26,13 +26,13 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public abstract class OAuthCustomEndpoint extends ButtonCustomEndpoint {
+public abstract class OAuthCustomEndpoint extends CustomEndpoint<String> {
     public ResponseFactory responseFactory;
     public Gson gson;
 
