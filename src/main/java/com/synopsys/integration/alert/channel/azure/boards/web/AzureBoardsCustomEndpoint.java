@@ -84,7 +84,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                 return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
             }
             String authUrl = createAuthURL(clientId.get(), alertServerUrl.get());
-            logger.info("Authenticating Azure OAuth URL: " + authUrl);
+            logger.debug("Authenticating Azure OAuth URL: " + authUrl);
             //TODO add code to check if Alert has already been authorized to set the authenticated flag.
 
             return new OAuthEndpointResponse(HttpStatus.OK.value(), false, authUrl, "");
@@ -101,8 +101,9 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
             // check if a configuration exists because the client id is a sensitive field and won't have a value in the field model if updating.
             if (StringUtils.isNotBlank(fieldModel.getId())) {
-                Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()));
-                configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
+                configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
+                    .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                    .ifPresent(fields::putAll);
             }
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error creating field acessor for Azure authentication", ex);

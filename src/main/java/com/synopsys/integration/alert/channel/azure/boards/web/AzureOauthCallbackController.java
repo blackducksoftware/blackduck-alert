@@ -79,7 +79,7 @@ public class AzureOauthCallbackController {
     @GetMapping
     public ResponseEntity<String> oauthCallback() {
         try {
-            logger.info("callback method called");
+            logger.debug("Azure OAuth callback method called");
             List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
             Optional<ConfigurationModel> configModel = azureChannelConfigs.stream()
                                                            .findFirst();
