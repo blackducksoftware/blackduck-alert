@@ -66,7 +66,10 @@ class EndpointSelectField extends Component {
                 .then((data) => {
                     this.setState({
                         options: [],
-                        fieldError: data.message
+                        fieldError: {
+                            severity: 'ERROR',
+                            fieldMessage: data.message
+                        }
                     }, this.emptyFieldValue);
                 });
             }

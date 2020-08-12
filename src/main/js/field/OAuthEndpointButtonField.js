@@ -7,6 +7,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
+import * as HTTErrorUtils from 'util/httpErrorUtilities';
 
 class OAuthEndpointButtonField extends Component {
     constructor(props) {
@@ -53,22 +54,27 @@ class OAuthEndpointButtonField extends Component {
 
             response.json()
             .then((data) => {
-                const { authenticated, authorizationUrl, message } = data;
+                const { httpStatus, authenticated, authorizationUrl, message } = data;
                 const target = {
                     name: [fieldKey],
                     checked: true,
                     type: 'checkbox'
                 };
+                debugger;
                 onChange({ target });
+                const okRequest = HTTErrorUtils.isOk(httpStatus);
                 this.setState({
-                    success: authenticated && !message
+                    success: okRequest
                 });
 
-                if (!message && authorizationUrl) {
+                if (okRequest) {
                     window.location.replace(authorizationUrl);
                 } else {
                     this.setState({
-                        fieldError: message
+                        fieldError: {
+                            severity: 'ERROR',
+                            fieldMessage: message
+                        }
                     });
                 }
             });
@@ -88,7 +94,7 @@ class OAuthEndpointButtonField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
+            buttonLabel, fields, fieldKey, readOnly, statusMessage
         } = this.props;
 
         const endpointField = (
@@ -100,18 +106,6 @@ class OAuthEndpointButtonField extends Component {
                     performingAction={this.state.progress}
                 >{buttonLabel}
                 </GeneralButton>
-                {successBox &&
-                <div className="d-inline-flex p-2 checkbox">
-                    <input
-                        className="form-control"
-                        id={`${fieldKey}-confirmation`}
-                        type="checkbox"
-                        name={name}
-                        checked={value}
-                        readOnly
-                    />
-                </div>
-                }
                 {this.state.success &&
                 <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
@@ -153,7 +147,6 @@ OAuthEndpointButtonField.propTypes = {
     requestedDataFieldKeys: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
-    successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string

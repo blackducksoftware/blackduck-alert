@@ -70,7 +70,10 @@ class EndpointButtonField extends Component {
                     };
                     onChange({ target });
                     this.setState({
-                        fieldError: data.message
+                        fieldError: {
+                            severity: 'ERROR',
+                            fieldMessage: data.message
+                        }
                     });
                 });
             }
