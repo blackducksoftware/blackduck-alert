@@ -7,7 +7,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
-import * as HTTErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class OAuthEndpointButtonField extends Component {
@@ -63,7 +63,7 @@ class OAuthEndpointButtonField extends Component {
                     type: 'checkbox'
                 };
                 onChange({ target });
-                const okRequest = HTTErrorUtils.isOk(httpStatus);
+                const okRequest = HTTPErrorUtils.isOk(httpStatus);
                 this.setState({
                     success: okRequest,
                     authenticated
