@@ -46,25 +46,27 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 
 public class AzureBoardsProperties implements IssueTrackerServiceConfig {
+    private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
-    private final String oAuthUserId;
+    private final String oauthUserId;
     private final List<String> scopes;
 
     public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, FieldAccessor fieldAccessor) {
         String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
-        String oAuthUserEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL);
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
+        String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
+        //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
+        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_WRITE.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, oAuthUserEmail, defaultScopes);
     }
 
-    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String oAuthUserId, List<String> scopes) {
+    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String oauthUserId, List<String> scopes) {
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
-        this.oAuthUserId = oAuthUserId;
+        this.oauthUserId = oauthUserId;
         this.scopes = scopes;
     }
 
@@ -76,8 +78,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return clientId;
     }
 
-    public String getoAuthUserId() {
-        return oAuthUserId;
+    public String getOauthUserId() {
+        return oauthUserId;
     }
 
     public List<String> getScopes() {
@@ -89,7 +91,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", oAuthUserId)));
+                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", oauthUserId)));
             return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);
@@ -99,7 +101,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     public AuthorizationCodeFlow createOAuthFlow(NetHttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
                    .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
-                   .addRefreshListener(new DataStoreCredentialRefreshListener(oAuthUserId, credentialDataStoreFactory))
+                   .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
                    .build();
     }
 
@@ -126,7 +128,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
-        Credential storedCredential = authorizationCodeFlow.loadCredential(oAuthUserId);
+        Credential storedCredential = authorizationCodeFlow.loadCredential(oauthUserId);
         return Optional.ofNullable(storedCredential);
     }
 

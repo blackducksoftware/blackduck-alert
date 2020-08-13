@@ -127,8 +127,9 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         //TODO have an object that stores the request keys and purges them after some amount of time.
         queryBuilder.append("&state=");
         queryBuilder.append(createRequestKey());
-        queryBuilder.append("&scope=vso.project_write%20vso.work_full");
-        queryBuilder.append(AzureOAuthScopes.PROJECTS_READ.getScope());
+        queryBuilder.append("&scope=");
+        //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
+        queryBuilder.append(AzureOAuthScopes.PROJECTS_WRITE.getScope());
         queryBuilder.append("%20");
         queryBuilder.append(AzureOAuthScopes.WORK_FULL.getScope());
         queryBuilder.append("&redirect_uri=");

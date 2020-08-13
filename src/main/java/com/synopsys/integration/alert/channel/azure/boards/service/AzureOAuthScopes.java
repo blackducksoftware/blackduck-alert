@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.azure.boards.service;
 
 public enum AzureOAuthScopes {
     PROJECTS_READ("vso.projects"),
+    PROJECTS_WRITE("vso.project_write"),
     WORK_FULL("vso.work_full");
 
     private final String scope;
