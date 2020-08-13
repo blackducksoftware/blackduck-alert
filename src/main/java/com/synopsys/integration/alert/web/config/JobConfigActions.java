@@ -255,7 +255,7 @@ public class JobConfigActions {
     }
 
     // TODO abstract duplicate functionality
-    public String testJob(JobFieldModel jobFieldModel) throws IntegrationException {
+    public MessageResult testJob(JobFieldModel jobFieldModel) throws IntegrationException {
         validateJob(jobFieldModel);
         Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
@@ -275,15 +275,14 @@ public class JobConfigActions {
                 String jobId = channelFieldModel.getId();
 
                 testProviderConfig(fieldAccessor, jobId, channelFieldModel);
-                MessageResult testResult = testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
-                return testResult.getStatusMessage();
+                return testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
             } else {
                 String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
                 throw new AlertMethodNotAllowedException("Test functionality not implemented for " + descriptorName);
             }
         }
-        return "No field model of type channel was was sent to test.";
+        return new MessageResult("No field model of type channel was was sent to test.");
     }
 
     public Optional<String> checkGlobalConfigExists(String descriptorName) {

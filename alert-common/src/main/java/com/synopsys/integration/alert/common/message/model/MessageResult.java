@@ -22,13 +22,24 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldErrorSeverity;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageResult extends AlertSerializableModel {
     private String statusMessage;
+    private List<AlertFieldStatus> fieldStatuses;
 
     public MessageResult(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    public MessageResult(String statusMessage, List<AlertFieldStatus> fieldStatuses) {
+        this.statusMessage = statusMessage;
+        this.fieldStatuses = fieldStatuses;
     }
 
     public String getStatusMessage() {
@@ -37,6 +48,40 @@ public class MessageResult extends AlertSerializableModel {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    public List<AlertFieldStatus> getFieldStatuses() {
+        return fieldStatuses;
+    }
+
+    public boolean hasErrors() {
+        return hasFieldStatusBySeverity(FieldErrorSeverity.ERROR);
+    }
+
+    public List<AlertFieldStatus> fieldErrors() {
+        return getFieldStatusesBySeverity(FieldErrorSeverity.ERROR);
+    }
+
+    public boolean hasWarnings() {
+        return hasFieldStatusBySeverity(FieldErrorSeverity.WARNING);
+    }
+
+    public List<AlertFieldStatus> fieldWarnings() {
+        return getFieldStatusesBySeverity(FieldErrorSeverity.WARNING);
+    }
+
+    public List<AlertFieldStatus> getFieldStatusesBySeverity(FieldErrorSeverity severity) {
+        return fieldStatuses
+                   .stream()
+                   .filter(status -> status.getSeverity().equals(severity))
+                   .collect(Collectors.toList());
+    }
+
+    public boolean hasFieldStatusBySeverity(FieldErrorSeverity severity) {
+        return fieldStatuses
+                   .stream()
+                   .map(AlertFieldStatus::getSeverity)
+                   .anyMatch(severity::equals);
     }
 
 }

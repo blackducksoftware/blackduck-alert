@@ -56,6 +56,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -80,7 +81,7 @@ public class JobConfigController extends BaseController {
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
-    private PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public JobConfigController(JobConfigActions jobConfigActions, ResponseFactory responseFactory, ContentConverter contentConverter, AuthorizationManager authorizationManager,
@@ -293,7 +294,7 @@ public class JobConfigController extends BaseController {
         return sendCustomMessage(restModel, jobConfigActions::testJob);
     }
 
-    private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {
+    private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, MessageResult, IntegrationException> messageFunction) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -303,8 +304,13 @@ public class JobConfigController extends BaseController {
         }
         String id = restModel.getJobId();
         try {
-            String responseMessage = messageFunction.apply(restModel);
-            return responseFactory.createOkResponse(id, responseMessage);
+            MessageResult result = messageFunction.apply(restModel);
+            if (result.hasErrors()) {
+                return responseFactory.createFieldErrorResponse(id, result.getStatusMessage(), result.getFieldStatuses());
+            } else if (result.hasWarnings()) {
+                // TODO create an OK response that includes warnings
+            }
+            return responseFactory.createOkResponse(id, result.getStatusMessage());
         } catch (IntegrationRestException e) {
             return createResponseFromIntegrationRestException(responseFactory, e, id);
         } catch (AlertFieldException e) {
