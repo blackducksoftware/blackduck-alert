@@ -34,6 +34,20 @@ public class MessageResult extends AlertSerializableModel {
     private final String statusMessage;
     private final List<AlertFieldStatus> fieldStatuses;
 
+    public static List<AlertFieldStatus> getFieldStatusesBySeverity(List<AlertFieldStatus> fieldStatuses, FieldStatusSeverity severity) {
+        return fieldStatuses
+                   .stream()
+                   .filter(status -> status.getSeverity().equals(severity))
+                   .collect(Collectors.toList());
+    }
+
+    public static boolean hasFieldStatusBySeverity(List<AlertFieldStatus> fieldStatuses, FieldStatusSeverity severity) {
+        return fieldStatuses
+                   .stream()
+                   .map(AlertFieldStatus::getSeverity)
+                   .anyMatch(severity::equals);
+    }
+
     public MessageResult(String statusMessage) {
         this.statusMessage = statusMessage;
         fieldStatuses = List.of();
@@ -75,17 +89,11 @@ public class MessageResult extends AlertSerializableModel {
     }
 
     public List<AlertFieldStatus> getFieldStatusesBySeverity(FieldStatusSeverity severity) {
-        return fieldStatuses
-                   .stream()
-                   .filter(status -> status.getSeverity().equals(severity))
-                   .collect(Collectors.toList());
+        return getFieldStatusesBySeverity(fieldStatuses, severity);
     }
 
     public boolean hasFieldStatusBySeverity(FieldStatusSeverity severity) {
-        return fieldStatuses
-                   .stream()
-                   .map(AlertFieldStatus::getSeverity)
-                   .anyMatch(severity::equals);
+        return hasFieldStatusBySeverity(fieldStatuses, severity);
     }
 
 }

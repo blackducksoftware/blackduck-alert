@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -84,6 +85,10 @@ public class BlackDuckDistributionTestAction extends TestAction {
             }
         } else {
             fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required"));
+        }
+
+        if (MessageResult.hasFieldStatusBySeverity(fieldStatuses, FieldStatusSeverity.ERROR)) {
+            return new MessageResult("There were errors with the BlackDuck provider fields", fieldStatuses);
         }
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
