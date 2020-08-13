@@ -26,6 +26,8 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,6 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -77,9 +78,12 @@ public class AzureOauthCallbackController {
     }
 
     @GetMapping
-    public ResponseEntity<String> oauthCallback() {
+    public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
+        logger.debug("Azure OAuth callback method called");
         try {
-            logger.debug("Azure OAuth callback method called");
+            String requestURI = request.getRequestURI();
+            logger.debug("Request URI ", requestURI);
+
             List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
             Optional<ConfigurationModel> configModel = azureChannelConfigs.stream()
                                                            .findFirst();
@@ -94,7 +98,7 @@ public class AzureOauthCallbackController {
                 // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
                 logger.info("Azure Service created with the oauth parameters.");
             }
-        } catch (AlertException ex) {
+        } catch (Exception ex) {
             logger.error("Error in azure oauth callback ", ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
