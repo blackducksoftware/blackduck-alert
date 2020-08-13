@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageResult extends AlertSerializableModel {
@@ -49,6 +50,12 @@ public class MessageResult extends AlertSerializableModel {
 
     public List<AlertFieldStatus> getFieldStatuses() {
         return fieldStatuses;
+    }
+
+    public void throwExceptionForFieldStatues() throws AlertFieldException {
+        if (!fieldStatuses.isEmpty()) {
+            throw new AlertFieldException(statusMessage, fieldStatuses);
+        }
     }
 
     public boolean hasErrors() {

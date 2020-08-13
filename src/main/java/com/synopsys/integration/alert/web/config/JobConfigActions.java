@@ -132,10 +132,7 @@ public class JobConfigActions {
 
     public JobFieldModel saveJob(JobFieldModel jobFieldModel) throws AlertException {
         MessageResult validationResult = validateJob(jobFieldModel);
-        List<AlertFieldStatus> fieldStatuses = validationResult.getFieldStatuses();
-        if (!fieldStatuses.isEmpty()) {
-            throw new AlertFieldException(fieldStatuses);
-        }
+        validationResult.throwExceptionForFieldStatues();
         validateJobNameUnique(null, jobFieldModel);
 
         Set<String> descriptorNames = new HashSet<>();
@@ -160,10 +157,7 @@ public class JobConfigActions {
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
         MessageResult validationResult = validateJob(jobFieldModel);
-        List<AlertFieldStatus> fieldStatuses = validationResult.getFieldStatuses();
-        if (!fieldStatuses.isEmpty()) {
-            throw new AlertFieldException(fieldStatuses);
-        }
+        validationResult.throwExceptionForFieldStatues();
         validateJobNameUnique(id, jobFieldModel);
 
         ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
