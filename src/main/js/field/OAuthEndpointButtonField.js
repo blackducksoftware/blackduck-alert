@@ -7,8 +7,10 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class EndpointButtonField extends Component {
+class OAuthEndpointButtonField extends Component {
     constructor(props) {
         super(props);
 
@@ -19,7 +21,8 @@ class EndpointButtonField extends Component {
             showModal: false,
             fieldError: this.props.errorValue,
             success: false,
-            progress: false
+            progress: false,
+            authenticated: false
         };
     }
 
@@ -50,33 +53,32 @@ class EndpointButtonField extends Component {
             this.setState({
                 progress: false
             });
-            if (response.ok) {
+
+            response.json()
+            .then((data) => {
+                const { httpStatus, authenticated, authorizationUrl, message } = data;
                 const target = {
                     name: [fieldKey],
                     checked: true,
                     type: 'checkbox'
                 };
                 onChange({ target });
+                const okRequest = HTTPErrorUtils.isOk(httpStatus);
                 this.setState({
-                    success: true
+                    success: okRequest,
+                    authenticated
                 });
-            } else {
-                response.json()
-                .then((data) => {
-                    const target = {
-                        name: [fieldKey],
-                        checked: false,
-                        type: 'checkbox'
-                    };
-                    onChange({ target });
+                if (okRequest) {
+                    window.location.replace(authorizationUrl);
+                } else {
                     this.setState({
                         fieldError: {
                             severity: 'ERROR',
-                            fieldMessage: data.message
+                            fieldMessage: message
                         }
                     });
-                });
-            }
+                }
+            });
         });
     }
 
@@ -93,8 +95,11 @@ class EndpointButtonField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
+            buttonLabel, fields, fieldKey, readOnly, statusMessage
         } = this.props;
+        const {
+            authenticated, progress, success
+        } = this.state;
 
         const endpointField = (
             <div className="d-inline-flex p-2 col-sm-8">
@@ -102,22 +107,13 @@ class EndpointButtonField extends Component {
                     id={fieldKey}
                     onClick={this.flipShowModal}
                     disabled={readOnly}
-                    performingAction={this.state.progress}
+                    performingAction={progress}
                 >{buttonLabel}
                 </GeneralButton>
-                {successBox &&
-                <div className="d-inline-flex p-2 checkbox">
-                    <input
-                        className="form-control"
-                        id={`${fieldKey}-confirmation`}
-                        type="checkbox"
-                        name={name}
-                        checked={value}
-                        readOnly
-                    />
-                </div>
-                }
-                {this.state.success &&
+                {authenticated &&
+                <FontAwesomeIcon icon="check" className="alert-icon synopsysGreen" size="2x"
+                                 title="authenticated" />}
+                {success &&
                 <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
 
@@ -146,7 +142,7 @@ class EndpointButtonField extends Component {
     }
 }
 
-EndpointButtonField.propTypes = {
+OAuthEndpointButtonField.propTypes = {
     id: PropTypes.string,
     endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
@@ -158,14 +154,13 @@ EndpointButtonField.propTypes = {
     requestedDataFieldKeys: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
-    successBox: PropTypes.bool.isRequired,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string
 };
 
-EndpointButtonField.defaultProps = {
-    id: 'endpointButtonFieldId',
+OAuthEndpointButtonField.defaultProps = {
+    id: 'oauthEndpointButtonFieldId',
     value: false,
     fields: [],
     requestedDataFieldKeys: [],
@@ -179,4 +174,4 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-export default connect(mapStateToProps, null)(EndpointButtonField);
+export default connect(mapStateToProps, null)(OAuthEndpointButtonField);

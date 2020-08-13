@@ -93,3 +93,27 @@ export function createHttpErrorHandler(statusHandlers) {
         return empty();
     };
 }
+
+export function isStatusWithinRange(statusCode, lowerBound, upperBound) {
+    return statusCode >= lowerBound && statusCode <= upperBound;
+}
+
+export function isOk(statusCode) {
+    return isStatusWithinRange(statusCode, 200, 299);
+}
+
+export function isRedirect(statusCode) {
+    return isStatusWithinRange(statusCode, 300, 399);
+}
+
+export function isClientError(statusCode) {
+    return isStatusWithinRange(statusCode, 400, 499);
+}
+
+export function isServerError(statusCode) {
+    return isStatusWithinRange(statusCode, 500, 599);
+}
+
+export function isError(statusCode) {
+    return isClientError(statusCode) || isServerError(statusCode);
+}

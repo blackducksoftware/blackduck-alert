@@ -39,6 +39,9 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
+    public static final String CALLBACKS_PATH = BASE_PATH + "/callbacks";
+    public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/oauth";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     protected static final String LOGGER_PATTERN_BREAKING_EXPRESSION = "[\n|\r|\t]";
 

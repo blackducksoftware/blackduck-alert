@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
@@ -61,9 +61,11 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         //        ConfigField azureBoardsUrlField = new URLInputConfigField(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL, LABEL_AZURE_BOARDS_URL, DESCRIPTION_AZURE_BOARDS_URL);
         ConfigField organizationName = new TextInputConfigField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME, LABEL_ORGANIZATION_NAME, DESCRIPTION_ORGANIZATION_NAME).applyRequired(true);
         ConfigField clientId = new TextInputConfigField(AzureBoardsDescriptor.KEY_CLIENT_ID, LABEL_CLIENT_ID, DESCRIPTION_CLIENT_ID).applyRequired(true);
-        ConfigField configureOAuth = new EndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
+        ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        // TODO requiredRelatedFields aren't validated when pushing endpoint button fields.
+        //.applyRequiredRelatedField(AzureBoardsDescriptor.KEY_CLIENT_ID);
         return List.of(organizationName, clientId, configureOAuth);
     }
 
