@@ -243,12 +243,17 @@ export function hasKey(fieldModel, key) {
 
 export function createFieldModelFromRequestedFields(fieldModel, requestedFields) {
     const newModel = {
+        id: null,
         context: null,
         descriptorName: null,
         keyToValues: {}
     };
 
     if (fieldModel) {
+        if (fieldModel.id) {
+            newModel.id = fieldModel.id;
+        }
+
         if (fieldModel.context) {
             newModel.context = fieldModel.context;
         }
@@ -257,14 +262,16 @@ export function createFieldModelFromRequestedFields(fieldModel, requestedFields)
             newModel.descriptorName = fieldModel.descriptorName;
         }
 
-        Object.keys(fieldModel.keyToValues).filter(key => requestedFields.includes(key)).forEach((key) => {
-            const specificField = fieldModel.keyToValues[key];
-            const fieldValues = (Array.isArray(specificField.values) && specificField.values.length > 0) ? specificField.values : [];
-            newModel.keyToValues[key] = {
-                values: fieldValues,
-                isSet: specificField.isSet
-            };
-        });
+        Object.keys(fieldModel.keyToValues)
+            .filter((key) => requestedFields.includes(key))
+            .forEach((key) => {
+                const specificField = fieldModel.keyToValues[key];
+                const fieldValues = (Array.isArray(specificField.values) && specificField.values.length > 0) ? specificField.values : [];
+                newModel.keyToValues[key] = {
+                    values: fieldValues,
+                    isSet: specificField.isSet
+                };
+            });
     }
     return newModel;
 }
