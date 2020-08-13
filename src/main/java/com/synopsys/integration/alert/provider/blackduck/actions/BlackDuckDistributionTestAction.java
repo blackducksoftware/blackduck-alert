@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -62,13 +63,13 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+        ArrayList<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         Optional<String> optionalProviderConfigName = registeredFieldValues.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (optionalProviderConfigName.isPresent()) {
             String providerConfigName = optionalProviderConfigName.get();
-            Optional<String> projectNamePattern = registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
-            if (projectNamePattern.isPresent()) {
-                validatePatternMatchesProject(providerConfigName, projectNamePattern.get());
-            }
+            registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)
+                .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigName, projectNamePattern))
+                .ifPresent(fieldStatuses::add);
 
             Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getProviderConfigurationByName(providerConfigName)
                                                                             .map(blackDuckProvider::createStatefulProvider)
@@ -78,22 +79,22 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
                 BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
                 if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-                    throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck.");
+                    fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck."));
                 }
             }
         } else {
-            throw AlertFieldException.singleFieldError(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required");
+            fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required"));
         }
-
-        return new MessageResult("Successfully tested BlackDuck provider fields");
+        return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
-    private void validatePatternMatchesProject(String providerConfigName, String projectNamePattern) throws AlertFieldException {
+    private Optional<AlertFieldStatus> validatePatternMatchesProject(String providerConfigName, String projectNamePattern) {
         List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.getProjectsByProviderConfigName(providerConfigName);
         boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
-            throw AlertFieldException.singleFieldError(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
+            return Optional.of(AlertFieldStatus.warning(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects."));
         }
+        return Optional.empty();
     }
 
 }

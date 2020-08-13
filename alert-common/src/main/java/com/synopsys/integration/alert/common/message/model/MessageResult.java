@@ -33,6 +33,11 @@ public class MessageResult extends AlertSerializableModel {
     private final String statusMessage;
     private final List<AlertFieldStatus> fieldStatuses;
 
+    public static MessageResult singleFieldError(String fieldName, String errorMessage) {
+        AlertFieldStatus fieldError = AlertFieldStatus.error(fieldName, errorMessage);
+        return new MessageResult("Field error", List.of(fieldError));
+    }
+
     public MessageResult(String statusMessage) {
         this.statusMessage = statusMessage;
         fieldStatuses = List.of();

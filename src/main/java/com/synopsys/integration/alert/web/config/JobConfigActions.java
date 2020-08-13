@@ -289,10 +289,15 @@ public class JobConfigActions {
                 FieldAccessor fieldAccessor = new FieldAccessor(fields);
                 String jobId = channelFieldModel.getId();
 
-                testProviderConfig(fieldAccessor, jobId, channelFieldModel);
+                MessageResult providerTestResult = testProviderConfig(fieldAccessor, jobId, channelFieldModel);
+                if (providerTestResult.hasErrors()) {
+                    return providerTestResult;
+                }
+
+                List<AlertFieldStatus> resultFieldStatuses = concatStatuses(jobValidationResult.getFieldStatuses(), providerTestResult.getFieldStatuses());
                 MessageResult testActionResult = testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
-                List<AlertFieldStatus> validationAndTestActionFieldStatuses = Stream.concat(testActionResult.getFieldStatuses().stream(), jobValidationResult.getFieldStatuses().stream()).collect(Collectors.toList());
-                return new MessageResult(testActionResult.getStatusMessage(), validationAndTestActionFieldStatuses);
+                resultFieldStatuses = concatStatuses(resultFieldStatuses, testActionResult.getFieldStatuses());
+                return new MessageResult(testActionResult.getStatusMessage(), resultFieldStatuses);
             } else {
                 String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
@@ -334,12 +339,13 @@ public class JobConfigActions {
         return fields;
     }
 
-    private void testProviderConfig(FieldAccessor fieldAccessor, String jobId, FieldModel fieldModel) throws IntegrationException {
+    private MessageResult testProviderConfig(FieldAccessor fieldAccessor, String jobId, FieldModel fieldModel) throws IntegrationException {
         Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                       .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
-            providerTestAction.get().testConfig(jobId, fieldModel, fieldAccessor);
+            return providerTestAction.get().testConfig(jobId, fieldModel, fieldAccessor);
         }
+        return new MessageResult("Provider Config Valid");
     }
 
     private JobFieldModel readJobConfiguration(ConfigurationJobModel groupedConfiguration) throws AlertException {
@@ -368,6 +374,13 @@ public class JobConfigActions {
             return Optional.of(configurationFieldModel);
         }
         return Optional.empty();
+    }
+
+    private List<AlertFieldStatus> concatStatuses(List<AlertFieldStatus> firstStatuses, List<AlertFieldStatus> secondStatuses) {
+        return Stream.concat(
+            firstStatuses.stream(),
+            secondStatuses.stream()
+        ).collect(Collectors.toList());
     }
 
 }
