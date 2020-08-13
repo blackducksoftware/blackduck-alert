@@ -22,12 +22,11 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
-import java.io.Serializable;
 import java.util.Collection;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueTrackerResponse extends Stringable implements Serializable {
+public class IssueTrackerResponse extends AlertSerializableModel {
     private final String statusMessage;
     private final Collection<IssueTrackerIssueResponseModel> updatedIssues;
 

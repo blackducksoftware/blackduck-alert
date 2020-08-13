@@ -17,7 +17,7 @@ public class JobFieldErrorsTest {
 
         List<AlertFieldStatus> fieldError = new ArrayList<>();
         fieldError.add(AlertFieldStatus.error(fieldErrorKey, fieldErrorValue));
-        List<AlertFieldStatus> testResult = new JobFieldErrors(fieldError).getFieldErrors();
+        List<AlertFieldStatus> testResult = new JobFieldStatuses(fieldError).getFieldStatuses();
 
         assertEquals(fieldError, testResult);
     }
@@ -31,8 +31,8 @@ public class JobFieldErrorsTest {
 
         List<AlertFieldStatus> fieldError = new ArrayList<>();
         fieldError.add(AlertFieldStatus.error(fieldErrorKey, fieldErrorValue));
-        JobFieldErrors jobFieldError = new JobFieldErrors(configId, fieldError);
-        List<AlertFieldStatus> testResult = jobFieldError.getFieldErrors();
+        JobFieldStatuses jobFieldError = new JobFieldStatuses(configId, fieldError);
+        List<AlertFieldStatus> testResult = jobFieldError.getFieldStatuses();
 
         assertEquals(testResult, fieldError);
         assertEquals(configId, jobFieldError.getId());
