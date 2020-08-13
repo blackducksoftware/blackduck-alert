@@ -50,6 +50,9 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
+import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 @RestController
 @RequestMapping(AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
@@ -82,8 +85,10 @@ public class AzureOauthCallbackController {
         logger.debug("Azure OAuth callback method called");
         try {
             String requestURI = request.getRequestURI();
-            logger.debug("Request URI ", requestURI);
-
+            String requestQueryString = request.getQueryString();
+            logger.debug("Request URI {}?{}", requestURI, requestQueryString);
+            String authorizationCode = request.getParameter("code");
+            String state = request.getParameter("state");
             List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
             Optional<ConfigurationModel> configModel = azureChannelConfigs.stream()
                                                            .findFirst();
@@ -94,14 +99,18 @@ public class AzureOauthCallbackController {
                 AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, fieldAccessor);
                 Proxy proxy = proxyManager.createProxy();
                 AzureHttpService azureService = properties.createAzureHttpService(proxy, gson);
-                // TODO store the tokens
+                AzureProjectService azureProjectService = new AzureProjectService(azureService);
+
                 // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
                 logger.info("Azure Service created with the oauth parameters.");
+                AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(properties.getOrganizationName());
+                Integer projectCount = projects.getCount();
+                logger.info("Azure Boards project count: {}", projectCount);
             }
         } catch (Exception ex) {
             logger.error("Error in azure oauth callback ", ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
-        return responseFactory.createFoundRedirectResponse("channels/" + AzureBoardsDescriptor.AZURE_BOARDS_URL);
+        return responseFactory.createFoundRedirectResponse("/channels/" + AzureBoardsDescriptor.AZURE_BOARDS_URL);
     }
 }

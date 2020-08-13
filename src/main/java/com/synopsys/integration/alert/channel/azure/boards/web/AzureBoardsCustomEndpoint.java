@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureOAuthScopes;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthCustomEndpoint;
@@ -106,7 +107,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                     .ifPresent(fields::putAll);
             }
         } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error creating field acessor for Azure authentication", ex);
+            logger.error("Error creating field accessor for Azure authentication", ex);
         }
         return new FieldAccessor(fields);
     }
@@ -124,10 +125,12 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         queryBuilder.append("&client_id=");
         queryBuilder.append(clientId);
         //TODO have an object that stores the request keys and purges them after some amount of time.
-        //TODO also store a redirect URL if possible
         queryBuilder.append("&state=");
         queryBuilder.append(createRequestKey());
-        queryBuilder.append("&scope=vso.work%20vso.code_write");
+        queryBuilder.append("&scope=vso.project_write%20vso.work_full");
+        queryBuilder.append(AzureOAuthScopes.PROJECTS_READ.getScope());
+        queryBuilder.append("%20");
+        queryBuilder.append(AzureOAuthScopes.WORK_FULL.getScope());
         queryBuilder.append("&redirect_uri=");
         queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
         return queryBuilder.toString();
