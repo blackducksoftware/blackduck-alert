@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -61,8 +63,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldErrors;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -129,8 +131,13 @@ public class JobConfigActions {
     }
 
     public JobFieldModel saveJob(JobFieldModel jobFieldModel) throws AlertException {
-        validateJob(jobFieldModel);
+        MessageResult validationResult = validateJob(jobFieldModel);
+        List<AlertFieldStatus> fieldStatuses = validationResult.getFieldStatuses();
+        if (!fieldStatuses.isEmpty()) {
+            throw new AlertFieldException(fieldStatuses);
+        }
         validateJobNameUnique(null, jobFieldModel);
+
         Set<String> descriptorNames = new HashSet<>();
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -152,7 +159,11 @@ public class JobConfigActions {
     }
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertException {
-        validateJob(jobFieldModel);
+        MessageResult validationResult = validateJob(jobFieldModel);
+        List<AlertFieldStatus> fieldStatuses = validationResult.getFieldStatuses();
+        if (!fieldStatuses.isEmpty()) {
+            throw new AlertFieldException(fieldStatuses);
+        }
         validateJobNameUnique(id, jobFieldModel);
 
         ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
@@ -226,20 +237,20 @@ public class JobConfigActions {
         }
     }
 
-    public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
+    public MessageResult validateJob(JobFieldModel jobFieldModel) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            fieldStatuses.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
 
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
+        if (!fieldStatuses.isEmpty()) {
+            return new MessageResult("Invalid", fieldStatuses);
         }
-        return "Valid";
+        return new MessageResult("Valid");
     }
 
-    public List<JobFieldErrors> validateJobs() throws AlertException {
-        List<JobFieldErrors> errorsList = new LinkedList<>();
+    public List<JobFieldStatuses> validateJobs() throws AlertException {
+        List<JobFieldStatuses> errorsList = new LinkedList<>();
         List<JobFieldModel> jobFieldModels = getAllJobs();
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
@@ -247,7 +258,7 @@ public class JobConfigActions {
                 fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
             }
             if (!fieldErrors.isEmpty()) {
-                errorsList.add(new JobFieldErrors(jobFieldModel.getJobId(), fieldErrors));
+                errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
         }
 
@@ -256,7 +267,11 @@ public class JobConfigActions {
 
     // TODO abstract duplicate functionality
     public MessageResult testJob(JobFieldModel jobFieldModel) throws IntegrationException {
-        validateJob(jobFieldModel);
+        MessageResult jobValidationResult = validateJob(jobFieldModel);
+        if (jobValidationResult.hasErrors()) {
+            return jobValidationResult;
+        }
+
         Collection<FieldModel> otherJobModels = new LinkedList<>();
         FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(jobFieldModel, otherJobModels);
 
@@ -275,7 +290,9 @@ public class JobConfigActions {
                 String jobId = channelFieldModel.getId();
 
                 testProviderConfig(fieldAccessor, jobId, channelFieldModel);
-                return testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
+                MessageResult testActionResult = testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
+                List<AlertFieldStatus> validationAndTestActionFieldStatuses = Stream.concat(testActionResult.getFieldStatuses().stream(), jobValidationResult.getFieldStatuses().stream()).collect(Collectors.toList());
+                return new MessageResult(testActionResult.getStatusMessage(), validationAndTestActionFieldStatuses);
             } else {
                 String descriptorName = channelFieldModel.getDescriptorName();
                 logger.error("Test action did not exist: {}", descriptorName);
