@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -66,11 +67,12 @@ public class AzureOauthCallbackController {
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter configFieldModelConverter;
+    private final AlertProperties alertProperties;
 
     @Autowired
     public AzureOauthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
-        ConfigurationFieldModelConverter configFieldModelConverter) {
+        ConfigurationFieldModelConverter configFieldModelConverter, AlertProperties alertProperties) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsChannelKey = azureBoardsChannelKey;
@@ -78,6 +80,7 @@ public class AzureOauthCallbackController {
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
         this.configFieldModelConverter = configFieldModelConverter;
+        this.alertProperties = alertProperties;
     }
 
     @GetMapping
@@ -111,6 +114,15 @@ public class AzureOauthCallbackController {
             logger.error("Error in azure oauth callback ", ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
-        return responseFactory.createFoundRedirectResponse("/channels/" + AzureBoardsDescriptor.AZURE_BOARDS_URL);
+        return responseFactory.createFoundRedirectResponse(createUIRedirectLocation());
+    }
+
+    private String createUIRedirectLocation() {
+        StringBuilder locationBuilder = new StringBuilder(200);
+        alertProperties.getServerUrl()
+            .ifPresent(locationBuilder::append);
+        locationBuilder.append("/channels/");
+        locationBuilder.append(AzureBoardsDescriptor.AZURE_BOARDS_URL);
+        return locationBuilder.toString();
     }
 }
