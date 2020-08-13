@@ -26,19 +26,20 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
-public class JobFieldErrors extends Config {
-    private final List<AlertFieldStatus> fieldErrors;
+public class JobFieldStatuses extends Config {
+    private final List<AlertFieldStatus> fieldStatuses;
 
-    public JobFieldErrors(List<AlertFieldStatus> fieldErrors) {
-        this.fieldErrors = fieldErrors;
+    public JobFieldStatuses(List<AlertFieldStatus> fieldStatuses) {
+        this.fieldStatuses = fieldStatuses;
     }
 
-    public JobFieldErrors(String id, List<AlertFieldStatus> fieldErrors) {
+    public JobFieldStatuses(String id, List<AlertFieldStatus> fieldStatuses) {
         super(id);
-        this.fieldErrors = fieldErrors;
+        this.fieldStatuses = fieldStatuses;
     }
 
-    public List<AlertFieldStatus> getFieldErrors() {
-        return fieldErrors;
+    public List<AlertFieldStatus> getFieldStatuses() {
+        return fieldStatuses;
     }
+
 }
