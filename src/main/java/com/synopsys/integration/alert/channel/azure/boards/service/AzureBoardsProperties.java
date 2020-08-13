@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener;
 import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -86,6 +88,19 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return scopes;
     }
 
+    public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson, String authorizationCode) throws AlertException {
+        NetHttpTransport httpTransport = createHttpTransport(proxy);
+        try {
+            AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
+            Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
+                                             .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential for the user '%s'", oauthUserId)));
+
+            return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
+        } catch (IOException e) {
+            throw new AlertException("Cannot request OAuth credentials", e);
+        }
+    }
+
     public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson) throws AlertException {
         NetHttpTransport httpTransport = createHttpTransport(proxy);
         try {
@@ -130,6 +145,13 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
         Credential storedCredential = authorizationCodeFlow.loadCredential(oauthUserId);
         return Optional.ofNullable(storedCredential);
+    }
+
+    public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
+        AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
+        TokenResponse tokenResponse = tokenRequest.execute();
+        Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);
+        return Optional.ofNullable(credential);
     }
 
     private String encode(String str) {
