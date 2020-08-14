@@ -71,7 +71,8 @@ public abstract class IssueCreatorTestAction {
         if (optionalResolveTransitionName.isPresent()) {
             return testTransitions(issueTrackerContext, messageId, optionalResolveTransitionName.get(), initialIssueKey);
         } else {
-            fieldStatuses.add(AlertFieldStatus.warning(getResolveTransitionFieldKey(), "If this field is left blank, Alert will not resolve issues when vulnerabilities are removed/remediated or policy violations are cleared."));
+            // TODO rethink this message if we ever have providers besides Black Duck
+            fieldStatuses.add(AlertFieldStatus.warning(getResolveTransitionFieldKey(), "If this field is left blank, Alert will not resolve issues when vulnerabilities are removed/remediated or policy violations are cleared/overridden."));
         }
         return new MessageResult(initialTestResult.getStatusMessage(), fieldStatuses);
     }
@@ -120,6 +121,7 @@ public abstract class IssueCreatorTestAction {
                     finalResult = createAndSendMessage(issueTrackerContext, IssueOperation.RESOLVE, messageId);
                 }
             } else {
+                // TODO rethink this message if we ever have providers besides Black Duck
                 transitionStatuses.add(AlertFieldStatus.warning(getOpenTransitionFieldKey(), "If this field is left blank, Alert will not reopen issues when vulnerabilities or policy violations are added to existing components."));
             }
 
