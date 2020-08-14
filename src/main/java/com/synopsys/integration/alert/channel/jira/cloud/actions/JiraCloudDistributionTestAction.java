@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -56,8 +55,7 @@ public class JiraCloudDistributionTestAction extends ChannelDistributionTestActi
         IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction((JiraCloudChannel) getDistributionChannel(), gson, issueCreator);
-        IssueTrackerResponse result = testAction.testConfig(context);
-        return new MessageResult(result.getStatusMessage());
+        return testAction.testConfig(context);
     }
 
 }

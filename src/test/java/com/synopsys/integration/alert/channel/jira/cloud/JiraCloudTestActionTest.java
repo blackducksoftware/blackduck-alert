@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,9 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueC
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCreationRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueResolutionRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -112,15 +111,10 @@ public class JiraCloudTestActionTest {
             }
         });
 
-        IssueTrackerResponse response = testAction.testConfig(createContext());
+        MessageResult response = testAction.testConfig(createContext());
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
-
-        boolean anyIssuesMatchKey = response.getUpdatedIssues()
-                                        .stream()
-                                        .map(IssueTrackerIssueResponseModel::getIssueKey)
-                                        .anyMatch("project-1"::equals);
-        assertTrue(anyIssuesMatchKey, "No issues matched the expected key");
+        assertFalse(response.hasErrors(), "The test action produced field errors");
     }
 
     private JiraCloudServiceFactory createMockServiceFactory() {
