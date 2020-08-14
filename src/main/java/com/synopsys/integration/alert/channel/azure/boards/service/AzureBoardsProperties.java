@@ -163,13 +163,6 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
         AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
-        //        tokenRequest.setGrantType(AzureAuthorizationCodeFlow.DEFAULT_GRANT_TYPE);
-        //        tokenRequest.setResponseClass(AzureTokenResponse.class);
-        //        tokenRequest.put("assertion", authorizationCode);
-        //        tokenRequest.put("client_assertion_type", AzureAuthorizationCodeFlow.DEFAULT_CLIENT_ASSERTION_TYPE);
-        //        tokenRequest.put("client_assertion", clientSecret);
-        //        tokenRequest.put("redirect_uri", "https://localhost:8443/alert/api/callbacks/oauth/azure");
-
         TokenResponse tokenResponse = tokenRequest.execute();
         Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);
         return Optional.ofNullable(credential);
