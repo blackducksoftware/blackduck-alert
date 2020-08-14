@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
@@ -64,7 +65,7 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraCloudProperties.KEY_ISSUE_CREATOR;
+        return JiraCloudDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
