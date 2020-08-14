@@ -53,6 +53,11 @@
             <column name="SOURCE_KEY">azure.boards.client.id</column>
             <column name="SENSITIVE">true</column>
         </insert>
+        <!-- TODO figure out why the encryption fails on this field store in plain text for now. -->
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">azure.boards.client.secret</column>
+            <column name="SENSITIVE">true</column>
+        </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.oauth.user.email</column>
             <column name="SENSITIVE">false</column>
@@ -118,6 +123,10 @@
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.client.secret')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth.user.email')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
@@ -180,6 +189,10 @@
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.client.secret')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('azure.boards.oauth.user.email')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
@@ -235,5 +248,9 @@
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
+    </changeSet>
+    <changeSet id="2020-08-14-13-43-35-281" author="psantos">
+        <!-- client secrets and tokens can be longer than 512 characters -->
+        <modifyDataType schemaName="ALERT" tableName="FIELD_VALUES" columnName="FIELD_VALUE" newDataType="VARCHAR(2048)"/>
     </changeSet>
 </databaseChangeLog>

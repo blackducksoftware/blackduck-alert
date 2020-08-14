@@ -60,10 +60,11 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, FieldAccessor fieldAccessor) {
         String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        String clientSecret = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_WRITE.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, "REPLACE_ME", oAuthUserEmail, defaultScopes);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes);
     }
 
     public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String clientSecret, String oauthUserId, List<String> scopes) {
