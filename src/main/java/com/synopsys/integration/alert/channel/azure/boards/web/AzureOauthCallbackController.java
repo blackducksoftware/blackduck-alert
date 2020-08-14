@@ -92,18 +92,24 @@ public class AzureOauthCallbackController {
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
-        String requestURI = request.getRequestURI();
-        String requestQueryString = request.getQueryString();
-        logger.debug("Request URI {}?{}", requestURI, requestQueryString);
-        String authorizationCode = request.getParameter("code");
-        String state = request.getParameter("state");
-        FieldAccessor fieldAccessor = createFieldAccessor();
-        if (fieldAccessor.getFields().isEmpty()) {
-            logger.error("Azure oauth callback: Channel global configuration missing");
-        } else {
-            AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, fieldAccessor);
-            // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
-            testOAuthConnection(properties, authorizationCode);
+        try {
+
+            String requestURI = request.getRequestURI();
+            String requestQueryString = request.getQueryString();
+            logger.debug("Request URI {}?{}", requestURI, requestQueryString);
+            String authorizationCode = request.getParameter("code");
+            String state = request.getParameter("state");
+            FieldAccessor fieldAccessor = createFieldAccessor();
+            if (fieldAccessor.getFields().isEmpty()) {
+                logger.error("Azure oauth callback: Channel global configuration missing");
+            } else {
+                AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, fieldAccessor);
+                // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
+                testOAuthConnection(properties, authorizationCode);
+            }
+        } catch (Exception ex) {
+            // catch any exceptions so the redirect back to the UI happens and doesn't display the URL with the authorization code to the user.
+            logger.error("Azure OAuth callback error occurred", ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
         return responseFactory.createFoundRedirectResponse(createUIRedirectLocation());

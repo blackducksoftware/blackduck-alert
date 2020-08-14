@@ -30,6 +30,7 @@ import java.util.Optional;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.BearerToken;
+import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener;
 import com.google.api.client.auth.oauth2.StoredCredential;
@@ -52,6 +53,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
+    private final String clientSecret;
     private final String oauthUserId;
     private final List<String> scopes;
 
@@ -61,13 +63,14 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_WRITE.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, oAuthUserEmail, defaultScopes);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, "REPLACE_ME", oAuthUserEmail, defaultScopes);
     }
 
-    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String oauthUserId, List<String> scopes) {
+    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String clientSecret, String oauthUserId, List<String> scopes) {
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
+        this.clientSecret = clientSecret;
         this.oauthUserId = oauthUserId;
         this.scopes = scopes;
     }
@@ -78,6 +81,10 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public String getClientId() {
         return clientId;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
     }
 
     public String getOauthUserId() {
@@ -130,7 +137,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
             httpTransport,
             JacksonFactory.getDefaultInstance(),
             new GenericUrl(AzureHttpServiceFactory.DEFAULT_TOKEN_URL),
-            null,
+            new ClientParametersAuthentication(clientId, clientSecret),
             clientId,
             encode(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL)
         ).setScopes(getScopes());
@@ -149,6 +156,13 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
         AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
+        tokenRequest.setGrantType(AzureHttpServiceFactory.DEFAULT_GRANT_TYPE);
+        tokenRequest.setResponseClass(AzureTokenResponse.class);
+        tokenRequest.put("assertion", authorizationCode);
+        tokenRequest.put("client_assertion_type", AzureHttpServiceFactory.DEFAULT_CLIENT_ASSERTION_TYPE);
+        tokenRequest.put("client_assertion", clientSecret);
+        tokenRequest.put("redirect_uri", "https://localhost:8443/alert/api/callbacks/oauth/azure");
+
         TokenResponse tokenResponse = tokenRequest.execute();
         Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);
         return Optional.ofNullable(credential);

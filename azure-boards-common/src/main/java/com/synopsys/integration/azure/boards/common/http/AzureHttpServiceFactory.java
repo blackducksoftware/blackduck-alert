@@ -33,7 +33,9 @@ public class AzureHttpServiceFactory {
     // TODO consider the tradeoffs of extracting the common base url vs readability
     public static final String DEFAULT_AUTHORIZATION_URL = "https://app.vssps.visualstudio.com/oauth2/authorize?response_type=Assertion";
     public static final String DEFAULT_TOKEN_URL = "https://app.vssps.visualstudio.com/oauth2/token?client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer";
-
+    public static final String DEFAULT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+    public static final String DEFAULT_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+    
     public static AzureHttpService withCredentialNoProxy(Credential oAuthCredential, Gson gson) {
         return withCredentialNoProxy(DEFAULT_BASE_URL, oAuthCredential, gson);
     }
