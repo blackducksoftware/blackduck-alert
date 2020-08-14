@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.service;
+package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 public enum AzureOAuthScopes {
     PROJECTS_READ("vso.projects"),

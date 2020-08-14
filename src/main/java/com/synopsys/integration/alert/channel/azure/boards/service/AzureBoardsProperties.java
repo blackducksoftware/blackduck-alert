@@ -41,7 +41,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureAuthorizationCodeFlow;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthScopes;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -56,24 +58,26 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private final String clientSecret;
     private final String oauthUserId;
     private final List<String> scopes;
+    private final String redirectUri;
 
-    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, FieldAccessor fieldAccessor) {
+    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldAccessor fieldAccessor) {
         String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
         String clientSecret = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_WRITE.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
     }
 
-    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String clientSecret, String oauthUserId, List<String> scopes) {
+    public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String clientSecret, String oauthUserId, List<String> scopes, String redirectUri) {
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.oauthUserId = oauthUserId;
         this.scopes = scopes;
+        this.redirectUri = redirectUri;
     }
 
     public String getOrganizationName() {
@@ -133,14 +137,16 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     }
 
     public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(NetHttpTransport httpTransport, Credential.AccessMethod authorizationAccessMethod) {
-        return new AuthorizationCodeFlow.Builder(
+        return new AzureAuthorizationCodeFlow.Builder(
             authorizationAccessMethod,
             httpTransport,
             JacksonFactory.getDefaultInstance(),
             new GenericUrl(AzureHttpServiceFactory.DEFAULT_TOKEN_URL),
             new ClientParametersAuthentication(clientId, clientSecret),
             clientId,
-            encode(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL)
+            encode(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL),
+            clientSecret,
+            redirectUri
         ).setScopes(getScopes());
     }
 
@@ -157,12 +163,12 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
         AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
-        tokenRequest.setGrantType(AzureHttpServiceFactory.DEFAULT_GRANT_TYPE);
-        tokenRequest.setResponseClass(AzureTokenResponse.class);
-        tokenRequest.put("assertion", authorizationCode);
-        tokenRequest.put("client_assertion_type", AzureHttpServiceFactory.DEFAULT_CLIENT_ASSERTION_TYPE);
-        tokenRequest.put("client_assertion", clientSecret);
-        tokenRequest.put("redirect_uri", "https://localhost:8443/alert/api/callbacks/oauth/azure");
+        //        tokenRequest.setGrantType(AzureAuthorizationCodeFlow.DEFAULT_GRANT_TYPE);
+        //        tokenRequest.setResponseClass(AzureTokenResponse.class);
+        //        tokenRequest.put("assertion", authorizationCode);
+        //        tokenRequest.put("client_assertion_type", AzureAuthorizationCodeFlow.DEFAULT_CLIENT_ASSERTION_TYPE);
+        //        tokenRequest.put("client_assertion", clientSecret);
+        //        tokenRequest.put("redirect_uri", "https://localhost:8443/alert/api/callbacks/oauth/azure");
 
         TokenResponse tokenResponse = tokenRequest.execute();
         Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);

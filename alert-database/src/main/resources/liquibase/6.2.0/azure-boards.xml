@@ -251,6 +251,6 @@
     </changeSet>
     <changeSet id="2020-08-14-13-43-35-281" author="psantos">
         <!-- client secrets and tokens can be longer than 512 characters -->
-        <modifyDataType schemaName="ALERT" tableName="FIELD_VALUES" columnName="FIELD_VALUE" newDataType="VARCHAR(2048)"/>
+        <modifyDataType schemaName="ALERT" tableName="FIELD_VALUES" columnName="FIELD_VALUE" newDataType="VARCHAR"/>
     </changeSet>
 </databaseChangeLog>

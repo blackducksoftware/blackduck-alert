@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.service;
+package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.json.JsonString;

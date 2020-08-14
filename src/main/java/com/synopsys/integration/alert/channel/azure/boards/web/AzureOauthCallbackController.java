@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
-import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,7 +51,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -72,28 +71,25 @@ public class AzureOauthCallbackController {
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
-    private final ConfigurationFieldModelConverter configFieldModelConverter;
-    private final AlertProperties alertProperties;
+    private final AzureRedirectUtil azureRedirectUtil;
 
     @Autowired
     public AzureOauthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
-        ConfigurationFieldModelConverter configFieldModelConverter, AlertProperties alertProperties) {
+        AzureRedirectUtil azureRedirectUtil) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsChannelKey = azureBoardsChannelKey;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
-        this.configFieldModelConverter = configFieldModelConverter;
-        this.alertProperties = alertProperties;
+        this.azureRedirectUtil = azureRedirectUtil;
     }
 
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
         try {
-
             String requestURI = request.getRequestURI();
             String requestQueryString = request.getQueryString();
             logger.debug("Request URI {}?{}", requestURI, requestQueryString);
@@ -103,16 +99,21 @@ public class AzureOauthCallbackController {
             if (fieldAccessor.getFields().isEmpty()) {
                 logger.error("Azure oauth callback: Channel global configuration missing");
             } else {
-                AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, fieldAccessor);
-                // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
-                testOAuthConnection(properties, authorizationCode);
+                if (StringUtils.isBlank(authorizationCode)) {
+                    logger.error("Azure oauth callback: Authorization code isn't valid. Stop processing");
+                } else {
+                    String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
+                    AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
+                    // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
+                    testOAuthConnection(properties, authorizationCode);
+                }
             }
         } catch (Exception ex) {
             // catch any exceptions so the redirect back to the UI happens and doesn't display the URL with the authorization code to the user.
             logger.error("Azure OAuth callback error occurred", ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
-        return responseFactory.createFoundRedirectResponse(createUIRedirectLocation());
+        return responseFactory.createFoundRedirectResponse(azureRedirectUtil.createUIRedirectLocation());
     }
 
     private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode) {
@@ -148,14 +149,5 @@ public class AzureOauthCallbackController {
             logger.error("Error reading Azure Channel configuration", ex);
         }
         return new FieldAccessor(fields);
-    }
-
-    private String createUIRedirectLocation() {
-        StringBuilder locationBuilder = new StringBuilder(200);
-        alertProperties.getServerUrl()
-            .ifPresent(locationBuilder::append);
-        locationBuilder.append("/channels/");
-        locationBuilder.append(AzureBoardsDescriptor.AZURE_BOARDS_URL);
-        return locationBuilder.toString();
     }
 }

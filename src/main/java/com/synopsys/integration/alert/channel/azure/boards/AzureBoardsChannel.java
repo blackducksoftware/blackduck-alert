@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestDelegator;
-import com.synopsys.integration.alert.channel.azure.boards.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -52,21 +52,24 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
+    private final AzureRedirectUtil azureRedirectUtil;
 
     @Autowired
     public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, ProxyManager proxyManager,
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
+        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser,
+        AzureRedirectUtil azureRedirectUtil) {
         super(gson, auditUtility, channelKey, eventManager);
         this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
+        this.azureRedirectUtil = azureRedirectUtil;
     }
 
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         FieldAccessor fieldAccessor = event.getFieldAccessor();
-        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, fieldAccessor);
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldAccessor);
         IssueConfig issueConfig = createIssueConfig(fieldAccessor);
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
