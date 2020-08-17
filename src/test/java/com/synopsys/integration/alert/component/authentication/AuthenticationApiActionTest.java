@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.component.authentication;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +42,10 @@ public class AuthenticationApiActionTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
+        
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.getFields(), ConfigField::getKey);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
-        fieldValidationAction.validateConfig(configFieldMap, fieldModel, fieldErrors);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(AuthenticationDescriptor.KEY_LDAP_SERVER));
     }
