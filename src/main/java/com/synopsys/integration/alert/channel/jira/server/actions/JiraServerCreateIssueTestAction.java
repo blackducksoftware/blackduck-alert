@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueCreatorTestAction;
@@ -50,12 +51,12 @@ public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
 
     @Override
     protected String getOpenTransitionFieldKey() {
-        return JiraServerProperties.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     protected String getResolveTransitionFieldKey() {
-        return JiraServerProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override

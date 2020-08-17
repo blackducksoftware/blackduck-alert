@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -72,7 +73,7 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraServerProperties.KEY_ISSUE_CREATOR;
+        return JiraServerDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override

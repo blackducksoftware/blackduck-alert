@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
-public class AlertFieldStatus {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class AlertFieldStatus extends AlertSerializableModel {
     private final String fieldName;
     private final FieldStatusSeverity severity;
     private final String fieldMessage;
@@ -31,8 +33,8 @@ public class AlertFieldStatus {
         return new AlertFieldStatus(fieldName, FieldStatusSeverity.ERROR, fieldErrorMessage);
     }
 
-    public static AlertFieldStatus warning(String fieldName, String fieldErrorMessage) {
-        return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, fieldErrorMessage);
+    public static AlertFieldStatus warning(String fieldName, String fieldWarningMessage) {
+        return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, fieldWarningMessage);
     }
 
     private AlertFieldStatus(String fieldName, FieldStatusSeverity severity, String fieldMessage) {
@@ -52,4 +54,5 @@ public class AlertFieldStatus {
     public String getFieldMessage() {
         return fieldMessage;
     }
+
 }
