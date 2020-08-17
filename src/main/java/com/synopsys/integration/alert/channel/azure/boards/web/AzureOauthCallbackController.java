@@ -104,7 +104,6 @@ public class AzureOauthCallbackController {
                 } else {
                     String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
                     AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
-                    // TODO lookup authorization request and redirect back to the Alert Azure global channel page.
                     testOAuthConnection(properties, authorizationCode);
                 }
             }
@@ -119,19 +118,27 @@ public class AzureOauthCallbackController {
     private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode) {
         try {
             Proxy proxy = proxyManager.createProxy();
+            String organizationName = azureBoardsProperties.getOrganizationName();
             // save initiate token requests with the authorization code.
-            AzureHttpService azureService = azureBoardsProperties.createAzureHttpService(proxy, gson, authorizationCode);
+            logger.info("Testing with authorization code to save tokens.");
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson, authorizationCode), organizationName);
             // load the oauth credentials from the store.
-            azureService = azureBoardsProperties.createAzureHttpService(proxy, gson);
 
-            AzureProjectService azureProjectService = new AzureProjectService(azureService);
+            logger.info("Testing with store to read tokens.");
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson), organizationName);
+        } catch (AlertException ex) {
+            logger.error("Error in azure oauth validation test ", ex);
+        }
+    }
 
-            logger.info("Azure Service created with the oauth parameters.");
-            AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(azureBoardsProperties.getOrganizationName());
+    private void testGetProjects(AzureHttpService azureHttpService, String organizationName) {
+        try {
+            AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
+            AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(organizationName);
             Integer projectCount = projects.getCount();
             logger.info("Azure Boards project count: {}", projectCount);
-        } catch (AlertException | HttpServiceException ex) {
-            logger.error("Error in azure oauth validation test ", ex);
+        } catch (HttpServiceException ex) {
+            logger.error("Error in azure oauth get projects validation test ", ex);
         }
     }
 

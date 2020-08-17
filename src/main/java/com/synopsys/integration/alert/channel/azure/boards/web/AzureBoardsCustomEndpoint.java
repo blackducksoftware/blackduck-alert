@@ -109,6 +109,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error creating field accessor for Azure authentication", ex);
         }
+        //TODO Refresh and Access tokens are "" which causes decryption errors.
         return new FieldAccessor(fields);
     }
 
