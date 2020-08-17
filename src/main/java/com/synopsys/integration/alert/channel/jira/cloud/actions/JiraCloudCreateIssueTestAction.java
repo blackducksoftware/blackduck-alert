@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraTransitionHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
@@ -50,12 +51,12 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
 
     @Override
     protected String getOpenTransitionFieldKey() {
-        return JiraCloudProperties.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override
     protected String getResolveTransitionFieldKey() {
-        return JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override

@@ -92,7 +92,7 @@ function checkingDescriptorGlobalConfig() {
 
 function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
     const errors = {};
-    errors[errorFieldName] = '';
+    errors[errorFieldName] = {};
     return {
         type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS,
         errors
@@ -101,7 +101,11 @@ function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
 
 function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     const errors = {};
-    errors[errorFieldName] = response;
+    //TODO This should be handled on Job validation now that we have warnings we can add a validator method to check if the global config is set.
+    errors[errorFieldName] = {
+        severity: 'WARNING',
+        fieldMessage: response
+    };
     return {
         type: DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE,
         errors

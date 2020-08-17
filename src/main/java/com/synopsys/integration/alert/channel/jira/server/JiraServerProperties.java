@@ -34,13 +34,6 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class JiraServerProperties implements IssueTrackerServiceConfig {
-    public static final String KEY_ADD_COMMENTS = "jira.server.add.comments";
-    public static final String KEY_ISSUE_CREATOR = "jira.server.issue.creator";
-    public static final String KEY_JIRA_PROJECT_NAME = "jira.server.project.name";
-    public static final String KEY_ISSUE_TYPE = "jira.server.issue.type";
-    public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = "jira.server.resolve.workflow";
-    public static final String KEY_OPEN_WORKFLOW_TRANSITION = "jira.server.reopen.workflow";
-
     private final String url;
     private final String password;
     private final String username;

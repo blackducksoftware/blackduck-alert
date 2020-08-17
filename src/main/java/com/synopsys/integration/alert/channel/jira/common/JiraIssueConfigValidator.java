@@ -22,15 +22,16 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
@@ -66,7 +67,7 @@ public abstract class JiraIssueConfigValidator {
     public abstract boolean isUserValid(String issueCreator) throws IntegrationException;
 
     public IssueConfig createValidIssueConfig(IssueTrackerContext context) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         IssueConfig issueConfig = context.getIssueConfig();
         IssueConfig newConfig = new IssueConfig();
         newConfig.setCommentOnIssues(issueConfig.getCommentOnIssues());
@@ -89,7 +90,7 @@ public abstract class JiraIssueConfigValidator {
         return newConfig;
     }
 
-    private ProjectComponent validateProject(IssueConfig config, Map<String, String> fieldErrors) {
+    private ProjectComponent validateProject(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String jiraProjectName = config.getProjectName();
         if (StringUtils.isNotBlank(jiraProjectName)) {
             try {
@@ -101,10 +102,10 @@ public abstract class JiraIssueConfigValidator {
                 if (optionalProject.isPresent()) {
                     return optionalProject.get();
                 } else {
-                    fieldErrors.put(getProjectFieldKey(), String.format("No project named '%s' was found", jiraProjectName));
+                    fieldErrors.add(AlertFieldStatus.error(getProjectFieldKey(), String.format("No project named '%s' was found", jiraProjectName)));
                 }
             } catch (IntegrationException e) {
-                fieldErrors.put(getProjectFieldKey(), String.format(CONNECTION_ERROR_FORMAT_STRING, "projects"));
+                fieldErrors.add(AlertFieldStatus.error(getProjectFieldKey(), String.format(CONNECTION_ERROR_FORMAT_STRING, "projects")));
             }
         } else {
             requireField(fieldErrors, getProjectFieldKey());
@@ -112,22 +113,22 @@ public abstract class JiraIssueConfigValidator {
         return null;
     }
 
-    private String validateIssueCreator(IssueConfig config, Map<String, String> fieldErrors) {
+    private String validateIssueCreator(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String issueCreatorFieldKey = getIssueCreatorFieldKey();
         String issueCreator = config.getIssueCreator();
         try {
             if (StringUtils.isNotBlank(issueCreator) && isUserValid(issueCreator)) {
                 return issueCreator;
             } else {
-                fieldErrors.put(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator));
+                fieldErrors.add(AlertFieldStatus.error(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator)));
             }
         } catch (IntegrationException e) {
-            fieldErrors.put(issueCreatorFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "users"));
+            fieldErrors.add(AlertFieldStatus.error(issueCreatorFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "users")));
         }
         return null;
     }
 
-    private String validateIssueType(IssueConfig config, Map<String, String> fieldErrors) {
+    private String validateIssueType(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String issueTypeFieldKey = getIssueTypeFieldKey();
         String issueType = config.getIssueType();
         try {
@@ -142,19 +143,19 @@ public abstract class JiraIssueConfigValidator {
                     if (isValidForProject) {
                         return issueType;
                     } else {
-                        fieldErrors.put(issueTypeFieldKey, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName));
+                        fieldErrors.add(AlertFieldStatus.error(issueTypeFieldKey, String.format("The issue type '%s' not assigned to project '%s'", issueType, projectName)));
                     }
                 }
             } else {
-                fieldErrors.put(issueTypeFieldKey, String.format("The issue type '%s' could not be found", issueType));
+                fieldErrors.add(AlertFieldStatus.error(issueTypeFieldKey, String.format("The issue type '%s' could not be found", issueType)));
             }
         } catch (IntegrationException e) {
-            fieldErrors.put(issueTypeFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "issue types"));
+            fieldErrors.add(AlertFieldStatus.error(issueTypeFieldKey, String.format(CONNECTION_ERROR_FORMAT_STRING, "issue types")));
         }
         return null;
     }
 
-    private void requireField(Map<String, String> fieldErrors, String key) {
-        fieldErrors.put(key, "This field is required");
+    private void requireField(List<AlertFieldStatus> fieldErrors, String key) {
+        fieldErrors.add(AlertFieldStatus.error(key, "This field is required"));
     }
 }

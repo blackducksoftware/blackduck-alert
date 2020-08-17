@@ -35,11 +35,12 @@ public enum FieldType {
     ENDPOINT_BUTTON("EndpointButtonField"),
     ENDPOINT_SELECT("EndpointSelectField"),
     TABLE_SELECT_INPUT("TableSelectInput"),
-    UPLOAD_FILE_BUTTON("UploadFileButtonField");
+    UPLOAD_FILE_BUTTON("UploadFileButtonField"),
+    OAUTH_ENDPOINT_BUTTON("OAuthEndpointButtonField");
 
     private final String fieldTypeName;
 
-    FieldType(final String fieldTypeName) {
+    FieldType(String fieldTypeName) {
         this.fieldTypeName = fieldTypeName;
     }
 

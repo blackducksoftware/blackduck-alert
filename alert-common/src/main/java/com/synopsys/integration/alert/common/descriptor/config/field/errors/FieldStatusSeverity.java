@@ -20,27 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.message;
+package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
-import java.util.Collection;
-
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-
-public class IssueTrackerResponse extends AlertSerializableModel {
-    private final String statusMessage;
-    private final Collection<IssueTrackerIssueResponseModel> updatedIssues;
-
-    public IssueTrackerResponse(String statusMessage, Collection<IssueTrackerIssueResponseModel> updatedIssues) {
-        this.statusMessage = statusMessage;
-        this.updatedIssues = updatedIssues;
-    }
-
-    public String getStatusMessage() {
-        return statusMessage;
-    }
-
-    public Collection<IssueTrackerIssueResponseModel> getUpdatedIssues() {
-        return updatedIssues;
-    }
-
+public enum FieldStatusSeverity {
+    WARNING,
+    ERROR
 }

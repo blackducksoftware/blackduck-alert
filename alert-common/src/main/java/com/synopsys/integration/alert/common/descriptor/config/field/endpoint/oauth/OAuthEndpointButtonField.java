@@ -20,27 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.message;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import java.util.Collection;
+import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-
-public class IssueTrackerResponse extends AlertSerializableModel {
-    private final String statusMessage;
-    private final Collection<IssueTrackerIssueResponseModel> updatedIssues;
-
-    public IssueTrackerResponse(String statusMessage, Collection<IssueTrackerIssueResponseModel> updatedIssues) {
-        this.statusMessage = statusMessage;
-        this.updatedIssues = updatedIssues;
+public class OAuthEndpointButtonField extends EndpointField {
+    public OAuthEndpointButtonField(String key, String label, String description, String buttonLabel) {
+        super(key, label, description, FieldType.OAUTH_ENDPOINT_BUTTON, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
     }
-
-    public String getStatusMessage() {
-        return statusMessage;
-    }
-
-    public Collection<IssueTrackerIssueResponseModel> getUpdatedIssues() {
-        return updatedIssues;
-    }
-
 }

@@ -4,15 +4,19 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
@@ -99,9 +103,10 @@ public class JiraServerIssueConfigValidatorTest {
             jiraIssueConfigValidator.createValidIssueConfig(context);
             fail();
         } catch (AlertFieldException e) {
-            Assertions.assertTrue(e.getFieldErrors().containsKey(JiraServerProperties.KEY_JIRA_PROJECT_NAME));
-            Assertions.assertTrue(e.getFieldErrors().containsKey(JiraServerProperties.KEY_ISSUE_CREATOR));
-            Assertions.assertFalse(e.getFieldErrors().containsKey(JiraServerProperties.KEY_ISSUE_TYPE));
+            Map<String, AlertFieldStatus> errorMap = AlertFieldStatusConverter.convertToMap(e.getFieldErrors());
+            Assertions.assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME));
+            Assertions.assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_CREATOR));
+            Assertions.assertFalse(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
         }
     }
 }
