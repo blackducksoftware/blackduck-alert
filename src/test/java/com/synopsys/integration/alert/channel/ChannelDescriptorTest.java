@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -244,20 +243,18 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
         FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
-        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testDistributionValidateWithFieldErrors() {
         FieldModel restModel = createInvalidDistributionFieldModel();
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
-        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
 
         if (restModel.getKeyToValues().size() > 0) {
             assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
@@ -267,10 +264,9 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     @Test
     public void testGlobalValidate() {
         FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
-        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
 
         assertTrue(fieldErrors.isEmpty(), StringUtils.join(fieldErrors, "; "));
     }
@@ -279,10 +275,9 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     public void testGlobalValidateWithFieldErrors() {
         // descriptor has a global configuration therefore continue testing
         FieldModel restModel = createInvalidGlobalFieldModel();
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         FieldValidationAction fieldValidationAction = new FieldValidationAction();
-        fieldValidationAction.validateConfig(configFieldMap, restModel, fieldErrors);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }
 

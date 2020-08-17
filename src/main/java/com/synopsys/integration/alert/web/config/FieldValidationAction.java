@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,39 +42,43 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class FieldValidationAction {
     private final Logger logger = LoggerFactory.getLogger(FieldValidationAction.class);
 
-    public void validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel, List<AlertFieldStatus> fieldErrors) {
+    public List<AlertFieldStatus> validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel) {
         logger.debug("Begin validating fields in configuration field model.");
-        for (Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
-            String key = fieldEntry.getKey();
-            ConfigField field = fieldEntry.getValue();
-            logger.debug("Validating descriptor field: {}", key);
-            Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
-            if (field.isRequired() && optionalFieldValue.isEmpty()) {
-                logger.debug("Descriptor field {} is required and missing.", key);
-                fieldErrors.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
-            }
-
-            boolean containsKey = fieldErrors.stream()
-                                      .map(AlertFieldStatus::getFieldName)
-                                      .anyMatch(key::equals);
-            if (!containsKey && optionalFieldValue.isPresent()) {
-                // field is present now validate the field
-                logger.debug("FieldModel contains '{}'", key);
-                FieldValueModel fieldValueModel = optionalFieldValue.get();
-                if (hasValueOrChecked(fieldValueModel, field.getType())) {
-                    checkRelatedFields(field, descriptorFields, fieldModel, fieldErrors);
-                }
-                ValidationResult validationResult = field.validate(fieldValueModel, fieldModel);
-                logger.debug("Validating '{}' errors: {}", key, validationResult);
-                if (validationResult.hasErrors()) {
-                    fieldErrors.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
-                }
-                if (validationResult.hasWarnings()) {
-                    fieldErrors.add(AlertFieldStatus.warning(key, validationResult.combineWarningMessages()));
-                }
-            }
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+        for (ConfigField field : descriptorFields.values()) {
+            List<AlertFieldStatus> fieldValidationResults = validateConfigField(field, fieldModel, descriptorFields);
+            fieldStatuses.addAll(fieldValidationResults);
         }
         logger.debug("Finished validating fields in configuration field model.");
+        return fieldStatuses;
+    }
+
+    private List<AlertFieldStatus> validateConfigField(ConfigField fieldToValidate, FieldModel fieldModel, Map<String, ConfigField> descriptorFields) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+        String key = fieldToValidate.getKey();
+        logger.debug("Validating descriptor field: {}", key);
+        Optional<FieldValueModel> optionalFieldValue = fieldModel.getFieldValueModel(key);
+        if (optionalFieldValue.isPresent()) {
+            // field is present now validate the field
+            logger.debug("FieldModel contains '{}'", key);
+            FieldValueModel fieldValueModel = optionalFieldValue.get();
+            if (hasValueOrChecked(fieldValueModel, fieldToValidate.getType())) {
+                checkRelatedFields(fieldToValidate, descriptorFields, fieldModel, fieldStatuses);
+            }
+
+            ValidationResult validationResult = fieldToValidate.validate(fieldValueModel, fieldModel);
+            logger.debug("Validating '{}' errors: {}", key, validationResult);
+            if (validationResult.hasErrors()) {
+                fieldStatuses.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
+            }
+            if (validationResult.hasWarnings()) {
+                fieldStatuses.add(AlertFieldStatus.warning(key, validationResult.combineWarningMessages()));
+            }
+        } else if (fieldToValidate.isRequired()) {
+            logger.debug("Descriptor field {} is required and missing.", key);
+            fieldStatuses.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
+        }
+        return fieldStatuses;
     }
 
     private void checkRelatedFields(ConfigField field, Map<String, ConfigField> descriptorFields, FieldModel fieldModel, List<AlertFieldStatus> fieldErrors) {
@@ -124,4 +129,5 @@ public class FieldValidationAction {
     private boolean isCheckbox(String type) {
         return FieldType.CHECKBOX_INPUT.getFieldTypeName().equals(type) || FieldType.HIDE_CHECKBOX_INPUT.getFieldTypeName().equals(type);
     }
+
 }
