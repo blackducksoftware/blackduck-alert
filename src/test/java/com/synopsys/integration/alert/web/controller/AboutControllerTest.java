@@ -27,7 +27,7 @@ public class AboutControllerTest {
         String version = "1.2.3";
         String created = "date";
         String description = "description";
-        String gitHubUrl = "https://www.google.com";
+        String aUrl = "https://www.google.com";
         boolean initialized = true;
         String startupTime = "startup time is now";
         DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
@@ -36,7 +36,7 @@ public class AboutControllerTest {
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
         ResponseFactory responseFactory = new ResponseFactory();
-        AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime, providers, channels);
+        AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
@@ -53,7 +53,7 @@ public class AboutControllerTest {
         String version = "1.2.3";
         String created = "date";
         String description = "description";
-        String gitHubUrl = "https://www.google.com";
+        String aUrl = "https://www.google.com";
         boolean initialized = true;
         String startupTime = "startup time is now";
         DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
@@ -65,7 +65,7 @@ public class AboutControllerTest {
         ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         ResponseFactory responseFactory = new ResponseFactory();
 
-        AboutModel model = new AboutModel(version, created, description, gitHubUrl, initialized, startupTime, providers, channels);
+        AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
         AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
 
@@ -93,4 +93,5 @@ public class AboutControllerTest {
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
+
 }

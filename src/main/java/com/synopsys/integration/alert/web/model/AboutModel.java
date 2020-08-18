@@ -32,6 +32,7 @@ public class AboutModel extends Stringable {
     private String created;
     private String description;
     private String projectUrl;
+    private String documentationUrl;
     private boolean initialized;
     private String startupTime;
     private Set<DescriptorMetadata> providers;
@@ -41,12 +42,22 @@ public class AboutModel extends Stringable {
 
     }
 
-    public AboutModel(String version, String created, String description, String projectUrl, boolean initialized, String startupTime, Set<DescriptorMetadata> providers,
-        Set<DescriptorMetadata> channels) {
+    public AboutModel(
+        String version,
+        String created,
+        String description,
+        String projectUrl,
+        String documentationUrl,
+        boolean initialized,
+        String startupTime,
+        Set<DescriptorMetadata> providers,
+        Set<DescriptorMetadata> channels
+    ) {
         this.version = version;
         this.created = created;
         this.description = description;
         this.projectUrl = projectUrl;
+        this.documentationUrl = documentationUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
         this.providers = providers;
@@ -69,6 +80,10 @@ public class AboutModel extends Stringable {
         return projectUrl;
     }
 
+    public String getDocumentationUrl() {
+        return documentationUrl;
+    }
+
     public boolean isInitialized() {
         return initialized;
     }
@@ -84,4 +99,5 @@ public class AboutModel extends Stringable {
     public Set<DescriptorMetadata> getChannels() {
         return channels;
     }
+
 }

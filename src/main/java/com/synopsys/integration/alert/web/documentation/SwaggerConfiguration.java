@@ -40,6 +40,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
+    public static final String SWAGGER_DEFAULT_URL = "/swagger-ui.html";
     public static final String[] SWAGGER_WEB_RESOURCE_DIRECTORIES = new String[] {
         "/swagger-ui.html",
         "/webjars",
