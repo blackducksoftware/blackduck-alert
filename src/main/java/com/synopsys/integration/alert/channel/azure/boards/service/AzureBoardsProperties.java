@@ -41,14 +41,14 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureAuthorizationCodeFlow;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthScopes;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
+import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";

@@ -61,10 +61,10 @@ import com.synopsys.integration.azure.boards.common.service.project.AzureProject
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 @RestController
-@RequestMapping(AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
-public class AzureOauthCallbackController {
+@RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
+public class AzureOAuthCallbackController {
     public static final String AZURE_OAUTH_CALLBACK_PATH = BaseController.OAUTH_CALLBACK_PATH + "/azure";
-    private Logger logger = LoggerFactory.getLogger(AzureOauthCallbackController.class);
+    private Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
     private ResponseFactory responseFactory;
     private final Gson gson;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
@@ -74,7 +74,7 @@ public class AzureOauthCallbackController {
     private final AzureRedirectUtil azureRedirectUtil;
 
     @Autowired
-    public AzureOauthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
+    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
         AzureRedirectUtil azureRedirectUtil) {
         this.responseFactory = responseFactory;

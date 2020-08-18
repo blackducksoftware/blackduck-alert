@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * azure-boards-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.oauth;
+package com.synopsys.integration.azure.boards.common.oauth;
 
 public enum AzureOAuthScopes {
     PROJECTS_READ("vso.project"),

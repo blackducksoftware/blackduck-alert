@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.web.AzureOauthCallbackController;
+import com.synopsys.integration.alert.channel.azure.boards.web.AzureOAuthCallbackController;
 import com.synopsys.integration.alert.common.AlertProperties;
 
 @Component
@@ -51,7 +51,7 @@ public class AzureRedirectUtil {
         StringBuilder locationBuilder = new StringBuilder(200);
         alertProperties.getServerUrl()
             .ifPresent(locationBuilder::append);
-        locationBuilder.append(AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
+        locationBuilder.append(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
         return locationBuilder.toString();
     }
 }
