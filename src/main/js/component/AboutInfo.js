@@ -77,7 +77,7 @@ class AboutInfo extends React.Component {
 
     render() {
         const {
-            version, description, projectUrl, descriptors, providers, channels
+            version, description, projectUrl, documentationUrl, descriptors, providers, channels
         } = this.props;
         const userProviderList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER);
         const userChannelList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL);
@@ -99,6 +99,9 @@ class AboutInfo extends React.Component {
                     <ReadOnlyField id="about-url" label="Project URL" name="projectUrl" readOnly="true"
                                    value={projectUrl}
                                    url={projectUrl} />
+                    <ReadOnlyField id="about-documentation-url" label="API Documentation (Beta)" name="documentationUrl" readOnly="true"
+                                   value="Swagger UI"
+                                   url={documentationUrl} />
                     <LabeledField id="about-view-distribution" label="View Distributions" name="distribution"
                                   readOnly="true" value=""
                                   field={distributionLink} />
@@ -148,6 +151,7 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
+    documentationUrl: PropTypes.string.isRequired,
     providers: PropTypes.array,
     channels: PropTypes.array,
     descriptors: PropTypes.arrayOf(PropTypes.object)
@@ -164,6 +168,7 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
+    documentationUrl: state.about.documentationUrl,
     providers: state.about.providerList,
     channels: state.about.channelList,
     descriptors: state.descriptors.items

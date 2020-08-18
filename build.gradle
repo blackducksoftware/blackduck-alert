@@ -102,6 +102,10 @@ dependencies {
 
     implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
 
+    // Documentation
+    implementation 'io.springfox:springfox-swagger2:2.8.0'
+    implementation 'io.springfox:springfox-swagger-ui:2.8.0'
+
     // Message Queue
     implementation 'org.apache.activemq:activemq-broker'
 

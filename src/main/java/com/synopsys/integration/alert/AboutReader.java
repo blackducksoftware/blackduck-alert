@@ -31,11 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
+import com.synopsys.integration.alert.web.documentation.SwaggerConfiguration;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
@@ -44,13 +46,16 @@ import com.synopsys.integration.util.ResourceUtil;
 public class AboutReader {
     public static final String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
+
     private final Gson gson;
+    private final AlertProperties alertProperties;
     private final SystemStatusUtility systemStatusUtility;
     private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, SystemStatusUtility systemStatusUtility, DescriptorMetadataActions descriptorActions) {
+    public AboutReader(Gson gson, AlertProperties alertProperties, SystemStatusUtility systemStatusUtility, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
+        this.alertProperties = alertProperties;
         this.systemStatusUtility = systemStatusUtility;
         this.descriptorActions = descriptorActions;
     }
@@ -62,7 +67,8 @@ public class AboutReader {
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
             Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
             Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
+                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -76,6 +82,11 @@ public class AboutReader {
         } else {
             return PRODUCT_VERSION_UNKNOWN;
         }
+    }
+
+    private String createInternalUrl(String path) {
+        String baseUrl = alertProperties.getServerUrl().orElse("https://localhost:8443/alert");
+        return baseUrl + path;
     }
 
 }
