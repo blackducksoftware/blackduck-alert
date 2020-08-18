@@ -53,7 +53,6 @@
             <column name="SOURCE_KEY">azure.boards.client.id</column>
             <column name="SENSITIVE">true</column>
         </insert>
-        <!-- TODO figure out why the encryption fails on this field store in plain text for now. -->
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">azure.boards.client.secret</column>
             <column name="SENSITIVE">true</column>
