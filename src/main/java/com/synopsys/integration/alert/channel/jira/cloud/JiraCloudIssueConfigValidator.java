@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 
 import java.util.Collection;
 
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueConfigValidator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
@@ -46,32 +47,32 @@ public class JiraCloudIssueConfigValidator extends JiraIssueConfigValidator {
 
     @Override
     public String getProjectFieldKey() {
-        return JiraCloudProperties.KEY_JIRA_PROJECT_NAME;
+        return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
     }
 
     @Override
     public String getIssueTypeFieldKey() {
-        return JiraCloudProperties.KEY_ISSUE_TYPE;
+        return JiraCloudDescriptor.KEY_ISSUE_TYPE;
     }
 
     @Override
     public String getIssueCreatorFieldKey() {
-        return JiraCloudProperties.KEY_ISSUE_CREATOR;
+        return JiraCloudDescriptor.KEY_ISSUE_CREATOR;
     }
 
     @Override
     public String getAddCommentsFieldKey() {
-        return JiraCloudProperties.KEY_ADD_COMMENTS;
+        return JiraCloudDescriptor.KEY_ADD_COMMENTS;
     }
 
     @Override
     public String getResolveTransitionFieldKey() {
-        return JiraCloudProperties.KEY_RESOLVE_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
     }
 
     @Override
     public String getOpenTransitionFieldKey() {
-        return JiraCloudProperties.KEY_OPEN_WORKFLOW_TRANSITION;
+        return JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
     }
 
     @Override

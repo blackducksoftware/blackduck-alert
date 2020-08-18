@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldErrorSeverity;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 
 public class AlertFieldStatusTest {
     private final String FIELD_NAME = "FieldName";
@@ -26,8 +26,8 @@ public class AlertFieldStatusTest {
         AlertFieldStatus alertFieldStatusError = AlertFieldStatus.error(FIELD_NAME, FIELD_ERROR_MESSAGE);
         AlertFieldStatus alertFieldStatusWarning = AlertFieldStatus.warning(FIELD_NAME, FIELD_WARNING_MESSAGE);
 
-        assertEquals(FieldErrorSeverity.ERROR, alertFieldStatusError.getSeverity());
-        assertEquals(FieldErrorSeverity.WARNING, alertFieldStatusWarning.getSeverity());
+        assertEquals(FieldStatusSeverity.ERROR, alertFieldStatusError.getSeverity());
+        assertEquals(FieldStatusSeverity.WARNING, alertFieldStatusWarning.getSeverity());
     }
 
     @Test

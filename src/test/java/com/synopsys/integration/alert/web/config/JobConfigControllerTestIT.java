@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +58,7 @@ import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 @Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
     private final String url = JobConfigController.JOB_CONFIGURATION_PATH;
 
     @Autowired

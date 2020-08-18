@@ -51,11 +51,13 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -80,7 +82,7 @@ public class JobConfigController extends BaseController {
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
-    private PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
     public JobConfigController(JobConfigActions jobConfigActions, ResponseFactory responseFactory, ContentConverter contentConverter, AuthorizationManager authorizationManager,
@@ -269,12 +271,12 @@ public class JobConfigController extends BaseController {
         }
 
         String id = restModel.getJobId();
-        try {
-            String responseMessage = jobConfigActions.validateJob(restModel);
-            return responseFactory.createOkResponse(id, responseMessage);
-        } catch (AlertFieldException e) {
-            return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
+        MessageResult result = jobConfigActions.validateJob(restModel);
+        List<AlertFieldStatus> fieldStatuses = result.getFieldStatuses();
+        if (!fieldStatuses.isEmpty()) {
+            return responseFactory.createFieldErrorResponse(id, result.getStatusMessage(), fieldStatuses);
         }
+        return responseFactory.createOkResponse(id, result.getStatusMessage());
     }
 
     // This will check if the specified descriptor has a global config associated with it
@@ -293,7 +295,7 @@ public class JobConfigController extends BaseController {
         return sendCustomMessage(restModel, jobConfigActions::testJob);
     }
 
-    private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, String, IntegrationException> messageFunction) {
+    private ResponseEntity<String> sendCustomMessage(JobFieldModel restModel, ThrowingFunction<JobFieldModel, MessageResult, IntegrationException> messageFunction) {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
@@ -303,8 +305,12 @@ public class JobConfigController extends BaseController {
         }
         String id = restModel.getJobId();
         try {
-            String responseMessage = messageFunction.apply(restModel);
-            return responseFactory.createOkResponse(id, responseMessage);
+            MessageResult result = messageFunction.apply(restModel);
+            List<AlertFieldStatus> fieldStatuses = result.getFieldStatuses();
+            if (!fieldStatuses.isEmpty()) {
+                return responseFactory.createFieldErrorResponse(id, result.getStatusMessage(), fieldStatuses);
+            }
+            return responseFactory.createOkResponse(id, result.getStatusMessage());
         } catch (IntegrationRestException e) {
             return createResponseFromIntegrationRestException(responseFactory, e, id);
         } catch (AlertFieldException e) {

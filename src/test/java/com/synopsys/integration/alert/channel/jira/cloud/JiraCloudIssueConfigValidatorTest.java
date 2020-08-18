@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -108,9 +109,9 @@ public class JiraCloudIssueConfigValidatorTest {
             fail();
         } catch (AlertFieldException e) {
             Map<String, AlertFieldStatus> errorMap = AlertFieldStatusConverter.convertToMap(e.getFieldErrors());
-            Assertions.assertTrue(errorMap.containsKey(JiraCloudProperties.KEY_JIRA_PROJECT_NAME));
-            Assertions.assertTrue(errorMap.containsKey(JiraCloudProperties.KEY_ISSUE_CREATOR));
-            Assertions.assertFalse(errorMap.containsKey(JiraCloudProperties.KEY_ISSUE_TYPE));
+            Assertions.assertTrue(errorMap.containsKey(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME));
+            Assertions.assertTrue(errorMap.containsKey(JiraCloudDescriptor.KEY_ISSUE_CREATOR));
+            Assertions.assertFalse(errorMap.containsKey(JiraCloudDescriptor.KEY_ISSUE_TYPE));
         }
     }
 }
