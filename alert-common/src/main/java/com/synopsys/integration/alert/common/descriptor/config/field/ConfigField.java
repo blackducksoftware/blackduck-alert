@@ -60,7 +60,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
  */
 public abstract class ConfigField extends AlertSerializableModel {
     public static final String REQUIRED_FIELD_MISSING = "Required field missing";
-    public static final int MAX_FIELD_LENGTH = 511;
+    public static final int MAX_FIELD_LENGTH = 2047;
     public static final String FIELD_HEADER_EMPTY = "";
     public static final String FIELD_PANEL_DEFAULT = "";
     public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);

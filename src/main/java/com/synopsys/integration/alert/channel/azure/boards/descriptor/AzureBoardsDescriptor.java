@@ -43,7 +43,7 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String KEY_AZURE_BOARDS_URL = AZURE_BOARDS_PREFIX + "url";
     public static final String KEY_ORGANIZATION_NAME = AZURE_BOARDS_PREFIX + "organization.name";
     public static final String KEY_CLIENT_ID = AZURE_BOARDS_PREFIX + "client.id";
-    //TODO revisit these fields as we may only need access token for oauth
+    public static final String KEY_CLIENT_SECRET = AZURE_BOARDS_PREFIX + "client.secret";
     public static final String KEY_OAUTH_USER_EMAIL = AZURE_BOARDS_PREFIX + "oauth.user.email";
     public static final String KEY_OAUTH = AZURE_BOARDS_PREFIX + "oauth";
     public static final String KEY_ACCESS_TOKEN = AZURE_BOARDS_PREFIX + "access.token";
