@@ -65,8 +65,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
         String clientSecret = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
-        //TODO fix the app scope to have project read.  Need to change the scope of the registered application.
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_WRITE.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
+        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
     }
 
@@ -159,6 +158,17 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
         Credential storedCredential = authorizationCodeFlow.loadCredential(oauthUserId);
         return Optional.ofNullable(storedCredential);
+    }
+
+    public boolean hasOAuthCredentials(Proxy proxy) {
+        NetHttpTransport httpTransport = createHttpTransport(proxy);
+        try {
+            AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
+            Optional<Credential> oAuthCredential = getExistingOAuthCredential(oAuthFlow);
+            return oAuthCredential.isPresent();
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {

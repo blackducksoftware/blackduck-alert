@@ -251,6 +251,10 @@
     </changeSet>
     <changeSet id="2020-08-14-13-43-35-281" author="psantos">
         <!-- client secrets and tokens can be longer than 512 characters -->
+        <!-- To avoid issues changing the type in the future using varchar for arbitrary length strings.
+             There are no performance differences in varchar vs varchar(n) or text.
+             https://www.postgresql.org/docs/9.1/datatype-character.html
+        -->
         <modifyDataType schemaName="ALERT" tableName="FIELD_VALUES" columnName="FIELD_VALUE" newDataType="VARCHAR"/>
     </changeSet>
 </databaseChangeLog>
