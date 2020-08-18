@@ -46,7 +46,7 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_ORGANIZATION_NAME = "The name of the Azure DevOps organization.";
     public static final String DESCRIPTION_CLIENT_ID = "The Client Id created for Alert when registering your Azure DevOps Application.";
     public static final String DESCRIPTION_CLIENT_SECRET = "The Client secret created for Alert when registering your Azure DevOps Application.";
-    public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.";
+    public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application.";
 
     public static final String BUTTON_LABEL_OAUTH = "Authenticate";
 
