@@ -26,6 +26,7 @@ import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -136,6 +137,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     }
 
     private String createQueryString(String clientId) {
+        List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         String authorizationUrl = azureRedirectUtil.createOAuthRedirectUri();
         StringBuilder queryBuilder = new StringBuilder(250);
         queryBuilder.append("&client_id=");
@@ -144,9 +146,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         queryBuilder.append("&state=");
         queryBuilder.append(createRequestKey());
         queryBuilder.append("&scope=");
-        queryBuilder.append(AzureOAuthScopes.PROJECTS_READ.getScope());
-        queryBuilder.append("%20");
-        queryBuilder.append(AzureOAuthScopes.WORK_FULL.getScope());
+        queryBuilder.append(URLEncoder.encode(StringUtils.join(scopes, " "), StandardCharsets.UTF_8));
         queryBuilder.append("&redirect_uri=");
         queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
         return queryBuilder.toString();
