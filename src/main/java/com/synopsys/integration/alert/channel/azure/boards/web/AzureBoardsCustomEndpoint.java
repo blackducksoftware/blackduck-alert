@@ -22,9 +22,11 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +38,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthCustomEndpoint;
@@ -49,9 +54,11 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
 public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
@@ -60,14 +67,21 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AlertProperties alertProperties;
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
+    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
+    private final AzureRedirectUtil azureRedirectUtil;
+    private final ProxyManager proxyManager;
 
     public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
-        ConfigurationFieldModelConverter modelConverter)
+        ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
+        ProxyManager proxyManager)
         throws AlertException {
         super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager, responseFactory, gson);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
+        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
+        this.azureRedirectUtil = azureRedirectUtil;
+        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -83,11 +97,9 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             if (!alertServerUrl.isPresent()) {
                 return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
             }
-            String authUrl = createAuthURL(clientId.get(), alertServerUrl.get());
+            String authUrl = createAuthURL(clientId.get());
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
-            //TODO add code to check if Alert has already been authorized to set the authenticated flag.
-
-            return new OAuthEndpointResponse(HttpStatus.OK.value(), false, authUrl, "");
+            return new OAuthEndpointResponse(HttpStatus.OK.value(), isAuthenticated(fieldAccessor), authUrl, "");
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -106,28 +118,35 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                     .ifPresent(fields::putAll);
             }
         } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error creating field acessor for Azure authentication", ex);
+            logger.error("Error creating field accessor for Azure authentication", ex);
         }
         return new FieldAccessor(fields);
     }
 
-    private String createAuthURL(String clientId, String alertServerUrl) {
+    private boolean isAuthenticated(FieldAccessor fieldAccessor) {
+        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldAccessor);
+        Proxy proxy = proxyManager.createProxy();
+        return properties.hasOAuthCredentials(proxy);
+    }
+
+    private String createAuthURL(String clientId) {
         StringBuilder authUrlBuilder = new StringBuilder(300);
         authUrlBuilder.append(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL);
-        authUrlBuilder.append(createQueryString(clientId, alertServerUrl));
+        authUrlBuilder.append(createQueryString(clientId));
         return authUrlBuilder.toString();
     }
 
-    private String createQueryString(String clientId, String alertServerUrl) {
-        String authorizationUrl = String.format("%s%s", alertServerUrl, AzureOauthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
+    private String createQueryString(String clientId) {
+        List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
+        String authorizationUrl = azureRedirectUtil.createOAuthRedirectUri();
         StringBuilder queryBuilder = new StringBuilder(250);
         queryBuilder.append("&client_id=");
         queryBuilder.append(clientId);
         //TODO have an object that stores the request keys and purges them after some amount of time.
-        //TODO also store a redirect URL if possible
         queryBuilder.append("&state=");
         queryBuilder.append(createRequestKey());
-        queryBuilder.append("&scope=vso.work%20vso.code_write");
+        queryBuilder.append("&scope=");
+        queryBuilder.append(URLEncoder.encode(StringUtils.join(scopes, " "), StandardCharsets.UTF_8));
         queryBuilder.append("&redirect_uri=");
         queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
         return queryBuilder.toString();

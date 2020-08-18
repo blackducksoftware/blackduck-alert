@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointButtonField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
@@ -38,12 +39,14 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String LABEL_AZURE_BOARDS_URL = "Url";
     public static final String LABEL_ORGANIZATION_NAME = "Organization Name";
     public static final String LABEL_CLIENT_ID = "Client Id";
+    public static final String LABEL_CLIENT_SECRET = "Client Secret";
     public static final String LABEL_OAUTH = "Microsoft OAuth";
 
     public static final String DESCRIPTION_AZURE_BOARDS_URL = "If your Azure DevOps instance is \"on-prem\", this field can be used to set that address.";
     public static final String DESCRIPTION_ORGANIZATION_NAME = "The name of the Azure DevOps organization.";
-    public static final String DESCRIPTION_CLIENT_ID = "The Client Id created for Alert through your Azure Active Directory";
-    public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.";
+    public static final String DESCRIPTION_CLIENT_ID = "The Client Id created for Alert when registering your Azure DevOps Application.";
+    public static final String DESCRIPTION_CLIENT_SECRET = "The Client secret created for Alert when registering your Azure DevOps Application.";
+    public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application.";
 
     public static final String BUTTON_LABEL_OAUTH = "Authenticate";
 
@@ -54,19 +57,17 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         super(AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_DESCRIPTION, AzureBoardsDescriptor.AZURE_BOARDS_URL);
         this.encryptionValidator = encryptionValidator;
     }
-
-    //FIXME determine which fields will be returned from the OAuth response, and which the user must provide
+    
     @Override
     public List<ConfigField> createFields() {
         //        ConfigField azureBoardsUrlField = new URLInputConfigField(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL, LABEL_AZURE_BOARDS_URL, DESCRIPTION_AZURE_BOARDS_URL);
         ConfigField organizationName = new TextInputConfigField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME, LABEL_ORGANIZATION_NAME, DESCRIPTION_ORGANIZATION_NAME).applyRequired(true);
         ConfigField clientId = new TextInputConfigField(AzureBoardsDescriptor.KEY_CLIENT_ID, LABEL_CLIENT_ID, DESCRIPTION_CLIENT_ID).applyRequired(true);
+        ConfigField clientSecret = new PasswordConfigField(AzureBoardsDescriptor.KEY_CLIENT_SECRET, LABEL_CLIENT_SECRET, DESCRIPTION_CLIENT_SECRET, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
-        // TODO requiredRelatedFields aren't validated when pushing endpoint button fields.
-        //.applyRequiredRelatedField(AzureBoardsDescriptor.KEY_CLIENT_ID);
-        return List.of(organizationName, clientId, configureOAuth);
+        return List.of(organizationName, clientId, clientSecret, configureOAuth);
     }
 
 }
