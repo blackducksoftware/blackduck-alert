@@ -28,18 +28,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OAuthRequestValidator {
+    private final Logger logger = LoggerFactory.getLogger(OAuthRequestValidator.class);
     private final Map<String, Instant> requestMap = new ConcurrentHashMap<>();
 
     public void addAuthorizationRequest(String requestKey) {
+        logger.debug("Adding OAuth authorization key {}", requestKey);
         requestMap.put(requestKey, Instant.now());
     }
 
     public void removeAuthorizationRequest(String requestKey) {
         requestMap.remove(requestKey);
+        logger.debug("Removed OAuth authorization key {}", requestKey);
     }
 
     public boolean hasRequestKey(String requestKey) {

@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -74,11 +75,12 @@ public class AzureOAuthCallbackController {
     private final ConfigurationAccessor configurationAccessor;
     private final AzureRedirectUtil azureRedirectUtil;
     private final OAuthRequestValidator oAuthRequestValidator;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
     public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
-        AzureRedirectUtil azureRedirectUtil, OAuthRequestValidator oAuthRequestValidator) {
+        AzureRedirectUtil azureRedirectUtil, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsChannelKey = azureBoardsChannelKey;
@@ -87,11 +89,17 @@ public class AzureOAuthCallbackController {
         this.configurationAccessor = configurationAccessor;
         this.azureRedirectUtil = azureRedirectUtil;
         this.oAuthRequestValidator = oAuthRequestValidator;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
+            logger.debug("Azure OAuth callback user does not have permission to call the controller.");
+            return responseFactory.createForbiddenResponse();
+        }
+
         String state = request.getParameter("state");
         try {
             String requestURI = request.getRequestURI();

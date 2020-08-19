@@ -34,7 +34,8 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
 public class OAuthRequestPurgeTask extends StartupScheduledTask {
-    private static final String CRON_EXPRESSION = "0 0/5 * 1/1 * ?";
+    // every 5 minutes.
+    public static final String CRON_EXPRESSION = "0 0/5 * 1/1 * ?";
     private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
@@ -50,7 +51,11 @@ public class OAuthRequestPurgeTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        Instant requestsBefore = Instant.now().minus(5, ChronoUnit.MINUTES);
+        Instant requestsBefore = getRequestsBeforeInstant();
         oAuthRequestValidator.removeRequestsOlderThanInstant(requestsBefore);
+    }
+
+    protected Instant getRequestsBeforeInstant() {
+        return Instant.now().minus(5, ChronoUnit.MINUTES);
     }
 }
