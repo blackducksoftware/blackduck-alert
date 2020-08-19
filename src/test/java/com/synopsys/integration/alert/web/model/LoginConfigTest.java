@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.web.api.authentication.LoginConfig;
+
 public class LoginConfigTest {
 
     @Test

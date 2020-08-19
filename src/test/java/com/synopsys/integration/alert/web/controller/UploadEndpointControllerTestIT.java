@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.web.api.upload.UploadEndpointController;
 
 public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
@@ -32,7 +33,7 @@ public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private UploadEndpointManager endpointManager;
-    private ResponseFactory responseFactory = new ResponseFactory();
+    private final ResponseFactory responseFactory = new ResponseFactory();
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -74,7 +75,7 @@ public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
     public void uploadFile(String targetKey) throws Exception {
         String url = UploadEndpointManager.UPLOAD_ENDPOINT_URL + "/" + targetKey;
         MockMultipartFile file = new MockMultipartFile("file", "testfile.txt", "text/plain", "test text".getBytes());
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.multipart(new URI(url))
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.multipart(new URI(url))
                                                           .file(file)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -83,7 +84,7 @@ public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
 
     public void exists(String targetKey) throws Exception {
         String url = UploadEndpointManager.UPLOAD_ENDPOINT_URL + "/" + targetKey + "/exists";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
@@ -91,7 +92,7 @@ public class UploadEndpointControllerTestIT extends AlertIntegrationTest {
 
     public void deleteFile(String targetKey) throws Exception {
         String url = UploadEndpointManager.UPLOAD_ENDPOINT_URL + "/" + targetKey;
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());

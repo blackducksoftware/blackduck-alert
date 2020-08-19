@@ -23,8 +23,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.controller.metadata.DescriptorController;
-import com.synopsys.integration.alert.web.controller.metadata.MetadataController;
+import com.synopsys.integration.alert.web.api.metadata.DescriptorController;
+import com.synopsys.integration.alert.web.api.metadata.MetadataController;
 
 public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
 

@@ -22,8 +22,8 @@ import com.synopsys.integration.alert.common.persistence.model.SystemMessageMode
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
-import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
-import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.alert.web.api.about.AboutModel;
+import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {

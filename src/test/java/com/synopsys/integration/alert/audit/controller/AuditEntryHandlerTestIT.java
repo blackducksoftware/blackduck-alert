@@ -67,8 +67,8 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.audit.AuditEntryActions;
-import com.synopsys.integration.alert.web.audit.AuditEntryController;
+import com.synopsys.integration.alert.web.api.audit.AuditEntryActions;
+import com.synopsys.integration.alert.web.api.audit.AuditEntryController;
 import com.synopsys.integration.util.ResourceUtil;
 
 import net.minidev.json.JSONArray;

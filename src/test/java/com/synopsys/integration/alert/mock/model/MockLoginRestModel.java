@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.mock.model;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.alert.web.api.authentication.LoginConfig;
 
 public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
     private String blackDuckUsername = "blackDuckUsername";
@@ -16,15 +16,15 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
         return blackDuckUsername;
     }
 
-    public void setBlackDuckUsername(final String blackDuckUsername) {
+    public void setBlackDuckUsername(String blackDuckUsername) {
         this.blackDuckUsername = blackDuckUsername;
     }
 
-    public void setBlackDuckPassword(final String blackDuckPassword) {
+    public void setBlackDuckPassword(String blackDuckPassword) {
         this.blackDuckPassword = blackDuckPassword;
     }
 
-    public void setId(final String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -40,7 +40,7 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
 
     @Override
     public String getRestModelJson() {
-        final JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
         json.addProperty("id", id);
         json.addProperty("blackDuckUsername", blackDuckUsername);
         json.addProperty("blackDuckPassword", blackDuckPassword);

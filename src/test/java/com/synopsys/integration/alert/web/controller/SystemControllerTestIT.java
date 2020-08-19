@@ -30,7 +30,9 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.api.system.SystemActions;
+import com.synopsys.integration.alert.web.api.system.SystemController;
+import com.synopsys.integration.alert.web.common.BaseController;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
     private static final String SYSTEM_MESSAGE_BASE_URL = BaseController.BASE_PATH + "/system/messages";
@@ -53,38 +55,38 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetLatestMessages() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_MESSAGE_BASE_URL + "/latest")
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_MESSAGE_BASE_URL + "/latest")
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetMessages() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_MESSAGE_BASE_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_MESSAGE_BASE_URL)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetInitialSystemSetup() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_INITIAL_SETUP_BASE_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_INITIAL_SETUP_BASE_URL)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testPostInitialSystemSetup() throws Exception {
-        final HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
-        final FieldModel configuration = new FieldModel("a_key", ConfigContextEnum.GLOBAL.name(), valueModelMap);
+        HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
+        FieldModel configuration = new FieldModel("a_key", ConfigContextEnum.GLOBAL.name(), valueModelMap);
 
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SYSTEM_INITIAL_SETUP_BASE_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SYSTEM_INITIAL_SETUP_BASE_URL)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -92,9 +94,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetLatestMessagesHandling() {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        final ResponseEntity<String> responseEntity = handler.getLatestSystemMessages();
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseEntity<String> responseEntity = handler.getLatestSystemMessages();
         Mockito.verify(systemActions).getSystemMessagesSinceStartup();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -102,9 +104,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesgetAll() {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        final ResponseEntity<String> responseEntity = handler.getSystemMessages("", "");
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseEntity<String> responseEntity = handler.getSystemMessages("", "");
         Mockito.verify(systemActions).getSystemMessages();
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -112,9 +114,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetAfter() throws Exception {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
         Mockito.verify(systemActions).getSystemMessagesAfter(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -122,9 +124,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetBefore() throws Exception {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        final ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBefore(Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -132,9 +134,9 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetBetween() throws Exception {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
-        final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(contentConverter).getJsonString(Mockito.any());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -142,10 +144,10 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
-        final ResponseFactory responseFactory = new ResponseFactory();
-        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        ResponseFactory responseFactory = new ResponseFactory();
+        SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
-        final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
+        ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.alert.web.api.about.AboutModel;
 
 public class AboutModelTest {
     @Test

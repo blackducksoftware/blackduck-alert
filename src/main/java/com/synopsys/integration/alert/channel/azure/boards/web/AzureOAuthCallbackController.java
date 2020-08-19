@@ -53,7 +53,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.common.BaseController;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
@@ -64,8 +64,8 @@ import com.synopsys.integration.azure.boards.common.service.project.TeamProjectR
 @RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
 public class AzureOAuthCallbackController {
     public static final String AZURE_OAUTH_CALLBACK_PATH = BaseController.OAUTH_CALLBACK_PATH + "/azure";
-    private Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
-    private ResponseFactory responseFactory;
+    private final Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
+    private final ResponseFactory responseFactory;
     private final Gson gson;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;

@@ -9,7 +9,8 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.alert.web.api.about.AboutActions;
+import com.synopsys.integration.alert.web.api.about.AboutModel;
 
 public class AboutActionsTest {
 

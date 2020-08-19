@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
@@ -63,7 +63,7 @@ public class UpdateChecker {
     private final Gson gson;
     private final AboutReader aboutReader;
     private final ProxyManager proxyManager;
-    private AlertProperties alertProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
     public UpdateChecker(Gson gson, AboutReader aboutReader, ProxyManager proxyManager, AlertProperties alertProperties) {
