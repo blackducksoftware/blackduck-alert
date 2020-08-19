@@ -41,8 +41,8 @@ public class AboutControllerTest {
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
-        ResponseEntity<String> response = controller.about();
+        AboutController controller = new AboutController(aboutActions);
+        ResponseEntity<String> response = controller.getAbout();
 
         ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
@@ -68,11 +68,11 @@ public class AboutControllerTest {
 
         AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        AboutController aboutController = new AboutController(aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
 
-        ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> response = aboutController.getAbout();
         ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
@@ -85,11 +85,11 @@ public class AboutControllerTest {
 
         ResponseFactory responseFactory = new ResponseFactory();
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+        AboutController aboutController = new AboutController(aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
 
-        ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> response = aboutController.getAbout();
         ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
