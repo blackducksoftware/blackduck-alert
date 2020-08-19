@@ -4,13 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.web.api.about.AboutDescriptorModel;
+
 public class AboutDescriptorModelTest {
 
     @Test
     public void testGetters() {
         final String iconName = "icon-name";
         final String name = "descriptor-name";
-        final AboutDescriptorModel model = new AboutDescriptorModel(iconName, name);
+        AboutDescriptorModel model = new AboutDescriptorModel(iconName, name);
         assertEquals(iconName, model.getIconKey());
         assertEquals(name, model.getName());
     }

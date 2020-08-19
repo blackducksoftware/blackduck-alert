@@ -22,7 +22,8 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
-import com.synopsys.integration.alert.web.model.UserConfig;
+import com.synopsys.integration.alert.web.api.user.UserActions;
+import com.synopsys.integration.alert.web.api.user.UserConfig;
 
 public class UserActionTest {
 

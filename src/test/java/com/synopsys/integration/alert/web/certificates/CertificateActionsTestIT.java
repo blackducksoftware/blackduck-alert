@@ -25,7 +25,8 @@ import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.model.CertificateModel;
+import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
+import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
 
 @Transactional
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
@@ -43,7 +44,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Autowired
     private CustomCertificateAccessor certificateAccessor;
 
-    private CertificateTestUtil certTestUtil = new CertificateTestUtil();
+    private final CertificateTestUtil certTestUtil = new CertificateTestUtil();
 
     @BeforeEach
     public void init() throws Exception {

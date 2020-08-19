@@ -27,7 +27,8 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
-import com.synopsys.integration.alert.web.config.FieldModelProcessor;
+import com.synopsys.integration.alert.web.api.system.SystemActions;
+import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SystemActionsTest {

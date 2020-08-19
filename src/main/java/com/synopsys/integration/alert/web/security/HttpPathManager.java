@@ -30,7 +30,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.common.BaseController;
 
 @Component
 public class HttpPathManager {

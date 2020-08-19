@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.web.api.metadata.ExposedEndpointsController;
 
 public class ExposedEndpointsControllerTest {
     @Test

@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsUIConfig;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
-import com.synopsys.integration.alert.web.config.FieldValidationAction;
+import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 
 public class SettingsGlobalApiActionTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

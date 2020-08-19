@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.config.DescriptorProcessor;
+import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
 
 //@ExtendWith(SpringExtension.class)
 //@ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class })

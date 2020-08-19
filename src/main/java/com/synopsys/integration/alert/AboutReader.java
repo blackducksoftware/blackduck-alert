@@ -36,9 +36,9 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMeta
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.web.actions.DescriptorMetadataActions;
+import com.synopsys.integration.alert.web.api.about.AboutModel;
+import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.documentation.SwaggerConfiguration;
-import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
 

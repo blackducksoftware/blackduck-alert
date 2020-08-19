@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.OutputLogger;
-import com.synopsys.integration.alert.web.audit.AuditEntryActions;
+import com.synopsys.integration.alert.web.api.audit.AuditEntryActions;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class AuditEntryActionsTest {

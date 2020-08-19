@@ -24,6 +24,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.web.api.config.ConfigActions;
+import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
 
 public class ConfigActionTestIT extends AlertIntegrationTest {
     @Autowired

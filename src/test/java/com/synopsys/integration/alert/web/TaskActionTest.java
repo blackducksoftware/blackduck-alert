@@ -14,7 +14,7 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
-import com.synopsys.integration.alert.web.tasks.TaskActions;
+import com.synopsys.integration.alert.web.api.task.TaskActions;
 
 public class TaskActionTest {
 

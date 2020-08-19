@@ -26,9 +26,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.web.config.DescriptorProcessor;
-import com.synopsys.integration.alert.web.config.FieldModelProcessor;
-import com.synopsys.integration.alert.web.config.FieldValidationAction;
+import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
+import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 

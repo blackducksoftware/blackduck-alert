@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingUIConfig;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
-import com.synopsys.integration.alert.web.config.FieldValidationAction;
+import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
