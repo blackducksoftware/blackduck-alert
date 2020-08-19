@@ -17,9 +17,9 @@ import com.synopsys.integration.alert.common.channel.issuetracker.service.Transi
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
+import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 
 public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCreateIssueTestAction.class);
@@ -53,30 +53,34 @@ public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
     }
 
     @Override
-    protected TransitionHandler<TransitionComponent> createTransitionHandler(IssueTrackerContext issueTrackerContext) throws IntegrationException {
-        //TODO:
-        //need gson, DONE
-        // azureBoardProperties, DONE
-        // azureWorkItemService,
-        // and azureWorkItemTypeStateService
-
+    protected TransitionHandler<WorkItemTypeStateResponseModel> createTransitionHandler(IssueTrackerContext issueTrackerContext) throws IntegrationException {
         AzureBoardsProperties azureBoardsProperties = createAzureBoardProperties(issueTrackerContext);
-
-        Proxy useProxy = proxyManager.createProxy();
-        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(useProxy, gson);
+        AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-
         AzureWorkItemTypeStateService azureWorkItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService);
-
         return new AzureTransitionHandler(gson, azureBoardsProperties, azureWorkItemService, azureWorkItemTypeStateService);
     }
 
     @Override
     protected void safelyCleanUpIssue(IssueTrackerContext issueTrackerContext, String issueKey) {
-
+        try {
+            AzureBoardsProperties azureBoardsProperties = createAzureBoardProperties(issueTrackerContext);
+            AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
+            AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
+            Integer workItemId = Integer.parseInt(issueKey);
+            azureWorkItemService.deleteWorkItem(azureBoardsProperties.getOrganizationName(), workItemId);
+        } catch (IntegrationException e) {
+            logger.warn(String.format("There was a problem trying to delete the Azure Boards distribution test issue, '%s': %s", issueKey, e.getMessage()));
+            logger.debug(e.getMessage(), e);
+        }
     }
 
     private AzureBoardsProperties createAzureBoardProperties(IssueTrackerContext context) {
         return (AzureBoardsProperties) context.getIssueTrackerConfig();
+    }
+
+    private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
+        Proxy proxy = proxyManager.createProxy();
+        return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }
 }
