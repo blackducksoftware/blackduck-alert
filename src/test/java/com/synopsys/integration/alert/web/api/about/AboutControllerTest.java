@@ -1,27 +1,22 @@
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.api.about;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.api.about.AboutActions;
-import com.synopsys.integration.alert.web.api.about.AboutController;
-import com.synopsys.integration.alert.web.api.about.AboutModel;
 
 public class AboutControllerTest {
     private final Gson gson = new Gson();
-    ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
     @Test
     public void testController() {
@@ -36,17 +31,18 @@ public class AboutControllerTest {
         Set<DescriptorMetadata> providers = Set.of(providerMetadata);
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
-        ResponseFactory responseFactory = new ResponseFactory();
         AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        AboutController controller = new AboutController(aboutActions);
-        ResponseEntity<String> response = controller.getAbout();
 
-        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        AboutController controller = new AboutController(aboutActions);
+        try {
+            AboutModel responseModel = controller.getAbout();
+            assertNotNull("Expected a valid AboutModel as a response", responseModel);
+        } catch (ResponseStatusException e) {
+            fail(String.format("Failed to retrieve a valid AboutModel. Status Code: %d. Error Message: %s", e.getStatus().value(), e.getMessage()));
+        }
     }
 
     @Test
@@ -62,37 +58,37 @@ public class AboutControllerTest {
         Set<DescriptorMetadata> providers = Set.of(providerMetadata);
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
-        Gson gson = new Gson();
-        ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        ResponseFactory responseFactory = new ResponseFactory();
-
         AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
         AboutController aboutController = new AboutController(aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
 
-        ResponseEntity<String> response = aboutController.getAbout();
-        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        try {
+            AboutModel responseModel = aboutController.getAbout();
+            assertNotNull("Expected a valid AboutModel as a response", responseModel);
+        } catch (ResponseStatusException e) {
+            fail(String.format("Failed to retrieve a valid AboutModel. Status Code: %d. Error Message: %s", e.getStatus().value(), e.getMessage()));
+        }
     }
 
     @Test
     public void testGetAboutDataNotPresent() {
-        Gson gson = new Gson();
-        ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-
-        ResponseFactory responseFactory = new ResponseFactory();
         AboutActions aboutActions = Mockito.mock(AboutActions.class);
         AboutController aboutController = new AboutController(aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
 
-        ResponseEntity<String> response = aboutController.getAbout();
-        ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        String failureMessage = "Expected a ResponseStatusException to be thrown";
+        try {
+            aboutController.getAbout();
+            fail(failureMessage);
+        } catch (ResponseStatusException e) {
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+            assertEquals(AboutController.ERROR_ABOUT_MODEL_NOT_FOUND, e.getReason());
+        } catch (Exception e) {
+            fail(failureMessage);
+        }
     }
 
 }
