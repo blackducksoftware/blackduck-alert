@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.storage;
+package com.synopsys.integration.alert.channel.azure.boards.oauth.storage;
 
 import java.io.IOException;
 

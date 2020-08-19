@@ -22,20 +22,20 @@
  */
 package com.synopsys.integration.azure.boards.common.service.project;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 public class TeamProjectReferenceResponseModel {
     private String id;
     private String name;
     private String description;
     private String url;
-    private JsonObject state;
+    private JsonElement state;
 
     public TeamProjectReferenceResponseModel() {
         // For serialization
     }
 
-    public TeamProjectReferenceResponseModel(String id, String name, String description, String url, JsonObject state) {
+    public TeamProjectReferenceResponseModel(String id, String name, String description, String url, JsonElement state) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -59,7 +59,7 @@ public class TeamProjectReferenceResponseModel {
         return url;
     }
 
-    public JsonObject getState() {
+    public JsonElement getState() {
         return state;
     }
 

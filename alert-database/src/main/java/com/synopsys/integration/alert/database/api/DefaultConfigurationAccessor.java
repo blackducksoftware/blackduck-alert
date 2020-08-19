@@ -331,9 +331,11 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         if (configuredFields != null && !configuredFields.isEmpty()) {
             List<FieldValueEntity> fieldValuesToSave = new ArrayList<>(configuredFields.size());
             for (ConfigurationFieldModel configFieldModel : configuredFields) {
-                Long fieldId = getFieldIdOrThrowException(configFieldModel.getFieldKey());
+                String fieldKey = configFieldModel.getFieldKey();
+                Long fieldId = getFieldIdOrThrowException(fieldKey);
+                boolean isSensitive = isFieldSensitive(fieldKey);
                 for (String value : configFieldModel.getFieldValues()) {
-                    FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, configFieldModel.isSensitive()));
+                    FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, isSensitive));
                     fieldValuesToSave.add(newFieldValue);
                 }
                 updatedConfig.put(configFieldModel);
@@ -498,6 +500,16 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                    .findFirstByKey(fieldKey)
                    .map(DefinedFieldEntity::getId)
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
+    }
+
+    private boolean isFieldSensitive(String fieldKey) {
+        if (StringUtils.isBlank(fieldKey)) {
+            return false;
+        }
+        return definedFieldRepository
+                   .findFirstByKey(fieldKey)
+                   .map(DefinedFieldEntity::getSensitive)
+                   .orElse(false);
     }
 
     private String encrypt(String value, boolean shouldEncrypt) {
