@@ -54,18 +54,25 @@ public class SwaggerConfiguration {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                    .select()
-                   .apis(RequestHandlerSelectors.basePackage("com.synopsys.integration.alert.web"))
+                   // TODO eventually only expose the "public" api package(s)
+                   .apis(RequestHandlerSelectors.basePackage("com.synopsys.integration.alert.web.api"))
                    .build()
                    .produces(Set.of("application/json"))
                    .consumes(Set.of("application/json"))
                    .ignoredParameterTypes(HttpServletRequest.class, HttpServletResponse.class)
+                   .groupName("production")
                    .apiInfo(apiEndpointInfo());
     }
 
-    // TODO add more info
     private ApiInfo apiEndpointInfo() {
         return new ApiInfoBuilder()
                    .title("BlackDuck Alert - REST API")
+                   .description(
+                       "The production REST endpoints used by the Alert UI."
+                           + " Currently, these are all subject to change between versions."
+                           + " A stable, versioned API is coming soon."
+                   )
+                   .version("preview")
                    .build();
     }
 
