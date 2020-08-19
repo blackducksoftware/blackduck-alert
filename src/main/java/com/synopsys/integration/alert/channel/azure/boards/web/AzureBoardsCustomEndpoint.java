@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -70,10 +71,11 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final AzureRedirectUtil azureRedirectUtil;
     private final ProxyManager proxyManager;
+    private final OAuthRequestValidator oAuthRequestValidator;
 
     public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
-        ProxyManager proxyManager)
+        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator)
         throws AlertException {
         super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager, responseFactory, gson);
         this.alertProperties = alertProperties;
@@ -82,6 +84,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.azureRedirectUtil = azureRedirectUtil;
         this.proxyManager = proxyManager;
+        this.oAuthRequestValidator = oAuthRequestValidator;
     }
 
     @Override
@@ -97,7 +100,10 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             if (!alertServerUrl.isPresent()) {
                 return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
             }
-            String authUrl = createAuthURL(clientId.get());
+            String requestKey = createRequestKey();
+            oAuthRequestValidator.addAuthorizationRequest(requestKey);
+            logger.info("OAuth authorization request created: {}", requestKey);
+            String authUrl = createAuthURL(clientId.get(), requestKey);
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
             return new OAuthEndpointResponse(HttpStatus.OK.value(), isAuthenticated(fieldAccessor), authUrl, "");
 
@@ -129,14 +135,14 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         return properties.hasOAuthCredentials(proxy);
     }
 
-    private String createAuthURL(String clientId) {
+    private String createAuthURL(String clientId, String requestKey) {
         StringBuilder authUrlBuilder = new StringBuilder(300);
         authUrlBuilder.append(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL);
-        authUrlBuilder.append(createQueryString(clientId));
+        authUrlBuilder.append(createQueryString(clientId, requestKey));
         return authUrlBuilder.toString();
     }
 
-    private String createQueryString(String clientId) {
+    private String createQueryString(String clientId, String requestKey) {
         List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         String authorizationUrl = azureRedirectUtil.createOAuthRedirectUri();
         StringBuilder queryBuilder = new StringBuilder(250);
@@ -144,7 +150,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         queryBuilder.append(clientId);
         //TODO have an object that stores the request keys and purges them after some amount of time.
         queryBuilder.append("&state=");
-        queryBuilder.append(createRequestKey());
+        queryBuilder.append(requestKey);
         queryBuilder.append("&scope=");
         queryBuilder.append(URLEncoder.encode(StringUtils.join(scopes, " "), StandardCharsets.UTF_8));
         queryBuilder.append("&redirect_uri=");
@@ -154,6 +160,6 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
 
     private String createRequestKey() {
         UUID requestID = UUID.randomUUID();
-        return String.format("%s-%s", "alert-auth-request", requestID.toString());
+        return String.format("%s-%s", "alert-oauth-request", requestID.toString());
     }
 }
