@@ -23,9 +23,11 @@
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
@@ -36,7 +38,8 @@ import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
@@ -49,6 +52,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
@@ -99,8 +103,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return scopes;
     }
 
-    public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson, String authorizationCode) throws AlertException {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public AzureHttpService createAzureHttpService(ProxyInfo proxy, Gson gson, String authorizationCode) throws AlertException {
+        HttpTransport httpTransport = createHttpTransport(proxy);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
@@ -112,8 +116,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         }
     }
 
-    public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson) throws AlertException {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public AzureHttpService createAzureHttpService(ProxyInfo proxyInfo, Gson gson) throws AlertException {
+        HttpTransport httpTransport = createHttpTransport(proxyInfo);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
@@ -124,18 +128,18 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         }
     }
 
-    public AuthorizationCodeFlow createOAuthFlow(NetHttpTransport httpTransport) throws IOException {
+    public AuthorizationCodeFlow createOAuthFlow(HttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
                    .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
                    .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
                    .build();
     }
 
-    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(NetHttpTransport httpTransport) {
+    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(HttpTransport httpTransport) {
         return createOAuthFlowBuilder(httpTransport, BearerToken.authorizationHeaderAccessMethod());
     }
 
-    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(NetHttpTransport httpTransport, Credential.AccessMethod authorizationAccessMethod) {
+    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(HttpTransport httpTransport, Credential.AccessMethod authorizationAccessMethod) {
         return new AzureAuthorizationCodeFlow.Builder(
             authorizationAccessMethod,
             httpTransport,
@@ -149,10 +153,14 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         ).setScopes(getScopes());
     }
 
-    public NetHttpTransport createHttpTransport(Proxy proxy) {
-        return new NetHttpTransport.Builder()
-                   .setProxy(proxy)
-                   .build();
+    public HttpTransport createHttpTransport(ProxyInfo proxyInfo) {
+        HttpHost httpHost = new HttpHost(proxyInfo.getHost().orElse(null), proxyInfo.getPort());
+        // TODO figure out auth strategy.
+        HttpClient httpClient = ApacheHttpTransport.newDefaultHttpClientBuilder()
+                                    .setProxy(httpHost)
+                                    .build();
+
+        return new ApacheHttpTransport(httpClient);
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
@@ -160,8 +168,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return Optional.ofNullable(storedCredential);
     }
 
-    public boolean hasOAuthCredentials(Proxy proxy) {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public boolean hasOAuthCredentials(ProxyInfo proxy) {
+        HttpTransport httpTransport = createHttpTransport(proxy);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Optional<Credential> oAuthCredential = getExistingOAuthCredential(oAuthFlow);

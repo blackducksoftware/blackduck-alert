@@ -24,8 +24,12 @@ package com.synopsys.integration.azure.boards.common.http;
 
 import java.net.Proxy;
 
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.gson.Gson;
 
 public class AzureHttpServiceFactory {
@@ -39,29 +43,32 @@ public class AzureHttpServiceFactory {
     }
 
     public static AzureHttpService withCredentialNoProxy(String baseUrl, Credential oAuthCredential, Gson gson) {
-        return withCredential(baseUrl, Proxy.NO_PROXY, oAuthCredential, gson);
+        return withCredentialUnauthenticatedProxy(baseUrl, Proxy.NO_PROXY, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(Proxy proxy, Credential oAuthCredential, Gson gson) {
-        return withCredential(DEFAULT_BASE_URL, proxy, oAuthCredential, gson);
+    public static AzureHttpService withCredentialUnauthenticatedProxy(Proxy proxy, Credential oAuthCredential, Gson gson) {
+        return withCredentialUnauthenticatedProxy(DEFAULT_BASE_URL, proxy, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpService withCredentialUnauthenticatedProxy(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
         return withCredential(baseUrl, defaultHttpTransport(proxy), oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(NetHttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpService withCredential(HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
         return withCredential(DEFAULT_BASE_URL, httpTransport, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(String baseUrl, NetHttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpService withCredential(String baseUrl, HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
         return new AzureHttpService(baseUrl, httpTransport.createRequestFactory(oAuthCredential), gson);
     }
 
-    private static NetHttpTransport defaultHttpTransport(Proxy proxy) {
-        return new NetHttpTransport.Builder()
-                   .setProxy(proxy)
-                   .build();
+    private static ApacheHttpTransport defaultHttpTransport(Proxy proxy) {
+        // TODO figure out how to use the proxy otherwise remove it and force httpTransport only
+        HttpHost httpHost = HttpHost.create(proxy.toString());
+        CloseableHttpClient httpClient = ApacheHttpTransport.newDefaultHttpClientBuilder()
+                                             .setProxy(httpHost)
+                                             .build();
+        return new ApacheHttpTransport(httpClient);
     }
 
 }
