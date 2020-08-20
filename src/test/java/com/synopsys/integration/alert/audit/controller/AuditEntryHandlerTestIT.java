@@ -14,6 +14,7 @@ package com.synopsys.integration.alert.audit.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
@@ -162,9 +164,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager, new AuditDescriptorKey());
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
 
-        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryController.get(null, null, null, null, null, true);
+        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryController.getPage(null, null, null, null, null, true);
         assertEquals(1, auditEntries.getContent().size());
 
         AuditEntryModel auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
@@ -184,7 +186,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
 
-        auditEntries = auditEntryController.get(null, null, null, null, null, false);
+        auditEntries = auditEntryController.getPage(null, null, null, null, null, false);
         assertEquals(2, auditEntries.getContent().size());
     }
 
@@ -200,7 +202,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager, new AuditDescriptorKey());
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
 
         AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
         assertNotNull(jobStatusModel);
@@ -231,22 +233,26 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager, new AuditDescriptorKey());
+        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
 
-        ResponseEntity<String> invalidIdResponse = auditEntryController.post(-1L, null);
-        assertEquals(HttpStatus.GONE, invalidIdResponse.getStatusCode());
+        try {
+            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), null);
+            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), null);
+            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), configurationJobModel.getJobId());
+        } catch (Exception e) {
+            fail("Expected the Audit POST request(s) not to throw an exception");
+        }
 
-        ResponseEntity<String> validResponse = auditEntryController.post(savedNotificationEntity.getId(), null);
-        assertEquals(HttpStatus.OK, validResponse.getStatusCode());
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryController.resendByIdAndJobId(-1L, null));
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), UUID.randomUUID()));
+    }
 
-        ResponseEntity<String> invalidJobResponse = auditEntryController.post(savedNotificationEntity.getId(), UUID.randomUUID());
-        assertEquals(HttpStatus.GONE, invalidJobResponse.getStatusCode());
-
-        ResponseEntity<String> invalidReferenceResponse_1 = auditEntryController.post(savedNotificationEntity.getId(), null);
-        assertEquals(HttpStatus.OK, invalidReferenceResponse_1.getStatusCode());
-
-        ResponseEntity<String> validJobSpecificResend = auditEntryController.post(savedNotificationEntity.getId(), configurationJobModel.getJobId());
-        assertEquals(HttpStatus.OK, validJobSpecificResend.getStatusCode());
+    private void assertResponseStatusException(HttpStatus expectedStatus, Supplier<?> auditRequest) {
+        try {
+            auditRequest.get();
+        } catch (ResponseStatusException e) {
+            assertEquals(expectedStatus, e.getStatus());
+        }
     }
 
 }

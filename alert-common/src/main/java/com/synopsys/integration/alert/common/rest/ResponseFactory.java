@@ -40,6 +40,10 @@ public class ResponseFactory {
     public static final String MISSING_REQUEST_BODY = "Required request body is missing";
     public static final String UNAUTHORIZED_REQUEST_MESSAGE = "User not authorized to perform the request";
 
+    public static ResponseStatusException createBadRequest(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, customMessage);
+    }
+
     public static ResponseStatusException createGoneException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.GONE, customMessage);
     }

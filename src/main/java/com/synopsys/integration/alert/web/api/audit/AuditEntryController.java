@@ -27,7 +27,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -53,22 +51,18 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuditEntryController extends BaseController {
     public static final String AUDIT_BASE_PATH = BaseController.BASE_PATH + "/audit";
     private final AuditEntryActions auditEntryActions;
-    private final ContentConverter contentConverter;
-    private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final AuditDescriptorKey descriptorKey;
 
     @Autowired
-    public AuditEntryController(AuditEntryActions auditEntryActions, ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey) {
+    public AuditEntryController(AuditEntryActions auditEntryActions, AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey) {
         this.auditEntryActions = auditEntryActions;
-        this.contentConverter = contentConverter;
-        this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
         this.descriptorKey = descriptorKey;
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryModel> get(@RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
+    public AlertPagedModel<AuditEntryModel> getPage(@RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam(value = "sortField", required = false) String sortField,
         @RequestParam(value = "sortOrder", required = false) String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) Boolean onlyShowSentNotifications) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
@@ -96,7 +90,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/")
-    public ResponseEntity<String> post(@PathVariable(value = "id") Long notificationId) {
+    public AlertPagedModel<AuditEntryModel> resendById(@PathVariable(value = "id") Long notificationId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
             throw ResponseFactory.createUnauthorizedException();
         }
@@ -104,22 +98,20 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
-    public ResponseEntity<String> post(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
+    public AlertPagedModel<AuditEntryModel> resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
             throw ResponseFactory.createUnauthorizedException();
         }
         return resendNotification(notificationId, jobId);
     }
 
-    private ResponseEntity<String> resendNotification(Long notificationId, UUID commonConfigId) {
-        String stringNotificationId = contentConverter.getStringValue(notificationId);
+    private AlertPagedModel<AuditEntryModel> resendNotification(Long notificationId, UUID commonConfigId) {
         try {
-            AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
-            return responseFactory.createOkResponse(stringNotificationId, contentConverter.getJsonString(auditEntries));
+            return auditEntryActions.resendNotification(notificationId, commonConfigId);
         } catch (AlertNotificationPurgedException | AlertJobMissingException e) {
             throw ResponseFactory.createGoneException(e.getMessage());
         } catch (IntegrationException e) {
-            return responseFactory.createBadRequestResponse(stringNotificationId, e.getMessage());
+            throw ResponseFactory.createBadRequest(e.getMessage());
         }
     }
 
