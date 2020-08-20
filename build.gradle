@@ -34,7 +34,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.2.0-SIGQA2-SNAPSHOT'
+version = '6.2.0-SIGQA3-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
