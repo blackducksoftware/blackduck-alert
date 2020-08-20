@@ -27,15 +27,30 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
+// TODO make this a Utils class
 @Component
 public class ResponseFactory {
     public static final String EMPTY_ID = "-1L";
     public static final String MISSING_REQUEST_BODY = "Required request body is missing";
     public static final String UNAUTHORIZED_REQUEST_MESSAGE = "User not authorized to perform the request";
+
+    public static ResponseStatusException createGoneException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.GONE, customMessage);
+    }
+
+    public static ResponseStatusException createUnauthorizedException() {
+        return createForbiddenException(UNAUTHORIZED_REQUEST_MESSAGE);
+    }
+
+    public static ResponseStatusException createForbiddenException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.FORBIDDEN, customMessage);
+    }
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
         String responseBody = new ResponseBodyBuilder(id, message).build();
@@ -80,7 +95,7 @@ public class ResponseFactory {
         return createMessageResponse(HttpStatus.OK, id, message);
     }
 
-    public ResponseEntity<String> createGoneResponse(String id, String message) {
+    public ResponseEntity<String> createGoneException(String id, String message) {
         return createMessageResponse(HttpStatus.GONE, id, message);
     }
 

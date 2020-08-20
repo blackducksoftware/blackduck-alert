@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -44,6 +42,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -70,8 +69,6 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.api.audit.AuditEntryController;
 import com.synopsys.integration.util.ResourceUtil;
-
-import net.minidev.json.JSONArray;
 
 @Transactional
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
@@ -167,23 +164,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
         AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager, new AuditDescriptorKey());
 
-        ResponseEntity<String> response = auditEntryController.get(null, null, null, null, null, true);
-        AlertPagedModel<AuditEntryModel> auditEntries = gson.fromJson(response.getBody(), AlertPagedModel.class);
+        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryController.get(null, null, null, null, null, true);
         assertEquals(1, auditEntries.getContent().size());
 
-        ResponseEntity<String> auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
+        AuditEntryModel auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
         assertNotNull(auditEntryResponse);
-        assertEquals(HttpStatus.OK, auditEntryResponse.getStatusCode());
 
-        JSONArray jsonContentArray = JsonPath.read(response.getBody(), "$.content");
-        LinkedHashMap auditEntryModelFieldMap = (LinkedHashMap) jsonContentArray.get(0);
-        String auditEntryModelString = gson.toJson(auditEntryModelFieldMap);
-        AuditEntryModel auditEntry = gson.fromJson(auditEntryModelString, AuditEntryModel.class);
-
-        String auditEntryModelByIdString = JsonPath.read(auditEntryResponse.getBody(), "$.message");
-        AuditEntryModel auditEntryById = gson.fromJson(auditEntryModelByIdString, AuditEntryModel.class);
-        assertEquals(auditEntryById, auditEntry);
-
+        AuditEntryModel auditEntry = auditEntries.getContent().get(0);
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
@@ -196,8 +183,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(createdAtStringValue, notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
-        response = auditEntryController.get(null, null, null, null, null, false);
-        auditEntries = gson.fromJson(response.getBody(), AlertPagedModel.class);
+
+        auditEntries = auditEntryController.get(null, null, null, null, null, false);
         assertEquals(2, auditEntries.getContent().size());
     }
 
@@ -215,11 +202,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
         AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, contentConverter, responseFactory, authorizationManager, new AuditDescriptorKey());
 
-        ResponseEntity<String> jobAuditModelResponse = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
-        assertNotNull(jobAuditModelResponse);
-        assertEquals(HttpStatus.OK, jobAuditModelResponse.getStatusCode());
-
-        assertNotNull(jobAuditModelResponse.getBody());
+        AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
+        assertNotNull(jobStatusModel);
     }
 
     @Test
