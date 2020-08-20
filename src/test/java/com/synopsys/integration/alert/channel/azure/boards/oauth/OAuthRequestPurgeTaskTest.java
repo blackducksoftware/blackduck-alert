@@ -15,7 +15,7 @@ public class OAuthRequestPurgeTaskTest {
     @Test
     public void testCronSchedule() {
         OAuthRequestPurgeTask task = new OAuthRequestPurgeTask(null, null, null);
-        assertEquals(OAuthRequestPurgeTask.CRON_EXPRESSION, task.scheduleCronExpression());
+        assertEquals(OAuthRequestPurgeTask.CRON_EXPRESSION_EVERY_5_MINUTES, task.scheduleCronExpression());
     }
 
     @Test

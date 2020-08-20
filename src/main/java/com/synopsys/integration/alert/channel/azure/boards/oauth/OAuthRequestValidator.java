@@ -24,9 +24,7 @@ package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +50,10 @@ public class OAuthRequestValidator {
     }
 
     public void removeRequestsOlderThanInstant(Instant instant) {
-        Set<Map.Entry<String, Instant>> entriesToRemove = requestMap.entrySet().stream()
-                                                              .filter(entry -> entry.getValue().isBefore(instant))
-                                                              .collect(Collectors.toSet());
-        entriesToRemove.stream()
+        requestMap.entrySet().stream()
+            .filter(entry -> entry.getValue().isBefore(instant))
             .map(Map.Entry::getKey)
             .forEach(this::removeAuthorizationRequest);
+
     }
 }

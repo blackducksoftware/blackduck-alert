@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 @Component
 public class OAuthRequestPurgeTask extends StartupScheduledTask {
     // every 5 minutes.
-    public static final String CRON_EXPRESSION = "0 0/5 * 1/1 * ?";
+    public static final String CRON_EXPRESSION_EVERY_5_MINUTES = "0 0/5 * 1/1 * ?";
     private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
@@ -46,7 +46,7 @@ public class OAuthRequestPurgeTask extends StartupScheduledTask {
 
     @Override
     public String scheduleCronExpression() {
-        return CRON_EXPRESSION;
+        return CRON_EXPRESSION_EVERY_5_MINUTES;
     }
 
     @Override
