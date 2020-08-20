@@ -22,16 +22,12 @@
  */
 package com.synopsys.integration.alert.web.api.about;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
@@ -39,23 +35,16 @@ public class AboutController extends BaseController {
     public static final String ERROR_ABOUT_MODEL_NOT_FOUND = "Could not find the About model.";
 
     private final AboutActions aboutActions;
-    private final ResponseFactory responseFactory;
-    private final ContentConverter contentConverter;
 
     @Autowired
-    public AboutController(AboutActions aboutActions, ResponseFactory responseFactory, ContentConverter contentConverter) {
+    public AboutController(AboutActions aboutActions) {
         this.aboutActions = aboutActions;
-        this.responseFactory = responseFactory;
-        this.contentConverter = contentConverter;
     }
 
     @GetMapping(value = "/about")
-    public ResponseEntity<String> about() {
-        Optional<AboutModel> optionalModel = aboutActions.getAboutModel();
-        if (optionalModel.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
-        }
-        return responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND);
+    public AboutModel getAbout() {
+        return aboutActions.getAboutModel()
+                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND));
     }
 
 }
