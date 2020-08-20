@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthTokenValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -51,23 +52,26 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String BUTTON_LABEL_OAUTH = "Authenticate";
 
     private final EncryptionValidator encryptionValidator;
+    private final AzureOAuthTokenValidator authTokenValidator;
 
     @Autowired
-    public AzureBoardsGlobalUIConfig(EncryptionValidator encryptionValidator) {
+
+    public AzureBoardsGlobalUIConfig(EncryptionValidator encryptionValidator, AzureOAuthTokenValidator authTokenValidator) {
         super(AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_DESCRIPTION, AzureBoardsDescriptor.AZURE_BOARDS_URL);
         this.encryptionValidator = encryptionValidator;
+        this.authTokenValidator = authTokenValidator;
     }
-    
+
     @Override
     public List<ConfigField> createFields() {
-        //        ConfigField azureBoardsUrlField = new URLInputConfigField(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL, LABEL_AZURE_BOARDS_URL, DESCRIPTION_AZURE_BOARDS_URL);
         ConfigField organizationName = new TextInputConfigField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME, LABEL_ORGANIZATION_NAME, DESCRIPTION_ORGANIZATION_NAME).applyRequired(true);
         ConfigField clientId = new TextInputConfigField(AzureBoardsDescriptor.KEY_CLIENT_ID, LABEL_CLIENT_ID, DESCRIPTION_CLIENT_ID).applyRequired(true);
         ConfigField clientSecret = new PasswordConfigField(AzureBoardsDescriptor.KEY_CLIENT_SECRET, LABEL_CLIENT_SECRET, DESCRIPTION_CLIENT_SECRET, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        // FIXME when we have consistent result objects containing the HTTP status code, content, and warnings versus errors this validator can be added.
+        //.applyValidationFunctions(authTokenValidator);
         return List.of(organizationName, clientId, clientSecret, configureOAuth);
     }
-
 }

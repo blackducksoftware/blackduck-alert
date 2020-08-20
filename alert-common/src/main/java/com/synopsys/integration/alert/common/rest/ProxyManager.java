@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.rest;
 
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Optional;
 
@@ -116,15 +115,8 @@ public class ProxyManager {
     }
 
     public Proxy createProxy() {
-        if (!getProxyHost().isPresent()) {
-            return Proxy.NO_PROXY;
-        }
-        //InetSocketAddress will validate the host name isn't null and the port is in the correct range.
-        String hostname = getProxyHost().orElse(null);
-        String port = getProxyPort().orElse("-1");
-        InetSocketAddress socketAddress = new InetSocketAddress(hostname, Integer.valueOf(port));
-
-        return new Proxy(Proxy.Type.HTTP, socketAddress);
+        return createProxyInfo()
+                   .getProxy()
+                   .orElse(Proxy.NO_PROXY);
     }
-
 }
