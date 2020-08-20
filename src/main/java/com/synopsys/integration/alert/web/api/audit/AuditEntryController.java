@@ -111,7 +111,7 @@ public class AuditEntryController extends BaseController {
         } catch (AlertNotificationPurgedException | AlertJobMissingException e) {
             throw ResponseFactory.createGoneException(e.getMessage());
         } catch (IntegrationException e) {
-            throw ResponseFactory.createBadRequest(e.getMessage());
+            throw ResponseFactory.createBadRequestException(e.getMessage());
         }
     }
 

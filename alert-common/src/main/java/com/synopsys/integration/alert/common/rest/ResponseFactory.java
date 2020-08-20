@@ -40,7 +40,9 @@ public class ResponseFactory {
     public static final String MISSING_REQUEST_BODY = "Required request body is missing";
     public static final String UNAUTHORIZED_REQUEST_MESSAGE = "User not authorized to perform the request";
 
-    public static ResponseStatusException createBadRequest(@Nullable String customMessage) {
+    // Static methods
+
+    public static ResponseStatusException createBadRequestException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, customMessage);
     }
 
@@ -55,6 +57,8 @@ public class ResponseFactory {
     public static ResponseStatusException createForbiddenException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.FORBIDDEN, customMessage);
     }
+
+    // Unnecessarily stateful methods:
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
         String responseBody = new ResponseBodyBuilder(id, message).build();
@@ -99,7 +103,7 @@ public class ResponseFactory {
         return createMessageResponse(HttpStatus.OK, id, message);
     }
 
-    public ResponseEntity<String> createGoneException(String id, String message) {
+    public ResponseEntity<String> createGoneResponse(String id, String message) {
         return createMessageResponse(HttpStatus.GONE, id, message);
     }
 
