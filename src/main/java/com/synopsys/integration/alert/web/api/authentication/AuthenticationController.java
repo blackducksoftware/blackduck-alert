@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -84,7 +84,7 @@ public class AuthenticationController extends BaseController {
             } else {
                 throw ResponseFactory.createUnauthorizedException();
             }
-        } catch (BadCredentialsException badCredentialsException) {
+        } catch (AuthenticationException authException) {
             throw ResponseFactory.createUnauthorizedException();
         }
     }
