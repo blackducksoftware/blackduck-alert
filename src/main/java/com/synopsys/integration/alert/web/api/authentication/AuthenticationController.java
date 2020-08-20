@@ -22,12 +22,11 @@
  */
 package com.synopsys.integration.alert.web.api.authentication;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.common.BaseController;
@@ -55,19 +52,17 @@ public class AuthenticationController extends BaseController {
 
     private final LoginActions loginActions;
     private final PasswordResetService passwordResetService;
-    private final ResponseFactory responseFactory;
     private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public AuthenticationController(LoginActions loginActions, PasswordResetService passwordResetService, ResponseFactory responseFactory, CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationController(LoginActions loginActions, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
         this.loginActions = loginActions;
         this.passwordResetService = passwordResetService;
-        this.responseFactory = responseFactory;
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @PostMapping(value = "/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
@@ -76,44 +71,34 @@ public class AuthenticationController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/");
-
-        return responseFactory.createResponse(HttpStatus.NO_CONTENT, headers, "{\"message\":\"Success\"}");
+        return new ResponseEntity<>(null, headers, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
+    public void login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
         try {
             if (loginActions.authenticateUser(loginConfig)) {
                 CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());
-                return responseFactory.createMessageResponse(HttpStatus.OK, "Success");
             } else {
-                return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+                throw ResponseFactory.createUnauthorizedException();
             }
-        } catch (BadCredentialsException ex) {
-            return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        } catch (BadCredentialsException badCredentialsException) {
+            throw ResponseFactory.createUnauthorizedException();
         }
     }
 
-    @PostMapping(value = "/resetPassword")
-    public ResponseEntity<String> resetPassword() {
-        return responseFactory.createBadRequestResponse(ResponseFactory.EMPTY_ID, "Password Reset Error: A username must be specified");
-    }
-
     @PostMapping(value = "/resetPassword/{username}")
-    public ResponseEntity<String> resetPassword(@PathVariable String username) {
-        final String errorPrefix = "Password Reset Error: ";
+    public void resetPassword(@PathVariable(required = false) String username) {
+        if (StringUtils.isBlank(username)) {
+            throw ResponseFactory.createBadRequestException("Username cannot be blank");
+        }
+
         try {
             passwordResetService.resetPassword(username);
-            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Password reset email sent");
-        } catch (AlertDatabaseConstraintException databaseException) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", List.of(AlertFieldStatus.error("username", databaseException.getMessage())));
-        } catch (AlertException e) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + e.getMessage());
+        } catch (AlertException alertException) {
+            throw ResponseFactory.createBadRequestException(alertException.getMessage());
         }
     }
 
