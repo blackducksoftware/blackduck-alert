@@ -1,7 +1,28 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (c) 2020 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.channel.azure.boards.actions;
 
 import java.net.Proxy;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -15,7 +36,7 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -23,9 +44,7 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -48,22 +67,17 @@ public class AzureBoardsGlobalTestAction extends TestAction {
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         try {
             Optional<ConfigurationFieldModel> configurationFieldModel = registeredFieldValues.getField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-            String organizationName = configurationFieldModel.map(model -> model.getFieldValue().get()).orElse(null);
+            String organizationName = configurationFieldModel.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null);
 
             AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), registeredFieldValues);
             AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
-            //TODO may not need to save this to projects
-            AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(organizationName);
-            //Integer projectCount = projects.getCount();
-            //logger.info("Azure Boards project count: {}", projectCount);
+            azureProjectService.getProjects(organizationName);
             return new MessageResult("Successfully connected to Azure instance.");
-        } catch (HttpServiceException ex) {
-            //TODO find out the fieldName
-            AlertFieldStatus fieldStatus = AlertFieldStatus.error("test", ex.getMessage());
-            return new MessageResult("An error occured during test.", List.of(fieldStatus));
+        } catch (HttpServiceException | AlertException ex) {
+            logger.error("Global Test Action failed testing Azure Boards connection.", ex);
+            throw new AlertException("Could not establish an OAuth Connection.");
         }
-
     }
 
     private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
