@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +60,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     }
 
     @Override
-    public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
+    public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
         try {
             String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
             String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
@@ -82,18 +83,18 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
 
             switch (operation) {
                 case RESOLVE:
-                    return createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return Optional.of(createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties));
                 case OPEN:
                 case UPDATE:
                 default:
-                    return createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return Optional.of(createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties));
             }
 
         } catch (AlertException ex) {
             logger.error("Error create test issue content", ex);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     // TODO simplify the following 2 methods
