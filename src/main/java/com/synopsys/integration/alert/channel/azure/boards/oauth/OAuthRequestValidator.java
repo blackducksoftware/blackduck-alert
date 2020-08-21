@@ -50,7 +50,7 @@ public class OAuthRequestValidator {
     }
 
     public void removeAllRequests() {
-        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used in the correctly.
+        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
         // Do not want to
         requestMap.clear();
     }
