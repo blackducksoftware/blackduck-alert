@@ -36,16 +36,27 @@ public class OAuthRequestValidator {
     private final Map<String, Instant> requestMap = new ConcurrentHashMap<>();
 
     public void addAuthorizationRequest(String requestKey) {
+        if (requestKey == null) {
+            logger.error("OAuth authorization key is null, authorization request will not be added");
+            return;
+        }
         logger.debug("Adding OAuth authorization key {}", requestKey);
         requestMap.put(requestKey, Instant.now());
     }
 
     public void removeAuthorizationRequest(String requestKey) {
+        if (requestKey == null) {
+            logger.error("OAuth authorization key is null, authorization request will not be removed");
+            return;
+        }
         requestMap.remove(requestKey);
         logger.debug("Removed OAuth authorization key {}", requestKey);
     }
 
     public boolean hasRequestKey(String requestKey) {
+        if (requestKey == null) {
+            return false;
+        }
         return requestMap.containsKey(requestKey);
     }
 
