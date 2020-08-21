@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.actions;
 
-import java.net.Proxy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +40,7 @@ import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemT
 import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCreateIssueTestAction.class);
@@ -102,7 +101,7 @@ public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
     }
 
     private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
-        Proxy proxy = proxyManager.createProxy();
+        ProxyInfo proxy = proxyManager.createProxyInfo();
         return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }
 }

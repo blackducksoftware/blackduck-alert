@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.actions;
 
-import java.net.Proxy;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -45,6 +44,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsGlobalTestAction extends TestAction {
@@ -80,7 +80,7 @@ public class AzureBoardsGlobalTestAction extends TestAction {
     }
 
     private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
-        Proxy proxy = proxyManager.createProxy();
+        ProxyInfo proxy = proxyManager.createProxyInfo();
         return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }
 }
