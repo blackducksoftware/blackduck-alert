@@ -114,8 +114,8 @@ export function login(username, password) {
         dispatch(loggingIn());
 
         const body = {
-            blackDuckUsername: username,
-            blackDuckPassword: password
+            alertUsername: username,
+            alertPassword: password
         };
 
         fetch('/alert/api/login', {
@@ -164,12 +164,12 @@ export function logout() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then(() => dispatch(loggedOut()))
-        .then(() => dispatch(logOut()))
-        .then(() => dispatch(push('/alert')))
-        .catch((error) => {
-            console.log(error);
-        });
+            .then(() => dispatch(loggedOut()))
+            .then(() => dispatch(logOut()))
+            .then(() => dispatch(push('/alert')))
+            .catch((error) => {
+                console.log(error);
+            });
     };
 }
 

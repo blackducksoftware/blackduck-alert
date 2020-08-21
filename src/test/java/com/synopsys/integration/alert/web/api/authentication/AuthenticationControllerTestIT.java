@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.api.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -38,9 +38,6 @@ import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.web.api.authentication.AuthenticationController;
-import com.synopsys.integration.alert.web.api.authentication.LoginActions;
-import com.synopsys.integration.alert.web.api.authentication.PasswordResetService;
 import com.synopsys.integration.alert.web.common.BaseController;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -75,8 +72,8 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
         TestProperties testProperties = new TestProperties();
         MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
-        mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
-        mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
+        mockLoginRestModel.setAlertUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
+        mockLoginRestModel.setAlertPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
 
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
         String restModel = mockLoginRestModel.getRestModelJson();
@@ -145,18 +142,6 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         HttpServletResponse httpResponse = new MockHttpServletResponse();
 
         assertErrorStatus(HttpStatus.UNAUTHORIZED, () -> loginHandler.login(request, httpResponse, null));
-    }
-
-    @Test
-    public void userLoginWithExceptionTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
-
-        HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new IllegalArgumentException("Test exception for catch all"));
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-
-        assertErrorStatus(HttpStatus.INTERNAL_SERVER_ERROR, () -> loginHandler.login(request, httpResponse, null));
     }
 
     @Test

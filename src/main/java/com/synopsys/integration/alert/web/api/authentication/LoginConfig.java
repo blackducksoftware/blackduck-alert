@@ -28,32 +28,32 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.synopsys.integration.alert.common.rest.model.Config;
 
 public class LoginConfig extends Config {
-    private String blackDuckUsername;
+    private String alertUsername;
 
     // If this variable name changes be sure to change the value in the toString
-    private String blackDuckPassword;
+    private String alertPassword;
 
     public LoginConfig() {
     }
 
-    public LoginConfig(String blackDuckUsername, String blackDuckPassword) {
+    public LoginConfig(String alertUsername, String alertPassword) {
         super("1L");
-        this.blackDuckUsername = blackDuckUsername;
-        this.blackDuckPassword = blackDuckPassword;
+        this.alertUsername = alertUsername;
+        this.alertPassword = alertPassword;
     }
 
-    public String getBlackDuckUsername() {
-        return blackDuckUsername;
+    public String getAlertUsername() {
+        return alertUsername;
     }
 
-    public String getBlackDuckPassword() {
-        return blackDuckPassword;
+    public String getAlertPassword() {
+        return alertPassword;
     }
 
     @Override
     public String toString() {
         return new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                   .setExcludeFieldNames("blackDuckPassword")
+                   .setExcludeFieldNames("alertPassword")
                    .toString();
     }
 }
