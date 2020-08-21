@@ -54,10 +54,6 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
         this.proxyManager = proxyManager;
     }
 
-    public ValidationResult validate(FieldValueModel fieldValueModel, FieldModel fieldModel) {
-        return this.apply(fieldValueModel, fieldModel);
-    }
-
     @Override
     public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         ValidationResult result = ValidationResult.success();

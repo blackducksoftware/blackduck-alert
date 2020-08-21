@@ -39,8 +39,11 @@ public class AzureRedirectUtil {
     }
 
     /**
-     * The OAuth callback controller will redirect back to the Alert UI and is the only place where this method.
+     * The OAuth callback controller will redirect back to the Alert UI.
+     * Only the callback controller should use this method.  All other requests for redirect URIs should use the
+     * createOAuthRedirectUri method.
      * @return The url location to redirect to the UI.
+     * @see #createOAuthRedirectUri()
      */
     public String createUIRedirectLocation() {
         StringBuilder locationBuilder = new StringBuilder(200);
