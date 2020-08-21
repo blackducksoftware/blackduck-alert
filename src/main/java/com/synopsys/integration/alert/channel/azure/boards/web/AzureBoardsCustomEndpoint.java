@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
-import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -131,8 +130,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
 
     private boolean isAuthenticated(FieldAccessor fieldAccessor) {
         AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldAccessor);
-        Proxy proxy = proxyManager.createProxy();
-        return properties.hasOAuthCredentials(proxy);
+        return properties.hasOAuthCredentials(proxyManager.createProxyInfo());
     }
 
     private String createAuthURL(String clientId, String requestKey) {

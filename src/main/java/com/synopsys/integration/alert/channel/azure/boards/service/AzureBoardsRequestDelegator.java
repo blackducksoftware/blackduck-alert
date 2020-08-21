@@ -23,14 +23,13 @@
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
@@ -65,7 +64,7 @@ public class AzureBoardsRequestDelegator {
         IssueConfig azureIssueConfig = context.getIssueConfig();
         AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
 
-        NetHttpTransport httpTransport = azureBoardsProperties.createHttpTransport(createJavaProxy());
+        HttpTransport httpTransport = azureBoardsProperties.createHttpTransport(proxyManager.createProxyInfo());
         Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
         AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
 
@@ -92,7 +91,7 @@ public class AzureBoardsRequestDelegator {
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
 
-    private Credential retrieveOAuthCredential(AzureBoardsProperties azureBoardsProperties, NetHttpTransport httpTransport) throws IntegrationException {
+    private Credential retrieveOAuthCredential(AzureBoardsProperties azureBoardsProperties, HttpTransport httpTransport) throws IntegrationException {
         try {
             AuthorizationCodeFlow oAuthFlow = azureBoardsProperties.createOAuthFlow(httpTransport);
             return azureBoardsProperties.getExistingOAuthCredential(oAuthFlow)
@@ -101,11 +100,4 @@ public class AzureBoardsRequestDelegator {
             throw new IntegrationException("Cannot initialize OAuth for Azure Boards", e);
         }
     }
-
-    private Proxy createJavaProxy() {
-        return proxyManager.createProxyInfo()
-                   .getProxy()
-                   .orElse(Proxy.NO_PROXY);
-    }
-
 }
