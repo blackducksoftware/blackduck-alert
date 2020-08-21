@@ -27,7 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
@@ -154,13 +159,26 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     }
 
     public HttpTransport createHttpTransport(ProxyInfo proxyInfo) {
-        HttpHost httpHost = new HttpHost(proxyInfo.getHost().orElse(null), proxyInfo.getPort());
-        // TODO figure out auth strategy.
-        HttpClient httpClient = ApacheHttpTransport.newDefaultHttpClientBuilder()
-                                    .setProxy(httpHost)
-                                    .build();
+        // Authenticated proxies aren't supported with the OAuth client library by default.
+        // Need to use an Apache Http Client backed transport to support authenticated proxies.
+        // Setup the client as the int-rest project does. That is known to setup a client that supports authenticated proxies.
+        // https://github.com/googleapis/google-http-java-client/issues/190
 
-        return new ApacheHttpTransport(httpClient);
+        HttpClientBuilder httpClientBuilder = ApacheHttpTransport.newDefaultHttpClientBuilder();
+        if (proxyInfo.shouldUseProxy()) {
+            httpClientBuilder.setProxy(new HttpHost(proxyInfo.getHost().orElse(null), proxyInfo.getPort()));
+            if (proxyInfo.hasAuthenticatedProxySettings()) {
+                NTCredentials credentials = new NTCredentials(proxyInfo.getUsername().orElse(null), proxyInfo.getPassword().orElse(null), proxyInfo.getNtlmWorkstation().orElse(null),
+                    proxyInfo.getNtlmDomain().orElse(null));
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(proxyInfo.getHost().orElse(null), proxyInfo.getPort()), credentials);
+
+                httpClientBuilder.setProxyAuthenticationStrategy(ProxyAuthenticationStrategy.INSTANCE);
+                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
+        }
+
+        return new ApacheHttpTransport(httpClientBuilder.build());
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {

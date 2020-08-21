@@ -63,7 +63,6 @@ public class AzureHttpServiceFactory {
     }
 
     private static ApacheHttpTransport defaultHttpTransport(Proxy proxy) {
-        // TODO figure out how to use the proxy otherwise remove it and force httpTransport only
         HttpHost httpHost = HttpHost.create(proxy.toString());
         CloseableHttpClient httpClient = ApacheHttpTransport.newDefaultHttpClientBuilder()
                                              .setProxy(httpHost)
