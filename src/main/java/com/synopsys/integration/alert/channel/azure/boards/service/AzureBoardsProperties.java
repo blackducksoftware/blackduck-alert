@@ -23,9 +23,16 @@
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
@@ -36,7 +43,8 @@ import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
@@ -49,6 +57,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
@@ -99,8 +108,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return scopes;
     }
 
-    public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson, String authorizationCode) throws AlertException {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public AzureHttpService createAzureHttpService(ProxyInfo proxy, Gson gson, String authorizationCode) throws AlertException {
+        HttpTransport httpTransport = createHttpTransport(proxy);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
@@ -112,8 +121,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         }
     }
 
-    public AzureHttpService createAzureHttpService(Proxy proxy, Gson gson) throws AlertException {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public AzureHttpService createAzureHttpService(ProxyInfo proxyInfo, Gson gson) throws AlertException {
+        HttpTransport httpTransport = createHttpTransport(proxyInfo);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
@@ -124,18 +133,18 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         }
     }
 
-    public AuthorizationCodeFlow createOAuthFlow(NetHttpTransport httpTransport) throws IOException {
+    public AuthorizationCodeFlow createOAuthFlow(HttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
                    .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
                    .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
                    .build();
     }
 
-    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(NetHttpTransport httpTransport) {
+    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(HttpTransport httpTransport) {
         return createOAuthFlowBuilder(httpTransport, BearerToken.authorizationHeaderAccessMethod());
     }
 
-    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(NetHttpTransport httpTransport, Credential.AccessMethod authorizationAccessMethod) {
+    public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(HttpTransport httpTransport, Credential.AccessMethod authorizationAccessMethod) {
         return new AzureAuthorizationCodeFlow.Builder(
             authorizationAccessMethod,
             httpTransport,
@@ -149,10 +158,27 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         ).setScopes(getScopes());
     }
 
-    public NetHttpTransport createHttpTransport(Proxy proxy) {
-        return new NetHttpTransport.Builder()
-                   .setProxy(proxy)
-                   .build();
+    public HttpTransport createHttpTransport(ProxyInfo proxyInfo) {
+        // Authenticated proxies aren't supported with the OAuth client library by default.
+        // Need to use an Apache Http Client backed transport to support authenticated proxies.
+        // Setup the client as the int-rest project does. That is known to setup a client that supports authenticated proxies.
+        // https://github.com/googleapis/google-http-java-client/issues/190
+
+        HttpClientBuilder httpClientBuilder = ApacheHttpTransport.newDefaultHttpClientBuilder();
+        if (proxyInfo.shouldUseProxy()) {
+            httpClientBuilder.setProxy(new HttpHost(proxyInfo.getHost().orElse(null), proxyInfo.getPort()));
+            if (proxyInfo.hasAuthenticatedProxySettings()) {
+                NTCredentials credentials = new NTCredentials(proxyInfo.getUsername().orElse(null), proxyInfo.getPassword().orElse(null), proxyInfo.getNtlmWorkstation().orElse(null),
+                    proxyInfo.getNtlmDomain().orElse(null));
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(proxyInfo.getHost().orElse(null), proxyInfo.getPort()), credentials);
+
+                httpClientBuilder.setProxyAuthenticationStrategy(ProxyAuthenticationStrategy.INSTANCE);
+                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
+        }
+
+        return new ApacheHttpTransport(httpClientBuilder.build());
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
@@ -160,8 +186,8 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         return Optional.ofNullable(storedCredential);
     }
 
-    public boolean hasOAuthCredentials(Proxy proxy) {
-        NetHttpTransport httpTransport = createHttpTransport(proxy);
+    public boolean hasOAuthCredentials(ProxyInfo proxy) {
+        HttpTransport httpTransport = createHttpTransport(proxy);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Optional<Credential> oAuthCredential = getExistingOAuthCredential(oAuthFlow);

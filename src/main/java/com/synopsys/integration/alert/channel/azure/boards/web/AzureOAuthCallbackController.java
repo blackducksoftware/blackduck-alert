@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
-import java.net.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +60,7 @@ import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @RestController
 @RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
@@ -134,15 +134,15 @@ public class AzureOAuthCallbackController {
 
     private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestKey) {
         try {
-            Proxy proxy = proxyManager.createProxy();
+            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
             String organizationName = azureBoardsProperties.getOrganizationName();
             // save initiate token requests with the authorization code.
             logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with authorization code to save tokens."));
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson, authorizationCode), organizationName, oAuthRequestKey);
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson, authorizationCode), organizationName, oAuthRequestKey);
             // load the oauth credentials from the store.
 
             logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with store to read tokens."));
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson), organizationName, oAuthRequestKey);
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson), organizationName, oAuthRequestKey);
         } catch (AlertException ex) {
             logger.error(createOAuthRequestLoggerMessage(oAuthRequestKey, "Error in azure oauth validation test "), ex);
         }

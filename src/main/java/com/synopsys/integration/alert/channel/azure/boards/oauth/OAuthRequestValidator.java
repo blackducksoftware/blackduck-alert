@@ -60,6 +60,12 @@ public class OAuthRequestValidator {
         return requestMap.containsKey(requestKey);
     }
 
+    public void removeAllRequests() {
+        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
+        // Do not want to remove requests for other OAuth clients inadvertently.
+        requestMap.clear();
+    }
+
     public void removeRequestsOlderThanInstant(Instant instant) {
         requestMap.entrySet().stream()
             .filter(entry -> entry.getValue().isBefore(instant))
