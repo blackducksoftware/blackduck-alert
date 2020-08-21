@@ -4,24 +4,24 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.web.api.authentication.LoginConfig;
 
 public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
-    private String blackDuckUsername = "blackDuckUsername";
-    private String blackDuckPassword = "blackDuckPassword";
+    private String alertUsername = "alertUsername";
+    private String alertPassword = "alertPassword";
     private String id = "1L";
 
-    public String getBlackDuckPassword() {
-        return blackDuckPassword;
+    public String getAlertPassword() {
+        return alertPassword;
     }
 
-    public String getBlackDuckUsername() {
-        return blackDuckUsername;
+    public String getAlertUsername() {
+        return alertUsername;
     }
 
-    public void setBlackDuckUsername(String blackDuckUsername) {
-        this.blackDuckUsername = blackDuckUsername;
+    public void setAlertUsername(String alertUsername) {
+        this.alertUsername = alertUsername;
     }
 
-    public void setBlackDuckPassword(String blackDuckPassword) {
-        this.blackDuckPassword = blackDuckPassword;
+    public void setAlertPassword(String alertPassword) {
+        this.alertPassword = alertPassword;
     }
 
     public void setId(String id) {
@@ -35,15 +35,15 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
 
     @Override
     public LoginConfig createRestModel() {
-        return new LoginConfig(blackDuckUsername, blackDuckPassword);
+        return new LoginConfig(alertUsername, alertPassword);
     }
 
     @Override
     public String getRestModelJson() {
         JsonObject json = new JsonObject();
         json.addProperty("id", id);
-        json.addProperty("blackDuckUsername", blackDuckUsername);
-        json.addProperty("blackDuckPassword", blackDuckPassword);
+        json.addProperty("alertUsername", alertUsername);
+        json.addProperty("alertPassword", alertPassword);
         return json.toString();
     }
 

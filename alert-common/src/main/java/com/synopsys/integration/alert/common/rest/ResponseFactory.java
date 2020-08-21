@@ -51,11 +51,15 @@ public class ResponseFactory {
     }
 
     public static ResponseStatusException createUnauthorizedException() {
-        return createForbiddenException(UNAUTHORIZED_REQUEST_MESSAGE);
+        return new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
     public static ResponseStatusException createForbiddenException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.FORBIDDEN, customMessage);
+    }
+
+    public static ResponseStatusException createInternalServerErrorException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, customMessage);
     }
 
     // Unnecessarily stateful methods:
