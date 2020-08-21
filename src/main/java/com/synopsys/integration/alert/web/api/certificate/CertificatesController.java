@@ -28,6 +28,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -87,9 +89,10 @@ public class CertificatesController extends BaseController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> importCertificate(@RequestBody CertificateModel certificateModel) {
         if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
         try {
             CertificateModel certificate = actions.createCertificate(certificateModel);
@@ -98,52 +101,56 @@ public class CertificatesController extends BaseController {
             String message = ex.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
+            // FIXME figure out how to handle field errors
             return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
-            return responseFactory.createInternalServerErrorResponse("", String.format("There was an issue importing the certificate. %s", message));
+            throw ResponseFactory.createInternalServerErrorException(String.format("There was an issue importing the certificate. %s", message));
         }
     }
 
     @PutMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    // FIXME make this void and add validate controller
     public ResponseEntity<String> updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
         if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
         try {
             Optional<CertificateModel> certificate = actions.updateCertificate(id, certificateModel);
             if (certificate.isPresent()) {
                 return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
             }
-            return responseFactory.createNotFoundResponse("Certificate resource not found");
+            throw ResponseFactory.createNotFoundException("Certificate resource not found");
         } catch (AlertFieldException ex) {
             String message = ex.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, ex);
+            // FIXME figure out how to handle field errors
             return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);
             logger.debug(message, ex);
-            return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue updating the certificate. %s", message));
+            throw ResponseFactory.createInternalServerErrorException(String.format("There was an issue updating the certificate. %s", message));
         }
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteCertificate(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCertificate(@PathVariable Long id) {
         if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
         try {
             actions.deleteCertificate(id);
-            return responseFactory.createOkResponse(Long.toString(id), "Certificate deleted");
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue deleting the certificate: {}", message);
             logger.debug(message, ex);
-            return responseFactory.createInternalServerErrorResponse(Long.toString(id), String.format("There was an issue deleting the certificate. %s", message));
+            throw ResponseFactory.createInternalServerErrorException(String.format("There was an issue deleting the certificate. %s", message));
         }
     }
 

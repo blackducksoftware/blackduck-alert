@@ -90,6 +90,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/")
+    // TODO returning something other than the resource being interacted with is considered bad practice
     public AlertPagedModel<AuditEntryModel> resendById(@PathVariable(value = "id") Long notificationId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
@@ -98,6 +99,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
+    // TODO returning something other than the resource being interacted with is considered bad practice
     public AlertPagedModel<AuditEntryModel> resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
