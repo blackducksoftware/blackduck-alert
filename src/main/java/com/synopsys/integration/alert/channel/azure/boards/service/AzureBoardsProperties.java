@@ -104,7 +104,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
-                                             .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential for the user '%s'", oauthUserId)));
+                                             .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with '%s'", oauthUserId)));
 
             return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
@@ -117,7 +117,7 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential for the user '%s'", oauthUserId)));
+                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
             return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);

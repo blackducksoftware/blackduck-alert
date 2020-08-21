@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -74,9 +73,9 @@ public class AzureBoardsGlobalTestAction extends TestAction {
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
             azureProjectService.getProjects(organizationName);
             return new MessageResult("Successfully connected to Azure instance.");
-        } catch (HttpServiceException | AlertException ex) {
+        } catch (HttpServiceException ex) {
             logger.error("Global Test Action failed testing Azure Boards connection.", ex);
-            throw new AlertException("Could not establish an OAuth Connection.");
+            throw (ex);
         }
     }
 

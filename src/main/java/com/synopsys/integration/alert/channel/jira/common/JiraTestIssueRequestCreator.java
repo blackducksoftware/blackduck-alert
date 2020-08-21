@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.util.UrlUtils;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
@@ -70,7 +71,7 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
             ContentKey providerContentKey = providerMessageContent.getContentKey();
             String providerName = providerMessageContent.getProvider().getValue();
             String providerUrl = providerMessageContent.getProvider().getUrl()
-                                     .map(JiraIssuePropertiesUtil::formatProviderUrl)
+                                     .map(UrlUtils::formatProviderUrl)
                                      .orElse("");
 
             LinkableItem topicItem = providerMessageContent.getTopic();

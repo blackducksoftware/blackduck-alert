@@ -42,46 +42,17 @@ public class AzureBoardsContextFactory {
         this.azureRedirectUtil = azureRedirectUtil;
     }
 
-    protected String getProjectFieldKey() {
-        return AzureBoardsDescriptor.KEY_AZURE_PROJECT;
-    }
-
-    protected String getIssueTypeFieldKey() {
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE;
-    }
-
-    protected String getIssueCreatorFieldKey() {
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL;
-    }
-
-    protected String getAddCommentsFieldKey() {
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT;
-    }
-
-    protected String getResolveTransitionFieldKey() {
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE;
-    }
-
-    protected String getOpenTransitionFieldKey() {
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE;
-    }
-
-    protected String getDefaultIssueCreatorFieldKey() {
-        //TODO: We may need to expose a default issue creator email address in the global config
-        return AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL;
-    }
-
     public AzureBoardsContext build(FieldAccessor fieldAccessor) {
         return new AzureBoardsContext(createAzureBoardsProperties(fieldAccessor), createIssueConfig(fieldAccessor));
     }
 
-    protected IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
-        String projectName = fieldAccessor.getStringOrNull(getProjectFieldKey());
-        String issueCreator = fieldAccessor.getString(getIssueCreatorFieldKey()).orElseGet(() -> fieldAccessor.getStringOrNull(getDefaultIssueCreatorFieldKey()));
-        String issueType = fieldAccessor.getString(getIssueTypeFieldKey()).orElse(AzureBoardsConstants.DEFAULT_WORK_ITEM_TYPE);
-        Boolean commentOnIssues = fieldAccessor.getBooleanOrFalse(getAddCommentsFieldKey());
-        String resolveTransition = fieldAccessor.getStringOrNull(getResolveTransitionFieldKey());
-        String openTransition = fieldAccessor.getStringOrNull(getOpenTransitionFieldKey());
+    private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
+        String projectName = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_AZURE_PROJECT);
+        String issueCreator = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
+        String issueType = fieldAccessor.getString(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE).orElse(AzureBoardsConstants.DEFAULT_WORK_ITEM_TYPE);
+        Boolean commentOnIssues = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
+        String resolveTransition = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
+        String openTransition = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
 
         IssueConfig issueConfig = new IssueConfig();
         issueConfig.setProjectName(projectName);
@@ -92,6 +63,10 @@ public class AzureBoardsContextFactory {
         issueConfig.setOpenTransition(openTransition);
 
         return issueConfig;
+    }
+
+    private String getFieldString(FieldAccessor fieldAccessor, String fieldKey) {
+        return fieldAccessor.getStringOrNull(fieldKey);
     }
 
     private AzureBoardsProperties createAzureBoardsProperties(FieldAccessor fieldAccessor) {

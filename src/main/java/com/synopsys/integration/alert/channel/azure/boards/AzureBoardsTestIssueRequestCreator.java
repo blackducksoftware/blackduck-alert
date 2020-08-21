@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraIssuePropertiesUtil;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -47,6 +46,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.util.UrlUtils;
 
 //TODO: This is a near copy of JiraTestIssueRequestCreator, we should abstract out this class
 public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreator {
@@ -59,7 +59,6 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
-    //TODO There are multiple references to JiraIssuePropertiesUtil. This class may be pulled out from Jira to become generic.
     @Override
     public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
         try {
@@ -73,22 +72,28 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
             ContentKey providerContentKey = providerMessageContent.getContentKey();
             String providerName = providerMessageContent.getProvider().getValue();
             String providerUrl = providerMessageContent.getProvider().getUrl()
-                                     .map(JiraIssuePropertiesUtil::formatProviderUrl)
+                                     .map(UrlUtils::formatProviderUrl)
                                      .orElse("");
 
             LinkableItem topicItem = providerMessageContent.getTopic();
             LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
+            ComponentItem componentItem = componentItems
+                                              .stream()
+                                              .findFirst()
+                                              .orElse(null);
 
-            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
+            String topLevelKey = AzureBoardsSearchPropertiesUtil.createTopLevelKey(providerName, providerUrl, topicItem, subTopicItem);
+            String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentLevelKey(componentItem, StringUtils.EMPTY);
+            AzureBoardsSearchProperties azureBoardsSearchProperties = new AzureBoardsSearchProperties(topLevelKey, componentLevelKey);
 
             switch (operation) {
                 case RESOLVE:
-                    return createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, azureBoardsSearchProperties);
                 case OPEN:
                 case UPDATE:
                 default:
-                    return createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties);
+                    return createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, azureBoardsSearchProperties);
             }
 
         } catch (AlertException ex) {
