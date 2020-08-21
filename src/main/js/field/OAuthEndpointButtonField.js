@@ -69,6 +69,7 @@ class OAuthEndpointButtonField extends Component {
                     authenticated
                 });
                 if (okRequest) {
+                    // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
                     window.location.replace(authorizationUrl);
                 } else {
                     this.setState({
