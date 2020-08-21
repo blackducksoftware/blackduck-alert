@@ -66,7 +66,7 @@ public class AuditEntryController extends BaseController {
         @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam(value = "sortField", required = false) String sortField,
         @RequestParam(value = "sortOrder", required = false) String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) Boolean onlyShowSentNotifications) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createUnauthorizedException();
+            throw ResponseFactory.createForbiddenException();
         }
         return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
     }
@@ -74,7 +74,7 @@ public class AuditEntryController extends BaseController {
     @GetMapping(value = "/{id}")
     public AuditEntryModel get(@PathVariable(value = "id") Long id) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createUnauthorizedException();
+            throw ResponseFactory.createForbiddenException();
         }
         return auditEntryActions.get(id)
                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.GONE, "This Audit entry could not be found."));
@@ -83,7 +83,7 @@ public class AuditEntryController extends BaseController {
     @GetMapping(value = "/job/{jobId}")
     public AuditJobStatusModel getAuditInfoForJob(@PathVariable(value = "jobId") UUID jobId) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createUnauthorizedException();
+            throw ResponseFactory.createForbiddenException();
         }
         return auditEntryActions.getAuditInfoForJob(jobId)
                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.GONE, "The Audit information could not be found for this job."));
@@ -92,7 +92,7 @@ public class AuditEntryController extends BaseController {
     @PostMapping(value = "/resend/{id}/")
     public AlertPagedModel<AuditEntryModel> resendById(@PathVariable(value = "id") Long notificationId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
-            throw ResponseFactory.createUnauthorizedException();
+            throw ResponseFactory.createForbiddenException();
         }
         return resendNotification(notificationId, null);
     }
@@ -100,7 +100,7 @@ public class AuditEntryController extends BaseController {
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     public AlertPagedModel<AuditEntryModel> resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
-            throw ResponseFactory.createUnauthorizedException();
+            throw ResponseFactory.createForbiddenException();
         }
         return resendNotification(notificationId, jobId);
     }

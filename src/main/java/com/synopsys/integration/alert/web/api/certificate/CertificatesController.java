@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.api.certificate;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -69,23 +70,20 @@ public class CertificatesController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<String> readCertificates() {
+    public List<CertificateModel> readCertificates() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(actions.readCertificates()));
+        return actions.readCertificates();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<String> readCertificate(@PathVariable Long id) {
+    public CertificateModel readCertificate(@PathVariable Long id) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
-        Optional<CertificateModel> certificate = actions.readCertificate(id);
-        if (certificate.isPresent()) {
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
-        }
-        return responseFactory.createNotFoundResponse("Certificate resource not found");
+        return actions.readCertificate(id)
+                   .orElseThrow(() -> ResponseFactory.createNotFoundException("Certificate resource not found"));
     }
 
     @PostMapping

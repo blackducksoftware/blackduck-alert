@@ -54,8 +54,16 @@ public class ResponseFactory {
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
+    public static ResponseStatusException createForbiddenException() {
+        return createForbiddenException(null);
+    }
+
     public static ResponseStatusException createForbiddenException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.FORBIDDEN, customMessage);
+    }
+
+    public static ResponseStatusException createNotFoundException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, customMessage);
     }
 
     public static ResponseStatusException createInternalServerErrorException(@Nullable String customMessage) {
