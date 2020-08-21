@@ -20,14 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.service;
+package com.synopsys.integration.alert.common.util;
 
-import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-
-public interface TestIssueRequestCreator {
-    // This method could create a creation request or a resolution request.
-    Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId);
+public class UrlUtils {
+    public static String formatProviderUrl(String originalUrl) {
+        String correctedUrl = "";
+        if (StringUtils.isNotBlank(originalUrl)) {
+            correctedUrl = originalUrl.trim();
+            if (!correctedUrl.endsWith("/")) {
+                correctedUrl += "/";
+            }
+        }
+        return correctedUrl;
+    }
 }

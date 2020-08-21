@@ -66,8 +66,8 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
 public class AzureOAuthCallbackController {
     public static final String AZURE_OAUTH_CALLBACK_PATH = BaseController.OAUTH_CALLBACK_PATH + "/azure";
-    private Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
-    private ResponseFactory responseFactory;
+    private final Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
+    private final ResponseFactory responseFactory;
     private final Gson gson;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
@@ -107,7 +107,7 @@ public class AzureOAuthCallbackController {
             logger.debug("Request URI {}?{}", requestURI, requestQueryString);
             String authorizationCode = request.getParameter("code");
             if (!oAuthRequestValidator.hasRequestKey(state)) {
-                logger.info("OAuth request {} not found.", state);
+                logger.info("OAuth request \"{}\" not found.", state);
             } else {
                 logger.info(createOAuthRequestLoggerMessage(state, "Processing..."));
                 oAuthRequestValidator.removeAuthorizationRequest(state);
@@ -151,7 +151,8 @@ public class AzureOAuthCallbackController {
     // This method take a logger formatting string and appends a prefix for the OAuth authorization request in order to correlate the
     // authorization requests from the custom endpoint and the callback controller for debugging potential customer issues.
     private String createOAuthRequestLoggerMessage(String oAuthRequestKey, String loggerMessageFormat) {
-        return String.format("OAuth request %s: %s", oAuthRequestKey, loggerMessageFormat);
+        String requestKey = StringUtils.isNotBlank(oAuthRequestKey) ? oAuthRequestKey : "<unknown value>";
+        return String.format("OAuth request %s: %s", requestKey, loggerMessageFormat);
     }
 
     private void testGetProjects(AzureHttpService azureHttpService, String organizationName, String oAuthRequestKey) {

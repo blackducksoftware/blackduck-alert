@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.service;
+package com.synopsys.integration.alert.channel.azure.boards.actions;
 
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.common.action.ConfigurationAction;
 
-public interface TestIssueRequestCreator {
-    // This method could create a creation request or a resolution request.
-    Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId);
+@Component
+public class AzureBoardsConfigurationAction extends ConfigurationAction {
+    @Autowired
+    protected AzureBoardsConfigurationAction(AzureBoardsChannelKey descriptorKey, AzureBoardsDistributionTestAction azureBoardsDistributionTestAction, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction) {
+        super(descriptorKey);
+        addGlobalTestAction(azureBoardsGlobalTestAction);
+        addDistributionTestAction(azureBoardsDistributionTestAction);
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker.service;
+package com.synopsys.integration.alert.channel.azure.boards;
 
-import java.util.Optional;
+public class AzureBoardsConstants {
+    //TODO: Figure out what constants we will need to use in Azure Boards
 
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
-
-public interface TestIssueRequestCreator {
-    // This method could create a creation request or a resolution request.
-    Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId);
+    //TODO: Figure out which of these values should be the default work item type. A list can be found here:
+    //https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20item%20types/list?view=azure-devops-rest-5.1
+    public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
+    //public static final String DEFAULT_WORK_ITEM_TYPE_REFERENCE_NAME = "Microsoft.VSTS.WorkItemTypes.Task";
 }

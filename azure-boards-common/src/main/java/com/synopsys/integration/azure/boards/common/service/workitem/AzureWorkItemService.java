@@ -37,6 +37,7 @@ import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
+import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemDeletedResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
@@ -119,6 +120,14 @@ public class AzureWorkItemService {
         } catch (IOException e) {
             throw HttpServiceException.internalServerError(e);
         }
+    }
+
+    public WorkItemDeletedResponseModel deleteWorkItem(String organizationName, Integer workItemId) throws HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
+                                 .populateSpec();
+        return azureHttpService.delete(requestSpec, WorkItemDeletedResponseModel.class);
     }
 
     private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
