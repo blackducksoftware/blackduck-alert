@@ -57,7 +57,7 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         super(AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_DESCRIPTION, AzureBoardsDescriptor.AZURE_BOARDS_URL);
         this.encryptionValidator = encryptionValidator;
     }
-    
+
     @Override
     public List<ConfigField> createFields() {
         //        ConfigField azureBoardsUrlField = new URLInputConfigField(AzureBoardsDescriptor.KEY_AZURE_BOARDS_URL, LABEL_AZURE_BOARDS_URL, DESCRIPTION_AZURE_BOARDS_URL);
@@ -66,7 +66,8 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         ConfigField clientSecret = new PasswordConfigField(AzureBoardsDescriptor.KEY_CLIENT_SECRET, LABEL_CLIENT_SECRET, DESCRIPTION_CLIENT_SECRET, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID)
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         return List.of(organizationName, clientId, clientSecret, configureOAuth);
     }
 

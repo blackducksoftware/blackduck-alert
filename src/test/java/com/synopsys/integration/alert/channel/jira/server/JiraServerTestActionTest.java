@@ -116,12 +116,12 @@ public class JiraServerTestActionTest {
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraServerChannel, gson, new TestIssueRequestCreator() {
             @Override
-            public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
+            public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
                 AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
                 if (operation == IssueOperation.RESOLVE) {
-                    return IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin);
+                    return Optional.of(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
                 }
-                return IssueCreationRequest.of(searchProperties, content, alertIssueOrigin);
+                return Optional.of(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
             }
         });
 

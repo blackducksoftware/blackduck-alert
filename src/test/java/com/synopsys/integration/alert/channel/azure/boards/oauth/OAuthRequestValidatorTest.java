@@ -27,6 +27,19 @@ public class OAuthRequestValidatorTest {
     }
 
     @Test
+    public void testRemoveAll() {
+        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        String requestKey = "request-key-1";
+        String requestKey2 = "request-key-2";
+        oAuthRequestValidator.addAuthorizationRequest(requestKey);
+        oAuthRequestValidator.addAuthorizationRequest(requestKey2);
+
+        oAuthRequestValidator.removeAllRequests();
+        assertFalse(oAuthRequestValidator.hasRequestKey(requestKey));
+        assertFalse(oAuthRequestValidator.hasRequestKey(requestKey2));
+    }
+
+    @Test
     public void testRemoveKeysByInstant() {
         OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
         String requestKey = "request-key-1";
