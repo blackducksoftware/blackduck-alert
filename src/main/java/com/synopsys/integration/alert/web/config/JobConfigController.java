@@ -318,6 +318,7 @@ public class JobConfigController extends BaseController {
         } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (IntegrationException e) {
+            logger.error(e.getMessage(), e);
             return pkixErrorResponseFactory.createSSLExceptionResponse(id, e).orElse(responseFactory.createBadRequestResponse(id, e.getMessage()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
