@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.web.actions;
+package com.synopsys.integration.alert.web.api.authentication;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.api.authentication.LoginActions;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.web.security.authentication.database.AlertDatabaseAuthenticationPerformer;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
@@ -58,8 +57,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @BeforeEach
     public void init() throws Exception {
         ldapManager.getAuthenticationProvider();
-        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
-        mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
+        mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
+        mockLoginRestModel.setAlertPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     @Test
@@ -72,10 +71,10 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void testAuthenticateDBUserFailIT() {
-        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
+        mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
         LoginActions loginActions = new LoginActions(authenticationProvider);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
-        badRestModel.setBlackDuckPassword("badpassword");
+        badRestModel.setAlertPassword("badpassword");
         boolean authenticated = loginActions.authenticateUser(badRestModel.createRestModel());
         assertFalse(authenticated);
     }
@@ -84,9 +83,9 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     public void testAuthenticateDBUserRoleFailIT() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
         // add a user test then delete a user.
         String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
-        mockLoginRestModel.setBlackDuckUsername(userName);
+        mockLoginRestModel.setAlertUsername(userName);
         LoginActions loginActions = new LoginActions(authenticationProvider);
-        userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword(), "");
+        userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
         boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertFalse(userAuthenticated);

@@ -68,6 +68,12 @@ public class AzureHttpService {
         return request.execute();
     }
 
+    public HttpResponse deleteResponse(String urlEndpoint) throws IOException {
+        GenericUrl url = constructRequestUrl(urlEndpoint);
+        HttpRequest request = buildRequestWithDefaultHeaders(HttpMethods.DELETE, url, null);
+        return request.execute();
+    }
+
     public <T> T get(String urlEndpoint, Type responseType) throws HttpServiceException {
         HttpResponse httpResponse = null;
         try {
@@ -93,6 +99,25 @@ public class AzureHttpService {
         GenericUrl url = constructRequestUrl(urlEndpoint);
         HttpRequest postRequest = buildRequestWithDefaultHeaders(HttpMethods.POST, url, requestBodyObject);
         return executeRequestAndParseResponse(postRequest, responseType);
+    }
+
+    public HttpResponse delete(String urlEndpoint) throws IOException {
+        return deleteResponse(urlEndpoint);
+    }
+
+    public <T> T delete(String urlEndpoint, Type responseType) throws HttpServiceException {
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = deleteResponse(urlEndpoint);
+            if (!httpResponse.isSuccessStatusCode()) {
+                throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
+            }
+            return parseResponse(httpResponse, responseType);
+        } catch (IOException e) {
+            throw HttpServiceException.internalServerError(e);
+        } finally {
+            disconnectResponse(httpResponse);
+        }
     }
 
     public <T> T executeRequestAndParseResponse(HttpRequest httpRequest, Type responseType) throws HttpServiceException {

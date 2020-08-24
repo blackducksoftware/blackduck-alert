@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.actions;
+package com.synopsys.integration.alert.web.api.about;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,8 +9,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.web.api.about.AboutActions;
-import com.synopsys.integration.alert.web.api.about.AboutModel;
 
 public class AboutActionsTest {
 

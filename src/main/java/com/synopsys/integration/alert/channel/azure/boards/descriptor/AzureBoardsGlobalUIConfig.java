@@ -69,7 +69,8 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         ConfigField clientSecret = new PasswordConfigField(AzureBoardsDescriptor.KEY_CLIENT_SECRET, LABEL_CLIENT_SECRET, DESCRIPTION_CLIENT_SECRET, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID);
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID)
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         // FIXME when we have consistent result objects containing the HTTP status code, content, and warnings versus errors this validator can be added.
         //.applyValidationFunctions(authTokenValidator);
         return List.of(organizationName, clientId, clientSecret, configureOAuth);

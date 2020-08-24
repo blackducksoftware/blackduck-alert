@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
-import java.net.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -53,12 +53,14 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.common.BaseController;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @RestController
 @RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
@@ -72,11 +74,13 @@ public class AzureOAuthCallbackController {
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
     private final AzureRedirectUtil azureRedirectUtil;
+    private final OAuthRequestValidator oAuthRequestValidator;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
     public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
-        AzureRedirectUtil azureRedirectUtil) {
+        AzureRedirectUtil azureRedirectUtil, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsChannelKey = azureBoardsChannelKey;
@@ -84,61 +88,81 @@ public class AzureOAuthCallbackController {
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
         this.azureRedirectUtil = azureRedirectUtil;
+        this.oAuthRequestValidator = oAuthRequestValidator;
+        this.authorizationManager = authorizationManager;
     }
 
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
+            logger.debug("Azure OAuth callback user does not have permission to call the controller.");
+            return responseFactory.createForbiddenResponse();
+        }
+
+        String state = request.getParameter("state");
         try {
             String requestURI = request.getRequestURI();
             String requestQueryString = request.getQueryString();
             logger.debug("Request URI {}?{}", requestURI, requestQueryString);
             String authorizationCode = request.getParameter("code");
-            String state = request.getParameter("state");
-            FieldAccessor fieldAccessor = createFieldAccessor();
-            if (fieldAccessor.getFields().isEmpty()) {
-                logger.error("Azure oauth callback: Channel global configuration missing");
+            if (!oAuthRequestValidator.hasRequestKey(state)) {
+                logger.info("OAuth request \"{}\" not found.", state);
             } else {
-                if (StringUtils.isBlank(authorizationCode)) {
-                    logger.error("Azure oauth callback: Authorization code isn't valid. Stop processing");
+                logger.info(createOAuthRequestLoggerMessage(state, "Processing..."));
+                oAuthRequestValidator.removeAuthorizationRequest(state);
+                FieldAccessor fieldAccessor = createFieldAccessor();
+                if (fieldAccessor.getFields().isEmpty()) {
+                    logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Channel global configuration missing"));
                 } else {
-                    String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
-                    AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
-                    testOAuthConnection(properties, authorizationCode);
+                    if (StringUtils.isBlank(authorizationCode)) {
+                        logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Authorization code isn't valid. Stop processing"));
+                    } else {
+                        String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
+                        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
+                        testOAuthConnection(properties, authorizationCode, state);
+                    }
                 }
             }
         } catch (Exception ex) {
             // catch any exceptions so the redirect back to the UI happens and doesn't display the URL with the authorization code to the user.
-            logger.error("Azure OAuth callback error occurred", ex);
+            logger.error(createOAuthRequestLoggerMessage(state, "Azure OAuth callback error occurred"), ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
         return responseFactory.createFoundRedirectResponse(azureRedirectUtil.createUIRedirectLocation());
     }
 
-    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode) {
+    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestKey) {
         try {
-            Proxy proxy = proxyManager.createProxy();
+            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
             String organizationName = azureBoardsProperties.getOrganizationName();
             // save initiate token requests with the authorization code.
-            logger.info("Testing with authorization code to save tokens.");
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson, authorizationCode), organizationName);
+            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with authorization code to save tokens."));
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson, authorizationCode), organizationName, oAuthRequestKey);
             // load the oauth credentials from the store.
 
-            logger.info("Testing with store to read tokens.");
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxy, gson), organizationName);
+            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with store to read tokens."));
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson), organizationName, oAuthRequestKey);
         } catch (AlertException ex) {
-            logger.error("Error in azure oauth validation test ", ex);
+            logger.error(createOAuthRequestLoggerMessage(oAuthRequestKey, "Error in azure oauth validation test "), ex);
         }
     }
 
-    private void testGetProjects(AzureHttpService azureHttpService, String organizationName) {
+    // This method take a logger formatting string and appends a prefix for the OAuth authorization request in order to correlate the
+    // authorization requests from the custom endpoint and the callback controller for debugging potential customer issues.
+    private String createOAuthRequestLoggerMessage(String oAuthRequestKey, String loggerMessageFormat) {
+        String requestKey = StringUtils.isNotBlank(oAuthRequestKey) ? oAuthRequestKey : "<unknown value>";
+        return String.format("OAuth request %s: %s", requestKey, loggerMessageFormat);
+    }
+
+    private void testGetProjects(AzureHttpService azureHttpService, String organizationName, String oAuthRequestKey) {
         try {
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
             AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(organizationName);
             Integer projectCount = projects.getCount();
-            logger.info("Azure Boards project count: {}", projectCount);
+            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Azure Boards project count: {}"), projectCount);
         } catch (HttpServiceException ex) {
-            logger.error("Error in azure oauth get projects validation test ", ex);
+            logger.error(createOAuthRequestLoggerMessage(oAuthRequestKey, "Error in azure oauth get projects validation test "), ex);
         }
     }
 

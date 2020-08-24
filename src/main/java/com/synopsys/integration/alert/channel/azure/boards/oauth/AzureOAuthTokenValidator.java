@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
-import java.net.Proxy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +35,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureOAuthTokenValidator implements ConfigValidationFunction {
@@ -58,11 +57,11 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
     public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         ValidationResult result = ValidationResult.success();
         try {
-            Proxy proxy = proxyManager.createProxy();
+            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
             FieldAccessor fieldAccessor = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
             String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
             AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
-            if (!properties.hasOAuthCredentials(proxy)) {
+            if (!properties.hasOAuthCredentials(proxyInfo)) {
                 result = ValidationResult.warnings("OAuth token credentials missing. Please save then authenticate.");
             }
         } catch (Exception ex) {

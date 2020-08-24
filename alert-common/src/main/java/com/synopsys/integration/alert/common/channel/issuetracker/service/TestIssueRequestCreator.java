@@ -22,10 +22,12 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.service;
 
+import java.util.Optional;
+
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 
 public interface TestIssueRequestCreator {
     // This method could create a creation request or a resolution request.
-    IssueTrackerRequest createRequest(IssueOperation operation, String messageId);
+    Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId);
 }

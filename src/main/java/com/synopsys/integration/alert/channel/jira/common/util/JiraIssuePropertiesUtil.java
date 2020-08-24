@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -47,16 +45,4 @@ public class JiraIssuePropertiesUtil {
         return new JiraIssueSearchProperties(providerName, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
             category, componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
-
-    public static String formatProviderUrl(String originalUrl) {
-        String correctedUrl = "";
-        if (StringUtils.isNotBlank(originalUrl)) {
-            correctedUrl = originalUrl.trim();
-            if (!correctedUrl.endsWith("/")) {
-                correctedUrl += "/";
-            }
-        }
-        return correctedUrl;
-    }
-
 }

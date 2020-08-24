@@ -37,7 +37,6 @@ function allJobsFetched() {
     };
 }
 
-
 function fetchingAllJobsError(message) {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR_ALL,
@@ -52,7 +51,6 @@ function fetchingAllJobsNoneFound() {
         jobConfigTableMessage: ''
     };
 }
-
 
 function openJobDelete() {
     return {
@@ -124,8 +122,7 @@ function fetchAuditInfoForJob(jobConfig) {
                 }
             }).then((response) => {
                 if (response.ok) {
-                    response.json().then((jsonObj) => {
-                        const auditInfo = JSON.parse(jsonObj.message);
+                    response.json().then((auditInfo) => {
                         if (auditInfo != null) {
                             lastRan = auditInfo.timeLastSent;
                             currentStatus = auditInfo.status;
@@ -157,18 +154,18 @@ export function deleteDistributionJob(job) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(deletingJobConfigSuccess(jobId));
-                } else {
-                    const deleteMessageHandler = () => jobDeleteError(responseData.message);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(deleteMessageHandler));
-                    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(deleteMessageHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(responseData.message, null)));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(deletingJobConfigSuccess(jobId));
+                    } else {
+                        const deleteMessageHandler = () => jobDeleteError(responseData.message);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(deleteMessageHandler));
+                        errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(deleteMessageHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(responseData.message, null)));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         }).catch(console.error);
     };
 }
@@ -188,32 +185,32 @@ export function fetchDistributionJobs() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    responseData.forEach((jobConfig) => {
-                        dispatch(fetchAuditInfoForJob(jobConfig));
-                    });
-                    dispatch(allJobsFetched());
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            responseData.forEach((jobConfig) => {
+                                dispatch(fetchAuditInfoForJob(jobConfig));
+                            });
+                            dispatch(allJobsFetched());
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                                let message = '';
+                                if (responseData && responseData.message) {
+                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                    message = responseData.message.toString();
+                                }
+                                return fetchingAllJobsError(message);
+                            }));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                        return fetchingAllJobsError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllJobsError(error));
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllJobsError(error));
-        });
     };
 }
 
@@ -231,28 +228,28 @@ export function fetchJobsValidationResults() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(jobsValidationFetched(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(jobsValidationFetched(responseData));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                                let message = '';
+                                if (responseData && responseData.message) {
+                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                    message = responseData.message.toString();
+                                }
+                                return jobsValidationError(message);
+                            }));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                        return jobsValidationError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(jobsValidationError(error));
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            dispatch(jobsValidationError(error));
-        });
     };
 }
