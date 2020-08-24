@@ -89,8 +89,7 @@ public class AzureProjectService {
         return azureHttpService.post(requestSpec, requestModel, ProjectWorkItemFieldModel.class);
     }
 
-    // TODO move this into it's own AzureFieldService.
-    public ProjectWorkItemFieldModel getProjectField(String organizationName, String fieldNameOrRef) throws IOException, HttpServiceException {
+    public ProjectWorkItemFieldModel getField(String organizationName, String fieldNameOrRef) throws IOException, HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_FIELDS_INDIVIDUAL
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement("{fieldNameOrRef}", fieldNameOrRef)
