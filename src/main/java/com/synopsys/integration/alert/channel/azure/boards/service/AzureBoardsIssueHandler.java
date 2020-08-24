@@ -135,8 +135,11 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
                                        .stream()
                                        .map(WorkItemReferenceModel::getId)
                                        .collect(Collectors.toSet());
-        AzureArrayResponseModel<WorkItemResponseModel> workItemArrayResponse = azureWorkItemService.getWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemIds);
-        return workItemArrayResponse.getValue();
+        if (!workItemIds.isEmpty()) {
+            AzureArrayResponseModel<WorkItemResponseModel> workItemArrayResponse = azureWorkItemService.getWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemIds);
+            return workItemArrayResponse.getValue();
+        }
+        return List.of();
     }
 
     @Override

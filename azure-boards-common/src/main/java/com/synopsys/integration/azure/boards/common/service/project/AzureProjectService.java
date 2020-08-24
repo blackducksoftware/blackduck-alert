@@ -41,6 +41,7 @@ public class AzureProjectService {
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_PROPERTIES = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}/properties");
     public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_FIELDS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/fields");
+    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_FIELDS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/wit/fields/{fieldNameOrRef}");
 
     public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
     public static final String PATH_PROJECT_ID_REPLACEMENT = "{projectId}";
@@ -86,6 +87,27 @@ public class AzureProjectService {
                                  .defineReplacement("{project}", projectNameOrId)
                                  .populateSpec();
         return azureHttpService.post(requestSpec, requestModel, ProjectWorkItemFieldModel.class);
+    }
+
+    // TODO move this into it's own AzureFieldService.
+    public ProjectWorkItemFieldModel getProjectField(String organizationName, String fieldNameOrRef) throws IOException, HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_FIELDS_INDIVIDUAL
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement("{fieldNameOrRef}", fieldNameOrRef)
+                                 .populateSpec();
+        Type responseType = new TypeToken<ProjectWorkItemFieldModel>() {}.getType();
+
+        return azureHttpService.get(requestSpec, responseType);
+    }
+
+    public AzureArrayResponseModel<ProjectWorkItemFieldModel> getProjectFields(String organizationName, String projectNameOrId) throws IOException, HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_FIELDS
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement("{project}", projectNameOrId)
+                                 .populateSpec();
+        Type responseType = new TypeToken<AzureArrayResponseModel<ProjectWorkItemFieldModel>>() {}.getType();
+
+        return azureHttpService.get(requestSpec, responseType);
     }
 
 }
