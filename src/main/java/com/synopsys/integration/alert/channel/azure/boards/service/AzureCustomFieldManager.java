@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -69,9 +70,9 @@ public class AzureCustomFieldManager {
 
     public void installCustomFields(String projectName, String workItemTypeName) throws AlertException {
         Future<ProjectWorkItemFieldModel> topLevelKeyFieldCreationResultHolder =
-            executorService.submit(() -> createAlertCustomProjectField(projectName, ALERT_TOP_LEVEL_KEY_FIELD_NAME, ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION));
+            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_TOP_LEVEL_KEY_FIELD_NAME, ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION));
         Future<ProjectWorkItemFieldModel> componentLevelKeyFieldCreationResultHolder =
-            executorService.submit(() -> createAlertCustomProjectField(projectName, ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION));
+            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION));
 
         TeamProjectReferenceResponseModel project = getProject(projectName);
         String processId = getProjectPropertyValue(project, ProjectPropertyResponseModel.COMMON_PROPERTIES_PROCESS_ID);
@@ -87,8 +88,24 @@ public class AzureCustomFieldManager {
         extractFutureResult(processComponentLevelFieldKeyResultHolder);
     }
 
-    private ProjectWorkItemFieldModel createAlertCustomProjectField(String projectName, String fieldName, String fieldReferenceName, String fieldDescription) throws AlertException {
+    private Optional<ProjectWorkItemFieldModel> getAlertCustomProjectField(String projectName, String fieldReferenceName) {
+        try {
+            return Optional.of(projectService.getProjectField(organizationName, fieldReferenceName));
+        } catch (IOException e) {
+            logger.error(String.format("There was a problem creating the request to get the Alert Custom Field in the Azure project: %s", projectName), e);
+        } catch (HttpServiceException e) {
+            logger.error(String.format("There was a problem finding the Alert Custom Field in the Azure project: %s", projectName), e);
+        }
+        return Optional.empty();
+    }
+
+    private ProjectWorkItemFieldModel findOrCreateAlertCustomProjectField(String projectName, String fieldName, String fieldReferenceName, String fieldDescription) throws AlertException {
         ProjectWorkItemFieldModel fieldRequestModel = ProjectWorkItemFieldModel.workItemStringField(fieldName, fieldReferenceName, fieldDescription);
+        Optional<ProjectWorkItemFieldModel> customField = getAlertCustomProjectField(projectName, fieldRequestModel.getReferenceName());
+        if (customField.isPresent()) {
+            return customField.get();
+        }
+        // custom field not found so create it
         try {
             return projectService.createProjectField(organizationName, projectName, fieldRequestModel);
         } catch (IOException e) {
