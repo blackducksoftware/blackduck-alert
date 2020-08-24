@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -48,18 +47,19 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
 public class ConfigurationFieldModelConverter {
     private final EncryptionUtility encryptionUtility;
     private final DescriptorAccessor descriptorAccessor;
-    private final DescriptorMap descriptorMap;
+    private final Map<String, DescriptorKey> descriptorKeys;
 
     @Autowired
-    public ConfigurationFieldModelConverter(EncryptionUtility encryptionUtility, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
+    public ConfigurationFieldModelConverter(EncryptionUtility encryptionUtility, DescriptorAccessor descriptorAccessor, List<DescriptorKey> descriptorKeys) {
         this.encryptionUtility = encryptionUtility;
         this.descriptorAccessor = descriptorAccessor;
-        this.descriptorMap = descriptorMap;
+        this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
     }
 
     public final FieldAccessor convertToFieldAccessor(FieldModel fieldModel) throws AlertDatabaseConstraintException {
@@ -92,7 +92,7 @@ public class ConfigurationFieldModelConverter {
     public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         String descriptorName = fieldModel.getDescriptorName();
-        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
+        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
 
         List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorKey, context);
         Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
@@ -130,13 +130,17 @@ public class ConfigurationFieldModelConverter {
 
     public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         String descriptorName = fieldModel.getDescriptorName();
-        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
+        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
 
         long descriptorId = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(configId, descriptorId, fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fieldModel.getContext());
         convertToConfigurationFieldModelMap(fieldModel).values().forEach(configurationModel::put);
         return configurationModel;
+    }
+
+    private Optional<DescriptorKey> getDescriptorKey(String key) {
+        return Optional.ofNullable(descriptorKeys.get(key));
     }
 
     private Optional<ConfigurationFieldModel> createEmptyModel(DefinedFieldModel definedFieldModel) {
