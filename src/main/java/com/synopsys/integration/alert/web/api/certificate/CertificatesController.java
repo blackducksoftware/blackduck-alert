@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,11 +38,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
@@ -58,16 +58,12 @@ public class CertificatesController extends BaseController {
 
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
-    private final ResponseFactory responseFactory;
-    private final ContentConverter contentConverter;
     private final CertificateActions actions;
 
     @Autowired
-    public CertificatesController(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, ResponseFactory responseFactory, ContentConverter contentConverter, CertificateActions actions) {
+    public CertificatesController(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, CertificateActions actions) {
         this.descriptorKey = descriptorKey;
         this.authorizationManager = authorizationManager;
-        this.responseFactory = responseFactory;
-        this.contentConverter = contentConverter;
         this.actions = actions;
     }
 
@@ -88,52 +84,52 @@ public class CertificatesController extends BaseController {
                    .orElseThrow(() -> ResponseFactory.createNotFoundException("Certificate resource not found"));
     }
 
+    @PostMapping("/validate")
+    public MessageResult validateCertificateModel(@RequestBody CertificateModel certificateModel) {
+        return actions.validateCertificate(certificateModel);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> importCertificate(@RequestBody CertificateModel certificateModel) {
+    public CertificateModel importCertificate(@RequestBody CertificateModel certificateModel) {
         if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }
         try {
-            CertificateModel certificate = actions.createCertificate(certificateModel);
-            return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate));
-        } catch (AlertFieldException ex) {
-            String message = ex.getMessage();
+            return actions.createCertificate(certificateModel);
+        } catch (AlertFieldException fieldException) {
+            String message = fieldException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
-            logger.debug(message, ex);
-            // FIXME figure out how to handle field errors
-            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
-        } catch (AlertException ex) {
-            String message = ex.getMessage();
+            logger.debug(message, fieldException);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues importing the certificate: %s", fieldException.getFieldErrors()));
+        } catch (AlertException alertException) {
+            String message = alertException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
-            logger.debug(message, ex);
+            logger.debug(message, alertException);
             throw ResponseFactory.createInternalServerErrorException(String.format("There was an issue importing the certificate. %s", message));
         }
     }
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    // FIXME make this void and add validate controller
-    public ResponseEntity<String> updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
+    public void updateCertificate(@PathVariable Long id, @RequestBody CertificateModel certificateModel) {
         if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }
         try {
             Optional<CertificateModel> certificate = actions.updateCertificate(id, certificateModel);
-            if (certificate.isPresent()) {
-                return responseFactory.createOkContentResponse(contentConverter.getJsonString(certificate.get()));
+            if (certificate.isEmpty()) {
+                throw ResponseFactory.createNotFoundException("Certificate resource not found");
             }
-            throw ResponseFactory.createNotFoundException("Certificate resource not found");
-        } catch (AlertFieldException ex) {
-            String message = ex.getMessage();
+        } catch (AlertFieldException fieldException) {
+            String message = fieldException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
-            logger.debug(message, ex);
-            // FIXME figure out how to handle field errors
-            return responseFactory.createFieldErrorResponse(null, "There was an issue importing the certificate.", ex.getFieldErrors());
-        } catch (AlertException ex) {
-            String message = ex.getMessage();
+            logger.debug(message, fieldException);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues updating the certificate: %s", fieldException.getFieldErrors()));
+        } catch (AlertException alertException) {
+            String message = alertException.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);
-            logger.debug(message, ex);
+            logger.debug(message, alertException);
             throw ResponseFactory.createInternalServerErrorException(String.format("There was an issue updating the certificate. %s", message));
         }
     }
@@ -145,7 +141,10 @@ public class CertificatesController extends BaseController {
             throw ResponseFactory.createForbiddenException();
         }
         try {
-            actions.deleteCertificate(id);
+            boolean existed = actions.deleteCertificate(id);
+            if (!existed) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue deleting the certificate: {}", message);
