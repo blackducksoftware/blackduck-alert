@@ -52,10 +52,10 @@ class CertificatesPage extends Component {
     }
 
     onSave(callback) {
-        const { validateCertificateAction } = this.props;
+        const { validateAndSaveCertificateAction } = this.props;
         const { certificate } = this.state;
 
-        validateCertificateAction(certificate);
+        validateAndSaveCertificateAction(certificate);
         this.setState({
             saveCallback: callback
         });
@@ -237,7 +237,7 @@ class CertificatesPage extends Component {
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
-    validateCertificateAction: PropTypes.func.isRequired,
+    validateAndSaveCertificateAction: PropTypes.func.isRequired,
     deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -272,7 +272,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    validateCertificateAction: (certificate) => dispatch(validateAndSaveCertificate(certificate)),
+    validateAndSaveCertificateAction: (certificate) => dispatch(validateAndSaveCertificate(certificate)),
     deleteCertificateAction: (certificateId) => dispatch(deleteCertificate(certificateId)),
     getCertificates: () => dispatch(fetchCertificates()),
     clearFieldErrors: () => dispatch(clearCertificateFieldErrors())
