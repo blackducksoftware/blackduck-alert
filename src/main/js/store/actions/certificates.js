@@ -1,4 +1,7 @@
 import {
+    CERTIFICATE_VALIDATE_ERROR,
+    CERTIFICATE_VALIDATED,
+    CERTIFICATE_VALIDATING,
     CERTIFICATES_CLEAR_FIELD_ERRORS,
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
@@ -15,7 +18,8 @@ import * as RequestUtilities from 'util/RequestUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 
-const CERTIFICATES_API_URL = `/alert/api/certificates`;
+const CERTIFICATES_API_URL = '/alert/api/certificates';
+const CERTIFICATES_VALIDATION_API_URL = `${CERTIFICATES_API_URL}/validate`;
 
 function fetchingAllCertificates() {
     return {
@@ -37,6 +41,27 @@ function fetchingAllCertificatesError(message) {
     };
 }
 
+function validatingCertificate() {
+    return {
+        type: CERTIFICATE_VALIDATING
+    };
+}
+
+function validatedCertificate(message) {
+    return {
+        type: CERTIFICATE_VALIDATED,
+        message
+    };
+}
+
+function certificateValidationError(message, errors) {
+    return {
+        type: CERTIFICATE_VALIDATE_ERROR,
+        message,
+        errors
+    };
+}
+
 function savingCertificate() {
     return {
         type: CERTIFICATES_SAVING
@@ -53,16 +78,13 @@ function saveCertificateErrorMessage(message) {
     return {
         type: CERTIFICATES_SAVE_ERROR,
         message
-
     };
 }
 
-function saveCertificateError({ message, errors }) {
+function saveCertificateError(message) {
     return {
         type: CERTIFICATES_SAVE_ERROR,
-        message,
-        errors
-
+        message
     };
 }
 
@@ -99,6 +121,13 @@ function clearFieldErrors() {
     };
 }
 
+function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+    dispatch(handler(responseStatus));
+}
+
 export function fetchCertificates() {
     return (dispatch, getState) => {
         dispatch(fetchingAllCertificates());
@@ -110,32 +139,32 @@ export function fetchCertificates() {
         const request = RequestUtilities.createReadRequest(CERTIFICATES_API_URL, csrfToken);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchedAllCertificates(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
-                        }
-                        return fetchingAllCertificatesError(message);
-                    }));
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(fetchedAllCertificates(responseData));
+                    } else {
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                            let message = '';
+                            if (responseData && responseData.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = responseData.message.toString();
+                            }
+                            return fetchingAllCertificatesError(message);
+                        }));
 
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllCertificatesError(error));
-        });
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllCertificatesError(error));
+            });
     };
 }
 
-export function saveCertificate(certificate) {
+function saveCertificate(certificate) {
     return (dispatch, getState) => {
         dispatch(savingCertificate());
         const { id } = certificate;
@@ -143,30 +172,62 @@ export function saveCertificate(certificate) {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveCertificateErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        let request;
+
+        let saveRequest;
         if (id) {
             const url = CERTIFICATES_API_URL.concat(`/${id}`);
-            request = RequestUtilities.createUpdateRequest(url, csrfToken, certificate);
+            saveRequest = RequestUtilities.createUpdateRequest(url, csrfToken, certificate);
         } else {
-            request = RequestUtilities.createPostRequest(CERTIFICATES_API_URL, csrfToken, certificate);
+            saveRequest = RequestUtilities.createPostRequest(CERTIFICATES_API_URL, csrfToken, certificate);
         }
-        request.then((response) => {
+        saveRequest.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(savedCertificate());
-                    dispatch(fetchCertificates());
-                } else {
-                    const defaultHandler = () => saveCertificateError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(savedCertificate());
+                        dispatch(fetchCertificates());
+                    } else {
+                        const defaultHandler = () => saveCertificateError(responseData.message);
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
+    };
+}
+
+export function validateAndSaveCertificate(certificate) {
+    return (dispatch, getState) => {
+        dispatch(validatingCertificate());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => certificateValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, HTTPErrorUtils.createEmptyErrorObject())));
+
+        const validateRequest = RequestUtilities.createPostRequest(CERTIFICATES_VALIDATION_API_URL, csrfToken, certificate);
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then(({ statusMessage, fieldStatuses }) => {
+                        // FIXME figure out the best way to handle warning statuses
+                        if (!fieldStatuses) {
+                            dispatch(validatedCertificate());
+                            saveCertificate(certificate);
+                        }
+                        handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(statusMessage, {
+                            message: statusMessage,
+                            fieldErrors: fieldStatuses
+                        }));
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
     };
 }
 
@@ -182,20 +243,20 @@ export function deleteCertificate(certificateId) {
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(deletedCertificate());
-                } else {
-                    const defaultHandler = () => deletingCertificateError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(deletedCertificate());
+                    } else {
+                        const defaultHandler = () => deletingCertificateError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 

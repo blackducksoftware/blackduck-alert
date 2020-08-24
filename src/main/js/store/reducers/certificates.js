@@ -1,4 +1,7 @@
 import {
+    CERTIFICATE_VALIDATE_ERROR,
+    CERTIFICATE_VALIDATED,
+    CERTIFICATE_VALIDATING,
     CERTIFICATES_CLEAR_FIELD_ERRORS,
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
@@ -69,6 +72,29 @@ const certificates = (state = initialState, action) => {
                 saveStatus: ''
 
             });
+        case CERTIFICATE_VALIDATING:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'VALIDATING'
+            };
+        case CERTIFICATE_VALIDATED:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: 'VALIDATED'
+            };
+        case CERTIFICATE_VALIDATE_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: 'ERROR'
+            };
         case CERTIFICATES_SAVE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,

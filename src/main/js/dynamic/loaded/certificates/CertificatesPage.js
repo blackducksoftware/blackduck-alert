@@ -5,7 +5,7 @@ import {
     clearCertificateFieldErrors,
     deleteCertificate,
     fetchCertificates,
-    saveCertificate
+    validateAndSaveCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
@@ -45,7 +45,6 @@ class CertificatesPage extends Component {
         }
     }
 
-
     onConfigClose(callback) {
         const { clearFieldErrors } = this.props;
         clearFieldErrors();
@@ -53,9 +52,10 @@ class CertificatesPage extends Component {
     }
 
     onSave(callback) {
-        const { saveCertificateAction } = this.props;
+        const { validateCertificateAction } = this.props;
         const { certificate } = this.state;
-        saveCertificateAction(certificate);
+
+        validateCertificateAction(certificate);
         this.setState({
             saveCallback: callback
         });
@@ -91,6 +91,16 @@ class CertificatesPage extends Component {
     createModalFields() {
         const { certificate } = this.state;
         const { fieldErrors } = this.props;
+
+        const fieldStatuses = fieldErrors.fieldErrors;
+        let fieldErrorMap = {};
+        if (fieldStatuses) {
+            fieldStatuses.forEach((fieldStatus) => {
+                fieldErrorMap[fieldStatus.fieldName] = fieldStatus;
+            });
+        } else {
+            fieldErrorMap = {};
+        }
         const aliasKey = 'alias';
         const certificateContentKey = 'certificateContent';
         return (
@@ -111,7 +121,7 @@ class CertificatesPage extends Component {
                     onChange={this.handleChange}
                     value={certificate[aliasKey]}
                     errorName={aliasKey}
-                    errorValue={fieldErrors[aliasKey]}
+                    errorValue={fieldErrorMap[aliasKey]}
                 />
                 <TextArea
                     id={certificateContentKey}
@@ -122,7 +132,7 @@ class CertificatesPage extends Component {
                     onChange={this.handleChange}
                     value={certificate[certificateContentKey]}
                     errorName={certificateContentKey}
-                    errorValue={fieldErrors[certificateContentKey]}
+                    errorValue={fieldErrorMap[certificateContentKey]}
                 />
             </div>
         );
@@ -135,7 +145,7 @@ class CertificatesPage extends Component {
         const { certificate } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newCertificate = Object.assign(certificate, { [name]: updatedValue });
         this.setState({
             certificate: newCertificate
@@ -227,7 +237,7 @@ class CertificatesPage extends Component {
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
-    saveCertificateAction: PropTypes.func.isRequired,
+    validateCertificateAction: PropTypes.func.isRequired,
     deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -235,7 +245,7 @@ CertificatesPage.propTypes = {
     inProgress: PropTypes.bool,
     deleteSuccess: PropTypes.bool,
     fetching: PropTypes.bool,
-    fieldErrors: PropTypes.object,
+    fieldErrors: PropTypes.array,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     saveStatus: PropTypes.string.isRequired
@@ -262,7 +272,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    saveCertificateAction: (certificate) => dispatch(saveCertificate(certificate)),
+    validateCertificateAction: (certificate) => dispatch(validateAndSaveCertificate(certificate)),
     deleteCertificateAction: (certificateId) => dispatch(deleteCertificate(certificateId)),
     getCertificates: () => dispatch(fetchCertificates()),
     clearFieldErrors: () => dispatch(clearCertificateFieldErrors())
