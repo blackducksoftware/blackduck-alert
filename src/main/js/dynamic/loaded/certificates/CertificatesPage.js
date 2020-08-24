@@ -93,13 +93,11 @@ class CertificatesPage extends Component {
         const { fieldErrors } = this.props;
 
         const fieldStatuses = fieldErrors.fieldErrors;
-        let fieldErrorMap = {};
+        const fieldErrorMap = {};
         if (fieldStatuses) {
             fieldStatuses.forEach((fieldStatus) => {
                 fieldErrorMap[fieldStatus.fieldName] = fieldStatus;
             });
-        } else {
-            fieldErrorMap = {};
         }
         const aliasKey = 'alias';
         const certificateContentKey = 'certificateContent';
