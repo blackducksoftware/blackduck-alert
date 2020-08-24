@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.channel.azure.boards;
 
 import java.util.Optional;
 import java.util.Set;
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira.common.util.JiraIssuePropertiesUtil;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -49,14 +49,15 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.util.UrlUtils;
 
-public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
-    private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
+//TODO: This is a near copy of JiraTestIssueRequestCreator, we should abstract out this class
+public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreator {
+    private final Logger logger = LoggerFactory.getLogger(AzureBoardsTestIssueRequestCreator.class);
     private final FieldAccessor fieldAccessor;
-    private final JiraMessageParser jiraMessageParser;
+    private final AzureBoardsMessageParser azureBoardsMessageParser;
 
-    public JiraTestIssueRequestCreator(FieldAccessor fieldAccessor, JiraMessageParser jiraMessageParser) {
+    public AzureBoardsTestIssueRequestCreator(FieldAccessor fieldAccessor, AzureBoardsMessageParser azureBoardsMessageParser) {
         this.fieldAccessor = fieldAccessor;
-        this.jiraMessageParser = jiraMessageParser;
+        this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
     @Override
@@ -78,16 +79,22 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
             LinkableItem topicItem = providerMessageContent.getTopic();
             LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
+            ComponentItem componentItem = componentItems
+                                              .stream()
+                                              .findFirst()
+                                              .orElse(null);
 
-            IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
+            String topLevelKey = AzureBoardsSearchPropertiesUtil.createTopLevelKey(providerName, providerUrl, topicItem, subTopicItem);
+            String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentLevelKey(componentItem, StringUtils.EMPTY);
+            AzureBoardsSearchProperties azureBoardsSearchProperties = new AzureBoardsSearchProperties(topLevelKey, componentLevelKey);
 
             switch (operation) {
                 case RESOLVE:
-                    return Optional.of(createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties));
+                    return Optional.of(createResolveIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, azureBoardsSearchProperties));
                 case OPEN:
                 case UPDATE:
                 default:
-                    return Optional.of(createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, issueSearchProperties));
+                    return Optional.of(createCreateOrUpdateIssueRequest(providerContentKey, topicItem, subTopicItem, componentItems, arbitraryItem, azureBoardsSearchProperties));
             }
 
         } catch (AlertException ex) {
@@ -100,15 +107,15 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     // TODO simplify the following 2 methods
     private IssueTrackerRequest createResolveIssueRequest(ContentKey providerContentKey, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
-        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey, null);
+        IssueContentModel contentModel = azureBoardsMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueResolutionRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey);
         return IssueResolutionRequest.of(issueSearchProperties, contentModel, alertIssueOrigin);
     }
 
     private IssueTrackerRequest createCreateOrUpdateIssueRequest(ContentKey providerContentKey, LinkableItem topicItem, LinkableItem subTopicItem, Set<ComponentItem> componentItems, ComponentItem arbitraryItem,
         IssueSearchProperties issueSearchProperties) {
-        IssueContentModel contentModel = jiraMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey, null);
+        IssueContentModel contentModel = azureBoardsMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueCreationRequest.OPERATION, topicItem, subTopicItem, componentItems, arbitraryItem);
+        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey);
         return IssueCreationRequest.of(issueSearchProperties, contentModel, alertIssueOrigin);
     }
 

@@ -38,6 +38,13 @@ public class AzureRedirectUtil {
         this.alertProperties = alertProperties;
     }
 
+    /**
+     * The OAuth callback controller will redirect back to the Alert UI.
+     * Only the callback controller should use this method.  All other requests for redirect URIs should use the
+     * createOAuthRedirectUri method.
+     * @return The url location to redirect to the UI.
+     * @see #createOAuthRedirectUri()
+     */
     public String createUIRedirectLocation() {
         StringBuilder locationBuilder = new StringBuilder(200);
         alertProperties.getServerUrl()
@@ -47,6 +54,11 @@ public class AzureRedirectUtil {
         return locationBuilder.toString();
     }
 
+    /**
+     * The OAuth  callback controller URI as a string for Azure to redirect to send the authorization code.
+     * This URI string should match the redirect URI in the Azure registered client application.
+     * @return The URI string to redirect to from azure when obtaining the authorization code
+     */
     public String createOAuthRedirectUri() {
         StringBuilder locationBuilder = new StringBuilder(200);
         alertProperties.getServerUrl()

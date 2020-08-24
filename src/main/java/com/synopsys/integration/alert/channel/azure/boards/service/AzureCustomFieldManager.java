@@ -129,8 +129,7 @@ public class AzureCustomFieldManager {
             return projectProperties.getValue()
                        .stream()
                        .filter(prop -> prop.getName().equals(propertyName))
-                       .filter(ProjectPropertyResponseModel::isValueAString)
-                       .map(ProjectPropertyResponseModel::getValueAsString)
+                       .map(ProjectPropertyResponseModel::getValue)
                        .findFirst()
                        .orElseThrow(() -> new AlertException(String.format("No property '%s' for the Azure project with the name '%s' exists", propertyName, project.getName())));
         } catch (HttpServiceException e) {

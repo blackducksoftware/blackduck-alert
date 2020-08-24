@@ -34,6 +34,10 @@ public class AlertIssueOrigin extends AlertSerializableModel {
     private final ContentKey providerContentKey;
     private final ComponentItem componentItem;
 
+    public AlertIssueOrigin(ContentKey providerContentKey) {
+        this(providerContentKey, null);
+    }
+
     public AlertIssueOrigin(ContentKey providerContentKey, @Nullable ComponentItem componentItem) {
         this.providerContentKey = providerContentKey;
         this.componentItem = componentItem;

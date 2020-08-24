@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -50,7 +49,7 @@ public class ConfigurationFieldModelTest {
         return List.of(new TextInputConfigField(KEY_FIELD_1, KEY_FIELD_1, DESCRIPTION_1), new PasswordConfigField(KEY_FIELD_2, KEY_FIELD_2, DESCRIPTION_2, encryptionValidator));
     }
 
-    private DescriptorMap createDescriptorMap() throws AlertException {
+    private List<DescriptorKey> createDescriptorKeyList() throws AlertException {
         DescriptorKey descriptorKey = new DescriptorKey() {
             @Override
             public String getUniversalKey() {
@@ -63,8 +62,8 @@ public class ConfigurationFieldModelTest {
             }
         };
 
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(descriptorKey), List.of(), List.of(), List.of());
-        return descriptorMap;
+        return List.of(descriptorKey);
+
     }
 
     @Test
@@ -74,8 +73,8 @@ public class ConfigurationFieldModelTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         FieldAccessor accessor = modelConverter.convertToFieldAccessor(fieldModel);
 
         assertEquals(VALUE_FIELD_1, accessor.getString(KEY_FIELD_1).orElseThrow(IllegalArgumentException::new));
@@ -89,8 +88,8 @@ public class ConfigurationFieldModelTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertToConfigurationFieldModelMap(fieldModel);
         assertTrue(actualModelMap.containsKey(KEY_FIELD_1));
         assertTrue(actualModelMap.containsKey(KEY_FIELD_2));
@@ -103,8 +102,8 @@ public class ConfigurationFieldModelTest {
         FieldModel fieldModel = createFieldModel();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(List.of());
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertToConfigurationFieldModelMap(fieldModel);
         assertTrue(actualModelMap.isEmpty());
     }
@@ -115,8 +114,8 @@ public class ConfigurationFieldModelTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), VALUE_FIELD_1, true);
 
         assertTrue(optionalModel.isPresent());
@@ -139,8 +138,8 @@ public class ConfigurationFieldModelTest {
         List<ConfigField> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1, true);
         assertTrue(optionalModel.isEmpty());
     }
@@ -151,8 +150,8 @@ public class ConfigurationFieldModelTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), List.of(VALUE_FIELD_1, VALUE_FIELD_2), true);
 
         assertTrue(optionalModel.isPresent());
@@ -175,8 +174,8 @@ public class ConfigurationFieldModelTest {
         List<ConfigField> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        DescriptorMap descriptorMap = createDescriptorMap();
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorMap);
+        List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
+        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2), true);
         assertTrue(optionalModel.isEmpty());
     }
