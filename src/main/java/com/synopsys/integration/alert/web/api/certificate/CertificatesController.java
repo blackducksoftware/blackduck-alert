@@ -86,6 +86,9 @@ public class CertificatesController extends BaseController {
 
     @PostMapping("/validate")
     public MessageResult validateCertificateModel(@RequestBody CertificateModel certificateModel) {
+        if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
+            throw ResponseFactory.createForbiddenException();
+        }
         return actions.validateCertificate(certificateModel);
     }
 
@@ -101,7 +104,7 @@ public class CertificatesController extends BaseController {
             String message = fieldException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, fieldException);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues importing the certificate: %s", fieldException.getFieldErrors()));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues importing the certificate: %s", fieldException.getFlattenedErrorMessages()));
         } catch (AlertException alertException) {
             String message = alertException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
@@ -125,7 +128,7 @@ public class CertificatesController extends BaseController {
             String message = fieldException.getMessage();
             logger.error(CERTIFICATE_IMPORT_ERROR_FORMAT, message);
             logger.debug(message, fieldException);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues updating the certificate: %s", fieldException.getFieldErrors()));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were issues updating the certificate: %s", fieldException.getFlattenedErrorMessages()));
         } catch (AlertException alertException) {
             String message = alertException.getMessage();
             logger.error("There was an issue updating the certificate: {}", message);

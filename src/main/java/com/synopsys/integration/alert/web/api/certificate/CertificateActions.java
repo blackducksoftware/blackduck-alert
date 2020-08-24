@@ -91,7 +91,7 @@ public class CertificateActions {
         }
 
         if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
-            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certification content cannot be empty."));
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
         } else {
             try {
                 certificateUtility.validateCertificateContent(convertedModel);
@@ -124,7 +124,7 @@ public class CertificateActions {
         String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
         logger.info("Updating certificate with id: {} and alias: {}", logableId, loggableAlias);
         if (existingCertificate.isPresent()) {
-            return Optional.ofNullable(importCertificate(certificateModel));
+            return Optional.of(importCertificate(certificateModel));
         }
         logger.error("Certificate with id: {} missing.", logableId);
         return Optional.empty();
