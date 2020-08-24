@@ -163,7 +163,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
                 JsonElement stateElement = workItemResponse.getFields().get(WorkItemResponseFields.System_State.getFieldName());
                 return transitionName.equals(stateElement.getAsString());
             } catch (HttpServiceException ex) {
-                logger.error("Error transitioning work item {} to {}", issueModel.getId(), transitionName, ex);
+                logger.error("Error transitioning work item {} to {}: cause: {}", issueModel.getId(), transitionName, ex);
             }
         }
 
