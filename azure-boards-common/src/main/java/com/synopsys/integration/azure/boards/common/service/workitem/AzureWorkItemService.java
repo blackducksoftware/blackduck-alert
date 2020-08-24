@@ -56,6 +56,7 @@ public class AzureWorkItemService {
     public static final String PATH_PROJECT_REPLACEMENT = "{project}";
     public static final String PATH_WORK_ITEM_ID_REPLACEMENT = "{workItemId}";
     public static final String PATH_TYPE_REPLACEMENT = "{type}";
+    public static final String PATH_IDS_REPLACEMENT = "{ids}";
 
     private final AzureHttpService azureHttpService;
 
@@ -71,7 +72,7 @@ public class AzureWorkItemService {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, joinedWorkItemIds)
+                                 .defineReplacement(PATH_IDS_REPLACEMENT, joinedWorkItemIds)
                                  .populateSpec();
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
