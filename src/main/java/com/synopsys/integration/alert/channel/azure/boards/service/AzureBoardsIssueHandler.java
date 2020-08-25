@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.gson.JsonElement;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -45,6 +46,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
+import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
@@ -135,13 +137,36 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
                                        .stream()
                                        .map(WorkItemReferenceModel::getId)
                                        .collect(Collectors.toSet());
-        AzureArrayResponseModel<WorkItemResponseModel> workItemArrayResponse = azureWorkItemService.getWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemIds);
-        return workItemArrayResponse.getValue();
+        if (!workItemIds.isEmpty()) {
+            AzureArrayResponseModel<WorkItemResponseModel> workItemArrayResponse = azureWorkItemService.getWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), workItemIds);
+            return workItemArrayResponse.getValue();
+        }
+        return List.of();
     }
 
     @Override
     protected boolean transitionIssue(WorkItemResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
-        // FIXME implement
+        List<WorkItemElementOperationModel> requestElementOps = new ArrayList<>();
+        Optional<String> transition;
+        if (IssueOperation.RESOLVE.equals(operation)) {
+            transition = issueConfig.getResolveTransition();
+        } else {
+            transition = issueConfig.getOpenTransition();
+        }
+        if (transition.isPresent()) {
+            String transitionName = transition.get();
+            try {
+                WorkItemElementOperationModel descriptionField = createUpdateFieldModel(WorkItemResponseFields.System_State, transitionName);
+                requestElementOps.add(descriptionField);
+                WorkItemRequest request = new WorkItemRequest(requestElementOps);
+                WorkItemResponseModel workItemResponse = azureWorkItemService.updateWorkItem(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), issueModel.getId(), request);
+                JsonElement stateElement = workItemResponse.getFields().get(WorkItemResponseFields.System_State.getFieldName());
+                return transitionName.equals(stateElement.getAsString());
+            } catch (HttpServiceException ex) {
+                logger.error("Error transitioning work item {} to {}: cause: {}", issueModel.getId(), transitionName, ex);
+            }
+        }
+
         return false;
     }
 
@@ -160,10 +185,15 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, WorkItemResponseModel issueResponse) {
         Integer workItemId = issueResponse.getId();
         Map<String, ReferenceLinkModel> issueLinks = issueResponse.getLinks();
-        ReferenceLinkModel htmlLink = issueLinks.get("html");
-        String uiLink = Optional.ofNullable(htmlLink)
-                            .map(ReferenceLinkModel::getHref)
-                            .orElseGet(this::getIssueTrackerUrl);
+        // the AzureWorkItemReponst does not contain any links when called via the rest API.
+        // only when the issue is created will the html link be present.
+        String uiLink = null;
+        if (null != issueLinks) {
+            ReferenceLinkModel htmlLink = issueLinks.get("html");
+            uiLink = Optional.ofNullable(htmlLink)
+                         .map(ReferenceLinkModel::getHref)
+                         .orElseGet(this::getIssueTrackerUrl);
+        }
         return new IssueTrackerIssueResponseModel(alertIssueOrigin, workItemId.toString(), uiLink, issueTitle, issueOperation);
     }
 
@@ -212,6 +242,10 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
     private <T> WorkItemElementOperationModel createAddFieldModel(AzureFieldDefinition<T> field, T value) {
         return WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.ADD, field, value);
+    }
+
+    private <T> WorkItemElementOperationModel createUpdateFieldModel(AzureFieldDefinition<T> field, T value) {
+        return WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.REPLACE, field, value);
     }
 
     private void addComment(String azureOrganizationName, String azureProjectName, Integer workItemId, String comment) throws IntegrationException {
