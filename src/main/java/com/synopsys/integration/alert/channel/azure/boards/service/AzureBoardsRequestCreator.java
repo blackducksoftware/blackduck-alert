@@ -39,11 +39,20 @@ public class AzureBoardsRequestCreator extends IssueTrackerRequestCreator {
     }
 
     @Override
-    protected AzureBoardsSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, String additionalInfo) {
+    public AzureBoardsSearchProperties createIssueSearchProperties(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem componentItem, @Nullable String additionalInfo) {
         String providerKey = AzureBoardsSearchPropertiesUtil.createProviderKey(providerName, providerUrl);
-        String topicKey = AzureBoardsSearchPropertiesUtil.createTopicKey(topic, subTopic);
-        String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentKey(componentItem, additionalInfo);
-        return new AzureBoardsSearchProperties(providerKey, topicKey, componentLevelKey);
+        String topicKey = AzureBoardsSearchPropertiesUtil.createNullableLinkableItemKey(topic);
+        String subTopicKey = AzureBoardsSearchPropertiesUtil.createNullableLinkableItemKey(subTopic);
+
+        String categoryKey = null;
+        String componentKey = null;
+        String subComponentKey = null;
+        if (null != componentItem) {
+            categoryKey = componentItem.getCategory();
+            componentKey = AzureBoardsSearchPropertiesUtil.createNullableLinkableItemKey(componentItem.getComponent());
+            subComponentKey = AzureBoardsSearchPropertiesUtil.createNullableLinkableItemKey(componentItem.getSubComponent().orElse(null));
+        }
+        return new AzureBoardsSearchProperties(providerKey, topicKey, subTopicKey, categoryKey, componentKey, subComponentKey, additionalInfo);
     }
 
 }

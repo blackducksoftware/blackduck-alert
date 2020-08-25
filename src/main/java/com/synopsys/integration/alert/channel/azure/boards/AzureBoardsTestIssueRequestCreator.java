@@ -25,11 +25,11 @@ package com.synopsys.integration.alert.channel.azure.boards;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
+import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -53,10 +53,12 @@ import com.synopsys.integration.alert.common.util.UrlUtils;
 public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsTestIssueRequestCreator.class);
     private final FieldAccessor fieldAccessor;
+    private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
-    public AzureBoardsTestIssueRequestCreator(FieldAccessor fieldAccessor, AzureBoardsMessageParser azureBoardsMessageParser) {
+    public AzureBoardsTestIssueRequestCreator(FieldAccessor fieldAccessor, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
         this.fieldAccessor = fieldAccessor;
+        this.azureBoardsRequestCreator = azureBoardsRequestCreator;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
 
@@ -83,11 +85,7 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
                                               .stream()
                                               .findFirst()
                                               .orElse(null);
-
-            String providerKey = AzureBoardsSearchPropertiesUtil.createProviderKey(providerName, providerUrl);
-            String topLevelKey = AzureBoardsSearchPropertiesUtil.createTopicKey(topicItem, subTopicItem);
-            String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentKey(componentItem, StringUtils.EMPTY);
-            AzureBoardsSearchProperties azureBoardsSearchProperties = new AzureBoardsSearchProperties(providerKey, topLevelKey, componentLevelKey);
+            AzureBoardsSearchProperties azureBoardsSearchProperties = azureBoardsRequestCreator.createIssueSearchProperties(providerName, providerUrl, topicItem, subTopicItem, componentItem, null);
 
             switch (operation) {
                 case RESOLVE:

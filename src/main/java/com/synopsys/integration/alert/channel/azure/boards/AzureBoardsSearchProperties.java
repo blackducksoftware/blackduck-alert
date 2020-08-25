@@ -31,12 +31,20 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 public class AzureBoardsSearchProperties implements IssueSearchProperties {
     private final String providerKey;
     private final String topicKey;
+    private final String subTopicKey;
+    private final String categoryKey;
     private final String componentKey;
+    private final String subComponentKey;
+    private final String additionalInfoKey;
 
-    public AzureBoardsSearchProperties(String providerKey, String topicKey, @Nullable String componentKey) {
+    public AzureBoardsSearchProperties(String providerKey, String topicKey, @Nullable String subTopicKey, @Nullable String categoryKey, @Nullable String componentKey, @Nullable String subComponentKey, @Nullable String additionalInfoKey) {
         this.providerKey = providerKey;
         this.topicKey = topicKey;
+        this.subTopicKey = subTopicKey;
+        this.categoryKey = categoryKey;
         this.componentKey = componentKey;
+        this.subComponentKey = subComponentKey;
+        this.additionalInfoKey = additionalInfoKey;
     }
 
     public String getProviderKey() {
@@ -47,8 +55,24 @@ public class AzureBoardsSearchProperties implements IssueSearchProperties {
         return topicKey;
     }
 
+    public Optional<String> getSubTopicKey() {
+        return Optional.ofNullable(subTopicKey);
+    }
+
+    public Optional<String> getCategoryKey() {
+        return Optional.ofNullable(categoryKey);
+    }
+
     public Optional<String> getComponentKey() {
         return Optional.ofNullable(componentKey);
+    }
+
+    public Optional<String> getSubComponentKey() {
+        return Optional.ofNullable(subComponentKey);
+    }
+
+    public Optional<String> getAdditionalInfoKey() {
+        return Optional.ofNullable(additionalInfoKey);
     }
 
 }

@@ -216,28 +216,39 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
 
-        AzureFieldDefinition<String> alertProviderKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME);
-        WorkItemElementOperationModel alertProviderKeyField = createAddFieldModel(alertProviderKeyFieldDefinition, issueSearchProperties.getProviderKey());
-        requestElementOps.add(alertProviderKeyField);
-
-        AzureFieldDefinition<String> alertTopicKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME);
-        WorkItemElementOperationModel alertTopicKeyField = createAddFieldModel(alertTopicKeyFieldDefinition, issueSearchProperties.getTopicKey());
-        requestElementOps.add(alertTopicKeyField);
-
-        Optional<String> optionalComponentKey = issueSearchProperties.getComponentKey();
-        if (optionalComponentKey.isPresent()) {
-            AzureFieldDefinition<String> alertComponentKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME);
-            WorkItemElementOperationModel alertComponentKeyField = createAddFieldModel(alertComponentKeyFieldDefinition, optionalComponentKey.get());
-            requestElementOps.add(alertComponentKeyField);
-        }
-
         // TODO determine if we can support this
         // if (StringUtils.isNotBlank(issueCreatorUniqueName)) {
         // WorkItemUserModel workItemUserModel = new WorkItemUserModel(null, null, issueConfig.getIssueCreator(), null, null, null, null, null);
         // WorkItemElementOperationModel createdByField = createAddFieldModel(WorkItemResponseFields.System_CreatedBy, workItemUserModel);
         // requestElementOps.add(createdByField);
         // }
+
+        List<WorkItemElementOperationModel> alertAzureCustomFields = createWorkItemRequestCustomFields(issueSearchProperties);
+        requestElementOps.addAll(alertAzureCustomFields);
+
         return new WorkItemRequest(requestElementOps);
+    }
+
+    private List<WorkItemElementOperationModel> createWorkItemRequestCustomFields(AzureBoardsSearchProperties issueSearchProperties) {
+        List<WorkItemElementOperationModel> customFields = new ArrayList<>(7);
+        addStringField(customFields, AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getProviderKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getTopicKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getSubTopicKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getCategoryKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getComponentKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getSubComponentKey());
+        addStringField(customFields, AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, issueSearchProperties.getAdditionalInfoKey());
+        return customFields;
+    }
+
+    private void addStringField(List<WorkItemElementOperationModel> customFields, String fieldReferenceName, Optional<String> optionalFieldValue) {
+        optionalFieldValue.ifPresent(fieldValue -> addStringField(customFields, fieldReferenceName, fieldValue));
+    }
+
+    private void addStringField(List<WorkItemElementOperationModel> customFields, String fieldReferenceName, String fieldValue) {
+        AzureFieldDefinition<String> alertProviderKeyFieldDefinition = AzureFieldDefinition.stringField(fieldReferenceName);
+        WorkItemElementOperationModel alertProviderKeyField = createAddFieldModel(alertProviderKeyFieldDefinition, fieldValue);
+        customFields.add(alertProviderKeyField);
     }
 
     private <T> WorkItemElementOperationModel createAddFieldModel(AzureFieldDefinition<T> field, T value) {
