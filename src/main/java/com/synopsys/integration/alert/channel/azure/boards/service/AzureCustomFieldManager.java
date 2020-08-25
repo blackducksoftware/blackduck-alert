@@ -103,29 +103,6 @@ public class AzureCustomFieldManager {
 
     public void installCustomFields(String projectName, String workItemTypeName) throws AlertException {
         installCustomFields(projectName, workItemTypeName, AZURE_CUSTOM_FIELDS);
-        //        Future<ProjectWorkItemFieldModel> providerKeyFieldCreationResultHolder =
-        //            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_PROVIDER_KEY_FIELD_NAME, ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, ALERT_PROVIDER_KEY_FIELD_DESCRIPTION));
-        //        Future<ProjectWorkItemFieldModel> topicKeyFieldCreationResultHolder =
-        //            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_TOPIC_KEY_FIELD_NAME, ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, ALERT_TOPIC_KEY_FIELD_DESCRIPTION));
-        //        Future<ProjectWorkItemFieldModel> componentKeyFieldCreationResultHolder =
-        //            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_COMPONENT_KEY_FIELD_NAME, ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_KEY_FIELD_DESCRIPTION));
-        //
-        //        TeamProjectReferenceResponseModel project = getProject(projectName);
-        //        String processId = getProjectPropertyValue(project, ProjectPropertyResponseModel.COMMON_PROPERTIES_PROCESS_ID);
-        //        String workItemTypeRefName = getWorkItemTypeRefName(processId, workItemTypeName);
-        //
-        //        ProjectWorkItemFieldModel providerKeyField = extractFutureResult(providerKeyFieldCreationResultHolder);
-        //        Future<ProcessFieldResponseModel> processProviderFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, providerKeyField));
-        //
-        //        ProjectWorkItemFieldModel topicKeyField = extractFutureResult(topicKeyFieldCreationResultHolder);
-        //        Future<ProcessFieldResponseModel> processTopicFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, topicKeyField));
-        //
-        //        ProjectWorkItemFieldModel componentKeyField = extractFutureResult(componentKeyFieldCreationResultHolder);
-        //        Future<ProcessFieldResponseModel> processComponentFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, componentKeyField));
-        //
-        //        extractFutureResult(processProviderFieldKeyResultHolder);
-        //        extractFutureResult(processTopicFieldKeyResultHolder);
-        //        extractFutureResult(processComponentFieldKeyResultHolder);
     }
 
     private void installCustomFields(String projectName, String workItemTypeName, List<AzureCustomFieldDescriptor> customFieldDescriptors) throws AlertException {

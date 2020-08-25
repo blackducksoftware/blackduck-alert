@@ -37,8 +37,6 @@ public class AzureBoardsMessageParser extends IssueTrackerMessageParser {
 
     @Override
     protected String encodeString(String txt) {
-        // TODO is this necessary?
-        //  URLEncoder.encode(txt, StandardCharsets.UTF_8);
         return txt;
     }
 
