@@ -27,8 +27,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AzureBoardsSearchProperties implements IssueSearchProperties {
+public class AzureBoardsSearchProperties extends AlertSerializableModel implements IssueSearchProperties {
     private final String providerKey;
     private final String topicKey;
     private final String subTopicKey;

@@ -124,11 +124,13 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemQueryWhere queryBuilder = WorkItemQuery
                                               .select(systemIdFieldName)
                                               .fromWorkItems()
-                                              .whereGroup(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopicKey());
-        Optional<String> optionalComponentLevelKey = searchProperties.getComponentKey();
-        if (optionalComponentLevelKey.isPresent()) {
-            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
-        }
+                                              .whereGroup(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getProviderKey())
+                                              .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopicKey());
+        queryBuilder = appendToQueryBuilder(queryBuilder, AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, searchProperties.getSubTopicKey());
+        queryBuilder = appendToQueryBuilder(queryBuilder, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, searchProperties.getCategoryKey());
+        queryBuilder = appendToQueryBuilder(queryBuilder, AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, searchProperties.getComponentKey());
+        queryBuilder = appendToQueryBuilder(queryBuilder, AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, searchProperties.getSubComponentKey());
+        queryBuilder = appendToQueryBuilder(queryBuilder, AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, searchProperties.getAdditionalInfoKey());
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
         WorkItemQueryResultResponseModel workItemQueryResultResponseModel = azureWorkItemQueryService.queryForWorkItems(azureBoardsProperties.getOrganizationName(), issueConfig.getProjectName(), query);
@@ -202,9 +204,14 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     @Override
     protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
         AzureBoardsSearchProperties issueProperties = request.getIssueSearchProperties();
-        String topLevelKey = issueProperties.getTopicKey();
-        String componentLevelKey = issueProperties.getComponentKey().orElse("Absent");
-        logger.debug("Attempting the {} action in Azure Boards. Top Level Key: {}. Component Level Key: {}", request.getOperation().name(), topLevelKey, componentLevelKey);
+        logger.debug("Attempting the {} action in Azure Boards. Search Properties: {}", request.getOperation().name(), issueProperties.toString());
+    }
+
+    private WorkItemQueryWhere appendToQueryBuilder(WorkItemQueryWhere queryBuilder, String fieldReferenceName, Optional<String> fieldKey) {
+        if (fieldKey.isPresent()) {
+            queryBuilder = queryBuilder.and(fieldReferenceName, WorkItemQueryWhereOperator.EQ, fieldKey.get());
+        }
+        return queryBuilder;
     }
 
     private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel, AzureBoardsSearchProperties issueSearchProperties) {
