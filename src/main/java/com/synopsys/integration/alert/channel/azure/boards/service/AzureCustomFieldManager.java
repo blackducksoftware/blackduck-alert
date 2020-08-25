@@ -102,12 +102,8 @@ public class AzureCustomFieldManager {
     }
 
     public void installCustomFields(String projectName, String workItemTypeName) throws AlertException {
-        installCustomFields(projectName, workItemTypeName, AZURE_CUSTOM_FIELDS);
-    }
-
-    private void installCustomFields(String projectName, String workItemTypeName, List<AzureCustomFieldDescriptor> customFieldDescriptors) throws AlertException {
         List<Future<ProjectWorkItemFieldModel>> projectFieldFindOrCreateHolders = new ArrayList<>(7);
-        for (AzureCustomFieldDescriptor fieldDesc : customFieldDescriptors) {
+        for (AzureCustomFieldDescriptor fieldDesc : AZURE_CUSTOM_FIELDS) {
             Future<ProjectWorkItemFieldModel> fieldFindOrCreateHolder =
                 executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, fieldDesc.getFieldName(), fieldDesc.getFieldReferenceName(), fieldDesc.getFieldDescription()));
             projectFieldFindOrCreateHolders.add(fieldFindOrCreateHolder);
