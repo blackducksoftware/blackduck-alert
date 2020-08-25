@@ -23,7 +23,6 @@
 package com.synopsys.integration.azure.boards.common.service.comment;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -34,6 +33,7 @@ import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemCommentRequestModel;
 import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemCommentResponseModel;
 import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemMultiCommentResponseModel;
 import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
@@ -77,10 +77,6 @@ public class AzureWorkItemCommentService {
     }
 
     public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
-        return addComment(organizationName, projectIdOrName, workItemId, List.of(commentText));
-    }
-
-    public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, List<String> commentTexts) throws HttpServiceException {
         String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
                                  .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
                                  .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
@@ -89,7 +85,8 @@ public class AzureWorkItemCommentService {
         requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, API_VERSION_PREVIEW_3);
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         try {
-            HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(HttpMethods.POST, requestUrl, commentTexts);
+            WorkItemCommentRequestModel requestModel = new WorkItemCommentRequestModel(commentText);
+            HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(HttpMethods.POST, requestUrl, requestModel);
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemCommentResponseModel.class);
         } catch (IOException e) {
             throw HttpServiceException.internalServerError(e);
