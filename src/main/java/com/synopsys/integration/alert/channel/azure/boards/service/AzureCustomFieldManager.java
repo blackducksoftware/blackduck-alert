@@ -46,13 +46,17 @@ import com.synopsys.integration.azure.boards.common.service.project.ProjectWorkI
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 public class AzureCustomFieldManager {
-    public static final String ALERT_TOP_LEVEL_KEY_FIELD_NAME = "Alert Top Level Key";
-    public static final String ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertTopLevelKey";
-    public static final String ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION = "A top-level tracking key for Alert";
+    public static final String ALERT_PROVIDER_KEY_FIELD_NAME = "Alert Provider Key";
+    public static final String ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME = "Custom.AlertProviderKey";
+    public static final String ALERT_PROVIDER_KEY_FIELD_DESCRIPTION = "A provider-level tracking key for Alert";
 
-    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME = "Alert Component Level Key";
-    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertComponentLevelKey";
-    public static final String ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION = "A component-level tracking key for Alert";
+    public static final String ALERT_TOPIC_KEY_FIELD_NAME = "Alert Topic Key";
+    public static final String ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME = "Custom.AlertTopicKey";
+    public static final String ALERT_TOPIC_KEY_FIELD_DESCRIPTION = "A topic-level tracking key for Alert";
+
+    public static final String ALERT_COMPONENT_KEY_FIELD_NAME = "Alert Component Key";
+    public static final String ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME = "Custom.AlertComponentKey";
+    public static final String ALERT_COMPONENT_KEY_FIELD_DESCRIPTION = "A component-level tracking key for Alert";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -69,23 +73,29 @@ public class AzureCustomFieldManager {
     }
 
     public void installCustomFields(String projectName, String workItemTypeName) throws AlertException {
-        Future<ProjectWorkItemFieldModel> topLevelKeyFieldCreationResultHolder =
-            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_TOP_LEVEL_KEY_FIELD_NAME, ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_TOP_LEVEL_KEY_FIELD_DESCRIPTION));
-        Future<ProjectWorkItemFieldModel> componentLevelKeyFieldCreationResultHolder =
-            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_COMPONENT_LEVEL_KEY_FIELD_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_LEVEL_KEY_FIELD_DESCRIPTION));
+        Future<ProjectWorkItemFieldModel> providerKeyFieldCreationResultHolder =
+            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_PROVIDER_KEY_FIELD_NAME, ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, ALERT_PROVIDER_KEY_FIELD_DESCRIPTION));
+        Future<ProjectWorkItemFieldModel> topicKeyFieldCreationResultHolder =
+            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_TOPIC_KEY_FIELD_NAME, ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, ALERT_TOPIC_KEY_FIELD_DESCRIPTION));
+        Future<ProjectWorkItemFieldModel> componentKeyFieldCreationResultHolder =
+            executorService.submit(() -> findOrCreateAlertCustomProjectField(projectName, ALERT_COMPONENT_KEY_FIELD_NAME, ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, ALERT_COMPONENT_KEY_FIELD_DESCRIPTION));
 
         TeamProjectReferenceResponseModel project = getProject(projectName);
         String processId = getProjectPropertyValue(project, ProjectPropertyResponseModel.COMMON_PROPERTIES_PROCESS_ID);
         String workItemTypeRefName = getWorkItemTypeRefName(processId, workItemTypeName);
 
-        ProjectWorkItemFieldModel topLevelKeyField = extractFutureResult(topLevelKeyFieldCreationResultHolder);
-        Future<ProcessFieldResponseModel> processTopLevelFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, topLevelKeyField));
+        ProjectWorkItemFieldModel providerKeyField = extractFutureResult(providerKeyFieldCreationResultHolder);
+        Future<ProcessFieldResponseModel> processProviderFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, providerKeyField));
 
-        ProjectWorkItemFieldModel componentLevelKeyField = extractFutureResult(componentLevelKeyFieldCreationResultHolder);
-        Future<ProcessFieldResponseModel> processComponentLevelFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, componentLevelKeyField));
+        ProjectWorkItemFieldModel topicKeyField = extractFutureResult(topicKeyFieldCreationResultHolder);
+        Future<ProcessFieldResponseModel> processTopicFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, topicKeyField));
 
-        extractFutureResult(processTopLevelFieldKeyResultHolder);
-        extractFutureResult(processComponentLevelFieldKeyResultHolder);
+        ProjectWorkItemFieldModel componentKeyField = extractFutureResult(componentKeyFieldCreationResultHolder);
+        Future<ProcessFieldResponseModel> processComponentFieldKeyResultHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, componentKeyField));
+
+        extractFutureResult(processProviderFieldKeyResultHolder);
+        extractFutureResult(processTopicFieldKeyResultHolder);
+        extractFutureResult(processComponentFieldKeyResultHolder);
     }
 
     private Optional<ProjectWorkItemFieldModel> getAlertCustomProjectField(String projectName, String fieldReferenceName) {

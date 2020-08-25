@@ -124,10 +124,10 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemQueryWhere queryBuilder = WorkItemQuery
                                               .select(systemIdFieldName)
                                               .fromWorkItems()
-                                              .whereGroup(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopLevelKey());
-        Optional<String> optionalComponentLevelKey = searchProperties.getComponentLevelKey();
+                                              .whereGroup(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_NAME, WorkItemQueryWhereOperator.EQ, searchProperties.getTopicKey());
+        Optional<String> optionalComponentLevelKey = searchProperties.getComponentKey();
         if (optionalComponentLevelKey.isPresent()) {
-            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
+            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, optionalComponentLevelKey.get());
         }
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
@@ -206,8 +206,8 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     @Override
     protected void logIssueAction(String issueTrackerProjectName, IssueTrackerRequest request) {
         AzureBoardsSearchProperties issueProperties = request.getIssueSearchProperties();
-        String topLevelKey = issueProperties.getTopLevelKey();
-        String componentLevelKey = issueProperties.getComponentLevelKey().orElse("Absent");
+        String topLevelKey = issueProperties.getTopicKey();
+        String componentLevelKey = issueProperties.getComponentKey().orElse("Absent");
         logger.debug("Attempting the {} action in Azure Boards. Top Level Key: {}. Component Level Key: {}", request.getOperation().name(), topLevelKey, componentLevelKey);
     }
 
@@ -220,15 +220,19 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
 
-        AzureFieldDefinition<String> alertTopLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_TOP_LEVEL_KEY_FIELD_REFERENCE_NAME);
-        WorkItemElementOperationModel alertTopLevelKey = createAddFieldModel(alertTopLevelKeyFieldDefinition, issueSearchProperties.getTopLevelKey());
-        requestElementOps.add(alertTopLevelKey);
+        AzureFieldDefinition<String> alertProviderKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME);
+        WorkItemElementOperationModel alertProviderKeyField = createAddFieldModel(alertProviderKeyFieldDefinition, issueSearchProperties.getProviderKey());
+        requestElementOps.add(alertProviderKeyField);
 
-        Optional<String> optionalComponentLevelKey = issueSearchProperties.getComponentLevelKey();
-        if (optionalComponentLevelKey.isPresent()) {
-            AzureFieldDefinition<String> alertComponentLevelKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_COMPONENT_LEVEL_KEY_FIELD_REFERENCE_NAME);
-            WorkItemElementOperationModel alertComponentLevelKeyField = createAddFieldModel(alertComponentLevelKeyFieldDefinition, optionalComponentLevelKey.get());
-            requestElementOps.add(alertComponentLevelKeyField);
+        AzureFieldDefinition<String> alertTopicKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME);
+        WorkItemElementOperationModel alertTopicKeyField = createAddFieldModel(alertTopicKeyFieldDefinition, issueSearchProperties.getTopicKey());
+        requestElementOps.add(alertTopicKeyField);
+
+        Optional<String> optionalComponentKey = issueSearchProperties.getComponentKey();
+        if (optionalComponentKey.isPresent()) {
+            AzureFieldDefinition<String> alertComponentKeyFieldDefinition = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME);
+            WorkItemElementOperationModel alertComponentKeyField = createAddFieldModel(alertComponentKeyFieldDefinition, optionalComponentKey.get());
+            requestElementOps.add(alertComponentKeyField);
         }
 
         // TODO determine if we can support this

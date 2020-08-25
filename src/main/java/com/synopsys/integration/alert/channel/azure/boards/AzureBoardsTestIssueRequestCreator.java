@@ -84,9 +84,10 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
                                               .findFirst()
                                               .orElse(null);
 
-            String topLevelKey = AzureBoardsSearchPropertiesUtil.createTopLevelKey(providerName, providerUrl, topicItem, subTopicItem);
-            String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentLevelKey(componentItem, StringUtils.EMPTY);
-            AzureBoardsSearchProperties azureBoardsSearchProperties = new AzureBoardsSearchProperties(topLevelKey, componentLevelKey);
+            String providerKey = AzureBoardsSearchPropertiesUtil.createProviderKey(providerName, providerUrl);
+            String topLevelKey = AzureBoardsSearchPropertiesUtil.createTopicKey(topicItem, subTopicItem);
+            String componentLevelKey = AzureBoardsSearchPropertiesUtil.createComponentKey(componentItem, StringUtils.EMPTY);
+            AzureBoardsSearchProperties azureBoardsSearchProperties = new AzureBoardsSearchProperties(providerKey, topLevelKey, componentLevelKey);
 
             switch (operation) {
                 case RESOLVE:
@@ -137,4 +138,5 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
                    .applyNotificationId(1L)
                    .build();
     }
+
 }

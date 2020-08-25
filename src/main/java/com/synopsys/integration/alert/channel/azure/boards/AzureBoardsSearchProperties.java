@@ -29,20 +29,26 @@ import javax.annotation.Nullable;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 
 public class AzureBoardsSearchProperties implements IssueSearchProperties {
-    private final String topLevelKey;
-    private final String componentLevelKey;
+    private final String providerKey;
+    private final String topicKey;
+    private final String componentKey;
 
-    public AzureBoardsSearchProperties(String topLevelKey, @Nullable String componentLevelKey) {
-        this.topLevelKey = topLevelKey;
-        this.componentLevelKey = componentLevelKey;
+    public AzureBoardsSearchProperties(String providerKey, String topicKey, @Nullable String componentKey) {
+        this.providerKey = providerKey;
+        this.topicKey = topicKey;
+        this.componentKey = componentKey;
     }
 
-    public String getTopLevelKey() {
-        return topLevelKey;
+    public String getProviderKey() {
+        return providerKey;
     }
 
-    public Optional<String> getComponentLevelKey() {
-        return Optional.ofNullable(componentLevelKey);
+    public String getTopicKey() {
+        return topicKey;
+    }
+
+    public Optional<String> getComponentKey() {
+        return Optional.ofNullable(componentKey);
     }
 
 }

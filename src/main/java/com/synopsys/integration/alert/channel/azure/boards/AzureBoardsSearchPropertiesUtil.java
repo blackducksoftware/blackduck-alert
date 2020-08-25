@@ -32,15 +32,20 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsSearchPropertiesUtil {
+    public static String createProviderKey(String providerName, String providerUrl) {
+        StringBuilder providerKeyBuilder = new StringBuilder();
 
-    public static String createTopLevelKey(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic) {
+        providerKeyBuilder.append("Provider=(");
+        providerKeyBuilder.append(providerName);
+        providerKeyBuilder.append(", ");
+        providerKeyBuilder.append(providerUrl);
+        providerKeyBuilder.append(')');
+
+        return providerKeyBuilder.toString();
+    }
+
+    public static String createTopicKey(LinkableItem topic, @Nullable LinkableItem subTopic) {
         StringBuilder topLevelKeyBuilder = new StringBuilder();
-
-        topLevelKeyBuilder.append("Provider=(");
-        topLevelKeyBuilder.append(providerName);
-        topLevelKeyBuilder.append(", ");
-        topLevelKeyBuilder.append(providerUrl);
-        topLevelKeyBuilder.append(')');
 
         topLevelKeyBuilder.append("Topic=(");
         appendLinkableItem(topLevelKeyBuilder, topic);
@@ -55,7 +60,7 @@ public class AzureBoardsSearchPropertiesUtil {
         return topLevelKeyBuilder.toString();
     }
 
-    public static String createComponentLevelKey(@Nullable ComponentItem componentItem, String additionalInfo) {
+    public static String createComponentKey(@Nullable ComponentItem componentItem, String additionalInfo) {
         if (null == componentItem) {
             return null;
         }
@@ -96,4 +101,5 @@ public class AzureBoardsSearchPropertiesUtil {
                 stringBuilder.append(url);
             });
     }
+
 }
