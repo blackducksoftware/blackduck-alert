@@ -65,7 +65,7 @@ public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
 
     @Override
     protected String getTodoStatusFieldKey() {
-        return AzureTransitionHandler.WORK_ITEM_STATE_CATEGORY_IN_PROGRESS;
+        return AzureTransitionHandler.WORK_ITEM_STATE_CATEGORY_PROPOSED;
     }
 
     @Override
@@ -104,4 +104,5 @@ public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
         ProxyInfo proxy = proxyManager.createProxyInfo();
         return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }
+
 }
