@@ -22,78 +22,36 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards;
 
-import java.util.Optional;
-
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsSearchPropertiesUtil {
+    private static final char URL_DELIMITER = '|';
 
-    public static String createTopLevelKey(String providerName, String providerUrl, LinkableItem topic, @Nullable LinkableItem subTopic) {
-        StringBuilder topLevelKeyBuilder = new StringBuilder();
-
-        topLevelKeyBuilder.append("Provider=(");
-        topLevelKeyBuilder.append(providerName);
-        topLevelKeyBuilder.append(", ");
-        topLevelKeyBuilder.append(providerUrl);
-        topLevelKeyBuilder.append(')');
-
-        topLevelKeyBuilder.append("Topic=(");
-        appendLinkableItem(topLevelKeyBuilder, topic);
-        topLevelKeyBuilder.append(')');
-
-        if (null != subTopic) {
-            topLevelKeyBuilder.append("SubTopic=(");
-            appendLinkableItem(topLevelKeyBuilder, subTopic);
-            topLevelKeyBuilder.append(')');
-        }
-
-        return topLevelKeyBuilder.toString();
+    public static String createProviderKey(String providerName, String providerUrl) {
+        StringBuilder providerKeyBuilder = new StringBuilder();
+        providerKeyBuilder.append(providerName);
+        providerKeyBuilder.append(URL_DELIMITER);
+        providerKeyBuilder.append(providerUrl);
+        return providerKeyBuilder.toString();
     }
 
-    public static String createComponentLevelKey(@Nullable ComponentItem componentItem, String additionalInfo) {
-        if (null == componentItem) {
+    public static String createNullableLinkableItemKey(@Nullable LinkableItem linkableItem) {
+        if (null == linkableItem) {
             return null;
         }
 
-        StringBuilder componentLevelKeyBuilder = new StringBuilder();
-
-        componentLevelKeyBuilder.append("Category=(");
-        componentLevelKeyBuilder.append(componentItem.getCategory());
-        componentLevelKeyBuilder.append(')');
-
-        componentLevelKeyBuilder.append("Component=(");
-        appendLinkableItem(componentLevelKeyBuilder, componentItem.getComponent());
-        componentLevelKeyBuilder.append(')');
-
-        Optional<LinkableItem> subComponent = componentItem.getSubComponent();
-        if (subComponent.isPresent()) {
-            componentLevelKeyBuilder.append("SubComponent=(");
-            appendLinkableItem(componentLevelKeyBuilder, subComponent.get());
-            componentLevelKeyBuilder.append(')');
-        }
-
-        if (StringUtils.isNotBlank(additionalInfo)) {
-            componentLevelKeyBuilder.append("AdditionalInfo=(");
-            componentLevelKeyBuilder.append(additionalInfo);
-            componentLevelKeyBuilder.append(')');
-        }
-
-        return componentLevelKeyBuilder.toString();
-    }
-
-    private static void appendLinkableItem(StringBuilder stringBuilder, LinkableItem linkableItem) {
-        stringBuilder.append(linkableItem.getName());
-        stringBuilder.append(", ");
-        stringBuilder.append(linkableItem.getValue());
+        StringBuilder linkableItemBuilder = new StringBuilder();
+        linkableItemBuilder.append(linkableItem.getName());
+        linkableItemBuilder.append(':');
+        linkableItemBuilder.append(linkableItem.getValue());
         linkableItem.getUrl()
             .ifPresent(url -> {
-                stringBuilder.append(", ");
-                stringBuilder.append(url);
+                linkableItemBuilder.append(URL_DELIMITER);
+                linkableItemBuilder.append(url);
             });
+        return linkableItemBuilder.toString();
     }
+
 }

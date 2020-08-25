@@ -27,22 +27,53 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AzureBoardsSearchProperties implements IssueSearchProperties {
-    private final String topLevelKey;
-    private final String componentLevelKey;
+public class AzureBoardsSearchProperties extends AlertSerializableModel implements IssueSearchProperties {
+    private final String providerKey;
+    private final String topicKey;
+    private final String subTopicKey;
+    private final String categoryKey;
+    private final String componentKey;
+    private final String subComponentKey;
+    private final String additionalInfoKey;
 
-    public AzureBoardsSearchProperties(String topLevelKey, @Nullable String componentLevelKey) {
-        this.topLevelKey = topLevelKey;
-        this.componentLevelKey = componentLevelKey;
+    public AzureBoardsSearchProperties(String providerKey, String topicKey, @Nullable String subTopicKey, @Nullable String categoryKey, @Nullable String componentKey, @Nullable String subComponentKey, @Nullable String additionalInfoKey) {
+        this.providerKey = providerKey;
+        this.topicKey = topicKey;
+        this.subTopicKey = subTopicKey;
+        this.categoryKey = categoryKey;
+        this.componentKey = componentKey;
+        this.subComponentKey = subComponentKey;
+        this.additionalInfoKey = additionalInfoKey;
     }
 
-    public String getTopLevelKey() {
-        return topLevelKey;
+    public String getProviderKey() {
+        return providerKey;
     }
 
-    public Optional<String> getComponentLevelKey() {
-        return Optional.ofNullable(componentLevelKey);
+    public String getTopicKey() {
+        return topicKey;
+    }
+
+    public Optional<String> getSubTopicKey() {
+        return Optional.ofNullable(subTopicKey);
+    }
+
+    public Optional<String> getCategoryKey() {
+        return Optional.ofNullable(categoryKey);
+    }
+
+    public Optional<String> getComponentKey() {
+        return Optional.ofNullable(componentKey);
+    }
+
+    public Optional<String> getSubComponentKey() {
+        return Optional.ofNullable(subComponentKey);
+    }
+
+    public Optional<String> getAdditionalInfoKey() {
+        return Optional.ofNullable(additionalInfoKey);
     }
 
 }
