@@ -22,9 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerMessageParser;
@@ -40,7 +37,7 @@ public class AzureBoardsMessageParser extends IssueTrackerMessageParser {
 
     @Override
     protected String encodeString(String txt) {
-        return URLEncoder.encode(txt, StandardCharsets.UTF_8);
+        return txt;
     }
 
     @Override

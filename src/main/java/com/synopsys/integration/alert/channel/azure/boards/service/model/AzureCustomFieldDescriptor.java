@@ -1,5 +1,5 @@
 /**
- * azure-boards-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.azure.boards.common.service.comment.model;
+package com.synopsys.integration.alert.channel.azure.boards.service.model;
 
-public class WorkItemCommentRequestModel {
-    private String text;
+public class AzureCustomFieldDescriptor {
+    private final String fieldName;
+    private final String fieldReferenceName;
+    private final String fieldDescription;
 
-    public WorkItemCommentRequestModel(String text) {
-        this.text = text;
+    public AzureCustomFieldDescriptor(String fieldName, String fieldReferenceName, String fieldDescription) {
+        this.fieldName = fieldName;
+        this.fieldReferenceName = fieldReferenceName;
+        this.fieldDescription = fieldDescription;
     }
 
-    public String getText() {
-        return text;
+    public String getFieldName() {
+        return fieldName;
     }
+
+    public String getFieldReferenceName() {
+        return fieldReferenceName;
+    }
+
+    public String getFieldDescription() {
+        return fieldDescription;
+    }
+
 }
