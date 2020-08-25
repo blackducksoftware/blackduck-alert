@@ -185,15 +185,11 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, WorkItemResponseModel issueResponse) {
         Integer workItemId = issueResponse.getId();
         Map<String, ReferenceLinkModel> issueLinks = issueResponse.getLinks();
-        // the AzureWorkItemReponst does not contain any links when called via the rest API.
-        // only when the issue is created will the html link be present.
-        String uiLink = null;
-        if (null != issueLinks) {
-            ReferenceLinkModel htmlLink = issueLinks.get("html");
-            uiLink = Optional.ofNullable(htmlLink)
-                         .map(ReferenceLinkModel::getHref)
-                         .orElseGet(this::getIssueTrackerUrl);
-        }
+        // AzureWorkItemResponse does not contain any links other than when a work item is created.
+        String uiLink = Optional.ofNullable(issueLinks)
+                            .flatMap(issueLinkMap -> Optional.ofNullable(issueLinkMap.get("html")))
+                            .map(ReferenceLinkModel::getHref)
+                            .orElseGet(this::getIssueTrackerUrl);
         return new IssueTrackerIssueResponseModel(alertIssueOrigin, workItemId.toString(), uiLink, issueTitle, issueOperation);
     }
 
