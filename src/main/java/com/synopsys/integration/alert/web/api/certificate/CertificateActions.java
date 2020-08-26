@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 import com.synopsys.integration.util.IntegrationEscapeUtil;
@@ -69,6 +70,14 @@ public class CertificateActions {
                    .map(this::convertFromDatabaseModel);
     }
 
+    public ValidationResponseModel validateCertificate(CertificateModel certificateModel) {
+        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
+        if (fieldErrors.isEmpty()) {
+            return ValidationResponseModel.withoutFieldStatuses("The certificate configuration is valid");
+        }
+        return ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
+    }
+
     public CertificateModel createCertificate(CertificateModel certificateModel) throws AlertException {
         if (null != certificateModel.getId()) {
             throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
@@ -86,7 +95,7 @@ public class CertificateActions {
         String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
         logger.info("Updating certificate with id: {} and alias: {}", logableId, loggableAlias);
         if (existingCertificate.isPresent()) {
-            return Optional.ofNullable(importCertificate(certificateModel));
+            return Optional.of(importCertificate(certificateModel));
         }
         logger.error("Certificate with id: {} missing.", logableId);
         return Optional.empty();
@@ -104,14 +113,19 @@ public class CertificateActions {
         }
     }
 
-    public void deleteCertificate(Long id) throws AlertException {
+    /**
+     * @return true if the certificate existed
+     */
+    public boolean deleteCertificate(Long id) throws AlertException {
         Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
         if (certificate.isPresent()) {
             CustomCertificateModel certificateModel = certificate.get();
             logger.info("Delete certificate with id: {} and alias: {}", certificateModel.getNullableId(), certificateModel.getAlias());
             certificateUtility.removeCertificate(certificateModel);
             certificateAccessor.deleteCertificate(id);
+            return true;
         }
+        return false;
     }
 
     private void deleteByAlias(CustomCertificateModel certificateModel) {
@@ -124,9 +138,9 @@ public class CertificateActions {
         }
     }
 
-    private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertifcateModel) {
-        String id = databaseCertifcateModel.getNullableId() != null ? Long.toString(databaseCertifcateModel.getNullableId()) : null;
-        return new CertificateModel(id, databaseCertifcateModel.getAlias(), databaseCertifcateModel.getCertificateContent(), databaseCertifcateModel.getLastUpdated());
+    private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertificateModel) {
+        String id = databaseCertificateModel.getNullableId() != null ? Long.toString(databaseCertificateModel.getNullableId()) : null;
+        return new CertificateModel(id, databaseCertificateModel.getAlias(), databaseCertificateModel.getCertificateContent(), databaseCertificateModel.getLastUpdated());
     }
 
     private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
@@ -134,7 +148,7 @@ public class CertificateActions {
         return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent(), certificateModel.getLastUpdated());
     }
 
-    private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
+    private List<AlertFieldStatus> validateCertificateFields(CertificateModel certificateModel) {
         CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
         List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         if (StringUtils.isBlank(certificateModel.getAlias())) {
@@ -155,7 +169,7 @@ public class CertificateActions {
         }
 
         if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
-            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certification content cannot be empty."));
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
         } else {
             try {
                 certificateUtility.validateCertificateContent(convertedModel);
@@ -164,7 +178,11 @@ public class CertificateActions {
                 fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage())));
             }
         }
+        return fieldErrors;
+    }
 
+    private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
+        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }

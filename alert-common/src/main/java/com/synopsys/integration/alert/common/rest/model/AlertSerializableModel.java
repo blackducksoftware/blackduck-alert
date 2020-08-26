@@ -27,4 +27,6 @@ import java.io.Serializable;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class AlertSerializableModel extends Stringable implements Serializable {
+    // TODO consider adding no-args constructor here for serialization
+
 }
