@@ -130,7 +130,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
         componentItems.addAll(
-            policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.ADD, componentVersionStatus.getBomComponent(), List.of(), policyFilters));
+            policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.ADD, bomComponentUrl, List.of(), policyFilters));
         for (PolicyInfo policyInfo : policies) {
             String policyName = policyInfo.getPolicyName();
             if (policyFilters.isEmpty() || policyFilters.contains(policyName)) {

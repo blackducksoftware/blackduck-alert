@@ -102,7 +102,7 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
         String componentName = overrideContent.getComponentName();
         String componentVersionName = overrideContent.getComponentVersionName();
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
-        return policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, null, List.of(policyOverride), policyFilter);
+        return policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.DELETE, overrideContent.getBomComponent(), List.of(policyOverride), policyFilter);
     }
 
 }
