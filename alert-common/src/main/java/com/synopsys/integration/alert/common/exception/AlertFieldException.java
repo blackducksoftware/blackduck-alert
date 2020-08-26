@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.exception;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
@@ -66,6 +67,13 @@ public class AlertFieldException extends AlertException {
 
     public List<AlertFieldStatus> getFieldErrors() {
         return fieldErrors;
+    }
+
+    public String getFlattenedErrorMessages() {
+        return fieldErrors
+                   .stream()
+                   .map(AlertFieldStatus::getFieldMessage)
+                   .collect(Collectors.joining(", "));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.web.api.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.Charset;
@@ -16,14 +17,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -64,7 +66,10 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testLogout() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+        mockMvc.perform(request).andExpect(ResultMatcher.matchAll(
+            MockMvcResultMatchers.redirectedUrl("/"),
+            MockMvcResultMatchers.status().isNoContent()
+        ));
     }
 
     @Test
@@ -79,27 +84,27 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         String restModel = mockLoginRestModel.getRestModelJson();
         request.content(restModel);
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
     public void userLogoutWithValidSessionTest() {
         AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
-        HttpServletRequest request = new MockHttpServletRequest();
-        HttpSession session = request.getSession(true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockHttpSession session = (MockHttpSession) request.getSession(true);
         session.setMaxInactiveInterval(30);
-
-        ResponseEntity<Void> response = loginHandler.logout(request);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        loginHandler.logout(request, response);
+        assertTrue(session.isInvalid(), "Expected the session to be invalid");
+        assertTrue(response.containsHeader("Location"), "Expected the response to contain a Location header");
     }
 
     @Test
     public void userLogoutWithInvalidSessionTest() {
         AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
         HttpServletRequest request = new MockHttpServletRequest();
-
-        ResponseEntity<Void> response = loginHandler.logout(request);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        loginHandler.logout(request, response);
     }
 
     @Test

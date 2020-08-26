@@ -27,12 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -40,6 +36,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -48,8 +45,6 @@ import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 public class AuthenticationController extends BaseController {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final LoginActions loginActions;
     private final PasswordResetService passwordResetService;
     private final CsrfTokenRepository csrfTokenRepository;
@@ -62,19 +57,18 @@ public class AuthenticationController extends BaseController {
     }
 
     @PostMapping(value = "/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
         SecurityContextHolder.clearContext();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/");
-        return new ResponseEntity<>(null, headers, HttpStatus.NO_CONTENT);
+        response.addHeader("Location", "/");
     }
 
     @PostMapping(value = "/login")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
         try {
             if (loginActions.authenticateUser(loginConfig)) {
@@ -90,6 +84,7 @@ public class AuthenticationController extends BaseController {
     }
 
     @PostMapping(value = "/resetPassword/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPassword(@PathVariable(required = false) String username) {
         if (StringUtils.isBlank(username)) {
             throw ResponseFactory.createBadRequestException("Username cannot be blank");

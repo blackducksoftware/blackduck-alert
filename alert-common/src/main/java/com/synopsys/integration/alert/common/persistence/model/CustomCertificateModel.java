@@ -24,12 +24,13 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
+// TODO rename this to something more descriptive like UserProvidedCertificateModel
 public class CustomCertificateModel extends AlertSerializableModel {
     private static final long serialVersionUID = -6655684999195764188L;
     private Long id;
-    private String alias;
-    private String certificateContent;
-    private String lastUpdated;
+    private final String alias;
+    private final String certificateContent;
+    private final String lastUpdated;
 
     public CustomCertificateModel(String alias, String certificateContent, String lastUpdated) {
         this.id = null;

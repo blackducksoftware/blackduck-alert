@@ -94,7 +94,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(certificateModel))
                                                     .contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(updatedCertificate))
                                                     .contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test

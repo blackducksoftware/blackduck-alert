@@ -5,7 +5,8 @@ import {
     clearCertificateFieldErrors,
     deleteCertificate,
     fetchCertificates,
-    saveCertificate
+    saveCertificate,
+    validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
@@ -29,14 +30,18 @@ class CertificatesPage extends Component {
 
         this.state = {
             certificate: {},
+            validateCallback: () => null,
             saveCallback: () => null,
             deleteCallback: () => null
         };
     }
 
     componentDidUpdate(prevProps) {
-        const { saveCallback, deleteCallback } = this.state;
+        const { validateCallback, saveCallback, deleteCallback } = this.state;
         const { saveStatus, deleteSuccess, inProgress } = this.props;
+        if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
         if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
             saveCallback(true);
         }
@@ -45,7 +50,6 @@ class CertificatesPage extends Component {
         }
     }
 
-
     onConfigClose(callback) {
         const { clearFieldErrors } = this.props;
         clearFieldErrors();
@@ -53,10 +57,12 @@ class CertificatesPage extends Component {
     }
 
     onSave(callback) {
-        const { saveCertificateAction } = this.props;
+        const { validateCertificateAction, saveCertificateAction } = this.props;
         const { certificate } = this.state;
-        saveCertificateAction(certificate);
+
+        validateCertificateAction(certificate);
         this.setState({
+            validateCallback: () => saveCertificateAction(certificate),
             saveCallback: callback
         });
         return true;
@@ -91,6 +97,7 @@ class CertificatesPage extends Component {
     createModalFields() {
         const { certificate } = this.state;
         const { fieldErrors } = this.props;
+
         const aliasKey = 'alias';
         const certificateContentKey = 'certificateContent';
         return (
@@ -135,7 +142,7 @@ class CertificatesPage extends Component {
         const { certificate } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newCertificate = Object.assign(certificate, { [name]: updatedValue });
         this.setState({
             certificate: newCertificate
@@ -227,6 +234,7 @@ class CertificatesPage extends Component {
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
+    validateCertificateAction: PropTypes.func.isRequired,
     saveCertificateAction: PropTypes.func.isRequired,
     deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
@@ -262,6 +270,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    validateCertificateAction: (certificate) => dispatch(validateCertificate(certificate)),
     saveCertificateAction: (certificate) => dispatch(saveCertificate(certificate)),
     deleteCertificateAction: (certificateId) => dispatch(deleteCertificate(certificateId)),
     getCertificates: () => dispatch(fetchCertificates()),
