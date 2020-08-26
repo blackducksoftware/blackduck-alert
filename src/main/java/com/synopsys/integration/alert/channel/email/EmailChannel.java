@@ -50,7 +50,9 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -98,8 +100,16 @@ public class EmailChannel extends NamedDistributionChannel {
 
     public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
         String topicValue = null;
+        Optional<String> subTopicValue = Optional.empty();
         if (!messageContent.isEmpty()) {
             topicValue = messageContent.getCommonTopic().getValue();
+            subTopicValue = messageContent.getSubContent()
+                                .stream()
+                                .map(ProviderMessageContent::getSubTopic)
+                                .map(Optional::get)
+                                .filter(linkableItem -> MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME.equals(linkableItem.getName()))
+                                .map(LinkableItem::getValue)
+                                .findFirst();
         }
 
         String alertServerUrl = alertProperties.getServerUrl().orElse(null);
@@ -118,7 +128,7 @@ public class EmailChannel extends NamedDistributionChannel {
 
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), formattedContent);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue, subTopicValue));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
@@ -146,9 +156,13 @@ public class EmailChannel extends NamedDistributionChannel {
         return optionalAttachmentFile;
     }
 
-    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName) {
+    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName, Optional<String> providerProjectVersionName) {
         if (StringUtils.isNotBlank(providerProjectName)) {
-            return String.format("%s | For: %s", originalSubjectLine, providerProjectName);
+            String subjectLine = String.format("%s | For: %s", originalSubjectLine, providerProjectName);
+            if (providerProjectVersionName.isPresent()) {
+                subjectLine += String.format(" %s", providerProjectVersionName.get());
+            }
+            return subjectLine;
         }
         return originalSubjectLine;
     }
