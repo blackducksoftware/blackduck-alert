@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueCommentRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
@@ -102,7 +103,8 @@ public abstract class IssueTrackerRequestCreator {
             IssueTrackerRequest issueRequest = null;
             AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(providerContentKey, arbitraryItem);
             if (ItemOperation.ADD == operation || ItemOperation.UPDATE == operation) {
-                IssueContentModel issueContentModel = issueTrackerMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueCreationRequest.OPERATION, topic, nullableSubTopic, componentItems, arbitraryItem);
+                IssueOperation creationOperation = operation == ItemOperation.ADD ? IssueOperation.OPEN : IssueOperation.UPDATE;
+                IssueContentModel issueContentModel = issueTrackerMessageParser.createIssueContentModel(providerContentKey.getProviderName(), creationOperation, topic, nullableSubTopic, componentItems, arbitraryItem);
                 issueRequest = IssueCreationRequest.of(issueSearchProperties, issueContentModel, alertIssueOrigin);
             } else if (ItemOperation.DELETE == operation) {
                 IssueContentModel issueContentModel = issueTrackerMessageParser.createIssueContentModel(providerContentKey.getProviderName(), IssueResolutionRequest.OPERATION, topic, nullableSubTopic, componentItems, arbitraryItem);
