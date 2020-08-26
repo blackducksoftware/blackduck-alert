@@ -56,14 +56,15 @@ public class AuthenticationController extends BaseController {
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
-    @PostMapping(value = "/logout", headers = { "Location=/" })
+    @PostMapping(value = "/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(HttpServletRequest request) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
         SecurityContextHolder.clearContext();
+        response.addHeader("Location", "/");
     }
 
     @PostMapping(value = "/login")

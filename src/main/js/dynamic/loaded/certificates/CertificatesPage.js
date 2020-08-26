@@ -5,7 +5,8 @@ import {
     clearCertificateFieldErrors,
     deleteCertificate,
     fetchCertificates,
-    validateAndSaveCertificate
+    saveCertificate,
+    validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
@@ -29,14 +30,18 @@ class CertificatesPage extends Component {
 
         this.state = {
             certificate: {},
+            validateCallback: () => null,
             saveCallback: () => null,
             deleteCallback: () => null
         };
     }
 
     componentDidUpdate(prevProps) {
-        const { saveCallback, deleteCallback } = this.state;
+        const { validateCallback, saveCallback, deleteCallback } = this.state;
         const { saveStatus, deleteSuccess, inProgress } = this.props;
+        if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
         if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
             saveCallback(true);
         }
@@ -52,11 +57,12 @@ class CertificatesPage extends Component {
     }
 
     onSave(callback) {
-        const { validateAndSaveCertificateAction } = this.props;
+        const { validateCertificateAction, saveCertificateAction } = this.props;
         const { certificate } = this.state;
 
-        validateAndSaveCertificateAction(certificate);
+        validateCertificateAction(certificate);
         this.setState({
+            validateCallback: () => saveCertificateAction(certificate),
             saveCallback: callback
         });
         return true;
@@ -92,13 +98,6 @@ class CertificatesPage extends Component {
         const { certificate } = this.state;
         const { fieldErrors } = this.props;
 
-        const fieldStatuses = fieldErrors.fieldErrors;
-        const fieldErrorMap = {};
-        if (fieldStatuses) {
-            fieldStatuses.forEach((fieldStatus) => {
-                fieldErrorMap[fieldStatus.fieldName] = fieldStatus;
-            });
-        }
         const aliasKey = 'alias';
         const certificateContentKey = 'certificateContent';
         return (
@@ -119,7 +118,7 @@ class CertificatesPage extends Component {
                     onChange={this.handleChange}
                     value={certificate[aliasKey]}
                     errorName={aliasKey}
-                    errorValue={fieldErrorMap[aliasKey]}
+                    errorValue={fieldErrors[aliasKey]}
                 />
                 <TextArea
                     id={certificateContentKey}
@@ -130,7 +129,7 @@ class CertificatesPage extends Component {
                     onChange={this.handleChange}
                     value={certificate[certificateContentKey]}
                     errorName={certificateContentKey}
-                    errorValue={fieldErrorMap[certificateContentKey]}
+                    errorValue={fieldErrors[certificateContentKey]}
                 />
             </div>
         );
@@ -235,7 +234,8 @@ class CertificatesPage extends Component {
 CertificatesPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     certificates: PropTypes.arrayOf(PropTypes.object),
-    validateAndSaveCertificateAction: PropTypes.func.isRequired,
+    validateCertificateAction: PropTypes.func.isRequired,
+    saveCertificateAction: PropTypes.func.isRequired,
     deleteCertificateAction: PropTypes.func.isRequired,
     getCertificates: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -243,7 +243,7 @@ CertificatesPage.propTypes = {
     inProgress: PropTypes.bool,
     deleteSuccess: PropTypes.bool,
     fetching: PropTypes.bool,
-    fieldErrors: PropTypes.array,
+    fieldErrors: PropTypes.object,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     saveStatus: PropTypes.string.isRequired
@@ -270,7 +270,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    validateAndSaveCertificateAction: (certificate) => dispatch(validateAndSaveCertificate(certificate)),
+    validateCertificateAction: (certificate) => dispatch(validateCertificate(certificate)),
+    saveCertificateAction: (certificate) => dispatch(saveCertificate(certificate)),
     deleteCertificateAction: (certificateId) => dispatch(deleteCertificate(certificateId)),
     getCertificates: () => dispatch(fetchCertificates()),
     clearFieldErrors: () => dispatch(clearCertificateFieldErrors())

@@ -25,6 +25,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -65,7 +66,10 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testLogout() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+        mockMvc.perform(request).andExpect(ResultMatcher.matchAll(
+            MockMvcResultMatchers.redirectedUrl("/"),
+            MockMvcResultMatchers.status().isNoContent()
+        ));
     }
 
     @Test
@@ -87,17 +91,20 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void userLogoutWithValidSessionTest() {
         AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
         MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
         MockHttpSession session = (MockHttpSession) request.getSession(true);
         session.setMaxInactiveInterval(30);
-        loginHandler.logout(request);
+        loginHandler.logout(request, response);
         assertTrue(session.isInvalid(), "Expected the session to be invalid");
+        assertTrue(response.containsHeader("Location"), "Expected the response to contain a Location header");
     }
 
     @Test
     public void userLogoutWithInvalidSessionTest() {
         AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
         HttpServletRequest request = new MockHttpServletRequest();
-        loginHandler.logout(request);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        loginHandler.logout(request, response);
     }
 
     @Test

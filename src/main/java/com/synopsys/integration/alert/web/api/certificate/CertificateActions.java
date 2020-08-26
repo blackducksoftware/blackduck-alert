@@ -37,9 +37,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 import com.synopsys.integration.util.IntegrationEscapeUtil;
@@ -70,41 +70,12 @@ public class CertificateActions {
                    .map(this::convertFromDatabaseModel);
     }
 
-    public MessageResult validateCertificate(CertificateModel certificateModel) {
-        CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        if (StringUtils.isBlank(certificateModel.getAlias())) {
-            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty."));
-        } else {
-            List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
-                                                                     .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
-                                                                     .collect(Collectors.toList());
-            if (duplicateCertificates.size() > 1) {
-                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
-            } else if (duplicateCertificates.size() == 1) {
-                boolean sameConfig = convertedModel.getNullableId() != null
-                                         && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
-                if (!sameConfig) {
-                    fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
-                }
-            }
-        }
-
-        if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
-            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
-        } else {
-            try {
-                certificateUtility.validateCertificateContent(convertedModel);
-            } catch (AlertException ex) {
-                logger.error(ex.getMessage(), ex);
-                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage())));
-            }
-        }
-
+    public ValidationResponseModel validateCertificate(CertificateModel certificateModel) {
+        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
         if (fieldErrors.isEmpty()) {
-            return new MessageResult("The certificate configuration is valid");
+            return ValidationResponseModel.withoutFieldStatuses("The certificate configuration is valid");
         }
-        return new MessageResult("There were problems with the certificate configuration", fieldErrors);
+        return ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
     }
 
     public CertificateModel createCertificate(CertificateModel certificateModel) throws AlertException {
@@ -177,10 +148,43 @@ public class CertificateActions {
         return new CustomCertificateModel(id, certificateModel.getAlias(), certificateModel.getCertificateContent(), certificateModel.getLastUpdated());
     }
 
+    private List<AlertFieldStatus> validateCertificateFields(CertificateModel certificateModel) {
+        CustomCertificateModel convertedModel = convertToDatabaseModel(certificateModel);
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
+        if (StringUtils.isBlank(certificateModel.getAlias())) {
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty."));
+        } else {
+            List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
+                                                                     .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
+                                                                     .collect(Collectors.toList());
+            if (duplicateCertificates.size() > 1) {
+                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
+            } else if (duplicateCertificates.size() == 1) {
+                boolean sameConfig = convertedModel.getNullableId() != null
+                                         && duplicateCertificates.get(0).getNullableId().equals(convertedModel.getNullableId());
+                if (!sameConfig) {
+                    fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
+                }
+            }
+        }
+
+        if (StringUtils.isBlank(certificateModel.getCertificateContent())) {
+            fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
+        } else {
+            try {
+                certificateUtility.validateCertificateContent(convertedModel);
+            } catch (AlertException ex) {
+                logger.error(ex.getMessage(), ex);
+                fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage())));
+            }
+        }
+        return fieldErrors;
+    }
+
     private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
-        MessageResult result = validateCertificate(certificateModel);
-        if (result.hasErrors()) {
-            throw new AlertFieldException(result.fieldErrors());
+        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
         }
     }
 

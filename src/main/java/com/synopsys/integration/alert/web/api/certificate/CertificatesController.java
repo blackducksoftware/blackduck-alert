@@ -43,8 +43,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.web.common.BaseController;
@@ -85,7 +85,7 @@ public class CertificatesController extends BaseController {
     }
 
     @PostMapping("/validate")
-    public MessageResult validateCertificateModel(@RequestBody CertificateModel certificateModel) {
+    public ValidationResponseModel validateCertificateModel(@RequestBody CertificateModel certificateModel) {
         if (!hasGlobalPermission(authorizationManager::hasExecutePermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }

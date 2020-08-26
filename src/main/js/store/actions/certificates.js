@@ -47,10 +47,9 @@ function validatingCertificate() {
     };
 }
 
-function validatedCertificate(message) {
+function validatedCertificate() {
     return {
-        type: CERTIFICATE_VALIDATED,
-        message
+        type: CERTIFICATE_VALIDATED
     };
 }
 
@@ -164,7 +163,35 @@ export function fetchCertificates() {
     };
 }
 
-function saveCertificate(certificate) {
+export function validateCertificate(certificate) {
+    return (dispatch, getState) => {
+        dispatch(validatingCertificate());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => certificateValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, HTTPErrorUtils.createEmptyErrorObject())));
+
+        const validateRequest = RequestUtilities.createPostRequest(CERTIFICATES_VALIDATION_API_URL, csrfToken, certificate);
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((validationResponse) => {
+                        // FIXME figure out the best way to handle warning statuses
+                        if (!Object.keys(validationResponse.errors).length) {
+                            dispatch(validatedCertificate());
+                        } else {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(validationResponse.message, validationResponse.errors));
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
+    };
+}
+
+export function saveCertificate(certificate) {
     return (dispatch, getState) => {
         dispatch(savingCertificate());
         const { id } = certificate;
@@ -195,37 +222,6 @@ function saveCertificate(certificate) {
                         dispatch(handler(response.status));
                     }
                 });
-        })
-            .catch(console.error);
-    };
-}
-
-export function validateAndSaveCertificate(certificate) {
-    return (dispatch, getState) => {
-        dispatch(validatingCertificate());
-        const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => certificateValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, HTTPErrorUtils.createEmptyErrorObject())));
-
-        const validateRequest = RequestUtilities.createPostRequest(CERTIFICATES_VALIDATION_API_URL, csrfToken, certificate);
-        validateRequest.then((response) => {
-            if (response.ok) {
-                response.json()
-                    .then(({ statusMessage, fieldStatuses }) => {
-                        // FIXME figure out the best way to handle warning statuses
-                        if (!fieldStatuses) {
-                            dispatch(validatedCertificate());
-                            saveCertificate(certificate);
-                        }
-                        handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(statusMessage, {
-                            message: statusMessage,
-                            fieldErrors: fieldStatuses
-                        }));
-                    });
-            } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => certificateValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
-            }
         })
             .catch(console.error);
     };
