@@ -65,6 +65,9 @@ public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
     @Override
     public Credential loadCredential(String userId) throws IOException {
         Credential credential = super.loadCredential(userId);
+        if (null == credential) {
+            return null;
+        }
         AzureCredential.Builder credentialBuilder = new AzureCredential.Builder(credential.getMethod());
         credentialBuilder.setClientAuthentication(credential.getClientAuthentication());
         credentialBuilder.setClock(credential.getClock());
@@ -74,6 +77,7 @@ public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
         credentialBuilder.setTokenServerEncodedUrl(credential.getTokenServerEncodedUrl());
         credentialBuilder.setTransport(credential.getTransport());
         credentialBuilder.setRedirectUri(redirectUri);
+        credentialBuilder.setCachedRefreshToken(credential.getRefreshToken());
         return credentialBuilder.build();
     }
 

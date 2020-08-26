@@ -10,6 +10,7 @@ import com.google.api.client.http.GenericUrl;
 public class AzureCredential extends Credential {
     private String clientSecret;
     private String redirectUri;
+    private String cachedRefreshToken;
 
     public AzureCredential(AccessMethod method) {
         super(method);
@@ -19,6 +20,15 @@ public class AzureCredential extends Credential {
         super(builder);
         this.clientSecret = builder.getClientSecret();
         this.redirectUri = builder.getRedirectUri();
+        this.cachedRefreshToken = builder.getCachedRefreshToken();
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public String getCachedRefreshToken() {
+        return cachedRefreshToken;
     }
 
     public String getRedirectUri() {
@@ -29,12 +39,17 @@ public class AzureCredential extends Credential {
     protected TokenResponse executeRefreshToken() throws IOException {
         String refreshToken = getRefreshToken();
         if (refreshToken == null) {
-            return null;
+            if (cachedRefreshToken == null) {
+                return null;
+            }
+            refreshToken = cachedRefreshToken;
         }
+
         RefreshTokenRequest request = new RefreshTokenRequest(getTransport(), getJsonFactory(), new GenericUrl(getTokenServerEncodedUrl()),
             refreshToken);
         request.setClientAuthentication(getClientAuthentication());
         request.setRequestInitializer(getRequestInitializer());
+        request.setResponseClass(AzureTokenResponse.class);
         request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_ASSERTION, refreshToken);
         request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_CLIENT_ASSERTION_TYPE, AzureOAuthConstants.DEFAULT_CLIENT_ASSERTION_TYPE);
         request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_CLIENT_ASSERTION, clientSecret);
@@ -45,6 +60,7 @@ public class AzureCredential extends Credential {
     public static class Builder extends Credential.Builder {
         private String clientSecret;
         private String redirectUri;
+        private String cachedRefreshToken;
 
         public Builder(AccessMethod method) {
             super(method);
@@ -65,6 +81,15 @@ public class AzureCredential extends Credential {
 
         public Builder setRedirectUri(String redirectUri) {
             this.redirectUri = redirectUri;
+            return this;
+        }
+
+        public String getCachedRefreshToken() {
+            return cachedRefreshToken;
+        }
+
+        public Builder setCachedRefreshToken(String cachedRefreshToken) {
+            this.cachedRefreshToken = cachedRefreshToken;
             return this;
         }
 
