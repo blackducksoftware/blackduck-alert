@@ -54,6 +54,8 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String AZURE_BOARDS_URL = "azure_boards";
     public static final String AZURE_BOARDS_DESCRIPTION = "Configure the Azure Boards instance that Alert will send issue updates to.";
 
+    public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
+
     @Autowired
     public AzureBoardsDescriptor(AzureBoardsChannelKey channelKey, AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig) {
         super(channelKey, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);

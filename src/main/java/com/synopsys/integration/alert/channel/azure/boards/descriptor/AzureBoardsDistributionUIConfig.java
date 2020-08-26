@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsConstants;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -62,7 +61,7 @@ public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig
         ConfigField azureBoard = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL, LABEL_AZURE_CREATOR_EMAIL, DESCRIPTION_AZURE_CREATOR_EMAIL);
         ConfigField workItemType = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, LABEL_WORK_ITEM_TYPE, DESCRIPTION_WORK_ITEM_TYPE)
                                        .applyRequired(true)
-                                       .applyDefaultValue(AzureBoardsConstants.DEFAULT_WORK_ITEM_TYPE);
+                                       .applyDefaultValue(AzureBoardsDescriptor.DEFAULT_WORK_ITEM_TYPE);
         ConfigField workItemCompletedState = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE, LABEL_WORK_ITEM_COMPLETED_STATE, DESCRIPTION_WORK_ITEM_COMPLETED_STATE);
         ConfigField workItemReopenState = new TextInputConfigField(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE, LABEL_WORK_ITEM_REOPEN_STATE, DESCRIPTION_WORK_ITEM_REOPEN_STATE);
 
