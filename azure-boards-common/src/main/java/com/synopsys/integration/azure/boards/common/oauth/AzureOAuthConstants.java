@@ -22,24 +22,12 @@
  */
 package com.synopsys.integration.azure.boards.common.oauth;
 
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.json.JsonString;
-import com.google.api.client.util.Key;
-
-public class AzureTokenResponse extends TokenResponse {
-
-    // Azure OAuth returns the expires_in as a string not a numeric value.
-    // need to override and create a custom TokenResponse to use the JsonString annotation.
-    @Key("expires_in")
-    @JsonString
-    private Long expiresInSeconds;
-
-    public AzureTokenResponse() {
-        super();
-    }
-
-    @Override
-    public AzureTokenResponse clone() {
-        return (AzureTokenResponse) super.clone();
-    }
+public class AzureOAuthConstants {
+    public static final String DEFAULT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+    public static final String DEFAULT_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+    
+    public static final String REQUEST_BODY_FIELD_ASSERTION = "assertion";
+    public static final String REQUEST_BODY_FIELD_CLIENT_ASSERTION_TYPE = "client_assertion_type";
+    public static final String REQUEST_BODY_FIELD_CLIENT_ASSERTION = "client_assertion";
+    public static final String REQUEST_BODY_FIELD_REDIRECT_URI = "redirect_uri";
 }

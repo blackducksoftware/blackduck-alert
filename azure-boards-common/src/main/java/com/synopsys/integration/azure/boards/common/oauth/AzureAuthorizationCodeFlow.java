@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.azure.boards.common.oauth;
 
+import java.io.IOException;
+
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.Credential;
@@ -32,8 +34,6 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.Preconditions;
 
 public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
-    public static final String DEFAULT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-    public static final String DEFAULT_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
     private final String clientSecret;
     private final String redirectUri;
 
@@ -53,13 +53,27 @@ public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
     @Override
     public AuthorizationCodeTokenRequest newTokenRequest(String authorizationCode) {
         AuthorizationCodeTokenRequest request = super.newTokenRequest(authorizationCode);
-        request.setGrantType(DEFAULT_GRANT_TYPE);
+        request.setGrantType(AzureOAuthConstants.DEFAULT_GRANT_TYPE);
         request.setResponseClass(AzureTokenResponse.class);
-        request.put("assertion", authorizationCode);
-        request.put("client_assertion_type", DEFAULT_CLIENT_ASSERTION_TYPE);
-        request.put("client_assertion", clientSecret);
-        request.put("redirect_uri", redirectUri);
+        request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_ASSERTION, authorizationCode);
+        request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_CLIENT_ASSERTION_TYPE, AzureOAuthConstants.DEFAULT_CLIENT_ASSERTION_TYPE);
+        request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_CLIENT_ASSERTION, clientSecret);
+        request.put(AzureOAuthConstants.REQUEST_BODY_FIELD_REDIRECT_URI, redirectUri);
         return request;
+    }
+
+    @Override
+    public Credential loadCredential(String userId) throws IOException {
+        Credential credential = super.loadCredential(userId);
+        if (null == credential) {
+            return null;
+        }
+        AzureCredential.Builder credentialBuilder = new AzureCredential.Builder(credential.getMethod());
+        credentialBuilder.copyFromExisting(credential);
+        credentialBuilder.setRedirectUri(redirectUri);
+        credentialBuilder.setClientSecret(clientSecret);
+
+        return credentialBuilder.build();
     }
 
     public String getClientSecret() {
