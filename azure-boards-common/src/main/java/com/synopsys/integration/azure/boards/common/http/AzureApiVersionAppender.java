@@ -28,16 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AzureApiVersionAppender {
     public String appendApiVersion(String spec, String apiVersion) {
-        char queryParamSeparator = '?';
-        if (StringUtils.contains(spec, queryParamSeparator)) {
-            queryParamSeparator = '&';
-        }
-        spec += queryParamSeparator;
-        spec += AZURE_API_VERSION_QUERY_PARAM_NAME;
-        spec += "=";
-        spec += apiVersion;
+        char queryParamSeparator = StringUtils.contains(spec, '?') ? '&' : '?';
 
-        return spec;
+        StringBuilder appendedSpec = new StringBuilder(spec);
+        appendedSpec.append(queryParamSeparator);
+        appendedSpec.append(AZURE_API_VERSION_QUERY_PARAM_NAME);
+        appendedSpec.append("=");
+        appendedSpec.append(apiVersion);
+
+        return appendedSpec.toString();
     }
 
 }
