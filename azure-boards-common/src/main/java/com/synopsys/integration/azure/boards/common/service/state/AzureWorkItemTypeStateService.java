@@ -46,21 +46,21 @@ public class AzureWorkItemTypeStateService {
 
     public AzureArrayResponseModel<WorkItemTypeStateResponseModel> getStatesForProject(String organizationName, String projectIdOrName, String workItemType) throws HttpServiceException {
         String requestSpec = String.format("/%s/%s/_apis/wit/workitemtypes/%s/states", organizationName, projectIdOrName, workItemType);
-        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_1);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_1(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeStateResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel> getStatesForProcess(String organizationName, String processId, String workItemTypeRefName) throws HttpServiceException {
         String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/states", organizationName, processId, workItemTypeRefName);
-        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_1);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_1(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeProcessStateResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public WorkItemTypeProcessStateResponseModel getStatesForProcess(String organizationName, String processId, String workItemTypeRefName, String stateId) throws HttpServiceException {
         String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/states/%s", organizationName, processId, workItemTypeRefName, stateId);
-        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_1);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_1(requestSpec);
         return azureHttpService.get(requestSpec, WorkItemTypeProcessStateResponseModel.class);
     }
 

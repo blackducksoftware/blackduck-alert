@@ -59,7 +59,7 @@ public class AzureProjectService {
 
     public AzureArrayResponseModel<ProjectPropertyResponseModel> getProjectProperties(String organizationName, String projectId) throws HttpServiceException {
         String requestSpec = String.format("/%s/_apis/projects/%s/properties", organizationName, projectId);
-        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_1);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_1(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProjectPropertyResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }

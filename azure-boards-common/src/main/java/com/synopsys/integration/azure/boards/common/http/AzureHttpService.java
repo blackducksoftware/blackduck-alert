@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.azure.boards.common.http;
 
+import static com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender.AZURE_API_VERSION_QUERY_PARAM_NAME;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -37,14 +39,6 @@ import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
 
 public class AzureHttpService {
-    public static final String AZURE_API_VERSION_QUERY_PARAM_NAME = "api-version";
-    public static final String AZURE_API_VERSION = "5.1";
-
-    public static final String AZURE_API_VERSION_5_0 = "5.0";
-    public static final String AZURE_API_VERSION_5_1_PREVIEW_1 = "5.1-preview.1";
-    public static final String AZURE_API_VERSION_5_1_PREVIEW_2 = "5.1-preview.2";
-    public static final String AZURE_API_VERSION_5_1_PREVIEW_3 = "5.1-preview.3";
-
     private final String baseUrl;
     private final HttpRequestFactory httpRequestFactory;
     private final Gson gson;
@@ -162,7 +156,7 @@ public class AzureHttpService {
         }
 
         if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
-            spec = azureApiVersionAppender.appendApiVersion(spec, AZURE_API_VERSION);
+            spec = azureApiVersionAppender.appendApiVersion5_1(spec);
         }
         requestUrlBuilder.append(spec);
 

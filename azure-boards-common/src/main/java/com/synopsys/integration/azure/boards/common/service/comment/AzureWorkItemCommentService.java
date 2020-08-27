@@ -73,6 +73,6 @@ public class AzureWorkItemCommentService {
 
     private String createCommentsSpec(String organizationName, String projectIdOrName, Integer workItemId) {
         String spec = String.format("/%s/%s/_apis/wit/workItems/%s/comments", organizationName, projectIdOrName, workItemId);
-        return azureApiVersionAppender.appendApiVersion(spec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_3);
+        return azureApiVersionAppender.appendApiVersion5_1_Preview_3(spec);
     }
 }
