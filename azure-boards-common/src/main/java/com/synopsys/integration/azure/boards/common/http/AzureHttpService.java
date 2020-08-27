@@ -40,14 +40,21 @@ public class AzureHttpService {
     public static final String AZURE_API_VERSION_QUERY_PARAM_NAME = "api-version";
     public static final String AZURE_API_VERSION = "5.1";
 
+    public static final String AZURE_API_VERSION_5_0 = "5.0";
+    public static final String AZURE_API_VERSION_5_1_PREVIEW_1 = "5.1-preview.1";
+    public static final String AZURE_API_VERSION_5_1_PREVIEW_2 = "5.1-preview.2";
+    public static final String AZURE_API_VERSION_5_1_PREVIEW_3 = "5.1-preview.3";
+
     private final String baseUrl;
     private final HttpRequestFactory httpRequestFactory;
     private final Gson gson;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureHttpService(String baseUrl, HttpRequestFactory httpRequestFactory, Gson gson) {
+    public AzureHttpService(String baseUrl, HttpRequestFactory httpRequestFactory, Gson gson, AzureApiVersionAppender azureApiVersionAppender) {
         this.baseUrl = sanitizeUrl(baseUrl);
         this.httpRequestFactory = httpRequestFactory;
         this.gson = gson;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public String getBaseUrl() {
@@ -154,20 +161,17 @@ public class AzureHttpService {
             requestUrlBuilder.append("/");
         }
 
+        if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
+            spec = azureApiVersionAppender.appendApiVersion(spec, AZURE_API_VERSION);
+        }
         requestUrlBuilder.append(spec);
 
-        if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
-            char queryParamSeparator = '?';
-            if (StringUtils.contains(spec, queryParamSeparator)) {
-                queryParamSeparator = '&';
-            }
-            requestUrlBuilder.append(queryParamSeparator);
-            requestUrlBuilder.append(AZURE_API_VERSION_QUERY_PARAM_NAME);
-            requestUrlBuilder.append('=');
-            requestUrlBuilder.append(AZURE_API_VERSION);
-        }
-
         return new GenericUrl(requestUrlBuilder.toString());
+    }
+
+    public String appendApiVersion(String spec, String apiVersion) {
+        //TODO ejk - is this appropriate or should the classes that need this demand an appender?
+        return azureApiVersionAppender.appendApiVersion(spec, apiVersion);
     }
 
     protected String acceptHeader() {

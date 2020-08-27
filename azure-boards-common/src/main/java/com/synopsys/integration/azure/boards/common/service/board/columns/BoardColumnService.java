@@ -29,11 +29,8 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.model.NameModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class BoardColumnService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS = new AzureSpecTemplate("/{organization}/{project}/_apis/work/boardcolumns");
-
     private final AzureHttpService azureHttpService;
 
     public BoardColumnService(AzureHttpService azureHttpService) {
@@ -41,10 +38,7 @@ public class BoardColumnService {
     }
 
     public AzureArrayResponseModel<NameModel> getBoardColumns(String organizationName, String projectIdOrName) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_BOARDCOLUMNS
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .populateSpec();
+        String requestSpec = String.format("/%s/%s/_apis/work/boardcolumns", organizationName, projectIdOrName);
         Type responseType = new TypeToken<AzureArrayResponseModel<NameModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }

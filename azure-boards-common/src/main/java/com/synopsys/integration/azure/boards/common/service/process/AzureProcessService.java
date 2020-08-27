@@ -29,21 +29,12 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 /**
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/work%20item%20types/list?view=azure-devops-rest-5.1">Work Item Types</a>
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/fields/add?view=azure-devops-rest-5.1">Fields</a>
  */
 public class AzureProcessService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_FIELDS = new AzureSpecTemplate("/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/fields");
-
-    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
-    public static final String PATH_PROCESS_ID_REPLACEMENT = "{processId}";
-
-    public static final String WORKITEMTYPES_ENDPOINT_API_VERSION = "5.1-preview.2";
-
     private final AzureHttpService azureHttpService;
 
     public AzureProcessService(AzureHttpService azureHttpService) {
@@ -51,27 +42,16 @@ public class AzureProcessService {
     }
 
     public AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> getWorkItemTypes(String organizationName, String processId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
-                                 .populateSpec();
-        requestSpec = appendApiVersionQueryParam(requestSpec);
+        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes?%s=%s", organizationName, processId);
+        requestSpec = azureHttpService.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProcessWorkItemTypesResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public ProcessFieldResponseModel addFieldToWorkItemType(String organizationName, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPE_FIELDS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
-                                 .defineReplacement("{witRefName}", workItemTypeRefName)
-                                 .populateSpec();
-        requestSpec = appendApiVersionQueryParam(requestSpec);
+        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/fields?%s=%s", organizationName, processId, workItemTypeRefName);
+        requestSpec = azureHttpService.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
         return azureHttpService.post(requestSpec, requestBody, ProcessFieldResponseModel.class);
-    }
-
-    private String appendApiVersionQueryParam(String requestSpec) {
-        return String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, WORKITEMTYPES_ENDPOINT_API_VERSION);
     }
 
 }

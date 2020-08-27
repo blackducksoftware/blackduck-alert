@@ -128,8 +128,6 @@ public class AzureCustomFieldManager {
     private Optional<ProjectWorkItemFieldModel> getAlertCustomProjectField(String projectName, String fieldReferenceName) {
         try {
             return Optional.of(projectService.getField(organizationName, fieldReferenceName));
-        } catch (IOException e) {
-            logger.error(String.format("There was a problem creating the request to get the Alert Custom Field in the Azure project: %s", projectName), e);
         } catch (HttpServiceException e) {
             logger.error(String.format("There was a problem finding the Alert Custom Field in the Azure project: %s", projectName), e);
         }
