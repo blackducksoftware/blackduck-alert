@@ -60,6 +60,10 @@ public class OAuthRequestValidator {
         return requestMap.containsKey(requestKey);
     }
 
+    public boolean hasRequests() {
+        return !requestMap.isEmpty();
+    }
+
     public void removeAllRequests() {
         // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
         // Do not want to remove requests for other OAuth clients inadvertently.
