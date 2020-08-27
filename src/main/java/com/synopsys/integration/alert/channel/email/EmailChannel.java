@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -100,16 +100,16 @@ public class EmailChannel extends NamedDistributionChannel {
 
     public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
         String topicValue = null;
-        Optional<String> subTopicValue = Optional.empty();
+        String subTopicValue = null;
         if (!messageContent.isEmpty()) {
             topicValue = messageContent.getCommonTopic().getValue();
+            //subTopic is assumed to be a BlackDuck project version
             subTopicValue = messageContent.getSubContent()
                                 .stream()
                                 .map(ProviderMessageContent::getSubTopic)
                                 .flatMap(Optional::stream)
-                                .filter(linkableItem -> MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME.equals(linkableItem.getName()))
                                 .map(LinkableItem::getValue)
-                                .findFirst();
+                                .collect(Collectors.joining(", "));
         }
 
         String alertServerUrl = alertProperties.getServerUrl().orElse(null);
@@ -156,13 +156,14 @@ public class EmailChannel extends NamedDistributionChannel {
         return optionalAttachmentFile;
     }
 
-    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName, Optional<String> providerProjectVersionName) {
+    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName, String providerProjectVersionName) {
         if (StringUtils.isNotBlank(providerProjectName)) {
             String subjectLine = String.format("%s | For: %s", originalSubjectLine, providerProjectName);
-            if (providerProjectVersionName.isPresent()) {
-                subjectLine += String.format(" %s", providerProjectVersionName.get());
+            if (StringUtils.isNotBlank(providerProjectVersionName)) {
+                subjectLine += String.format(" %s", providerProjectVersionName);
             }
-            return subjectLine;
+            //78 characters is the suggested length for the message: https://tools.ietf.org/html/rfc2822#section-2.1.1
+            return StringUtils.abbreviate(subjectLine, 78);
         }
         return originalSubjectLine;
     }
