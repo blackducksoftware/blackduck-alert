@@ -69,16 +69,10 @@ public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
             return null;
         }
         AzureCredential.Builder credentialBuilder = new AzureCredential.Builder(credential.getMethod());
-        credentialBuilder.setClientAuthentication(credential.getClientAuthentication());
-        credentialBuilder.setClock(credential.getClock());
-        credentialBuilder.setJsonFactory(credential.getJsonFactory());
-        credentialBuilder.setRefreshListeners(credential.getRefreshListeners());
-        credentialBuilder.setRequestInitializer(credential.getRequestInitializer());
-        credentialBuilder.setTokenServerEncodedUrl(credential.getTokenServerEncodedUrl());
-        credentialBuilder.setTransport(credential.getTransport());
+        credentialBuilder.copyFromExisting(credential);
         credentialBuilder.setRedirectUri(redirectUri);
         credentialBuilder.setClientSecret(clientSecret);
-        credentialBuilder.setCachedRefreshToken(credential.getRefreshToken());
+
         return credentialBuilder.build();
     }
 

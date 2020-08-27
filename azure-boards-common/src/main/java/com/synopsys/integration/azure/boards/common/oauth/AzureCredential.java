@@ -88,6 +88,18 @@ public class AzureCredential extends Credential {
             super(method);
         }
 
+        public Builder copyFromExisting(Credential credential) {
+            this.setCachedRefreshToken(credential.getRefreshToken())
+                .setClientAuthentication(credential.getClientAuthentication())
+                .setClock(credential.getClock())
+                .setJsonFactory(credential.getJsonFactory())
+                .setRefreshListeners(credential.getRefreshListeners())
+                .setRequestInitializer(credential.getRequestInitializer())
+                .setTokenServerEncodedUrl(credential.getTokenServerEncodedUrl())
+                .setTransport(credential.getTransport());
+            return this;
+        }
+
         public String getClientSecret() {
             return clientSecret;
         }
