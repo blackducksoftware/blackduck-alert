@@ -77,6 +77,7 @@ public class AzureAuthorizationCodeFlow extends AuthorizationCodeFlow {
         credentialBuilder.setTokenServerEncodedUrl(credential.getTokenServerEncodedUrl());
         credentialBuilder.setTransport(credential.getTransport());
         credentialBuilder.setRedirectUri(redirectUri);
+        credentialBuilder.setClientSecret(clientSecret);
         credentialBuilder.setCachedRefreshToken(credential.getRefreshToken());
         return credentialBuilder.build();
     }
