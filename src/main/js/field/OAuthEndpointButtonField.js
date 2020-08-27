@@ -50,10 +50,6 @@ class OAuthEndpointButtonField extends Component {
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
-
             response.json()
             .then((data) => {
                 const { httpStatus, authenticated, authorizationUrl, message } = data;
@@ -65,7 +61,6 @@ class OAuthEndpointButtonField extends Component {
                 onChange({ target });
                 const okRequest = HTTPErrorUtils.isOk(httpStatus);
                 this.setState({
-                    success: okRequest,
                     authenticated
                 });
                 if (okRequest) {
