@@ -91,4 +91,3 @@ task copyToTemplates(type: Copy, dependsOn: [npm_run]) {
 }
 
 tasks.compileJava.mustRunAfter(createAboutText)
-tasks.compileJava.finalizedBy(copyToTemplates)
