@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
@@ -36,21 +37,23 @@ import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseMode
  */
 public class AzureProcessService {
     private final AzureHttpService azureHttpService;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureProcessService(AzureHttpService azureHttpService) {
+    public AzureProcessService(AzureHttpService azureHttpService, AzureApiVersionAppender azureApiVersionAppender) {
         this.azureHttpService = azureHttpService;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> getWorkItemTypes(String organizationName, String processId) throws HttpServiceException {
         String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes?%s=%s", organizationName, processId);
-        requestSpec = azureHttpService.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
+        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProcessWorkItemTypesResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public ProcessFieldResponseModel addFieldToWorkItemType(String organizationName, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
         String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/fields?%s=%s", organizationName, processId, workItemTypeRefName);
-        requestSpec = azureHttpService.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
+        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_1_PREVIEW_2);
         return azureHttpService.post(requestSpec, requestBody, ProcessFieldResponseModel.class);
     }
 

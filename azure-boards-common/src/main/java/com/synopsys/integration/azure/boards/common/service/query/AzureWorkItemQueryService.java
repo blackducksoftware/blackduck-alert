@@ -24,6 +24,7 @@ package com.synopsys.integration.azure.boards.common.service.query;
 
 import java.io.IOException;
 
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
@@ -33,14 +34,16 @@ import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkIte
  */
 public class AzureWorkItemQueryService {
     private final AzureHttpService azureHttpService;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureWorkItemQueryService(AzureHttpService azureHttpService) {
+    public AzureWorkItemQueryService(AzureHttpService azureHttpService, AzureApiVersionAppender azureApiVersionAppender) {
         this.azureHttpService = azureHttpService;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, WorkItemQuery query) throws HttpServiceException {
         String requestSpec = String.format("/%s/%s/_apis/wit/wiql", organizationName, projectIdOrName);
-        requestSpec = azureHttpService.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_0);
+        requestSpec = azureApiVersionAppender.appendApiVersion(requestSpec, AzureHttpService.AZURE_API_VERSION_5_0);
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
         try {
             return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);

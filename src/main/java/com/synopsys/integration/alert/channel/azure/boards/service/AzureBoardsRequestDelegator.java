@@ -85,7 +85,7 @@ public class AzureBoardsRequestDelegator {
         IssueContentLengthValidator workItemContentLengthValidator =
             new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-        AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService);
+        AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService, azureApiVersionAppender);
         AzureWorkItemCommentService azureWorkItemCommentService = new AzureWorkItemCommentService(azureHttpService);
         AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemCommentService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);

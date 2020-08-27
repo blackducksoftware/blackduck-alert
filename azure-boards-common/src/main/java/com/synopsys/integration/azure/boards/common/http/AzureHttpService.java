@@ -169,11 +169,6 @@ public class AzureHttpService {
         return new GenericUrl(requestUrlBuilder.toString());
     }
 
-    public String appendApiVersion(String spec, String apiVersion) {
-        //TODO ejk - is this appropriate or should the classes that need this demand an appender?
-        return azureApiVersionAppender.appendApiVersion(spec, apiVersion);
-    }
-
     protected String acceptHeader() {
         return "application/json";
     }
