@@ -49,7 +49,7 @@ public class AzureBoardsContextFactory {
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
         String projectName = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_AZURE_PROJECT);
         String issueCreator = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
-        String issueType = fieldAccessor.getString(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE).orElse(AzureBoardsConstants.DEFAULT_WORK_ITEM_TYPE);
+        String issueType = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
         Boolean commentOnIssues = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
         String resolveTransition = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
         String openTransition = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);

@@ -39,67 +39,6 @@ public class AzureTokenResponse extends TokenResponse {
     }
 
     @Override
-    public String getAccessToken() {
-        return super.getAccessToken();
-    }
-
-    @Override
-    public AzureTokenResponse setAccessToken(String accessToken) {
-        super.setAccessToken(accessToken);
-        return this;
-    }
-
-    @Override
-    public String getTokenType() {
-        return super.getTokenType();
-    }
-
-    @Override
-    public AzureTokenResponse setTokenType(String tokenType) {
-        super.setTokenType(tokenType);
-        return this;
-    }
-
-    @Override
-    public Long getExpiresInSeconds() {
-        return this.expiresInSeconds;
-    }
-
-    @Override
-    public AzureTokenResponse setExpiresInSeconds(Long expiresInSeconds) {
-        this.expiresInSeconds = expiresInSeconds;
-        return this;
-    }
-
-    @Override
-    public String getRefreshToken() {
-        return super.getRefreshToken();
-    }
-
-    @Override
-    public AzureTokenResponse setRefreshToken(String refreshToken) {
-        super.setRefreshToken(refreshToken);
-        return this;
-    }
-
-    @Override
-    public String getScope() {
-        return super.getScope();
-    }
-
-    @Override
-    public AzureTokenResponse setScope(String scope) {
-        super.setScope(scope);
-        return this;
-    }
-
-    @Override
-    public AzureTokenResponse set(String fieldName, Object value) {
-        super.set(fieldName, value);
-        return this;
-    }
-
-    @Override
     public AzureTokenResponse clone() {
         return (AzureTokenResponse) super.clone();
     }
