@@ -106,7 +106,7 @@ public class EmailChannel extends NamedDistributionChannel {
             subTopicValue = messageContent.getSubContent()
                                 .stream()
                                 .map(ProviderMessageContent::getSubTopic)
-                                .map(Optional::get)
+                                .flatMap(Optional::stream)
                                 .filter(linkableItem -> MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME.equals(linkableItem.getName()))
                                 .map(LinkableItem::getValue)
                                 .findFirst();
