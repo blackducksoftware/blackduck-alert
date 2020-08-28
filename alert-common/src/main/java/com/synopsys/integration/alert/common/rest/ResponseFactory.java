@@ -70,6 +70,10 @@ public class ResponseFactory {
         return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, customMessage);
     }
 
+    public static ResponseStatusException createNotImplementedException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
+    }
+
     // Unnecessarily stateful methods:
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
