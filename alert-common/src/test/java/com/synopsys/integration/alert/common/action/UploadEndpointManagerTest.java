@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
@@ -27,15 +28,14 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public class UploadEndpointManagerTest {
-
     public static final String TEST_TARGET_KEY = "a.key";
     private static final String TEST_FILE_NAME = "TEST_FILE_NAME";
-    private Gson gson = new Gson();
-    private ResponseFactory responseFactory = new ResponseFactory();
-    private AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-    private FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
+    private final Gson gson = new Gson();
+    private final ResponseFactory responseFactory = new ResponseFactory();
+    private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+    private final FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
     private Resource testResource;
-    private DescriptorKey descriptorKey = new DescriptorKey() {
+    private final DescriptorKey descriptorKey = new DescriptorKey() {
         @Override
         public String getUniversalKey() {
             return "descriptor_universal_key";
@@ -96,8 +96,8 @@ public class UploadEndpointManagerTest {
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        manager.performUpload(TEST_TARGET_KEY, testResource);
     }
 
     @Test
@@ -108,8 +108,8 @@ public class UploadEndpointManagerTest {
         UploadValidationFunction validationFunction = (file) -> ValidationResult.success();
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        manager.performUpload(TEST_TARGET_KEY, testResource);
     }
 
     @Test
@@ -120,8 +120,8 @@ public class UploadEndpointManagerTest {
         UploadValidationFunction validationFunction = (file) -> ValidationResult.errors("validation error");
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME, validationFunction);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.BAD_REQUEST, () -> manager.performUpload(TEST_TARGET_KEY, testResource));
     }
 
     @Test
@@ -132,8 +132,8 @@ public class UploadEndpointManagerTest {
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.INTERNAL_SERVER_ERROR, () -> manager.performUpload(TEST_TARGET_KEY, testResource));
     }
 
     @Test
@@ -141,8 +141,7 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        callEndpointAndAssertException(HttpStatus.NOT_IMPLEMENTED, () -> manager.performUpload(TEST_TARGET_KEY, testResource));
     }
 
     @Test
@@ -151,9 +150,9 @@ public class UploadEndpointManagerTest {
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
-        ResponseEntity<String> response = manager.performUpload(TEST_TARGET_KEY, testResource);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.FORBIDDEN, () -> manager.performUpload(TEST_TARGET_KEY, testResource));
     }
 
     @Test
@@ -164,8 +163,9 @@ public class UploadEndpointManagerTest {
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.deleteUploadedFile(TEST_TARGET_KEY);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        manager.deleteUploadedFile(TEST_TARGET_KEY);
+
     }
 
     @Test
@@ -177,8 +177,8 @@ public class UploadEndpointManagerTest {
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.deleteUploadedFile(TEST_TARGET_KEY);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.INTERNAL_SERVER_ERROR, () -> manager.deleteUploadedFile(TEST_TARGET_KEY));
     }
 
     @Test
@@ -187,8 +187,7 @@ public class UploadEndpointManagerTest {
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.deleteUploadedFile(TEST_TARGET_KEY);
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        callEndpointAndAssertException(HttpStatus.NOT_IMPLEMENTED, () -> manager.deleteUploadedFile(TEST_TARGET_KEY));
     }
 
     @Test
@@ -198,9 +197,9 @@ public class UploadEndpointManagerTest {
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
-        ResponseEntity<String> response = manager.deleteUploadedFile(TEST_TARGET_KEY);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.FORBIDDEN, () -> manager.deleteUploadedFile(TEST_TARGET_KEY));
     }
 
     @Test
@@ -210,8 +209,8 @@ public class UploadEndpointManagerTest {
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.checkExists(TEST_TARGET_KEY);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        manager.checkExists(TEST_TARGET_KEY);
     }
 
     @Test
@@ -219,17 +218,27 @@ public class UploadEndpointManagerTest {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
-        ResponseEntity<String> response = manager.checkExists(TEST_TARGET_KEY);
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        callEndpointAndAssertException(HttpStatus.NOT_IMPLEMENTED, () -> manager.checkExists(TEST_TARGET_KEY));
     }
 
     @Test
     public void fileExistsMissingPermissions() throws Exception {
         UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
         Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
+
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
-        ResponseEntity<String> response = manager.checkExists(TEST_TARGET_KEY);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        callEndpointAndAssertException(HttpStatus.FORBIDDEN, () -> manager.checkExists(TEST_TARGET_KEY));
     }
+
+    private void callEndpointAndAssertException(HttpStatus expectedStatus, Runnable endpointFunction) {
+        try {
+            endpointFunction.run();
+            fail("Expected a ResponseStatusException to be thrown");
+        } catch (ResponseStatusException responseStatusException) {
+            assertEquals(expectedStatus, responseStatusException.getStatus());
+        }
+    }
+
 }

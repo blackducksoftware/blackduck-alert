@@ -33,12 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
@@ -46,6 +43,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
@@ -54,11 +52,11 @@ public class UploadEndpointManager {
     public static final String NO_UPLOAD_FUNCTIONALITY_REGISTERED = "No upload functionality has been created for this endpoint.";
     public static final String CUSTOM_ENDPOINT_ALREADY_REGISTERED = "A custom endpoint is already registered for ";
     private final Logger logger = LoggerFactory.getLogger(UploadEndpointManager.class);
-    private Map<String, UploadTarget> uploadTargets = new HashMap<>();
-    private FilePersistenceUtil filePersistenceUtil;
-    private AuthorizationManager authorizationManager;
-    private ResponseFactory responseFactory;
-    private Gson gson;
+    private final Map<String, UploadTarget> uploadTargets = new HashMap<>();
+    private final FilePersistenceUtil filePersistenceUtil;
+    private final AuthorizationManager authorizationManager;
+    private final ResponseFactory responseFactory;
+    private final Gson gson;
 
     @Autowired
     public UploadEndpointManager(Gson gson, FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager, ResponseFactory responseFactory) {
@@ -90,58 +88,54 @@ public class UploadEndpointManager {
         uploadTargets.remove(targetKey);
     }
 
-    public ResponseEntity<String> performUpload(String targetKey, Resource fileResource) {
+    public void performUpload(String targetKey, Resource fileResource) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
+            throwNotImplementedException();
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
         if (!authorizationManager.hasUploadWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
-
-        return writeFile(target, fileResource);
+        writeFile(target, fileResource);
     }
 
-    public ResponseEntity<String> checkExists(String targetKey) {
+    public ExistenceModel checkExists(String targetKey) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
+            throwNotImplementedException();
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
         if (!authorizationManager.hasUploadReadPermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
         String targetFilename = target.getFilename();
         Boolean exists = filePersistenceUtil.uploadFileExists(targetFilename);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("exists", exists);
-        return responseFactory.createOkContentResponse(gson.toJson(jsonObject));
+        return new ExistenceModel(exists);
     }
 
-    public ResponseEntity<String> deleteUploadedFile(String targetKey) {
+    public void deleteUploadedFile(String targetKey) {
         if (!containsTarget(targetKey)) {
-            return new ResponseEntity(NO_UPLOAD_FUNCTIONALITY_REGISTERED, HttpStatus.NOT_IMPLEMENTED);
+            throwNotImplementedException();
         }
 
         UploadTarget target = uploadTargets.get(targetKey);
         if (!authorizationManager.hasUploadDeletePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
 
         try {
             String targetFilename = target.getFilename();
             File fileToValidate = filePersistenceUtil.createUploadsFile(targetFilename);
             filePersistenceUtil.delete(fileToValidate);
-            return responseFactory.createNoContentResponse();
         } catch (IOException ex) {
             logger.error("Error deleting file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
             logger.error("Error deleting file caused by: ", ex);
-            return responseFactory.createInternalServerErrorResponse("", "Error deleting uploaded file from server.");
+            throw ResponseFactory.createInternalServerErrorException("Error deleting uploaded file from server.");
         }
     }
 
-    private ResponseEntity<String> writeFile(UploadTarget target, Resource fileResource) {
+    private void writeFile(UploadTarget target, Resource fileResource) {
         try {
             String targetFilename = target.getFilename();
             String tempFilename = "temp_" + targetFilename;
@@ -149,24 +143,19 @@ public class UploadEndpointManager {
             Optional<UploadValidationFunction> validationFunction = target.getValidationFunction();
             if (validationFunction.isPresent()) {
                 writeFile(tempFilename, fileResource);
-                File fileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
-                ValidationResult validationResult = validationFunction.get().apply(fileToValidate);
-                filePersistenceUtil.delete(fileToValidate);
-                if (!validationResult.hasErrors()) {
-                    writeFile(targetFilename, fileResource);
-                    return responseFactory.createCreatedResponse("", "File uploaded.");
+                File tempFileToValidate = filePersistenceUtil.createUploadsFile(tempFilename);
+                ValidationResult validationResult = validationFunction.get().apply(tempFileToValidate);
+                filePersistenceUtil.delete(tempFileToValidate);
+                if (validationResult.hasErrors()) {
+                    throw ResponseFactory.createBadRequestException(validationResult.combineErrorMessages());
                 }
-                return responseFactory.createBadRequestResponse("", validationResult.combineErrorMessages());
-            } else {
-                writeFile(targetFilename, fileResource);
-                return responseFactory.createCreatedResponse("", "File uploaded.");
             }
+            writeFile(targetFilename, fileResource);
         } catch (IOException ex) {
             logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", target.getFilename(), target.getContext(), target.getDescriptorKey().getUniversalKey());
             logger.error("Error uploading file caused by: ", ex);
-            return responseFactory.createInternalServerErrorResponse("", "Error uploading file to server.");
+            throw ResponseFactory.createInternalServerErrorException("Error uploading file to server.");
         }
-
     }
 
     private void writeFile(String fileName, Resource fileResource) throws IOException {
@@ -178,12 +167,15 @@ public class UploadEndpointManager {
         }
     }
 
-    private class UploadTarget {
+    private void throwNotImplementedException() {
+        throw ResponseFactory.createNotImplementedException(NO_UPLOAD_FUNCTIONALITY_REGISTERED);
+    }
 
-        private ConfigContextEnum context;
-        private DescriptorKey descriptorKey;
-        private String filename;
-        private UploadValidationFunction validationFunction;
+    private class UploadTarget {
+        private final ConfigContextEnum context;
+        private final DescriptorKey descriptorKey;
+        private final String filename;
+        private final UploadValidationFunction validationFunction;
 
         public UploadTarget(ConfigContextEnum context, DescriptorKey descriptorKey, String filename, UploadValidationFunction validationFunction) {
             this.context = context;
@@ -207,5 +199,7 @@ public class UploadEndpointManager {
         public Optional<UploadValidationFunction> getValidationFunction() {
             return Optional.ofNullable(validationFunction);
         }
+
     }
+
 }

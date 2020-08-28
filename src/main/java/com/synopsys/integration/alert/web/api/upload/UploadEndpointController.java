@@ -24,54 +24,61 @@ package com.synopsys.integration.alert.web.api.upload;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.synopsys.integration.alert.common.action.UploadEndpointManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 
 @RestController
 @RequestMapping(UploadEndpointManager.UPLOAD_ENDPOINT_URL)
 public class UploadEndpointController {
-
     public static final String TARGET_KEY_MISSING = "Must be given the key associated with the custom functionality.";
+
     private final UploadEndpointManager uploadEndpointManager;
-    private final ResponseFactory responseFactory;
 
     @Autowired
-    public UploadEndpointController(UploadEndpointManager uploadEndpointManager, ResponseFactory responseFactory) {
+    public UploadEndpointController(UploadEndpointManager uploadEndpointManager) {
         this.uploadEndpointManager = uploadEndpointManager;
-        this.responseFactory = responseFactory;
     }
 
     @GetMapping("/{key}/exists")
-    public ResponseEntity<String> checkUploadedFileExists(@PathVariable String key) {
+    public ExistenceModel checkUploadedFileExists(@PathVariable String key) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
+            throwTargetKeyMissingException();
         }
         return uploadEndpointManager.checkExists(key);
     }
 
     @PostMapping("/{key}")
-    public ResponseEntity<String> postFileUpload(@PathVariable String key, @RequestParam("file") MultipartFile file) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void postFileUpload(@PathVariable String key, @RequestParam("file") MultipartFile file) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
+            throwTargetKeyMissingException();
         }
-        return uploadEndpointManager.performUpload(key, file.getResource());
+        uploadEndpointManager.performUpload(key, file.getResource());
     }
 
     @DeleteMapping("/{key}")
-    public ResponseEntity<String> deleteUploadedFile(@PathVariable String key) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUploadedFile(@PathVariable String key) {
         if (StringUtils.isBlank(key)) {
-            return responseFactory.createBadRequestResponse("", TARGET_KEY_MISSING);
+            throwTargetKeyMissingException();
         }
-        return uploadEndpointManager.deleteUploadedFile(key);
+        uploadEndpointManager.deleteUploadedFile(key);
     }
+
+    private void throwTargetKeyMissingException() {
+        throw ResponseFactory.createBadRequestException(TARGET_KEY_MISSING);
+    }
+
 }
