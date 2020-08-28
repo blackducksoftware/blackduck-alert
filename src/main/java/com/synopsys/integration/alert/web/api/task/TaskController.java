@@ -22,15 +22,16 @@
  */
 package com.synopsys.integration.alert.web.api.task;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
 import com.synopsys.integration.alert.web.common.BaseController;
 
@@ -38,28 +39,22 @@ import com.synopsys.integration.alert.web.common.BaseController;
 @RequestMapping(TaskController.TASK_BASE_PATH)
 public class TaskController extends BaseController {
     public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
-    private final ContentConverter contentConverter;
-    private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final TaskActions taskActions;
     private final TaskManagementDescriptorKey descriptorKey;
 
     @Autowired
-    public TaskController(ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager, TaskActions taskActions,
-        TaskManagementDescriptorKey descriptorKey) {
-        this.contentConverter = contentConverter;
-        this.responseFactory = responseFactory;
+    public TaskController(AuthorizationManager authorizationManager, TaskActions taskActions, TaskManagementDescriptorKey descriptorKey) {
         this.authorizationManager = authorizationManager;
         this.taskActions = taskActions;
         this.descriptorKey = descriptorKey;
     }
 
     @GetMapping
-    public ResponseEntity<String> getAllTasks() {
+    public List<TaskMetaData> getAllTasks() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(taskActions.getTasks()));
+        return taskActions.getTasks();
     }
-
 }
