@@ -61,17 +61,17 @@ public class AzureWorkItemService {
     }
 
     public WorkItemResponseModel getWorkItem(String organizationName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = String.format("/%s/_apis/wit/workitems/%s", organizationName, workItemId.toString());
+        String requestSpec = createWorkItemSpecById(organizationName, workItemId);
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
     public WorkItemResponseModel getWorkItem(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = createOrganizationProjectWorkItemsIndividualSpec(organizationName, projectIdOrName, workItemId);
+        String requestSpec = createWorkItemSpecByIdWithProject(organizationName, projectIdOrName, workItemId);
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
     public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
-        String requestSpec = String.format("/%s/%s/_apis/wit/workitems/$%s", organizationName, projectIdOrName, workItemType);
+        String requestSpec = createWorkItemSpecWithProject(organizationName, projectIdOrName, workItemType);
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
@@ -81,7 +81,7 @@ public class AzureWorkItemService {
     }
 
     public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
-        String requestSpec = createOrganizationProjectWorkItemsIndividualSpec(organizationName, projectIdOrName, workItemId);
+        String requestSpec = createWorkItemSpecByIdWithProject(organizationName, projectIdOrName, workItemId);
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
@@ -91,8 +91,7 @@ public class AzureWorkItemService {
     }
 
     public WorkItemDeletedResponseModel deleteWorkItem(String organizationName, Integer workItemId) throws HttpServiceException {
-        //TODO verify this is a bug
-        String requestSpec = createOrganizationProjectWorkItemsIndividualSpec(organizationName, null, workItemId);
+        String requestSpec = createWorkItemSpecById(organizationName, workItemId);
         return azureHttpService.delete(requestSpec, WorkItemDeletedResponseModel.class);
     }
 
@@ -103,8 +102,16 @@ public class AzureWorkItemService {
         return httpRequest;
     }
 
-    private String createOrganizationProjectWorkItemsIndividualSpec(String organizationName, String projectIdOrName, Integer workItemId) {
+    private String createWorkItemSpecWithProject(String organizationName, String projectIdOrName, String workItemType) {
+        return String.format("/%s/%s/_apis/wit/workitems/%s", organizationName, projectIdOrName, workItemType);
+    }
+
+    private String createWorkItemSpecByIdWithProject(String organizationName, String projectIdOrName, Integer workItemId) {
         return String.format("/%s/%s/_apis/wit/workitems/%s", organizationName, projectIdOrName, workItemId.toString());
+    }
+
+    private String createWorkItemSpecById(String organizationName, Integer workItemId) {
+        return String.format("/%s/_apis/wit/workitems/%s", organizationName, workItemId.toString());
     }
 
 }

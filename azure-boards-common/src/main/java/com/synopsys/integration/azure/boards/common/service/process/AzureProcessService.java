@@ -45,14 +45,14 @@ public class AzureProcessService {
     }
 
     public AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> getWorkItemTypes(String organizationName, String processId) throws HttpServiceException {
-        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes?%s=%s", organizationName, processId);
+        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes", organizationName, processId);
         requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_2(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProcessWorkItemTypesResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public ProcessFieldResponseModel addFieldToWorkItemType(String organizationName, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
-        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/fields?%s=%s", organizationName, processId, workItemTypeRefName);
+        String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/fields", organizationName, processId, workItemTypeRefName);
         requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_2(requestSpec);
         return azureHttpService.post(requestSpec, requestBody, ProcessFieldResponseModel.class);
     }
