@@ -169,7 +169,10 @@ tasks.dockerLogin.mustRunAfter(helmPushChart)
 
 tasks.helmPushChart.mustRunAfter(helmValidation)
 
-task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+tasks.build.mustRunAfter(copyToTemplates)
+tasks.runServer.dependsOn copyToTemplates
+
+task all(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
 
