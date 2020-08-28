@@ -117,19 +117,17 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "");
             }
             FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                oAuthRequestValidator.removeAllRequests();
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "client id not found.");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "client id not found.");
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
             if (!alertServerUrl.isPresent()) {
-                oAuthRequestValidator.removeAllRequests();
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "Could not determine the alert server url for the callback.");
             }
 
             logger.info("OAuth authorization request created: {}", requestKey);
@@ -145,14 +143,17 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                                      .collect(Collectors.toSet());
             String errorMessage = String.format(
                 "The configuration is invalid. Please test the configuration. Details: %s", StringUtils.join(errors, ","));
-            oAuthRequestValidator.removeAllRequests();
-            return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", errorMessage);
+            return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            oAuthRequestValidator.removeAllRequests();
-            return new OAuthEndpointResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", "Error activating azure oauth.");
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
         }
+    }
+
+    private OAuthEndpointResponse createErrorResponse(HttpStatus httpStatus, String errorMessage) {
+        oAuthRequestValidator.removeAllRequests();
+        return new OAuthEndpointResponse(httpStatus.value(), false, "", errorMessage);
     }
 
     private Optional<FieldModel> saveIfValid(FieldModel fieldModel) throws AlertException {

@@ -83,6 +83,7 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
             ConfigurationModel configurationModel = existingConfig.get();
             Map<String, FieldValueModel> existingFields = fieldModelConverter.convertToFieldValuesMap(configurationModel.getCopyOfFieldList());
 
+            // These fields are saved in the OAuth callback controller so we need to preserve their values on a save or an update.
             updateMapWithMissingField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, existingFields, keyToValues);
             updateMapWithMissingField(AzureBoardsDescriptor.KEY_REFRESH_TOKEN, existingFields, keyToValues);
             updateMapWithMissingField(AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, existingFields, keyToValues);
