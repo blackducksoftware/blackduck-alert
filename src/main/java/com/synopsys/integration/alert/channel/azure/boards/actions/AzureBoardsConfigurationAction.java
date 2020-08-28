@@ -31,9 +31,11 @@ import com.synopsys.integration.alert.common.action.ConfigurationAction;
 @Component
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected AzureBoardsConfigurationAction(AzureBoardsChannelKey descriptorKey, AzureBoardsDistributionTestAction azureBoardsDistributionTestAction, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction) {
+    protected AzureBoardsConfigurationAction(AzureBoardsChannelKey descriptorKey, AzureBoardsDistributionTestAction azureBoardsDistributionTestAction, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction,
+        AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
         super(descriptorKey);
         addGlobalTestAction(azureBoardsGlobalTestAction);
+        addGlobalApiAction(azureBoardsGlobalApiAction);
         addDistributionTestAction(azureBoardsDistributionTestAction);
     }
 }

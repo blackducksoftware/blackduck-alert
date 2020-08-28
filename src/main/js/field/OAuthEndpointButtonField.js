@@ -8,7 +8,6 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class OAuthEndpointButtonField extends Component {
     constructor(props) {
@@ -70,7 +69,8 @@ class OAuthEndpointButtonField extends Component {
                     this.setState({
                         fieldError: {
                             severity: 'ERROR',
-                            fieldMessage: message
+                            fieldMessage: message,
+                            progress: false
                         }
                     });
                 }
@@ -106,9 +106,6 @@ class OAuthEndpointButtonField extends Component {
                     performingAction={progress}
                 >{buttonLabel}
                 </GeneralButton>
-                {authenticated &&
-                <FontAwesomeIcon icon="check" className="alert-icon synopsysGreen" size="2x"
-                                 title="authenticated" />}
                 {success &&
                 <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
