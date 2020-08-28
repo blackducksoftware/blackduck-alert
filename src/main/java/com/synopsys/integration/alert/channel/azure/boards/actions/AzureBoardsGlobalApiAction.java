@@ -60,35 +60,37 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
         FieldModel updatedFieldModel = super.beforeSaveAction(fieldModel);
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName());
 
-        if (descriptorKey.isPresent()) {
-            ConfigContextEnum context = ConfigContextEnum.valueOf(fieldModel.getContext());
-            List<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), context);
-            Optional<ConfigurationModel> configurationModel = existingConfig.stream()
-                                                                  .findFirst();
-            updatedFieldModel = updateTokenFields(updatedFieldModel, configurationModel);
+        if (!descriptorKey.isPresent()) {
+            return updatedFieldModel;
         }
-        return updatedFieldModel;
+        ConfigContextEnum context = ConfigContextEnum.valueOf(fieldModel.getContext());
+        List<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), context);
+        Optional<ConfigurationModel> configurationModel = existingConfig.stream()
+                                                              .findFirst();
+        return configurationModel
+                   .map((config) -> updateTokenFields(updatedFieldModel, config))
+                   .orElse(updatedFieldModel);
+
     }
 
     @Override
     public FieldModel beforeUpdateAction(FieldModel fieldModel) throws AlertException {
         FieldModel updatedFieldModel = super.beforeUpdateAction(fieldModel);
         Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()));
-        return updateTokenFields(updatedFieldModel, existingConfig);
+        return existingConfig
+                   .map((config) -> updateTokenFields(updatedFieldModel, config))
+                   .orElse(updatedFieldModel);
     }
 
-    private FieldModel updateTokenFields(FieldModel fieldModel, Optional<ConfigurationModel> existingConfig) {
+    private FieldModel updateTokenFields(FieldModel fieldModel, ConfigurationModel configurationModel) {
         Map<String, FieldValueModel> keyToValues = new HashMap<>(fieldModel.getKeyToValues());
-        if (existingConfig.isPresent()) {
-            ConfigurationModel configurationModel = existingConfig.get();
-            Map<String, FieldValueModel> existingFields = fieldModelConverter.convertToFieldValuesMap(configurationModel.getCopyOfFieldList());
+        Map<String, FieldValueModel> existingFields = fieldModelConverter.convertToFieldValuesMap(configurationModel.getCopyOfFieldList());
 
-            // These fields are saved in the OAuth callback controller so we need to preserve their values on a save or an update.
-            updateMapWithMissingField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, existingFields, keyToValues);
-            updateMapWithMissingField(AzureBoardsDescriptor.KEY_REFRESH_TOKEN, existingFields, keyToValues);
-            updateMapWithMissingField(AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, existingFields, keyToValues);
-            updateMapWithMissingField(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, existingFields, keyToValues);
-        }
+        // These fields are saved in the OAuth callback controller so we need to preserve their values on a save or an update.
+        updateMapWithMissingField(AzureBoardsDescriptor.KEY_ACCESS_TOKEN, existingFields, keyToValues);
+        updateMapWithMissingField(AzureBoardsDescriptor.KEY_REFRESH_TOKEN, existingFields, keyToValues);
+        updateMapWithMissingField(AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, existingFields, keyToValues);
+        updateMapWithMissingField(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, existingFields, keyToValues);
 
         return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), keyToValues);
     }
