@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthAuthenticateValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -51,11 +52,13 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String BUTTON_LABEL_OAUTH = "Authenticate";
 
     private final EncryptionValidator encryptionValidator;
+    private final AzureOAuthAuthenticateValidator azureOAuthAuthenticateValidator;
 
     @Autowired
-    public AzureBoardsGlobalUIConfig(EncryptionValidator encryptionValidator) {
+    public AzureBoardsGlobalUIConfig(EncryptionValidator encryptionValidator, AzureOAuthAuthenticateValidator azureOAuthAuthenticateValidator) {
         super(AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_DESCRIPTION, AzureBoardsDescriptor.AZURE_BOARDS_URL);
         this.encryptionValidator = encryptionValidator;
+        this.azureOAuthAuthenticateValidator = azureOAuthAuthenticateValidator;
     }
 
     @Override
@@ -67,7 +70,8 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
                                          .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
+                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_SECRET)
+                                         .applyValidationFunctions(azureOAuthAuthenticateValidator);
         return List.of(organizationName, clientId, clientSecret, configureOAuth);
     }
 

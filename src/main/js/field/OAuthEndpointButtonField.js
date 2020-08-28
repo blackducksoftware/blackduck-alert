@@ -8,7 +8,6 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class OAuthEndpointButtonField extends Component {
     constructor(props) {
@@ -50,10 +49,6 @@ class OAuthEndpointButtonField extends Component {
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
-
             response.json()
             .then((data) => {
                 const { httpStatus, authenticated, authorizationUrl, message } = data;
@@ -65,7 +60,6 @@ class OAuthEndpointButtonField extends Component {
                 onChange({ target });
                 const okRequest = HTTPErrorUtils.isOk(httpStatus);
                 this.setState({
-                    success: okRequest,
                     authenticated
                 });
                 if (okRequest) {
@@ -75,7 +69,8 @@ class OAuthEndpointButtonField extends Component {
                     this.setState({
                         fieldError: {
                             severity: 'ERROR',
-                            fieldMessage: message
+                            fieldMessage: message,
+                            progress: false
                         }
                     });
                 }
@@ -111,9 +106,6 @@ class OAuthEndpointButtonField extends Component {
                     performingAction={progress}
                 >{buttonLabel}
                 </GeneralButton>
-                {authenticated &&
-                <FontAwesomeIcon icon="check" className="alert-icon synopsysGreen" size="2x"
-                                 title="authenticated" />}
                 {success &&
                 <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
                 }
