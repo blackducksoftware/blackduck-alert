@@ -109,29 +109,31 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                 logger.debug("Azure OAuth callback user does not have permission to call the controller.");
                 return new OAuthEndpointResponse(HttpStatus.FORBIDDEN.value(), false, "", ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
             }
+            String requestKey = createRequestKey();
+            // since we have only one OAuth channel now remove all other requests.
+            // if we have more OAuth clients then the removeAllRequests will have to be removed from here.
+            // beginning authentication process create the request id at the start.
+            oAuthRequestValidator.removeAllRequests();
+            oAuthRequestValidator.addAuthorizationRequest(requestKey);
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "");
             }
             FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "client id not found.");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "client id not found.");
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
             if (!alertServerUrl.isPresent()) {
-                return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", "Could not determine the alert server url for the callback.");
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "Could not determine the alert server url for the callback.");
             }
-            String requestKey = createRequestKey();
-            // since we have only one OAuth channel now remove all other requests.
-            // if we have more OAuth clients then the removeAllRequests will have to be removed from here.
-            oAuthRequestValidator.removeAllRequests();
-            oAuthRequestValidator.addAuthorizationRequest(requestKey);
+
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
-            return new OAuthEndpointResponse(HttpStatus.OK.value(), isAuthenticated(fieldAccessor), authUrl, "");
+            return new OAuthEndpointResponse(HttpStatus.OK.value(), isAuthenticated(fieldAccessor), authUrl, "Authenticating...");
 
         } catch (AlertFieldException ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -141,12 +143,17 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                                      .collect(Collectors.toSet());
             String errorMessage = String.format(
                 "The configuration is invalid. Please test the configuration. Details: %s", StringUtils.join(errors, ","));
-            return new OAuthEndpointResponse(HttpStatus.BAD_REQUEST.value(), false, "", errorMessage);
+            return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            return new OAuthEndpointResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", "Error activating azure oauth.");
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
         }
+    }
+
+    private OAuthEndpointResponse createErrorResponse(HttpStatus httpStatus, String errorMessage) {
+        oAuthRequestValidator.removeAllRequests();
+        return new OAuthEndpointResponse(httpStatus.value(), false, "", errorMessage);
     }
 
     private Optional<FieldModel> saveIfValid(FieldModel fieldModel) throws AlertException {

@@ -325,6 +325,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
 
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
         fieldValueRepository.deleteAll(oldValues);
+        fieldValueRepository.flush();
 
         ConfigurationModelMutable updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
             descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId());
@@ -341,6 +342,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                 updatedConfig.put(configFieldModel);
             }
             fieldValueRepository.saveAll(fieldValuesToSave);
+            fieldValueRepository.flush();
         }
         descriptorConfigEntity.setLastUpdated(DateUtils.createCurrentDateTimestamp());
         descriptorConfigsRepository.save(descriptorConfigEntity);
