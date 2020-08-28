@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -98,8 +100,16 @@ public class EmailChannel extends NamedDistributionChannel {
 
     public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
         String topicValue = null;
+        String subTopicValue = null;
         if (!messageContent.isEmpty()) {
             topicValue = messageContent.getCommonTopic().getValue();
+            //subTopic is assumed to be a BlackDuck project version
+            subTopicValue = messageContent.getSubContent()
+                                .stream()
+                                .map(ProviderMessageContent::getSubTopic)
+                                .flatMap(Optional::stream)
+                                .map(LinkableItem::getValue)
+                                .collect(Collectors.joining(", "));
         }
 
         String alertServerUrl = alertProperties.getServerUrl().orElse(null);
@@ -118,7 +128,7 @@ public class EmailChannel extends NamedDistributionChannel {
 
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), formattedContent);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue, subTopicValue));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
@@ -146,9 +156,14 @@ public class EmailChannel extends NamedDistributionChannel {
         return optionalAttachmentFile;
     }
 
-    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName) {
+    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName, String providerProjectVersionName) {
         if (StringUtils.isNotBlank(providerProjectName)) {
-            return String.format("%s | For: %s", originalSubjectLine, providerProjectName);
+            String subjectLine = String.format("%s | For: %s", originalSubjectLine, providerProjectName);
+            if (StringUtils.isNotBlank(providerProjectVersionName)) {
+                subjectLine += String.format(" %s", providerProjectVersionName);
+            }
+            //78 characters is the suggested length for the message: https://tools.ietf.org/html/rfc2822#section-2.1.1
+            return StringUtils.abbreviate(subjectLine, 78);
         }
         return originalSubjectLine;
     }
