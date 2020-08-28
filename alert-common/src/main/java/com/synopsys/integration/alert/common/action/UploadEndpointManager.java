@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
@@ -55,15 +55,11 @@ public class UploadEndpointManager {
     private final Map<String, UploadTarget> uploadTargets = new HashMap<>();
     private final FilePersistenceUtil filePersistenceUtil;
     private final AuthorizationManager authorizationManager;
-    private final ResponseFactory responseFactory;
-    private final Gson gson;
 
     @Autowired
-    public UploadEndpointManager(Gson gson, FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager, ResponseFactory responseFactory) {
+    public UploadEndpointManager(FilePersistenceUtil filePersistenceUtil, AuthorizationManager authorizationManager) {
         this.filePersistenceUtil = filePersistenceUtil;
         this.authorizationManager = authorizationManager;
-        this.responseFactory = responseFactory;
-        this.gson = gson;
     }
 
     public boolean containsTarget(String targetKey) {
@@ -89,40 +85,29 @@ public class UploadEndpointManager {
     }
 
     public void performUpload(String targetKey, Resource fileResource) {
-        if (!containsTarget(targetKey)) {
-            throwNotImplementedException();
-        }
+        throwNotImplementedExceptionIfMissing(targetKey);
 
         UploadTarget target = uploadTargets.get(targetKey);
-        if (!authorizationManager.hasUploadWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
-        }
+        throwForbiddenExceptionIfPermissionMissing(authorizationManager::hasUploadWritePermission, target);
         writeFile(target, fileResource);
     }
 
     public ExistenceModel checkExists(String targetKey) {
-        if (!containsTarget(targetKey)) {
-            throwNotImplementedException();
-        }
+        throwNotImplementedExceptionIfMissing(targetKey);
 
         UploadTarget target = uploadTargets.get(targetKey);
-        if (!authorizationManager.hasUploadReadPermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
-        }
+
+        throwForbiddenExceptionIfPermissionMissing(authorizationManager::hasUploadReadPermission, target);
         String targetFilename = target.getFilename();
         Boolean exists = filePersistenceUtil.uploadFileExists(targetFilename);
         return new ExistenceModel(exists);
     }
 
     public void deleteUploadedFile(String targetKey) {
-        if (!containsTarget(targetKey)) {
-            throwNotImplementedException();
-        }
+        throwNotImplementedExceptionIfMissing(targetKey);
 
         UploadTarget target = uploadTargets.get(targetKey);
-        if (!authorizationManager.hasUploadDeletePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
-        }
+        throwForbiddenExceptionIfPermissionMissing(authorizationManager::hasUploadDeletePermission, target);
 
         try {
             String targetFilename = target.getFilename();
@@ -167,8 +152,16 @@ public class UploadEndpointManager {
         }
     }
 
-    private void throwNotImplementedException() {
-        throw ResponseFactory.createNotImplementedException(NO_UPLOAD_FUNCTIONALITY_REGISTERED);
+    private void throwNotImplementedExceptionIfMissing(String targetKey) {
+        if (!containsTarget(targetKey)) {
+            throw ResponseFactory.createNotImplementedException(NO_UPLOAD_FUNCTIONALITY_REGISTERED);
+        }
+    }
+
+    private void throwForbiddenExceptionIfPermissionMissing(BiFunction<String, String, Boolean> permissionChecker, UploadTarget target) {
+        if (!permissionChecker.apply(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+            throw ResponseFactory.createForbiddenException();
+        }
     }
 
     private class UploadTarget {

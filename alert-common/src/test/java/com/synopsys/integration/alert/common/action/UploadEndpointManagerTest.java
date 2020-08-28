@@ -17,21 +17,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public class UploadEndpointManagerTest {
     public static final String TEST_TARGET_KEY = "a.key";
     private static final String TEST_FILE_NAME = "TEST_FILE_NAME";
-    private final Gson gson = new Gson();
-    private final ResponseFactory responseFactory = new ResponseFactory();
     private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
     private final FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
     private Resource testResource;
@@ -55,7 +51,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void registerTarget() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
@@ -63,7 +59,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void registerExistingTarget() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
@@ -73,7 +69,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void unRegisterMissingTarget() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
         assertThrows(AlertException.class, () -> manager.unRegisterTarget(TEST_TARGET_KEY));
@@ -81,7 +77,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void unRegisterTarget() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
         assertTrue(manager.containsTarget(TEST_TARGET_KEY));
@@ -91,7 +87,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUpload() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
@@ -102,7 +98,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUploadWithValidationSuccess() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
         UploadValidationFunction validationFunction = (file) -> ValidationResult.success();
@@ -114,7 +110,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUploadWithValidationFail() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
         UploadValidationFunction validationFunction = (file) -> ValidationResult.errors("validation error");
@@ -126,7 +122,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUploadIOException() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.doThrow(IOException.class).when(filePersistenceUtil).writeFileToUploadsDirectory(Mockito.anyString(), Mockito.any(InputStream.class));
 
@@ -138,7 +134,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUploadMissingTarget() {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
         callEndpointAndAssertException(HttpStatus.NOT_IMPLEMENTED, () -> manager.performUpload(TEST_TARGET_KEY, testResource));
@@ -146,7 +142,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void performUploadMissingPermissions() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
@@ -157,7 +153,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void deleteUpload() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
@@ -170,7 +166,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void deleteUploadIOException() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
         Mockito.doThrow(IOException.class).when(filePersistenceUtil).delete(Mockito.any(File.class));
@@ -183,7 +179,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void deleteUploadMissingTarget() {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
@@ -192,7 +188,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void deleteUploadMissingPermissions() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
@@ -204,7 +200,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void fileExists() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);
@@ -215,7 +211,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void fileExistsMissingTarget() {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
 
         assertFalse(manager.containsTarget(TEST_TARGET_KEY));
         callEndpointAndAssertException(HttpStatus.NOT_IMPLEMENTED, () -> manager.checkExists(TEST_TARGET_KEY));
@@ -223,7 +219,7 @@ public class UploadEndpointManagerTest {
 
     @Test
     public void fileExistsMissingPermissions() throws Exception {
-        UploadEndpointManager manager = new UploadEndpointManager(gson, filePersistenceUtil, authorizationManager, responseFactory);
+        UploadEndpointManager manager = new UploadEndpointManager(filePersistenceUtil, authorizationManager);
         Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
 
         manager.registerTarget(TEST_TARGET_KEY, ConfigContextEnum.GLOBAL, descriptorKey, TEST_FILE_NAME);

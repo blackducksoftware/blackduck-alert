@@ -53,32 +53,28 @@ public class UploadEndpointController {
 
     @GetMapping("/{key}/exists")
     public ExistenceModel checkUploadedFileExists(@PathVariable String key) {
-        if (StringUtils.isBlank(key)) {
-            throwTargetKeyMissingException();
-        }
+        throwBadRequestExceptionIfBlank(key);
         return uploadEndpointManager.checkExists(key);
     }
 
     @PostMapping("/{key}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void postFileUpload(@PathVariable String key, @RequestParam("file") MultipartFile file) {
-        if (StringUtils.isBlank(key)) {
-            throwTargetKeyMissingException();
-        }
+        throwBadRequestExceptionIfBlank(key);
         uploadEndpointManager.performUpload(key, file.getResource());
     }
 
     @DeleteMapping("/{key}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUploadedFile(@PathVariable String key) {
-        if (StringUtils.isBlank(key)) {
-            throwTargetKeyMissingException();
-        }
+        throwBadRequestExceptionIfBlank(key);
         uploadEndpointManager.deleteUploadedFile(key);
     }
 
-    private void throwTargetKeyMissingException() {
-        throw ResponseFactory.createBadRequestException(TARGET_KEY_MISSING);
+    private void throwBadRequestExceptionIfBlank(String key) {
+        if (StringUtils.isBlank(key)) {
+            throw ResponseFactory.createBadRequestException(TARGET_KEY_MISSING);
+        }
     }
 
 }
