@@ -69,8 +69,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     public abstract String getIssueCreatorFieldKey();
 
     @Override
-    protected Optional<IssueResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request)
-        throws IntegrationException {
+    // TODO this does not need to be Optional
+    protected Optional<IssueResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel contentModel = request.getRequestContent();
 
@@ -99,9 +99,10 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             }
             return Optional.of(issue);
         } catch (IntegrationRestException e) {
-            logger.error("Error creating issue", improveRestException(e, issueCreator));
+            AlertException improvedException = improveRestException(e, issueCreator);
+            logger.error("Error creating issue", improvedException);
+            throw improvedException;
         }
-        return Optional.empty();
     }
 
     @Override
