@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -131,6 +132,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
         try {
             handler.getSystemMessages("bad-start-time", "bad-end-time");
+            fail("getSystemMessages did not throw the expected ResponseStatusException.");
         } catch (ResponseStatusException ex) {
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
         }
