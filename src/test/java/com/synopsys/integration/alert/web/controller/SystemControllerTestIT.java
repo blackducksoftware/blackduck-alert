@@ -38,7 +38,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     private final String SYSTEM_INITIAL_SETUP_BASE_URL = BaseController.BASE_PATH + "/system/setup/initial";
     private final String SYSTEM_INITIAL_DESCRIPTOR = BaseController.BASE_PATH + "/system/setup/descriptor";
     private final Gson gson = new Gson();
-    //private final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
