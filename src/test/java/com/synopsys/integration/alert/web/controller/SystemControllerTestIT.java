@@ -1,12 +1,16 @@
 package com.synopsys.integration.alert.web.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -17,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -99,47 +104,36 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         Mockito.verify(systemActions).getSystemMessages();
     }
 
-    /*
     @Test
     public void testGetSystemMessagesGetAfter() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
         SystemController handler = new SystemController(systemActions);
-        ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
+        handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
         Mockito.verify(systemActions).getSystemMessagesAfter(Mockito.anyString());
-        Mockito.verify(contentConverter).getJsonString(Mockito.any());
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     public void testGetSystemMessagesGetBefore() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
         SystemController handler = new SystemController(systemActions);
-        ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
+        handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBefore(Mockito.anyString());
-        Mockito.verify(contentConverter).getJsonString(Mockito.any());
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     public void testGetSystemMessagesGetBetween() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
         SystemController handler = new SystemController(systemActions);
-        ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
+        handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
-        Mockito.verify(contentConverter).getJsonString(Mockito.any());
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
-
-
 
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
         SystemController handler = new SystemController(systemActions);
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("error parsing date ", 0));
-        ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
+        try {
+            handler.getSystemMessages("bad-start-time", "bad-end-time");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+        }
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
-    */
 }
