@@ -28,7 +28,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -38,26 +37,26 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 @Component
 public class CustomEndpointManager {
     public static final String CUSTOM_ENDPOINT_URL = "/api/function";
-    private final Map<String, BiFunction<FieldModel, HttpServletContentWrapper, ResponseEntity<String>>> endpointFunctions = new HashMap<>();
+    private final Map<String, BiFunction<FieldModel, HttpServletContentWrapper, ActionResult>> endpointFunctions = new HashMap<>();
 
     public boolean containsFunction(String functionKey) {
         return endpointFunctions.containsKey(functionKey);
     }
 
-    public void registerFunction(String functionKey, Function<FieldModel, ResponseEntity<String>> endpointFunction) throws AlertException {
+    public void registerFunction(String functionKey, Function<FieldModel, ActionResult> endpointFunction) throws AlertException {
         registerFunction(functionKey, (fieldModel, ignoredServletContent) -> endpointFunction.apply(fieldModel));
     }
 
-    public void registerFunction(String functionKey, BiFunction<FieldModel, HttpServletContentWrapper, ResponseEntity<String>> endpointFunction) throws AlertException {
+    public void registerFunction(String functionKey, BiFunction<FieldModel, HttpServletContentWrapper, ActionResult> endpointFunction) throws AlertException {
         if (containsFunction(functionKey)) {
             throw new AlertException("A custom endpoint is already registered for " + functionKey);
         }
         endpointFunctions.put(functionKey, endpointFunction);
     }
 
-    public ResponseEntity<String> performFunction(String endpointKey, FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public <T> ActionResult<T> performFunction(String endpointKey, FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         if (!containsFunction(endpointKey)) {
-            return new ResponseEntity<>("No functionality has been created for this endpoint.", HttpStatus.NOT_IMPLEMENTED);
+            return new ActionResult<>(HttpStatus.NOT_IMPLEMENTED, "No functionality has been created for this endpoint.");
         }
         return endpointFunctions.get(endpointKey).apply(fieldModel, servletContentWrapper);
     }

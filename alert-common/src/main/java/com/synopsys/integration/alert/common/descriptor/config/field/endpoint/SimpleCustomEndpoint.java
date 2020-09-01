@@ -22,38 +22,35 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class SimpleCustomEndpoint<R> extends CustomEndpoint<R> {
-    private final ResponseFactory responseFactory;
-
-    public SimpleCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory) throws AlertException {
+    public SimpleCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         super(fieldKey, customEndpointManager);
-        this.responseFactory = responseFactory;
     }
 
     protected abstract R createData(FieldModel fieldModel) throws AlertException, ResponseStatusException;
 
-    protected abstract ResponseEntity<String> createErrorResponse(Exception e);
+    protected abstract ActionResult<R> createErrorResponse(Exception e);
 
-    protected abstract ResponseEntity<String> createSuccessResponse(R response);
+    protected abstract ActionResult<R> createSuccessResponse(R response);
 
     @Override
-    public final ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
+    public final ActionResult<R> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         try {
             R response = createData(fieldModel);
             return createSuccessResponse(response);
         } catch (Exception e) {
+            // TODO we won't need this going forward.
             if (e instanceof ResponseStatusException) {
                 ResponseStatusException responseStatusException = (ResponseStatusException) e;
-                return responseFactory.createMessageResponse(responseStatusException.getStatus(), responseStatusException.getReason());
+                return new ActionResult<>(responseStatusException.getStatus(), responseStatusException.getReason());
             }
             return createErrorResponse(e);
         }

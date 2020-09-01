@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -47,12 +49,14 @@ public class CustomEndpointController {
     private final CustomEndpointManager customEndpointManager;
     private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
+    private final Gson gson;
 
     @Autowired
-    public CustomEndpointController(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, AuthorizationManager authorizationManager) {
+    public CustomEndpointController(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, AuthorizationManager authorizationManager, Gson gson) {
         this.customEndpointManager = customEndpointManager;
         this.responseFactory = responseFactory;
         this.authorizationManager = authorizationManager;
+        this.gson = gson;
     }
 
     @PostMapping("/{key}")
@@ -66,7 +70,14 @@ public class CustomEndpointController {
         }
 
         HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
-        return customEndpointManager.performFunction(key, restModel, servletContentWrapper);
+        ActionResult<> result = customEndpointManager.performFunction(key, restModel, servletContentWrapper);
+        if (result.isOk()) {
+            String content = gson.toJson(result.getContent());
+            return responseFactory.createOkContentResponse(content);
+        } else {
+            String message = result.getMessage().orElse("");
+            return responseFactory.createResponse(result.getHttpStatus(), null, message);
+        }
     }
 
 }

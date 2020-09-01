@@ -1,2 +1,4 @@
-package com.synopsys.integration.alert.common.action;public class ActionRequest {
+package com.synopsys.integration.alert.common.action;
+
+public class ActionRequest {
 }

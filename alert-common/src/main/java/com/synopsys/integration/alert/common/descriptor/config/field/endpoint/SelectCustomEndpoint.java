@@ -24,33 +24,28 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
-import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
 public abstract class SelectCustomEndpoint extends SimpleCustomEndpoint<List<LabelValueSelectOption>> {
-    private final ResponseFactory responseFactory;
-    private final Gson gson;
 
-    public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
+    public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         super(fieldKey, customEndpointManager, responseFactory);
-        this.responseFactory = responseFactory;
-        this.gson = gson;
     }
 
     @Override
-    protected ResponseEntity<String> createErrorResponse(Exception e) {
-        return responseFactory.createInternalServerErrorResponse("", String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
+    protected ActionResult<List<LabelValueSelectOption>> createErrorResponse(Exception e) {
+        return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
     }
 
     @Override
-    protected ResponseEntity<String> createSuccessResponse(List<LabelValueSelectOption> response) {
-        String optionsAsJson = gson.toJson(response);
-        return responseFactory.createOkContentResponse(optionsAsJson);
+    protected ActionResult<List<LabelValueSelectOption>> createSuccessResponse(List<LabelValueSelectOption> response) {
+
+        return new ActionResult<>(HttpStatus.OK, response);
     }
 
 }
