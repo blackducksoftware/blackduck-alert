@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const ProviderCommonKeys = {
     KEY_NAME: 'provider.common.config.name',
     KEY_ENABLED: 'provider.common.config.enabled'
-}
+};
 
 class ProviderTable extends Component {
     constructor(props) {
@@ -45,7 +45,9 @@ class ProviderTable extends Component {
     }
 
     componentDidMount() {
-        const { descriptors, descriptorName, clearFieldErrors, getAllConfigs } = this.props;
+        const {
+            descriptors, descriptorName, clearFieldErrors, getAllConfigs
+        } = this.props;
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         clearFieldErrors();
         if (descriptor) {
@@ -66,8 +68,8 @@ class ProviderTable extends Component {
     }
 
     combineModelWithDefaults(providerConfig) {
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const { descriptors, descriptorName } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
             const emptyConfig = FieldModelUtilities.createFieldModelWithDefaults(descriptor.fields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, descriptor.name);
             const updatedFieldModel = FieldModelUtilities.combineFieldModels(emptyConfig, providerConfig);
@@ -149,7 +151,9 @@ class ProviderTable extends Component {
     }
 
     handleChange(e) {
-        const { name, value, type, checked } = e.target;
+        const {
+            name, value, type, checked
+        } = e.target;
         const { providerConfig } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString().toLowerCase() === 'true' : value;
@@ -180,7 +184,7 @@ class ProviderTable extends Component {
 
     onDelete(configsToDelete, callback) {
         if (configsToDelete) {
-            configsToDelete.forEach(configId => {
+            configsToDelete.forEach((configId) => {
                 this.props.deleteConfig(configId);
             });
         }
@@ -192,7 +196,7 @@ class ProviderTable extends Component {
         const { providerConfig } = this.state;
         const { fieldErrors, descriptors, descriptorName } = this.props;
         const newConfig = this.combineModelWithDefaults(providerConfig);
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
             return (
                 <div>
@@ -200,7 +204,7 @@ class ProviderTable extends Component {
                         descriptorFields={descriptor.fields}
                         self={this}
                         fieldErrors={fieldErrors}
-                        stateName={'providerConfig'}
+                        stateName="providerConfig"
                         currentConfig={newConfig}
                     />
                 </div>
@@ -212,7 +216,7 @@ class ProviderTable extends Component {
     onEdit(selectedRow, callback) {
         const { id } = selectedRow;
         const { providerConfigs } = this.props;
-        const selectedConfig = providerConfigs.find(config => config.id === id);
+        const selectedConfig = providerConfigs.find((config) => config.id === id);
         this.setState({
             providerConfig: selectedConfig
         }, callback);
@@ -221,13 +225,13 @@ class ProviderTable extends Component {
     onCopy(selectedRow, callback) {
         const { id } = selectedRow;
         const { providerConfigs } = this.props;
-        let selectedConfig = providerConfigs.find(config => config.id === id);
-        const { descriptors, descriptorName } = this.props
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        let selectedConfig = providerConfigs.find((config) => config.id === id);
+        const { descriptors, descriptorName } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
-            descriptor.fields.forEach(field => {
+            descriptor.fields.forEach((field) => {
                 if (field.sensitive) {
-                    selectedConfig = FieldModelUtilities.updateFieldModelSingleValue(selectedConfig, field.key, "");
+                    selectedConfig = FieldModelUtilities.updateFieldModelSingleValue(selectedConfig, field.key, '');
                 }
             });
         }
@@ -245,18 +249,18 @@ class ProviderTable extends Component {
         const tableData = [];
         providerConfigs.forEach((providerConfig) => {
             if (FieldModelUtilities.hasAnyValuesExcludingId(providerConfig)) {
-                const id = providerConfig.id;
+                const { id } = providerConfig;
                 const name = FieldModelUtilities.getFieldModelSingleValue(providerConfig, ProviderCommonKeys.KEY_NAME);
                 const enabled = FieldModelUtilities.getFieldModelSingleValue(providerConfig, ProviderCommonKeys.KEY_ENABLED);
-                const createdAt = providerConfig.createdAt;
-                const lastUpdated = providerConfig.lastUpdated;
-                const entry = Object.assign({}, {
+                const { createdAt } = providerConfig;
+                const { lastUpdated } = providerConfig;
+                const entry = {
                     id,
                     name,
                     createdAt,
                     lastUpdated,
                     enabled
-                });
+                };
                 tableData.push(entry);
             }
         });
@@ -264,8 +268,10 @@ class ProviderTable extends Component {
     }
 
     render() {
-        const { providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage, descriptors, descriptorName } = this.props;
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const {
+            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage, descriptors, descriptorName
+        } = this.props;
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
 
         const descriptorHeader = descriptor && (
             <div>
@@ -282,7 +288,7 @@ class ProviderTable extends Component {
         const canSave = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.WRITE);
         const data = this.createTableData(providerConfigs);
         const hasFieldErrors = fieldErrors && Object.keys(fieldErrors).length > 0;
-        const providerActionMessage = actionMessage ? actionMessage : errorMessage;
+        const providerActionMessage = actionMessage || errorMessage;
         return (
             <div>
                 {descriptorHeader}
@@ -318,7 +324,6 @@ class ProviderTable extends Component {
     }
 }
 
-
 ProviderTable.propTypes = {
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -346,7 +351,7 @@ ProviderTable.defaultProps = {
     fieldErrors: {}
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     descriptorFetching: state.descriptors.fetching,
     configFetching: state.globalConfiguration.fetching,
@@ -358,11 +363,11 @@ const mapStateToProps = state => ({
     fieldErrors: state.globalConfiguration.error.fieldErrors
 });
 
-const mapDispatchToProps = dispatch => ({
-    getAllConfigs: descriptorName => dispatch(getAllConfigs(descriptorName)),
-    updateConfig: config => dispatch(updateConfig(config)),
+const mapDispatchToProps = (dispatch) => ({
+    getAllConfigs: (descriptorName) => dispatch(getAllConfigs(descriptorName)),
+    updateConfig: (config) => dispatch(updateConfig(config)),
     testConfig: (config) => dispatch(testConfig(config)),
-    deleteConfig: id => dispatch(deleteConfig(id)),
+    deleteConfig: (id) => dispatch(deleteConfig(id)),
     clearFieldErrors: () => dispatch(clearConfigFieldErrors())
 });
 

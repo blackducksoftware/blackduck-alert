@@ -24,7 +24,8 @@ class IconTableCellFormatter extends Component {
 
         return (
             <button id={id} className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}>
-                <FontAwesomeIcon icon={this.props.buttonIconName} className="alert-icon" size="lg" /></button>
+                <FontAwesomeIcon icon={this.props.buttonIconName} className="alert-icon" size="lg" />
+            </button>
         );
     }
 }

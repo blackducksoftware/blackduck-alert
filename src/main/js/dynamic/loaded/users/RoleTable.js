@@ -4,7 +4,9 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
-import { clearRoleFieldErrors, deleteRole, fetchRoles, saveRole } from 'store/actions/roles';
+import {
+    clearRoleFieldErrors, deleteRole, fetchRoles, saveRole
+} from 'store/actions/roles';
 
 class RoleTable extends Component {
     constructor(props) {
@@ -41,7 +43,6 @@ class RoleTable extends Component {
             }, () => saveCallback(true));
         }
     }
-
 
     onEdit(selectedRow, callback) {
         this.setState({
@@ -108,7 +109,7 @@ class RoleTable extends Component {
         } = e.target;
         const { role } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newRole = Object.assign(role, { [name]: updatedValue });
         this.setState({
             role: newRole

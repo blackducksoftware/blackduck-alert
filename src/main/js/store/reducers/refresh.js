@@ -7,14 +7,10 @@ const initialState = {
 const refresh = (state = initialState, action) => {
     switch (action.type) {
         case REFRESH_DISABLE:
-            return Object.assign({}, state, {
-                autoRefresh: false
-            });
+            return { ...state, autoRefresh: false };
 
         case REFRESH_ENABLE:
-            return Object.assign({}, state, {
-                autoRefresh: true
-            });
+            return { ...state, autoRefresh: true };
 
         case SERIALIZE:
             return initialState;

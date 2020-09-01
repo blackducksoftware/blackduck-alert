@@ -24,12 +24,13 @@ class CollapsiblePane extends Component {
         const iconClass = expanded ? 'minus' : 'plus';
         return (
             <div className="collapsiblePanel">
-                <button id={`${id}-expand-button`}
-                        type="button"
-                        className="btn btn-link"
-                        onClick={() => this.setState({ expanded: !this.state.expanded })}
+                <button
+                    id={`${id}-expand-button`}
+                    type="button"
+                    className="btn btn-link"
+                    onClick={() => this.setState({ expanded: !this.state.expanded })}
                 >
-                    <FontAwesomeIcon icon={iconClass} className='icon' size="lg" />
+                    <FontAwesomeIcon icon={iconClass} className="icon" size="lg" />
                     {title}
                 </button>
                 <div className={contentClass}>

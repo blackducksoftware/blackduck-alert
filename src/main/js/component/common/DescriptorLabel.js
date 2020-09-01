@@ -7,7 +7,8 @@ function DescriptorLabel(props) {
     return (
         <div className="inline" title={cellText}>
             {cellText}
-        </div>);
+        </div>
+    );
 }
 
 DescriptorLabel.propTypes = {

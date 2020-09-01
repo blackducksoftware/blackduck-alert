@@ -8,7 +8,9 @@ class MessageFormatter extends Component {
     }
 
     createDetailedMessage(messageBody) {
-        const { header, title, message, componentLabel, componentLink } = JSON.parse(messageBody);
+        const {
+            header, title, message, componentLabel, componentLink
+        } = JSON.parse(messageBody);
 
         return (
             <div>

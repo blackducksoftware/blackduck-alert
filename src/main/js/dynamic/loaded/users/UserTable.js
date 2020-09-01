@@ -4,7 +4,9 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { connect } from 'react-redux';
-import { clearUserFieldErrors, deleteUser, fetchUsers, saveUser } from 'store/actions/users';
+import {
+    clearUserFieldErrors, deleteUser, fetchUsers, saveUser
+} from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -161,7 +163,7 @@ class UserTable extends Component {
         const { user } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser

@@ -18,24 +18,26 @@ class SelectInput extends Component {
             closeOnSelect = false;
         }
 
-        const field = (<div className={selectClasses}>
-            <Select
-                id={id}
-                className={inputClass}
-                onChange={onChange}
-                isSearchable={isSearchable}
-                isClearable={clearable}
-                removeSelected={removeSelected}
-                options={options}
-                placeholder={placeholder}
-                value={value}
-                isMulti={hasMultipleValues}
-                closeMenuOnSelect={closeOnSelect}
-                components={components}
-                noOptionsMessage={noOptionsMessage}
-                isDisabled={readOnly}
-            />
-        </div>);
+        const field = (
+            <div className={selectClasses}>
+                <Select
+                    id={id}
+                    className={inputClass}
+                    onChange={onChange}
+                    isSearchable={isSearchable}
+                    isClearable={clearable}
+                    removeSelected={removeSelected}
+                    options={options}
+                    placeholder={placeholder}
+                    value={value}
+                    isMulti={hasMultipleValues}
+                    closeMenuOnSelect={closeOnSelect}
+                    components={components}
+                    noOptionsMessage={noOptionsMessage}
+                    isDisabled={readOnly}
+                />
+            </div>
+        );
         return (
             <LabeledField field={field} {...this.props} />
         );
@@ -74,6 +76,5 @@ SelectInput.defaultProps = {
     hasMultipleValues: false,
     value: {}
 };
-
 
 export default SelectInput;

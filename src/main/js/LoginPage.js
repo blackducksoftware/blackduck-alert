@@ -41,11 +41,12 @@ class LoginPage extends Component {
                     <div className="loginBox">
                         <Header />
                         <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
-                            {this.props.errorMessage &&
-                            <div className="alert alert-danger">
-                                <p name="configurationMessage">{this.props.errorMessage}</p>
-                            </div>
-                            }
+                            {this.props.errorMessage
+                            && (
+                                <div className="alert alert-danger">
+                                    <p name="configurationMessage">{this.props.errorMessage}</p>
+                                </div>
+                            )}
 
                             <TextInput
                                 id="loginUsername"
@@ -67,12 +68,10 @@ class LoginPage extends Component {
                                 <div className="col-sm-12 text-right">
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
-                                        {this.props.loggingIn &&
-                                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                                        }
-                                        {!this.props.loggingIn &&
-                                        <span>&nbsp;&nbsp;</span>
-                                        }
+                                        {this.props.loggingIn
+                                        && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                                        {!this.props.loggingIn
+                                        && <span>&nbsp;&nbsp;</span>}
                                     </div>
                                 </div>
                             </div>
@@ -95,12 +94,12 @@ LoginPage.defaultProps = {
 };
 
 // Redux mappings to be used later....
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     loggingIn: state.session.fetching,
     errorMessage: state.session.errorMessage
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     login: (username, password) => dispatch(login(username, password))
 });
 

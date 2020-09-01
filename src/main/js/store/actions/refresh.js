@@ -20,7 +20,6 @@ function refreshDisable() {
     };
 }
 
-
 export function updateRefresh(boolean) {
     return (dispatch) => {
         if (boolean) {
