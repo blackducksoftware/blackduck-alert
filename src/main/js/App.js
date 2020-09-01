@@ -6,7 +6,10 @@ import { withRouter } from 'react-router-dom';
 import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
-import { verifyLogin, verifySaml } from 'store/actions/session';
+import {
+    verifyLogin,
+    verifySaml
+} from 'store/actions/session';
 import * as IconUtility from 'util/iconUtility';
 import LogoutPage from 'LogoutPage';
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
@@ -21,20 +24,24 @@ IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {
-        this.props.verifyLogin();
-        this.props.verifySaml();
+        const { verifySaml: verifySamlAction, verifyLogin: verifyLoginAction } = this.props;
+        verifyLoginAction();
+        verifySamlAction();
     }
 
     render() {
-        if (this.props.initializing) {
+        const {
+            initializing, logoutPerformed, samlEnabled, loggedIn
+        } = this.props;
+        if (initializing) {
             return (<div />);
         }
 
-        if (this.props.logoutPerformed) {
+        if (logoutPerformed) {
             return <LogoutPage />;
         }
 
-        const contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
+        const contentPage = (loggedIn || samlEnabled) ? <MainPage /> : <LoginPage />;
 
         return (
             <div>

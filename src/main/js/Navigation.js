@@ -1,7 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { NavLink, withRouter } from 'react-router-dom';
+import {
+    NavLink,
+    withRouter
+} from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -60,7 +63,8 @@ class Navigation extends Component {
             </>
         );
 
-        const rows = (this.props.fetching) ? null : nav;
+        const { fetching, confirmLogout: confirmLogoutAction } = this.props;
+        const rows = (fetching) ? null : nav;
 
         return (
             <div className="navigation">
@@ -79,7 +83,7 @@ class Navigation extends Component {
                                 tabIndex={0}
                                 onClick={(evt) => {
                                     evt.preventDefault();
-                                    this.props.confirmLogout();
+                                    confirmLogoutAction();
                                 }}
                             >
                                 Logout

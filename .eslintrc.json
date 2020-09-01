@@ -33,7 +33,7 @@
     ],
     "max-len": [
       "warn",
-      120
+      240
     ],
     "react/forbid-prop-types": [
       "warn",

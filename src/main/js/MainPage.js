@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect, Route, withRouter } from 'react-router-dom';
+import {
+    Redirect,
+    Route,
+    withRouter
+} from 'react-router-dom';
 import Navigation from 'Navigation';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
@@ -23,7 +27,8 @@ class MainPage extends Component {
     }
 
     componentDidMount() {
-        this.props.getDescriptors();
+        const { getDescriptors: getDescriptorsAction } = this.props;
+        getDescriptorsAction();
     }
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
@@ -51,7 +56,7 @@ class MainPage extends Component {
             return null;
         }
 
-        const routesList = descriptorList.map((descriptor) => {
+        return descriptorList.map((descriptor) => {
             const { urlName, name } = descriptor;
             return (
                 <Route
@@ -61,7 +66,6 @@ class MainPage extends Component {
                 />
             );
         });
-        return routesList;
     }
 
     createConfigurationPage(component, uriPrefix) {
@@ -121,7 +125,8 @@ class MainPage extends Component {
             </div>
         );
 
-        const content = (this.props.fetching) ? spinner : page;
+        const { fetching } = this.props;
+        const content = (fetching) ? spinner : page;
 
         return (
             <div>

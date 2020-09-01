@@ -12,7 +12,6 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/blackducksoftware/blackduck-alert.git",
   "dependencies": {
-    "@babel/parser": "^7.11.5",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-brands-svg-icons": "^5.14.0",
@@ -41,12 +40,13 @@
     "start": "webpack-dev-server --config webpack.dev.config.js -w --hot",
     "build": "webpack --progress",
     "test": "jest --watch",
-    "lint": "eslint --fix src/main/js"
+    "lint": "eslint src/main/js"
   },
   "devDependencies": {
     "@babel/core": "^7.11.5",
     "@babel/eslint-parser": "^7.11.5",
     "@babel/eslint-plugin": "^7.11.5",
+    "@babel/parser": "^7.11.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/polyfill": "^7.11.5",

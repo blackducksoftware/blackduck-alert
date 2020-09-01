@@ -31,20 +31,27 @@ class LoginPage extends Component {
     handleSubmit(evt) {
         evt.preventDefault();
         const { username, password } = this.state;
-        this.props.login(username, password);
+        const { login: loginAction } = this.props;
+        loginAction(username, password);
     }
 
     render() {
+        const {
+            errorMessage, loggingIn
+        } = this.props;
+        const {
+            username, password
+        } = this.state;
         return (
             <div className="wrapper">
                 <div className="loginContainer">
                     <div className="loginBox">
                         <Header />
                         <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
-                            {this.props.errorMessage
+                            {errorMessage
                             && (
                                 <div className="alert alert-danger">
-                                    <p name="configurationMessage">{this.props.errorMessage}</p>
+                                    <p name="configurationMessage">{errorMessage}</p>
                                 </div>
                             )}
 
@@ -54,7 +61,7 @@ class LoginPage extends Component {
                                 name="username"
                                 onChange={this.handleChange}
                                 autoFocus
-                                value={this.state.username}
+                                value={username}
                             />
 
                             <PasswordInput
@@ -62,15 +69,15 @@ class LoginPage extends Component {
                                 label="Password"
                                 name="password"
                                 onChange={this.handleChange}
-                                value={this.state.password}
+                                value={password}
                             />
                             <div className="row">
                                 <div className="col-sm-12 text-right">
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
-                                        {this.props.loggingIn
+                                        {loggingIn
                                         && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
-                                        {!this.props.loggingIn
+                                        {!loggingIn
                                         && <span>&nbsp;&nbsp;</span>}
                                     </div>
                                 </div>
