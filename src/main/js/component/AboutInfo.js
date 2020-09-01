@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import {
+    BootstrapTable,
+    TableHeaderColumn
+} from 'react-bootstrap-table';
 import ReadOnlyField from 'field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -86,8 +89,7 @@ class AboutInfo extends React.Component {
         const distributionLink = (
             <div className="d-inline-flex p-2 col-sm-8">
                 <NavLink to="/alert/jobs/distribution">
-                    All
-                    Distributions
+                    All Distributions
                 </NavLink>
             </div>
         );
