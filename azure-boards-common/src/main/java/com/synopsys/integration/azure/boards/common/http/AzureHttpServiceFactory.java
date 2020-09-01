@@ -59,7 +59,7 @@ public class AzureHttpServiceFactory {
     }
 
     public static AzureHttpService withCredential(String baseUrl, HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
-        return new AzureHttpService(baseUrl, httpTransport.createRequestFactory(oAuthCredential), gson);
+        return new AzureHttpService(baseUrl, httpTransport.createRequestFactory(oAuthCredential), gson, new AzureApiVersionAppender());
     }
 
     private static ApacheHttpTransport defaultHttpTransport(Proxy proxy) {

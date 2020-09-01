@@ -31,25 +31,20 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemCommentRequestModel;
 import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemCommentResponseModel;
 import com.synopsys.integration.azure.boards.common.service.comment.model.WorkItemMultiCommentResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 public class AzureWorkItemCommentService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workItems/{workItemId}/comments");
-
-    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
-    public static final String PATH_PROJECT_REPLACEMENT = "{project}";
-    public static final String PATH_WORK_ITEM_ID_REPLACEMENT = "{workItemId}";
-    public static final String API_VERSION_PREVIEW_3 = "5.1-preview.3";
-
     private final AzureHttpService azureHttpService;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureWorkItemCommentService(AzureHttpService azureHttpService) {
+    public AzureWorkItemCommentService(AzureHttpService azureHttpService, AzureApiVersionAppender azureApiVersionAppender) {
         this.azureHttpService = azureHttpService;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public WorkItemMultiCommentResponseModel getComments(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
@@ -57,32 +52,15 @@ public class AzureWorkItemCommentService {
     }
 
     public WorkItemMultiCommentResponseModel getComments(String organizationName, String projectIdOrName, Integer workItemId, @Nullable String continuationToken) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
-        String apiVersionQueryParam = new AzureSpecTemplate("?{apiVersionParam}={apiVersion}")
-                                          .defineReplacement("{apiVersionParam}", AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME)
-                                          .defineReplacement("{apiVersion}", API_VERSION_PREVIEW_3)
-                                          .populateSpec();
-        requestSpec = requestSpec + apiVersionQueryParam;
+        String requestSpec = createCommentsSpec(organizationName, projectIdOrName, workItemId);
         if (StringUtils.isNotBlank(continuationToken)) {
-            String continuationTokenQueryParam = new AzureSpecTemplate("&continuationToken={continuationToken}")
-                                                     .defineReplacement("{continuationToken}", continuationToken)
-                                                     .populateSpec();
-            requestSpec = requestSpec + continuationTokenQueryParam;
+            requestSpec += String.format("&continuationToken=%s", continuationToken);
         }
         return azureHttpService.get(requestSpec, WorkItemMultiCommentResponseModel.class);
     }
 
     public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_COMMENTS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, API_VERSION_PREVIEW_3);
+        String requestSpec = createCommentsSpec(organizationName, projectIdOrName, workItemId);
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         try {
             WorkItemCommentRequestModel requestModel = new WorkItemCommentRequestModel(commentText);
@@ -93,4 +71,8 @@ public class AzureWorkItemCommentService {
         }
     }
 
+    private String createCommentsSpec(String organizationName, String projectIdOrName, Integer workItemId) {
+        String spec = String.format("/%s/%s/_apis/wit/workItems/%s/comments", organizationName, projectIdOrName, workItemId);
+        return azureApiVersionAppender.appendApiVersion5_1_Preview_3(spec);
+    }
 }

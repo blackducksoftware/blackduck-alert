@@ -28,15 +28,11 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 /**
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20item%20types/list?view=azure-devops-rest-5.1">Documentation</a>
  */
 public class AzureWorkItemTypeService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitemtypes/{type}");
-
     private final AzureHttpService azureHttpService;
 
     public AzureWorkItemTypeService(AzureHttpService azureHttpService) {
@@ -44,20 +40,13 @@ public class AzureWorkItemTypeService {
     }
 
     public AzureArrayResponseModel<WorkItemTypeResponseModel> getWorkItemTypes(String organizationName, String projectIdOrName) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .populateSpec();
+        String requestSpec = String.format("/%s/%s/_apis/wit/workitemtypes", organizationName, projectIdOrName);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemTypeResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public WorkItemTypeResponseModel getWorkItemType(String organizationName, String projectIdOrName, String workItemType) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMTYPES_INDIVIDUAL
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .defineReplacement("{type}", workItemType)
-                                 .populateSpec();
+        String requestSpec = String.format("/%s/%s/_apis/wit/workitemtypes/%s", organizationName, projectIdOrName, workItemType);
         return azureHttpService.get(requestSpec, WorkItemTypeResponseModel.class);
     }
 

@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 /**
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects?view=azure-devops-rest-5.1">Projects</a>
@@ -37,76 +37,54 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/fields/create?view=azure-devops-rest-5.1">Project Fields</a>
  */
 public class AzureProjectService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS = new AzureSpecTemplate("/{organization}/_apis/projects");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECTS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_PROPERTIES = new AzureSpecTemplate("/{organization}/_apis/projects/{projectId}/properties");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_FIELDS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/fields");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_FIELDS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/wit/fields/{fieldNameOrRef}");
-
-    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
-    public static final String PATH_PROJECT_ID_REPLACEMENT = "{projectId}";
-
-    public static final String PROPERTIES_ENDPOINT_API_VERSION = "5.1-preview.1";
-
     private final AzureHttpService azureHttpService;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureProjectService(AzureHttpService azureHttpService) {
+    public AzureProjectService(AzureHttpService azureHttpService, AzureApiVersionAppender azureApiVersionAppender) {
         this.azureHttpService = azureHttpService;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public AzureArrayResponseModel<TeamProjectReferenceResponseModel> getProjects(String organizationName) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECTS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .populateSpec();
+        String requestSpec = String.format("/%s/_apis/projects", organizationName);
         Type responseType = new TypeToken<AzureArrayResponseModel<TeamProjectReferenceResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public TeamProjectResponseModel getProject(String organizationName, String projectId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECTS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_ID_REPLACEMENT, projectId)
-                                 .populateSpec();
+        String requestSpec = String.format("/%s/_apis/projects/%s", organizationName, projectId);
         Type responseType = new TypeToken<TeamProjectResponseModel>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public AzureArrayResponseModel<ProjectPropertyResponseModel> getProjectProperties(String organizationName, String projectId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_PROPERTIES
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_ID_REPLACEMENT, projectId)
-                                 .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, PROPERTIES_ENDPOINT_API_VERSION);
+        String requestSpec = String.format("/%s/_apis/projects/%s/properties", organizationName, projectId);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_1(requestSpec);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProjectPropertyResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public ProjectWorkItemFieldModel createProjectField(String organizationName, String projectNameOrId, ProjectWorkItemFieldModel requestModel) throws IOException, HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_FIELDS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement("{project}", projectNameOrId)
-                                 .populateSpec();
+        String requestSpec = createOrganizationProjectFieldsSpec(organizationName, projectNameOrId);
         return azureHttpService.post(requestSpec, requestModel, ProjectWorkItemFieldModel.class);
     }
 
-    public ProjectWorkItemFieldModel getField(String organizationName, String fieldNameOrRef) throws IOException, HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_FIELDS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement("{fieldNameOrRef}", fieldNameOrRef)
-                                 .populateSpec();
+    public ProjectWorkItemFieldModel getField(String organizationName, String fieldNameOrRef) throws HttpServiceException {
+        String requestSpec = String.format("/%s/_apis/wit/fields/%s", organizationName, fieldNameOrRef);
         Type responseType = new TypeToken<ProjectWorkItemFieldModel>() {}.getType();
 
         return azureHttpService.get(requestSpec, responseType);
     }
 
-    public AzureArrayResponseModel<ProjectWorkItemFieldModel> getProjectFields(String organizationName, String projectNameOrId) throws IOException, HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_FIELDS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement("{project}", projectNameOrId)
-                                 .populateSpec();
+    public AzureArrayResponseModel<ProjectWorkItemFieldModel> getProjectFields(String organizationName, String projectNameOrId) throws HttpServiceException {
+        String requestSpec = createOrganizationProjectFieldsSpec(organizationName, projectNameOrId);
         Type responseType = new TypeToken<AzureArrayResponseModel<ProjectWorkItemFieldModel>>() {}.getType();
 
         return azureHttpService.get(requestSpec, responseType);
+    }
+
+    private String createOrganizationProjectFieldsSpec(String organizationName, String projectNameOrId) {
+        return String.format("/%s/%s/_apis/wit/fields", organizationName, projectNameOrId);
     }
 
 }

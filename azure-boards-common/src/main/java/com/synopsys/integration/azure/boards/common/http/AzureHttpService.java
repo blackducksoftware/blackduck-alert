@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.azure.boards.common.http;
 
+import static com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender.AZURE_API_VERSION_QUERY_PARAM_NAME;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -37,17 +39,16 @@ import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
 
 public class AzureHttpService {
-    public static final String AZURE_API_VERSION_QUERY_PARAM_NAME = "api-version";
-    public static final String AZURE_API_VERSION = "5.1";
-
     private final String baseUrl;
     private final HttpRequestFactory httpRequestFactory;
     private final Gson gson;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureHttpService(String baseUrl, HttpRequestFactory httpRequestFactory, Gson gson) {
+    public AzureHttpService(String baseUrl, HttpRequestFactory httpRequestFactory, Gson gson, AzureApiVersionAppender azureApiVersionAppender) {
         this.baseUrl = sanitizeUrl(baseUrl);
         this.httpRequestFactory = httpRequestFactory;
         this.gson = gson;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public String getBaseUrl() {
@@ -154,18 +155,10 @@ public class AzureHttpService {
             requestUrlBuilder.append("/");
         }
 
-        requestUrlBuilder.append(spec);
-
         if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
-            char queryParamSeparator = '?';
-            if (StringUtils.contains(spec, queryParamSeparator)) {
-                queryParamSeparator = '&';
-            }
-            requestUrlBuilder.append(queryParamSeparator);
-            requestUrlBuilder.append(AZURE_API_VERSION_QUERY_PARAM_NAME);
-            requestUrlBuilder.append('=');
-            requestUrlBuilder.append(AZURE_API_VERSION);
+            spec = azureApiVersionAppender.appendApiVersion5_1(spec);
         }
+        requestUrlBuilder.append(spec);
 
         return new GenericUrl(requestUrlBuilder.toString());
     }

@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
@@ -39,7 +40,6 @@ import com.synopsys.integration.azure.boards.common.service.workitem.request.Wor
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemDeletedResponseModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 /**
  * Documentation:
@@ -47,17 +47,6 @@ import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/comments?view=azure-devops-rest-5.1">Work Item Comments</a>
  */
 public class AzureWorkItemService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/_apis/wit/workitems/{workItemId}");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems?ids={ids}");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/{workItemId}");
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/workitems/${type}");
-
-    public static final String PATH_ORGANIZATION_REPLACEMENT = "{organization}";
-    public static final String PATH_PROJECT_REPLACEMENT = "{project}";
-    public static final String PATH_WORK_ITEM_ID_REPLACEMENT = "{workItemId}";
-    public static final String PATH_TYPE_REPLACEMENT = "{type}";
-    public static final String PATH_IDS_REPLACEMENT = "{ids}";
-
     private final AzureHttpService azureHttpService;
 
     public AzureWorkItemService(AzureHttpService azureHttpService) {
@@ -65,42 +54,24 @@ public class AzureWorkItemService {
     }
 
     public AzureArrayResponseModel<WorkItemResponseModel> getWorkItems(String organizationName, String projectIdOrName, Collection<Integer> workItemIds) throws HttpServiceException {
-        String joinedWorkItemIds = workItemIds
-                                       .stream()
-                                       .map(Number::toString)
-                                       .collect(Collectors.joining(","));
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_IDS_REPLACEMENT, joinedWorkItemIds)
-                                 .populateSpec();
+        String joinedWorkItemIds = StringUtils.join(workItemIds, ",");
+        String requestSpec = String.format("/%s/%s/_apis/wit/workitems?ids=%s", organizationName, projectIdOrName, joinedWorkItemIds);
         Type responseType = new TypeToken<AzureArrayResponseModel<WorkItemResponseModel>>() {}.getType();
         return azureHttpService.get(requestSpec, responseType);
     }
 
     public WorkItemResponseModel getWorkItem(String organizationName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
+        String requestSpec = createWorkItemSpecById(organizationName, workItemId);
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
     public WorkItemResponseModel getWorkItem(String organizationName, String projectIdOrName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
+        String requestSpec = createWorkItemSpecByIdWithProject(organizationName, projectIdOrName, workItemId);
         return azureHttpService.get(requestSpec, WorkItemResponseModel.class);
     }
 
     public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_TYPE
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_TYPE_REPLACEMENT, workItemType)
-                                 .populateSpec();
+        String requestSpec = createWorkItemSpecWithProject(organizationName, projectIdOrName, workItemType);
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
@@ -110,11 +81,7 @@ public class AzureWorkItemService {
     }
 
     public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_PROJECT_REPLACEMENT, projectIdOrName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
+        String requestSpec = createWorkItemSpecByIdWithProject(organizationName, projectIdOrName, workItemId);
         try {
             HttpRequest httpRequest = buildWriteRequest(HttpMethods.PATCH, requestSpec, workItemRequest.getElementOperationModels());
             return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
@@ -124,10 +91,7 @@ public class AzureWorkItemService {
     }
 
     public WorkItemDeletedResponseModel deleteWorkItem(String organizationName, Integer workItemId) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_WORKITEMS_INDIVIDUAL
-                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
-                                 .defineReplacement(PATH_WORK_ITEM_ID_REPLACEMENT, workItemId.toString())
-                                 .populateSpec();
+        String requestSpec = createWorkItemSpecById(organizationName, workItemId);
         return azureHttpService.delete(requestSpec, WorkItemDeletedResponseModel.class);
     }
 
@@ -136,6 +100,18 @@ public class AzureWorkItemService {
         HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
         httpRequest.getHeaders().setContentType("application/json-patch+json");
         return httpRequest;
+    }
+
+    private String createWorkItemSpecWithProject(String organizationName, String projectIdOrName, String workItemType) {
+        return String.format("/%s/%s/_apis/wit/workitems/%s", organizationName, projectIdOrName, workItemType);
+    }
+
+    private String createWorkItemSpecByIdWithProject(String organizationName, String projectIdOrName, Integer workItemId) {
+        return String.format("/%s/%s/_apis/wit/workitems/%s", organizationName, projectIdOrName, workItemId.toString());
+    }
+
+    private String createWorkItemSpecById(String organizationName, Integer workItemId) {
+        return String.format("/%s/_apis/wit/workitems/%s", organizationName, workItemId.toString());
     }
 
 }

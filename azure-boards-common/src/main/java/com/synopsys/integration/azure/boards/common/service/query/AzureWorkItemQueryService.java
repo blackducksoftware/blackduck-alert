@@ -24,28 +24,26 @@ package com.synopsys.integration.azure.boards.common.service.query;
 
 import java.io.IOException;
 
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
-import com.synopsys.integration.azure.boards.common.util.AzureSpecTemplate;
 
 /**
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/wiql?view=azure-devops-rest-5.1">Documentation</a>
  */
 public class AzureWorkItemQueryService {
-    public static final AzureSpecTemplate API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL = new AzureSpecTemplate("/{organization}/{project}/_apis/wit/wiql");
     private final AzureHttpService azureHttpService;
+    private final AzureApiVersionAppender azureApiVersionAppender;
 
-    public AzureWorkItemQueryService(AzureHttpService azureHttpService) {
+    public AzureWorkItemQueryService(AzureHttpService azureHttpService, AzureApiVersionAppender azureApiVersionAppender) {
         this.azureHttpService = azureHttpService;
+        this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
     public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, WorkItemQuery query) throws HttpServiceException {
-        String requestSpec = API_SPEC_ORGANIZATION_PROJECT_TEAM_WIQL
-                                 .defineReplacement("{organization}", organizationName)
-                                 .defineReplacement("{project}", projectIdOrName)
-                                 .populateSpec();
-        requestSpec = String.format("%s?%s=%s", requestSpec, AzureHttpService.AZURE_API_VERSION_QUERY_PARAM_NAME, "5.0");
+        String requestSpec = String.format("/%s/%s/_apis/wit/wiql", organizationName, projectIdOrName);
+        requestSpec = azureApiVersionAppender.appendApiVersion5_0(requestSpec);
         WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
         try {
             return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
