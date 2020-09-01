@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueC
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TransitionHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
@@ -78,7 +79,7 @@ public class AzureBoardsCreateIssueTestAction extends IssueCreatorTestAction {
         AzureBoardsProperties azureBoardsProperties = createAzureBoardProperties(issueTrackerContext);
         AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
-        AzureWorkItemTypeStateService azureWorkItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService);
+        AzureWorkItemTypeStateService azureWorkItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, new AzureApiVersionAppender());
         return new AzureTransitionHandler(gson, azureBoardsProperties, azureWorkItemService, azureWorkItemTypeStateService);
     }
 

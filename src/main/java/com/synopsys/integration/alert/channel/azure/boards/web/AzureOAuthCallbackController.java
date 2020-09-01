@@ -55,6 +55,7 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
@@ -157,7 +158,7 @@ public class AzureOAuthCallbackController {
 
     private void testGetProjects(AzureHttpService azureHttpService, String organizationName, String oAuthRequestKey) {
         try {
-            AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
+            AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
             AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(organizationName);
             Integer projectCount = projects.getCount();
             logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Azure Boards project count: {}"), projectCount);
