@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
@@ -70,8 +71,9 @@ public class AzureBoardsRequestDelegator {
 
         // TODO validate configuration
 
-        AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
-        AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
+        AzureApiVersionAppender azureApiVersionAppender = new AzureApiVersionAppender();
+        AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, azureApiVersionAppender);
+        AzureProcessService azureProcessService = new AzureProcessService(azureHttpService, azureApiVersionAppender);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         AzureCustomFieldManager azureCustomFieldInstaller =
@@ -86,7 +88,7 @@ public class AzureBoardsRequestDelegator {
             new IssueContentLengthValidator(AzureBoardsMessageParser.TITLE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT, AzureBoardsMessageParser.MESSAGE_SIZE_LIMIT);
         AzureWorkItemService azureWorkItemService = new AzureWorkItemService(azureHttpService);
         AzureWorkItemQueryService azureWorkItemQueryService = new AzureWorkItemQueryService(azureHttpService, azureApiVersionAppender);
-        AzureWorkItemCommentService azureWorkItemCommentService = new AzureWorkItemCommentService(azureHttpService);
+        AzureWorkItemCommentService azureWorkItemCommentService = new AzureWorkItemCommentService(azureHttpService, azureApiVersionAppender);
         AzureBoardsIssueHandler issueHandler = new AzureBoardsIssueHandler(workItemContentLengthValidator, azureBoardsProperties, azureBoardsMessageParser, azureWorkItemService, azureWorkItemCommentService, azureWorkItemQueryService);
         return issueHandler.createOrUpdateIssues(azureIssueConfig, requests);
     }
@@ -100,4 +102,5 @@ public class AzureBoardsRequestDelegator {
             throw new IntegrationException("Cannot initialize OAuth for Azure Boards", e);
         }
     }
+
 }
