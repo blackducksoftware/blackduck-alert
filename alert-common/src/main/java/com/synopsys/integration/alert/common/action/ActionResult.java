@@ -24,6 +24,9 @@ package com.synopsys.integration.alert.common.action;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.http.HttpStatus;
 
 public class ActionResult<T> {
@@ -31,35 +34,29 @@ public class ActionResult<T> {
     private String message;
     private T content;
 
-    public ActionResult(HttpStatus httpStatus) {
+    public ActionResult(@NotNull HttpStatus httpStatus) {
         this(httpStatus, null, null);
     }
 
-    public ActionResult(HttpStatus httpStatus, String message) {
+    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable String message) {
         this(httpStatus, message, null);
     }
 
-    public ActionResult(HttpStatus httpStatus, T content) {
+    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable T content) {
         this(httpStatus, null, content);
     }
 
-    public ActionResult(HttpStatus httpStatus, String message, T content) {
+    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable String message, @Nullable T content) {
         this.httpStatus = httpStatus;
         this.content = content;
         this.message = message;
     }
 
-    public boolean isOk() {
-        if (null == httpStatus) {
-            return false;
-        }
+    public boolean isSuccessful() {
         return httpStatus.is2xxSuccessful();
     }
 
     public boolean isError() {
-        if (null == httpStatus) {
-            return false;
-        }
         return httpStatus.isError();
     }
 
@@ -78,5 +75,4 @@ public class ActionResult<T> {
     public boolean hasContent() {
         return getContent().isPresent();
     }
-
 }

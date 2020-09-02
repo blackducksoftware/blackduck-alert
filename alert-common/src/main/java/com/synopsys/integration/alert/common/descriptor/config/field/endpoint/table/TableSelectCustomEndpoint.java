@@ -24,33 +24,27 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
-import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SimpleCustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
 public abstract class TableSelectCustomEndpoint extends SimpleCustomEndpoint<List<?>> {
-    private final ResponseFactory responseFactory;
-    private final Gson gson;
 
-    protected TableSelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
-        super(fieldKey, customEndpointManager, responseFactory);
-        this.responseFactory = responseFactory;
-        this.gson = gson;
+    protected TableSelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
+        super(fieldKey, customEndpointManager);
     }
 
     @Override
-    protected ResponseEntity<String> createErrorResponse(Exception e) {
-        return responseFactory.createInternalServerErrorResponse("", String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
+    protected ActionResult<List<?>> createErrorResponse(Exception e) {
+        return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("An internal issue occurred while trying to retrieve your select data: %s", e.getMessage()));
     }
 
     @Override
-    protected ResponseEntity<String> createSuccessResponse(List<?> response) {
-        String providerOptionsConverted = gson.toJson(response);
-        return responseFactory.createOkContentResponse(providerOptionsConverted);
+    protected ActionResult<List<?>> createSuccessResponse(List<?> response) {
+        return new ActionResult<>(HttpStatus.OK, response);
     }
 
 }

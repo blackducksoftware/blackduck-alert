@@ -29,42 +29,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class EmailCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
-
-    private ResponseFactory responseFactory;
     private ProviderDataAccessor providerDataAccessor;
-    private Gson gson;
 
     @Autowired
-    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ProviderDataAccessor providerDataAccessor, Gson gson) throws AlertException {
-        this.responseFactory = responseFactory;
+    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
         this.providerDataAccessor = providerDataAccessor;
-        this.gson = gson;
-
         customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ResponseEntity<String> createEmailOptions(FieldModel fieldModel) {
+    public ActionResult<List<ProviderUserModel>> createEmailOptions(FieldModel fieldModel) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
             logger.debug("Received provider user email data request with a blank provider config name");
-            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
+            return new ActionResult<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
@@ -72,11 +64,10 @@ public class EmailCustomEndpoint {
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
-            String usersJson = gson.toJson(pageOfUsers);
-            return responseFactory.createOkContentResponse(usersJson);
+            return new ActionResult<>(HttpStatus.OK, pageOfUsers);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 

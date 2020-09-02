@@ -22,31 +22,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import org.springframework.http.ResponseEntity;
-
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public abstract class OAuthCustomEndpoint extends CustomEndpoint<String> {
-    public ResponseFactory responseFactory;
-    public Gson gson;
-
-    public OAuthCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson) throws AlertException {
+public abstract class OAuthCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
+    public OAuthCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         super(fieldKey, customEndpointManager);
-        this.responseFactory = responseFactory;
-        this.gson = gson;
-    }
-
-    protected abstract OAuthEndpointResponse createOAuthResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper);
-
-    @Override
-    public ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        OAuthEndpointResponse response = createOAuthResponse(fieldModel, servletContentWrapper);
-        return responseFactory.createOkContentResponse(gson.toJson(response));
     }
 }

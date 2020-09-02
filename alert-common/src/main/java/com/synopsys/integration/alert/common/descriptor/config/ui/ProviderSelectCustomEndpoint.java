@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -37,7 +36,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.Se
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
@@ -45,8 +43,8 @@ public class ProviderSelectCustomEndpoint extends SelectCustomEndpoint {
     private DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, ResponseFactory responseFactory, Gson gson) throws AlertException {
-        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager, responseFactory, gson);
+    public ProviderSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap) throws AlertException {
+        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager);
         this.descriptorMap = descriptorMap;
     }
 
