@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
@@ -84,12 +83,12 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AuthorizationManager authorizationManager;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
 
-    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
+    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
         AzureBoardsChannelKey azureBoardsChannelKey)
         throws AlertException {
-        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager, responseFactory, gson);
+        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;

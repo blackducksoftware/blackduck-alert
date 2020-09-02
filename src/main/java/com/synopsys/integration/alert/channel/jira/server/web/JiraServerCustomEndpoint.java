@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -72,7 +73,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     }
 
     @Override
-    public ResponseEntity<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
+    public ActionResult<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
@@ -83,22 +84,22 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
                 jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
-                    return responseFactory.createNotFoundResponse(
+                    return new ActionResult<>(HttpStatus.NOT_FOUND,
                         "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage());
                 }
                 createBadRequestIntegrationException(e);
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return responseFactory.createNotFoundResponse("Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
+                return new ActionResult<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
             }
-            return responseFactory.createOkResponse("", "Successfully installed the Alert plugin on Jira server.");
+            return new ActionResult<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira server.");
         } catch (IntegrationException e) {
             return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return responseFactory.createInternalServerErrorResponse("", "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
         }
     }
 
@@ -148,9 +149,9 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
         return false;
     }
 
-    private ResponseEntity<String> createBadRequestIntegrationException(IntegrationException error) {
+    private ActionResult<String> createBadRequestIntegrationException(IntegrationException error) {
         logger.error("There was an issue connecting to Jira server", error);
-        return responseFactory.createBadRequestResponse("", "The following error occurred when connecting to Jira server: " + error.getMessage());
+        return new ActionResult<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira server: " + error.getMessage());
     }
 
 }

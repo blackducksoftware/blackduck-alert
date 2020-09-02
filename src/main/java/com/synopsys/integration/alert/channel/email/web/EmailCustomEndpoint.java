@@ -59,12 +59,12 @@ public class EmailCustomEndpoint {
         customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ActionResult<String> createEmailOptions(FieldModel fieldModel) {
+    public ActionResult<List<ProviderUserModel>> createEmailOptions(FieldModel fieldModel) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
             logger.debug("Received provider user email data request with a blank provider config name");
-            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
+            return new ActionResult<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
@@ -72,11 +72,10 @@ public class EmailCustomEndpoint {
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
-            String usersJson = gson.toJson(pageOfUsers);
-            return responseFactory.createOkContentResponse(usersJson);
+            return new ActionResult<>(HttpStatus.OK, pageOfUsers);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 

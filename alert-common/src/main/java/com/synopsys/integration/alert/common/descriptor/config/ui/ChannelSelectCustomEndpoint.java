@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -38,7 +37,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.Se
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
@@ -48,8 +46,8 @@ public class ChannelSelectCustomEndpoint extends SelectCustomEndpoint {
     private AuthorizationManager authorizationManager;
 
     @Autowired
-    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, DescriptorMap descriptorMap, AuthorizationManager authorizationManager) throws AlertException {
-        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager, responseFactory, gson);
+    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, AuthorizationManager authorizationManager) throws AlertException {
+        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager);
         this.descriptorMap = descriptorMap;
         this.authorizationManager = authorizationManager;
     }

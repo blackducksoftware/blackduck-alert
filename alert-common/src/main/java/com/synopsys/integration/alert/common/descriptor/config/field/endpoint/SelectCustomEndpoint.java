@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 public abstract class SelectCustomEndpoint extends SimpleCustomEndpoint<List<LabelValueSelectOption>> {
 
     public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager, responseFactory);
+        super(fieldKey, customEndpointManager);
     }
 
     @Override

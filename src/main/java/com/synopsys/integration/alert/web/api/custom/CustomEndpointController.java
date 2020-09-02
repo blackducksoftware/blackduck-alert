@@ -70,14 +70,18 @@ public class CustomEndpointController {
         }
 
         HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
-        ActionResult<> result = customEndpointManager.performFunction(key, restModel, servletContentWrapper);
+        ActionResult<?> result = customEndpointManager.performFunction(key, restModel, servletContentWrapper);
         if (result.isOk()) {
-            String content = gson.toJson(result.getContent());
-            return responseFactory.createOkContentResponse(content);
+            if (result.hasContent()) {
+                String content = gson.toJson(result.getContent().get());
+                return responseFactory.createOkContentResponse(content);
+            } else {
+                String message = result.getMessage().orElse("");
+                return responseFactory.createOkResponse("", message);
+            }
         } else {
             String message = result.getMessage().orElse("");
             return responseFactory.createResponse(result.getHttpStatus(), null, message);
         }
     }
-
 }
