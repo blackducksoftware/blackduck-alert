@@ -20,10 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
+package com.synopsys.integration.alert.common.action.endpoint.oauth;
 
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 public abstract class OAuthCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
