@@ -1,5 +1,5 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "allowImportExportEverywhere": true
   },
@@ -33,7 +33,7 @@
     ],
     "max-len": [
       "warn",
-      120
+      240
     ],
     "react/forbid-prop-types": [
       "warn",

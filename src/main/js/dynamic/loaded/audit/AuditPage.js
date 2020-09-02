@@ -15,7 +15,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'field/StatusMessage';
 import '../../../../css/audit.scss';
 
-
 class AuditPage extends Component {
     constructor(props) {
         super(props);
@@ -164,7 +163,6 @@ class AuditPage extends Component {
         this.reloadAuditEntries(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
 
-
     reloadAuditEntries(currentPage, sizePerPage, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
         let page = 1;
         if (currentPage) {
@@ -219,12 +217,14 @@ class AuditPage extends Component {
 
     resendButton(cell, row) {
         if (this.isResendAllowed() && row.content) {
-            return (<RefreshTableCellFormatter
-                id="audit-refresh-cell"
-                handleButtonClicked={this.onResendClick}
-                currentRowSelected={row}
-                buttonText="Re-send"
-            />);
+            return (
+                <RefreshTableCellFormatter
+                    id="audit-refresh-cell"
+                    handleButtonClicked={this.onResendClick}
+                    currentRowSelected={row}
+                    buttonText="Re-send"
+                />
+            );
         }
         return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
     }
@@ -234,7 +234,7 @@ class AuditPage extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_AUDIT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.EXECUTE));
+                return descriptorList.some((descriptor) => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.EXECUTE));
             }
         }
 
@@ -244,20 +244,21 @@ class AuditPage extends Component {
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
-                {!this.props.autoRefresh &&
-                <div
-                    id="audit-refresh-button"
-                    role="button"
-                    tabIndex={0}
-                    className="btn btn-info react-bs-table-add-btn tableButton"
-                    onClick={this.refreshAuditEntries}
-                >
-                    <span>
-                        <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
-                        Refresh
-                    </span>
-                </div>
-                }
+                {!this.props.autoRefresh
+                && (
+                    <div
+                        id="audit-refresh-button"
+                        role="button"
+                        tabIndex={0}
+                        className="btn btn-info react-bs-table-add-btn tableButton"
+                        onClick={this.refreshAuditEntries}
+                    >
+                        <span>
+                            <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                            Refresh
+                        </span>
+                    </div>
+                )}
             </ButtonGroup>
         );
     }
@@ -268,7 +269,7 @@ class AuditPage extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
+                const filteredList = descriptorList.filter((descriptor) => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="audit-provider-icon" descriptor={foundDescriptor} />);
@@ -340,8 +341,11 @@ class AuditPage extends Component {
                         errorMessage={this.props.errorMessage}
                         onlyShowSentNotifications={this.state.onlyShowSentNotifications}
                     />
-                    <StatusMessage id="audit-status-message" actionMessage={this.props.message}
-                                   errorMessage={this.props.errorMessage} />
+                    <StatusMessage
+                        id="audit-status-message"
+                        actionMessage={this.props.message}
+                        errorMessage={this.props.errorMessage}
+                    />
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
@@ -361,40 +365,52 @@ class AuditPage extends Component {
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.providerColumnDataFormat}
-                        >Provider</TableHeaderColumn>
+                        >
+                            Provider
+                        </TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="notificationType"
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.notificationTypeDataFormat}
-                        >Notification Types</TableHeaderColumn>
+                        >
+                            Notification Types
+                        </TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="createdAt"
                             dataSort
                             columnTitle
                             columnClassName="tableCell"
-                        >Time Retrieved</TableHeaderColumn>
+                        >
+                            Time Retrieved
+                        </TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="lastSent"
                             dataSort
                             columnTitle
                             columnClassName="tableCell"
-                        >Last Sent</TableHeaderColumn>
+                        >
+                            Last Sent
+                        </TableHeaderColumn>
                         <TableHeaderColumn
                             dataField="overallStatus"
                             dataSort
                             columnClassName="tableCell"
                             dataFormat={this.statusColumnDataFormat}
-                        >Status</TableHeaderColumn>
+                        >
+                            Status
+                        </TableHeaderColumn>
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 
-                    {this.props.inProgress && <div className="progressIcon">
-                        <span className="fa-layers fa-fw">
-                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                        </span>
-                    </div>}
+                    {this.props.inProgress && (
+                        <div className="progressIcon">
+                            <span className="fa-layers fa-fw">
+                                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -428,7 +444,7 @@ AuditPage.propTypes = {
     label: PropTypes.string.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     message: state.audit.message,
     errorMessage: state.audit.error.message,
     inProgress: state.audit.inProgress,
@@ -439,7 +455,7 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     getAuditData: (totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(getAuditData(totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications)),
     resendNotification: (notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(resendNotification(notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications))
 });

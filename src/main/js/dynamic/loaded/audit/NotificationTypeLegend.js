@@ -16,9 +16,9 @@ const NotificationTypeLegend = ({ notificationTypes }) => {
                 </Popover>
             )}
         >
-        <span>
-            {notificationTypeMessage}
-        </span>
+            <span>
+                {notificationTypeMessage}
+            </span>
         </OverlayTrigger>
     );
 };

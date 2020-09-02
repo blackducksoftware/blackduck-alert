@@ -25,7 +25,6 @@ export const KEY_PROVIDER_CONFIG_NAME = 'provider.common.config.name';
 
 export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 
-
 class DistributionConfiguration extends Component {
     constructor(props) {
         super(props);
@@ -38,7 +37,7 @@ class DistributionConfiguration extends Component {
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
 
-        const defaultDescriptor = this.props.descriptors.find(descriptor => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const defaultDescriptor = this.props.descriptors.find((descriptor) => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const { fields, context, name } = defaultDescriptor;
         this.props.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, name);
         const emptyFieldModel = FieldModelUtilities.createFieldModelWithDefaults(fields, context, name);
@@ -74,11 +73,11 @@ class DistributionConfiguration extends Component {
                 this.loading = false;
                 const { job } = this.props;
                 if (job && job.fieldModels) {
-                    const channelModel = this.props.job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
+                    const channelModel = this.props.job.fieldModels.find((model) => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
-                    const providerModel = this.props.job.fieldModels.find(model => providerName === model.descriptorName);
-                    const newChannel = this.props.descriptors.find(descriptor => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-                    const newProvider = this.props.descriptors.find(descriptor => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    const providerModel = this.props.job.fieldModels.find((model) => providerName === model.descriptorName);
+                    const newChannel = this.props.descriptors.find((descriptor) => descriptor.name === channelModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+                    const newProvider = this.props.descriptors.find((descriptor) => descriptor.name === providerModel.descriptorName && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
                     this.props.checkDescriptorForGlobalConfig(KEY_CHANNEL_NAME, newChannel.name);
                     this.props.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
                     this.setState({
@@ -98,9 +97,9 @@ class DistributionConfiguration extends Component {
         const prevChannelName = currentChannel ? currentChannel.name : '';
 
         if (selectedChannelOption && prevChannelName !== selectedChannelOption) {
-            const newChannel = this.props.descriptors.find(descriptor => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const newChannel = this.props.descriptors.find((descriptor) => descriptor.name === selectedChannelOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const emptyChannelConfig = FieldModelUtilities.createFieldModelWithDefaults(newChannel.fields, newChannel.context, newChannel.name);
-            const updatedChannelConfig = Object.assign({}, FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption));
+            const updatedChannelConfig = { ...FieldModelUtilities.updateFieldModelSingleValue(emptyChannelConfig, KEY_CHANNEL_NAME, selectedChannelOption) };
             const name = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_NAME) || '';
             const frequency = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_FREQUENCY) || '';
             const provider = FieldModelUtilities.getFieldModelSingleValue(channelConfig, KEY_PROVIDER_NAME) || '';
@@ -118,7 +117,7 @@ class DistributionConfiguration extends Component {
         const prevProviderName = currentProvider ? currentProvider.name : '';
 
         if (selectedProviderOption && prevProviderName !== selectedProviderOption) {
-            const newProvider = this.props.descriptors.find(descriptor => descriptor.name === selectedProviderOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const newProvider = this.props.descriptors.find((descriptor) => descriptor.name === selectedProviderOption && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const emptyProviderConfig = FieldModelUtilities.createFieldModelWithDefaults(newProvider.fields, newProvider.context, newProvider.name);
             this.props.checkDescriptorForGlobalConfig(KEY_PROVIDER_NAME, newProvider.name);
             this.setState({
@@ -136,12 +135,12 @@ class DistributionConfiguration extends Component {
 
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
-        return Object.assign({}, {
+        return {
             fieldModels: [
                 channelConfig,
                 providerConfig
             ]
-        });
+        };
     }
 
     handleTestSubmit(event) {
@@ -176,7 +175,7 @@ class DistributionConfiguration extends Component {
         const {
             providerConfig, channelConfig, currentProvider
         } = this.state;
-        const configNameFields = currentProvider.fields.filter(field => field.key === KEY_PROVIDER_CONFIG_NAME);
+        const configNameFields = currentProvider.fields.filter((field) => field.key === KEY_PROVIDER_CONFIG_NAME);
         return (
             <div>
                 <FieldsPanel
@@ -187,7 +186,8 @@ class DistributionConfiguration extends Component {
                     self={this}
                     stateName="providerConfig"
                 />
-            </div>);
+            </div>
+        );
     }
 
     renderProviderForm() {
@@ -197,7 +197,7 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const channelDescriptorName = channelConfig && channelConfig.descriptorName;
-        const providerFields = currentProvider.fields.filter(field => field.key !== KEY_PROVIDER_CONFIG_NAME);
+        const providerFields = currentProvider.fields.filter((field) => field.key !== KEY_PROVIDER_CONFIG_NAME);
         return (
             <div>
                 <FieldsPanel
@@ -227,14 +227,20 @@ class DistributionConfiguration extends Component {
                     handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}
                 />
-                <p id="distribution-configuration-message"
-                   name="configurationMessage">{this.props.configurationMessage}</p>
+                <p
+                    id="distribution-configuration-message"
+                    name="configurationMessage"
+                >
+                    {this.props.configurationMessage}
+                </p>
             </div>
         );
     }
 
     render() {
-        const { providerConfig, channelConfig, currentProvider, currentChannel } = this.state;
+        const {
+            providerConfig, channelConfig, currentProvider, currentChannel
+        } = this.state;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
 
         let jobAction = 'New';
@@ -243,16 +249,15 @@ class DistributionConfiguration extends Component {
         }
         const modalTitle = `${jobAction} Distribution Job`;
 
-
-        const commonFields = currentChannel.fields.filter(field => COMMON_KEYS.includes(field.key));
-        const channelFields = currentChannel.fields.filter(field => field.key !== KEY_PROVIDER_NAME && !COMMON_KEYS.includes(field.key));
+        const commonFields = currentChannel.fields.filter((field) => COMMON_KEYS.includes(field.key));
+        const channelFields = currentChannel.fields.filter((field) => field.key !== KEY_PROVIDER_NAME && !COMMON_KEYS.includes(field.key));
 
         return (
             <div
-                onKeyDown={e => e.stopPropagation()}
-                onClick={e => e.stopPropagation()}
-                onFocus={e => e.stopPropagation()}
-                onMouseOver={e => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
+                onMouseOver={(e) => e.stopPropagation()}
             >
                 <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
@@ -268,16 +273,17 @@ class DistributionConfiguration extends Component {
                                 stateName="channelConfig"
                             />
                             {currentChannel && selectedProvider && this.renderProviderConfigNameForm()}
-                            {currentChannel && selectedProvider &&
-                            <FieldsPanel
-                                descriptorFields={channelFields}
-                                metadata={{ additionalFields: providerConfig.keyToValues }}
-                                currentConfig={channelConfig}
-                                fieldErrors={this.props.fieldErrors}
-                                self={this}
-                                stateName="channelConfig"
-                            />
-                            }
+                            {currentChannel && selectedProvider
+                            && (
+                                <FieldsPanel
+                                    descriptorFields={channelFields}
+                                    metadata={{ additionalFields: providerConfig.keyToValues }}
+                                    currentConfig={channelConfig}
+                                    fieldErrors={this.props.fieldErrors}
+                                    self={this}
+                                    stateName="channelConfig"
+                                />
+                            )}
                             {currentChannel && selectedProvider && this.renderProviderForm()}
                         </form>
                     </Modal.Body>
@@ -323,15 +329,15 @@ DistributionConfiguration.defaultProps = {
     isUpdatingJob: false
 };
 
-const mapDispatchToProps = dispatch => ({
-    getDistributionJob: id => dispatch(getDistributionJob(id)),
-    saveDistributionJob: config => dispatch(saveDistributionJob(config)),
-    updateDistributionJob: config => dispatch(updateDistributionJob(config)),
-    testDistributionJob: config => dispatch(testDistributionJob(config)),
+const mapDispatchToProps = (dispatch) => ({
+    getDistributionJob: (id) => dispatch(getDistributionJob(id)),
+    saveDistributionJob: (config) => dispatch(saveDistributionJob(config)),
+    updateDistributionJob: (config) => dispatch(updateDistributionJob(config)),
+    testDistributionJob: (config) => dispatch(testDistributionJob(config)),
     checkDescriptorForGlobalConfig: (fieldErrorName, descriptorName) => dispatch(checkDescriptorForGlobalConfig(fieldErrorName, descriptorName))
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error.fieldErrors,
     fetching: state.distributionConfigs.fetching,

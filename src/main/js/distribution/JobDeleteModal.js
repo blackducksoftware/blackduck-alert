@@ -11,7 +11,6 @@ class JobDeleteModal extends Component {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -58,27 +57,64 @@ class JobDeleteModal extends Component {
                                 bodyContainerClass="tableScrollableBody"
                             >
                                 <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                                <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution
-                                    Id</TableHeaderColumn>
-                                <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution
-                                    Job</TableHeaderColumn>
-                                <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell"
-                                                   dataFormat={this.props.typeColumnDataFormat}>Type</TableHeaderColumn>
-                                <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell"
-                                                   dataFormat={this.props.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                                <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell"
-                                                   dataFormat={this.props.frequencyColumnDataFormat}>Frequency
-                                    Type</TableHeaderColumn>
-                                <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last
-                                    Run</TableHeaderColumn>
-                                <TableHeaderColumn dataField="status" dataSort columnTitle
-                                                   columnClassName={this.props.statusColumnClassNameFormat}>Status</TableHeaderColumn>
+                                <TableHeaderColumn dataField="distributionConfigId" hidden>
+                                    Distribution
+                                    Id
+                                </TableHeaderColumn>
+                                <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
+                                    Distribution
+                                    Job
+                                </TableHeaderColumn>
+                                <TableHeaderColumn
+                                    dataField="distributionType"
+                                    dataSort
+                                    columnClassName="tableCell"
+                                    dataFormat={this.props.typeColumnDataFormat}
+                                >
+                                    Type
+                                </TableHeaderColumn>
+                                <TableHeaderColumn
+                                    dataField="providerName"
+                                    dataSort
+                                    columnClassName="tableCell"
+                                    dataFormat={this.props.providerColumnDataFormat}
+                                >
+                                    Provider
+                                </TableHeaderColumn>
+                                <TableHeaderColumn
+                                    dataField="frequency"
+                                    dataSort
+                                    columnClassName="tableCell"
+                                    dataFormat={this.props.frequencyColumnDataFormat}
+                                >
+                                    Frequency
+                                    Type
+                                </TableHeaderColumn>
+                                <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
+                                    Last
+                                    Run
+                                </TableHeaderColumn>
+                                <TableHeaderColumn
+                                    dataField="status"
+                                    dataSort
+                                    columnTitle
+                                    columnClassName={this.props.statusColumnClassNameFormat}
+                                >
+                                    Status
+                                </TableHeaderColumn>
                             </BootstrapTable>
                         </div>
                         <p id="jobDeleteMessage" name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
-                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-delete-cancel"
-                                       submitId="job-delete-submit" submitLabel="Confirm" includeSave includeCancel
-                                       onCancelClick={this.handleClose} isFixed={false} />
+                        <ConfigButtons
+                            performingAction={this.props.inProgress}
+                            cancelId="job-delete-cancel"
+                            submitId="job-delete-submit"
+                            submitLabel="Confirm"
+                            includeSave
+                            includeCancel
+                            onCancelClick={this.handleClose}
+                            isFixed={false}
+                        />
                     </form>
                 </Modal.Body>
             </Modal>
@@ -109,14 +145,14 @@ JobDeleteModal.defaultProps = {
     deleteSuccess: false
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     jobDeleteMessage: state.distributions.jobDeleteMessage,
     deleteSuccess: state.distributions.deleteSuccess,
     inProgress: state.distributions.inProgress
 });
 
-const mapDispatchToProps = dispatch => ({
-    deleteDistributionJob: job => dispatch(deleteDistributionJob(job))
+const mapDispatchToProps = (dispatch) => ({
+    deleteDistributionJob: (job) => dispatch(deleteDistributionJob(job))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobDeleteModal);

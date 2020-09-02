@@ -50,31 +50,33 @@ class OAuthEndpointButtonField extends Component {
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
             response.json()
-            .then((data) => {
-                const { httpStatus, authenticated, authorizationUrl, message } = data;
-                const target = {
-                    name: [fieldKey],
-                    checked: true,
-                    type: 'checkbox'
-                };
-                onChange({ target });
-                const okRequest = HTTPErrorUtils.isOk(httpStatus);
-                this.setState({
-                    authenticated
-                });
-                if (okRequest) {
-                    // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
-                    window.location.replace(authorizationUrl);
-                } else {
+                .then((data) => {
+                    const {
+                        httpStatus, authenticated, authorizationUrl, message
+                    } = data;
+                    const target = {
+                        name: [fieldKey],
+                        checked: true,
+                        type: 'checkbox'
+                    };
+                    onChange({ target });
+                    const okRequest = HTTPErrorUtils.isOk(httpStatus);
                     this.setState({
-                        fieldError: {
-                            severity: 'ERROR',
-                            fieldMessage: message,
-                            progress: false
-                        }
+                        authenticated
                     });
-                }
-            });
+                    if (okRequest) {
+                    // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
+                        window.location.replace(authorizationUrl);
+                    } else {
+                        this.setState({
+                            fieldError: {
+                                severity: 'ERROR',
+                                fieldMessage: message,
+                                progress: false
+                            }
+                        });
+                    }
+                });
         });
     }
 
@@ -104,11 +106,11 @@ class OAuthEndpointButtonField extends Component {
                     onClick={this.flipShowModal}
                     disabled={readOnly}
                     performingAction={progress}
-                >{buttonLabel}
+                >
+                    {buttonLabel}
                 </GeneralButton>
-                {success &&
-                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
-                }
+                {success
+                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
             </div>
         );
@@ -163,7 +165,7 @@ OAuthEndpointButtonField.defaultProps = {
     statusMessage: 'Success'
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 

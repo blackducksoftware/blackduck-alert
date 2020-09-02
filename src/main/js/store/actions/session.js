@@ -87,7 +87,7 @@ export function verifyLogin() {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({ csrfToken: token }));
             }
-        }).catch(error => console.log(error));
+        }).catch((error) => console.log(error));
     };
 }
 
@@ -100,12 +100,12 @@ export function verifySaml() {
             if (!response.ok) {
                 dispatch(loggedOut());
             } else {
-                response.json().then(body => {
+                response.json().then((body) => {
                     const { saml_enabled } = body;
                     dispatch(samlEnabled(Boolean(saml_enabled)));
                 });
             }
-        }).catch(error => console.log(error))
+        }).catch((error) => console.log(error));
     };
 }
 

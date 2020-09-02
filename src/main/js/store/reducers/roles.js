@@ -26,77 +26,87 @@ const initialState = {
 const roles = (state = initialState, action) => {
     switch (action.type) {
         case USER_MANAGEMENT_ROLE_DELETE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_DELETED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: true,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_DELETING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_FETCHED_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 data: action.data,
                 fetching: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_FETCHING_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 data: [],
                 fetching: true,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 roleError: action.roleError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: 'ERROR'
-            });
+            };
         case USER_MANAGEMENT_ROLE_SAVED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: 'SAVED'
-            });
+            };
         case USER_MANAGEMENT_ROLE_SAVING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 saveStatus: 'SAVING'
-            });
+            };
         case USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS: {
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 roleError: null,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 saveStatus: ''
-            });
+            };
         }
         case SERIALIZE:
             return initialState;

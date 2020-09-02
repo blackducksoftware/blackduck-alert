@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Modal } from "react-bootstrap";
-import TextInput from "field/input/TextInput";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import { Modal } from 'react-bootstrap';
+import TextInput from 'field/input/TextInput';
+import PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { CONTEXT_TYPE } from "util/descriptorUtilities";
+import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 
 const TOPIC_ID = 'channel.common.custom.message.topic';
 const MESSAGE_ID = 'channel.common.custom.message.content';
@@ -12,7 +12,6 @@ const MESSAGE_ERROR_NAME = 'messageError';
 
 const DEFAULT_TOPIC = 'Alert Test Message';
 const DEFAULT_MESSAGE = 'Test Message Content';
-
 
 class JobCustomMessageModal extends Component {
     constructor(props) {
@@ -30,7 +29,7 @@ class JobCustomMessageModal extends Component {
     }
 
     createCustomMessageFieldModel(jobFieldModel) {
-        const fieldModel = jobFieldModel.fieldModels.find(model => model.descriptorName === this.props.channelDescriptorName);
+        const fieldModel = jobFieldModel.fieldModels.find((model) => model.descriptorName === this.props.channelDescriptorName);
         let newModel = FieldModelUtilities.createEmptyFieldModel([TOPIC_ID, MESSAGE_ID], CONTEXT_TYPE.DISTRIBUTION, this.props.channelDescriptorName);
         newModel = FieldModelUtilities.combineFieldModels(newModel, fieldModel);
         newModel = FieldModelUtilities.updateFieldModelSingleValue(newModel, TOPIC_ID, this.state.topicName);
@@ -89,7 +88,7 @@ class JobCustomMessageModal extends Component {
         };
         const customMessageFieldModel = this.createCustomMessageFieldModel(jobFieldModel);
         newJobFieldModel.fieldModels.push(customMessageFieldModel);
-        const otherModels = jobFieldModel.fieldModels.filter(model => model.descriptorName !== this.props.channelDescriptorName);
+        const otherModels = jobFieldModel.fieldModels.filter((model) => model.descriptorName !== this.props.channelDescriptorName);
         newJobFieldModel.fieldModels = newJobFieldModel.fieldModels.concat(otherModels);
         this.props.sendMessage(newJobFieldModel, destination);
     }
@@ -134,9 +133,11 @@ class JobCustomMessageModal extends Component {
                         type="button"
                         className="btn btn-primary"
                         onClick={this.handleSendMessage}
-                    >Send Message
+                    >
+                        Send Message
                     </button>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>
+                        Cancel
                     </button>
                 </Modal.Footer>
             </Modal>

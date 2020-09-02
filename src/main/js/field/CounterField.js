@@ -31,7 +31,7 @@ class CounterField extends Component {
     }
 
     render() {
-        const updatedCount = Object.assign({}, this.props, { value: this.state.currentTime });
+        const updatedCount = { ...this.props, value: this.state.currentTime };
         return (
             <div>
                 <ReadOnlyField {...updatedCount} />
@@ -47,6 +47,6 @@ CounterField.propTypes = {
 
 CounterField.defaultProps = {
     value: ''
-}
+};
 
 export default CounterField;

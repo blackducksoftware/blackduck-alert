@@ -22,12 +22,13 @@ class ConfigurationLabel extends Component {
                     </h1>
                 </div>
                 <div className="timeStampContainer">
-                    {lastUpdated &&
-                    <div>
-                        <label className="text-right">Last Updated:</label>
-                        <div className="d-inline-flex p-2">{lastUpdated}</div>
-                    </div>
-                    }
+                    {lastUpdated
+                    && (
+                        <div>
+                            <label className="text-right">Last Updated:</label>
+                            <div className="d-inline-flex p-2">{lastUpdated}</div>
+                        </div>
+                    )}
                 </div>
                 <div className="descriptorDescription">
                     {description}

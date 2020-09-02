@@ -108,29 +108,29 @@ export function fetchRoles() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchedAllRoles(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(fetchedAllRoles(responseData));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                                let message = '';
+                                if (responseData && responseData.message) {
+                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                    message = responseData.message.toString();
+                                }
+                                return fetchingAllRolesError(message);
+                            }));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                        return fetchingAllRolesError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllRolesError(error));
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllRolesError(error));
-        });
     };
 }
 
@@ -150,20 +150,20 @@ export function saveRole(role) {
         }
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(savedRole());
-                    dispatch(fetchRoles());
-                } else {
-                    const defaultHandler = () => saveRoleError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(savedRole());
+                        dispatch(fetchRoles());
+                    } else {
+                        const defaultHandler = () => saveRoleError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 
@@ -177,19 +177,19 @@ export function deleteRole(roleId) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(deletedRole());
-                } else {
-                    const defaultHandler = () => deletingRoleError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(deletedRole());
+                    } else {
+                        const defaultHandler = () => deletingRoleError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 

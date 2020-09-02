@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 
 import about from 'store/reducers/about';
 import audit from 'store/reducers/audit';
-import certificates from "store/reducers/certificates";
+import certificates from 'store/reducers/certificates';
 import descriptors from 'store/reducers/descriptors';
 import distributions from 'store/reducers/distributions';
 import distributionConfigs from 'store/reducers/distributionConfigs';
@@ -14,7 +14,6 @@ import globalConfiguration from 'store/reducers/globalConfiguration';
 import roles from 'store/reducers/roles';
 import tasks from 'store/reducers/tasks';
 import users from 'store/reducers/users';
-
 
 const rootReducer = combineReducers({
     about,

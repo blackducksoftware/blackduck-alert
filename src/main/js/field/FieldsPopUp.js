@@ -36,13 +36,15 @@ class FieldsPopUp extends Component {
         } = this.props;
         const { modalConfig, fieldErrors } = this.state;
 
-        const fieldsPanel = (<FieldsPanel
-            descriptorFields={fields}
-            currentConfig={modalConfig}
-            fieldErrors={fieldErrors}
-            self={this}
-            stateName="modalConfig"
-        />);
+        const fieldsPanel = (
+            <FieldsPanel
+                descriptorFields={fields}
+                currentConfig={modalConfig}
+                fieldErrors={fieldErrors}
+                self={this}
+                stateName="modalConfig"
+            />
+        );
         return (
             <div>
                 <PopUp
@@ -52,7 +54,9 @@ class FieldsPopUp extends Component {
                     okLabel={okLabel}
                     onCancel={this.internalCancel}
                     handleSubmit={this.internalHandleSubmit}
-                >{fieldsPanel}</PopUp>
+                >
+                    {fieldsPanel}
+                </PopUp>
             </div>
         );
     }
