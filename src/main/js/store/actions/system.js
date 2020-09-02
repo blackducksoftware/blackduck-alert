@@ -27,17 +27,17 @@ export function getLatestMessages() {
     return (dispatch) => {
         dispatch(fetchingLatestSystemMessages());
         fetch(LATEST_MESSAGES_URL)
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(latestSystemMessagesFetched(responseData));
-                } else {
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
-        })
-        .catch(console.error);
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(latestSystemMessagesFetched(responseData));
+                        } else {
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
+                        }
+                    });
+            })
+            .catch(console.error);
     };
 }

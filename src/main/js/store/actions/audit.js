@@ -93,23 +93,21 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(auditDataFetched(responseData.totalPages, responseData.content));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        return auditDataFetchError(responseData.message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(auditDataFetched(responseData.totalPages, responseData.content));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => auditDataFetchError(responseData.message)));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
+                        }
+                    });
+            })
+            .catch((error) => {
+                dispatch(auditDataFetchError(error));
             });
-        })
-        .catch((error) => {
-            dispatch(auditDataFetchError(error));
-        });
     };
 }
 
@@ -132,20 +130,18 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(auditResentSuccessfully());
-                    dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        return auditResendError(responseData.message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
-        }).catch(console.error);
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(auditResentSuccessfully());
+                            dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => auditResendError(responseData.message)));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
+                        }
+                    });
+            }).catch(console.error);
     };
 }

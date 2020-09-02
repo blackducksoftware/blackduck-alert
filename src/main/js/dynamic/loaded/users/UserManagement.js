@@ -8,22 +8,21 @@ import UserTable from 'dynamic/loaded/users/UserTable';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class UserManagement extends Component {
-
     constructor(props) {
         super(props);
-
     }
 
     render() {
         const { label, description, descriptors } = this.props;
-        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL)
+        const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
         return (
             <div>
                 <ConfigurationLabel
                     configurationName={label}
-                    description={description} />
+                    description={description}
+                />
                 <Tabs defaultActiveKey={1} id="user-management-tabs">
                     <Tab eventKey={1} title="Users">
                         <UserTable canCreate={canCreate} canDelete={canDelete} />
@@ -43,7 +42,7 @@ UserManagement.propTypes = {
     label: PropTypes.string.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items
 });
 

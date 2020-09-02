@@ -16,7 +16,7 @@ function descriptorsFetched(descriptors) {
         const sortedList = descriptors.sort((first, second) => {
             if (first.label < second.label) {
                 return -1;
-            } else if (first.label > second.label) {
+            } if (first.label > second.label) {
                 return 1;
             }
             return 0;
@@ -52,19 +52,19 @@ export function getDescriptors() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(descriptorsFetched(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(responseData.message)));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(descriptorsFetched(responseData));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(responseData.message)));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
+                        }
+                    });
+            }).catch((error) => {
+                dispatch(descriptorsError(error));
             });
-        }).catch((error) => {
-            dispatch(descriptorsError(error));
-        });
     };
 }

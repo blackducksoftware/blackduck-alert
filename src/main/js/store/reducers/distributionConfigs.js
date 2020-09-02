@@ -33,7 +33,8 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case DISTRIBUTION_JOB_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: true,
                 saving: false,
                 inProgress: true,
@@ -41,10 +42,11 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: '',
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case DISTRIBUTION_JOB_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -53,10 +55,11 @@ const config = (state = initialState, action) => {
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 job: action.job
-            });
+            };
 
         case DISTRIBUTION_JOB_FETCH_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -64,11 +67,12 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: action.message,
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
 
         case DISTRIBUTION_JOB_UPDATING:
         case DISTRIBUTION_JOB_SAVING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: true,
                 inProgress: true,
@@ -77,11 +81,12 @@ const config = (state = initialState, action) => {
                 configurationMessage: 'Saving...',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 job: action.job
-            });
+            };
 
         case DISTRIBUTION_JOB_UPDATED:
         case DISTRIBUTION_JOB_SAVED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -90,11 +95,12 @@ const config = (state = initialState, action) => {
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 ...action
-            });
+            };
 
         case DISTRIBUTION_JOB_UPDATE_ERROR:
         case DISTRIBUTION_JOB_SAVE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -102,10 +108,11 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: action.message,
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
 
         case DISTRIBUTION_JOB_TESTING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: true,
@@ -113,10 +120,11 @@ const config = (state = initialState, action) => {
                 testingConfig: true,
                 configurationMessage: 'Testing...',
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case DISTRIBUTION_JOB_TEST_SUCCESS:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -124,10 +132,11 @@ const config = (state = initialState, action) => {
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case DISTRIBUTION_JOB_TEST_FAILURE:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 saving: false,
                 inProgress: false,
@@ -135,21 +144,21 @@ const config = (state = initialState, action) => {
                 testingConfig: true,
                 configurationMessage: action.message,
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
-            return Object.assign({}, state, {
-                inProgress: true
-            });
+            return { ...state, inProgress: true };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 error: HTTPErrorUtils.combineErrorObjects(state.error, HTTPErrorUtils.createErrorObject(action))
-            });
+            };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_FAILURE:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 error: HTTPErrorUtils.combineErrorObjects(state.error, HTTPErrorUtils.createErrorObject(action))
-            });
+            };
         case SERIALIZE:
             return initialState;
 

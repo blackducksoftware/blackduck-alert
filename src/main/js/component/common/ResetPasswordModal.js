@@ -28,26 +28,26 @@ class ResetPasswordModal extends Component {
     }
 
     render() {
-        return (<Modal show={this.props.showResetModal} onHide={this.props.cancelResetModal}>
-            <Modal.Header closeButton>
-                <Modal.Title>Send Password Reset Email</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <TextInput id="resetUsername" label="Username" name="resetUsername" value={this.state.resetUsername} onChange={this.handleChange} />
-            </Modal.Body>
-            <Modal.Footer>
-                <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelResetModal}>Cancel</button>
-                <button id="testSend" type="button" className="btn btn-primary" onClick={this.handlePasswordReset}>Reset Password</button>
-                <div className="progressIcon">
-                    {this.props.resettingPassword &&
-                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                    }
-                    {!this.props.resettingPassword &&
-                    <span>&nbsp;&nbsp;</span>
-                    }
-                </div>
-            </Modal.Footer>
-        </Modal>);
+        return (
+            <Modal show={this.props.showResetModal} onHide={this.props.cancelResetModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Send Password Reset Email</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <TextInput id="resetUsername" label="Username" name="resetUsername" value={this.state.resetUsername} onChange={this.handleChange} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelResetModal}>Cancel</button>
+                    <button id="testSend" type="button" className="btn btn-primary" onClick={this.handlePasswordReset}>Reset Password</button>
+                    <div className="progressIcon">
+                        {this.props.resettingPassword
+                    && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                        {!this.props.resettingPassword
+                    && <span>&nbsp;&nbsp;</span>}
+                    </div>
+                </Modal.Footer>
+            </Modal>
+        );
     }
 }
 
@@ -58,7 +58,7 @@ ResetPasswordModal.propTypes = {
     resettingPassword: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     showResetModal: state.system.showPasswordResetModal
 });
 

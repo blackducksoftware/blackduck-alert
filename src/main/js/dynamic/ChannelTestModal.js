@@ -60,11 +60,12 @@ class ChannelTestModal extends Component {
                     <Modal.Title>Test Your Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <FieldsPanel descriptorFields={testFields}
-                                 self={this}
-                                 fieldErrors={null}
-                                 stateName='testFieldModel'
-                                 currentConfig={this.state.testFieldModel}
+                    <FieldsPanel
+                        descriptorFields={testFields}
+                        self={this}
+                        fieldErrors={null}
+                        stateName="testFieldModel"
+                        currentConfig={this.state.testFieldModel}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -73,9 +74,11 @@ class ChannelTestModal extends Component {
                         type="button"
                         className="btn btn-primary"
                         onClick={this.handleSendTestMessage}
-                    >Send Test Message
+                    >
+                        Send Test Message
                     </button>
-                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>Cancel
+                    <button id="testCancel" type="button" className="btn btn-link" onClick={this.handleHide}>
+                        Cancel
                     </button>
                 </Modal.Footer>
             </Modal>
@@ -85,17 +88,17 @@ class ChannelTestModal extends Component {
 
 ChannelTestModal
     .propTypes = {
-    showTestModal: PropTypes.bool,
-    sendTestMessage: PropTypes.func.isRequired,
-    handleCancel: PropTypes.func.isRequired,
-    fieldModel: PropTypes.object.isRequired,
-    testFields: PropTypes.arrayOf(PropTypes.object)
-};
+        showTestModal: PropTypes.bool,
+        sendTestMessage: PropTypes.func.isRequired,
+        handleCancel: PropTypes.func.isRequired,
+        fieldModel: PropTypes.object.isRequired,
+        testFields: PropTypes.arrayOf(PropTypes.object)
+    };
 
 ChannelTestModal
     .defaultProps = {
-    showTestModal: false,
-    testFields: null
-};
+        showTestModal: false,
+        testFields: null
+    };
 
 export default ChannelTestModal;

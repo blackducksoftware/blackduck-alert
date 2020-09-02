@@ -9,7 +9,6 @@ export const CONTEXT_TYPE = {
     DISTRIBUTION: 'DISTRIBUTION'
 };
 
-
 export const DESCRIPTOR_NAME = {
     CHANNEL_EMAIL: 'channel_email',
     CHANNEL_SLACK: 'channel_slack',
@@ -29,7 +28,6 @@ export const OPERATIONS = {
     WRITE: 'WRITE',
     EXECUTE: 'EXECUTE'
 };
-
 
 export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
     if (!descriptorList) {
@@ -73,7 +71,6 @@ export function findDescriptorByType(descriptorList, descriptorType) {
 
     return resultList;
 }
-
 
 export function findDescriptorField(descriptor, fieldKey) {
     if (descriptor) {

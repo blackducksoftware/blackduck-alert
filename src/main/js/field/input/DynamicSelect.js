@@ -15,7 +15,7 @@ function DynamicSelectInput(props) {
 
     const handleChange = (option) => {
         const optionValue = option ? option.value : null;
-        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map(mappedOption => mappedOption.value) : [optionValue];
+        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [optionValue];
 
         onChange({
             target: {
@@ -25,19 +25,19 @@ function DynamicSelectInput(props) {
         });
     };
 
-    const typeOptionLabel = props => (
+    const typeOptionLabel = (props) => (
         <Option {...props}>
             <DescriptorOption label={props.data.label} value={props.data.value} />
         </Option>
     );
 
-    const typeLabel = props => (
+    const typeLabel = (props) => (
         <SingleValue {...props}>
             <DescriptorOption label={props.data.label} value={props.data.value} />
         </SingleValue>
     );
 
-    const multiTypeLabel = props => (
+    const multiTypeLabel = (props) => (
         <MultiValue {...props}>
             <DescriptorOption label={props.data.label} value={props.data.value} />
         </MultiValue>
@@ -47,29 +47,31 @@ function DynamicSelectInput(props) {
         Option: typeOptionLabel,
         SingleValue: typeLabel,
         MultiValue: multiTypeLabel
-    }
+    };
 
-    const selectValue = options.filter(option => value.includes(option.value));
+    const selectValue = options.filter((option) => value.includes(option.value));
 
-    const field = (<div className={selectClasses}>
-        <Select
-            id={id}
-            className={inputClass}
-            onChange={handleChange}
-            isSearchable={searchable}
-            isClearable={clearable}
-            removeSelected={removeSelected}
-            options={options}
-            placeholder={placeholder}
-            value={selectValue}
-            isMulti={multiSelect}
-            closeMenuOnSelect={!multiSelect}
-            components={components}
-            isDisabled={readOnly}
-            noOptionsMessage={() => 'No options available'}
-            onFocus={onFocus}
-        />
-    </div>);
+    const field = (
+        <div className={selectClasses}>
+            <Select
+                id={id}
+                className={inputClass}
+                onChange={handleChange}
+                isSearchable={searchable}
+                isClearable={clearable}
+                removeSelected={removeSelected}
+                options={options}
+                placeholder={placeholder}
+                value={selectValue}
+                isMulti={multiSelect}
+                closeMenuOnSelect={!multiSelect}
+                components={components}
+                isDisabled={readOnly}
+                noOptionsMessage={() => 'No options available'}
+                onFocus={onFocus}
+            />
+        </div>
+    );
     return (
         <LabeledField field={field} {...props} />
     );
@@ -109,6 +111,5 @@ DynamicSelectInput.defaultProps = {
     clearable: true,
     onFocus: () => null
 };
-
 
 export default DynamicSelectInput;

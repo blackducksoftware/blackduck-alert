@@ -59,8 +59,11 @@ class PopUp extends Component {
                                 isFixed={false}
                                 performingAction={performingAction}
                             />
-                            <MessageFormatter id={`${id}-action-message`} name="actionMessage"
-                                              message={actionMessage} />
+                            <MessageFormatter
+                                id={`${id}-action-message`}
+                                name="actionMessage"
+                                message={actionMessage}
+                            />
                         </form>
                     </Modal.Body>
                 </Modal>

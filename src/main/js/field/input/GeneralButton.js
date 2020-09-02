@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GeneralButton = ({
-                           onClick, children, className, id, disabled, performingAction
-                       }) => (
+    onClick, children, className, id, disabled, performingAction
+}) => (
     <div>
         <button
             id={id}
@@ -12,15 +12,17 @@ const GeneralButton = ({
             type="button"
             onClick={onClick}
             disabled={disabled}
-        >{children}
+        >
+            {children}
         </button>
-        {performingAction &&
-        <div className="progressContainer">
-            <div className="progressIcon">
-                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+        {performingAction
+        && (
+            <div className="progressContainer">
+                <div className="progressIcon">
+                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                </div>
             </div>
-        </div>
-        }
+        )}
     </div>
 
 );

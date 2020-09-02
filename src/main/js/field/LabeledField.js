@@ -27,29 +27,31 @@ class LabeledField extends Component {
         const errorMessage = severity === 'WARNING' ? `Warning: ${fieldMessage}` : fieldMessage;
         let descriptionField = null;
         if (description) {
-            descriptionField = (<div className="d-inline-flex">
-                <span
-                    className="descriptionIcon"
-                    onClick={() => this.setState({ showDescription: !showDescription })}
-                    ref={(icon) => {
-                        this.target = icon;
-                    }}
-                >
-                    <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
-                </span>
-                <Overlay
-                    rootClose
-                    placement="top"
-                    show={showDescription}
-                    onHide={() => this.setState({ showDescription: false })}
-                    target={() => this.target}
-                    container={this}
-                >
-                    <Tooltip id="description-tooltip">
-                        {description}
-                    </Tooltip>
-                </Overlay>
-            </div>);
+            descriptionField = (
+                <div className="d-inline-flex">
+                    <span
+                        className="descriptionIcon"
+                        onClick={() => this.setState({ showDescription: !showDescription })}
+                        ref={(icon) => {
+                            this.target = icon;
+                        }}
+                    >
+                        <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
+                    </span>
+                    <Overlay
+                        rootClose
+                        placement="top"
+                        show={showDescription}
+                        onHide={() => this.setState({ showDescription: false })}
+                        target={() => this.target}
+                        container={this}
+                    >
+                        <Tooltip id="description-tooltip">
+                            {description}
+                        </Tooltip>
+                    </Overlay>
+                </div>
+            );
         } else if (showDescriptionPlaceHolder) {
             descriptionField = (<div className="descriptionPlaceHolder" />);
         }
@@ -59,11 +61,12 @@ class LabeledField extends Component {
                 <label id={`${id}-label`} className={labelClasses}>{label}</label>
                 {descriptionField}
                 {field}
-                {errorName && errorValue &&
-                <div className="offset-sm-3 col-sm-8">
-                    <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>
-                </div>
-                }
+                {errorName && errorValue
+                && (
+                    <div className="offset-sm-3 col-sm-8">
+                        <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>
+                    </div>
+                )}
             </div>
         );
     }
