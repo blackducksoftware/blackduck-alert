@@ -52,17 +52,11 @@ public class ActionResult<T> {
         this.message = message;
     }
 
-    public boolean isOk() {
-        if (null == httpStatus) {
-            return false;
-        }
+    public boolean isSuccessful() {
         return httpStatus.is2xxSuccessful();
     }
 
     public boolean isError() {
-        if (null == httpStatus) {
-            return false;
-        }
         return httpStatus.isError();
     }
 

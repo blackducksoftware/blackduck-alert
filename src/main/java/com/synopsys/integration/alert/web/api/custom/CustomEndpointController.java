@@ -71,7 +71,7 @@ public class CustomEndpointController {
 
         HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
         ActionResult<?> result = customEndpointManager.performFunction(key, restModel, servletContentWrapper);
-        if (result.isOk()) {
+        if (result.isSuccessful()) {
             if (result.hasContent()) {
                 String content = gson.toJson(result.getContent().get());
                 return responseFactory.createOkContentResponse(content);
