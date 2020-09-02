@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
@@ -39,23 +38,16 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class EmailCustomEndpoint {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
-
-    private ResponseFactory responseFactory;
     private ProviderDataAccessor providerDataAccessor;
-    private Gson gson;
 
     @Autowired
-    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ProviderDataAccessor providerDataAccessor, Gson gson) throws AlertException {
-        this.responseFactory = responseFactory;
+    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
         this.providerDataAccessor = providerDataAccessor;
-        this.gson = gson;
-
         customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 

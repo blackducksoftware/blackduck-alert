@@ -47,7 +47,6 @@ public abstract class SimpleCustomEndpoint<R> extends CustomEndpoint<R> {
             R response = createData(fieldModel);
             return createSuccessResponse(response);
         } catch (Exception e) {
-            // TODO we won't need this going forward.
             if (e instanceof ResponseStatusException) {
                 ResponseStatusException responseStatusException = (ResponseStatusException) e;
                 return new ActionResult<>(responseStatusException.getStatus(), responseStatusException.getReason());
