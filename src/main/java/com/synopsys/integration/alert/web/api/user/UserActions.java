@@ -71,7 +71,7 @@ public class UserActions {
         this.userSystemValidator = userSystemValidator;
     }
 
-    public Collection<UserConfig> getUsers() {
+    public List<UserConfig> getUsers() {
         return userAccessor.getUsers().stream()
                    .map(this::convertToCustomUserRoleModel)
                    .collect(Collectors.toList());
@@ -175,6 +175,7 @@ public class UserActions {
         }
     }
 
+    //TODO update validate methods to return ValidationResponseModel
     private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
             fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
