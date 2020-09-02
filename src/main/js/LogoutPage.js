@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import Header from 'component/common/Header';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 class LogoutPage extends Component {
     constructor(props) {

@@ -48,7 +48,9 @@ class ConfirmModal extends Component {
     }
 
     render() {
-        const { id, affirmativeButtonText, message, negativeButtonText, title } = this.props;
+        const {
+            id, affirmativeButtonText, message, negativeButtonText, title
+        } = this.props;
         return (
             <Modal id={id} show={this.state.show} onHide={this.handleNegativeClick}>
                 <Modal.Header closeButton>
@@ -60,10 +62,22 @@ class ConfirmModal extends Component {
                     </Modal.Body>
                 )}
                 <Modal.Footer>
-                    <button id="confirmNegative" type="button" className="btn btn-link"
-                            onClick={this.handleNegativeClick}>{negativeButtonText}</button>
-                    <button id="confirmAffirmative" type="button" className="btn btn-danger"
-                            onClick={this.handleAffirmativeClick}>{affirmativeButtonText}</button>
+                    <button
+                        id="confirmNegative"
+                        type="button"
+                        className="btn btn-link"
+                        onClick={this.handleNegativeClick}
+                    >
+                        {negativeButtonText}
+                    </button>
+                    <button
+                        id="confirmAffirmative"
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={this.handleAffirmativeClick}
+                    >
+                        {affirmativeButtonText}
+                    </button>
                 </Modal.Footer>
             </Modal>
         );
@@ -89,4 +103,3 @@ ConfirmModal.defaultProps = {
 };
 
 export default ConfirmModal;
-

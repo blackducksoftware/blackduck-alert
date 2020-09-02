@@ -9,7 +9,7 @@ class SystemMessage extends Component {
         const errorIcon = 'exclamation-triangle';
         if (severity === 'ERROR') {
             return `${errorIcon}`;
-        } else if (severity === 'WARNING') {
+        } if (severity === 'WARNING') {
             return `${errorIcon}`;
         }
         return 'check-circle';
@@ -19,19 +19,28 @@ class SystemMessage extends Component {
         const { severity } = this.props;
         if (severity === 'ERROR') {
             return 'errorStatus';
-        } else if (severity === 'WARNING') {
+        } if (severity === 'WARNING') {
             return 'warningStatus';
         }
         return 'validStatus';
     }
 
     render() {
-        const { createdAt, content, severity, id } = this.props;
-        return (<div id={id} className="messageHeader">
-            <FontAwesomeIcon icon={this.getIcon()} className={`alert-icon ${this.getClassName()}`} size="lg"
-                             title={severity} /><span className="messageDate">{createdAt}</span>
-            <div>{content}</div>
-        </div>);
+        const {
+            createdAt, content, severity, id
+        } = this.props;
+        return (
+            <div id={id} className="messageHeader">
+                <FontAwesomeIcon
+                    icon={this.getIcon()}
+                    className={`alert-icon ${this.getClassName()}`}
+                    size="lg"
+                    title={severity}
+                />
+                <span className="messageDate">{createdAt}</span>
+                <div>{content}</div>
+            </div>
+        );
     }
 }
 
@@ -50,4 +59,3 @@ SystemMessage.defaultProps = {
 };
 
 export default SystemMessage;
-

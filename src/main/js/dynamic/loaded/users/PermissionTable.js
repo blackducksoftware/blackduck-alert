@@ -18,7 +18,6 @@ export const PERMISSIONS_TABLE = {
     UPLOAD_DELETE: 'uploadDelete'
 };
 
-
 class PermissionTable extends Component {
     constructor(props) {
         super(props);
@@ -41,10 +40,12 @@ class PermissionTable extends Component {
     }
 
     handlePermissionsChange(e) {
-        const { name, value, type, checked } = e.target;
+        const {
+            name, value, type, checked
+        } = e.target;
         const { permissionsData } = this.state;
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
         const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
         this.setState({
@@ -84,7 +85,7 @@ class PermissionTable extends Component {
             return [];
         }
 
-        return data.map(permission => {
+        return data.map((permission) => {
             const permissionShorthand = [];
             permission[PERMISSIONS_TABLE.CREATE] && permissionShorthand.push('c');
             permission[PERMISSIONS_TABLE.DELETE_OPERATION] && permissionShorthand.push('d');
@@ -106,7 +107,9 @@ class PermissionTable extends Component {
     }
 
     convertPermissionsColumn(permissions) {
-        const { permissionsColumn, descriptorName, context, id } = permissions;
+        const {
+            permissionsColumn, descriptorName, context, id
+        } = permissions;
         const splitPermissions = permissionsColumn.split('-');
 
         return {
@@ -129,7 +132,7 @@ class PermissionTable extends Component {
         const descriptorOptions = [];
         const nameCache = [];
 
-        descriptors.forEach(descriptor => {
+        descriptors.forEach((descriptor) => {
             const { label } = descriptor;
             if (!nameCache.includes(label)) {
                 nameCache.push(label);
@@ -167,7 +170,7 @@ class PermissionTable extends Component {
     }
 
     onCopy(selectedRow, callback) {
-        selectedRow.id = null
+        selectedRow.id = null;
         const parsedPermissions = this.convertPermissionsColumn(selectedRow);
         this.setState({
             permissionsData: parsedPermissions
@@ -181,63 +184,87 @@ class PermissionTable extends Component {
             <div>
 
                 <DynamicSelectInput
-                    name={PERMISSIONS_TABLE.DESCRIPTOR_NAME} id={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
-                    label="Descriptor Name" options={this.createDescriptorOptions()} clearable={false}
+                    name={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
+                    id={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
+                    label="Descriptor Name"
+                    options={this.createDescriptorOptions()}
+                    clearable={false}
                     onChange={this.handlePermissionsChange}
-                    value={permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} />
+                    value={permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]}
+                />
                 <DynamicSelectInput
-                    name={PERMISSIONS_TABLE.CONTEXT} id={PERMISSIONS_TABLE.CONTEXT} label="Context"
-                    options={this.createContextOptions()} clearable={false}
+                    name={PERMISSIONS_TABLE.CONTEXT}
+                    id={PERMISSIONS_TABLE.CONTEXT}
+                    label="Context"
+                    options={this.createContextOptions()}
+                    clearable={false}
                     onChange={this.handlePermissionsChange}
-                    value={permissionsData[PERMISSIONS_TABLE.CONTEXT]} />
+                    value={permissionsData[PERMISSIONS_TABLE.CONTEXT]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.CREATE} id={PERMISSIONS_TABLE.CREATE}
+                    name={PERMISSIONS_TABLE.CREATE}
+                    id={PERMISSIONS_TABLE.CREATE}
                     label="Create"
                     description="Allow users to create new items with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.CREATE]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.CREATE]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.DELETE_OPERATION} id={PERMISSIONS_TABLE.DELETE_OPERATION}
+                    name={PERMISSIONS_TABLE.DELETE_OPERATION}
+                    id={PERMISSIONS_TABLE.DELETE_OPERATION}
                     label="Delete"
                     description="Allow users to delete items with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.DELETE_OPERATION]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.DELETE_OPERATION]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.READ} id={PERMISSIONS_TABLE.READ}
+                    name={PERMISSIONS_TABLE.READ}
+                    id={PERMISSIONS_TABLE.READ}
                     label="Read"
                     description="This permission shows or hides content for the user."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.READ]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.READ]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.WRITE} id={PERMISSIONS_TABLE.WRITE}
+                    name={PERMISSIONS_TABLE.WRITE}
+                    id={PERMISSIONS_TABLE.WRITE}
                     label="Write"
                     description="Allow users to edit items with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.WRITE]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.EXECUTE} id={PERMISSIONS_TABLE.EXECUTE}
+                    name={PERMISSIONS_TABLE.EXECUTE}
+                    id={PERMISSIONS_TABLE.EXECUTE}
                     label="Execute"
                     description="Allow users to perform functionality with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_READ} id={PERMISSIONS_TABLE.UPLOAD_READ}
+                    name={PERMISSIONS_TABLE.UPLOAD_READ}
+                    id={PERMISSIONS_TABLE.UPLOAD_READ}
                     label="Upload Read"
                     description="This permission shows or hides upload related content for the user."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_WRITE} id={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                    name={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                    id={PERMISSIONS_TABLE.UPLOAD_WRITE}
                     label="Upload Write"
                     description="Allow users to modify uploaded content with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]}
+                />
                 <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_DELETE} id={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                    name={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                    id={PERMISSIONS_TABLE.UPLOAD_DELETE}
                     label="Upload Delete"
                     description="Allow users to delete uploaded content with this permission."
                     onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]} />
+                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
+                />
             </div>
         );
     }
@@ -254,11 +281,9 @@ class PermissionTable extends Component {
             });
             return false;
         }
-        const duplicates = data.filter(permission =>
-            permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] &&
-            permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT] &&
-            permission.id !== permissionsData.id
-        );
+        const duplicates = data.filter((permission) => permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME] === permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]
+            && permission[PERMISSIONS_TABLE.CONTEXT] === permissionsData[PERMISSIONS_TABLE.CONTEXT]
+            && permission.id !== permissionsData.id);
 
         if (duplicates && duplicates.length > 0) {
             await this.setState({
@@ -289,7 +314,9 @@ class PermissionTable extends Component {
     }
 
     render() {
-        const { canCreate, canDelete, inProgress, fetching, nestedInModal } = this.props;
+        const {
+            canCreate, canDelete, inProgress, fetching, nestedInModal
+        } = this.props;
         const savingInProgress = inProgress || this.state.saveInProgress;
         return (
             <div>
@@ -317,7 +344,8 @@ class PermissionTable extends Component {
                     sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
                     errorDialogMessage={this.state.errorMessage}
                     clearModalFieldState={() => this.setState({ errorMessage: null })}
-                    nestedInAnotherModal={nestedInModal} />
+                    nestedInAnotherModal={nestedInModal}
+                />
             </div>
         );
     }

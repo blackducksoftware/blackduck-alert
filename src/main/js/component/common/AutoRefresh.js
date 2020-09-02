@@ -89,12 +89,12 @@ AutoRefresh.defaultProps = {
     label: 'Enable Auto-Refresh'
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     autoRefresh: state.refresh.autoRefresh
 });
 
-const mapDispatchToProps = dispatch => ({
-    updateRefresh: checked => dispatch(updateRefresh(checked))
+const mapDispatchToProps = (dispatch) => ({
+    updateRefresh: (checked) => dispatch(updateRefresh(checked))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AutoRefresh);

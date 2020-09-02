@@ -5,19 +5,19 @@ export const ROLE_API_URL = `${ALERT_API_URL}/configuration/role`;
 export const USER_API_URL = `${ALERT_API_URL}/configuration/user`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
-    const queryParams = Object.assign({}, {
+    const queryParams = {
         context,
         descriptorName
-    });
+    };
     const parameters = [];
     Object.keys(queryParams)
-    .forEach((key) => {
-        const value = queryParams[key];
-        if (value) {
-            const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            parameters.push(parameterString);
-        }
-    });
+        .forEach((key) => {
+            const value = queryParams[key];
+            if (value) {
+                const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+                parameters.push(parameterString);
+            }
+        });
     const queryString = parameters.join('&');
     const url = `${apiUrl}?${queryString}`;
     return fetch(url, {
@@ -51,7 +51,7 @@ export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
         method: 'POST',
         body: JSON.stringify(fieldModel),
         headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -113,7 +113,7 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
 }
 
 export function createTestRequest(apiUrl, csrfToken, fieldModel) {
-    let url = `${apiUrl}/test`;
+    const url = `${apiUrl}/test`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',

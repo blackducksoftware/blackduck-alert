@@ -101,7 +101,7 @@ function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
 
 function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     const errors = {};
-    //TODO This should be handled on Job validation now that we have warnings we can add a validator method to check if the global config is set.
+    // TODO This should be handled on Job validation now that we have warnings we can add a validator method to check if the global config is set.
     errors[errorFieldName] = {
         severity: 'WARNING',
         fieldMessage: response
@@ -143,18 +143,18 @@ export function getDistributionJob(jobId) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
             request.then((response) => {
                 response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        if (responseData) {
-                            dispatch(jobFetched(responseData));
+                    .then((responseData) => {
+                        if (response.ok) {
+                            if (responseData) {
+                                dispatch(jobFetched(responseData));
+                            } else {
+                                dispatch(jobFetchError());
+                            }
                         } else {
-                            dispatch(jobFetchError());
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                    } else {
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                        dispatch(handler(response.status));
-                    }
-                });
+                    });
             }).catch(console.error);
         } else {
             dispatch(jobFetched({}));
@@ -169,13 +169,13 @@ export function saveDistributionJob(config) {
         const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(saveJobSuccess(responseData.message));
-                } else {
-                    handleFailureResponse(DISTRIBUTION_JOB_SAVE_ERROR, dispatch, responseData, response.status);
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(saveJobSuccess(responseData.message));
+                    } else {
+                        handleFailureResponse(DISTRIBUTION_JOB_SAVE_ERROR, dispatch, responseData, response.status);
+                    }
+                });
         }).catch(console.error);
     };
 }
@@ -187,13 +187,13 @@ export function updateDistributionJob(config) {
         const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config.jobId, config);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(updateJobSuccess(responseData.message));
-                } else {
-                    handleFailureResponse(DISTRIBUTION_JOB_UPDATE_ERROR, dispatch, responseData, response.status);
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(updateJobSuccess(responseData.message));
+                    } else {
+                        handleFailureResponse(DISTRIBUTION_JOB_UPDATE_ERROR, dispatch, responseData, response.status);
+                    }
+                });
         }).catch(console.error);
     };
 }
@@ -205,13 +205,13 @@ export function testDistributionJob(config) {
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(testJobSuccess(responseData.message));
-                } else {
-                    handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, responseData, response.status);
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(testJobSuccess(responseData.message));
+                    } else {
+                        handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, responseData, response.status);
+                    }
+                });
         }).catch(console.error);
     };
 }

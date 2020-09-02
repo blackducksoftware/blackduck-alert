@@ -1,4 +1,6 @@
-import { SERIALIZE, SYSTEM_LATEST_MESSAGES_FETCH_ERROR, SYSTEM_LATEST_MESSAGES_FETCHED, SYSTEM_LATEST_MESSAGES_FETCHING, } from 'store/actions/types';
+import {
+    SERIALIZE, SYSTEM_LATEST_MESSAGES_FETCH_ERROR, SYSTEM_LATEST_MESSAGES_FETCHED, SYSTEM_LATEST_MESSAGES_FETCHING
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,
@@ -17,24 +19,27 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case SYSTEM_LATEST_MESSAGES_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 actionMessage: null,
                 fetching: true,
                 updateStatus: ''
-            });
+            };
         case SYSTEM_LATEST_MESSAGES_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 actionMessage: null,
                 fetching: false,
                 latestMessages: action.latestMessages,
                 updateStatus: ''
-            });
+            };
         case SYSTEM_LATEST_MESSAGES_FETCH_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 actionMessage: null,
                 fetching: false,
                 updateStatus: ''
-            });
+            };
         case SERIALIZE:
             return initialState;
         default:

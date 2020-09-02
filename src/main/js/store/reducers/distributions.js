@@ -30,73 +30,77 @@ const config = (state = initialState, action) => {
     switch (action.type) {
         case DISTRIBUTION_JOB_DELETE_OPEN_MODAL:
         case DISTRIBUTION_JOB_DELETE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 jobDeleteMessage: action.jobDeleteMessage
-            });
+            };
 
         case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
         case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 jobConfigTableMessage: '',
                 jobs: [],
                 error: HTTPErrorUtil.createErrorObject(action)
-            });
+            };
 
         case DISTRIBUTION_JOB_UPDATE_AUDIT_INFO:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 jobs: [
                     action.job,
-                    ...state.jobs.filter(job => job.jobId !== action.job.jobId)
+                    ...state.jobs.filter((job) => job.jobId !== action.job.jobId)
                 ]
-            });
+            };
 
         case DISTRIBUTION_JOB_FETCHED_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
                 error: HTTPErrorUtil.createEmptyErrorObject()
-            });
+            };
 
         case DISTRIBUTION_JOB_DELETED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: true,
                 jobConfigTableMessage: '',
-                jobs: state.jobs.filter(job => job.jobId !== action.jobId)
-            });
+                jobs: state.jobs.filter((job) => job.jobId !== action.jobId)
+            };
 
         case DISTRIBUTION_JOB_DELETING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 jobConfigTableMessage: 'Deleting...'
-            });
+            };
 
         case DISTRIBUTION_JOB_FETCHING_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 jobConfigTableMessage: 'Loading...',
                 jobs: []
-            });
+            };
         case DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 jobsValidationResult: [],
                 jobsValidationMessage: ''
-            });
+            };
         case DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED:
-            return Object.assign({}, state, {
-                jobsValidationResult: action.jobsValidationResult
-            });
+            return { ...state, jobsValidationResult: action.jobsValidationResult };
         case DISTRIBUTION_JOB_VALIDATE_ALL_ERROR:
-            return Object.assign({}, state, {
-                jobsValidationMessage: action.jobsValidationMessage
-            });
+            return { ...state, jobsValidationMessage: action.jobsValidationMessage };
         case SERIALIZE:
             return initialState;
 

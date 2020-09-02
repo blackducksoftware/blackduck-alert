@@ -50,7 +50,6 @@ function buildSelectInput(items, field) {
         searchable, multiSelect, options, readOnly, removeSelected, clearable
     } = field;
 
-
     const isReadOnly = convertStringToBoolean(readOnly);
     const isClearable = convertStringToBoolean(clearable);
     const isRemoveSelected = convertStringToBoolean(removeSelected);
@@ -82,12 +81,14 @@ function buildEndpointSelectInput(items, field) {
         removeSelected: isRemoveSelected,
         clearable: isClearable
     });
-    return <EndpointSelectField
-        requestedDataFieldKeys={requestedDataFieldKeys}
-        endpoint={url}
-        fieldKey={key}
-        {...items}
-    />;
+    return (
+        <EndpointSelectField
+            requestedDataFieldKeys={requestedDataFieldKeys}
+            endpoint={url}
+            fieldKey={key}
+            {...items}
+        />
+    );
 }
 
 function buildPasswordInput(items, field) {
@@ -160,15 +161,17 @@ function buildEndpointField(items, field) {
         className: 'form-control',
         readOnly: isReadOnly
     });
-    return (<EndpointButtonField
-        fields={subFields}
-        requestedDataFieldKeys={requestedDataFieldKeys}
-        buttonLabel={buttonLabel}
-        endpoint={url}
-        successBox={successBox}
-        fieldKey={key}
-        {...items}
-    />);
+    return (
+        <EndpointButtonField
+            fields={subFields}
+            requestedDataFieldKeys={requestedDataFieldKeys}
+            buttonLabel={buttonLabel}
+            endpoint={url}
+            successBox={successBox}
+            fieldKey={key}
+            {...items}
+        />
+    );
 }
 
 function buildTableSelectInput(items, field) {
@@ -183,7 +186,7 @@ function buildTableSelectInput(items, field) {
         searchable
     });
 
-    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requestedDataFieldKeys={requestedDataFieldKeys} {...items} />
+    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requestedDataFieldKeys={requestedDataFieldKeys} {...items} />;
 }
 
 function buildUploadFileButtonField(items, field) {
@@ -196,16 +199,18 @@ function buildUploadFileButtonField(items, field) {
         className: 'form-control',
         readOnly: isReadOnly
     });
-    return (<UploadFileButtonField
-        fields={subFields}
-        buttonLabel={buttonLabel}
-        endpoint={url}
-        successBox={successBox}
-        fieldKey={key}
-        accept={accept}
-        multiple={multiple}
-        {...items}
-    />);
+    return (
+        <UploadFileButtonField
+            fields={subFields}
+            buttonLabel={buttonLabel}
+            endpoint={url}
+            successBox={successBox}
+            fieldKey={key}
+            accept={accept}
+            multiple={multiple}
+            {...items}
+        />
+    );
 }
 
 function buildOAuthEndpointField(items, field) {

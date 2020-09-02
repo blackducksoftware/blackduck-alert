@@ -5,7 +5,9 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
-import { deleteConfig, getConfig, testConfig, updateConfig } from 'store/actions/globalConfiguration';
+import {
+    deleteConfig, getConfig, testConfig, updateConfig
+} from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
@@ -76,14 +78,14 @@ class GlobalConfiguration extends React.Component {
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
             return type !== 'EndpointButtonField';
-        }).map(field => field.key);
+        }).map((field) => field.key);
         const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentDescriptor.context, currentDescriptor.name);
         newConfig.id = currentConfig.id;
         Object.keys(currentConfig.keyToValues)
-        .filter(key => filteredFieldKeys.includes(key))
-        .forEach((key) => {
-            newConfig.keyToValues[key] = currentConfig.keyToValues[key];
-        });
+            .filter((key) => filteredFieldKeys.includes(key))
+            .forEach((key) => {
+                newConfig.keyToValues[key] = currentConfig.keyToValues[key];
+            });
         this.props.updateConfig(newConfig);
     }
 
@@ -105,8 +107,8 @@ class GlobalConfiguration extends React.Component {
         const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && includeTestButton;
         const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const displayDelete = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
-        const body = (!Array.isArray(fields) || !fields.length) ?
-            (
+        const body = (!Array.isArray(fields) || !fields.length)
+            ? (
                 <div className="form-horizontal">There is no global configuration required. The configuration is handled in the distribution jobs.</div>
             ) : (
                 <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
@@ -182,7 +184,7 @@ GlobalConfiguration.defaultProps = {
 };
 
 // Mapping redux state -> react props
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     currentConfig: state.globalConfiguration.config,
     actionMessage: state.globalConfiguration.actionMessage,
     updateStatus: state.globalConfiguration.updateStatus,
@@ -191,11 +193,11 @@ const mapStateToProps = state => ({
 });
 
 // Mapping redux actions -> react props
-const mapDispatchToProps = dispatch => ({
-    getConfig: descriptorName => dispatch(getConfig(descriptorName)),
-    updateConfig: config => dispatch(updateConfig(config)),
+const mapDispatchToProps = (dispatch) => ({
+    getConfig: (descriptorName) => dispatch(getConfig(descriptorName)),
+    updateConfig: (config) => dispatch(updateConfig(config)),
     testConfig: (config) => dispatch(testConfig(config)),
-    deleteConfig: id => dispatch(deleteConfig(id))
+    deleteConfig: (id) => dispatch(deleteConfig(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GlobalConfiguration);

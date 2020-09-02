@@ -13,7 +13,6 @@ import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
 
-
 class MainPage extends Component {
     constructor(props) {
         super(props);
@@ -37,7 +36,7 @@ class MainPage extends Component {
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
-        const routeList = descriptorList.map(component => this.createConfigurationPage(component, uriPrefix));
+        const routeList = descriptorList.map((component) => this.createConfigurationPage(component, uriPrefix));
         return routeList;
     }
 
@@ -52,13 +51,15 @@ class MainPage extends Component {
             return null;
         }
 
-        const routesList = descriptorList.map(descriptor => {
+        const routesList = descriptorList.map((descriptor) => {
             const { urlName, name } = descriptor;
-            return (<Route
-                exact
-                path={`/alert/providers/${urlName}`}
-                render={() => <ProviderTable descriptorName={name} />}
-            />);
+            return (
+                <Route
+                    exact
+                    path={`/alert/providers/${urlName}`}
+                    render={() => <ProviderTable descriptorName={name} />}
+                />
+            );
         });
         return routesList;
     }
@@ -68,20 +69,24 @@ class MainPage extends Component {
             urlName, name, automaticallyGenerateUI, componentNamespace, label, description
         } = component;
         if (!automaticallyGenerateUI) {
-            return (<Route
+            return (
+                <Route
+                    exact
+                    key={urlName}
+                    path={`${uriPrefix}${urlName}`}
+                    render={() => <DescriptorContentLoader componentNamespace={componentNamespace} label={label} description={description} />}
+                />
+            );
+        }
+
+        return (
+            <Route
                 exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <DescriptorContentLoader componentNamespace={componentNamespace} label={label} description={description} />}
-            />);
-        }
-
-        return (<Route
-            exact
-            key={urlName}
-            path={`${uriPrefix}${urlName}`}
-            render={() => <GlobalConfiguration key={name} descriptor={component} />}
-        />);
+                render={() => <GlobalConfiguration key={name} descriptor={component} />}
+            />
+        );
     }
 
     render() {
@@ -125,7 +130,8 @@ class MainPage extends Component {
                 <div className="modalsArea">
                     <LogoutConfirmation />
                 </div>
-            </div>);
+            </div>
+        );
     }
 }
 
@@ -135,12 +141,12 @@ MainPage.propTypes = {
     getDescriptors: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     getDescriptors: () => dispatch(getDescriptors())
 });
 

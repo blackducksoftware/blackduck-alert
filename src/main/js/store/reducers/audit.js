@@ -21,45 +21,50 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case AUDIT_RESEND_START:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: true,
                 inProgress: true,
                 message: 'Sending...'
-            });
+            };
 
         case AUDIT_RESEND_COMPLETE:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 inProgress: false,
                 message: 'Send successful',
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case AUDIT_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: true,
                 inProgress: true,
                 message: ''
-            });
+            };
 
         case AUDIT_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 inProgress: false,
                 totalPageCount: action.totalPageCount,
                 items: action.items,
                 message: '',
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case AUDIT_RESEND_ERROR:
         case AUDIT_FETCH_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 inProgress: false,
                 message: '',
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
         case SERIALIZE:
             return initialState;
 

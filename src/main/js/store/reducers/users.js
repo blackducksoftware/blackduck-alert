@@ -27,80 +27,90 @@ const initialState = {
 const users = (state = initialState, action) => {
     switch (action.type) {
         case USER_MANAGEMENT_USER_DELETE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_DELETED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: true,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_DELETING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_FETCH_ERROR_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 userFetchError: action.userFetchError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_FETCHED_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 data: action.data,
                 fetching: false,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_FETCHING_ALL:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 data: [],
                 fetching: true,
                 saveStatus: ''
-            });
+            };
         case USER_MANAGEMENT_USER_SAVE_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: 'ERROR'
-            });
+            };
         case USER_MANAGEMENT_USER_SAVED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: 'SAVED'
-            });
+            };
         case USER_MANAGEMENT_USER_SAVING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 inProgress: true,
                 deleteSuccess: false,
                 saveStatus: 'SAVING'
-            });
+            };
         case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: ''
-            });
+            };
         }
         case SERIALIZE:
             return initialState;
