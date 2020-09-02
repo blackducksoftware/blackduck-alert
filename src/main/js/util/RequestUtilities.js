@@ -3,7 +3,7 @@ export function createReadRequest(url, csrfToken) {
         credentials: 'same-origin',
         method: 'GET',
         headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
     });
@@ -15,7 +15,7 @@ export function createUpdateRequest(url, csrfToken, body) {
         method: 'PUT',
         body: JSON.stringify(body),
         headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -28,7 +28,7 @@ export function createPostRequest(url, csrfToken, body) {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -40,10 +40,8 @@ export function createDeleteRequest(url, csrfToken) {
         credentials: 'same-origin',
         method: 'DELETE',
         headers: {
-            'accept': 'application/json',
+            accept: 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
     });
 }
-
-

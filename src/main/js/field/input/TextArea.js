@@ -11,13 +11,17 @@ class TextArea extends Component {
 
         let field;
         if (readOnly) {
-            field = (<div className={divClasses}>
-                <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
-            </div>);
+            field = (
+                <div className={divClasses}>
+                    <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
+                </div>
+            );
         } else {
-            field = (<div className={divClasses}>
-                <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
-            </div>);
+            field = (
+                <div className={divClasses}>
+                    <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
+                </div>
+            );
         }
 
         return (
@@ -45,6 +49,5 @@ TextArea.defaultProps = {
     name: 'name',
     onChange: () => true
 };
-
 
 export default TextArea;

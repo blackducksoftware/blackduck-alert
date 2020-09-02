@@ -10,7 +10,8 @@ beforeAll(() => {
 
 test('Rendering default cancel button snapshot', () => {
     const button = renderer.create(<CancelButton onClick={() => {
-    }} />);
+    }}
+    />);
     const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });

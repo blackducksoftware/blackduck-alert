@@ -82,7 +82,7 @@ function jobDeleteError(message) {
 function jobsValidationFetching() {
     return {
         type: DISTRIBUTION_JOB_VALIDATE_ALL_FETCHING
-    }
+    };
 }
 
 function jobsValidationFetched(result) {
@@ -100,7 +100,7 @@ function jobsValidationError(message) {
 }
 
 function updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, status) {
-    let newConfig = Object.assign({}, jobConfig);
+    let newConfig = { ...jobConfig };
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
     dispatch(updateJobWithAuditInfo(newConfig));
@@ -109,7 +109,7 @@ function updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, status) {
 function fetchAuditInfoForJob(jobConfig) {
     return (dispatch, getState) => {
         const { csrfToken } = getState().session;
-        const newConfig = Object.assign({}, jobConfig);
+        const newConfig = { ...jobConfig };
         let lastRan = 'Unknown';
         let currentStatus = 'Unknown';
 
@@ -221,7 +221,7 @@ export function fetchJobsValidationResults() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        fetch(ConfigRequestBuilder.JOB_API_URL + '/validate', {
+        fetch(`${ConfigRequestBuilder.JOB_API_URL}/validate`, {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,

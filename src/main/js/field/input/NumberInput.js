@@ -4,7 +4,9 @@ import LabeledField from 'field/LabeledField';
 
 class NumberInput extends Component {
     render() {
-        const { readOnly, inputClass, id, name, value, onChange } = this.props;
+        const {
+            readOnly, inputClass, id, name, value, onChange
+        } = this.props;
 
         let field = null;
         if (readOnly) {
@@ -17,7 +19,6 @@ class NumberInput extends Component {
         );
     }
 }
-
 
 NumberInput.propTypes = {
     id: PropTypes.string,
@@ -36,6 +37,5 @@ NumberInput.defaultProps = {
     name: 'name',
     onChange: () => true
 };
-
 
 export default NumberInput;

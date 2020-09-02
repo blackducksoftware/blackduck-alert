@@ -109,29 +109,29 @@ export function fetchUsers() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchedAllUsers(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(fetchedAllUsers(responseData));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                                let message = '';
+                                if (responseData && responseData.message) {
+                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                    message = responseData.message.toString();
+                                }
+                                return fetchingAllUsersError(message);
+                            }));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                        return fetchingAllUsersError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllUsersError(error));
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllUsersError(error));
-        });
     };
 }
 
@@ -151,20 +151,20 @@ export function saveUser(user) {
         }
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(savedUser());
-                    dispatch(fetchUsers());
-                } else {
-                    const defaultHandler = () => saveUserError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(savedUser());
+                        dispatch(fetchUsers());
+                    } else {
+                        const defaultHandler = () => saveUserError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 
@@ -178,19 +178,19 @@ export function deleteUser(userId) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(deletedUser());
-                } else {
-                    const defaultHandler = () => deletingUserError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(deletedUser());
+                    } else {
+                        const defaultHandler = () => deletingUserError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 

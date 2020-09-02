@@ -43,7 +43,7 @@ class EndpointSelectField extends Component {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const options = data.map(item => {
+                    const options = data.map((item) => {
                         const dataValue = item.value;
                         return {
                             key: dataValue,
@@ -51,7 +51,7 @@ class EndpointSelectField extends Component {
                             value: dataValue
                         };
                     });
-                    const selectedValues = options.filter(option => value.includes(option.value));
+                    const selectedValues = options.filter((option) => value.includes(option.value));
                     if (options.length === 0 || selectedValues.length === 0) {
                         this.emptyFieldValue();
                     }
@@ -63,15 +63,15 @@ class EndpointSelectField extends Component {
                 });
             } else {
                 response.json()
-                .then((data) => {
-                    this.setState({
-                        options: [],
-                        fieldError: {
-                            severity: 'ERROR',
-                            fieldMessage: data.message
-                        }
-                    }, this.emptyFieldValue);
-                });
+                    .then((data) => {
+                        this.setState({
+                            options: [],
+                            fieldError: {
+                                severity: 'ERROR',
+                                fieldMessage: data.message
+                            }
+                        }, this.emptyFieldValue);
+                    });
             }
         });
     }
@@ -91,8 +91,12 @@ class EndpointSelectField extends Component {
     render() {
         return (
             <div>
-                <DynamicSelectInput onChange={this.props.onChange} onFocus={this.onSendClick}
-                                    options={this.state.options} {...this.props} />
+                <DynamicSelectInput
+                    onChange={this.props.onChange}
+                    onFocus={this.onSendClick}
+                    options={this.state.options}
+                    {...this.props}
+                />
             </div>
         );
     }
@@ -113,7 +117,7 @@ EndpointSelectField.defaultProps = {
     requestedDataFieldKeys: []
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 

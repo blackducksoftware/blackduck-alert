@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import LabeledField from 'field/LabeledField';
 
-
 class ReadOnlyField extends Component {
     constructor(props) {
         super(props);

@@ -62,20 +62,20 @@ class EndpointButtonField extends Component {
                 });
             } else {
                 response.json()
-                .then((data) => {
-                    const target = {
-                        name: [fieldKey],
-                        checked: false,
-                        type: 'checkbox'
-                    };
-                    onChange({ target });
-                    this.setState({
-                        fieldError: {
-                            severity: 'ERROR',
-                            fieldMessage: data.message
-                        }
+                    .then((data) => {
+                        const target = {
+                            name: [fieldKey],
+                            checked: false,
+                            type: 'checkbox'
+                        };
+                        onChange({ target });
+                        this.setState({
+                            fieldError: {
+                                severity: 'ERROR',
+                                fieldMessage: data.message
+                            }
+                        });
                     });
-                });
             }
         });
     }
@@ -103,23 +103,24 @@ class EndpointButtonField extends Component {
                     onClick={this.flipShowModal}
                     disabled={readOnly}
                     performingAction={this.state.progress}
-                >{buttonLabel}
+                >
+                    {buttonLabel}
                 </GeneralButton>
-                {successBox &&
-                <div className="d-inline-flex p-2 checkbox">
-                    <input
-                        className="form-control"
-                        id={`${fieldKey}-confirmation`}
-                        type="checkbox"
-                        name={name}
-                        checked={value}
-                        readOnly
-                    />
-                </div>
-                }
-                {this.state.success &&
-                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />
-                }
+                {successBox
+                && (
+                    <div className="d-inline-flex p-2 checkbox">
+                        <input
+                            className="form-control"
+                            id={`${fieldKey}-confirmation`}
+                            type="checkbox"
+                            name={name}
+                            checked={value}
+                            readOnly
+                        />
+                    </div>
+                )}
+                {this.state.success
+                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
             </div>
         );
@@ -175,7 +176,7 @@ EndpointButtonField.defaultProps = {
     statusMessage: 'Success'
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 

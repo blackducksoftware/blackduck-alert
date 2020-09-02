@@ -30,7 +30,7 @@ class Details extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.name === eventType);
+                const filteredList = descriptorList.filter((descriptor) => descriptor.name === eventType);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="audit-detail-icon" descriptor={foundDescriptor} />);
@@ -43,26 +43,49 @@ class Details extends Component {
     expandComponent(row) {
         let errorMessage = null;
         if (row.errorMessage) {
-            errorMessage = <TextInput id="auditDetailErrorMessage" label="Error" readOnly name="errorMessage"
-                                      value={row.errorMessage} />;
+            errorMessage = (
+                <TextInput
+                    id="auditDetailErrorMessage"
+                    label="Error"
+                    readOnly
+                    name="errorMessage"
+                    value={row.errorMessage}
+                />
+            );
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace =
-                <TextArea id="auditDetailStackTrace" inputClass="auditJobDetails" sizeClass="col-sm-8"
-                          label="Stack Trace" readOnly
-                          name="errorStackTrace"
-                          value={row.errorStackTrace} cols={'auto'} />;
+            errorStackTrace = (
+                <TextArea
+                    id="auditDetailStackTrace"
+                    inputClass="auditJobDetails"
+                    sizeClass="col-sm-8"
+                    label="Stack Trace"
+                    readOnly
+                    name="errorStackTrace"
+                    value={row.errorStackTrace}
+                    cols="auto"
+                />
+            );
         }
 
-        return (<div className="auditJobDetails">{errorMessage}{errorStackTrace}</div>);
+        return (
+            <div className="auditJobDetails">
+                {errorMessage}
+                {errorStackTrace}
+            </div>
+        );
     }
 
     resendButton(cell, row) {
-        return (<RefreshTableCellFormatter
-            id="audit-detail-refresh-cell"
-            handleButtonClicked={this.onResendClick} currentRowSelected={row}
-            buttonText="Re-send" />);
+        return (
+            <RefreshTableCellFormatter
+                id="audit-detail-refresh-cell"
+                handleButtonClicked={this.onResendClick}
+                currentRowSelected={row}
+                buttonText="Re-send"
+            />
+        );
     }
 
     flattenJobsForTable(jsonArray = []) {
@@ -96,7 +119,7 @@ class Details extends Component {
         if (this.props.currentEntry.content) {
             jsonContent = JSON.parse(this.props.currentEntry.content);
         } else {
-            jsonContent = Object.assign({}, { warning: 'Content in an Unknown Format' });
+            jsonContent = { warning: 'Content in an Unknown Format' };
         }
         const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
 
@@ -141,17 +164,46 @@ class Details extends Component {
                                         pagination
                                         search
                                     >
-                                        <TableHeaderColumn dataField="name" dataSort columnTitle
-                                                           columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell"
-                                                           dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle
-                                                           columnClassName="tableCell">Time Last
-                                            Sent</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell"
-                                                           dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="" width="48" expandable={false}
-                                                           columnClassName="tableCell" dataFormat={this.resendButton} />
+                                        <TableHeaderColumn
+                                            dataField="name"
+                                            dataSort
+                                            columnTitle
+                                            columnClassName="tableCell"
+                                        >
+                                            Distribution Job
+                                        </TableHeaderColumn>
+                                        <TableHeaderColumn
+                                            dataField="eventType"
+                                            dataSort
+                                            columnClassName="tableCell"
+                                            dataFormat={this.getEventType}
+                                        >
+                                            Event Type
+                                        </TableHeaderColumn>
+                                        <TableHeaderColumn
+                                            dataField="timeLastSent"
+                                            dataSort
+                                            columnTitle
+                                            columnClassName="tableCell"
+                                        >
+                                            Time Last
+                                            Sent
+                                        </TableHeaderColumn>
+                                        <TableHeaderColumn
+                                            dataField="status"
+                                            dataSort
+                                            columnClassName="tableCell"
+                                            dataFormat={this.props.statusFormat}
+                                        >
+                                            Status
+                                        </TableHeaderColumn>
+                                        <TableHeaderColumn
+                                            dataField=""
+                                            width="48"
+                                            expandable={false}
+                                            columnClassName="tableCell"
+                                            dataFormat={this.resendButton}
+                                        />
                                         <TableHeaderColumn dataField="configId" hidden>Job Id</TableHeaderColumn>
                                         <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
                                     </BootstrapTable>
@@ -159,8 +211,14 @@ class Details extends Component {
                             </Tab>
                             <Tab eventKey={2} title="Notification Content">
                                 <div className="tableContainer">
-                                    <TextArea inputClass="auditContentTextArea" sizeClass="col-sm-12" label="" readOnly
-                                              name="notificationContent" value={jsonPrettyPrintContent} />
+                                    <TextArea
+                                        inputClass="auditContentTextArea"
+                                        sizeClass="col-sm-12"
+                                        label=""
+                                        readOnly
+                                        name="notificationContent"
+                                        value={jsonPrettyPrintContent}
+                                    />
                                 </div>
                             </Tab>
                         </Tabs>
@@ -197,10 +255,10 @@ Details.defaultProps = {
     descriptors: []
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = (dispatch) => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Details);

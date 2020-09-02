@@ -21,52 +21,59 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case DESCRIPTORS_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: true,
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case DESCRIPTORS_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 items: [
                     ...action.items
                 ]
-            });
+            };
 
         case DESCRIPTORS_FETCH_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
 
         case DESCRIPTORS_DISTRIBUTION_FETCHING:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: true,
                 currentDistributionComponents: null,
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case DESCRIPTORS_DISTRIBUTION_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 currentDistributionComponents: action.currentDistributionComponents
-            });
+            };
 
         case DESCRIPTORS_DISTRIBUTION_FETCH_ERROR:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 currentDistributionComponents: null,
                 error: HTTPErrorUtils.createErrorObject(action)
-            });
+            };
 
         case DESCRIPTORS_DISTRIBUTION_RESET:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 currentDistributionComponents: null,
                 error: HTTPErrorUtils.createEmptyErrorObject()
-            });
+            };
 
         case SERIALIZE:
             return initialState;

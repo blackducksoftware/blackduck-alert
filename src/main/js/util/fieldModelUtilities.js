@@ -52,8 +52,8 @@ export function isFieldModelValueSet(fieldModel, key) {
 
 export function areKeyToValuesEmpty(fieldModel) {
     if (fieldModel && fieldModel.keyToValues) {
-        const keyToValues = fieldModel.keyToValues;
-        return Object.keys(keyToValues).some(key => {
+        const { keyToValues } = fieldModel;
+        return Object.keys(keyToValues).some((key) => {
             const value = keyToValues[key];
             return !hasValuesOrIsSet(value);
         });
@@ -65,7 +65,7 @@ export function hasValuesOrIsSet(fieldObject) {
     if (fieldObject) {
         const { isSet, values } = fieldObject;
         const valuesNotEmpty = values ? values.length > 0 : false;
-        const everyValueIsNotEmpty = values ? values.every(item => item !== '') : false;
+        const everyValueIsNotEmpty = values ? values.every((item) => item !== '') : false;
         return isSet || (values && valuesNotEmpty && everyValueIsNotEmpty);
     }
     return false;
@@ -75,7 +75,7 @@ export function checkboxHasValue(fieldValue) {
     if (fieldValue) {
         const { values } = fieldValue;
         const valuesNotEmpty = values ? values.length > 0 : false;
-        const everyValueIsNotEmpty = values ? values.every(item => item === 'true') : false;
+        const everyValueIsNotEmpty = values ? values.every((item) => item === 'true') : false;
         return values && valuesNotEmpty && everyValueIsNotEmpty;
     }
     return false;
@@ -157,7 +157,7 @@ export function combineFieldModels(sourceModel, modelToAdd) {
 
     const copyKeyToValues = (model) => {
         const sourceKeys = Object.keys(model.keyToValues);
-        sourceKeys.forEach(key => {
+        sourceKeys.forEach((key) => {
             copy.keyToValues[key] = model.keyToValues[key];
         });
     };
@@ -193,7 +193,7 @@ export function createFieldModelErrorKey(fieldKey) {
 
 export function checkModelOrCreateEmpty(fieldModel, fieldKeys) {
     const emptyFieldModel = createEmptyFieldModel(fieldKeys, fieldModel.context, fieldModel.descriptorName);
-    const newModel = Object.assign({}, emptyFieldModel, fieldModel);
+    const newModel = { ...emptyFieldModel, ...fieldModel };
     const newKeyToValues = emptyFieldModel.keyToValues;
     if (fieldModel.keyToValues) {
         Object.keys(fieldModel.keyToValues).forEach((key) => {
@@ -223,7 +223,7 @@ export function createFieldModelWithDefaults(fields, context, descriptorName) {
 
 export function checkModelOrCreateModelWithDefaults(fieldModel, fields) {
     const fieldModelWithDefaults = createFieldModelWithDefaults(fields, fieldModel.context, fieldModel.descriptorName);
-    const newModel = Object.assign({}, fieldModelWithDefaults, fieldModel);
+    const newModel = { ...fieldModelWithDefaults, ...fieldModel };
     const newKeyToValues = fieldModelWithDefaults.keyToValues;
     if (fieldModel.keyToValues) {
         Object.keys(fieldModel.keyToValues).forEach((key) => {
@@ -235,7 +235,7 @@ export function checkModelOrCreateModelWithDefaults(fieldModel, fields) {
 }
 
 export function hasKey(fieldModel, key) {
-    const keyToValues = fieldModel.keyToValues;
+    const { keyToValues } = fieldModel;
     if (keyToValues) {
         return Object.keys(keyToValues).includes(key);
     }

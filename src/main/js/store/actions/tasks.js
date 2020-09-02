@@ -3,7 +3,7 @@ import * as RequestUtilities from 'util/RequestUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 
-const TASKS_API_URL = `/alert/api/task`;
+const TASKS_API_URL = '/alert/api/task';
 
 function fetchingAllTasks() {
     return {
@@ -35,26 +35,26 @@ export function fetchTasks() {
         const request = RequestUtilities.createReadRequest(TASKS_API_URL, csrfToken);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchedAllTasks(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(fetchedAllTasks(responseData));
+                    } else {
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                            let message = '';
+                            if (responseData && responseData.message) {
                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
-                        }
-                        return fetchingAllTasksError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                                message = responseData.message.toString();
+                            }
+                            return fetchingAllTasksError(message);
+                        }));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllTasksError(error));
-        });
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllTasksError(error));
+            });
     };
 }

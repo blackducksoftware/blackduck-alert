@@ -35,17 +35,17 @@ export function getAboutInfo() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         fetch(ABOUT_INFO_URL)
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(aboutInfoFetched(responseData));
-                } else {
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
-        })
-        .catch(console.error);
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(aboutInfoFetched(responseData));
+                        } else {
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
+                        }
+                    });
+            })
+            .catch(console.error);
     };
 }
