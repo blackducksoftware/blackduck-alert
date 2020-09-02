@@ -20,22 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.metadata;
+package com.synopsys.integration.alert.web.api.metadata.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
+public class ConfigContextsResponseModel extends AlertSerializableModel {
+    // This is not a component or singleton because it is stateless. It should always be treated as static.
+    public static final ConfigContextsResponseModel DEFAULT = new ConfigContextsResponseModel();
+    public final ConfigContextEnum[] configContexts = ConfigContextEnum.values();
 
-@RestController
-@RequestMapping(DescriptorTypeController.TYPES_PATH)
-public class DescriptorTypeController {
-    public static final String TYPES_PATH = MetadataControllerConstants.METADATA_BASE_PATH + "/descriptorTypes";
-
-    @GetMapping
-    public DescriptorTypesResponseModel getTypes() {
-        return DescriptorTypesResponseModel.DEFAULT;
+    ConfigContextsResponseModel() {
+        // For serialization
     }
 
 }
