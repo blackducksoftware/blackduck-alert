@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestVal
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
@@ -102,11 +103,11 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     }
 
     @Override
-    protected OAuthEndpointResponse createOAuthResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResult<OAuthEndpointResponse> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
             if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
                 logger.debug("Azure OAuth callback user does not have permission to call the controller.");
-                return new OAuthEndpointResponse(HttpStatus.FORBIDDEN.value(), false, "", ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
+                return new ActionResult<>(HttpStatus.FORBIDDEN, new OAuthEndpointResponse(false, "", ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE));
             }
             String requestKey = createRequestKey();
             // since we have only one OAuth channel now remove all other requests.
@@ -116,23 +117,23 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return createErrorResponse(HttpStatus.BAD_REQUEST, "");
+                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse(""));
             }
             FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return createErrorResponse(HttpStatus.BAD_REQUEST, "client id not found.");
+                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
             if (!alertServerUrl.isPresent()) {
-                return createErrorResponse(HttpStatus.BAD_REQUEST, "Could not determine the alert server url for the callback.");
+                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
             }
 
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
-            return new OAuthEndpointResponse(HttpStatus.OK.value(), isAuthenticated(fieldAccessor), authUrl, "Authenticating...");
+            return new ActionResult<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldAccessor), authUrl, "Authenticating..."));
 
         } catch (AlertFieldException ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -142,17 +143,17 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                                      .collect(Collectors.toSet());
             String errorMessage = String.format(
                 "The configuration is invalid. Please test the configuration. Details: %s", StringUtils.join(errors, ","));
-            return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+            return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse(errorMessage));
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
+            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, createErrorResponse("Error activating azure oauth."));
         }
     }
 
-    private OAuthEndpointResponse createErrorResponse(HttpStatus httpStatus, String errorMessage) {
+    private OAuthEndpointResponse createErrorResponse(String errorMessage) {
         oAuthRequestValidator.removeAllRequests();
-        return new OAuthEndpointResponse(httpStatus.value(), false, "", errorMessage);
+        return new OAuthEndpointResponse(false, "", errorMessage);
     }
 
     private Optional<FieldModel> saveIfValid(FieldModel fieldModel) throws AlertException {
@@ -203,7 +204,6 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         StringBuilder queryBuilder = new StringBuilder(250);
         queryBuilder.append("&client_id=");
         queryBuilder.append(clientId);
-        //TODO have an object that stores the request keys and purges them after some amount of time.
         queryBuilder.append("&state=");
         queryBuilder.append(requestKey);
         queryBuilder.append("&scope=");

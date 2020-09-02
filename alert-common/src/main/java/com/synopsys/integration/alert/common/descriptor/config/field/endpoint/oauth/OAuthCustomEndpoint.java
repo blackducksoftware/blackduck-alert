@@ -22,25 +22,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import org.springframework.http.HttpStatus;
-
-import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class OAuthCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
     public OAuthCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
         super(fieldKey, customEndpointManager);
-    }
-
-    protected abstract OAuthEndpointResponse createOAuthResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper);
-
-    @Override
-    public ActionResult<OAuthEndpointResponse> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        OAuthEndpointResponse response = createOAuthResponse(fieldModel, servletContentWrapper);
-        return new ActionResult<>(HttpStatus.OK, response);
     }
 }
