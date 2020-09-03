@@ -2,7 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Overlay, Popover } from 'react-bootstrap';
+import {
+    Overlay,
+    Popover,
+    PopoverContent,
+    PopoverTitle
+} from 'react-bootstrap';
 
 import SystemMessage from 'component/common/SystemMessage';
 import { getAboutInfo } from 'store/actions/about';
@@ -31,6 +36,7 @@ class AboutInfoFooter extends React.Component {
         this.startAutoReload();
     }
 
+    // FIXME componentWillReceiveProps is deprecated
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching) {
             const { latestMessages } = nextProps;
@@ -94,13 +100,19 @@ class AboutInfoFooter extends React.Component {
         const errorMessages = this.createMessageList();
         const iconColor = this.getIconColor();
         const iconClassName = this.getFontAwesomeIcon();
-        const popover = (<Popover id="system-errors-popover" className="popoverContent" title="System Messages">{errorMessages}</Popover>);
+        const popover = (
+            <Popover id="system-errors-popover" className="popoverContainer">
+                <PopoverTitle>System Messages</PopoverTitle>
+                <PopoverContent>
+                    {errorMessages}
+                </PopoverContent>
+            </Popover>
+        );
         const overlayComponent = (
             <Overlay
                 rootClose
                 show={this.state.showOverlay}
                 onHide={() => this.setState({ showOverlay: false, hideOverlayByUser: true })}
-                container={this}
                 placement="top"
                 target={() => ReactDOM.findDOMNode(this.target)}
             >

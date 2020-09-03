@@ -53,6 +53,7 @@ class AuditPage extends Component {
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
 
+    // FIXME componentWillReceiveProps is deprecated
     componentWillReceiveProps(nextProps) {
         if (nextProps.items !== this.props.items) {
             this.setEntriesFromArray(nextProps.items);
