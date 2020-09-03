@@ -1,14 +1,14 @@
 {
   "name": "blackduck-alert",
   "version": "6.3.0-SNAPSHOT",
-  "description": "Alert npm project",
+  "description": "Alert UI",
   "keywords": [
     "blackduck",
     "hub",
     "notifications",
     "alert"
   ],
-  "author": "Black Duck Software, Inc.",
+  "author": "Synopsys, Inc.",
   "license": "Apache-2.0",
   "homepage": "https://github.com/blackducksoftware/blackduck-alert.git",
   "dependencies": {
