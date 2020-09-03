@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderConfigSelectCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderConfigSelectCustomFunctionAction;
 
 @RestController
 @RequestMapping(ProviderConfigNameFunctionController.PROVIDER_CONFIG_NAME_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class ProviderConfigNameFunctionController extends AbstractFunctionContro
     public static final String PROVIDER_CONFIG_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME;
 
     @Autowired
-    public ProviderConfigNameFunctionController(ProviderConfigSelectCustomEndpoint functionAction) {
+    public ProviderConfigNameFunctionController(ProviderConfigSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.channel.jira.server.web.JiraServerCustomEndpoint;
+import com.synopsys.integration.alert.channel.jira.server.web.JiraServerCustomFunctionAction;
 
 @RestController
 @RequestMapping(JiraServerFuntionController.JIRA_SERVER_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class JiraServerFuntionController extends AbstractFunctionController {
     public static final String JIRA_SERVER_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN;
 
     @Autowired
-    public JiraServerFuntionController(JiraServerCustomEndpoint functionAction) {
+    public JiraServerFuntionController(JiraServerCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

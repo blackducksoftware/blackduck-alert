@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 
 @RestController
@@ -35,7 +35,7 @@ public class ProviderProjectFunctionController extends AbstractFunctionControlle
     public static final String CHANNEL_CONFIGURED_PROJECT_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
 
     @Autowired
-    public ProviderProjectFunctionController(ProviderDistributionCustomEndpoint functionAction) {
+    public ProviderProjectFunctionController(ProviderDistributionCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

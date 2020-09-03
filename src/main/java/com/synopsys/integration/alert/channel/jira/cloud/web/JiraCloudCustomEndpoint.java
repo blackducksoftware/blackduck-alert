@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -53,7 +53,7 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.rest.response.Response;
 
 @Component
-public class JiraCloudCustomEndpoint extends CustomEndpoint<String> {
+public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomEndpoint.class);
 
     private final JiraCloudChannelKey jiraChannelKey;

@@ -20,23 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.endpoint;
+package com.synopsys.integration.alert.common.action;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class CustomEndpoint<T> {
+public abstract class CustomFunctionAction<T> {
     public static final String API_FUNCTION_URL = "/api/function";
     private AuthorizationManager authorizationManager;
 
-    public CustomEndpoint(AuthorizationManager authorizationManager) {
+    public CustomFunctionAction(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 

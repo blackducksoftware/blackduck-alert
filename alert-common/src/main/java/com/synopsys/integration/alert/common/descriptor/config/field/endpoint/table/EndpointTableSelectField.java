@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 import java.util.LinkedList;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
@@ -35,7 +35,7 @@ public class EndpointTableSelectField extends EndpointField {
     private List<TableSelectColumn> columns;
 
     public EndpointTableSelectField(String key, String label, String description) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", CustomEndpoint.API_FUNCTION_URL);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", CustomFunctionAction.API_FUNCTION_URL);
         this.paged = false;
         this.searchable = true;
         columns = new LinkedList<>();

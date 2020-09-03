@@ -35,7 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -58,14 +58,14 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class PolicyNotificationFilterCustomEndpoint extends CustomEndpoint<List<NotificationFilterModel>> {
-    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
+public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<List<NotificationFilterModel>> {
+    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    protected PolicyNotificationFilterCustomEndpoint(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
+    protected PolicyNotificationFilterCustomFunctionAction(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
         ConfigurationAccessor configurationAccessor) {
         super(authorizationManager);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;

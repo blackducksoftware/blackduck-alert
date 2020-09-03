@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.email.web.EmailCustomEndpoint;
+import com.synopsys.integration.alert.channel.email.web.EmailCustomFunctionAction;
 
 @RestController
 @RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class EmailAddressFunctionController extends AbstractFunctionController {
     public static final String EMAIL_ADDRESS_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES;
 
     @Autowired
-    public EmailAddressFunctionController(EmailCustomEndpoint functionAction) {
+    public EmailAddressFunctionController(EmailCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

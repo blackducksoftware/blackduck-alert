@@ -32,7 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -41,12 +41,12 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>> {
-    private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
+public class EmailCustomFunctionAction extends CustomFunctionAction<List<ProviderUserModel>> {
+    private final Logger logger = LoggerFactory.getLogger(EmailCustomFunctionAction.class);
     private ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailCustomEndpoint(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+    public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
         super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
     }

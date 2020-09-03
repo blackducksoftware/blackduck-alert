@@ -27,14 +27,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.web.PolicyNotificationFilterCustomEndpoint;
+import com.synopsys.integration.alert.provider.blackduck.web.PolicyNotificationFilterCustomFunctionAction;
 
 @RestController
 @RequestMapping(PolicyFilterFunctionController.POLICY_FILTER_FUNCTION_URL)
 public class PolicyFilterFunctionController extends AbstractFunctionController {
     public static final String POLICY_FILTER_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER;
+
     @Autowired
-    public PolicyFilterFunctionController(PolicyNotificationFilterCustomEndpoint functionAction) {
+    public PolicyFilterFunctionController(PolicyNotificationFilterCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

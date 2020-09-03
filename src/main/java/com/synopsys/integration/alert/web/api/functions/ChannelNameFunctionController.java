@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelSelectCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelSelectCustomFunctionAction;
 
 @RestController
 @RequestMapping(ChannelNameFunctionController.CHANNEL_NAME_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class ChannelNameFunctionController extends AbstractFunctionController {
     public static final String CHANNEL_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME;
 
     @Autowired
-    public ChannelNameFunctionController(ChannelSelectCustomEndpoint functionAction) {
+    public ChannelNameFunctionController(ChannelSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

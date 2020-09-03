@@ -31,7 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -42,11 +42,11 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderSelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
+public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<List<LabelValueSelectOption>> {
     private DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderSelectCustomEndpoint(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
+    public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
         super(authorizationManager);
         this.descriptorMap = descriptorMap;
     }

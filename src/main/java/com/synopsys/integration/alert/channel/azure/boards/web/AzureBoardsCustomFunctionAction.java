@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
@@ -69,8 +69,8 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
-public class AzureBoardsCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
-    private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomEndpoint.class);
+public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
+    private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
     private final AlertProperties alertProperties;
     private final ConfigurationAccessor configurationAccessor;
@@ -84,7 +84,7 @@ public class AzureBoardsCustomEndpoint extends CustomEndpoint<OAuthEndpointRespo
     private final AzureBoardsChannelKey azureBoardsChannelKey;
 
     @Autowired
-    public AzureBoardsCustomEndpoint(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
+    public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
         AzureBoardsChannelKey azureBoardsChannelKey) {

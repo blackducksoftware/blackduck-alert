@@ -30,17 +30,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 public abstract class AbstractFunctionController<T> extends BaseController {
-    public static final String API_FUNCTION_URL = CustomEndpoint.API_FUNCTION_URL;
-    private final CustomEndpoint<T> functionAction;
+    public static final String API_FUNCTION_URL = CustomFunctionAction.API_FUNCTION_URL;
+    private final CustomFunctionAction<T> functionAction;
 
-    public AbstractFunctionController(CustomEndpoint<T> functionAction) {
+    public AbstractFunctionController(CustomFunctionAction<T> functionAction) {
         this.functionAction = functionAction;
     }
 

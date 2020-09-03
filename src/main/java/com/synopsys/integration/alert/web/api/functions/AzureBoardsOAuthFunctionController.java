@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.web.AzureBoardsCustomEndpoint;
+import com.synopsys.integration.alert.channel.azure.boards.web.AzureBoardsCustomFunctionAction;
 
 @RestController
 @RequestMapping(AzureBoardsOAuthFunctionController.AZURE_OAUTH_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class AzureBoardsOAuthFunctionController extends AbstractFunctionControll
     public static final String AZURE_OAUTH_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + AzureBoardsDescriptor.KEY_OAUTH;
 
     @Autowired
-    public AzureBoardsOAuthFunctionController(AzureBoardsCustomEndpoint functionAction) {
+    public AzureBoardsOAuthFunctionController(AzureBoardsCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

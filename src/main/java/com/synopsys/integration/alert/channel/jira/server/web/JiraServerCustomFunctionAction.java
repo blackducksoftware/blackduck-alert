@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -53,15 +53,15 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
-public class JiraServerCustomEndpoint extends CustomEndpoint<String> {
-    private final Logger logger = LoggerFactory.getLogger(JiraServerCustomEndpoint.class);
+public class JiraServerCustomFunctionAction extends CustomFunctionAction<String> {
+    private final Logger logger = LoggerFactory.getLogger(JiraServerCustomFunctionAction.class);
 
     private final JiraServerChannelKey jiraChannelKey;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomEndpoint(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
         super(authorizationManager);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;

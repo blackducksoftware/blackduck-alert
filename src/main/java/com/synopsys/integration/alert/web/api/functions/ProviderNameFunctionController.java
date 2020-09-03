@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderSelectCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderSelectCustomFunctionAction;
 
 @RestController
 @RequestMapping(ProviderNameFunctionController.PROVIDER_NAME_FUNCTION_URL)
@@ -35,7 +35,7 @@ public class ProviderNameFunctionController extends AbstractFunctionController {
     public static final String PROVIDER_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ChannelDistributionUIConfig.KEY_PROVIDER_NAME;
 
     @Autowired
-    public ProviderNameFunctionController(ProviderSelectCustomEndpoint functionAction) {
+    public ProviderNameFunctionController(ProviderSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

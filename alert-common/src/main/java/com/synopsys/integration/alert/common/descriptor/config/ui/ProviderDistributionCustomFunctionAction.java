@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -41,13 +41,13 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderDistributionCustomEndpoint extends CustomEndpoint<List<ProviderProject>> {
+public class ProviderDistributionCustomFunctionAction extends CustomFunctionAction<List<ProviderProject>> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public ProviderDistributionCustomEndpoint(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+    public ProviderDistributionCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
         super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
     }
