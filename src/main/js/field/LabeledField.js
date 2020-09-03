@@ -44,7 +44,6 @@ class LabeledField extends Component {
                         show={showDescription}
                         onHide={() => this.setState({ showDescription: false })}
                         target={() => this.target}
-                        container={this}
                     >
                         <Tooltip id="description-tooltip">
                             {description}

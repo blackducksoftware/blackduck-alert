@@ -43,7 +43,7 @@
     "lint": "eslint src/main/js"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.5",
+    "@babel/core": "^7.11.6",
     "@babel/eslint-parser": "^7.11.5",
     "@babel/eslint-plugin": "^7.11.5",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
