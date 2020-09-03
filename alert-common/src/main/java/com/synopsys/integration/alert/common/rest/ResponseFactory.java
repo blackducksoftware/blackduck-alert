@@ -75,6 +75,11 @@ public class ResponseFactory {
         return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
     }
 
+    public static <T> ResponseStatusException createStatusException(ActionResult<T> actionResult) {
+        String customMessage = actionResult.getMessage().orElse("");
+        return new ResponseStatusException(actionResult.getHttpStatus(), customMessage);
+    }
+
     // Unnecessarily stateful methods:
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {

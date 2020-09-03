@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +85,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AuthorizationManager authorizationManager;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
 
+    @Autowired
     public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,

@@ -34,24 +34,27 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class EmailCustomEndpoint {
+public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>> {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
     private ProviderDataAccessor providerDataAccessor;
 
     @Autowired
     public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
+        super(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, customEndpointManager);
         this.providerDataAccessor = providerDataAccessor;
-        customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ActionResult<List<ProviderUserModel>> createEmailOptions(FieldModel fieldModel) {
+    @Override
+    public ActionResult<List<ProviderUserModel>> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
