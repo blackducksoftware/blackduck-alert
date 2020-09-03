@@ -87,7 +87,6 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
         String azureProjectName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
-        String workItemCreatorEmail = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
         String workItemTypeName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
         boolean commentOnWorkItems = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
         String completedStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
@@ -96,7 +95,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
             azureProjectName,
             null,
             null,
-            workItemCreatorEmail,
+            null,
             workItemTypeName,
             commentOnWorkItems,
             completedStateName,
