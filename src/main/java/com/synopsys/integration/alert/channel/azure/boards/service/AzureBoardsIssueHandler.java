@@ -29,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +96,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
             issueContentModel = IssueContentModel.of(issueContentModel.getTitle(), description, List.of());
         }
 
-        WorkItemRequest workItemRequest = createWorkItemRequest(issueConfig.getIssueCreator(), issueContentModel, issueProperties);
+        WorkItemRequest workItemRequest = createWorkItemRequest(issueContentModel, issueProperties);
         try {
             WorkItemResponseModel workItemResponseModel = azureWorkItemService.createWorkItem(azureOrganizationName, azureProjectName, issueConfig.getIssueType(), workItemRequest);
             Integer workItemId = workItemResponseModel.getId();
@@ -214,7 +212,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
         return queryBuilder;
     }
 
-    private WorkItemRequest createWorkItemRequest(@Nullable String issueCreatorUniqueName, IssueContentModel issueContentModel, AzureBoardsSearchProperties issueSearchProperties) {
+    private WorkItemRequest createWorkItemRequest(IssueContentModel issueContentModel, AzureBoardsSearchProperties issueSearchProperties) {
         List<WorkItemElementOperationModel> requestElementOps = new ArrayList<>();
 
         WorkItemElementOperationModel titleField = createAddFieldModel(WorkItemResponseFields.System_Title, issueContentModel.getTitle());
@@ -222,13 +220,6 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
 
         WorkItemElementOperationModel descriptionField = createAddFieldModel(WorkItemResponseFields.System_Description, issueContentModel.getDescription());
         requestElementOps.add(descriptionField);
-
-        // TODO determine if we can support this
-        // if (StringUtils.isNotBlank(issueCreatorUniqueName)) {
-        // WorkItemUserModel workItemUserModel = new WorkItemUserModel(null, null, issueConfig.getIssueCreator(), null, null, null, null, null);
-        // WorkItemElementOperationModel createdByField = createAddFieldModel(WorkItemResponseFields.System_CreatedBy, workItemUserModel);
-        // requestElementOps.add(createdByField);
-        // }
 
         List<WorkItemElementOperationModel> alertAzureCustomFields = createWorkItemRequestCustomFields(issueSearchProperties);
         requestElementOps.addAll(alertAzureCustomFields);
