@@ -161,7 +161,7 @@ class UserTable extends Component {
         const { user } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser
@@ -173,10 +173,14 @@ class UserTable extends Component {
         const confirmPasswordKey = 'confirmPassword';
         const confirmPasswordError = KEY_CONFIRM_PASSWORD_ERROR;
 
-        let passwordError = '';
+        let passwordError = {};
         let matching = true;
         if ((user[passwordKey] || user[confirmPasswordKey]) && (user[passwordKey] !== user[confirmPasswordKey])) {
-            passwordError = 'Passwords do not match.';
+            passwordError = {
+                severity: 'ERROR',
+                fieldMessage: 'Passwords do not match.'
+            };
+            console.log(passwordError);
             matching = false;
         }
         const newUser = Object.assign(user, { [confirmPasswordError]: passwordError });
