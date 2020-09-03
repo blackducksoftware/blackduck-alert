@@ -213,7 +213,7 @@ class TableDisplay extends Component {
         const callback = (result) => {
             const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
             const validationSetCallback = () => this.setState({
-                showConfiguration: false
+                showConfiguration: !result
             }, () => {
                 if (validationState !== VALIDATION_STATE.FAILED) {
                     this.updateData();

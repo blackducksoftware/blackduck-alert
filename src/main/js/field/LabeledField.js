@@ -77,7 +77,7 @@ LabeledField.propTypes = {
     description: PropTypes.string,
     showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
-    errorValue: PropTypes.string,
+    errorValue: PropTypes.object,
     required: PropTypes.bool
 };
 
