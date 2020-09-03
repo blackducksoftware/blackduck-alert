@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,7 +207,7 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
     }
 
     private WorkItemQueryWhere appendToQueryBuilder(WorkItemQueryWhere queryBuilder, String fieldReferenceName, Optional<String> fieldKey) {
-        if (fieldKey.isPresent()) {
+        if (fieldKey.filter(StringUtils::isNotBlank).isPresent()) {
             queryBuilder = queryBuilder.and(fieldReferenceName, WorkItemQueryWhereOperator.EQ, fieldKey.get());
         }
         return queryBuilder;
