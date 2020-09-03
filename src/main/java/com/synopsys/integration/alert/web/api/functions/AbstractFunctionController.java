@@ -22,8 +22,9 @@
  */
 package com.synopsys.integration.alert.web.api.functions;
 
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 public abstract class AbstractFunctionController<T> extends BaseController {
-    public static final String API_FUNCTION_URL = BaseController.BASE_PATH + "/function";
+    public static final String API_FUNCTION_URL = CustomEndpoint.API_FUNCTION_URL;
 }

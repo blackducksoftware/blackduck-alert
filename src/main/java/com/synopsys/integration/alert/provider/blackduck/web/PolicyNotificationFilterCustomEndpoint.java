@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -45,7 +44,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -63,9 +61,8 @@ public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEnd
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
-        ConfigurationAccessor configurationAccessor) throws AlertException {
-        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager);
+    protected PolicyNotificationFilterCustomEndpoint(BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
+        ConfigurationAccessor configurationAccessor) {
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
         this.configurationAccessor = configurationAccessor;

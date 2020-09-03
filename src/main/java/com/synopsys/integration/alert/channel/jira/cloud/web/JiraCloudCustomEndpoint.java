@@ -38,11 +38,9 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.ButtonCustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -62,8 +60,7 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager);
+    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;

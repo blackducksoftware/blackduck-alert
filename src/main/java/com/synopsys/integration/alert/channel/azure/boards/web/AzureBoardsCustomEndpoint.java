@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.oauth.OAuthCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -86,12 +85,10 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AzureBoardsChannelKey azureBoardsChannelKey;
 
     @Autowired
-    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
+    public AzureBoardsCustomEndpoint(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
-        AzureBoardsChannelKey azureBoardsChannelKey)
-        throws AlertException {
-        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager);
+        AzureBoardsChannelKey azureBoardsChannelKey) {
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;

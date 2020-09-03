@@ -31,12 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -48,8 +45,7 @@ public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>>
     private ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
-        super(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, customEndpointManager);
+    public EmailCustomEndpoint(ProviderDataAccessor providerDataAccessor) {
         this.providerDataAccessor = providerDataAccessor;
     }
 
