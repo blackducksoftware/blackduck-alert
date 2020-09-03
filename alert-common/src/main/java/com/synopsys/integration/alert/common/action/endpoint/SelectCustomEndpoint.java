@@ -27,15 +27,9 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
-import com.synopsys.integration.alert.common.exception.AlertException;
 
 public abstract class SelectCustomEndpoint extends SimpleCustomEndpoint<List<LabelValueSelectOption>> {
-
-    public SelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
-    }
 
     @Override
     protected ActionResult<List<LabelValueSelectOption>> createErrorResponse(Exception e) {

@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -46,8 +45,7 @@ public class ChannelSelectCustomEndpoint extends SelectCustomEndpoint {
     private AuthorizationManager authorizationManager;
 
     @Autowired
-    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, AuthorizationManager authorizationManager) throws AlertException {
-        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager);
+    public ChannelSelectCustomEndpoint(DescriptorMap descriptorMap, AuthorizationManager authorizationManager) {
         this.descriptorMap = descriptorMap;
         this.authorizationManager = authorizationManager;
     }

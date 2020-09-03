@@ -22,12 +22,5 @@
  */
 package com.synopsys.integration.alert.common.action.endpoint;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
-
 public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
-    public ButtonCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
-    }
-
 }

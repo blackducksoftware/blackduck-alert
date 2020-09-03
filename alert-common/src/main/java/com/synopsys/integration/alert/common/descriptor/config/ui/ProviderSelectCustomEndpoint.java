@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -43,8 +42,7 @@ public class ProviderSelectCustomEndpoint extends SelectCustomEndpoint {
     private DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap) throws AlertException {
-        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, customEndpointManager);
+    public ProviderSelectCustomEndpoint(DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 

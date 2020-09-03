@@ -27,15 +27,9 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.SimpleCustomEndpoint;
-import com.synopsys.integration.alert.common.exception.AlertException;
 
 public abstract class TableSelectCustomEndpoint extends SimpleCustomEndpoint<List<?>> {
-
-    protected TableSelectCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
-    }
 
     @Override
     protected ActionResult<List<?>> createErrorResponse(Exception e) {

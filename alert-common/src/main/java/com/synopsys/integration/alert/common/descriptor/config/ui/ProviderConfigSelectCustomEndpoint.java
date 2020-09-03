@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -48,8 +47,7 @@ public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) throws AlertException {
-        super(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, customEndpointManager);
+    public ProviderConfigSelectCustomEndpoint(ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }

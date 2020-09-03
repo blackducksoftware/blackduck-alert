@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
@@ -34,7 +34,7 @@ public class EndpointButtonField extends EndpointField {
     private List<ConfigField> subFields;
 
     public EndpointButtonField(String key, String label, String description, String buttonLabel) {
-        super(key, label, description, FieldType.ENDPOINT_BUTTON, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+        super(key, label, description, FieldType.ENDPOINT_BUTTON, buttonLabel, CustomEndpoint.API_FUNCTION_URL);
         this.successBox = Boolean.FALSE;
         this.subFields = new LinkedList<>();
     }

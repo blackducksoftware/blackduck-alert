@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
@@ -36,7 +36,7 @@ public class EndpointSelectField extends SelectConfigField {
 
     public EndpointSelectField(String key, String label, String description) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, new LinkedList<>());
-        this.url = CustomEndpointManager.CUSTOM_ENDPOINT_URL;
+        this.url = CustomEndpoint.API_FUNCTION_URL;
         this.requestedDataFieldKeys = new HashSet<>();
     }
 

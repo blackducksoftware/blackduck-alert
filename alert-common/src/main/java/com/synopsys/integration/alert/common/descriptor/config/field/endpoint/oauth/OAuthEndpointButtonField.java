@@ -22,12 +22,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class OAuthEndpointButtonField extends EndpointField {
     public OAuthEndpointButtonField(String key, String label, String description, String buttonLabel) {
-        super(key, label, description, FieldType.OAUTH_ENDPOINT_BUTTON, buttonLabel, CustomEndpointManager.CUSTOM_ENDPOINT_URL);
+        super(key, label, description, FieldType.OAUTH_ENDPOINT_BUTTON, buttonLabel, CustomEndpoint.API_FUNCTION_URL);
     }
 }

@@ -23,16 +23,11 @@
 package com.synopsys.integration.alert.common.action.endpoint;
 
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class CustomEndpoint<T> {
-    public CustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        customEndpointManager.registerFunction(fieldKey, this::createResponse);
-    }
-
+    public static final String API_FUNCTION_URL = "/api/function";
     public abstract ActionResult<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper);
 
 }

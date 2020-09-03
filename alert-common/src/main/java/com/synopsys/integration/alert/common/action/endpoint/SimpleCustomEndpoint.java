@@ -25,15 +25,11 @@ package com.synopsys.integration.alert.common.action.endpoint;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class SimpleCustomEndpoint<R> extends CustomEndpoint<R> {
-    public SimpleCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
-    }
 
     protected abstract R createData(FieldModel fieldModel) throws AlertException, ResponseStatusException;
 
