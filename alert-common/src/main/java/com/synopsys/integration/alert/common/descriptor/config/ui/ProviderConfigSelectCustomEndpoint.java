@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -58,7 +58,7 @@ public class ProviderConfigSelectCustomEndpoint extends CustomEndpoint<List<Labe
     }
 
     @Override
-    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
+    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         List<LabelValueSelectOption> content = List.of();
@@ -72,6 +72,6 @@ public class ProviderConfigSelectCustomEndpoint extends CustomEndpoint<List<Labe
                           .map(LabelValueSelectOption::new)
                           .collect(Collectors.toList());
         }
-        return new ActionResult<>(HttpStatus.OK, content);
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 }

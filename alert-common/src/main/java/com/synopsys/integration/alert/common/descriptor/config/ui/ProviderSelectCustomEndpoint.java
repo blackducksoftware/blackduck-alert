@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -52,14 +52,14 @@ public class ProviderSelectCustomEndpoint extends CustomEndpoint<List<LabelValue
     }
 
     @Override
-    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                                                    .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                                                    .flatMap(Optional::stream)
                                                    .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
                                                    .sorted()
                                                    .collect(Collectors.toList());
-        return new ActionResult<>(HttpStatus.OK, content);
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 
 }

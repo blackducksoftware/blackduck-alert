@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.action.endpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -40,25 +40,25 @@ public abstract class CustomEndpoint<T> {
         this.authorizationManager = authorizationManager;
     }
 
-    public ActionResult<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
             if (!authorizationManager.hasExecutePermission(fieldModel.getContext(), fieldModel.getDescriptorName())) {
-                return new ActionResult<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
+                return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
             }
             return createActionResponse(fieldModel, servletContentWrapper);
         } catch (Exception e) {
             if (e instanceof ResponseStatusException) {
                 ResponseStatusException responseStatusException = (ResponseStatusException) e;
-                return new ActionResult<>(responseStatusException.getStatus(), responseStatusException.getReason());
+                return new ActionResponse<>(responseStatusException.getStatus(), responseStatusException.getReason());
             }
             return createErrorResponse(e);
         }
     }
 
-    private ActionResult<T> createErrorResponse(Exception e) {
-        return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("An internal issue occurred while trying to retrieve your data: %s", e.getMessage()));
+    private ActionResponse<T> createErrorResponse(Exception e) {
+        return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("An internal issue occurred while trying to retrieve your data: %s", e.getMessage()));
     }
 
-    public abstract ActionResult<T> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException;
+    public abstract ActionResponse<T> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException;
 
 }

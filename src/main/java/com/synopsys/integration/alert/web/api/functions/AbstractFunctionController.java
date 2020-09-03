@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -47,7 +47,7 @@ public abstract class AbstractFunctionController<T> extends BaseController {
     @PostMapping
     public ResponseEntity<T> postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
         HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
-        ActionResult<T> result = functionAction.createResponse(restModel, servletContentWrapper);
+        ActionResponse<T> result = functionAction.createResponse(restModel, servletContentWrapper);
         if (result.isSuccessful()) {
             return ResponseFactory.createResponseFromAction(result);
         } else {

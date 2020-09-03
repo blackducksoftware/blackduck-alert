@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -52,12 +52,12 @@ public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>>
     }
 
     @Override
-    public ActionResult<List<ProviderUserModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<List<ProviderUserModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
             logger.debug("Received provider user email data request with a blank provider config name");
-            return new ActionResult<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
@@ -65,10 +65,10 @@ public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>>
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
-            return new ActionResult<>(HttpStatus.OK, pageOfUsers);
+            return new ActionResponse<>(HttpStatus.OK, pageOfUsers);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 

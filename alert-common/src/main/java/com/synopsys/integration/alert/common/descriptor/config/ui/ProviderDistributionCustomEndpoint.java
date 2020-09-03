@@ -30,7 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -53,7 +53,7 @@ public class ProviderDistributionCustomEndpoint extends CustomEndpoint<List<Prov
     }
 
     @Override
-    public ActionResult<List<ProviderProject>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<List<ProviderProject>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
@@ -61,7 +61,7 @@ public class ProviderDistributionCustomEndpoint extends CustomEndpoint<List<Prov
 
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         List<ProviderProject> content = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
-        return new ActionResult<>(HttpStatus.OK, content);
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 
 }

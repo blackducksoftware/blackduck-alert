@@ -26,8 +26,8 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
-public class ValidationActionResult extends ActionResult<ValidationResponseModel> {
-    public ValidationActionResult(HttpStatus httpStatus, String message, ValidationResponseModel content) {
+public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
+    public ValidationActionResponse(HttpStatus httpStatus, String message, ValidationResponseModel content) {
         super(httpStatus, message, content);
     }
 }

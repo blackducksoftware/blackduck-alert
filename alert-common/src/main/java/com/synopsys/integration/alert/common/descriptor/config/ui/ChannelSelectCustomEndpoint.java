@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -54,7 +54,7 @@ public class ChannelSelectCustomEndpoint extends CustomEndpoint<List<LabelValueS
     }
 
     @Override
-    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
                                                    .filter(this::hasPermission)
                                                    .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
@@ -63,7 +63,7 @@ public class ChannelSelectCustomEndpoint extends CustomEndpoint<List<LabelValueS
                                                    .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
                                                    .sorted()
                                                    .collect(Collectors.toList());
-        return new ActionResult<>(HttpStatus.OK, content);
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 
     private boolean hasPermission(Descriptor descriptor) {

@@ -31,7 +31,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 // TODO make this a Utils class
@@ -75,16 +75,16 @@ public class ResponseFactory {
         return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
     }
 
-    public static <T> ResponseStatusException createStatusException(ActionResult<T> actionResult) {
-        String customMessage = actionResult.getMessage().orElse("");
-        return new ResponseStatusException(actionResult.getHttpStatus(), customMessage);
+    public static <T> ResponseStatusException createStatusException(ActionResponse<T> actionResponse) {
+        String customMessage = actionResponse.getMessage().orElse("");
+        return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);
     }
 
-    public static <T> ResponseEntity<T> createResponseFromAction(ActionResult<T> actionResult) {
-        if (actionResult.hasContent()) {
-            return new ResponseEntity<>(actionResult.getContent().get(), actionResult.getHttpStatus());
+    public static <T> ResponseEntity<T> createResponseFromAction(ActionResponse<T> actionResponse) {
+        if (actionResponse.hasContent()) {
+            return new ResponseEntity<>(actionResponse.getContent().get(), actionResponse.getHttpStatus());
         }
-        return new ResponseEntity<>(actionResult.getHttpStatus());
+        return new ResponseEntity<>(actionResponse.getHttpStatus());
     }
 
     // Unnecessarily stateful methods:
