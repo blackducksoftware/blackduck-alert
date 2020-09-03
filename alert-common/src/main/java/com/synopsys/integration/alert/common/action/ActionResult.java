@@ -75,4 +75,6 @@ public class ActionResult<T> {
     public boolean hasContent() {
         return getContent().isPresent();
     }
+
+    public boolean hasMessage() { return getMessage().isPresent(); }
 }

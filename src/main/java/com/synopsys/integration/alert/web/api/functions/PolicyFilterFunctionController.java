@@ -22,22 +22,10 @@
  */
 package com.synopsys.integration.alert.web.api.functions;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.web.PolicyNotificationFilterCustomEndpoint;
 
@@ -45,31 +33,8 @@ import com.synopsys.integration.alert.provider.blackduck.web.PolicyNotificationF
 @RequestMapping(PolicyFilterFunctionController.POLICY_FILTER_FUNCTION_URL)
 public class PolicyFilterFunctionController extends AbstractFunctionController {
     public static final String POLICY_FILTER_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER;
-
-    private final AuthorizationManager authorizationManager;
-    private final PolicyNotificationFilterCustomEndpoint functionAction;
-
     @Autowired
-    public PolicyFilterFunctionController(AuthorizationManager authorizationManager, PolicyNotificationFilterCustomEndpoint functionAction) {
-        this.authorizationManager = authorizationManager;
-        this.functionAction = functionAction;
-    }
-
-    @PostMapping
-    public List<?> postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
-        if (!authorizationManager.hasExecutePermission(restModel.getContext(), restModel.getDescriptorName())) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        List<?> responseContent = List.of();
-        HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
-        ActionResult<List<?>> result = functionAction.createResponse(restModel, servletContentWrapper);
-        if (result.isSuccessful()) {
-            if (result.hasContent()) {
-                responseContent = result.getContent().get();
-            }
-        } else {
-            throw ResponseFactory.createStatusException(result);
-        }
-        return responseContent;
+    public PolicyFilterFunctionController(PolicyNotificationFilterCustomEndpoint functionAction) {
+        super(functionAction);
     }
 }

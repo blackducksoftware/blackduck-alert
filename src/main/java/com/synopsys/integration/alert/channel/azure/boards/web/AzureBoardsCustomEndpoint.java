@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.endpoint.oauth.OAuthCustomEndpoint;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
@@ -62,7 +62,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
@@ -70,7 +69,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
-public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
+public class AzureBoardsCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomEndpoint.class);
 
     private final AlertProperties alertProperties;
@@ -89,6 +88,7 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
         AzureBoardsChannelKey azureBoardsChannelKey) {
+        super(authorizationManager);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
@@ -102,12 +102,8 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     }
 
     @Override
-    public ActionResult<OAuthEndpointResponse> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResult<OAuthEndpointResponse> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
-            if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
-                logger.debug("Azure OAuth callback user does not have permission to call the controller.");
-                return new ActionResult<>(HttpStatus.FORBIDDEN, new OAuthEndpointResponse(false, "", ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE));
-            }
             String requestKey = createRequestKey();
             // since we have only one OAuth channel now remove all other requests.
             // if we have more OAuth clients then the removeAllRequests will have to be removed from here.

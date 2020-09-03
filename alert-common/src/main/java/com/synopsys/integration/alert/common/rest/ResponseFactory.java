@@ -80,6 +80,13 @@ public class ResponseFactory {
         return new ResponseStatusException(actionResult.getHttpStatus(), customMessage);
     }
 
+    public static <T> ResponseEntity<T> createResponseFromAction(ActionResult<T> actionResult) {
+        if (actionResult.hasContent()) {
+            return new ResponseEntity<>(actionResult.getContent().get(), actionResult.getHttpStatus());
+        }
+        return new ResponseEntity<>(actionResult.getHttpStatus());
+    }
+
     // Unnecessarily stateful methods:
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
@@ -172,14 +179,4 @@ public class ResponseFactory {
         header.add("Location", location);
         return new ResponseEntity<>(header, HttpStatus.FOUND);
     }
-
-    public <T> ResponseEntity<T> createResponseFromAction(ActionResult<T> actionResult) {
-        // TODO implement more conversion methods.
-        if (actionResult.hasContent()) {
-            return new ResponseEntity<>(actionResult.getContent().get(), actionResult.getHttpStatus());
-        } else {
-            return new ResponseEntity<>(actionResult.getHttpStatus());
-        }
-    }
-
 }

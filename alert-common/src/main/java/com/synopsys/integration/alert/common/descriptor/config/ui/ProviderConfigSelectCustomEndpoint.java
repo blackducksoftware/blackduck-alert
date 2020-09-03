@@ -27,45 +27,51 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ProviderConfigSelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
     private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomEndpoint(ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
+    public ProviderConfigSelectCustomEndpoint(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
+        super(authorizationManager);
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
+    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
+        List<LabelValueSelectOption> content = List.of();
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
-            return configurationModels.stream()
-                       .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                       .map(FieldAccessor::new)
-                       .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
-                       .flatMap(Optional::stream)
-                       .map(LabelValueSelectOption::new)
-                       .collect(Collectors.toList());
+            content = configurationModels.stream()
+                          .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                          .map(FieldAccessor::new)
+                          .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                          .flatMap(Optional::stream)
+                          .map(LabelValueSelectOption::new)
+                          .collect(Collectors.toList());
         }
-        return List.of();
+        return new ActionResult<>(HttpStatus.OK, content);
     }
 }

@@ -27,33 +27,39 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ProviderSelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
     private DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderSelectCustomEndpoint(DescriptorMap descriptorMap) {
+    public ProviderSelectCustomEndpoint(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
+        super(authorizationManager);
         this.descriptorMap = descriptorMap;
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
-        return descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
-                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
-                   .flatMap(Optional::stream)
-                   .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
-                   .sorted()
-                   .collect(Collectors.toList());
+    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+        List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
+                                                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
+                                                   .flatMap(Optional::stream)
+                                                   .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
+                                                   .sorted()
+                                                   .collect(Collectors.toList());
+        return new ActionResult<>(HttpStatus.OK, content);
     }
 
 }

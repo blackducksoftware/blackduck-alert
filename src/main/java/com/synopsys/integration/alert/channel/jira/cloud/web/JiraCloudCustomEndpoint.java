@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -46,13 +46,14 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.rest.response.Response;
 
 @Component
-public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
+public class JiraCloudCustomEndpoint extends CustomEndpoint<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomEndpoint.class);
 
     private final JiraCloudChannelKey jiraChannelKey;
@@ -60,14 +61,15 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
+    public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
+        super(authorizationManager);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
     }
 
     @Override
-    public ActionResult<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
+    public ActionResult<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         JiraCloudProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);

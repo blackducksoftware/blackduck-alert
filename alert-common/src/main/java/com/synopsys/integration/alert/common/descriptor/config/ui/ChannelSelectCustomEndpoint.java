@@ -27,39 +27,43 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.endpoint.SelectCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ChannelSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ChannelSelectCustomEndpoint extends CustomEndpoint<List<LabelValueSelectOption>> {
     private DescriptorMap descriptorMap;
     private AuthorizationManager authorizationManager;
 
     @Autowired
     public ChannelSelectCustomEndpoint(DescriptorMap descriptorMap, AuthorizationManager authorizationManager) {
+        super(authorizationManager);
         this.descriptorMap = descriptorMap;
         this.authorizationManager = authorizationManager;
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
-        return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                   .filter(this::hasPermission)
-                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                   .flatMap(Optional::stream)
-                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
-                   .sorted()
-                   .collect(Collectors.toList());
+    public ActionResult<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
+                                                   .filter(this::hasPermission)
+                                                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
+                                                   .flatMap(Optional::stream)
+                                                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
+                                                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
+                                                   .sorted()
+                                                   .collect(Collectors.toList());
+        return new ActionResult<>(HttpStatus.OK, content);
     }
 
     private boolean hasPermission(Descriptor descriptor) {

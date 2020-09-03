@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>> {
@@ -45,12 +46,13 @@ public class EmailCustomEndpoint extends CustomEndpoint<List<ProviderUserModel>>
     private ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailCustomEndpoint(ProviderDataAccessor providerDataAccessor) {
+    public EmailCustomEndpoint(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+        super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
-    public ActionResult<List<ProviderUserModel>> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResult<List<ProviderUserModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {

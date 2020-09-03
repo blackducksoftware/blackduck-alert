@@ -22,9 +22,36 @@
  */
 package com.synopsys.integration.alert.web.api.functions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.synopsys.integration.alert.common.action.ActionResult;
 import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 public abstract class AbstractFunctionController<T> extends BaseController {
     public static final String API_FUNCTION_URL = CustomEndpoint.API_FUNCTION_URL;
+    private final CustomEndpoint<T> functionAction;
+
+    public AbstractFunctionController(CustomEndpoint<T> functionAction) {
+        this.functionAction = functionAction;
+    }
+
+    @PostMapping
+    public ResponseEntity<T> postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
+        HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
+        ActionResult<T> result = functionAction.createResponse(restModel, servletContentWrapper);
+        if (result.isSuccessful()) {
+            return ResponseFactory.createResponseFromAction(result);
+        } else {
+            throw ResponseFactory.createStatusException(result);
+        }
+    }
 }

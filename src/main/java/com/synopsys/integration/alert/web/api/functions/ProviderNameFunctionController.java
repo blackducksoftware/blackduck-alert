@@ -22,55 +22,20 @@
  */
 package com.synopsys.integration.alert.web.api.functions;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderSelectCustomEndpoint;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @RestController
 @RequestMapping(ProviderNameFunctionController.PROVIDER_NAME_FUNCTION_URL)
 public class ProviderNameFunctionController extends AbstractFunctionController {
     public static final String PROVIDER_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ChannelDistributionUIConfig.KEY_PROVIDER_NAME;
 
-    private final AuthorizationManager authorizationManager;
-    private final ProviderSelectCustomEndpoint functionAction;
-
     @Autowired
-    public ProviderNameFunctionController(AuthorizationManager authorizationManager, ProviderSelectCustomEndpoint functionAction) {
-        this.authorizationManager = authorizationManager;
-        this.functionAction = functionAction;
-    }
-
-    @PostMapping
-    public List<LabelValueSelectOption> postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
-        if (!authorizationManager.hasExecutePermission(restModel.getContext(), restModel.getDescriptorName())) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        List<LabelValueSelectOption> responseContent = List.of();
-        HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
-        ActionResult<List<LabelValueSelectOption>> result = functionAction.createResponse(restModel, servletContentWrapper);
-        if (result.isSuccessful()) {
-            if (result.hasContent()) {
-                responseContent = result.getContent().get();
-            }
-        } else {
-            throw ResponseFactory.createStatusException(result);
-        }
-        return responseContent;
+    public ProviderNameFunctionController(ProviderSelectCustomEndpoint functionAction) {
+        super(functionAction);
     }
 }

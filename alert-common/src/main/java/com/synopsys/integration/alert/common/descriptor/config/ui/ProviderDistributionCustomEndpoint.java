@@ -30,31 +30,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.endpoint.table.TableSelectCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.endpoint.CustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoint {
+public class ProviderDistributionCustomEndpoint extends CustomEndpoint<List<ProviderProject>> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public ProviderDistributionCustomEndpoint(ProviderDataAccessor providerDataAccessor) {
+    public ProviderDistributionCustomEndpoint(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+        super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
-    protected List<?> createData(FieldModel fieldModel) throws ResponseStatusException {
+    public ActionResult<List<ProviderProject>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
-        return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+        List<ProviderProject> content = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+        return new ActionResult<>(HttpStatus.OK, content);
     }
 
 }
