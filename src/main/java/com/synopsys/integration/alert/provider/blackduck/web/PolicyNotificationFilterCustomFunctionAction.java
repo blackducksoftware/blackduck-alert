@@ -58,7 +58,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<List<NotificationFilterModel>> {
+public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<NotificationFilterModelOptions> {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -74,7 +74,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     @Override
-    public ActionResponse<List<NotificationFilterModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<NotificationFilterModelOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
         List<NotificationFilterModel> options = List.of();
@@ -88,8 +88,8 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        NotificationFilterModels notificationFilterModels = new NotificationFilterModels(options);
-        return new ActionResponse<>(HttpStatus.OK, options);
+        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
     private boolean isFilterablePolicy(Collection<String> notificationTypes) {

@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List<LabelValueSelectOption>> {
+public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private DescriptorMap descriptorMap;
     private AuthorizationManager authorizationManager;
 
@@ -55,7 +55,7 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List
     }
 
     @Override
-    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
                                                    .filter(this::hasPermission)
                                                    .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
@@ -65,7 +65,7 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List
                                                    .sorted()
                                                    .collect(Collectors.toList());
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
-        return new ActionResponse<>(HttpStatus.OK, options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
     private boolean hasPermission(Descriptor descriptor) {

@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<List<LabelValueSelectOption>> {
+public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private DescriptorMap descriptorMap;
 
     @Autowired
@@ -53,7 +53,7 @@ public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<Lis
     }
 
     @Override
-    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                                                    .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                                                    .flatMap(Optional::stream)
@@ -61,7 +61,7 @@ public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<Lis
                                                    .sorted()
                                                    .collect(Collectors.toList());
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
-        return new ActionResponse<>(HttpStatus.OK, options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
 }
