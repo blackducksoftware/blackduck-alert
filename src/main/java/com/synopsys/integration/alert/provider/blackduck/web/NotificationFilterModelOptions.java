@@ -24,14 +24,10 @@ package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.List;
 
-public class NotificationFilterModelOptions {
-    private List<NotificationFilterModel> options;
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
 
+public class NotificationFilterModelOptions extends FieldOptions<NotificationFilterModel> {
     public NotificationFilterModelOptions(List<NotificationFilterModel> options) {
-        this.options = options;
-    }
-
-    public List<NotificationFilterModel> getOptions() {
-        return options;
+        super(options);
     }
 }

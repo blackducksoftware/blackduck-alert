@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
+package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
 
-public class ProviderProjectOptions extends FieldOptions<ProviderProjectSelectOption> {
-    public ProviderProjectOptions(List<ProviderProjectSelectOption> options) {
+public class EmailAddressOptions extends FieldOptions<EmailAddressSelectOption> {
+    public EmailAddressOptions(List<EmailAddressSelectOption> options) {
         super(options);
     }
 }
