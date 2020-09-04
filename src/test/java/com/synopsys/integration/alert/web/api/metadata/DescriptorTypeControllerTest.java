@@ -10,6 +10,7 @@ public class DescriptorTypeControllerTest {
     @Test
     public void getTypesTest() {
         DescriptorTypeController descriptorTypeController = new DescriptorTypeController();
-        assertArrayEquals(DescriptorType.values(), descriptorTypeController.getTypes());
+        assertArrayEquals(DescriptorType.values(), descriptorTypeController.getTypes().descriptorTypes);
     }
+
 }

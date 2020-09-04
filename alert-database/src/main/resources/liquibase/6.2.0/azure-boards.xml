@@ -25,10 +25,6 @@
             <column name="SENSITIVE">false</column>
         </insert>
         <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
-            <column name="SOURCE_KEY">channel.azure.boards.work.item.creator.email</column>
-            <column name="SENSITIVE">false</column>
-        </insert>
-        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
             <column name="SOURCE_KEY">channel.azure.boards.work.item.type</column>
             <column name="SENSITIVE">false</column>
         </insert>
@@ -113,10 +109,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
             <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.creator.email')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
-            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.type')"/>
         </insert>
         <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
@@ -176,10 +168,6 @@
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.project')"/>
-            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
-        </insert>
-        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.azure.boards.work.item.creator.email')"/>
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
         <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">

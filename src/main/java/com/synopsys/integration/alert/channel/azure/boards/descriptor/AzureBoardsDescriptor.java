@@ -34,7 +34,6 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String AZURE_BOARDS_CHANNEL_PREFIX = "channel." + AZURE_BOARDS_PREFIX;
 
     public static final String KEY_AZURE_PROJECT = AZURE_BOARDS_CHANNEL_PREFIX + "project";
-    public static final String KEY_WORK_ITEM_CREATOR_EMAIL = AZURE_BOARDS_CHANNEL_PREFIX + "work.item.creator.email";
     public static final String KEY_WORK_ITEM_TYPE = AZURE_BOARDS_CHANNEL_PREFIX + "work.item.type";
     public static final String KEY_WORK_ITEM_COMMENT = AZURE_BOARDS_CHANNEL_PREFIX + "work.item.comment";
     public static final String KEY_WORK_ITEM_COMPLETED_STATE = AZURE_BOARDS_CHANNEL_PREFIX + "work.item.completed.state";

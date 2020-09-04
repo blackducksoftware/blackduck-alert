@@ -231,14 +231,6 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testAccumulateNextRunEmpty() {
-        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
-        BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        spiedAccumulator.accumulate();
-        Mockito.verify(spiedAccumulator).getMillisecondsToNextRun();
-    }
-
-    @Test
     public void testRead() throws Exception {
         BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);

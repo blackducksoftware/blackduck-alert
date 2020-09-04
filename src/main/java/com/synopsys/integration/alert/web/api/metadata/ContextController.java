@@ -23,17 +23,19 @@
 package com.synopsys.integration.alert.web.api.metadata;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 
 @RestController
-public class ContextController extends MetadataController {
-    public static final String CONTEXTS_PATH = "/contexts";
+@RequestMapping(ContextController.CONTEXTS_PATH)
+public class ContextController {
+    public static final String CONTEXTS_PATH = MetadataControllerConstants.METADATA_BASE_PATH + "/contexts";
 
-    @GetMapping(CONTEXTS_PATH)
-    public ConfigContextEnum[] getContexts() {
-        return ConfigContextEnum.values();
+    @GetMapping
+    public ConfigContextsResponseModel getContexts() {
+        return ConfigContextsResponseModel.DEFAULT;
     }
 
 }
