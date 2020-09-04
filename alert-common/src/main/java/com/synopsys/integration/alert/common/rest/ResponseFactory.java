@@ -76,7 +76,7 @@ public class ResponseFactory {
     }
 
     public static <T> ResponseStatusException createStatusException(ActionResponse<T> actionResponse) {
-        String customMessage = actionResponse.getMessage().orElse("");
+        String customMessage = actionResponse.getMessage().orElse(null);
         return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);
     }
 
