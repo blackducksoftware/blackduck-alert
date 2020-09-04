@@ -46,7 +46,7 @@ public class PolicyViolationMessageBuilderTest {
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
-        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyCommonBuilder);
+        PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyCommonBuilder, blackDuckIssueTrackerCallbackUtility);
         runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 
