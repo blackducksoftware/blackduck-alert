@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +144,7 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
         List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)
@@ -184,7 +186,8 @@ public class PolicyCommonBuilder {
                                                 .applyCategoryGroupingAttribute(policySeverity)
                                                 .applyCollapseOnCategory(false)
                                                 .applyAllComponentAttributes(vulnAttributes)
-                                                .applyNotificationId(notificationId);
+                                                .applyNotificationId(notificationId)
+                                                .applyComponentItemCallbackInfo(callbackInfo);
             ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
             try {
                 vulnerabilityItems.add(builder.build());

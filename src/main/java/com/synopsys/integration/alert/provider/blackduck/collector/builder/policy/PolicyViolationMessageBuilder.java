@@ -40,10 +40,12 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
@@ -75,11 +77,13 @@ import com.synopsys.integration.exception.IntegrationException;
 public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleViolationNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(PolicyViolationMessageBuilder.class);
     private final PolicyCommonBuilder policyCommonBuilder;
+    private final BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility;
 
     @Autowired
-    public PolicyViolationMessageBuilder(PolicyCommonBuilder policyCommonBuilder) {
+    public PolicyViolationMessageBuilder(PolicyCommonBuilder policyCommonBuilder, BlackDuckIssueTrackerCallbackUtility blackDuckIssueTrackerCallbackUtility) {
         super(NotificationType.RULE_VIOLATION);
         this.policyCommonBuilder = policyCommonBuilder;
+        this.blackDuckIssueTrackerCallbackUtility = blackDuckIssueTrackerCallbackUtility;
     }
 
     @Override
@@ -157,10 +161,11 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
             try {
                 ProjectVersionWrapper projectVersionWrapper = optionalProjectVersionWrapper.get();
                 ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
+                Optional<ComponentItemCallbackInfo> callbackInfo = blackDuckIssueTrackerCallbackUtility.createCallbackInfo(getNotificationType(), bomComponent);
+
                 List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
-                List<ComponentItem> vulnerabilityComponentItems = policyCommonBuilder
-                                                                      .createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, notificationId,
-                                                                          blackDuckService, blackDuckResponseCache);
+                List<ComponentItem> vulnerabilityComponentItems =
+                    policyCommonBuilder.createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, callbackInfo.orElse(null), notificationId, blackDuckService, blackDuckResponseCache);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
                 ComponentVersionView componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, bomComponent.getComponentVersion()).orElse(null);
 
@@ -189,7 +194,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
                 ComponentBuilderUtil.applyComponentInformation(remediationComponent, blackDuckResponseCache, componentData);
-
+                // TODO should this get callbackInfo?
                 return Optional.of(remediationComponent.build());
             }
         } catch (IntegrationException e) {
