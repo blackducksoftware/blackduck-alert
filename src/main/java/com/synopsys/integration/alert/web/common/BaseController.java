@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RequestMapping(BaseController.BASE_PATH)
+// TODO this class is an improper use of abstraction, it should be removed
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
     public static final String CALLBACKS_PATH = BASE_PATH + "/callbacks";
@@ -62,4 +63,5 @@ public abstract class BaseController {
     public boolean hasGlobalPermission(BiFunction<String, String, Boolean> permissionChecker, DescriptorKey descriptorKey) {
         return permissionChecker.apply(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     }
+
 }

@@ -120,6 +120,7 @@ public abstract class ScheduledTask implements Runnable {
         if (future != null) {
             future.cancel(false);
         }
+        future = null;
     }
 
     public Optional<Long> getMillisecondsToNextRun() {

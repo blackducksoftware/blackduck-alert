@@ -26,14 +26,17 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 @RestController
-public class DescriptorController extends MetadataController {
-    public static final String DESCRIPTORS_PATH = "/descriptors";
+@RequestMapping(DescriptorController.BASE_PATH)
+public class DescriptorController {
+    public static final String BASE_PATH = MetadataControllerConstants.METADATA_BASE_PATH + "/descriptors";
 
     private final DescriptorMetadataActions descriptorMetadataActions;
 
@@ -42,9 +45,10 @@ public class DescriptorController extends MetadataController {
         this.descriptorMetadataActions = descriptorMetadataActions;
     }
 
-    @GetMapping(DESCRIPTORS_PATH)
-    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String context) {
-        return descriptorMetadataActions.getDescriptorsByPermissions(name, type, context);
+    @GetMapping
+    public DescriptorsResponseModel getDescriptors(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String context) {
+        Set<DescriptorMetadata> permittedDescriptors = descriptorMetadataActions.getDescriptorsByPermissions(name, type, context);
+        return new DescriptorsResponseModel(permittedDescriptors);
     }
 
 }

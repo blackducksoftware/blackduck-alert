@@ -10,6 +10,7 @@ public class ContextControllerTest {
     @Test
     public void getContextsTest() {
         ContextController contextController = new ContextController();
-        assertArrayEquals(ConfigContextEnum.values(), contextController.getContexts());
+        assertArrayEquals(ConfigContextEnum.values(), contextController.getContexts().configContexts);
     }
+
 }

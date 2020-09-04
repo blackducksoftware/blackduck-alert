@@ -20,11 +20,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorController;
-import com.synopsys.integration.alert.web.api.metadata.MetadataController;
 
 public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
 
@@ -47,9 +46,12 @@ public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDescriptorEndpoint() throws Exception {
-        String urlPath = MetadataController.METADATA_BASE_PATH + DescriptorController.DESCRIPTORS_PATH;
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(DescriptorController.BASE_PATH)
+                                                    .with(
+                                                        SecurityMockMvcRequestPostProcessors
+                                                            .user("admin")
+                                                            .roles(AlertIntegrationTest.ROLE_ALERT_ADMIN)
+                                                    )
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         long startTime = System.nanoTime();
@@ -59,9 +61,10 @@ public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
         long timeInMillis = TimeUnit.NANOSECONDS.toMillis(totalRunTime);
 
         String responseContent = mvcResult.getResponse().getContentAsString();
-        JsonArray descriptorMetadata = gson.fromJson(responseContent, new TypeToken<JsonArray>() {}.getType());
+        JsonObject descriptorHolder = gson.fromJson(responseContent, JsonObject.class);
+        JsonArray descriptorMetadata = descriptorHolder.getAsJsonArray("descriptors");
 
-        assertTrue(descriptorMetadata.size() >= descriptors.size());
+        assertTrue(descriptorMetadata.size() >= this.descriptors.size());
         long expectedMaxTime = 500;
         assertTrue(timeInMillis < expectedMaxTime, "Total runtime was: " + timeInMillis + "ms and should be below: " + expectedMaxTime + "ms.");
     }

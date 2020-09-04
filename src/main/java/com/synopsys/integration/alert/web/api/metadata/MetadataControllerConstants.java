@@ -22,12 +22,9 @@
  */
 package com.synopsys.integration.alert.web.api.metadata;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.synopsys.integration.alert.web.common.BaseController;
 
-@RequestMapping(MetadataController.METADATA_BASE_PATH)
-public abstract class MetadataController {
+public final class MetadataControllerConstants {
     public static final String METADATA_BASE_PATH = BaseController.BASE_PATH + "/metadata";
 
 }
