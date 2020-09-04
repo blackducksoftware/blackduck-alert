@@ -56,7 +56,7 @@ export function getDescriptors() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            dispatch(descriptorsFetched(responseData));
+                            dispatch(descriptorsFetched(responseData.descriptors));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => descriptorsError(responseData.message)));
                             const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);

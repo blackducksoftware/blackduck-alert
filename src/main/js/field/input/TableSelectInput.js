@@ -79,6 +79,7 @@ class TableSelectInput extends Component {
         };
     }
 
+    // FIXME componentWillMount is deprecated, use the constructor or componentDidMount to initialize this
     componentWillMount() {
         const { value } = this.props;
         if (value && value.length > 0) {
@@ -432,8 +433,9 @@ class TableSelectInput extends Component {
                     </div>
                     <ConfirmModal
                         id={confirmModalId}
+                        title="Clear Input"
+                        message="Are you sure you want to clear all selected items?"
                         showModal={this.state.showClearConfirm}
-                        title="Are you sure you want to clear all selected items?"
                         affirmativeAction={this.handleClearClick}
                         negativeAction={this.handleHideClearConfirm}
                     />
