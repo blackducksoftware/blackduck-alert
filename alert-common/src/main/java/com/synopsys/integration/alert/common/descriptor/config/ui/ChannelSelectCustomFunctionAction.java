@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -42,7 +43,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List<LabelValueSelectOption>> {
+public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private DescriptorMap descriptorMap;
     private AuthorizationManager authorizationManager;
 
@@ -54,8 +55,8 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List
     }
 
     @Override
-    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
                                                    .filter(this::hasPermission)
                                                    .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
                                                    .flatMap(Optional::stream)
@@ -63,7 +64,8 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<List
                                                    .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
                                                    .sorted()
                                                    .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, content);
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
     private boolean hasPermission(Descriptor descriptor) {

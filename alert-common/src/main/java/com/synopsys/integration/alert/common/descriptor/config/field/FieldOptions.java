@@ -24,8 +24,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.List;
 
-public class LabelValueSelectOptions extends FieldOptions<LabelValueSelectOption> {
-    public LabelValueSelectOptions(List<LabelValueSelectOption> options) {
-        super(options);
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class FieldOptions<T> extends AlertSerializableModel {
+    // Do not rename this the UI looks for a field named options in the JSON object it receives.
+    private List<T> options;
+
+    public FieldOptions(List<T> options) {
+        this.options = options;
+    }
+
+    public List<T> getOptions() {
+        return options;
     }
 }

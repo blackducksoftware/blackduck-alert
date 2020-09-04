@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,12 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.List;
 
-public class LabelValueSelectOptions extends FieldOptions<LabelValueSelectOption> {
-    public LabelValueSelectOptions(List<LabelValueSelectOption> options) {
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+
+public class NotificationFilterModelOptions extends FieldOptions<NotificationFilterModel> {
+    public NotificationFilterModelOptions(List<NotificationFilterModel> options) {
         super(options);
     }
 }

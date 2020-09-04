@@ -20,12 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
 import java.util.List;
 
-public class LabelValueSelectOptions extends FieldOptions<LabelValueSelectOption> {
-    public LabelValueSelectOptions(List<LabelValueSelectOption> options) {
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+
+public class ProviderProjectOptions extends FieldOptions<ProviderProjectSelectOption> {
+    public ProviderProjectOptions(List<ProviderProjectSelectOption> options) {
         super(options);
     }
 }

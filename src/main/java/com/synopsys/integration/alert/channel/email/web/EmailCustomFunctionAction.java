@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class EmailCustomFunctionAction extends CustomFunctionAction<List<ProviderUserModel>> {
+public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddressOptions> {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomFunctionAction.class);
     private ProviderDataAccessor providerDataAccessor;
 
@@ -52,7 +53,7 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<List<Provide
     }
 
     @Override
-    public ActionResponse<List<ProviderUserModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<EmailAddressOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
@@ -65,7 +66,11 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<List<Provide
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
-            return new ActionResponse<>(HttpStatus.OK, pageOfUsers);
+            List<EmailAddressSelectOption> options = pageOfUsers.stream()
+                                                         .map(providerUser -> new EmailAddressSelectOption(providerUser.getEmailAddress(), providerUser.getOptOut()))
+                                                         .collect(Collectors.toList());
+            EmailAddressOptions optionList = new EmailAddressOptions(options);
+            return new ActionResponse<>(HttpStatus.OK, optionList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

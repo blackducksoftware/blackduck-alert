@@ -20,5 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.web;public class NotificationFilterModels {
+package com.synopsys.integration.alert.channel.email.web;
+
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class EmailAddressSelectOption extends AlertSerializableModel {
+    private String emailAddress;
+    private Boolean optOut;
+
+    public EmailAddressSelectOption(String emailAddress, Boolean optOut) {
+        this.emailAddress = emailAddress;
+        this.optOut = optOut;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public Boolean getOptOut() {
+        return optOut;
+    }
 }

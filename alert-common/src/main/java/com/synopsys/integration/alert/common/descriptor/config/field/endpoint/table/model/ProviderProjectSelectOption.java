@@ -20,12 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
-import java.util.List;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class LabelValueSelectOptions extends FieldOptions<LabelValueSelectOption> {
-    public LabelValueSelectOptions(List<LabelValueSelectOption> options) {
-        super(options);
+public class ProviderProjectSelectOption extends AlertSerializableModel {
+    private String name;
+    private String description;
+
+    public ProviderProjectSelectOption(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

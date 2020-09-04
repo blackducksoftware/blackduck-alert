@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -46,7 +47,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionAction<List<LabelValueSelectOption>> {
+public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
 
@@ -58,13 +59,13 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     }
 
     @Override
-    public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
-        List<LabelValueSelectOption> content = List.of();
+        List<LabelValueSelectOption> options = List.of();
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
-            content = configurationModels.stream()
+            options = configurationModels.stream()
                           .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                           .map(FieldAccessor::new)
                           .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
@@ -72,6 +73,7 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
                           .map(LabelValueSelectOption::new)
                           .collect(Collectors.toList());
         }
-        return new ActionResponse<>(HttpStatus.OK, content);
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 }

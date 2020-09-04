@@ -58,7 +58,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<List<NotificationFilterModel>> {
+public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<NotificationFilterModelOptions> {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -74,20 +74,22 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     @Override
-    public ActionResponse<List<NotificationFilterModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<NotificationFilterModelOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
-        List<NotificationFilterModel> content = List.of();
+        List<NotificationFilterModel> options = List.of();
+
         if (isFilterablePolicy(selectedNotificationTypes)) {
             try {
-                content = retrieveBlackDuckPolicyOptions(fieldModel);
+                options = retrieveBlackDuckPolicyOptions(fieldModel);
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        return new ActionResponse<>(HttpStatus.OK, content);
+        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
     private boolean isFilterablePolicy(Collection<String> notificationTypes) {

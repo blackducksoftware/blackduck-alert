@@ -43,7 +43,8 @@ class EndpointSelectField extends Component {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const options = data.map((item) => {
+                    const { options } = data;
+                    const selectOptions = options.map((item) => {
                         const dataValue = item.value;
                         return {
                             key: dataValue,
@@ -51,13 +52,13 @@ class EndpointSelectField extends Component {
                             value: dataValue
                         };
                     });
-                    const selectedValues = options.filter((option) => value.includes(option.value));
-                    if (options.length === 0 || selectedValues.length === 0) {
+                    const selectedValues = selectOptions.filter((option) => value.includes(option.value));
+                    if (selectOptions.length === 0 || selectedValues.length === 0) {
                         this.emptyFieldValue();
                     }
 
                     this.setState({
-                        options,
+                        options: selectOptions,
                         success: true
                     });
                 });
