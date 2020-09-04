@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -61,17 +62,19 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
-        List<LabelValueSelectOption> content = List.of();
+        List<LabelValueSelectOption> options = List.of();
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions();
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
-            content = configurationModels.stream()
+            options = configurationModels.stream()
                           .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                           .map(FieldAccessor::new)
                           .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
                           .flatMap(Optional::stream)
                           .map(LabelValueSelectOption::new)
                           .collect(Collectors.toList());
+            optionList = new LabelValueSelectOptions(options);
         }
-        return new ActionResponse<>(HttpStatus.OK, content);
+        return new ActionResponse<>(HttpStatus.OK, options);
     }
 }

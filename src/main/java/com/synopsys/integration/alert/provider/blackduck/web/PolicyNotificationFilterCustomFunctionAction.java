@@ -77,17 +77,19 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     public ActionResponse<List<NotificationFilterModel>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
-        List<NotificationFilterModel> content = List.of();
+        List<NotificationFilterModel> options = List.of();
+
         if (isFilterablePolicy(selectedNotificationTypes)) {
             try {
-                content = retrieveBlackDuckPolicyOptions(fieldModel);
+                options = retrieveBlackDuckPolicyOptions(fieldModel);
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        return new ActionResponse<>(HttpStatus.OK, content);
+        NotificationFilterModels notificationFilterModels = new NotificationFilterModels(options);
+        return new ActionResponse<>(HttpStatus.OK, options);
     }
 
     private boolean isFilterablePolicy(Collection<String> notificationTypes) {

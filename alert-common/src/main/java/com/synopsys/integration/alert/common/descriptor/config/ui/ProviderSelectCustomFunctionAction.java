@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -53,13 +54,14 @@ public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<Lis
 
     @Override
     public ActionResponse<List<LabelValueSelectOption>> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
-        List<LabelValueSelectOption> content = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
+        List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
                                                    .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
                                                    .flatMap(Optional::stream)
                                                    .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
                                                    .sorted()
                                                    .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, content);
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, options);
     }
 
 }
