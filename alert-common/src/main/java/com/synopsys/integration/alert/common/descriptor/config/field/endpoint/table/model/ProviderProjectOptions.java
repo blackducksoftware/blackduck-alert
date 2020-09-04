@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import java.util.List;
 
-public abstract class ButtonCustomEndpoint extends CustomEndpoint<String> {
-    public ButtonCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+
+public class ProviderProjectOptions extends FieldOptions<ProviderProjectSelectOption> {
+    public ProviderProjectOptions(List<ProviderProjectSelectOption> options) {
+        super(options);
     }
-
 }

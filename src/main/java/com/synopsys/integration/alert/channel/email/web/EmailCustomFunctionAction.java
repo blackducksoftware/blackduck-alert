@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,32 +32,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class EmailCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(EmailCustomEndpoint.class);
+public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddressOptions> {
+    private final Logger logger = LoggerFactory.getLogger(EmailCustomFunctionAction.class);
     private ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
+    public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+        super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
-        customEndpointManager.registerFunction(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, this::createEmailOptions);
     }
 
-    public ActionResult<List<ProviderUserModel>> createEmailOptions(FieldModel fieldModel) {
+    @Override
+    public ActionResponse<EmailAddressOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
 
         if (StringUtils.isBlank(providerConfigName)) {
             logger.debug("Received provider user email data request with a blank provider config name");
-            return new ActionResult<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
@@ -64,10 +66,14 @@ public class EmailCustomEndpoint {
             if (pageOfUsers.isEmpty()) {
                 logger.info("No user emails found in the database for the provider: {}", providerConfigName);
             }
-            return new ActionResult<>(HttpStatus.OK, pageOfUsers);
+            List<EmailAddressSelectOption> options = pageOfUsers.stream()
+                                                         .map(providerUser -> new EmailAddressSelectOption(providerUser.getEmailAddress(), providerUser.getOptOut()))
+                                                         .collect(Collectors.toList());
+            EmailAddressOptions optionList = new EmailAddressOptions(options);
+            return new ActionResponse<>(HttpStatus.OK, optionList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 

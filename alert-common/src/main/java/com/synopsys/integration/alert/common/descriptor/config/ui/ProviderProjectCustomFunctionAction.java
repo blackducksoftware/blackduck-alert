@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,34 +31,44 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectSelectOption;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProviderDistributionCustomEndpoint extends TableSelectCustomEndpoint {
+public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public ProviderDistributionCustomEndpoint(CustomEndpointManager customEndpointManager, ProviderDataAccessor providerDataAccessor) throws AlertException {
-        super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, customEndpointManager);
+    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
+        super(authorizationManager);
         this.providerDataAccessor = providerDataAccessor;
     }
 
     @Override
-    protected List<?> createData(FieldModel fieldModel) throws ResponseStatusException {
+    public ActionResponse<ProviderProjectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
         String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
-        return providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+        List<ProviderProject> content = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+        List<ProviderProjectSelectOption> options = content.stream()
+                                                        .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
+                                                        .collect(Collectors.toList());
+        ProviderProjectOptions optionList = new ProviderProjectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
 }

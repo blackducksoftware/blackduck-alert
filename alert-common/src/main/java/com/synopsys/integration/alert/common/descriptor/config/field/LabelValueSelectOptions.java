@@ -20,14 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import org.springframework.http.HttpStatus;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-
-public class ValidationActionResult extends ActionResult<ValidationResponseModel> {
-    public ValidationActionResult(HttpStatus httpStatus, String message, ValidationResponseModel content) {
-        super(httpStatus, message, content);
+public class LabelValueSelectOptions extends FieldOptions<LabelValueSelectOption> {
+    public LabelValueSelectOptions(List<LabelValueSelectOption> options) {
+        super(options);
     }
 }

@@ -27,47 +27,53 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ProviderConfigSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private final ConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) throws AlertException {
-        super(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, customEndpointManager);
+    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
+        super(authorizationManager);
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
+        List<LabelValueSelectOption> options = List.of();
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
-            return configurationModels.stream()
-                       .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                       .map(FieldAccessor::new)
-                       .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
-                       .flatMap(Optional::stream)
-                       .map(LabelValueSelectOption::new)
-                       .collect(Collectors.toList());
+            options = configurationModels.stream()
+                          .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                          .map(FieldAccessor::new)
+                          .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                          .flatMap(Optional::stream)
+                          .map(LabelValueSelectOption::new)
+                          .collect(Collectors.toList());
         }
-        return List.of();
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 }

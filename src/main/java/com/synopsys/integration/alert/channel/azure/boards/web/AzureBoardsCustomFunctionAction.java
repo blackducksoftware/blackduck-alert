@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -45,9 +46,8 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestVal
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
@@ -62,7 +62,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
@@ -70,8 +69,8 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
-public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomEndpoint.class);
+public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
+    private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
     private final AlertProperties alertProperties;
     private final ConfigurationAccessor configurationAccessor;
@@ -84,12 +83,12 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     private final AuthorizationManager authorizationManager;
     private final AzureBoardsChannelKey azureBoardsChannelKey;
 
-    public AzureBoardsCustomEndpoint(CustomEndpointManager customEndpointManager, AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
+    @Autowired
+    public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
-        AzureBoardsChannelKey azureBoardsChannelKey)
-        throws AlertException {
-        super(AzureBoardsDescriptor.KEY_OAUTH, customEndpointManager);
+        AzureBoardsChannelKey azureBoardsChannelKey) {
+        super(authorizationManager);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
@@ -103,12 +102,8 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
     }
 
     @Override
-    public ActionResult<OAuthEndpointResponse> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<OAuthEndpointResponse> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
-            if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
-                logger.debug("Azure OAuth callback user does not have permission to call the controller.");
-                return new ActionResult<>(HttpStatus.FORBIDDEN, new OAuthEndpointResponse(false, "", ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE));
-            }
             String requestKey = createRequestKey();
             // since we have only one OAuth channel now remove all other requests.
             // if we have more OAuth clients then the removeAllRequests will have to be removed from here.
@@ -117,23 +112,23 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse(""));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse(""));
             }
             FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
             if (!alertServerUrl.isPresent()) {
-                return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
             }
 
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
-            return new ActionResult<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldAccessor), authUrl, "Authenticating..."));
+            return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldAccessor), authUrl, "Authenticating..."));
 
         } catch (AlertFieldException ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -143,11 +138,11 @@ public class AzureBoardsCustomEndpoint extends OAuthCustomEndpoint {
                                      .collect(Collectors.toSet());
             String errorMessage = String.format(
                 "The configuration is invalid. Please test the configuration. Details: %s", StringUtils.join(errors, ","));
-            return new ActionResult<>(HttpStatus.BAD_REQUEST, createErrorResponse(errorMessage));
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse(errorMessage));
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, createErrorResponse("Error activating azure oauth."));
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, createErrorResponse("Error activating azure oauth."));
         }
     }
 

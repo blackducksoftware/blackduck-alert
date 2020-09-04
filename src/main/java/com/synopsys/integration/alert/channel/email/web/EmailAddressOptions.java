@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
+package com.synopsys.integration.alert.channel.email.web;
 
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
+import java.util.List;
 
-public class OAuthEndpointButtonField extends EndpointField {
-    public OAuthEndpointButtonField(String key, String label, String description, String buttonLabel) {
-        super(key, label, description, FieldType.OAUTH_ENDPOINT_BUTTON, buttonLabel, CustomFunctionAction.API_FUNCTION_URL);
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+
+public class EmailAddressOptions extends FieldOptions<EmailAddressSelectOption> {
+    public EmailAddressOptions(List<EmailAddressSelectOption> options) {
+        super(options);
     }
 }

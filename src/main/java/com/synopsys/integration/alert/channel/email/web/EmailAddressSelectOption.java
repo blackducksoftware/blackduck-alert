@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
+package com.synopsys.integration.alert.channel.email.web;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.CustomEndpoint;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class OAuthCustomEndpoint extends CustomEndpoint<OAuthEndpointResponse> {
-    public OAuthCustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        super(fieldKey, customEndpointManager);
+public class EmailAddressSelectOption extends AlertSerializableModel {
+    private String emailAddress;
+    private Boolean optOut;
+
+    public EmailAddressSelectOption(String emailAddress, Boolean optOut) {
+        this.emailAddress = emailAddress;
+        this.optOut = optOut;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public Boolean getOptOut() {
+        return optOut;
     }
 }

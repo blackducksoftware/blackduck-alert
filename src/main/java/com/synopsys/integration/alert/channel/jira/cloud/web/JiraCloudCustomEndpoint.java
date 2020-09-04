@@ -37,24 +37,23 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.rest.response.Response;
 
 @Component
-public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
+public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomEndpoint.class);
 
     private final JiraCloudChannelKey jiraChannelKey;
@@ -62,15 +61,15 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager);
+    public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
+        super(authorizationManager);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
     }
 
     @Override
-    public ActionResult<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
+    public ActionResponse<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         JiraCloudProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -79,20 +78,20 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
             String accessToken = jiraProperties.getAccessToken();
             Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
             if (BooleanUtils.isTrue(response.isStatusCodeError())) {
-                return new ActionResult<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + response.getStatusCode());
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return new ActionResult<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
+                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
             }
-            return new ActionResult<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira Cloud");
+            return new ActionResponse<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira Cloud");
         } catch (IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
-            return new ActionResult<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
         }
     }
 

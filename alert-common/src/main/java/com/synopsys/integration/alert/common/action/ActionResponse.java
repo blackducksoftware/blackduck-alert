@@ -29,24 +29,24 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpStatus;
 
-public class ActionResult<T> {
+public class ActionResponse<T> {
     private HttpStatus httpStatus;
     private String message;
     private T content;
 
-    public ActionResult(@NotNull HttpStatus httpStatus) {
+    public ActionResponse(@NotNull HttpStatus httpStatus) {
         this(httpStatus, null, null);
     }
 
-    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable String message) {
+    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable String message) {
         this(httpStatus, message, null);
     }
 
-    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable T content) {
+    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable T content) {
         this(httpStatus, null, content);
     }
 
-    public ActionResult(@NotNull HttpStatus httpStatus, @Nullable String message, @Nullable T content) {
+    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable String message, @Nullable T content) {
         this.httpStatus = httpStatus;
         this.content = content;
         this.message = message;
@@ -75,4 +75,6 @@ public class ActionResult<T> {
     public boolean hasContent() {
         return getContent().isPresent();
     }
+
+    public boolean hasMessage() { return getMessage().isPresent(); }
 }

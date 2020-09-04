@@ -31,21 +31,23 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectCustomEndpoint;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -56,39 +58,38 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class PolicyNotificationFilterCustomEndpoint extends TableSelectCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomEndpoint.class);
+public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<NotificationFilterModelOptions> {
+    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    protected PolicyNotificationFilterCustomEndpoint(CustomEndpointManager customEndpointManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
-        ConfigurationAccessor configurationAccessor) throws AlertException {
-        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, customEndpointManager);
+    protected PolicyNotificationFilterCustomFunctionAction(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
+        ConfigurationAccessor configurationAccessor) {
+        super(authorizationManager);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
         this.configurationAccessor = configurationAccessor;
     }
 
     @Override
-    protected List<?> createData(FieldModel fieldModel) throws AlertException {
+    public ActionResponse<NotificationFilterModelOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
-        if (selectedNotificationTypes.isEmpty()) {
-            return List.of();
-        }
+        List<NotificationFilterModel> options = List.of();
 
         if (isFilterablePolicy(selectedNotificationTypes)) {
             try {
-                return retrieveBlackDuckPolicyOptions(fieldModel);
+                options = retrieveBlackDuckPolicyOptions(fieldModel);
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        return List.of();
+        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
     private boolean isFilterablePolicy(Collection<String> notificationTypes) {

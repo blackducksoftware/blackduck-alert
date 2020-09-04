@@ -20,14 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class OAuthEndpointButtonField extends EndpointField {
-    public OAuthEndpointButtonField(String key, String label, String description, String buttonLabel) {
-        super(key, label, description, FieldType.OAUTH_ENDPOINT_BUTTON, buttonLabel, CustomFunctionAction.API_FUNCTION_URL);
+public class ProviderProjectSelectOption extends AlertSerializableModel {
+    private String name;
+    private String description;
+
+    public ProviderProjectSelectOption(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

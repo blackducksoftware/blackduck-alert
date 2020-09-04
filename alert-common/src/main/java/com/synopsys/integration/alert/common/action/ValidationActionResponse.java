@@ -20,19 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
+package com.synopsys.integration.alert.common.action;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import org.springframework.http.HttpStatus;
 
-public abstract class CustomEndpoint<T> {
-    public CustomEndpoint(String fieldKey, CustomEndpointManager customEndpointManager) throws AlertException {
-        customEndpointManager.registerFunction(fieldKey, this::createResponse);
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+
+public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
+    public ValidationActionResponse(HttpStatus httpStatus, String message, ValidationResponseModel content) {
+        super(httpStatus, message, content);
     }
-
-    public abstract ActionResult<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper);
-
 }

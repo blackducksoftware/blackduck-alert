@@ -31,7 +31,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.action.ActionResult;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 // TODO make this a Utils class
@@ -73,6 +73,18 @@ public class ResponseFactory {
 
     public static ResponseStatusException createNotImplementedException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
+    }
+
+    public static <T> ResponseStatusException createStatusException(ActionResponse<T> actionResponse) {
+        String customMessage = actionResponse.getMessage().orElse(null);
+        return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);
+    }
+
+    public static <T> ResponseEntity<T> createResponseFromAction(ActionResponse<T> actionResponse) {
+        if (actionResponse.hasContent()) {
+            return new ResponseEntity<>(actionResponse.getContent().get(), actionResponse.getHttpStatus());
+        }
+        return new ResponseEntity<>(actionResponse.getHttpStatus());
     }
 
     // Unnecessarily stateful methods:
@@ -167,14 +179,4 @@ public class ResponseFactory {
         header.add("Location", location);
         return new ResponseEntity<>(header, HttpStatus.FOUND);
     }
-
-    public <T> ResponseEntity<T> createResponseFromAction(ActionResult<T> actionResult) {
-        // TODO implement more conversion methods.
-        if (actionResult.hasContent()) {
-            return new ResponseEntity<>(actionResult.getContent().get(), actionResult.getHttpStatus());
-        } else {
-            return new ResponseEntity<>(actionResult.getHttpStatus());
-        }
-    }
-
 }

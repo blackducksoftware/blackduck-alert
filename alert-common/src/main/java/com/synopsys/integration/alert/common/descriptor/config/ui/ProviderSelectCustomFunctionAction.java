@@ -27,44 +27,41 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ChannelSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private DescriptorMap descriptorMap;
-    private AuthorizationManager authorizationManager;
 
     @Autowired
-    public ChannelSelectCustomEndpoint(CustomEndpointManager customEndpointManager, DescriptorMap descriptorMap, AuthorizationManager authorizationManager) throws AlertException {
-        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, customEndpointManager);
+    public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
+        super(authorizationManager);
         this.descriptorMap = descriptorMap;
-        this.authorizationManager = authorizationManager;
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
-        return descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                   .filter(this::hasPermission)
-                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                   .flatMap(Optional::stream)
-                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
-                   .sorted()
-                   .collect(Collectors.toList());
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+        List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
+                                                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
+                                                   .flatMap(Optional::stream)
+                                                   .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
+                                                   .sorted()
+                                                   .collect(Collectors.toList());
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
-    private boolean hasPermission(Descriptor descriptor) {
-        return authorizationManager.hasPermissions(ConfigContextEnum.DISTRIBUTION.name(), descriptor.getDescriptorKey().getUniversalKey());
-    }
 }

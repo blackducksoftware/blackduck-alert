@@ -36,17 +36,16 @@ import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.action.ActionResult;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ButtonCustomEndpoint;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
@@ -54,23 +53,23 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
-public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
-    private final Logger logger = LoggerFactory.getLogger(JiraServerCustomEndpoint.class);
+public class JiraServerCustomFunctionAction extends CustomFunctionAction<String> {
+    private final Logger logger = LoggerFactory.getLogger(JiraServerCustomFunctionAction.class);
 
     private final JiraServerChannelKey jiraChannelKey;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomEndpoint(JiraServerChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
-        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager);
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
+        super(authorizationManager);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
     }
 
     @Override
-    public ActionResult<String> createResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
+    public ActionResponse<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
         JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
@@ -81,22 +80,22 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
                 jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
-                    return new ActionResult<>(HttpStatus.NOT_FOUND,
+                    return new ActionResponse<>(HttpStatus.NOT_FOUND,
                         "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage());
                 }
                 createBadRequestIntegrationException(e);
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return new ActionResult<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
+                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
             }
-            return new ActionResult<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira server.");
+            return new ActionResponse<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira server.");
         } catch (IntegrationException e) {
             return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return new ActionResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
         }
     }
 
@@ -146,9 +145,9 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
         return false;
     }
 
-    private ActionResult<String> createBadRequestIntegrationException(IntegrationException error) {
+    private ActionResponse<String> createBadRequestIntegrationException(IntegrationException error) {
         logger.error("There was an issue connecting to Jira server", error);
-        return new ActionResult<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira server: " + error.getMessage());
+        return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira server: " + error.getMessage());
     }
 
 }
