@@ -42,7 +42,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
@@ -74,6 +76,14 @@ public class UserController extends BaseController {
         return userActions.getUsers();
     }
 
+    @PostMapping("/validate")
+    public ValidationResponseModel validateUserModel(@RequestBody UserModel userModel) {
+        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
+            throw ResponseFactory.createForbiddenException();
+        }
+        return userActions.validateUser(userModel);
+    }
+
     @PostMapping
     public UserConfig createUser(@RequestBody UserConfig userModel) {
         if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
@@ -98,7 +108,6 @@ public class UserController extends BaseController {
         }
         try {
             return userActions.updateUser(userId, userModel);
-            //return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "User Updated.");
         } catch (AlertDatabaseConstraintException e) {
             logger.error("There was an issue with the DB: {}", e.getMessage());
             logger.debug("Cause", e);
@@ -115,7 +124,10 @@ public class UserController extends BaseController {
             throw ResponseFactory.createForbiddenException();
         }
         try {
-            userActions.deleteUser(userId);
+            boolean existed = userActions.deleteUser(userId);
+            if (!existed) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
         } catch (AlertForbiddenOperationException ex) {
             throw ResponseFactory.createForbiddenException(ex.getMessage());
         }
