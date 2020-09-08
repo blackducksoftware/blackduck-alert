@@ -24,14 +24,18 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public abstract class AbstractResourceActions<T> implements ResourceActions<T>, ValidateAction<T>, TestAction<T> {
+    public static final String FORBIDDEN_MESSAGE = "User not authorized to perform the request";
+    private static final String RESOURCE_IDENTIFIER_MISSING = "Resource identifier missing.";
     private DescriptorKey descriptorKey;
     private AuthorizationManager authorizationManager;
     private ConfigContextEnum context;
@@ -44,59 +48,96 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
 
     }
 
+    public abstract ActionResponse<T> createResource(T resource);
+
+    public abstract ActionResponse<T> deleteResource(Long id);
+
+    public abstract ActionResponse<List<T>> readAllResources();
+
+    public abstract ActionResponse<T> readResource(Long id);
+
+    public abstract ValidationActionResponse testResource(T resource);
+
+    public abstract ActionResponse<T> updateResource(Long id, T resource);
+
+    public abstract ValidationActionResponse validateResource(T resource);
+
     @Override
     public ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return null;
+        ValidationActionResponse validationResponse = validateResource(resource);
+        if (validationResponse.isError()) {
+            return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
+        }
+        return createResource(resource);
     }
 
     @Override
     public ActionResponse<List<T>> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return null;
+        return readAllResources();
     }
 
     @Override
     public ActionResponse<T> getOne(Long id) {
-        if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+        if (null == id) {
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
         }
-        return null;
+        if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+        }
+        return readResource(id);
     }
 
     @Override
     public ActionResponse<T> update(Long id, T resource) {
-        if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+        if (null == id) {
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
         }
-        return null;
+        if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+        }
+        ValidationActionResponse validationResponse = validateResource(resource);
+        if (validationResponse.isError()) {
+            return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
+        }
+        return updateResource(id, resource);
     }
 
     @Override
     public ActionResponse<T> delete(Long id) {
-        if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+        if (null == id) {
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
         }
-        return null;
+        if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+        }
+        return deleteResource(id);
     }
 
     @Override
-    public ValidationActionResponse testConfig(T resource) {
+    public ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+            ValidationResponseModel emptyModel = new ValidationResponseModel();
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
         }
-        return null;
+        ValidationActionResponse validationResponse = validateResource(resource);
+        if (validationResponse.isError()) {
+            return validationResponse;
+        }
+        return testResource(resource);
     }
 
     @Override
     public ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            throw ResponseFactory.createForbiddenException();
+            ValidationResponseModel emptyModel = new ValidationResponseModel();
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
         }
-        return null;
+        return validateResource(resource);
     }
 }

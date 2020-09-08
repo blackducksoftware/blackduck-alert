@@ -27,5 +27,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 
 public interface TestAction<T> {
-    ValidationActionResponse testConfig(@RequestBody T resource);
+    ValidationActionResponse test(@RequestBody T resource);
 }
