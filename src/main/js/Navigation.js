@@ -22,13 +22,13 @@ class Navigation extends Component {
             return null;
         }
 
-        const contentList = descriptorList.map(component =>
-            (<li key={component.name}>
+        const contentList = descriptorList.map((component) => (
+            <li key={component.name}>
                 <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                     {component.label}
                 </NavLink>
-            </li>)
-        );
+            </li>
+        ));
 
         if (header && contentList && contentList.length > 0) {
             contentList.unshift(<li className="navHeader" key={header}>
@@ -44,7 +44,7 @@ class Navigation extends Component {
         const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         const nav = (
-            <Fragment>
+            <>
                 {providers}
                 {channelGlobals}
                 <li className="navHeader">
@@ -57,7 +57,7 @@ class Navigation extends Component {
                 </li>
                 <li className="divider" />
                 {components}
-            </Fragment>
+            </>
         );
 
         const rows = (this.props.fetching) ? null : nav;
@@ -87,7 +87,8 @@ class Navigation extends Component {
                         </li>
                     </ul>
                 </div>
-            </div>);
+            </div>
+        );
     }
 }
 
@@ -97,13 +98,13 @@ Navigation.propTypes = {
     fetching: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken,
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     confirmLogout: () => dispatch(confirmLogout())
 });
 

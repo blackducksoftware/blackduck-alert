@@ -20,22 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.metadata;
+package com.synopsys.integration.alert.web.api.metadata.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Set;
 
-import com.synopsys.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-@RestController
-@RequestMapping(DescriptorTypeController.TYPES_PATH)
-public class DescriptorTypeController {
-    public static final String TYPES_PATH = MetadataControllerConstants.METADATA_BASE_PATH + "/descriptorTypes";
+public class DescriptorsResponseModel extends AlertSerializableModel {
+    private final Set<DescriptorMetadata> descriptors;
 
-    @GetMapping
-    public DescriptorTypesResponseModel getTypes() {
-        return DescriptorTypesResponseModel.DEFAULT;
+    DescriptorsResponseModel() {
+        // For serialization
+        this.descriptors = Set.of();
+    }
+
+    public DescriptorsResponseModel(Set<DescriptorMetadata> descriptors) {
+        this.descriptors = descriptors;
+    }
+
+    public Set<DescriptorMetadata> getDescriptors() {
+        return descriptors;
     }
 
 }

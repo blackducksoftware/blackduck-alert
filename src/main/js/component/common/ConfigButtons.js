@@ -18,17 +18,21 @@ class ConfigButtons extends Component {
     }
 
     createTestButton() {
-        const { includeTest, onTestClick, testLabel, testId } = this.props;
+        const {
+            includeTest, onTestClick, testLabel, testId
+        } = this.props;
         if (includeTest) {
-            return (<div style={{
-                display: 'inline-block',
-                paddingRight: '12px',
-                marginRight: '12px',
-                borderRight: '1px solid #aaa'
-            }}
-            >
-                <GeneralButton id={testId} onClick={onTestClick}>{testLabel}</GeneralButton>
-            </div>);
+            return (
+                <div style={{
+                    display: 'inline-block',
+                    paddingRight: '12px',
+                    marginRight: '12px',
+                    borderRight: '1px solid #aaa'
+                }}
+                >
+                    <GeneralButton id={testId} onClick={onTestClick}>{testLabel}</GeneralButton>
+                </div>
+            );
         }
         return null;
     }
@@ -42,7 +46,9 @@ class ConfigButtons extends Component {
     }
 
     createCancelButton() {
-        const { includeCancel, onCancelClick, cancelLabel, cancelId } = this.props;
+        const {
+            includeCancel, onCancelClick, cancelLabel, cancelId
+        } = this.props;
 
         if (includeCancel) {
             return (<CancelButton id={cancelId} onClick={onCancelClick}>{cancelLabel}</CancelButton>);
@@ -51,7 +57,9 @@ class ConfigButtons extends Component {
     }
 
     createDeleteButton() {
-        const { includeDelete, includeSave, onDeleteClick, deleteLabel, deleteId } = this.props;
+        const {
+            includeDelete, includeSave, onDeleteClick, deleteLabel, deleteId
+        } = this.props;
         const borderLeft = includeSave ? '1px solid #aaa' : 'none';
         const style = {
             display: 'inline-block',
@@ -59,8 +67,8 @@ class ConfigButtons extends Component {
             marginLeft: '12px'
         };
         if (includeDelete) {
-            return (<div style={Object.assign(style, { borderLeft })}
-                >
+            return (
+                <div style={Object.assign(style, { borderLeft })}>
                     <GeneralButton id={deleteId} onClick={this.handleDelete}>{deleteLabel}</GeneralButton>
                 </div>
             );
@@ -102,9 +110,8 @@ class ConfigButtons extends Component {
             <div className={buttonContainerClass}>
                 <div className="progressContainer">
                     <div className="progressIcon">
-                        {performingAction &&
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                        }
+                        {performingAction
+                        && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
                     </div>
                 </div>
                 {testButton}
@@ -112,11 +119,12 @@ class ConfigButtons extends Component {
                 {deleteButton}
                 {cancelButton}
                 <div>
-                    <ConfirmModal showModal={showDeleteConfirmation}
-                                  title={confirmDeleteTitle}
-                                  message={confirmDeleteMessage}
-                                  affirmativeAction={this.handleDeleteConfirmed}
-                                  negativeAction={this.handleDeleteCancelled}
+                    <ConfirmModal
+                        showModal={showDeleteConfirmation}
+                        title={confirmDeleteTitle}
+                        message={confirmDeleteMessage}
+                        affirmativeAction={this.handleDeleteConfirmed}
+                        negativeAction={this.handleDeleteCancelled}
                     />
                 </div>
             </div>
@@ -135,9 +143,8 @@ class ConfigButtons extends Component {
         const wrapperStyles = `${fixedStyle} d-inline-flex offset-sm-4 col-sm-8`;
         return (
             <div className="form-group">
-                {isFixed &&
-                <div className="fixedButtonGroupBuffer" />
-                }
+                {isFixed
+                && <div className="fixedButtonGroupBuffer" />}
                 <div className={wrapperStyles}>
                     {this.createButtonContent()}
                 </div>
@@ -145,7 +152,6 @@ class ConfigButtons extends Component {
         );
     }
 }
-
 
 ConfigButtons.propTypes = {
     cancelId: PropTypes.string,

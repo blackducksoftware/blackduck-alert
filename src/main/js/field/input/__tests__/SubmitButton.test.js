@@ -10,7 +10,8 @@ beforeAll(() => {
 
 test('Rendering default save button snapshot', () => {
     const button = renderer.create(<SubmitButton onClick={() => {
-    }} />);
+    }}
+    />);
     const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });

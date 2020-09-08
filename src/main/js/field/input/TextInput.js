@@ -9,19 +9,21 @@ class TextInput extends Component {
         } = this.props;
         const placeholderText = (isSet) ? '********' : null;
 
-        const field = (<div className="d-inline-flex flex-column p-2 col-sm-8">
-            <input
-                id={id}
-                type="text"
-                readOnly={readOnly}
-                autoFocus={autoFocus}
-                className={inputClass}
-                name={name}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholderText}
-            />
-        </div>);
+        const field = (
+            <div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input
+                    id={id}
+                    type="text"
+                    readOnly={readOnly}
+                    autoFocus={autoFocus}
+                    className={inputClass}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholderText}
+                />
+            </div>
+        );
 
         return (
             <LabeledField field={field} {...this.props} />
@@ -50,6 +52,5 @@ TextInput.defaultProps = {
     name: 'name',
     onChange: () => true
 };
-
 
 export default TextInput;

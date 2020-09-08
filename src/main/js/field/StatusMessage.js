@@ -34,13 +34,31 @@ class StatusMessage extends Component {
         };
         return (
             <div id={id}>
-                {errorMessage && this.state.showError &&
-                <Alert bsPrefix="statusAlert alert" dismissible onClose={onErrorClose}
-                       variant="danger"><MessageFormatter message={errorMessage} /></Alert>}
+                {errorMessage && this.state.showError
+                && (
+                    <Alert
+                        bsPrefix="statusAlert alert"
+                        dismissible
+                        onClose={onErrorClose}
+                        variant="danger"
+                    >
+                        <MessageFormatter message={errorMessage} />
+                    </Alert>
+                )}
 
-                {actionMessage && !errorMessage && this.state.showMessage &&
-                <FadeField><Alert bsPrefix="statusAlert alert" dismissible onClose={onMessageClose}
-                                  variant="success">{actionMessage}</Alert></FadeField>}
+                {actionMessage && !errorMessage && this.state.showMessage
+                && (
+                    <FadeField>
+                        <Alert
+                            bsPrefix="statusAlert alert"
+                            dismissible
+                            onClose={onMessageClose}
+                            variant="success"
+                        >
+                            {actionMessage}
+                        </Alert>
+                    </FadeField>
+                )}
             </div>
         );
     }

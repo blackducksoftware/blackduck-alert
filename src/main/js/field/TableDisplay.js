@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
+import {
+    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+} from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import { connect } from 'react-redux';
@@ -151,8 +153,11 @@ class TableDisplay extends Component {
                 )}
                 {buttons.deleteBtn
                 && (
-                    <DeleteButton id={`${id}-delete-button`}
-                                  className="deleteJobButton btn-md" onClick={deleteOnClick}>
+                    <DeleteButton
+                        id={`${id}-delete-button`}
+                        className="deleteJobButton btn-md"
+                        onClick={deleteOnClick}
+                    >
                         <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                         {tableDeleteButtonLabel}
                     </DeleteButton>
@@ -213,7 +218,7 @@ class TableDisplay extends Component {
         const callback = (result) => {
             const validationState = result ? VALIDATION_STATE.SUCCESS : VALIDATION_STATE.FAILED;
             const validationSetCallback = () => this.setState({
-                showConfiguration: false
+                showConfiguration: !result
             }, () => {
                 if (validationState !== VALIDATION_STATE.FAILED) {
                     this.updateData();
@@ -253,7 +258,7 @@ class TableDisplay extends Component {
             id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
             actionMessage, hasFieldErrors, ignoredActionMessages
         } = this.props;
-        //TODO have a better way of displaying action messages for the dialog versus the table. The ignoredActionMessages is to fix an issue with the provider table in a generic way.
+        // TODO have a better way of displaying action messages for the dialog versus the table. The ignoredActionMessages is to fix an issue with the provider table in a generic way.
         const popupActionMessage = (hasFieldErrors && errorDialogMessage) || (!ignoredActionMessages.includes(actionMessage) && actionMessage);
         const configFields = isInsertModal ? newConfigFields() : newConfigFields(currentRowSelected);
         const popupAssignmentFunction = (functionToTest, defaultFunction) => {
@@ -362,17 +367,15 @@ class TableDisplay extends Component {
     createTableCellFormatter(iconName, buttonText, clickFunction) {
         const { id } = this.props;
         const buttonId = buttonText.toLowerCase();
-        return (cell, row) => {
-            return (
-                <IconTableCellFormatter
-                    id={`${id}-${buttonId}-cell`}
-                    handleButtonClicked={clickFunction}
-                    currentRowSelected={row}
-                    buttonIconName={iconName}
-                    buttonText={buttonText}
-                />
-            );
-        };
+        return (cell, row) => (
+            <IconTableCellFormatter
+                id={`${id}-${buttonId}-cell`}
+                handleButtonClicked={clickFunction}
+                currentRowSelected={row}
+                buttonIconName={iconName}
+                buttonText={buttonText}
+            />
+        );
     }
 
     editColumnFormatter() {
@@ -463,8 +466,13 @@ class TableDisplay extends Component {
             </div>
         );
         const status = !hasFieldErrors
-            && <StatusMessage
-                id={`${id}-status-message`} errorMessage={errorDialogMessage} actionMessage={actionMessage} />;
+            && (
+                <StatusMessage
+                    id={`${id}-status-message`}
+                    errorMessage={errorDialogMessage}
+                    actionMessage={actionMessage}
+                />
+            );
         const content = (
             <div>
                 {status}

@@ -4,7 +4,9 @@ import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { connect } from 'react-redux';
-import { clearUserFieldErrors, deleteUser, fetchUsers, saveUser } from 'store/actions/users';
+import {
+    clearUserFieldErrors, deleteUser, fetchUsers, saveUser
+} from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -161,7 +163,7 @@ class UserTable extends Component {
         const { user } = this.state;
 
         const updatedValue = type === 'checkbox' ? checked.toString()
-        .toLowerCase() === 'true' : value;
+            .toLowerCase() === 'true' : value;
         const newUser = Object.assign(user, { [name]: updatedValue });
         this.setState({
             user: newUser
@@ -173,10 +175,14 @@ class UserTable extends Component {
         const confirmPasswordKey = 'confirmPassword';
         const confirmPasswordError = KEY_CONFIRM_PASSWORD_ERROR;
 
-        let passwordError = '';
+        let passwordError = {};
         let matching = true;
         if ((user[passwordKey] || user[confirmPasswordKey]) && (user[passwordKey] !== user[confirmPasswordKey])) {
-            passwordError = 'Passwords do not match.';
+            passwordError = {
+                severity: 'ERROR',
+                fieldMessage: 'Passwords do not match.'
+            };
+            console.log(passwordError);
             matching = false;
         }
         const newUser = Object.assign(user, { [confirmPasswordError]: passwordError });

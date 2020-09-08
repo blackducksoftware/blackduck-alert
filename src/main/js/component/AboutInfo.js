@@ -21,9 +21,8 @@ class AboutInfo extends React.Component {
             const url = `${uriPrefix}${row.urlName}`;
             if (row.navigate) {
                 return (<NavLink to={url} id={id}>{cell}</NavLink>);
-            } else {
-                return (<div id={id}>{cell}</div>);
             }
+            return (<div id={id}>{cell}</div>);
         };
     }
 
@@ -59,10 +58,9 @@ class AboutInfo extends React.Component {
 
     createTableData(userBasedDescriptors, descriptors) {
         const data = [];
-        for (let key in descriptors) {
+        for (const key in descriptors) {
             const descriptor = descriptors[key];
-            const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(
-                userBasedDescriptors, descriptor.name, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(userBasedDescriptors, descriptor.name, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             const globalConfigAllowed = Boolean(globalDescriptor);
             if (!data.find((item) => item.urlName === descriptor.urlName)) {
                 data.push({
@@ -85,61 +83,90 @@ class AboutInfo extends React.Component {
         const channelData = this.createTableData(userChannelList, channels);
         const providerTable = this.createDescriptorTable('about-providers', providerData, '/alert/providers/');
         const channelTable = this.createDescriptorTable('about-channels', channelData, '/alert/channels/');
-        const distributionLink = (<div className="d-inline-flex p-2 col-sm-8"><NavLink to="/alert/jobs/distribution">All
-            Distributions</NavLink></div>);
+        const distributionLink = (
+            <div className="d-inline-flex p-2 col-sm-8">
+                <NavLink to="/alert/jobs/distribution">
+                    All
+                    Distributions
+                </NavLink>
+            </div>
+        );
         const providersMissing = !providerData || providerData.length <= 0;
         const channelsMissing = !channelData || channelData.length <= 0;
         return (
             <div>
                 <ConfigurationLabel configurationName="About" />
                 <div className="form-horizontal">
-                    <ReadOnlyField id="about-description" label="Description" name="description" readOnly="true"
-                                   value={description} />
+                    <ReadOnlyField
+                        id="about-description"
+                        label="Description"
+                        name="description"
+                        readOnly="true"
+                        value={description}
+                    />
                     <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField id="about-url" label="Project URL" name="projectUrl" readOnly="true"
-                                   value={projectUrl}
-                                   url={projectUrl} />
-                    <ReadOnlyField id="about-documentation-url" label="API Documentation (Beta)" name="documentationUrl" readOnly="true"
-                                   value="Swagger UI"
-                                   url={documentationUrl} />
-                    <LabeledField id="about-view-distribution" label="View Distributions" name="distribution"
-                                  readOnly="true" value=""
-                                  field={distributionLink} />
-                    {providersMissing && channelsMissing &&
-                    <div className="form-group">
+                    <ReadOnlyField
+                        id="about-url"
+                        label="Project URL"
+                        name="projectUrl"
+                        readOnly="true"
+                        value={projectUrl}
+                        url={projectUrl}
+                    />
+                    <ReadOnlyField
+                        id="about-documentation-url"
+                        label="API Documentation (Beta)"
+                        name="documentationUrl"
+                        readOnly="true"
+                        value="Swagger UI"
+                        url={documentationUrl}
+                    />
+                    <LabeledField
+                        id="about-view-distribution"
+                        label="View Distributions"
+                        name="distribution"
+                        readOnly="true"
+                        value=""
+                        field={distributionLink}
+                    />
+                    {providersMissing && channelsMissing
+                    && (
                         <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right" />
-                            <div className="d-inline-flex p-2 col-sm-8 missingData">
-                                <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
-                                The current user cannot view Distribution Channel or Provider data!
-                            </div>
-                        </div>
-                    </div>
-                    }
-                    {!providersMissing &&
-                    <div className="form-group">
-                        <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right">Providers</label>
-                            <div className="d-inline-flex p-2 col-sm-8">
-                                <div className="form-control-static">
-                                    {providerTable}
+                            <div className="form-group">
+                                <label className="col-sm-3 col-form-label text-right" />
+                                <div className="d-inline-flex p-2 col-sm-8 missingData">
+                                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                                    The current user cannot view Distribution Channel or Provider data!
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    }
-                    {!channelsMissing &&
-                    <div className="form-group">
+                    )}
+                    {!providersMissing
+                    && (
                         <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right">Distribution Channels</label>
-                            <div className="d-inline-flex p-2 col-sm-8">
-                                <div className="form-control-static">
-                                    {channelTable}
+                            <div className="form-group">
+                                <label className="col-sm-3 col-form-label text-right">Providers</label>
+                                <div className="d-inline-flex p-2 col-sm-8">
+                                    <div className="form-control-static">
+                                        {providerTable}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    }
+                    )}
+                    {!channelsMissing
+                    && (
+                        <div className="form-group">
+                            <div className="form-group">
+                                <label className="col-sm-3 col-form-label text-right">Distribution Channels</label>
+                                <div className="d-inline-flex p-2 col-sm-8">
+                                    <div className="form-control-static">
+                                        {channelTable}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -164,7 +191,7 @@ AboutInfo.defaultProps = {
     descriptors: []
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
@@ -174,7 +201,7 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     getAboutInfo: () => dispatch(getAboutInfo())
 });
 

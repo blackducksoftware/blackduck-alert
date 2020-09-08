@@ -1,4 +1,6 @@
-import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING, SERIALIZE } from 'store/actions/types';
+import {
+    ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING, SERIALIZE
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,
@@ -16,11 +18,10 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case ABOUT_INFO_FETCHING:
-            return Object.assign({}, state, {
-                fetching: true
-            });
+            return { ...state, fetching: true };
         case ABOUT_INFO_FETCHED:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 fetching: false,
                 version: action.version,
                 description: action.description,
@@ -30,11 +31,9 @@ const config = (state = initialState, action) => {
                 startupTime: action.startupTime,
                 providerList: action.providers,
                 channelList: action.channels
-            });
+            };
         case ABOUT_INFO_FETCH_ERROR:
-            return Object.assign({}, state, {
-                fetching: false
-            });
+            return { ...state, fetching: false };
         case SERIALIZE:
             return initialState;
         default:

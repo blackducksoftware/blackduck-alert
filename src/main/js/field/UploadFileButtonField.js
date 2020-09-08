@@ -71,13 +71,13 @@ class UploadFileButtonField extends Component {
         if (!fileData || fileData.length <= 0) {
             this.setState({
                 progress: false,
-                fieldError: "Please select a file to upload."
+                fieldError: 'Please select a file to upload.'
             });
         } else {
             const {
-                fieldKey, csrfToken, endpoint,
+                fieldKey, csrfToken, endpoint
             } = this.props;
-            const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, "file", fileData);
+            const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, 'file', fileData);
 
             request.then((response) => {
                 this.setState({
@@ -89,7 +89,6 @@ class UploadFileButtonField extends Component {
                         statusMessage: 'Upload Metadata File Success',
                         fileUploaded: true
                     });
-
                 } else {
                     response.json().then((data) => {
                         this.setState({
@@ -157,17 +156,16 @@ class UploadFileButtonField extends Component {
                                 onClick={this.onUploadClick}
                                 disabled={readOnly}
                                 performingAction={this.state.progress}
-                            >{buttonLabel}
+                            >
+                                {buttonLabel}
                             </GeneralButton>
-                            {this.state.fileUploaded &&
-                            <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={this.onDeleteClick}>Remove Uploaded File</button>
-                            }
+                            {this.state.fileUploaded
+                            && <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={this.onDeleteClick}>Remove Uploaded File</button>}
                         </div>
                     </div>
                 </div>
-                {this.state.success &&
-                <StatusMessage id={`${fieldKey}-status-message`} actionMessage={this.state.statusMessage} />
-                }
+                {this.state.success
+                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={this.state.statusMessage} />}
             </div>
         );
 
@@ -214,7 +212,7 @@ UploadFileButtonField.defaultProps = {
     multiple: false
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 

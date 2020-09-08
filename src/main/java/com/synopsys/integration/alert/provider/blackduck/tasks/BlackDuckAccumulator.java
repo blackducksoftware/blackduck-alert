@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -99,12 +98,6 @@ public class BlackDuckAccumulator extends ProviderTask {
             saveNextSearchStart(nextSearchStartString);
         } catch (AlertDatabaseConstraintException e) {
             logger.error("Error occurred accumulating data! ", e);
-        } finally {
-            Optional<Long> nextRun = getMillisecondsToNextRun();
-            if (nextRun.isPresent()) {
-                Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
-                logger.debug("Accumulator next run: {} seconds", seconds);
-            }
         }
     }
 

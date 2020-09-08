@@ -48,7 +48,6 @@ public class AzureBoardsContextFactory {
 
     private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
         String projectName = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_AZURE_PROJECT);
-        String issueCreator = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_CREATOR_EMAIL);
         String issueType = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
         Boolean commentOnIssues = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
         String resolveTransition = getFieldString(fieldAccessor, AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
@@ -56,7 +55,6 @@ public class AzureBoardsContextFactory {
 
         IssueConfig issueConfig = new IssueConfig();
         issueConfig.setProjectName(projectName);
-        issueConfig.setIssueCreator(issueCreator);
         issueConfig.setIssueType(issueType);
         issueConfig.setCommentOnIssues(commentOnIssues);
         issueConfig.setResolveTransition(resolveTransition);

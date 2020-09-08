@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
+import {
+    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+} from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
@@ -11,7 +13,9 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import DistributionConfiguration, { KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME } from 'dynamic/DistributionConfiguration';
+import DistributionConfiguration, {
+    KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME
+} from 'dynamic/DistributionConfiguration';
 import StatusMessage from 'field/StatusMessage';
 
 /**
@@ -123,7 +127,8 @@ class Index extends Component {
                         this.cancelRowSelect();
                     }}
                     isUpdatingJob={modificationState === jobModificationState.EDIT}
-                />);
+                />
+            );
         }
         return null;
     }
@@ -163,7 +168,7 @@ class Index extends Component {
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
         const { jobs } = this.props;
-        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.jobId));
+        const matchingJobs = jobs.filter((job) => dropRowKeys.includes(job.jobId));
         this.props.openJobDeleteModal();
         this.setState({
             showDeleteModal: true,
@@ -181,8 +186,15 @@ class Index extends Component {
     }
 
     editButtonClick(cell, row) {
-        return <IconTableCellFormatter id="distribution-edit-cell" handleButtonClicked={this.editButtonClicked}
-                                       currentRowSelected={row} buttonIconName="pencil-alt" buttonText="Edit" />;
+        return (
+            <IconTableCellFormatter
+                id="distribution-edit-cell"
+                handleButtonClicked={this.editButtonClicked}
+                currentRowSelected={row}
+                buttonIconName="pencil-alt"
+                buttonText="Edit"
+            />
+        );
     }
 
     copyButtonClicked(currentRowSelected) {
@@ -193,8 +205,15 @@ class Index extends Component {
     }
 
     copyButtonClick(cell, row) {
-        return <IconTableCellFormatter id="distribution-copy-cell" handleButtonClicked={this.copyButtonClicked}
-                                       currentRowSelected={row} buttonIconName="copy" buttonText="Copy" />;
+        return (
+            <IconTableCellFormatter
+                id="distribution-copy-cell"
+                handleButtonClicked={this.copyButtonClicked}
+                currentRowSelected={row}
+                buttonIconName="copy"
+                buttonText="Copy"
+            />
+        );
     }
 
     enabledState(cell) {
@@ -207,34 +226,38 @@ class Index extends Component {
                 <FontAwesomeIcon icon={icon} className={className} size="lg" title={cell} />
             </div>
         );
-
     }
 
     createCustomButtonGroup(buttons) {
         const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const insertOnClick = buttons.insertBtn ? buttons.insertBtn.props.onClick : null;
         const deleteOnClick = buttons.deleteBtn ? buttons.deleteBtn.props.onClick : null;
-        let refreshButton = !this.props.autoRefresh && (
+        const refreshButton = !this.props.autoRefresh && (
             <button id="distribution-refresh-button" type="button" className={classes} onClick={this.reloadJobs}>
-                <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />Refresh
+                <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                Refresh
             </button>
         );
         return (
             <div>
                 {buttons.insertBtn
-                &&
-                <InsertButton id="distribution-insert-button" className="addJobButton btn-md" onClick={insertOnClick}>
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    New
-                </InsertButton>
-                }
+                && (
+                    <InsertButton id="distribution-insert-button" className="addJobButton btn-md" onClick={insertOnClick}>
+                        <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                        New
+                    </InsertButton>
+                )}
                 {buttons.deleteBtn
-                && <DeleteButton id="distribution-delete-button" className="deleteJobButton btn-md"
-                                 onClick={deleteOnClick}>
-                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    Delete
-                </DeleteButton>
-                }
+                && (
+                    <DeleteButton
+                        id="distribution-delete-button"
+                        className="deleteJobButton btn-md"
+                        onClick={deleteOnClick}
+                    >
+                        <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                        Delete
+                    </DeleteButton>
+                )}
                 {refreshButton}
             </div>
         );
@@ -244,7 +267,7 @@ class Index extends Component {
         const defaultValue = <div className="inline" title={cell}>{cell}</div>;
         const { jobsValidationResults } = this.props;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
-            const jobErrors = jobsValidationResults.filter(item => item.id === row.id);
+            const jobErrors = jobsValidationResults.filter((item) => item.id === row.id);
             if (jobErrors && jobErrors.length > 0) {
                 return (
                     <span className="missingData" title={cell}>
@@ -252,9 +275,8 @@ class Index extends Component {
                         {defaultValue}
                     </span>
                 );
-            } else {
-                return defaultValue;
             }
+            return defaultValue;
         }
         return defaultValue;
     }
@@ -277,7 +299,7 @@ class Index extends Component {
         if (jobs) {
             jobs.forEach((job) => {
                 if (job && job.fieldModels) {
-                    const channelModel = job.fieldModels.find(model => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
+                    const channelModel = job.fieldModels.find((model) => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
                     const id = job.jobId;
                     const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_NAME);
@@ -286,7 +308,7 @@ class Index extends Component {
                     const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_ENABLED);
                     const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
                     const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
-                    const entry = Object.assign({}, {
+                    const entry = {
                         id,
                         name,
                         distributionType,
@@ -295,7 +317,7 @@ class Index extends Component {
                         lastRan,
                         status,
                         enabled
-                    });
+                    };
                     tableData.push(entry);
                 }
             });
@@ -308,7 +330,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                return descriptorList.some(descriptor => DescriptorUtilities.isOperationAssigned(descriptor, operation));
+                return descriptorList.some((descriptor) => DescriptorUtilities.isOperationAssigned(descriptor, operation));
             }
         }
         return false;
@@ -341,15 +363,18 @@ class Index extends Component {
         const canCreate = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.CREATE);
         const canDelete = this.checkJobPermissions(DescriptorUtilities.OPERATIONS.DELETE);
 
-        //TODO: Refresh is enabled on insert, but disabled on edit and delete modals
-        //TODO: Convert to TableDisplay to resolve autoRefresh issues
+        // TODO: Refresh is enabled on insert, but disabled on edit and delete modals
+        // TODO: Convert to TableDisplay to resolve autoRefresh issues
         const shouldRefresh = !this.state.currentRowSelected && !this.state.showDeleteModal;
 
         const content = (
             <div>
                 {this.getCurrentJobConfig()}
-                <StatusMessage id="distribution-status-message" actionMessage={null}
-                               errorMessage={this.props.errorMessage} />
+                <StatusMessage
+                    id="distribution-status-message"
+                    actionMessage={null}
+                    errorMessage={this.props.errorMessage}
+                />
                 <BootstrapTable
                     version="4"
                     hover
@@ -367,51 +392,107 @@ class Index extends Component {
                     ref="table"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                    <TableHeaderColumn dataField="name" dataSort columnClassName="tableCell"
-                                       dataFormat={this.nameDataFormat}>Distribution Job</TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell"
-                                       dataFormat={this.descriptorDataFormat}>Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell"
-                                       dataFormat={this.descriptorDataFormat}>Provider</TableHeaderColumn>
-                    <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell"
-                                       dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="lastRan" dataSort
-                                       columnClassName="tableCell"
-                                       dataFormat={defaultColumnDataFormat}>Last Run</TableHeaderColumn>
-                    <TableHeaderColumn dataField="status" dataSort
-                                       columnClassName={statusColumnClassNameFormat}
-                                       dataFormat={defaultColumnDataFormat}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataField="enabled" width="96" dataSort columnClassName="tableCell"
-                                       dataFormat={this.enabledState}>Enabled</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell"
-                                       dataFormat={this.editButtonClick}
-                                       thStyle={{ textAlign: 'center' }}>Edit</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell"
-                                       dataFormat={this.copyButtonClick}
-                                       thStyle={{ textAlign: 'center' }}>Copy</TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="name"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={this.nameDataFormat}
+                    >
+                        Distribution Job
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="distributionType"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={this.descriptorDataFormat}
+                    >
+                        Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="providerName"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={this.descriptorDataFormat}
+                    >
+                        Provider
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="frequency"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={frequencyColumnDataFormat}
+                    >
+                        Frequency Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="lastRan"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={defaultColumnDataFormat}
+                    >
+                        Last Run
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="status"
+                        dataSort
+                        columnClassName={statusColumnClassNameFormat}
+                        dataFormat={defaultColumnDataFormat}
+                    >
+                        Status
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField="enabled"
+                        width="96"
+                        dataSort
+                        columnClassName="tableCell"
+                        dataFormat={this.enabledState}
+                    >
+                        Enabled
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField=""
+                        width="48"
+                        columnClassName="tableCell"
+                        dataFormat={this.editButtonClick}
+                        thStyle={{ textAlign: 'center' }}
+                    >
+                        Edit
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                        dataField=""
+                        width="48"
+                        columnClassName="tableCell"
+                        dataFormat={this.copyButtonClick}
+                        thStyle={{ textAlign: 'center' }}
+                    >
+                        Copy
+                    </TableHeaderColumn>
                 </BootstrapTable>
 
-                {this.props.inProgress &&
-                <div className="progressIcon">
-                    <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                </div>
-                }
+                {this.props.inProgress
+                && (
+                    <div className="progressIcon">
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                    </div>
+                )}
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
         return (
             <div>
-                {canDelete && <JobDeleteModal
-                    createTableData={this.createTableData}
-                    onModalSubmit={this.onJobDeleteSubmit}
-                    onModalClose={this.onJobDeleteClose}
-                    typeColumnDataFormat={this.descriptorDataFormat}
-                    providerColumnDataFormat={this.descriptorDataFormat}
-                    frequencyColumnDataFormat={frequencyColumnDataFormat}
-                    statusColumnClassNameFormat={statusColumnClassNameFormat}
-                    jobs={this.state.jobsToDelete}
-                    show={this.state.showDeleteModal}
-                />}
+                {canDelete && (
+                    <JobDeleteModal
+                        createTableData={this.createTableData}
+                        onModalSubmit={this.onJobDeleteSubmit}
+                        onModalClose={this.onJobDeleteClose}
+                        typeColumnDataFormat={this.descriptorDataFormat}
+                        providerColumnDataFormat={this.descriptorDataFormat}
+                        frequencyColumnDataFormat={frequencyColumnDataFormat}
+                        statusColumnClassNameFormat={statusColumnClassNameFormat}
+                        jobs={this.state.jobsToDelete}
+                        show={this.state.showDeleteModal}
+                    />
+                )}
 
                 <ConfigurationLabel configurationName="Distribution" description="Create jobs from the channels Alert provides. Double click the row to edit that job." />
                 <div className="pull-right">
@@ -443,7 +524,7 @@ Index.defaultProps = {
     errorMessage: null
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
@@ -453,7 +534,7 @@ const mapStateToProps = state => ({
     errorMessage: state.distributions.error.message
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     openJobDeleteModal: () => dispatch(openJobDeleteModal()),
     fetchDistributionJobs: () => dispatch(fetchDistributionJobs()),
     fetchJobsValidationResults: () => dispatch(fetchJobsValidationResults())

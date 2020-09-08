@@ -2,7 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Overlay, Popover } from 'react-bootstrap';
+import {
+    Overlay,
+    Popover,
+    PopoverContent,
+    PopoverTitle
+} from 'react-bootstrap';
 
 import SystemMessage from 'component/common/SystemMessage';
 import { getAboutInfo } from 'store/actions/about';
@@ -11,7 +16,6 @@ import '../../css/footer.scss';
 import '../../css/messages.scss';
 import '../../css/logos.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {
@@ -32,6 +36,7 @@ class AboutInfoFooter extends React.Component {
         this.startAutoReload();
     }
 
+    // FIXME componentWillReceiveProps is deprecated
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching) {
             const { latestMessages } = nextProps;
@@ -56,7 +61,7 @@ class AboutInfoFooter extends React.Component {
         const { latestMessages } = this.props;
         if (this.hasErrorMessages(latestMessages)) {
             return 'statusPopoverError errorStatus';
-        } else if (this.hasWarninigMessages(latestMessages)) {
+        } if (this.hasWarninigMessages(latestMessages)) {
             return 'warningStatus';
         }
         return 'validStatus';
@@ -72,7 +77,7 @@ class AboutInfoFooter extends React.Component {
 
     containsSeverity(messages, severity) {
         if (messages && messages.length > 0) {
-            if (messages.find(message => message.severity === severity)) {
+            if (messages.find((message) => message.severity === severity)) {
                 return true;
             }
             return false;
@@ -95,18 +100,25 @@ class AboutInfoFooter extends React.Component {
         const errorMessages = this.createMessageList();
         const iconColor = this.getIconColor();
         const iconClassName = this.getFontAwesomeIcon();
-        const popover = (<Popover id="system-errors-popover" className="popoverContent" title="System Messages">{errorMessages}</Popover>);
+        const popover = (
+            <Popover id="system-errors-popover" className="popoverContainer">
+                <PopoverTitle>System Messages</PopoverTitle>
+                <PopoverContent>
+                    {errorMessages}
+                </PopoverContent>
+            </Popover>
+        );
         const overlayComponent = (
             <Overlay
                 rootClose
                 show={this.state.showOverlay}
                 onHide={() => this.setState({ showOverlay: false, hideOverlayByUser: true })}
-                container={this}
                 placement="top"
                 target={() => ReactDOM.findDOMNode(this.target)}
             >
                 {popover}
-            </Overlay>);
+            </Overlay>
+        );
         return (
             <div id="about-footer-status" className="statusPopover">
                 <div
@@ -115,14 +127,14 @@ class AboutInfoFooter extends React.Component {
                     }}
                     onClick={this.handleOverlayButton}
                 >
-                    <div className={iconColor}><FontAwesomeIcon icon={iconClassName} className="alert-icon" size="lg" />
+                    <div className={iconColor}>
+                        <FontAwesomeIcon icon={iconClassName} className="alert-icon" size="lg" />
                     </div>
                 </div>
                 {overlayComponent}
             </div>
         );
     }
-
 
     handleOverlayButton() {
         this.setState({ showOverlay: !this.state.showOverlay, hideOverlayByUser: !this.state.hideOverlayByUser });
@@ -143,7 +155,6 @@ class AboutInfoFooter extends React.Component {
         this.props.getLatestMessages();
     }
 
-
     render() {
         const { version, projectUrl } = this.props;
         const errorComponent = this.createErrorComponent();
@@ -156,9 +167,13 @@ class AboutInfoFooter extends React.Component {
                         alt={projectUrl}
                         href={projectUrl}
                     />
-                    <span className="synopsysFooterLogoVerticalBarSpace">|</span>ALERT
+                    <span className="synopsysFooterLogoVerticalBarSpace">|</span>
+                    ALERT
                 </span>
-                <span className="productVersion">v{version}</span>
+                <span className="productVersion">
+                    v
+                    {version}
+                </span>
                 <span className="copyright">
                     &nbsp;© 2020&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
@@ -186,7 +201,7 @@ AboutInfoFooter.defaultProps = {
     latestMessages: []
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     fetching: state.about.fetching,
     version: state.about.version,
     description: state.about.description,
@@ -194,7 +209,7 @@ const mapStateToProps = state => ({
     latestMessages: state.system.latestMessages
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     getAboutInfo: () => dispatch(getAboutInfo()),
     getLatestMessages: () => dispatch(getLatestMessages())
 });

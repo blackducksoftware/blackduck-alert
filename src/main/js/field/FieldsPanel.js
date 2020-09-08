@@ -47,7 +47,7 @@ class FieldsPanel extends React.Component {
             if (field.type === 'HideCheckboxInput') {
                 const isChecked = FieldModelUtilities.getFieldModelBooleanValue(this.props.currentConfig, field.key);
                 if (!isChecked) {
-                    field.relatedHiddenFields.forEach(hiddenField => {
+                    field.relatedHiddenFields.forEach((hiddenField) => {
                         this.state.hiddenFieldKeys.push(hiddenField);
                     });
                 }
@@ -66,7 +66,7 @@ class FieldsPanel extends React.Component {
     parsePanel(panelName, headerName, field, fieldMapping) {
         const foundPanel = fieldMapping[panelName];
         const newHeader = headerName ? this.parseHeader(foundPanel, headerName, field) : this.parseHeader(foundPanel, DEFAULT_PANEL, field);
-        return Object.assign({}, foundPanel, newHeader);
+        return { ...foundPanel, ...newHeader };
     }
 
     parseHeader(foundPanel, headerName, field) {
@@ -102,8 +102,10 @@ class FieldsPanel extends React.Component {
                 id={panelName}
                 title={panelName}
                 expanded={hasValues}
-            >{this.createHeaders(fieldMapping)}
-            </CollapsiblePane>);
+            >
+                {this.createHeaders(fieldMapping)}
+            </CollapsiblePane>
+        );
 
         return (
             <div key={panelName} className="form-group">
@@ -133,7 +135,7 @@ class FieldsPanel extends React.Component {
         const { additionalFields } = metadata;
         const currentConfigCopy = JSON.parse(JSON.stringify(currentConfig));
         if (additionalFields && Object.keys(additionalFields).length !== 0) {
-            Object.keys(additionalFields).forEach(key => {
+            Object.keys(additionalFields).forEach((key) => {
                 currentConfigCopy.keyToValues[key] = additionalFields[key];
             });
         }
@@ -180,6 +182,6 @@ FieldsPanel.defaultProps = {
     metadata: {
         additionalFields: {}
     }
-}
+};
 
 export default FieldsPanel;

@@ -48,7 +48,7 @@ function configAllFetched(config) {
     return {
         type: CONFIG_ALL_FETCHED,
         config
-    }
+    };
 }
 
 function configRefreshed(config) {
@@ -178,19 +178,18 @@ export function refreshConfig(id) {
         const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    if (responseData) {
-                        dispatch(configRefreshed(responseData));
+                .then((responseData) => {
+                    if (response.ok) {
+                        if (responseData) {
+                            dispatch(configRefreshed(responseData));
+                        } else {
+                            dispatch(configRefreshed({}));
+                        }
                     } else {
-                        dispatch(configRefreshed({}));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
                     }
-
-                } else {
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                });
         }).catch(console.error);
     };
 }
@@ -205,18 +204,18 @@ export function getAllConfigs(descriptorName) {
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    if (responseData.length > 0) {
-                        dispatch(configAllFetched(responseData));
+                .then((responseData) => {
+                    if (response.ok) {
+                        if (responseData.length > 0) {
+                            dispatch(configAllFetched(responseData));
+                        } else {
+                            dispatch(configAllFetched({}));
+                        }
                     } else {
-                        dispatch(configAllFetched({}));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
                     }
-                } else {
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                });
         }).catch(console.error);
     };
 }
@@ -231,18 +230,18 @@ export function getConfig(descriptorName) {
         const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, descriptorName);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    if (responseData.length > 0) {
-                        dispatch(configFetched(responseData[0]));
+                .then((responseData) => {
+                    if (response.ok) {
+                        if (responseData.length > 0) {
+                            dispatch(configFetched(responseData[0]));
+                        } else {
+                            dispatch(configFetched({}));
+                        }
                     } else {
-                        dispatch(configFetched({}));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
                     }
-                } else {
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                });
         }).catch(console.error);
     };
 }
@@ -260,20 +259,19 @@ export function updateConfig(config) {
         }
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    const newId = responseData.id;
-                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
-                    dispatch(configUpdated(updatedConfig));
-                    dispatch(refreshConfig(newId));
-                } else {
-                    handleFailureResponse(dispatch, responseData, response.status);
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        const newId = responseData.id;
+                        const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
+                        dispatch(configUpdated(updatedConfig));
+                        dispatch(refreshConfig(newId));
+                    } else {
+                        handleFailureResponse(dispatch, responseData, response.status);
+                    }
+                });
         }).catch(console.error);
     };
 }
-
 
 export function testConfig(config) {
     return (dispatch, getState) => {
@@ -309,14 +307,14 @@ export function deleteConfig(id) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(configDeleted());
-                    dispatch(refreshConfig());
-                } else {
-                    handleFailureResponse(dispatch, responseData, response.status);
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(configDeleted());
+                        dispatch(refreshConfig());
+                    } else {
+                        handleFailureResponse(dispatch, responseData, response.status);
+                    }
+                });
         }).catch(console.error);
     };
 }
