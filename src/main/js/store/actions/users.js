@@ -109,29 +109,29 @@ export function fetchUsers() {
                 'Content-Type': 'application/json'
             }
         })
-        .then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchedAllUsers(responseData));
-                } else {
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                        let message = '';
-                        if (responseData && responseData.message) {
-                            // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                            message = responseData.message.toString();
+            .then((response) => {
+                response.json()
+                    .then((responseData) => {
+                        if (response.ok) {
+                            dispatch(fetchedAllUsers(responseData));
+                        } else {
+                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                                let message = '';
+                                if (responseData && responseData.message) {
+                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                    message = responseData.message.toString();
+                                }
+                                return fetchingAllUsersError(message);
+                            }));
+                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                            dispatch(handler(response.status));
                         }
-                        return fetchingAllUsersError(message);
-                    }));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(fetchingAllUsersError(error));
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            dispatch(fetchingAllUsersError(error));
-        });
     };
 }
 
@@ -142,29 +142,50 @@ export function saveUser(user) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        let request;
+        errorHandlers.push(HTTPErrorUtils
+            .createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+
+        const validateRequest = ConfigRequestBuilder
+            .createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        let saveRequest;
         if (id) {
-            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
+            saveRequest = ConfigRequestBuilder
+                .createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
         } else {
-            request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+            saveRequest = ConfigRequestBuilder
+                .createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
-        request.then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(savedUser());
-                    dispatch(fetchUsers());
-                } else {
-                    const defaultHandler = () => saveUserError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
+
+        validateRequest
+            .then((validateResponse) => {
+                validateResponse.json()
+                    .then((responseJson) => {
+                        if (Object.keys(responseJson.errors).length) {
+                            // TODO update to: createErrorObjectWithStatusCode(400, responseJson);
+                            throw HTTPErrorUtils.createErrorObject(responseJson);
+                        }
+                    });
+            })
+            .then(() => saveRequest
+                .then((saveResponse) => {
+                    saveResponse.json()
+                        .then((responseData) => {
+                            if (saveResponse.ok) {
+                                dispatch(savedUser());
+                                dispatch(fetchUsers());
+                            } else {
+                                // TODO update to: createErrorObjectWithStatusCode(saveResponse.status, responseData);
+                                throw HTTPErrorUtils.createErrorObject(responseData);
+                            }
+                        });
+                }))
+            .catch((error) => {
+                const defaultHandler = () => saveUserError(error);
+                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                dispatch(handler(error.statusCode));
             });
-        })
-        .catch(console.error);
     };
 }
 
@@ -178,19 +199,19 @@ export function deleteUser(userId) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(deletedUser());
-                } else {
-                    const defaultHandler = () => deletingUserError(responseData);
-                    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                    dispatch(handler(response.status));
-                }
-            });
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(deletedUser());
+                    } else {
+                        const defaultHandler = () => deletingUserError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
         })
-        .catch(console.error);
+            .catch(console.error);
     };
 }
 
