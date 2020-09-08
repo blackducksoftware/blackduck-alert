@@ -40,7 +40,8 @@ public interface BaseResourceController<T> {
     T getOne(@PathVariable Long id);
 
     @PutMapping("/{id}")
-    T update(@PathVariable Long id, @RequestBody T resource);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void update(@PathVariable Long id, @RequestBody T resource);
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

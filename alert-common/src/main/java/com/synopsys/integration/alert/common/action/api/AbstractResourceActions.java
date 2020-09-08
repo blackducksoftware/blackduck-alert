@@ -48,19 +48,19 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
 
     }
 
-    public abstract ActionResponse<T> createResource(T resource);
+    protected abstract ActionResponse<T> createResource(T resource);
 
-    public abstract ActionResponse<T> deleteResource(Long id);
+    protected abstract ActionResponse<T> deleteResource(Long id);
 
-    public abstract ActionResponse<List<T>> readAllResources();
+    protected abstract ActionResponse<List<T>> readAllResources();
 
-    public abstract ActionResponse<T> readResource(Long id);
+    protected abstract ActionResponse<T> readResource(Long id);
 
-    public abstract ValidationActionResponse testResource(T resource);
+    protected abstract ValidationActionResponse testResource(T resource);
 
-    public abstract ActionResponse<T> updateResource(Long id, T resource);
+    protected abstract ActionResponse<T> updateResource(Long id, T resource);
 
-    public abstract ValidationActionResponse validateResource(T resource);
+    protected abstract ValidationActionResponse validateResource(T resource);
 
     @Override
     public ActionResponse<T> create(T resource) {

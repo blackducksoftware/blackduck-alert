@@ -80,11 +80,22 @@ public class ResponseFactory {
         return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);
     }
 
-    public static <T> ResponseEntity<T> createResponseFromAction(ActionResponse<T> actionResponse) {
+    public static <T> ResponseEntity<T> createResponseFromAction(ActionResponse<T> actionResponse) throws ResponseStatusException {
+        if (actionResponse.isError()) {
+            throw createStatusException(actionResponse);
+        }
+
         if (actionResponse.hasContent()) {
             return new ResponseEntity<>(actionResponse.getContent().get(), actionResponse.getHttpStatus());
         }
         return new ResponseEntity<>(actionResponse.getHttpStatus());
+    }
+
+    public static <T> T createContentResponseFromAction(ActionResponse<T> actionResponse) throws ResponseStatusException {
+        if (actionResponse.hasContent()) {
+            return actionResponse.getContent().get();
+        }
+        throw createStatusException(actionResponse);
     }
 
     // Unnecessarily stateful methods:

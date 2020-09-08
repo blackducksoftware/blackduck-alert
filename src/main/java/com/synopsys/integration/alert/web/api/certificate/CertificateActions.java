@@ -31,9 +31,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -41,11 +46,13 @@ import com.synopsys.integration.alert.common.persistence.accessor.CustomCertific
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
-public class CertificateActions {
+public class CertificateActions extends AbstractResourceActions<CertificateModel> {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
     private final CertificateUtility certificateUtility;
@@ -53,10 +60,19 @@ public class CertificateActions {
     private final IntegrationEscapeUtil escapeUtil;
 
     @Autowired
-    public CertificateActions(CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {
+    public CertificateActions(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {
+        super(descriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.certificateAccessor = certificateAccessor;
         this.certificateUtility = certificateUtility;
         escapeUtil = new IntegrationEscapeUtil();
+    }
+
+    @Override
+    public ActionResponse<List<CertificateModel>> readAllResources() {
+        List<CertificateModel> certificates = certificateAccessor.getCertificates().stream()
+                                                  .map(this::convertFromDatabaseModel)
+                                                  .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, certificates);
     }
 
     public List<CertificateModel> readCertificates() {
@@ -65,9 +81,31 @@ public class CertificateActions {
                    .collect(Collectors.toList());
     }
 
+    @Override
+    public ActionResponse<CertificateModel> readResource(Long id) {
+        Optional<CertificateModel> model = certificateAccessor.getCertificate(id)
+                                               .map(this::convertFromDatabaseModel);
+        if (model.isPresent()) {
+            return new ActionResponse<>(HttpStatus.OK, model.get());
+        }
+
+        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Certificate with id:%d not found.", id));
+    }
+
+    @Override
+    public ValidationActionResponse testResource(CertificateModel resource) {
+        return validateResource(resource);
+    }
+
     public Optional<CertificateModel> readCertificate(Long id) {
         return certificateAccessor.getCertificate(id)
                    .map(this::convertFromDatabaseModel);
+    }
+
+    @Override
+    public ValidationActionResponse validateResource(CertificateModel resource) {
+        ValidationResponseModel validationResponseModel = validateCertificate(resource);
+        return new ValidationActionResponse(HttpStatus.OK, validationResponseModel.getMessage(), validationResponseModel);
     }
 
     public ValidationResponseModel validateCertificate(CertificateModel certificateModel) {
@@ -78,6 +116,21 @@ public class CertificateActions {
         return ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
     }
 
+    @Override
+    public ActionResponse<CertificateModel> createResource(CertificateModel resource) {
+        String loggableAlias = escapeUtil.replaceWithUnderscore(resource.getAlias());
+        logger.info("Importing certificate with alias {}", loggableAlias);
+        try {
+            CertificateModel certificateModel = importCertificate(resource);
+            return new ActionResponse<>(HttpStatus.OK, certificateModel);
+        } catch (AlertException ex) {
+            String message = ex.getMessage();
+            logger.error("There was an issue importing the certificate.{}", message);
+            logger.debug(message, ex);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue importing the certificate. %s", message));
+        }
+    }
+
     public CertificateModel createCertificate(CertificateModel certificateModel) throws AlertException {
         if (null != certificateModel.getId()) {
             throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
@@ -86,6 +139,25 @@ public class CertificateActions {
         String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
         logger.info("Importing certificate with alias {}", loggableAlias);
         return importCertificate(certificateModel);
+    }
+
+    @Override
+    public ActionResponse<CertificateModel> updateResource(Long id, CertificateModel resource) {
+        try {
+            Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
+            String logableId = escapeUtil.replaceWithUnderscore(resource.getId());
+            String loggableAlias = escapeUtil.replaceWithUnderscore(resource.getAlias());
+            logger.info("Updating certificate with id: {} and alias: {}", logableId, loggableAlias);
+            if (existingCertificate.isPresent()) {
+                CertificateModel certificateModel = importCertificate(resource);
+                return new ActionResponse<>(HttpStatus.NO_CONTENT, certificateModel);
+            }
+            logger.error("Certificate with id: {} missing.", logableId);
+            return new ActionResponse<>(HttpStatus.NOT_FOUND, "Certificate not found.");
+        } catch (AlertException ex) {
+            logger.error("Error occurred updating certificate", ex);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }
     }
 
     public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
@@ -111,6 +183,24 @@ public class CertificateActions {
             deleteByAlias(certificateToStore);
             throw importException;
         }
+    }
+
+    @Override
+    public ActionResponse<CertificateModel> deleteResource(Long id) {
+        try {
+            Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
+            if (certificate.isPresent()) {
+                CustomCertificateModel certificateModel = certificate.get();
+                logger.info("Delete certificate with id: {} and alias: {}", certificateModel.getNullableId(), certificateModel.getAlias());
+                certificateUtility.removeCertificate(certificateModel);
+                certificateAccessor.deleteCertificate(id);
+            }
+        } catch (AlertException ex) {
+            logger.error("Error deleting certificate", ex);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting certificate: %s", ex.getMessage()));
+        }
+
+        return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
     }
 
     /**
