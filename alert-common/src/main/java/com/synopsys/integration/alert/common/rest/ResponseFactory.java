@@ -92,7 +92,7 @@ public class ResponseFactory {
     }
 
     public static <T> T createContentResponseFromAction(ActionResponse<T> actionResponse) throws ResponseStatusException {
-        if (actionResponse.hasContent()) {
+        if (actionResponse.isSuccessful() && actionResponse.hasContent()) {
             return actionResponse.getContent().get();
         }
         throw createStatusException(actionResponse);

@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 
 public abstract class AbstractResourceActions<T> implements ResourceActions<T>, ValidateAction<T>, TestAction<T> {
     public static final String FORBIDDEN_MESSAGE = "User not authorized to perform the request";
-    private static final String RESOURCE_IDENTIFIER_MISSING = "Resource identifier missing.";
+    public static final String RESOURCE_IDENTIFIER_MISSING = "Resource identifier missing.";
     private DescriptorKey descriptorKey;
     private AuthorizationManager authorizationManager;
     private ConfigContextEnum context;

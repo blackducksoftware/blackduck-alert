@@ -22,7 +22,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
@@ -134,8 +136,10 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
         String certificateContent = certTestUtil.readCertificateContents();
         CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         CertificateUtility certificateUtility = Mockito.mock(CertificateUtility.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.doThrow(new AlertException("Test exception")).when(certificateUtility).importCertificate(Mockito.any(CustomCertificateModel.class));
-        CertificateActions certificateActions = new CertificateActions(certificateAccessor, certificateUtility);
+        CertificateActions certificateActions = new CertificateActions(new CertificatesDescriptorKey(), authorizationManager, certificateAccessor, certificateUtility);
         try {
             certificateActions.createCertificate(certificate);
             fail();
