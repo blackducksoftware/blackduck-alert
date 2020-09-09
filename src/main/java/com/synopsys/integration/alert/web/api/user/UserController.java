@@ -42,7 +42,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -77,11 +76,11 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/validate")
-    public ValidationResponseModel validateUserModel(@RequestBody UserModel userModel) {
+    public ValidationResponseModel validateUserModel(@RequestBody UserConfig userConfig) {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }
-        return userActions.validateUser(userModel);
+        return userActions.validateUser(userConfig);
     }
 
     @PostMapping

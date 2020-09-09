@@ -78,8 +78,8 @@ public class UserActions {
                    .collect(Collectors.toList());
     }
 
-    public ValidationResponseModel validateUser(UserModel userModel) {
-        List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(convertToCustomUserRoleModel(userModel));
+    public ValidationResponseModel validateUser(UserConfig userConfig) {
+        List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(userConfig);
         if (fieldErrors.isEmpty()) {
             return ValidationResponseModel.withoutFieldStatuses("The user is valid");
         }
@@ -180,7 +180,9 @@ public class UserActions {
         List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         validateUserExistsByName(fieldErrors, userName);
         validatePasswordLength(fieldErrors, password);
-        validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+        if (!userConfig.isExternal()) {
+            validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
+        }
 
         return fieldErrors;
     }
