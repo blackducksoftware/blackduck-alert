@@ -174,6 +174,7 @@ export function validateCertificate(certificate) {
 
         const validateRequest = RequestUtilities.createPostRequest(CERTIFICATES_VALIDATION_API_URL, csrfToken, certificate);
         validateRequest.then((response) => {
+            // FIXME no need to check if response is OK
             if (response.ok) {
                 response.json()
                     .then((validationResponse) => {

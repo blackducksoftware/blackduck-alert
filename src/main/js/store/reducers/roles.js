@@ -9,7 +9,9 @@ import {
     USER_MANAGEMENT_ROLE_FETCHING_ALL,
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
-    USER_MANAGEMENT_ROLE_SAVING
+    USER_MANAGEMENT_ROLE_SAVING,
+    USER_MANAGEMENT_ROLE_VALIDATED,
+    USER_MANAGEMENT_ROLE_VALIDATING
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
@@ -84,6 +86,21 @@ const roles = (state = initialState, action) => {
                 roleError: action.roleError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 saveStatus: 'ERROR'
+            };
+        case USER_MANAGEMENT_ROLE_VALIDATED:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: 'VALIDATED'
+            };
+        case USER_MANAGEMENT_ROLE_VALIDATING:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'VALIDATING'
             };
         case USER_MANAGEMENT_ROLE_SAVED:
             return {

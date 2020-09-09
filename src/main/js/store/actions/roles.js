@@ -8,7 +8,9 @@ import {
     USER_MANAGEMENT_ROLE_FETCHING_ALL,
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
-    USER_MANAGEMENT_ROLE_SAVING
+    USER_MANAGEMENT_ROLE_SAVING,
+    USER_MANAGEMENT_ROLE_VALIDATED,
+    USER_MANAGEMENT_ROLE_VALIDATING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
@@ -31,6 +33,18 @@ function fetchingAllRolesError(message) {
     return {
         type: USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
         message
+    };
+}
+
+function validatingRole() {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATING
+    };
+}
+
+function validatedRole() {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATED
     };
 }
 
@@ -94,6 +108,16 @@ function clearFieldErrors() {
     };
 }
 
+function createErrorHandler(errorResponseData) {
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    const defaultHandler = () => saveRoleError(errorResponseData);
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+}
+
 export function fetchRoles() {
     return (dispatch, getState) => {
         dispatch(fetchingAllRoles());
@@ -134,13 +158,34 @@ export function fetchRoles() {
     };
 }
 
+export function validateRole(role) {
+    return (dispatch, getState) => {
+        dispatch(validatingRole());
+        const { csrfToken } = getState().session;
+        const { id } = role;
+
+        const roleToValidate = { ...role, id: id?.toString() };
+        const request = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, roleToValidate);
+        request.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    const handler = createErrorHandler(responseData);
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                        dispatch(validatedRole());
+                    } else if (!response.ok) {
+                        dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
+                    }
+                });
+        }).catch(console.error);
+    };
+}
+
 export function saveRole(role) {
     return (dispatch, getState) => {
         dispatch(savingRole());
         const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const { id } = role;
         let request;
         if (id) {
@@ -148,22 +193,19 @@ export function saveRole(role) {
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
         }
+
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(savedRole());
-                        dispatch(fetchRoles());
-                    } else {
-                        const defaultHandler = () => saveRoleError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+            if (response.ok) {
+                dispatch(savedRole());
+                dispatch(fetchRoles());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const handler = createErrorHandler(responseData);
                         dispatch(handler(response.status));
-                    }
-                });
-        })
-            .catch(console.error);
+                    });
+            }
+        }).catch(console.error);
     };
 }
 

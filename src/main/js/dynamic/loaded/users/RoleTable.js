@@ -5,7 +5,7 @@ import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
 import {
-    clearRoleFieldErrors, deleteRole, fetchRoles, saveRole
+    clearRoleFieldErrors, deleteRole, fetchRoles, validateRole, saveRole
 } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -34,7 +34,10 @@ class RoleTable extends Component {
 
     componentDidUpdate(prevProps) {
         const { saveStatus } = this.props;
-        const { saveCallback } = this.state;
+        const { saveCallback, validateCallback } = this.state;
+        if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
         if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
             this.setState({
                 role: {
@@ -59,7 +62,7 @@ class RoleTable extends Component {
     }
 
     onSave(callback) {
-        const { descriptors, saveRoleAction } = this.props;
+        const { descriptors, validateRoleAction, saveRoleAction } = this.props;
         const { role } = this.state;
         const { permissions } = role;
         const correctedPermissions = [];
@@ -75,9 +78,11 @@ class RoleTable extends Component {
         });
         role.permissions = correctedPermissions;
 
+        validateRoleAction(role);
         this.setState({
+            validateCallback: () => saveRoleAction(role),
             saveCallback: callback
-        }, () => saveRoleAction(role));
+        });
 
         return true;
     }
@@ -275,6 +280,7 @@ RoleTable.defaultProps = {
 };
 
 RoleTable.propTypes = {
+    validateRoleAction: PropTypes.func.isRequired,
     saveRoleAction: PropTypes.func.isRequired,
     deleteRoleAction: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -301,6 +307,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    validateRoleAction: (role) => dispatch(validateRole(role)),
     saveRoleAction: (role) => dispatch(saveRole(role)),
     deleteRoleAction: (roleId) => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),
