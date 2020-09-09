@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
@@ -63,12 +64,17 @@ public class RoleController extends BaseController {
     }
 
     @GetMapping
-    // TODO wrap this response
-    public List<RolePermissionModel> getRoles() {
+    public MultiRolePermissionModel getRoles() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }
-        return roleActions.getRoles();
+        List<RolePermissionModel> allRoles = roleActions.getRoles();
+        return new MultiRolePermissionModel(allRoles);
+    }
+
+    @PostMapping("/validate")
+    public ValidationResponseModel validateRoleFields(@RequestBody RolePermissionModel rolePermissionModel) {
+        return roleActions.validateRoleFields(rolePermissionModel);
     }
 
     @PostMapping
@@ -82,8 +88,6 @@ public class RoleController extends BaseController {
         } catch (AlertDatabaseConstraintException ex) {
             throw ResponseFactory.createInternalServerErrorException(String.format("Failed to create the role: %s", ex.getMessage()));
         } catch (AlertFieldException e) {
-            // FIXME add validation
-            //  return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
             throw ResponseFactory.createBadRequestException(String.format("There were errors with the configuration: %s", e.getFlattenedErrorMessages()));
         } catch (AlertConfigurationException e) {
             throw ResponseFactory.createBadRequestException(e.getMessage());
@@ -99,9 +103,10 @@ public class RoleController extends BaseController {
 
         try {
             roleActions.updateRole(roleId, rolePermissionModel);
-            // TODO shouldn't there be field errors?
         } catch (AlertDatabaseConstraintException ex) {
             throw ResponseFactory.createInternalServerErrorException(String.format("Failed to update role: %s", ex.getMessage()));
+        } catch (AlertFieldException e) {
+            throw ResponseFactory.createBadRequestException(String.format("There were errors with the configuration: %s", e.getFlattenedErrorMessages()));
         } catch (AlertConfigurationException e) {
             throw ResponseFactory.createBadRequestException(e.getMessage());
         }

@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 
@@ -69,14 +70,22 @@ public class RoleActions {
                    .collect(Collectors.toList());
     }
 
+    public ValidationResponseModel validateRoleFields(RolePermissionModel rolePermissionModel) {
+        List<AlertFieldStatus> fieldErrors = validateRoleNameField(rolePermissionModel.getRoleName());
+        if (fieldErrors.isEmpty()) {
+            return ValidationResponseModel.withoutFieldStatuses("The role name is valid");
+        }
+        return ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", fieldErrors);
+    }
+
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        validateCreationRoleName(fieldErrors, roleName);
-
+        List<AlertFieldStatus> fieldErrors = validateRoleNameField(roleName);
+        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
+
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
@@ -85,8 +94,13 @@ public class RoleActions {
         return userRoleModel;
     }
 
-    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException {
+    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException, AlertFieldException {
         String roleName = rolePermissionModel.getRoleName();
+        List<AlertFieldStatus> fieldErrors = validateRoleNameField(roleName);
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+
         authorizationUtility.updateRoleName(roleId, roleName);
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
@@ -170,17 +184,19 @@ public class RoleActions {
         return new PermissionMatrixModel(permissionMatrix);
     }
 
+    private List<AlertFieldStatus> validateRoleNameField(String roleName) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldStatuses, roleName);
+        boolean exists = authorizationUtility.doesRoleNameExist(roleName);
+        if (exists) {
+            fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
+        }
+        return fieldStatuses;
+    }
+
     private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
             fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
-        }
-    }
-
-    private void validateCreationRoleName(List<AlertFieldStatus> fieldErrors, String roleName) {
-        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
-        boolean exists = authorizationUtility.doesRoleNameExist(roleName);
-        if (exists) {
-            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A user with that role name already exists."));
         }
     }
 

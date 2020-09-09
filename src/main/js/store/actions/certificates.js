@@ -163,6 +163,7 @@ export function fetchCertificates() {
     };
 }
 
+// FIXME clean this up
 export function validateCertificate(certificate) {
     return (dispatch, getState) => {
         dispatch(validatingCertificate());
