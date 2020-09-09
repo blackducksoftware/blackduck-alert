@@ -8,11 +8,15 @@ import {
     USER_MANAGEMENT_ROLE_FETCHING_ALL,
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
-    USER_MANAGEMENT_ROLE_SAVING
+    USER_MANAGEMENT_ROLE_SAVING,
+    USER_MANAGEMENT_ROLE_VALIDATED,
+    USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
+    USER_MANAGEMENT_ROLE_VALIDATING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as RequestUtils from 'util/RequestUtilities';
 
 function fetchingAllRoles() {
     return {
@@ -34,6 +38,26 @@ function fetchingAllRolesError(message) {
     };
 }
 
+function validatingRole() {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATING
+    };
+}
+
+function validatedRole() {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATED
+    };
+}
+
+function validateRoleError(validationResult) {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
+        message: validationResult.message,
+        errors: validationResult.errors
+    };
+}
+
 function savingRole() {
     return {
         type: USER_MANAGEMENT_ROLE_SAVING
@@ -49,15 +73,9 @@ function savedRole() {
 function saveRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleError: message
-    };
-}
-
-function saveRoleError({ message, errors }) {
-    return {
-        type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
         roleError: message,
-        errors
+        message,
+        errors: {}
     };
 }
 
@@ -76,15 +94,7 @@ function deletedRole() {
 function deletingRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleError: message
-    };
-}
-
-function deletingRoleError({ message, errors }) {
-    return {
-        type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleError: message,
-        errors
+        message
     };
 }
 
@@ -92,6 +102,15 @@ function clearFieldErrors() {
     return {
         type: USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS
     };
+}
+
+function createErrorHandler(defaultHandler) {
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
 export function fetchRoles() {
@@ -134,13 +153,33 @@ export function fetchRoles() {
     };
 }
 
+export function validateRole(role) {
+    return (dispatch, getState) => {
+        dispatch(validatingRole());
+        const { csrfToken } = getState().session;
+
+        const validateUrl = `${ConfigRequestBuilder.ROLE_API_URL}/validate`;
+        const request = RequestUtils.createPostRequest(validateUrl, csrfToken, role);
+        request.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    const handler = createErrorHandler(() => validateRoleError(responseData));
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                        dispatch(validatedRole());
+                    } else if (!response.ok) {
+                        dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
+                    }
+                });
+        }).catch(console.error);
+    };
+}
+
 export function saveRole(role) {
     return (dispatch, getState) => {
         dispatch(savingRole());
         const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const { id } = role;
         let request;
         if (id) {
@@ -148,22 +187,19 @@ export function saveRole(role) {
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, role);
         }
+
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(savedRole());
-                        dispatch(fetchRoles());
-                    } else {
-                        const defaultHandler = () => saveRoleError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+            if (response.ok) {
+                dispatch(savedRole());
+                dispatch(fetchRoles());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const handler = createErrorHandler(() => saveRoleErrorMessage(responseData.message));
                         dispatch(handler(response.status));
-                    }
-                });
-        })
-            .catch(console.error);
+                    });
+            }
+        }).catch(console.error);
     };
 }
 
@@ -176,18 +212,15 @@ export function deleteRole(roleId) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(deletedRole());
-                    } else {
-                        const defaultHandler = () => deletingRoleError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+            if (response.ok) {
+                dispatch(deletedRole());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const handler = createErrorHandler(() => deletingRoleErrorMessage(responseData.message));
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         })
             .catch(console.error);
     };

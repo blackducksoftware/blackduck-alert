@@ -103,6 +103,7 @@ public class RoleActions {
         }
 
         UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
+        // FIXME we need to check if the role name would be a duplicate
         if (!existingRole.getName().equals(roleName)) {
             authorizationUtility.updateRoleName(roleId, roleName);
         }
