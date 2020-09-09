@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.web.api.role;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +63,7 @@ public class RoleActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public Collection<RolePermissionModel> getRoles() {
+    public List<RolePermissionModel> getRoles() {
         return authorizationUtility.getRoles().stream()
                    .map(this::convertUserRoleModel)
                    .collect(Collectors.toList());

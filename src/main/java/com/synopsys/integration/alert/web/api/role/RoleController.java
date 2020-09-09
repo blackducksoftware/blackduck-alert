@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.alert.web.api.role;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,13 +33,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
@@ -48,75 +51,73 @@ import com.synopsys.integration.alert.web.common.BaseController;
 @RequestMapping(RoleController.ROLE_BASE_PATH)
 public class RoleController extends BaseController {
     public static final String ROLE_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/role";
-    private final ContentConverter contentConverter;
-    private final ResponseFactory responseFactory;
     private final AuthorizationManager authorizationManager;
     private final RoleActions roleActions;
     private final UserManagementDescriptorKey descriptorKey;
 
     @Autowired
-    public RoleController(ContentConverter contentConverter, ResponseFactory responseFactory, AuthorizationManager authorizationManager, RoleActions roleActions,
-        UserManagementDescriptorKey descriptorKey) {
-        this.contentConverter = contentConverter;
-        this.responseFactory = responseFactory;
+    public RoleController(AuthorizationManager authorizationManager, RoleActions roleActions, UserManagementDescriptorKey descriptorKey) {
         this.authorizationManager = authorizationManager;
         this.roleActions = roleActions;
         this.descriptorKey = descriptorKey;
     }
 
     @GetMapping
-    public ResponseEntity<String> getRoles() {
+    // TODO wrap this response
+    public List<RolePermissionModel> getRoles() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
-        return responseFactory.createOkContentResponse(contentConverter.getJsonString(roleActions.getRoles()));
+        return roleActions.getRoles();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserRoleModel createRole(@RequestBody RolePermissionModel rolePermissionModel) {
+        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
+            throw ResponseFactory.createForbiddenException();
+        }
+        try {
+            return roleActions.createRole(rolePermissionModel);
+        } catch (AlertDatabaseConstraintException ex) {
+            throw ResponseFactory.createInternalServerErrorException(String.format("Failed to create the role: %s", ex.getMessage()));
+        } catch (AlertFieldException e) {
+            // FIXME add validation
+            //  return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
+            throw ResponseFactory.createBadRequestException(String.format("There were errors with the configuration: %s", e.getFlattenedErrorMessages()));
+        } catch (AlertConfigurationException e) {
+            throw ResponseFactory.createBadRequestException(e.getMessage());
+        }
     }
 
     @PutMapping(value = "/{roleId}")
-    public ResponseEntity<String> updateRole(@PathVariable Long roleId, @RequestBody RolePermissionModel rolePermissionModel) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateRole(@PathVariable Long roleId, @RequestBody RolePermissionModel rolePermissionModel) {
         if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
 
         try {
             roleActions.updateRole(roleId, rolePermissionModel);
+            // TODO shouldn't there be field errors?
         } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(String.valueOf(roleId), String.format("Failed to update role: %s", ex.getMessage()));
+            throw ResponseFactory.createInternalServerErrorException(String.format("Failed to update role: %s", ex.getMessage()));
         } catch (AlertConfigurationException e) {
-            return responseFactory.createBadRequestResponse(String.valueOf(roleId), e.getMessage());
+            throw ResponseFactory.createBadRequestException(e.getMessage());
         }
-
-        return responseFactory.createCreatedResponse(String.valueOf(roleId), "Role updated.");
-    }
-
-    @PostMapping
-    public ResponseEntity<String> createRole(@RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
-        }
-        try {
-            roleActions.createRole(rolePermissionModel);
-        } catch (AlertDatabaseConstraintException ex) {
-            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, String.format("Failed to create the role: %s", ex.getMessage()));
-        } catch (AlertFieldException e) {
-            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, "There were errors with the configuration.", e.getFieldErrors());
-        } catch (AlertConfigurationException e) {
-            return responseFactory.createBadRequestResponse(ResponseFactory.EMPTY_ID, e.getMessage());
-        }
-
-        return responseFactory.createCreatedResponse(ResponseFactory.EMPTY_ID, "Role created.");
     }
 
     @DeleteMapping(value = "/{roleId}")
-    public ResponseEntity<String> deleteRole(@PathVariable Long roleId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRole(@PathVariable Long roleId) {
         if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
-            return responseFactory.createForbiddenResponse();
+            throw ResponseFactory.createForbiddenException();
         }
         try {
             roleActions.deleteRole(roleId);
         } catch (AlertForbiddenOperationException ex) {
-            return responseFactory.createForbiddenResponse(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
+            throw ResponseFactory.createForbiddenException(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
         }
-        return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Role deleted.");
     }
+
 }
