@@ -33,7 +33,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -100,7 +102,10 @@ public class RoleActions {
             throw AlertFieldException.singleFieldError(roleNameMissingError.get());
         }
 
-        authorizationUtility.updateRoleName(roleId, roleName);
+        UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
+        if (!existingRole.getName().equals(roleName)) {
+            authorizationUtility.updateRoleName(roleId, roleName);
+        }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
@@ -110,8 +115,17 @@ public class RoleActions {
     }
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        getExistingRoleOrThrow404(roleId);
         authorizationUtility.deleteRole(roleId);
         authorizationManager.loadPermissionsIntoCache();
+    }
+
+    // TODO update this when response statuses are handled consistently across actions and controllers
+    private UserRoleModel getExistingRoleOrThrow404(Long roleId) {
+        return authorizationUtility.getRoles(List.of(roleId))
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
