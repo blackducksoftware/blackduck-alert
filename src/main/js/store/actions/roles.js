@@ -112,7 +112,7 @@ export function fetchRoles() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            dispatch(fetchedAllRoles(responseData));
+                            dispatch(fetchedAllRoles(responseData.roles));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                                 let message = '';

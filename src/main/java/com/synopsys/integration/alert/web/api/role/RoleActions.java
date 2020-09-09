@@ -23,17 +23,19 @@
 package com.synopsys.integration.alert.web.api.role;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -47,6 +49,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 
@@ -64,20 +67,26 @@ public class RoleActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public Collection<RolePermissionModel> getRoles() {
+    public List<RolePermissionModel> getRoles() {
         return authorizationUtility.getRoles().stream()
                    .map(this::convertUserRoleModel)
                    .collect(Collectors.toList());
     }
 
+    public ValidationResponseModel validateRoleFields(RolePermissionModel rolePermissionModel) {
+        return validateRoleNameFieldRequired(rolePermissionModel.getRoleName())
+                   .map(requiredFieldError -> ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", List.of(requiredFieldError)))
+                   .orElseGet(() -> ValidationResponseModel.withoutFieldStatuses("The role name is valid"));
+    }
+
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        validateCreationRoleName(fieldErrors, roleName);
-
+        List<AlertFieldStatus> fieldErrors = fullyValidateRoleNameField(roleName);
+        validateRoleNameFieldRequired(roleName);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
+
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
@@ -86,9 +95,17 @@ public class RoleActions {
         return userRoleModel;
     }
 
-    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException {
+    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException, AlertFieldException {
         String roleName = rolePermissionModel.getRoleName();
-        authorizationUtility.updateRoleName(roleId, roleName);
+        Optional<AlertFieldStatus> roleNameMissingError = validateRoleNameFieldRequired(roleName);
+        if (roleNameMissingError.isPresent()) {
+            throw AlertFieldException.singleFieldError(roleNameMissingError.get());
+        }
+
+        UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
+        if (!existingRole.getName().equals(roleName)) {
+            authorizationUtility.updateRoleName(roleId, roleName);
+        }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
@@ -98,8 +115,17 @@ public class RoleActions {
     }
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        getExistingRoleOrThrow404(roleId);
         authorizationUtility.deleteRole(roleId);
         authorizationManager.loadPermissionsIntoCache();
+    }
+
+    // TODO update this when response statuses are handled consistently across actions and controllers
+    private UserRoleModel getExistingRoleOrThrow404(Long roleId) {
+        return authorizationUtility.getRoles(List.of(roleId))
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
@@ -171,18 +197,22 @@ public class RoleActions {
         return new PermissionMatrixModel(permissionMatrix);
     }
 
-    private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
-        if (StringUtils.isBlank(fieldValue)) {
-            fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
-        }
-    }
-
-    private void validateCreationRoleName(List<AlertFieldStatus> fieldErrors, String roleName) {
-        validateRequiredField(FIELD_KEY_ROLE_NAME, fieldErrors, roleName);
+    private List<AlertFieldStatus> fullyValidateRoleNameField(String roleName) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+        validateRoleNameFieldRequired(roleName)
+            .ifPresent(fieldStatuses::add);
         boolean exists = authorizationUtility.doesRoleNameExist(roleName);
         if (exists) {
-            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A user with that role name already exists."));
+            fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
         }
+        return fieldStatuses;
+    }
+
+    private Optional<AlertFieldStatus> validateRoleNameFieldRequired(String fieldValue) {
+        if (StringUtils.isBlank(fieldValue)) {
+            return Optional.of(AlertFieldStatus.error(RoleActions.FIELD_KEY_ROLE_NAME, "This field is required."));
+        }
+        return Optional.empty();
     }
 
     private void validatePermissions(Set<PermissionModel> permissionModels) throws AlertConfigurationException {
