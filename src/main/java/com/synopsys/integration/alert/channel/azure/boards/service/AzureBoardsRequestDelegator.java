@@ -69,8 +69,6 @@ public class AzureBoardsRequestDelegator {
         Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
         AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
 
-        // TODO validate configuration
-
         AzureProjectService azureProjectService = new AzureProjectService(azureHttpService);
         AzureProcessService azureProcessService = new AzureProcessService(azureHttpService);
 
