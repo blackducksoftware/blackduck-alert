@@ -114,9 +114,6 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         if (StringUtils.isBlank(organizationName) || StringUtils.isBlank(clientId) || StringUtils.isBlank(clientSecret)) {
             throw new AlertConfigurationException("The global configuration for Azure is missing required information.");
         }
-        if (StringUtils.isBlank(oauthUserId)) {
-            throw new AlertConfigurationException("The Azure connection was not authenticated properly. Please go to the Azure global configuration to authenticate the connection.");
-        }
     }
 
     public AzureHttpService createAzureHttpService(ProxyInfo proxy, Gson gson, String authorizationCode) throws AlertException {
