@@ -30,12 +30,12 @@ import javax.net.ssl.SSLHandshakeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.rest.ResponseBodyBuilder;
+import com.synopsys.integration.alert.common.action.SSLValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 
 @Component
@@ -55,7 +55,7 @@ public class PKIXErrorResponseFactory {
         this.responseFactory = responseFactory;
     }
 
-    public Optional<ResponseEntity<String>> createSSLExceptionResponse(String id, Exception e) {
+    public Optional<ValidationResponseModel> createSSLExceptionResponse(String id, Exception e) {
         if (isPKIXError(e)) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
             logger.debug(e.getMessage(), e);
@@ -63,10 +63,7 @@ public class PKIXErrorResponseFactory {
             Map<String, Object> pkixErrorBody = Map.of("header", PKIX_HEADER, "title", PKIX_TITLE, "message", PKIX_MESSAGE,
                 "componentLabel", CertificatesDescriptor.CERTIFICATES_LABEL, "componentLink", certificateLink);
             String pkixError = gson.toJson(pkixErrorBody);
-            ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(id, pkixError);
-            responseBodyBuilder.put("isDetailed", true);
-            ResponseEntity<String> badRequestResponse = responseFactory.createBadRequestResponse(id, responseBodyBuilder.build());
-            return Optional.of(badRequestResponse);
+            return Optional.of(new SSLValidationResponseModel(pkixError));
         }
 
         return Optional.empty();

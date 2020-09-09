@@ -122,8 +122,8 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
     @Override
     public ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateResource(resource);
         if (validationResponse.isError()) {
@@ -135,8 +135,8 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
     @Override
     public ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateResource(resource);
     }

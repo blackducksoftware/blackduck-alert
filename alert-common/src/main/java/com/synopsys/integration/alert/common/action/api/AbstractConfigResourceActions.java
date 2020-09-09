@@ -58,8 +58,6 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
 
     protected abstract ActionResponse<List<FieldModel>> readAllResources();
 
-    protected abstract ActionResponse<List<FieldModel>> readAllByContext(String context);
-
     protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptor(String context, String descriptorName);
 
     protected abstract Optional<FieldModel> findFieldModel(Long id);
@@ -69,21 +67,6 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
     protected abstract ActionResponse<FieldModel> updateResource(Long id, FieldModel resource);
 
     protected abstract ValidationActionResponse validateResource(FieldModel resource);
-
-    public ActionResponse<List<FieldModel>> getAllByContext(String context) {
-        try {
-            Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
-                                              .stream()
-                                              .map(RegisteredDescriptorModel::getName)
-                                              .collect(Collectors.toSet());
-            if (!authorizationManager.anyReadPermission(List.of(context), descriptorNames)) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
-            }
-            return readAllByContext(context);
-        } catch (AlertException ex) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
-        }
-    }
 
     public ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
@@ -170,8 +153,8 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
     @Override
     public ValidationActionResponse test(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateResource(resource);
         if (validationResponse.isError()) {
@@ -183,8 +166,8 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
     @Override
     public ValidationActionResponse validate(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateResource(resource);
     }

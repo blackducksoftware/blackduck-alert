@@ -171,8 +171,8 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ValidationActionResponse test(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateResource(resource);
         if (validationResponse.isError()) {
@@ -190,8 +190,8 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
                                                        || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
                                                        || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
-            ValidationResponseModel emptyModel = new ValidationResponseModel();
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE, emptyModel);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateResource(resource);
     }

@@ -22,12 +22,20 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
-    public ValidationActionResponse(HttpStatus httpStatus, String message, ValidationResponseModel content) {
-        super(httpStatus, message, content);
+    public ValidationActionResponse(HttpStatus httpStatus, ValidationResponseModel content) {
+        super(httpStatus, null, content);
+    }
+
+    @Override
+    public Optional<String> getMessage() {
+        return getContent()
+                   .map(ValidationResponseModel::getMessage);
     }
 }

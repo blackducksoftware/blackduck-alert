@@ -105,7 +105,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     @Override
     public ValidationActionResponse validateResource(CertificateModel resource) {
         ValidationResponseModel validationResponseModel = validateCertificate(resource);
-        return new ValidationActionResponse(HttpStatus.OK, validationResponseModel.getMessage(), validationResponseModel);
+        return new ValidationActionResponse(HttpStatus.OK, validationResponseModel);
     }
 
     public ValidationResponseModel validateCertificate(CertificateModel certificateModel) {
