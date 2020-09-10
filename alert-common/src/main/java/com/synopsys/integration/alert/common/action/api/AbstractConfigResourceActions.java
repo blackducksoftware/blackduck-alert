@@ -171,4 +171,12 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
         }
         return validateResource(resource);
     }
+
+    public AuthorizationManager getAuthorizationManager() {
+        return authorizationManager;
+    }
+
+    public DescriptorAccessor getDescriptorAccessor() {
+        return descriptorAccessor;
+    }
 }

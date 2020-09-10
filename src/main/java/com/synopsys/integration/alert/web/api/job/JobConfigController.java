@@ -54,7 +54,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @GetMapping("/validate")
-    public List<JobFieldStatuses> validateConfig() {
+    public List<JobFieldStatuses> validateJobs() {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateAllJobs());
     }
 
@@ -95,7 +95,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @Override
-    public ValidationResponseModel testConfig(JobFieldModel resource) {
+    public ValidationResponseModel test(JobFieldModel resource) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.test(resource));
     }
 }

@@ -51,7 +51,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
     }
 
     @GetMapping
-    public List<FieldModel> getConfigs(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
+    public List<FieldModel> getAll(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
         return ResponseFactory.createContentResponseFromAction(configActions.readAllByContextAndDescriptor(context.name(), descriptorName));
     }
 
@@ -81,7 +81,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
     }
 
     @Override
-    public ValidationResponseModel testConfig(FieldModel resource) {
+    public ValidationResponseModel test(FieldModel resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
     }
 }

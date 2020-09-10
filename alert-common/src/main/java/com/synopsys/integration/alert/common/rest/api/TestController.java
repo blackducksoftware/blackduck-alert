@@ -29,5 +29,5 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 public interface TestController<T> {
     @PostMapping("/test")
-    ValidationResponseModel testConfig(@RequestBody T resource);
+    ValidationResponseModel test(@RequestBody T resource);
 }
