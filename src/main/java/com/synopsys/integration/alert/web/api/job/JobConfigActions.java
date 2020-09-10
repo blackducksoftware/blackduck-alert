@@ -278,7 +278,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     protected ValidationActionResponse validateResource(JobFieldModel resource) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        UUID jobId = UUID.fromString(resource.getJobId());
+        UUID jobId = null;
+        if (StringUtils.isNotBlank(resource.getJobId())) {
+            jobId = UUID.fromString(resource.getJobId());
+        }
         ValidationResponseModel responseModel = validateJobNameUnique(jobId, resource);
         if (responseModel.hasErrors()) {
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
