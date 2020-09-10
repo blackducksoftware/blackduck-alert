@@ -50,11 +50,11 @@ function validatedRole() {
     };
 }
 
-function validateRoleError(roleError) {
+function validateRoleError(validationResult) {
     return {
         type: USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
-        message: roleError,
-        roleError
+        message: validationResult.message,
+        errors: validationResult.errors
     };
 }
 
@@ -73,15 +73,9 @@ function savedRole() {
 function saveRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        message
-    };
-}
-
-function saveRoleError({ message, errors }) {
-    return {
-        type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
         roleError: message,
-        errors
+        message,
+        errors: {}
     };
 }
 
@@ -177,7 +171,7 @@ export function validateRole(role) {
         request.then((response) => {
             response.json()
                 .then((responseData) => {
-                    const handler = createErrorHandler(() => validateRoleError(responseData.message));
+                    const handler = createErrorHandler(() => validateRoleError(responseData));
                     if (responseData.errors && !Object.keys(responseData.errors).length) {
                         dispatch(validatedRole());
                     } else if (!response.ok) {
@@ -209,7 +203,7 @@ export function saveRole(role) {
             } else {
                 response.json()
                     .then((responseData) => {
-                        const handler = createErrorHandler(() => saveRoleError(responseData.message));
+                        const handler = createErrorHandler(() => saveRoleErrorMessage(responseData.message));
                         dispatch(handler(response.status));
                     });
             }

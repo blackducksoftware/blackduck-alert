@@ -205,7 +205,7 @@ class RoleTable extends Component {
         const roleNameValue = role[roleNameKey];
 
         const {
-            canCreate, canDelete, fieldErrors, inProgress, fetching, descriptors, saveStatus, roleError
+            canCreate, canDelete, fieldErrors, inProgress, fetching, descriptors
         } = this.props;
 
         return (
@@ -232,11 +232,6 @@ class RoleTable extends Component {
                     canDelete={canDelete}
                     nestedInModal
                 />
-                {(saveStatus === 'ERROR') && (
-                    <div id="role-save-message">
-                        {roleError}
-                    </div>
-                )}
             </div>
         );
     }

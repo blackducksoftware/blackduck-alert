@@ -76,7 +76,8 @@ function savedCertificate() {
 function saveCertificateErrorMessage(message) {
     return {
         type: CERTIFICATES_SAVE_ERROR,
-        message
+        message,
+        errors: {}
     };
 }
 
