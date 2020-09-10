@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.api.certificate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,6 +76,6 @@ public class CertificatesController implements ReadAllController<CertificateMode
     @Override
     public ValidationResponseModel validate(CertificateModel requestBody) {
         ValidationActionResponse response = actions.validate(requestBody);
-        return ResponseFactory.createContentResponseFromAction(response);
+        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 }

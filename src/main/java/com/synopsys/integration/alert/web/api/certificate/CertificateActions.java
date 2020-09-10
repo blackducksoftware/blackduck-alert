@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -75,12 +74,6 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         return new ActionResponse<>(HttpStatus.OK, certificates);
     }
 
-    public List<CertificateModel> readCertificates() {
-        return certificateAccessor.getCertificates().stream()
-                   .map(this::convertFromDatabaseModel)
-                   .collect(Collectors.toList());
-    }
-
     @Override
     public ActionResponse<CertificateModel> readResource(Long id) {
         Optional<CertificateModel> model = certificateAccessor.getCertificate(id)
@@ -97,23 +90,20 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         return validateResource(resource);
     }
 
-    public Optional<CertificateModel> readCertificate(Long id) {
-        return certificateAccessor.getCertificate(id)
-                   .map(this::convertFromDatabaseModel);
-    }
-
     @Override
     public ValidationActionResponse validateResource(CertificateModel resource) {
-        ValidationResponseModel validationResponseModel = validateCertificate(resource);
-        return new ValidationActionResponse(HttpStatus.OK, validationResponseModel);
-    }
-
-    public ValidationResponseModel validateCertificate(CertificateModel certificateModel) {
-        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
-        if (fieldErrors.isEmpty()) {
-            return ValidationResponseModel.withoutFieldStatuses("The certificate configuration is valid");
+        ValidationResponseModel responseModel;
+        if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
+            responseModel = ValidationResponseModel.withoutFieldStatuses("Invalid resource id");
+            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
-        return ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
+        List<AlertFieldStatus> fieldErrors = validateCertificateFields(resource);
+        if (fieldErrors.isEmpty()) {
+            responseModel = ValidationResponseModel.withoutFieldStatuses("The certificate configuration is valid");
+            return new ValidationActionResponse(HttpStatus.OK, responseModel);
+        }
+        responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
+        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
     @Override
@@ -129,16 +119,6 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             logger.debug(message, ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue importing the certificate. %s", message));
         }
-    }
-
-    public CertificateModel createCertificate(CertificateModel certificateModel) throws AlertException {
-        if (null != certificateModel.getId()) {
-            throw new AlertDatabaseConstraintException("id cannot be present to create a new certificate on the server.");
-        }
-        validateCertificateModel(certificateModel);
-        String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
-        logger.info("Importing certificate with alias {}", loggableAlias);
-        return importCertificate(certificateModel);
     }
 
     @Override
@@ -158,19 +138,6 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             logger.error("Error occurred updating certificate", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
-    }
-
-    public Optional<CertificateModel> updateCertificate(Long id, CertificateModel certificateModel) throws AlertException {
-        validateCertificateModel(certificateModel);
-        Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
-        String logableId = escapeUtil.replaceWithUnderscore(certificateModel.getId());
-        String loggableAlias = escapeUtil.replaceWithUnderscore(certificateModel.getAlias());
-        logger.info("Updating certificate with id: {} and alias: {}", logableId, loggableAlias);
-        if (existingCertificate.isPresent()) {
-            return Optional.of(importCertificate(certificateModel));
-        }
-        logger.error("Certificate with id: {} missing.", logableId);
-        return Optional.empty();
     }
 
     private CertificateModel importCertificate(CertificateModel certificateModel) throws AlertException {
@@ -201,21 +168,6 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         }
 
         return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
-    }
-
-    /**
-     * @return true if the certificate existed
-     */
-    public boolean deleteCertificate(Long id) throws AlertException {
-        Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
-        if (certificate.isPresent()) {
-            CustomCertificateModel certificateModel = certificate.get();
-            logger.info("Delete certificate with id: {} and alias: {}", certificateModel.getNullableId(), certificateModel.getAlias());
-            certificateUtility.removeCertificate(certificateModel);
-            certificateAccessor.deleteCertificate(id);
-            return true;
-        }
-        return false;
     }
 
     private void deleteByAlias(CustomCertificateModel certificateModel) {
@@ -270,12 +222,4 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         }
         return fieldErrors;
     }
-
-    private void validateCertificateModel(CertificateModel certificateModel) throws AlertFieldException {
-        List<AlertFieldStatus> fieldErrors = validateCertificateFields(certificateModel);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-    }
-
 }

@@ -52,10 +52,9 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     private DescriptorAccessor descriptorAccessor;
 
     public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor) {
-        // to do change the authorization manager to use the context enum and the descriptor key
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
-
+        this.descriptorAccessor = descriptorAccessor;
     }
 
     protected abstract Optional<JobFieldModel> findJobFieldModel(UUID id);

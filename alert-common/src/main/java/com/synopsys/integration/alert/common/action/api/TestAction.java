@@ -22,10 +22,8 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 
 public interface TestAction<T> {
-    ValidationActionResponse test(@RequestBody T resource);
+    ValidationActionResponse test(T resource);
 }

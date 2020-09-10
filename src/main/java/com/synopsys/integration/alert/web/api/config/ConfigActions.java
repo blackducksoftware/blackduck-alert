@@ -212,12 +212,14 @@ public class ConfigActions extends AbstractConfigResourceActions {
     protected ValidationActionResponse validateResource(FieldModel resource) {
         List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateFieldModel(resource);
         ValidationResponseModel responseModel;
+        HttpStatus status = HttpStatus.OK;
         if (fieldStatuses.isEmpty()) {
             responseModel = ValidationResponseModel.withoutFieldStatuses("The configuration is valid");
         } else {
+            status = HttpStatus.BAD_REQUEST;
             responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the configuration", fieldStatuses);
         }
-        return new ValidationActionResponse(HttpStatus.OK, responseModel);
+        return new ValidationActionResponse(status, responseModel);
     }
 
     @Override

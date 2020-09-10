@@ -284,7 +284,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
         ValidationResponseModel responseModel = validateJobNameUnique(jobId, resource);
         if (responseModel.hasErrors()) {
-            return new ValidationActionResponse(HttpStatus.OK, responseModel);
+            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
         for (FieldModel fieldModel : resource.getFieldModels()) {
             fieldStatuses.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
@@ -292,10 +292,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
         if (fieldStatuses.isEmpty()) {
             responseModel = ValidationResponseModel.withoutFieldStatuses("Valid");
-        } else {
-            responseModel = ValidationResponseModel.fromStatusCollection("Invalid", fieldStatuses);
+            return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
-        return new ValidationActionResponse(HttpStatus.OK, responseModel);
+        responseModel = ValidationResponseModel.fromStatusCollection("Invalid", fieldStatuses);
+        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
     public ActionResponse<List<JobFieldStatuses>> validateAllJobs() {
