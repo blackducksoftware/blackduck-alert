@@ -69,7 +69,7 @@ class RoleTable extends Component {
         const correctedPermissions = [];
         permissions.forEach((permission) => {
             const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
-            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === descriptorName);
+            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === descriptorName || currentDescriptor.name === descriptorName);
             if (descriptor) {
                 const descriptorKey = descriptor.name;
                 const permissionCopy = JSON.parse(JSON.stringify(permission));
