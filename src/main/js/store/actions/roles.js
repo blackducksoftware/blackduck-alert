@@ -10,11 +10,13 @@ import {
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING,
     USER_MANAGEMENT_ROLE_VALIDATED,
+    USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
     USER_MANAGEMENT_ROLE_VALIDATING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as RequestUtils from 'util/RequestUtilities';
 
 function fetchingAllRoles() {
     return {
@@ -48,6 +50,14 @@ function validatedRole() {
     };
 }
 
+function validateRoleError(roleError) {
+    return {
+        type: USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
+        message: roleError,
+        roleError
+    };
+}
+
 function savingRole() {
     return {
         type: USER_MANAGEMENT_ROLE_SAVING
@@ -63,7 +73,7 @@ function savedRole() {
 function saveRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_SAVE_ERROR,
-        roleError: message
+        message
     };
 }
 
@@ -108,11 +118,10 @@ function clearFieldErrors() {
     };
 }
 
-function createErrorHandler(errorResponseData) {
+function createErrorHandler(defaultHandler) {
     const errorHandlers = [];
     errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
     errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-    const defaultHandler = () => saveRoleError(errorResponseData);
     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -162,14 +171,13 @@ export function validateRole(role) {
     return (dispatch, getState) => {
         dispatch(validatingRole());
         const { csrfToken } = getState().session;
-        const { id } = role;
 
-        const roleToValidate = { ...role, id: id?.toString() };
-        const request = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, id, roleToValidate);
+        const validateUrl = `${ConfigRequestBuilder.ROLE_API_URL}/validate`;
+        const request = RequestUtils.createPostRequest(validateUrl, csrfToken, role);
         request.then((response) => {
             response.json()
                 .then((responseData) => {
-                    const handler = createErrorHandler(responseData);
+                    const handler = createErrorHandler(() => validateRoleError(responseData.message));
                     if (responseData.errors && !Object.keys(responseData.errors).length) {
                         dispatch(validatedRole());
                     } else if (!response.ok) {
@@ -201,7 +209,7 @@ export function saveRole(role) {
             } else {
                 response.json()
                     .then((responseData) => {
-                        const handler = createErrorHandler(responseData);
+                        const handler = createErrorHandler(() => saveRoleError(responseData.message));
                         dispatch(handler(response.status));
                     });
             }

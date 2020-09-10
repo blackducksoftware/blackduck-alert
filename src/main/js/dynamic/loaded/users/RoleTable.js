@@ -28,7 +28,8 @@ class RoleTable extends Component {
                 permissions: []
             },
             incrementalId: 1,
-            saveCallback: () => null
+            saveCallback: () => null,
+            validateCallback: () => null
         };
     }
 
@@ -204,7 +205,7 @@ class RoleTable extends Component {
         const roleNameValue = role[roleNameKey];
 
         const {
-            canCreate, canDelete, fieldErrors, inProgress, fetching, descriptors
+            canCreate, canDelete, fieldErrors, inProgress, fetching, descriptors, saveStatus, roleError
         } = this.props;
 
         return (
@@ -231,6 +232,11 @@ class RoleTable extends Component {
                     canDelete={canDelete}
                     nestedInModal
                 />
+                {(saveStatus === 'ERROR') && (
+                    <div id="role-save-message">
+                        {roleError}
+                    </div>
+                )}
             </div>
         );
     }
