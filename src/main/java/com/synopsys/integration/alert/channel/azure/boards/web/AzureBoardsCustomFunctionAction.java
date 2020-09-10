@@ -155,11 +155,13 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         if (StringUtils.isNotBlank(fieldModel.getId())) {
             if (authorizationManager.hasWritePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
                 Long id = Long.parseLong(fieldModel.getId());
-                return Optional.ofNullable(configActions.updateConfig(id, fieldModel));
+                ActionResponse<FieldModel> response = configActions.update(id, fieldModel);
+                return response.getContent();
             }
         } else {
             if (authorizationManager.hasCreatePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
-                return Optional.ofNullable(configActions.saveConfig(fieldModel, azureBoardsChannelKey));
+                ActionResponse<FieldModel> response = configActions.create(fieldModel);
+                return response.getContent();
             }
         }
         return Optional.empty();

@@ -196,6 +196,14 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return validateResource(resource);
     }
 
+    public AuthorizationManager getAuthorizationManager() {
+        return authorizationManager;
+    }
+
+    public DescriptorAccessor getDescriptorAccessor() {
+        return descriptorAccessor;
+    }
+
     private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
         return fieldModels
                    .stream()

@@ -59,6 +59,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         Mockito.doReturn(List.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
             pkixErrorResponseFactory);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);

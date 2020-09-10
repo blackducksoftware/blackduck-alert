@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,7 +236,8 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 responseModel = ValidationResponseModel.withoutFieldStatuses("Successfully sent test message.");
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationRestException e) {
-                return createResponseFromIntegrationRestException(e, id);
+                logger.error(e.getMessage(), e);
+                return ValidationActionResponse.createResponseFromIntegrationRestException(e);
             } catch (AlertFieldException e) {
                 logger.error("Test Error with field Errors", e);
                 responseModel = ValidationResponseModel.fromStatusCollection(e.getMessage(), e.getFieldErrors());
@@ -256,15 +256,5 @@ public class ConfigActions extends AbstractConfigResourceActions {
         String descriptorName = resource.getDescriptorName();
         responseModel = ValidationResponseModel.withoutFieldStatuses("Test functionality not implemented for " + descriptorName);
         return new ValidationActionResponse(HttpStatus.NOT_IMPLEMENTED, responseModel);
-    }
-
-    private ValidationActionResponse createResponseFromIntegrationRestException(IntegrationRestException integrationRestException, String id) {
-        String exceptionMessage = integrationRestException.getMessage();
-        logger.error(exceptionMessage, integrationRestException);
-        String message = exceptionMessage;
-        if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
-            message += " : " + integrationRestException.getHttpStatusMessage();
-        }
-        return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.withoutFieldStatuses(message));
     }
 }
