@@ -8,7 +8,10 @@ import {
     USER_MANAGEMENT_USER_FETCHING_ALL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
-    USER_MANAGEMENT_USER_SAVING
+    USER_MANAGEMENT_USER_SAVING,
+    USER_MANAGEMENT_USER_VALIDATE_ERROR,
+    USER_MANAGEMENT_USER_VALIDATED,
+    USER_MANAGEMENT_USER_VALIDATING
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
@@ -95,6 +98,33 @@ function clearFieldErrors() {
     };
 }
 
+function validatingUser() {
+    return {
+        type: USER_MANAGEMENT_USER_VALIDATING
+    };
+}
+
+function validatedUser() {
+    return {
+        type: USER_MANAGEMENT_USER_VALIDATED
+    };
+}
+
+function userValidationError(message, errors) {
+    return {
+        type: USER_MANAGEMENT_USER_VALIDATE_ERROR,
+        message,
+        errors
+    };
+}
+
+function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+    dispatch(handler(responseStatus));
+}
+
 export function fetchUsers() {
     return (dispatch, getState) => {
         dispatch(fetchingAllUsers());
@@ -135,6 +165,35 @@ export function fetchUsers() {
     };
 }
 
+export function validateUser(user) {
+    return (dispatch, getState) => {
+        dispatch(validatingUser());
+        const { id } = user;
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((validationResponse) => {
+                        // FIXME figure out the best way to handle warning statuses
+                        if (!Object.keys(validationResponse.errors).length) {
+                            dispatch(validatedUser());
+                        } else {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => userValidationError(validationResponse.message, validationResponse.errors));
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => userValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
+    };
+}
+
 export function saveUser(user) {
     return (dispatch, getState) => {
         dispatch(savingUser());
@@ -142,50 +201,29 @@ export function saveUser(user) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils
-            .createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-
-        const validateRequest = ConfigRequestBuilder
-            .createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let saveRequest;
         if (id) {
-            saveRequest = ConfigRequestBuilder
-                .createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
+            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
         } else {
-            saveRequest = ConfigRequestBuilder
-                .createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
+            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
-
-        validateRequest
-            .then((validateResponse) => {
-                validateResponse.json()
-                    .then((responseJson) => {
-                        if (Object.keys(responseJson.errors).length) {
-                            // TODO update to: createErrorObjectWithStatusCode(400, responseJson);
-                            throw HTTPErrorUtils.createErrorObject(responseJson);
-                        }
-                    });
-            })
-            .then(() => saveRequest
-                .then((saveResponse) => {
-                    saveResponse.json()
-                        .then((responseData) => {
-                            if (saveResponse.ok) {
-                                dispatch(savedUser());
-                                dispatch(fetchUsers());
-                            } else {
-                                // TODO update to: createErrorObjectWithStatusCode(saveResponse.status, responseData);
-                                throw HTTPErrorUtils.createErrorObject(responseData);
-                            }
-                        });
-                }))
-            .catch((error) => {
-                const defaultHandler = () => saveUserError(error);
-                errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                dispatch(handler(error.statusCode));
-            });
+        saveRequest.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(savedUser());
+                        dispatch(fetchUsers());
+                    } else {
+                        const defaultHandler = () => saveUserError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
+        })
+            .catch(console.error);
     };
 }
 

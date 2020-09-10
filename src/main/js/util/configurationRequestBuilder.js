@@ -65,6 +65,7 @@ export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldMod
         method: 'PUT',
         body: JSON.stringify(fieldModel),
         headers: {
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -78,6 +79,7 @@ export function createUpdateWithoutIdRequest(apiUrl, csrfToken, model) {
         method: 'PUT',
         body: JSON.stringify(model),
         headers: {
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -106,6 +108,7 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
         method: 'POST',
         body: JSON.stringify(fieldModel),
         headers: {
+            accept: 'application/json;charset=UTF-8',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }
@@ -119,6 +122,7 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel) {
         method: 'POST',
         body: JSON.stringify(fieldModel),
         headers: {
+            accept: 'application/json',
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         }

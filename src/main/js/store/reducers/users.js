@@ -9,7 +9,10 @@ import {
     USER_MANAGEMENT_USER_FETCHING_ALL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
-    USER_MANAGEMENT_USER_SAVING
+    USER_MANAGEMENT_USER_SAVING,
+    USER_MANAGEMENT_USER_VALIDATE_ERROR,
+    USER_MANAGEMENT_USER_VALIDATED,
+    USER_MANAGEMENT_USER_VALIDATING
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
@@ -112,6 +115,29 @@ const users = (state = initialState, action) => {
                 saveStatus: ''
             };
         }
+        case USER_MANAGEMENT_USER_VALIDATING:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'VALIDATING'
+            };
+        case USER_MANAGEMENT_USER_VALIDATED:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: 'VALIDATED'
+            };
+        case USER_MANAGEMENT_USER_VALIDATE_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: 'ERROR'
+            };
         case SERIALIZE:
             return initialState;
 

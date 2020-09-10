@@ -83,7 +83,7 @@ public class UserActions {
         if (fieldErrors.isEmpty()) {
             return ValidationResponseModel.withoutFieldStatuses("The user is valid");
         }
-        return ValidationResponseModel.fromStatusCollection("There were problems validating this user", fieldErrors);
+        return ValidationResponseModel.fromStatusCollection("There were problems validating this user.", fieldErrors);
     }
 
     public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
