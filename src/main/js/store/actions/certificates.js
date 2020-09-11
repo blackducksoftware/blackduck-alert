@@ -107,14 +107,6 @@ function deletingCertificateErrorMessage(message) {
     };
 }
 
-function deletingCertificateError({ message, errors }) {
-    return {
-        type: CERTIFICATES_DELETE_ERROR,
-        message,
-        errors
-    };
-}
-
 function clearFieldErrors() {
     return {
         type: CERTIFICATES_CLEAR_FIELD_ERRORS
@@ -241,19 +233,19 @@ export function deleteCertificate(certificateId) {
 
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(deletedCertificate());
-                    } else {
-                        const defaultHandler = () => deletingCertificateError(responseData);
+            if (response.ok) {
+                dispatch(deletedCertificate());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => deletingCertificateErrorMessage(responseData.message);
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         })
             .catch(console.error);
     };

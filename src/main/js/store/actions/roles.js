@@ -94,15 +94,7 @@ function deletedRole() {
 function deletingRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleError: message
-    };
-}
-
-function deletingRoleError({ message, errors }) {
-    return {
-        type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
-        roleError: message,
-        errors
+        message
     };
 }
 
@@ -220,18 +212,15 @@ export function deleteRole(roleId) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleId);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(deletedRole());
-                    } else {
-                        const defaultHandler = () => deletingRoleError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+            if (response.ok) {
+                dispatch(deletedRole());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const handler = createErrorHandler(() => deletingRoleErrorMessage(responseData.message));
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         })
             .catch(console.error);
     };
