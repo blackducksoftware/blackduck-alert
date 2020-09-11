@@ -111,7 +111,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
         String accessToken = fieldAccessToken.getValue().orElse("");
-        boolean accessTokenSet = fieldAccessToken.isSet();
+        boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             try {
                 return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)

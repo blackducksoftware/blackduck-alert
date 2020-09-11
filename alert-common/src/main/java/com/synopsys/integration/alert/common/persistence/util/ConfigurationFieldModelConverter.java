@@ -98,7 +98,7 @@ public class ConfigurationFieldModelConverter {
         Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (DefinedFieldModel definedField : fieldsForContext) {
             fieldModel.getFieldValueModel(definedField.getKey())
-                .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues(), fieldValueModel.isSet()))
+                .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues(), fieldValueModel.getIsSet()))
                 .ifPresent(configurationFieldModel -> configurationModels.put(configurationFieldModel.getFieldKey(), configurationFieldModel));
         }
 
