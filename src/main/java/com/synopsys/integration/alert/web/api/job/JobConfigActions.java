@@ -121,7 +121,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<List<JobFieldModel>> readAllResources() {
+    protected ActionResponse<List<JobFieldModel>> readAllAfterChecks() {
         try {
             List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
             List<JobFieldModel> jobFieldModels = new LinkedList<>();
@@ -137,7 +137,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> deleteResource(UUID id) {
+    protected ActionResponse<JobFieldModel> deleteAfterChecks(UUID id) {
         try {
             Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
             if (jobs.isPresent()) {
@@ -159,11 +159,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
 
-        return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> createResource(JobFieldModel resource) {
+    protected ActionResponse<JobFieldModel> createAfterChecks(JobFieldModel resource) {
         try {
             Set<String> descriptorNames = new HashSet<>();
             Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
@@ -190,7 +190,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> updateResource(UUID id, JobFieldModel resource) {
+    protected ActionResponse<JobFieldModel> updateAfterChecks(UUID id, JobFieldModel resource) {
         try {
             ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
                                                     .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
@@ -276,7 +276,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse validateResource(JobFieldModel resource) {
+    protected ValidationActionResponse validateAfterChecks(JobFieldModel resource) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         UUID jobId = null;
         if (StringUtils.isNotBlank(resource.getJobId())) {
@@ -313,7 +313,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         List<JobFieldStatuses> errorsList = new LinkedList<>();
-        List<JobFieldModel> jobFieldModels = readAllResources().getContent().orElse(List.of());
+        List<JobFieldModel> jobFieldModels = readAllAfterChecks().getContent().orElse(List.of());
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -328,7 +328,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse testResource(JobFieldModel resource) {
+    protected ValidationActionResponse testAfterChecks(JobFieldModel resource) {
         ValidationResponseModel responseModel;
         String id = resource.getJobId();
         try {
@@ -397,7 +397,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             String message = configMissingMessage.get();
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
         }
-        return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
     private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.action.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 
@@ -48,30 +49,32 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
 
     }
 
-    protected abstract ActionResponse<T> createResource(T resource);
+    protected abstract ActionResponse<T> createAfterChecks(T resource);
 
-    protected abstract ActionResponse<T> deleteResource(Long id);
+    protected abstract ActionResponse<T> deleteAfterChecks(Long id);
 
-    protected abstract ActionResponse<List<T>> readAllResources();
+    protected abstract ActionResponse<List<T>> readAllAfterChecks();
 
-    protected abstract ActionResponse<T> readResource(Long id);
+    protected abstract ActionResponse<T> readAfterChecks(Long id);
 
-    protected abstract ValidationActionResponse testResource(T resource);
+    protected abstract ValidationActionResponse testAfterChecks(T resource);
 
-    protected abstract ActionResponse<T> updateResource(Long id, T resource);
+    protected abstract ActionResponse<T> updateAfterChecks(Long id, T resource);
 
-    protected abstract ValidationActionResponse validateResource(T resource);
+    protected abstract ValidationActionResponse validateAfterChecks(T resource);
+
+    protected abstract Optional<T> findExisting(Long id);
 
     @Override
     public ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return createResource(resource);
+        return createAfterChecks(resource);
     }
 
     @Override
@@ -79,7 +82,7 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return readAllResources();
+        return readAllAfterChecks();
     }
 
     @Override
@@ -90,7 +93,13 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return readResource(id);
+
+        Optional<T> existingItem = findExisting(id);
+        if (existingItem.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        return readAfterChecks(id);
     }
 
     @Override
@@ -101,11 +110,17 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+
+        Optional<T> existingItem = findExisting(id);
+        if (existingItem.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateResource(id, resource);
+        return updateAfterChecks(id, resource);
     }
 
     @Override
@@ -116,7 +131,13 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return deleteResource(id);
+
+        Optional<T> existingItem = findExisting(id);
+        if (existingItem.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        return deleteAfterChecks(id);
     }
 
     @Override
@@ -125,11 +146,11 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return validationResponse;
         }
-        return testResource(resource);
+        return testAfterChecks(resource);
     }
 
     @Override
@@ -138,6 +159,6 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        return validateResource(resource);
+        return validateAfterChecks(resource);
     }
 }

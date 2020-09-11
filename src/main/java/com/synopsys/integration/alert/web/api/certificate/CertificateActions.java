@@ -67,7 +67,13 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<List<CertificateModel>> readAllResources() {
+    protected Optional<CertificateModel> findExisting(Long id) {
+        return certificateAccessor.getCertificate(id)
+                   .map(this::convertFromDatabaseModel);
+    }
+
+    @Override
+    public ActionResponse<List<CertificateModel>> readAllAfterChecks() {
         List<CertificateModel> certificates = certificateAccessor.getCertificates().stream()
                                                   .map(this::convertFromDatabaseModel)
                                                   .collect(Collectors.toList());
@@ -75,9 +81,8 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> readResource(Long id) {
-        Optional<CertificateModel> model = certificateAccessor.getCertificate(id)
-                                               .map(this::convertFromDatabaseModel);
+    public ActionResponse<CertificateModel> readAfterChecks(Long id) {
+        Optional<CertificateModel> model = findExisting(id);
         if (model.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, model.get());
         }
@@ -86,12 +91,12 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ValidationActionResponse testResource(CertificateModel resource) {
-        return validateResource(resource);
+    public ValidationActionResponse testAfterChecks(CertificateModel resource) {
+        return validateAfterChecks(resource);
     }
 
     @Override
-    public ValidationActionResponse validateResource(CertificateModel resource) {
+    public ValidationActionResponse validateAfterChecks(CertificateModel resource) {
         ValidationResponseModel responseModel;
         if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
             responseModel = ValidationResponseModel.withoutFieldStatuses("Invalid resource id");
@@ -107,7 +112,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> createResource(CertificateModel resource) {
+    public ActionResponse<CertificateModel> createAfterChecks(CertificateModel resource) {
         String loggableAlias = escapeUtil.replaceWithUnderscore(resource.getAlias());
         logger.info("Importing certificate with alias {}", loggableAlias);
         try {
@@ -115,14 +120,14 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             return new ActionResponse<>(HttpStatus.OK, certificateModel);
         } catch (AlertException ex) {
             String message = ex.getMessage();
-            logger.error("There was an issue importing the certificate.{}", message);
+            logger.error("There was an issue importing the certificate. {}", message);
             logger.debug(message, ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue importing the certificate. %s", message));
         }
     }
 
     @Override
-    public ActionResponse<CertificateModel> updateResource(Long id, CertificateModel resource) {
+    public ActionResponse<CertificateModel> updateAfterChecks(Long id, CertificateModel resource) {
         try {
             Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
             String logableId = escapeUtil.replaceWithUnderscore(resource.getId());
@@ -153,7 +158,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> deleteResource(Long id) {
+    public ActionResponse<CertificateModel> deleteAfterChecks(Long id) {
         try {
             Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
             if (certificate.isPresent()) {
@@ -167,7 +172,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting certificate: %s", ex.getMessage()));
         }
 
-        return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
     private void deleteByAlias(CustomCertificateModel certificateModel) {

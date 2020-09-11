@@ -60,7 +60,9 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public void setValue(String value) {
-        if (null != value) {
+        if (null == value) {
+            setValues(Set.of());
+        } else {
             setValues(Set.of(value));
         }
     }

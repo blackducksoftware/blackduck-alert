@@ -86,12 +86,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ActionResponse<List<FieldModel>> readAllResources() {
-        return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED, null);
+    protected ActionResponse<List<FieldModel>> readAllAfterChecks() {
+        return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
-    protected ActionResponse<List<FieldModel>> readAllByContextAndDescriptor(String context, String descriptorName) {
+    protected ActionResponse<List<FieldModel>> readAllByContextAndDescriptorAfterChecks(String context, String descriptorName) {
         ConfigContextEnum configContext = ConfigContextEnum.valueOf(context);
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(descriptorName);
         if (!descriptorKey.isPresent()) {
@@ -150,7 +150,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ActionResponse<FieldModel> deleteResource(Long id) {
+    protected ActionResponse<FieldModel> deleteAfterChecks(Long id) {
         try {
             Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
             if (configuration.isPresent()) {
@@ -165,11 +165,11 @@ public class ConfigActions extends AbstractConfigResourceActions {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
 
-        return new ActionResponse<>(HttpStatus.NO_CONTENT, null);
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
-    protected ActionResponse<FieldModel> createResource(FieldModel resource) {
+    protected ActionResponse<FieldModel> createAfterChecks(FieldModel resource) {
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(resource.getDescriptorName());
         if (descriptorKey.isPresent()) {
             try {
@@ -190,7 +190,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ActionResponse<FieldModel> updateResource(Long id, FieldModel resource) {
+    protected ActionResponse<FieldModel> updateAfterChecks(Long id, FieldModel resource) {
         try {
             Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
             FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
@@ -209,7 +209,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse validateResource(FieldModel resource) {
+    protected ValidationActionResponse validateAfterChecks(FieldModel resource) {
         List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateFieldModel(resource);
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
@@ -223,7 +223,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse testResource(FieldModel resource) {
+    protected ValidationActionResponse testAfterChecks(FieldModel resource) {
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(resource);
         ValidationResponseModel responseModel;
         String id = resource.getId();

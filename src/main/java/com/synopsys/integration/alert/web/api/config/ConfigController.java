@@ -54,7 +54,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @GetMapping
     public List<FieldModel> getAll(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
-        return ResponseFactory.createContentResponseFromAction(configActions.readAllByContextAndDescriptor(context.name(), descriptorName));
+        return ResponseFactory.createContentResponseFromAction(configActions.readAllByContextAndDescriptorAfterChecks(context.name(), descriptorName));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @Override
     public void update(Long id, FieldModel resource) {
-        ResponseFactory.createContentResponseFromAction(configActions.updateResource(id, resource));
+        ResponseFactory.createContentResponseFromAction(configActions.updateAfterChecks(id, resource));
     }
 
     @Override

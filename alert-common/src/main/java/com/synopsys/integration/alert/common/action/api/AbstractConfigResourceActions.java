@@ -52,27 +52,27 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
         this.authorizationManager = authorizationManager;
     }
 
-    protected abstract ActionResponse<FieldModel> createResource(FieldModel resource);
+    protected abstract ActionResponse<FieldModel> createAfterChecks(FieldModel resource);
 
-    protected abstract ActionResponse<FieldModel> deleteResource(Long id);
+    protected abstract ActionResponse<FieldModel> deleteAfterChecks(Long id);
 
-    protected abstract ActionResponse<List<FieldModel>> readAllResources();
+    protected abstract ActionResponse<List<FieldModel>> readAllAfterChecks();
 
-    protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptor(String context, String descriptorName);
+    protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptorAfterChecks(String context, String descriptorName);
 
     protected abstract Optional<FieldModel> findFieldModel(Long id);
 
-    protected abstract ValidationActionResponse testResource(FieldModel resource);
+    protected abstract ValidationActionResponse testAfterChecks(FieldModel resource);
 
-    protected abstract ActionResponse<FieldModel> updateResource(Long id, FieldModel resource);
+    protected abstract ActionResponse<FieldModel> updateAfterChecks(Long id, FieldModel resource);
 
-    protected abstract ValidationActionResponse validateResource(FieldModel resource);
+    protected abstract ValidationActionResponse validateAfterChecks(FieldModel resource);
 
     public ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        return readAllByContextAndDescriptor(context, descriptorName);
+        return readAllByContextAndDescriptorAfterChecks(context, descriptorName);
     }
 
     @Override
@@ -80,11 +80,11 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
         if (!authorizationManager.hasCreatePermission(resource.getContext(), resource.getDescriptorName())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return createResource(resource);
+        return createAfterChecks(resource);
     }
 
     @Override
@@ -97,7 +97,7 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
             if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name(), ConfigContextEnum.GLOBAL.name()), descriptorNames)) {
                 return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
             }
-            return readAllResources();
+            return readAllAfterChecks();
         } catch (AlertException ex) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
         }
@@ -105,9 +105,6 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
 
     @Override
     public ActionResponse<FieldModel> getOne(Long id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
-        }
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
@@ -117,29 +114,29 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
 
             return new ActionResponse<>(HttpStatus.OK, model);
         }
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, null);
+        return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
     public ActionResponse<FieldModel> update(Long id, FieldModel resource) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
-        }
         if (!authorizationManager.hasWritePermission(resource.getContext(), resource.getDescriptorName())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+
+        Optional<FieldModel> existingModel = findFieldModel(id);
+        if (existingModel.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateResource(id, resource);
+        return updateAfterChecks(id, resource);
     }
 
     @Override
     public ActionResponse<FieldModel> delete(Long id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
-        }
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
@@ -147,7 +144,12 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
                 return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
             }
         }
-        return deleteResource(id);
+
+        Optional<FieldModel> existingModel = findFieldModel(id);
+        if (existingModel.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+        return deleteAfterChecks(id);
     }
 
     @Override
@@ -156,11 +158,11 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return validationResponse;
         }
-        return testResource(resource);
+        return testAfterChecks(resource);
     }
 
     @Override
@@ -169,7 +171,7 @@ public abstract class AbstractConfigResourceActions implements ResourceActions<F
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        return validateResource(resource);
+        return validateAfterChecks(resource);
     }
 
     public AuthorizationManager getAuthorizationManager() {

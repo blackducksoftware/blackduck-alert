@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -54,22 +54,35 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor) {
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
-        this.descriptorAccessor = descriptorAccessor;
     }
 
     protected abstract Optional<JobFieldModel> findJobFieldModel(UUID id);
 
-    protected abstract ActionResponse<JobFieldModel> createResource(JobFieldModel resource);
+    protected abstract ActionResponse<JobFieldModel> createAfterChecks(JobFieldModel resource);
 
-    protected abstract ActionResponse<JobFieldModel> deleteResource(UUID id);
+    protected abstract ActionResponse<JobFieldModel> deleteAfterChecks(UUID id);
 
-    protected abstract ActionResponse<List<JobFieldModel>> readAllResources();
+    protected abstract ActionResponse<List<JobFieldModel>> readAllAfterChecks();
 
-    protected abstract ValidationActionResponse testResource(JobFieldModel resource);
+    protected abstract ValidationActionResponse testAfterChecks(JobFieldModel resource);
 
-    protected abstract ActionResponse<JobFieldModel> updateResource(UUID id, JobFieldModel resource);
+    protected abstract ActionResponse<JobFieldModel> updateAfterChecks(UUID id, JobFieldModel resource);
 
-    protected abstract ValidationActionResponse validateResource(JobFieldModel resource);
+    protected abstract ValidationActionResponse validateAfterChecks(JobFieldModel resource);
+
+    private Set<String> getDescriptorNames() {
+        Set<String> descriptorNames = Set.of();
+        try {
+            descriptorNames = descriptorAccessor.getRegisteredDescriptors()
+                                  .stream()
+                                  .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
+                                  .map(RegisteredDescriptorModel::getName)
+                                  .collect(Collectors.toSet());
+        } catch (AlertDatabaseConstraintException ex) {
+        }
+
+        return descriptorNames;
+    }
 
     @Override
     public ActionResponse<JobFieldModel> create(JobFieldModel resource) {
@@ -77,46 +90,37 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         if (!hasPermissions) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return createResource(resource);
+        return createAfterChecks(resource);
     }
 
     @Override
     public ActionResponse<List<JobFieldModel>> getAll() {
-        try {
-            Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
-                                              .stream()
-                                              .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
-                                              .map(RegisteredDescriptorModel::getName)
-                                              .collect(Collectors.toSet());
-            if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
-            }
-            List<JobFieldModel> models = new LinkedList<>();
-            ActionResponse<List<JobFieldModel>> response = readAllResources();
-            List<JobFieldModel> allModels = response.getContent().orElse(List.of());
-            for (JobFieldModel jobModel : allModels) {
-                boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
-                if (includeJob) {
-                    models.add(jobModel);
-                }
-            }
-            return new ActionResponse<>(HttpStatus.OK, models);
-        } catch (AlertException ex) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading job configurations: %s", ex.getMessage()));
+        Set<String> descriptorNames = getDescriptorNames();
+        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-
+        List<JobFieldModel> models = new LinkedList<>();
+        ActionResponse<List<JobFieldModel>> response = readAllAfterChecks();
+        List<JobFieldModel> allModels = response.getContent().orElse(List.of());
+        for (JobFieldModel jobModel : allModels) {
+            boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
+            if (includeJob) {
+                models.add(jobModel);
+            }
+        }
+        return new ActionResponse<>(HttpStatus.OK, models);
     }
 
     @Override
     public ActionResponse<JobFieldModel> getOne(UUID id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
+        Set<String> descriptorNames = getDescriptorNames();
+        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
         if (optionalModel.isPresent()) {
@@ -128,30 +132,30 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             return new ActionResponse<>(HttpStatus.OK, fieldModel);
         }
 
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, null);
+        return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
     public ActionResponse<JobFieldModel> update(UUID id, JobFieldModel resource) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
-        }
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+
+        Optional<JobFieldModel> existingJob = findJobFieldModel(id);
+        if (existingJob.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateResource(id, resource);
+        return updateAfterChecks(id, resource);
     }
 
     @Override
     public ActionResponse<JobFieldModel> delete(UUID id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, AbstractResourceActions.RESOURCE_IDENTIFIER_MISSING);
-        }
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
         if (optionalModel.isPresent()) {
@@ -161,9 +165,9 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
                 return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
             }
         } else {
-            return new ActionResponse<>(HttpStatus.NOT_FOUND, null);
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
-        return deleteResource(id);
+        return deleteAfterChecks(id);
     }
 
     @Override
@@ -173,11 +177,11 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        ValidationActionResponse validationResponse = validateResource(resource);
+        ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
             return validationResponse;
         }
-        return testResource(resource);
+        return testAfterChecks(resource);
     }
 
     @Override
@@ -192,7 +196,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        return validateResource(resource);
+        return validateAfterChecks(resource);
     }
 
     public AuthorizationManager getAuthorizationManager() {
