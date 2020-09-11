@@ -79,6 +79,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
                                   .map(RegisteredDescriptorModel::getName)
                                   .collect(Collectors.toSet());
         } catch (AlertDatabaseConstraintException ex) {
+            // ignore or add a logger.
         }
 
         return descriptorNames;

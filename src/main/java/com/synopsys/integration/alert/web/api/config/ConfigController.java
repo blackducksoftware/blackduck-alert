@@ -75,6 +75,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
     @Override
     public ValidationResponseModel validate(FieldModel requestBody) {
         ValidationActionResponse response = configActions.validate(requestBody);
+        // TODO A better API for validation. Validation response should not be null.
         return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 

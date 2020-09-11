@@ -56,7 +56,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @GetMapping("/validate")
-    public List<JobFieldStatuses> validateJobs() {
+    public List<JobFieldStatuses> getValidationResultsForJobs() {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateAllJobs());
     }
 
@@ -94,6 +94,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     @Override
     public ValidationResponseModel validate(JobFieldModel requestBody) {
         ValidationActionResponse response = jobConfigActions.validate(requestBody);
+        // TODO A better API for validation. Validation response should not be null.
         return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 

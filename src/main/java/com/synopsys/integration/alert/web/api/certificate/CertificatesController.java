@@ -76,6 +76,7 @@ public class CertificatesController implements ReadAllController<CertificateMode
     @Override
     public ValidationResponseModel validate(CertificateModel requestBody) {
         ValidationActionResponse response = actions.validate(requestBody);
+        // TODO A better API for validation. Validation response should not be null.
         return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 }

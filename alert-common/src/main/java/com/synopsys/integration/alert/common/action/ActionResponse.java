@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.action;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpStatus;
 
@@ -34,19 +33,19 @@ public class ActionResponse<T> {
     private String message;
     private T content;
 
-    public ActionResponse(@NotNull HttpStatus httpStatus) {
+    public ActionResponse(HttpStatus httpStatus) {
         this(httpStatus, null, null);
     }
 
-    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable String message) {
+    public ActionResponse(HttpStatus httpStatus, @Nullable String message) {
         this(httpStatus, message, null);
     }
 
-    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable T content) {
+    public ActionResponse(HttpStatus httpStatus, @Nullable T content) {
         this(httpStatus, null, content);
     }
 
-    public ActionResponse(@NotNull HttpStatus httpStatus, @Nullable String message, @Nullable T content) {
+    public ActionResponse(HttpStatus httpStatus, @Nullable String message, @Nullable T content) {
         this.httpStatus = httpStatus;
         this.content = content;
         this.message = message;

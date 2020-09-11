@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import java.util.UUID;
 
-public interface JobResourceActions extends UUIDResourceActions<JobFieldModel> {
+public interface UUIDResourceActions<T> extends ResourceActions<T, UUID> {
 }

@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T> implements ResourceActions<T>, ValidateAction<T>, TestAction<T> {
+public abstract class AbstractResourceActions<T> implements LongResourceActions<T>, ValidateAction<T>, TestAction<T> {
     public static final String FORBIDDEN_MESSAGE = "User not authorized to perform the request";
     public static final String RESOURCE_IDENTIFIER_MISSING = "Resource identifier missing.";
     private DescriptorKey descriptorKey;
@@ -104,9 +104,6 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
 
     @Override
     public ActionResponse<T> update(Long id, T resource) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
-        }
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }
@@ -125,9 +122,6 @@ public abstract class AbstractResourceActions<T> implements ResourceActions<T>, 
 
     @Override
     public ActionResponse<T> delete(Long id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
-        }
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
         }

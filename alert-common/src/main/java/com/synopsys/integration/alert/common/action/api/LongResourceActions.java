@@ -22,7 +22,5 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-
-public interface JobResourceActions extends UUIDResourceActions<JobFieldModel> {
+public interface LongResourceActions<T> extends ResourceActions<T, Long> {
 }

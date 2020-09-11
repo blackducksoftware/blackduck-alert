@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions implements ResourceActions<FieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
+public abstract class AbstractConfigResourceActions implements LongResourceActions<FieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
 

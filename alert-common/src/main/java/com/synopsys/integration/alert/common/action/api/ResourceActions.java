@@ -26,14 +26,14 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
-public interface ResourceActions<T> {
+public interface ResourceActions<T, I> {
     ActionResponse<T> create(T resource);
 
     ActionResponse<List<T>> getAll();
 
-    ActionResponse<T> getOne(Long id);
+    ActionResponse<T> getOne(I id);
 
-    ActionResponse<T> update(Long id, T resource);
+    ActionResponse<T> update(I id, T resource);
 
-    ActionResponse<T> delete(Long id);
+    ActionResponse<T> delete(I id);
 }
