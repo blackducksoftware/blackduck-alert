@@ -39,12 +39,14 @@ class RoleTable extends Component {
         if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
             validateCallback(true);
         }
-        if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
+        if (prevProps.saveStatus === 'SAVING' && saveStatus === 'SAVED') {
             this.setState({
                 role: {
                     permissions: []
                 }
             }, () => saveCallback(true));
+        } else if (prevProps.saveStatus === 'SAVING' && saveStatus === 'ERROR') {
+            saveCallback(false);
         }
     }
 
@@ -241,7 +243,7 @@ class RoleTable extends Component {
             canCreate, canDelete, fieldErrors, roleError, inProgress, fetching, roles
         } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
+        const hasErrors = roleError || (fieldErrorKeys && fieldErrorKeys.length > 0);
         return (
             <div>
                 <TableDisplay
