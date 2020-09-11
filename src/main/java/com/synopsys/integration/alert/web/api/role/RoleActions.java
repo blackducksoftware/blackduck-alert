@@ -82,7 +82,6 @@ public class RoleActions {
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
         String roleName = rolePermissionModel.getRoleName();
         List<AlertFieldStatus> fieldErrors = fullyValidateRoleNameField(roleName);
-        validateRoleNameFieldRequired(roleName);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -103,7 +102,14 @@ public class RoleActions {
         }
 
         UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
-        // FIXME we need to check if the role name would be a duplicate
+        boolean targetRoleNameIsUsedByDifferentRole = authorizationUtility.getRoles()
+                                                          .stream()
+                                                          .filter(role -> !role.getId().equals(existingRole.getId()))
+                                                          .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
+        if (targetRoleNameIsUsedByDifferentRole) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The role name is already in use");
+        }
+
         if (!existingRole.getName().equals(roleName)) {
             authorizationUtility.updateRoleName(roleId, roleName);
         }
