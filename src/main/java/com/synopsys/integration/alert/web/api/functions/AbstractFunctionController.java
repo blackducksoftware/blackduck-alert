@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.web.api.functions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -45,13 +44,9 @@ public abstract class AbstractFunctionController<T> extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<T> postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
+    public T postConfig(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestBody FieldModel restModel) {
         HttpServletContentWrapper servletContentWrapper = new HttpServletContentWrapper(httpRequest, httpResponse);
         ActionResponse<T> result = functionAction.createResponse(restModel, servletContentWrapper);
-        if (result.isSuccessful()) {
-            return ResponseFactory.createResponseFromAction(result);
-        } else {
-            throw ResponseFactory.createStatusException(result);
-        }
+        return ResponseFactory.createContentResponseFromAction(result);
     }
 }

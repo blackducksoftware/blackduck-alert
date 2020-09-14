@@ -62,7 +62,7 @@ public class FieldValueModelTest {
         FieldValueModel testFieldValueModel = createEmptyFieldValueModel();
         testFieldValueModel.setIsSet(Boolean.FALSE);
 
-        assertFalse(testFieldValueModel.isSet());
+        assertFalse(testFieldValueModel.getIsSet());
     }
 
     @Test

@@ -22,12 +22,32 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
-    public ValidationActionResponse(HttpStatus httpStatus, String message, ValidationResponseModel content) {
-        super(httpStatus, message, content);
+
+    public static ValidationActionResponse createResponseFromIntegrationRestException(IntegrationRestException integrationRestException) {
+        String exceptionMessage = integrationRestException.getMessage();
+        String message = exceptionMessage;
+        if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
+            message += " : " + integrationRestException.getHttpStatusMessage();
+        }
+        return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.withoutFieldStatuses(message));
+    }
+
+    public ValidationActionResponse(HttpStatus httpStatus, ValidationResponseModel content) {
+        super(httpStatus, null, content);
+    }
+
+    @Override
+    public Optional<String> getMessage() {
+        return getContent()
+                   .map(ValidationResponseModel::getMessage);
     }
 }

@@ -60,15 +60,21 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public void setValue(String value) {
-        setValues(Set.of(value));
+        if (null == value) {
+            setValues(Set.of());
+        } else {
+            setValues(Set.of(value));
+        }
     }
 
-    public boolean isSet() {
+    // DO NOT CHANGE this method name unless you change the UI. Alert is serializing this object in controllers. Spring uses Jackson which uses getters and setters to serialize fields.
+    // Jackson will remove the is, get, and set prefixes from method names to determine the field names for the JSON object.  This changes what the UI expects so get was added to the method name.
+    public boolean getIsSet() {
         return isSet;
     }
 
-    public void setIsSet(boolean set) {
-        isSet = set;
+    public void setIsSet(boolean isSet) {
+        this.isSet = isSet;
     }
 
     public boolean hasValues() {
@@ -76,7 +82,7 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public boolean containsNoData() {
-        return !hasValues() && !isSet();
+        return !hasValues() && !getIsSet();
     }
 
     private void cleanValues() {

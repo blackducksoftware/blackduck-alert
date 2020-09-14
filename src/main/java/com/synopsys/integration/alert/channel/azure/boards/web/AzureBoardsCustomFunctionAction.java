@@ -28,9 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
@@ -49,12 +46,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -80,14 +72,11 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final ConfigActions configActions;
-    private final AuthorizationManager authorizationManager;
-    private final AzureBoardsChannelKey azureBoardsChannelKey;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
-        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
-        AzureBoardsChannelKey azureBoardsChannelKey) {
+        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager) {
         super(authorizationManager);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
@@ -97,8 +86,6 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         this.proxyManager = proxyManager;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.configActions = configActions;
-        this.authorizationManager = authorizationManager;
-        this.azureBoardsChannelKey = azureBoardsChannelKey;
     }
 
     @Override
@@ -112,7 +99,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse(""));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("The configuration is invalid. Please test the configuration."));
             }
             FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
@@ -130,16 +117,6 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
             return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldAccessor), authUrl, "Authenticating..."));
 
-        } catch (AlertFieldException ex) {
-            logger.error("Error activating Azure Boards", ex);
-            Set<String> errors = ex.getFieldErrors().stream()
-                                     .filter(fieldStatus -> FieldStatusSeverity.ERROR == fieldStatus.getSeverity())
-                                     .map(AlertFieldStatus::getFieldMessage)
-                                     .collect(Collectors.toSet());
-            String errorMessage = String.format(
-                "The configuration is invalid. Please test the configuration. Details: %s", StringUtils.join(errors, ","));
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse(errorMessage));
-
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, createErrorResponse("Error activating azure oauth."));
@@ -151,18 +128,15 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         return new OAuthEndpointResponse(false, "", errorMessage);
     }
 
-    private Optional<FieldModel> saveIfValid(FieldModel fieldModel) throws AlertException {
+    private Optional<FieldModel> saveIfValid(FieldModel fieldModel) {
         if (StringUtils.isNotBlank(fieldModel.getId())) {
-            if (authorizationManager.hasWritePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
-                Long id = Long.parseLong(fieldModel.getId());
-                return Optional.ofNullable(configActions.updateConfig(id, fieldModel));
-            }
+            Long id = Long.parseLong(fieldModel.getId());
+            ActionResponse<FieldModel> response = configActions.update(id, fieldModel);
+            return response.getContent();
         } else {
-            if (authorizationManager.hasCreatePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
-                return Optional.ofNullable(configActions.saveConfig(fieldModel, azureBoardsChannelKey));
-            }
+            ActionResponse<FieldModel> response = configActions.create(fieldModel);
+            return response.getContent();
         }
-        return Optional.empty();
     }
 
     private FieldAccessor createFieldAccessor(FieldModel fieldModel) {
