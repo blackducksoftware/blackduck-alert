@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class ProcessingSelectCustomEndpoint extends SelectCustomEndpoint {
-    List<String> issueTrackerChannelKeys;
+    private final List<String> issueTrackerChannelKeys;
 
     @Autowired
     public ProcessingSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, List<IssueTrackerChannelKey> issueTrackerChannelKeys) throws AlertException {
