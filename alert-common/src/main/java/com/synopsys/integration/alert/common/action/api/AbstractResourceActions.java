@@ -35,8 +35,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public abstract class AbstractResourceActions<T> implements LongResourceActions<T>, ValidateAction<T>, TestAction<T> {
-    public static final String FORBIDDEN_MESSAGE = "User not authorized to perform the request";
-    public static final String RESOURCE_IDENTIFIER_MISSING = "Resource identifier missing.";
+
     private DescriptorKey descriptorKey;
     private AuthorizationManager authorizationManager;
     private ConfigContextEnum context;
@@ -68,7 +67,7 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
@@ -80,18 +79,15 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ActionResponse<List<T>> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         return readAllAfterChecks();
     }
 
     @Override
     public ActionResponse<T> getOne(Long id) {
-        if (null == id) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, RESOURCE_IDENTIFIER_MISSING);
-        }
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         Optional<T> existingItem = findExisting(id);
@@ -105,7 +101,7 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ActionResponse<T> update(Long id, T resource) {
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         Optional<T> existingItem = findExisting(id);
@@ -123,7 +119,7 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ActionResponse<T> delete(Long id) {
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         Optional<T> existingItem = findExisting(id);
@@ -137,7 +133,7 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
@@ -150,7 +146,7 @@ public abstract class AbstractResourceActions<T> implements LongResourceActions<
     @Override
     public ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateAfterChecks(resource);

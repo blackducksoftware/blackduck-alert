@@ -29,6 +29,12 @@ import javax.annotation.Nullable;
 import org.springframework.http.HttpStatus;
 
 public class ActionResponse<T> {
+    public static final String FORBIDDEN_MESSAGE = "User not authorized to perform the request";
+
+    public static final <T> ActionResponse<T> createForbiddenResponse() {
+        return new ActionResponse<>(HttpStatus.FORBIDDEN, FORBIDDEN_MESSAGE);
+    }
+
     private HttpStatus httpStatus;
     private String message;
     private T content;

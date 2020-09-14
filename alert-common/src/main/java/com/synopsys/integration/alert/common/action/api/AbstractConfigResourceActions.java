@@ -48,10 +48,6 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
         this.descriptorAccessor = descriptorAccessor;
     }
 
-    public AbstractConfigResourceActions(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
-    }
-
     protected abstract ActionResponse<FieldModel> createAfterChecks(FieldModel resource);
 
     protected abstract ActionResponse<FieldModel> deleteAfterChecks(Long id);
@@ -70,7 +66,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
 
     public ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         return readAllByContextAndDescriptorAfterChecks(context, descriptorName);
     }
@@ -78,7 +74,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
     @Override
     public ActionResponse<FieldModel> create(FieldModel resource) {
         if (!authorizationManager.hasCreatePermission(resource.getContext(), resource.getDescriptorName())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
@@ -95,7 +91,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
                                               .map(RegisteredDescriptorModel::getName)
                                               .collect(Collectors.toSet());
             if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name(), ConfigContextEnum.GLOBAL.name()), descriptorNames)) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+                return ActionResponse.createForbiddenResponse();
             }
             return readAllAfterChecks();
         } catch (AlertException ex) {
@@ -109,7 +105,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
             if (!authorizationManager.hasReadPermission(model.getContext(), model.getDescriptorName())) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+                return ActionResponse.createForbiddenResponse();
             }
 
             return new ActionResponse<>(HttpStatus.OK, model);
@@ -120,7 +116,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
     @Override
     public ActionResponse<FieldModel> update(Long id, FieldModel resource) {
         if (!authorizationManager.hasWritePermission(resource.getContext(), resource.getDescriptorName())) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         Optional<FieldModel> existingModel = findFieldModel(id);
@@ -141,7 +137,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
             if (!authorizationManager.hasDeletePermission(model.getContext(), model.getDescriptorName())) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+                return ActionResponse.createForbiddenResponse();
             }
         }
 
@@ -155,7 +151,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
     @Override
     public ValidationActionResponse test(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
@@ -168,7 +164,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
     @Override
     public ValidationActionResponse validate(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateAfterChecks(resource);

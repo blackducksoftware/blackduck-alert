@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActions;
-import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -309,7 +308,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             }
         }
         if (!getAuthorizationManager().anyReadPermission(keys)) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         List<JobFieldStatuses> errorsList = new LinkedList<>();

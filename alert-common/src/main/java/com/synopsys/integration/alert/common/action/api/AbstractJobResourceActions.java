@@ -89,7 +89,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ActionResponse<JobFieldModel> create(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasCreatePermission);
         if (!hasPermissions) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
@@ -102,7 +102,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ActionResponse<List<JobFieldModel>> getAll() {
         Set<String> descriptorNames = getDescriptorNames();
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         List<JobFieldModel> models = new LinkedList<>();
         ActionResponse<List<JobFieldModel>> response = readAllAfterChecks();
@@ -120,7 +120,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ActionResponse<JobFieldModel> getOne(UUID id) {
         Set<String> descriptorNames = getDescriptorNames();
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
@@ -128,7 +128,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             JobFieldModel fieldModel = optionalModel.get();
             boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (!hasPermissions) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+                return ActionResponse.createForbiddenResponse();
             }
             return new ActionResponse<>(HttpStatus.OK, fieldModel);
         }
@@ -140,7 +140,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ActionResponse<JobFieldModel> update(UUID id, JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
-            return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+            return ActionResponse.createForbiddenResponse();
         }
 
         Optional<JobFieldModel> existingJob = findJobFieldModel(id);
@@ -163,7 +163,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             JobFieldModel jobFieldModel = optionalModel.get();
             boolean hasPermissions = hasRequiredPermissions(jobFieldModel.getFieldModels(), authorizationManager::hasDeletePermission);
             if (!hasPermissions) {
-                return new ActionResponse<>(HttpStatus.FORBIDDEN, AbstractResourceActions.FORBIDDEN_MESSAGE);
+                return ActionResponse.createForbiddenResponse();
             }
         } else {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
@@ -175,7 +175,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public ValidationActionResponse test(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
@@ -194,7 +194,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
                                                        || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
                                                        || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(AbstractResourceActions.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         return validateAfterChecks(resource);
