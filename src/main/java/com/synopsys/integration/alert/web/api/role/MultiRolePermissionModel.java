@@ -31,7 +31,7 @@ public class MultiRolePermissionModel extends AlertSerializableModel {
 
     MultiRolePermissionModel() {
         // For serialization
-        this.roles = List.of();
+        this(List.of());
     }
 
     public MultiRolePermissionModel(List<RolePermissionModel> roles) {
