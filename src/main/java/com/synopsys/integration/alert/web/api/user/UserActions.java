@@ -80,6 +80,7 @@ public class UserActions {
 
     public ValidationResponseModel validateUser(UserConfig userConfig) {
         List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(userConfig);
+
         if (fieldErrors.isEmpty()) {
             return ValidationResponseModel.withoutFieldStatuses("The user is valid");
         }
@@ -118,7 +119,7 @@ public class UserActions {
             String emailAddress = userConfig.getEmailAddress();
 
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-            fieldErrors.addAll(validateUserExistsById(userId, userName));
+            validateUserExistsById(userId, userName).ifPresent(fieldErrors::add);
             fieldErrors.addAll(validateCreationRequiredFields(userConfig));
             if (!fieldErrors.isEmpty()) {
                 throw new AlertFieldException(fieldErrors);
@@ -178,8 +179,22 @@ public class UserActions {
         String emailAddress = userConfig.getEmailAddress();
 
         List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        validateUserExistsByName(fieldErrors, userName);
-        validatePasswordLength(fieldErrors, password);
+
+        if (userConfig.getId() == null) {
+            validateUserExistsByName(fieldErrors, userName);
+            validatePasswordLength(fieldErrors, password);
+        } else {
+            Long userId = Long.valueOf(userConfig.getId());
+            validateUserExistsById(userId, userName).ifPresent(fieldErrors::add);
+            Optional<UserModel> userModel = userAccessor.getUser(userId);
+            if (userModel.isPresent()) {
+                boolean passwordMissing = StringUtils.isBlank(userConfig.getPassword());
+
+                if (!userConfig.isPasswordSet() || !passwordMissing) {
+                    validatePasswordLength(fieldErrors, password);
+                }
+            }
+        }
         if (!userConfig.isExternal()) {
             validateRequiredField(FIELD_KEY_USER_MGMT_EMAILADDRESS, fieldErrors, emailAddress);
         }
@@ -199,12 +214,10 @@ public class UserActions {
         userModel.ifPresent(user -> fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists.")));
     }
 
-    private List<AlertFieldStatus> validateUserExistsById(Long userId, String userName) {
+    private Optional<AlertFieldStatus> validateUserExistsById(Long userId, String userName) {
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         return userModel.filter(user -> !user.getId().equals(userId))
-                   .map(user -> AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."))
-                   .stream()
-                   .collect(Collectors.toList());
+                   .map(user -> AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
     }
 
     private void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {
