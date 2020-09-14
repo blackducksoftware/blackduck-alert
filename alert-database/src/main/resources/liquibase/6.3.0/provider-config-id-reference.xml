@@ -44,4 +44,5 @@
             )
         </sql>
     </changeSet>
+    <!-- TODO delete old field -->
 </databaseChangeLog>
