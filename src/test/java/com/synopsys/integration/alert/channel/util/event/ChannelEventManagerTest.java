@@ -38,7 +38,7 @@ public class ChannelEventManagerTest {
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
         FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
-        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
+        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
             MessageContentGroup.singleton(content), fieldAccessor);
         eventManager.sendEvents(List.of(event));
     }
@@ -56,7 +56,7 @@ public class ChannelEventManagerTest {
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
+        AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }
 }

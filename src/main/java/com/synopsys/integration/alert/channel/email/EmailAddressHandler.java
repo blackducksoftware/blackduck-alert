@@ -59,7 +59,7 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldAccessor updateEmailAddresses(String providerConfigName, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
+    public FieldAccessor updateEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
         Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
 
@@ -69,7 +69,7 @@ public class EmailAddressHandler {
         if (!useOnlyAdditionalEmailAddresses) {
             Optional<String> optionalHref = contentGroup.getCommonTopic().getUrl();
             if (optionalHref.isPresent()) {
-                Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigName, optionalHref.get(), projectOwnerOnly);
+                Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigId, optionalHref.get(), projectOwnerOnly);
                 emailAddresses.addAll(projectEmailAddresses);
             } else {
                 logger.warn("The topic '{}' did not have an href, cannot get emails", contentGroup.getCommonTopic().getName());
@@ -78,11 +78,11 @@ public class EmailAddressHandler {
 
         if (emailAddresses.isEmpty()) {
             // Temporary fix for license notifications
-            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigName, projectOwnerOnly);
+            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigId, projectOwnerOnly);
             emailAddresses.addAll(licenseNotificationEmails);
         }
 
-        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(providerConfigName, originalAccessor);
+        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(providerConfigId, originalAccessor);
         emailAddresses.addAll(additionalEmailAddresses);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
@@ -111,11 +111,11 @@ public class EmailAddressHandler {
         return emailAddresses;
     }
 
-    public Set<String> collectAdditionalEmailAddresses(String providerConfigName, FieldAccessor fieldAccessor) {
+    public Set<String> collectAdditionalEmailAddresses(Long providerConfigId, FieldAccessor fieldAccessor) {
         Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
         if (!additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
-            return providerDataAccessor.getUsersByProviderConfigName(providerConfigName)
+            return providerDataAccessor.getUsersByProviderConfigId(providerConfigId)
                        .stream()
                        .map(ProviderUserModel::getEmailAddress)
                        .filter(additionalEmailAddresses::contains)
@@ -125,8 +125,8 @@ public class EmailAddressHandler {
         return Set.of();
     }
 
-    private Set<String> collectProviderEmailsFromProject(String providerConfigName, String projectHref, boolean projectOwnerOnly) {
-        Optional<ProviderProject> optionalProject = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
+    private Set<String> collectProviderEmailsFromProject(Long providerConfigId, String projectHref, boolean projectOwnerOnly) {
+        Optional<ProviderProject> optionalProject = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId)
                                                         .stream()
                                                         .filter(project -> project.getHref().equals(projectHref))
                                                         .findFirst();
@@ -137,7 +137,7 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, String providerConfigName, boolean projectOwnerOnly) {
+    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, Long providerConfigId, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
                                   .stream()
                                   .map(ProviderMessageContent::getSubTopic)
@@ -149,13 +149,13 @@ public class EmailAddressHandler {
                 Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
                 associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
-                associatedProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName)
+                associatedProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId)
                                          .stream()
                                          .map(ProviderProject::getHref)
                                          .collect(Collectors.toList());
             }
             return associatedProjects.stream()
-                       .map(projectHref -> collectProviderEmailsFromProject(providerConfigName, projectHref, projectOwnerOnly))
+                       .map(projectHref -> collectProviderEmailsFromProject(providerConfigId, projectHref, projectOwnerOnly))
                        .flatMap(Set::stream)
                        .collect(Collectors.toSet());
         }

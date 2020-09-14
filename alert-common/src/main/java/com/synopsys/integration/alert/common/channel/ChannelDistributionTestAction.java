@@ -57,10 +57,10 @@ public abstract class ChannelDistributionTestAction extends TestAction {
         ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
 
         String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        String providerConfigName = fieldAccessor.getStringOrEmpty(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
         String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
 
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigName, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigId, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
     }
 
     public DistributionChannel getDistributionChannel() {

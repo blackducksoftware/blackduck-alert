@@ -201,7 +201,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, EMAIL_TEST_PROVIDER_CONFIG_NAME, ProcessingType.DEFAULT.name(),
+        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
             MessageContentGroup.singleton(content), fieldAccessor);
         return event;
     }

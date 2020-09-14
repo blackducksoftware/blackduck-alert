@@ -150,7 +150,7 @@ public class NotificationProcessor {
 
     private Optional<ConfigurationModel> retrieveProviderConfig(ConfigurationJobModel job) {
         try {
-            return configurationAccessor.getProviderConfigurationByName(job.getProviderConfigName());
+            return configurationAccessor.getConfigurationById(job.getProviderConfigIdAsLong());
         } catch (AlertDatabaseConstraintException e) {
             logger.error("Could not retrieve the provider config for job: {}", job.getName(), e);
             return Optional.empty();

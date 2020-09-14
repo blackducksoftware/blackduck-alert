@@ -27,12 +27,12 @@ public class EventManagerTest {
 
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("provider", 1L, "providerConfig")
+                                             .applyProvider("1", 1L, "providerConfig")
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
         FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
-        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), "provider", "FORMAT",
+        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
             MessageContentGroup.singleton(content), fieldAccessor);
         eventManager.sendEvents(List.of(event));
     }
@@ -45,11 +45,11 @@ public class EventManagerTest {
         EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("provider", 1L, "providerConfig")
+                                             .applyProvider("1", 1L, "providerConfig")
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", MessageContentGroup.singleton(content));
+        AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }
 }

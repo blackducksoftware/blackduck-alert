@@ -87,7 +87,7 @@ public class NotificationToDistributionEventConverter {
 
     private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
         // TODO fix date usage
-        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigName(), job.getProcessingType().name(), contentGroup, job.getFieldAccessor());
+        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigIdAsLong(), job.getProcessingType().name(), contentGroup, job.getFieldAccessor());
     }
 
 }
