@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="create-field-to-store-provider-id">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.id'</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="provider.common.config.id"/>
+            <column name="sensitive" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="add-context-to-provider-id-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('provider.common.config.id')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('provider.common.config.id')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="migrate-provider-config-name-to-id">
+        <sql
+                dbms="postgres"
+                stripComments="true"
+        >
+        INSERT INTO alert.field_values (config_id, field_id, field_value) (
+            SELECT fv.config_id, GET_FIELD_ID('provider.common.config.id') AS field_id, (
+                SELECT dc1.id FROM alert.descriptor_configs dc1
+                WHERE (
+                        dc1.context_id = GET_CONTEXT_ID('GLOBAL')
+                        AND dc1.descriptor_id = GET_DESCRIPTOR_ID('provider_blackduck')
+                    )
+                ) AS field_value
+            FROM alert.field_values fv
+            WHERE (
+                fv.field_id = GET_FIELD_ID('provider.common.config.name')
+                AND
+                fv.config_id IN (
+                        SELECT dc2.id FROM alert.descriptor_configs dc2
+                        WHERE dc2.context_id = GET_CONTEXT_ID('DISTRIBUTION')
+                    )
+                )
+            )
+        </sql>
+    </changeSet>
+</databaseChangeLog>
