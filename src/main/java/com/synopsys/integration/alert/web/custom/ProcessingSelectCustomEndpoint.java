@@ -64,7 +64,7 @@ public class ProcessingSelectCustomEndpoint extends SelectCustomEndpoint {
 
     private boolean shouldInclude(ProcessingType processingType, String channelName) {
         if (issueTrackerChannelKeys.contains(channelName) && processingType == ProcessingType.SUMMARY) {
-            // We do not want to allow user's to choose the summary processing type for issue tracker channels
+            // We do not want to expose the summary processing type as an option for issue tracker channels
             return false;
         }
         return true;
