@@ -63,10 +63,7 @@ public class ProcessingSelectCustomEndpoint extends SelectCustomEndpoint {
     }
 
     private boolean shouldInclude(ProcessingType processingType, String channelName) {
-        if (issueTrackerChannelKeys.contains(channelName) && processingType == ProcessingType.SUMMARY) {
-            // We do not want to expose the summary processing type as an option for issue tracker channels
-            return false;
-        }
-        return true;
+        // We do not want to expose the summary processing type as an option for issue tracker channels
+        return !(issueTrackerChannelKeys.contains(channelName) && processingType == ProcessingType.SUMMARY);
     }
 }
