@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="gavink" id="create-field-to-store-provider-id">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from ALERT.DEFINED_FIELDS where SOURCE_KEY = 'provider.common.config.id'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.defined_fields WHERE source_key = 'provider.common.config.id'</sqlCheck>
         </preConditions>
         <insert schemaName="alert" tableName="defined_fields">
             <column name="source_key" value="provider.common.config.id"/>
@@ -12,7 +12,7 @@
     </changeSet>
     <changeSet author="gavink" id="add-context-to-provider-id-field">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from ALERT.FIELD_CONTEXTS where FIELD_ID = GET_FIELD_ID('provider.common.config.id')</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.field_contexts WHERE field_id = GET_FIELD_ID('provider.common.config.id')</sqlCheck>
         </preConditions>
         <insert schemaName="alert" tableName="field_contexts">
             <column name="context_id" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
@@ -44,5 +44,18 @@
             )
         </sql>
     </changeSet>
-    <!-- TODO delete old field -->
+    <changeSet author="gavink" id="delete-provider-name-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+            SELECT COUNT(*) FROM alert.field_contexts
+            WHERE field_id = GET_FIELD_ID('provider.common.config.name')
+            AND context_id = GET_CONTEXT_ID('DISTRIBUTION')
+            </sqlCheck>
+        </preConditions>
+        <delete schemaName="alert" tableName="field_contexts">
+            <where>
+                field_id = GET_FIELD_ID('provider.common.config.name') AND context_id = GET_CONTEXT_ID('DISTRIBUTION')
+            </where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>
