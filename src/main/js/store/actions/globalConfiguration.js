@@ -13,9 +13,11 @@ import {
     CONFIG_TEST_FAILED,
     CONFIG_TEST_SUCCESS,
     CONFIG_TESTING,
-    CONFIG_UPDATE_ERROR,
     CONFIG_UPDATED,
-    CONFIG_UPDATING
+    CONFIG_UPDATING,
+    CONFIG_VALIDATE_ERROR,
+    CONFIG_VALIDATED,
+    CONFIG_VALIDATING
 } from 'store/actions/types';
 
 import { unauthorized } from 'store/actions/session';
@@ -85,9 +87,9 @@ function configUpdated(config) {
  * Triggers Scheduling Config Error
  * @returns {{type}}
  */
-function configError(message, errors) {
+function configError(type, message, errors) {
     return {
-        type: CONFIG_UPDATE_ERROR,
+        type,
         message,
         errors
     };
@@ -153,6 +155,36 @@ function clearFieldErrors() {
     };
 }
 
+function validatingConfig() {
+    return {
+        type: CONFIG_VALIDATING
+    };
+}
+
+function validatedConfig() {
+    return {
+        type: CONFIG_VALIDATED
+    };
+}
+
+function configValidationError(message, errors) {
+    return {
+        type: CONFIG_VALIDATE_ERROR,
+        message,
+        errors
+    };
+}
+
+function createErrorHandler(type, defaultHandler) {
+    const errorHandlers = [];
+    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configError(type, HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+}
+
+/*
 function handleFailureResponse(dispatch, responseData, statusCode) {
     const errorHandlers = [];
     const configErrorHandler = () => configError(responseData.message, responseData.errors);
@@ -162,7 +194,7 @@ function handleFailureResponse(dispatch, responseData, statusCode) {
     errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(configErrorHandler));
     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
     dispatch(handler(statusCode));
-}
+} */
 
 export function refreshConfig(id) {
     return (dispatch, getState) => {
@@ -244,6 +276,55 @@ export function getConfig(descriptorName) {
                 });
         }).catch(console.error);
     };
+}
+
+export function validateConfig(config) {
+    return (dispatch, getState) => {
+        dispatch(validatingConfig());
+
+        const { csrfToken } = getState().session;
+
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
+        request.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    const handler = createErrorHandler(() => validateRoleError(responseData));
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                        dispatch(validatedRole());
+                    } else if (!response.ok) {
+                        dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
+                    }
+                });
+        }).catch(console.error);
+    };
+
+    /*
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
+
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((validationResponse) => {
+                        if (!Object.keys(validationResponse.errors).length) {
+                            dispatch(validatedConfig());
+                        } else {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => configValidationError(validationResponse.message, validationResponse.errors));
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => configValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
+    };
+
+     */
 }
 
 export function updateConfig(config) {

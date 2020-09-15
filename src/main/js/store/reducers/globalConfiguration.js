@@ -16,6 +16,9 @@ import {
     CONFIG_UPDATE_ERROR,
     CONFIG_UPDATED,
     CONFIG_UPDATING,
+    CONFIG_VALIDATE_ERROR,
+    CONFIG_VALIDATED,
+    CONFIG_VALIDATING,
     SERIALIZE
 } from 'store/actions/types';
 
@@ -174,6 +177,32 @@ const globalConfiguration = (state = initialState, action) => {
 
         case CONFIG_CLEAR_FIELD_ERRORS:
             return { ...state, error: HTTPErrorUtils.createEmptyErrorObject() };
+
+        case CONFIG_VALIDATING:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'VALIDATING'
+            };
+
+        case CONFIG_VALIDATED:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: 'VALIDATED'
+            };
+
+        case CONFIG_VALIDATE_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: 'ERROR'
+            };
 
         case SERIALIZE:
             return initialState;
