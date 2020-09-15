@@ -114,7 +114,7 @@ function validatedJob() {
     };
 }
 
-function validateJobError(message, errors) {
+function validateJobError({ message, errors }) {
     return {
         type: DISTRIBUTION_JOB_VALIDATE_ERROR,
         message,
@@ -135,7 +135,7 @@ function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     };
 }
 
-function jobError(type, message, errors) {
+function jobError({ type = '', message, errors }) {
     return {
         type,
         message,
@@ -146,7 +146,7 @@ function jobError(type, message, errors) {
 function createErrorHandler(type, defaultHandler) {
     const errorHandlers = [];
     errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobError(type, HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobError({ type, message: HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION })));
     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
@@ -195,8 +195,11 @@ export function saveDistributionJob(config) {
                     if (response.ok) {
                         dispatch(saveJobSuccess(responseData.message));
                     } else {
-                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_SAVE_ERROR, responseData.message(), responseData.errors);
-                        const handler = createErrorHandler(DISTRIBUTION_JOB_SAVE_ERROR, defaultHandler());
+                        const defaultHandler = () => jobError({
+                            type: DISTRIBUTION_JOB_SAVE_ERROR,
+                            ...responseData
+                        });
+                        const handler = createErrorHandler(DISTRIBUTION_JOB_SAVE_ERROR, defaultHandler);
                         dispatch(handler(response.status));
                     }
                 });
@@ -215,8 +218,11 @@ export function updateDistributionJob(config) {
                     if (response.ok) {
                         dispatch(updateJobSuccess(responseData.message));
                     } else {
-                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_UPDATE_ERROR, responseData.message(), responseData.errors);
-                        const handler = createErrorHandler(DISTRIBUTION_JOB_UPDATE_ERROR, defaultHandler());
+                        const defaultHandler = () => jobError({
+                            type: DISTRIBUTION_JOB_UPDATE_ERROR,
+                            ...responseData
+                        });
+                        const handler = createErrorHandler(DISTRIBUTION_JOB_UPDATE_ERROR, defaultHandler);
                         dispatch(handler(response.status));
                     }
                 });
@@ -232,13 +238,19 @@ export function testDistributionJob(config) {
         request.then((response) => {
             response.json()
                 .then((responseData) => {
-                    if (response.ok) {
+                    const defaultHandler = () => jobError({
+                        type: DISTRIBUTION_JOB_TEST_FAILURE,
+                        ...responseData
+                    });
+                    const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler);
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
                         dispatch(testJobSuccess(responseData.message));
-                    } else {
-                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_TEST_FAILURE, responseData.message(), responseData.errors);
-                        const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler());
+                    } else if (!response.ok) {
                         dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
                     }
+                    dispatch(handler(response.status));
                 });
         }).catch(console.error);
     };

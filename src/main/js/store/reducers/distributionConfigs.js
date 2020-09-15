@@ -30,7 +30,8 @@ const initialState = {
     sendingCustomMessage: false,
     job: {},
     error: HTTPErrorUtils.createEmptyErrorObject(),
-    configurationMessage: ''
+    configurationMessage: '',
+    status: ''
 };
 
 const config = (state = initialState, action) => {
@@ -44,7 +45,8 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: '',
-                error: HTTPErrorUtils.createEmptyErrorObject()
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                status: ''
             };
 
         case DISTRIBUTION_JOB_FETCHED:
@@ -57,7 +59,8 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                job: action.job
+                job: action.job,
+                status: ''
             };
 
         case DISTRIBUTION_JOB_FETCH_ERROR:
@@ -69,7 +72,8 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: action.message,
-                error: HTTPErrorUtils.createErrorObject(action)
+                error: HTTPErrorUtils.createErrorObject(action),
+                status: ''
             };
 
         case DISTRIBUTION_JOB_UPDATING:
@@ -83,7 +87,8 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: 'Saving...',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                job: action.job
+                job: action.job,
+                status: 'SAVING'
             };
 
         case DISTRIBUTION_JOB_UPDATED:
@@ -97,6 +102,7 @@ const config = (state = initialState, action) => {
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
+                status: 'SAVED',
                 ...action
             };
 
@@ -110,7 +116,8 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: action.message,
-                error: HTTPErrorUtils.createErrorObject(action)
+                error: HTTPErrorUtils.createErrorObject(action),
+                status: 'ERROR'
             };
 
         case DISTRIBUTION_JOB_TESTING:
@@ -122,7 +129,8 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: true,
                 configurationMessage: 'Testing...',
-                error: HTTPErrorUtils.createEmptyErrorObject()
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                status: 'TESTING'
             };
 
         case DISTRIBUTION_JOB_TEST_SUCCESS:
@@ -134,7 +142,8 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
-                error: HTTPErrorUtils.createEmptyErrorObject()
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                status: 'TESTING'
             };
 
         case DISTRIBUTION_JOB_TEST_FAILURE:
@@ -146,7 +155,8 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: true,
                 configurationMessage: action.message,
-                error: HTTPErrorUtils.createErrorObject(action)
+                error: HTTPErrorUtils.createErrorObject(action),
+                status: 'ERROR'
             };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
             return { ...state, inProgress: true };
@@ -165,19 +175,22 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_VALIDATING:
             return {
                 ...state,
-                inProgress: true
+                inProgress: true,
+                status: 'VALIDATING'
             };
         case DISTRIBUTION_JOB_VALIDATED:
             return {
                 ...state,
-                inProgress: false
+                inProgress: false,
+                status: 'VALIDATED'
             };
         case DISTRIBUTION_JOB_VALIDATE_ERROR:
             return {
                 ...state,
                 inProgress: false,
                 configurationMessage: action.message,
-                error: HTTPErrorUtils.createErrorObject(action)
+                error: HTTPErrorUtils.createErrorObject(action),
+                status: 'ERROR'
             };
         case SERIALIZE:
             return initialState;
