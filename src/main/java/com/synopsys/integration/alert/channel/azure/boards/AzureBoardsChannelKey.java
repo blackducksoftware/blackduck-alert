@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.channel.azure.boards;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 
 @Component
-public class AzureBoardsChannelKey extends ChannelKey {
+public class AzureBoardsChannelKey extends IssueTrackerChannelKey {
     private static final String COMPONENT_NAME = "channel_azure_boards";
 
     @Override

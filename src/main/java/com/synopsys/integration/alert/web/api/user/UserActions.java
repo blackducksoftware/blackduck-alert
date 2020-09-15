@@ -197,7 +197,7 @@ public class UserActions {
     private void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {
         validateRequiredField(FIELD_KEY_USER_MGMT_PASSWORD, fieldErrors, passwordValue);
         if (fieldErrors.isEmpty() && DEFAULT_PASSWORD_LENGTH > passwordValue.length()) {
-            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password need to be at least 8 characters long."));
+            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be at least 8 characters long."));
         }
     }
 
