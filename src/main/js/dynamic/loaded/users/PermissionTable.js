@@ -4,6 +4,7 @@ import TableDisplay from 'field/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import StatusMessage from '../../../field/StatusMessage';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',
@@ -147,13 +148,30 @@ class PermissionTable extends Component {
     }
 
     createContextOptions() {
-        return [{
-            label: CONTEXT_TYPE.DISTRIBUTION,
-            value: CONTEXT_TYPE.DISTRIBUTION
-        }, {
-            label: CONTEXT_TYPE.GLOBAL,
-            value: CONTEXT_TYPE.GLOBAL
-        }];
+        const { permissionsData } = this.state;
+        const { descriptors } = this.props;
+
+        const availableContexts = [];
+        if (permissionsData && permissionsData.descriptorName) {
+            descriptors.forEach((descriptor) => {
+                if (descriptor.label === permissionsData.descriptorName) {
+                    availableContexts.push(descriptor.context);
+                }
+            });
+
+            if (permissionsData.context && !availableContexts.includes(permissionsData.context)) {
+                this.setState({
+                    permissionsData: {
+                        descriptorName: permissionsData.descriptorName
+                    }
+                });
+            }
+        }
+
+        return availableContexts.map((context) => ({
+            label: context,
+            value: context
+        }));
     }
 
     onPermissionsClose(callback) {
@@ -178,11 +196,10 @@ class PermissionTable extends Component {
     }
 
     createPermissionsModal() {
-        const { permissionsData } = this.state;
+        const { permissionsData, errorMessage } = this.state;
 
         return (
             <div>
-
                 <DynamicSelectInput
                     name={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
                     id={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
@@ -265,6 +282,13 @@ class PermissionTable extends Component {
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
                 />
+                {errorMessage
+                && (
+                    <p id="permissions-table-error-message">
+                        <br />
+                        {errorMessage}
+                    </p>
+                )}
             </div>
         );
     }
@@ -273,11 +297,12 @@ class PermissionTable extends Component {
         await this.setState({
             saveInProgress: true
         });
-        const { data } = this.props;
+        const { data, saveRole } = this.props;
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
-            this.setState({
-                errorMessage: 'Please select Descriptor name and context'
+            await this.setState({
+                errorMessage: 'Please select Descriptor name and context',
+                saveInProgress: false
             });
             return false;
         }
@@ -287,13 +312,13 @@ class PermissionTable extends Component {
 
         if (duplicates && duplicates.length > 0) {
             await this.setState({
-                errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor:${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context:${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
+                errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor: ${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context: ${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
                 saveInProgress: false
             });
             return false;
         }
 
-        const saved = this.props.saveRole(permissionsData);
+        const saved = saveRole(permissionsData);
         if (saved) {
             this.setState({
                 permissionsData: {}
@@ -307,17 +332,19 @@ class PermissionTable extends Component {
     }
 
     onDeletePermissions(permissionsToDelete, callback) {
+        const { deleteRole } = this.props;
         if (permissionsToDelete) {
-            this.props.deleteRole(permissionsToDelete);
+            deleteRole(permissionsToDelete);
             callback();
         }
     }
 
     render() {
+        const { saveInProgress } = this.state;
         const {
             canCreate, canDelete, inProgress, fetching, nestedInModal
         } = this.props;
-        const savingInProgress = inProgress || this.state.saveInProgress;
+        const savingInProgress = inProgress || saveInProgress;
         return (
             <div>
                 <TableDisplay
@@ -342,7 +369,6 @@ class PermissionTable extends Component {
                     deleteButton={canDelete}
                     newButton={canCreate}
                     sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
-                    errorDialogMessage={this.state.errorMessage}
                     clearModalFieldState={() => this.setState({ errorMessage: null })}
                     nestedInAnotherModal={nestedInModal}
                 />
