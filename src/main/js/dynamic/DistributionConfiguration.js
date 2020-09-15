@@ -6,11 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import FieldsPanel from 'field/FieldsPanel';
 import {
-    checkDescriptorForGlobalConfig,
-    getDistributionJob,
-    saveDistributionJob,
-    testDistributionJob,
-    updateDistributionJob
+    checkDescriptorForGlobalConfig, getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob, validateDistributionJob
 } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -161,10 +157,15 @@ class DistributionConfiguration extends Component {
         const { jobId, isUpdatingJob } = this.props;
 
         const jsonBody = this.buildJsonBody();
+
         if (isUpdatingJob) {
             const withId = Object.assign(jsonBody, { jobId });
+            this.props.validateDistributionJob(withId);
+            // TODO check if validation is good;
             this.props.updateDistributionJob(withId);
         } else {
+            this.props.validateDistributionJob(jsonBody);
+            // TODO check if validation is good for save.
             this.props.saveDistributionJob(jsonBody);
         }
     }
@@ -312,6 +313,7 @@ DistributionConfiguration.propTypes = {
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
     checkDescriptorForGlobalConfig: PropTypes.func.isRequired,
+    validateDistributionJob: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     isUpdatingJob: PropTypes.bool
 };
@@ -334,7 +336,8 @@ const mapDispatchToProps = (dispatch) => ({
     saveDistributionJob: (config) => dispatch(saveDistributionJob(config)),
     updateDistributionJob: (config) => dispatch(updateDistributionJob(config)),
     testDistributionJob: (config) => dispatch(testDistributionJob(config)),
-    checkDescriptorForGlobalConfig: (fieldErrorName, descriptorName) => dispatch(checkDescriptorForGlobalConfig(fieldErrorName, descriptorName))
+    checkDescriptorForGlobalConfig: (fieldErrorName, descriptorName) => dispatch(checkDescriptorForGlobalConfig(fieldErrorName, descriptorName)),
+    validateDistributionJob: (config) => dispatch(validateDistributionJob(config))
 });
 
 const mapStateToProps = (state) => ({

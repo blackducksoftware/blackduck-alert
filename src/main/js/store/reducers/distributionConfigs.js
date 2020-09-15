@@ -14,6 +14,9 @@ import {
     DISTRIBUTION_JOB_UPDATE_ERROR,
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING,
+    DISTRIBUTION_JOB_VALIDATE_ERROR,
+    DISTRIBUTION_JOB_VALIDATED,
+    DISTRIBUTION_JOB_VALIDATING,
     SERIALIZE
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
@@ -158,6 +161,23 @@ const config = (state = initialState, action) => {
                 ...state,
                 inProgress: false,
                 error: HTTPErrorUtils.combineErrorObjects(state.error, HTTPErrorUtils.createErrorObject(action))
+            };
+        case DISTRIBUTION_JOB_VALIDATING:
+            return {
+                ...state,
+                inProgress: true
+            };
+        case DISTRIBUTION_JOB_VALIDATED:
+            return {
+                ...state,
+                inProgress: false
+            };
+        case DISTRIBUTION_JOB_VALIDATE_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                configurationMessage: action.message,
+                error: HTTPErrorUtils.createErrorObject(action)
             };
         case SERIALIZE:
             return initialState;

@@ -13,7 +13,10 @@ import {
     DISTRIBUTION_JOB_TESTING,
     DISTRIBUTION_JOB_UPDATE_ERROR,
     DISTRIBUTION_JOB_UPDATED,
-    DISTRIBUTION_JOB_UPDATING
+    DISTRIBUTION_JOB_UPDATING,
+    DISTRIBUTION_JOB_VALIDATE_ERROR,
+    DISTRIBUTION_JOB_VALIDATED,
+    DISTRIBUTION_JOB_VALIDATING
 } from 'store/actions/types';
 import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
@@ -99,6 +102,26 @@ function checkingDescriptorGlobalConfigSuccess(errorFieldName) {
     };
 }
 
+function validatingJob() {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATING
+    };
+}
+
+function validatedJob() {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATED
+    };
+}
+
+function validateJobError(message, errors) {
+    return {
+        type: DISTRIBUTION_JOB_VALIDATE_ERROR,
+        message,
+        errors
+    };
+}
+
 function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     const errors = {};
     // TODO This should be handled on Job validation now that we have warnings we can add a validator method to check if the global config is set.
@@ -120,15 +143,14 @@ function jobError(type, message, errors) {
     };
 }
 
-function handleFailureResponse(type, dispatch, responseData, statusCode) {
+function createErrorHandler(type, defaultHandler) {
     const errorHandlers = [];
     errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    const errorMessageHandler = () => jobError(type, responseData.message, responseData.errors);
-    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(errorMessageHandler));
-    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(errorMessageHandler));
-    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobError(type, responseData.message, null)));
-    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-    dispatch(handler(statusCode));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobError(type, HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
 export function getDistributionJob(jobId) {
@@ -173,7 +195,9 @@ export function saveDistributionJob(config) {
                     if (response.ok) {
                         dispatch(saveJobSuccess(responseData.message));
                     } else {
-                        handleFailureResponse(DISTRIBUTION_JOB_SAVE_ERROR, dispatch, responseData, response.status);
+                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_SAVE_ERROR, responseData.message(), responseData.errors);
+                        const handler = createErrorHandler(DISTRIBUTION_JOB_SAVE_ERROR, defaultHandler());
+                        dispatch(handler(response.status));
                     }
                 });
         }).catch(console.error);
@@ -191,7 +215,9 @@ export function updateDistributionJob(config) {
                     if (response.ok) {
                         dispatch(updateJobSuccess(responseData.message));
                     } else {
-                        handleFailureResponse(DISTRIBUTION_JOB_UPDATE_ERROR, dispatch, responseData, response.status);
+                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_UPDATE_ERROR, responseData.message(), responseData.errors);
+                        const handler = createErrorHandler(DISTRIBUTION_JOB_UPDATE_ERROR, defaultHandler());
+                        dispatch(handler(response.status));
                     }
                 });
         }).catch(console.error);
@@ -209,7 +235,9 @@ export function testDistributionJob(config) {
                     if (response.ok) {
                         dispatch(testJobSuccess(responseData.message));
                     } else {
-                        handleFailureResponse(DISTRIBUTION_JOB_TEST_FAILURE, dispatch, responseData, response.status);
+                        const defaultHandler = () => jobError(DISTRIBUTION_JOB_TEST_FAILURE, responseData.message(), responseData.errors);
+                        const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler());
+                        dispatch(handler(response.status));
                     }
                 });
         }).catch(console.error);
@@ -238,6 +266,27 @@ export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
                     dispatch(checkingDescriptorGlobalConfigFailure(errorFieldName, data.message));
                 });
             }
+        }).catch(console.error);
+    };
+}
+
+export function validateDistributionJob(config) {
+    return (dispatch, getState) => {
+        dispatch(validatingJob());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
+        request.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    const handler = createErrorHandler(DISTRIBUTION_JOB_VALIDATE_ERROR, () => validateJobError(responseData));
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                        dispatch(validatedJob());
+                    } else if (!response.ok) {
+                        dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
+                    }
+                });
         }).catch(console.error);
     };
 }
