@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.common.channel.issuetracker;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
-
-@Component
-public class JiraServerChannelKey extends IssueTrackerChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
-    }
-
-    @Override
-    public String getDisplayName() {
-        return JiraServerDescriptor.JIRA_LABEL;
-    }
+public abstract class IssueTrackerChannelKey extends ChannelKey {
 }
