@@ -48,7 +48,15 @@ class PermissionTable extends Component {
         const updatedValue = type === 'checkbox' ? checked.toString()
             .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
-        const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
+
+        let newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
+        if (newPermissions && newPermissions.descriptorName !== 'Settings') {
+            newPermissions = Object.assign(newPermissions, {
+                [PERMISSIONS_TABLE.UPLOAD_READ]: undefined,
+                [PERMISSIONS_TABLE.UPLOAD_WRITE]: undefined,
+                [PERMISSIONS_TABLE.UPLOAD_DELETE]: undefined
+            });
+        }
         this.setState({
             permissionsData: newPermissions
         });
@@ -198,6 +206,40 @@ class PermissionTable extends Component {
     createPermissionsModal() {
         const { permissionsData, errorMessage } = this.state;
 
+        let uploadInputs;
+        // Currently, there does not seem to be a good way to filter this dynamically.
+        // For now, restrict upload permissions to 'Settings'.
+        if (permissionsData && permissionsData.descriptorName === 'Settings') {
+            uploadInputs = (
+                <div>
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_READ}
+                        id={PERMISSIONS_TABLE.UPLOAD_READ}
+                        label="Upload Read"
+                        description="This permission shows or hides upload related content for the user."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]}
+                    />
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                        id={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                        label="Upload Write"
+                        description="Allow users to modify uploaded content with this permission."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]}
+                    />
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                        id={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                        label="Upload Delete"
+                        description="Allow users to delete uploaded content with this permission."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
+                    />
+                </div>
+            );
+        }
+
         return (
             <div>
                 <DynamicSelectInput
@@ -258,30 +300,7 @@ class PermissionTable extends Component {
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]}
                 />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_READ}
-                    id={PERMISSIONS_TABLE.UPLOAD_READ}
-                    label="Upload Read"
-                    description="This permission shows or hides upload related content for the user."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]}
-                />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_WRITE}
-                    id={PERMISSIONS_TABLE.UPLOAD_WRITE}
-                    label="Upload Write"
-                    description="Allow users to modify uploaded content with this permission."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]}
-                />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_DELETE}
-                    id={PERMISSIONS_TABLE.UPLOAD_DELETE}
-                    label="Upload Delete"
-                    description="Allow users to delete uploaded content with this permission."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
-                />
+                {uploadInputs}
                 {errorMessage
                 && (
                     <p id="permissions-table-error-message">
