@@ -68,11 +68,12 @@ public class UserController extends BaseController {
     }
 
     @GetMapping
-    public List<UserConfig> getAllUsers() {
+    public MultiUserConfigResponseModel getAllUsers() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
             throw ResponseFactory.createForbiddenException();
         }
-        return userActions.getUsers();
+        List<UserConfig> allUsers = userActions.getUsers();
+        return new MultiUserConfigResponseModel(allUsers);
     }
 
     @PostMapping("/validate")

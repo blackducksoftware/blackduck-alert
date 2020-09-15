@@ -143,7 +143,7 @@ export function fetchUsers() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            dispatch(fetchedAllUsers(responseData));
+                            dispatch(fetchedAllUsers(responseData.users));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                                 let message = '';
