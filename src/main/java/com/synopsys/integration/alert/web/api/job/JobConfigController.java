@@ -26,14 +26,12 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
 import com.synopsys.integration.alert.common.rest.api.ReadAllController;
@@ -93,14 +91,11 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
 
     @Override
     public ValidationResponseModel validate(JobFieldModel requestBody) {
-        ValidationActionResponse response = jobConfigActions.validate(requestBody);
-        // TODO A better API for validation. Validation response should not be null.
-        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.validate(requestBody));
     }
 
     @Override
     public ValidationResponseModel test(JobFieldModel resource) {
-        ValidationActionResponse response = jobConfigActions.test(resource);
-        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.test(resource));
     }
 }

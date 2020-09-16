@@ -41,6 +41,11 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
         return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.withoutFieldStatuses(message));
     }
 
+    public static ValidationActionResponse createOKResponseWithContent(ValidationActionResponse response) {
+        // TODO A better API for validation. Validation response should not be null.
+        return new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null));
+    }
+
     public ValidationActionResponse(HttpStatus httpStatus, ValidationResponseModel content) {
         super(httpStatus, null, content);
     }

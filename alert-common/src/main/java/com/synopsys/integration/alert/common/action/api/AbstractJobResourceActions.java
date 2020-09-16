@@ -180,9 +180,10 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         }
         ValidationActionResponse validationResponse = validateAfterChecks(resource);
         if (validationResponse.isError()) {
-            return validationResponse;
+            return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        return testAfterChecks(resource);
+        ValidationActionResponse response = testAfterChecks(resource);
+        return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
     @Override
@@ -197,7 +198,8 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        return validateAfterChecks(resource);
+        ValidationActionResponse response = validateAfterChecks(resource);
+        return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
     public AuthorizationManager getAuthorizationManager() {
