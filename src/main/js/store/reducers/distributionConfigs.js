@@ -143,7 +143,7 @@ const config = (state = initialState, action) => {
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                status: 'TESTING'
+                status: 'TESTED'
             };
 
         case DISTRIBUTION_JOB_TEST_FAILURE:
