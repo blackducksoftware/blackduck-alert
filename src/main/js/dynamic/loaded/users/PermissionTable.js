@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
-import StatusMessage from '../../../field/StatusMessage';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',
@@ -49,13 +47,14 @@ class PermissionTable extends Component {
             .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
 
-        let newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
-        if (newPermissions && newPermissions.descriptorName !== 'Settings') {
-            newPermissions = Object.assign(newPermissions, {
+        let newPermissions = { ...permissionsData, [name]: trimmedValue };
+        if (newPermissions && newPermissions.descriptorName !== 'Authentication') {
+            newPermissions = {
+                ...newPermissions,
                 [PERMISSIONS_TABLE.UPLOAD_READ]: undefined,
                 [PERMISSIONS_TABLE.UPLOAD_WRITE]: undefined,
                 [PERMISSIONS_TABLE.UPLOAD_DELETE]: undefined
-            });
+            };
         }
         this.setState({
             permissionsData: newPermissions
@@ -196,8 +195,11 @@ class PermissionTable extends Component {
     }
 
     onCopy(selectedRow, callback) {
-        selectedRow.id = null;
-        const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+        const selectedRowCopy = {
+            ...selectedRow,
+            id: null
+        };
+        const parsedPermissions = this.convertPermissionsColumn(selectedRowCopy);
         this.setState({
             permissionsData: parsedPermissions
         }, callback);
@@ -208,8 +210,8 @@ class PermissionTable extends Component {
 
         let uploadInputs;
         // Currently, there does not seem to be a good way to filter this dynamically.
-        // For now, restrict upload permissions to 'Settings'.
-        if (permissionsData && permissionsData.descriptorName === 'Settings') {
+        // For now, restrict upload permissions to 'Authentication'.
+        if (permissionsData && permissionsData.descriptorName === 'Authentication') {
             uploadInputs = (
                 <div>
                     <CheckboxInput
