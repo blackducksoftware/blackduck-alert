@@ -149,7 +149,8 @@ class DistributionConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const { jobId, channelConfig, providerConfig } = this.state;
+        const { channelConfig, providerConfig } = this.state;
+        const { jobId } = this.props;
         return {
             jobId,
             fieldModels: [

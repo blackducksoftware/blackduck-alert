@@ -213,19 +213,19 @@ export function updateDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config.jobId, config);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(updateJobSuccess(responseData.message));
-                    } else {
+            if (response.ok) {
+                dispatch(updateJobSuccess('Success'));
+            } else {
+                response.json()
+                    .then((responseData) => {
                         const defaultHandler = () => jobError({
                             type: DISTRIBUTION_JOB_UPDATE_ERROR,
                             ...responseData
                         });
                         const handler = createErrorHandler(DISTRIBUTION_JOB_UPDATE_ERROR, defaultHandler);
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         }).catch(console.error);
     };
 }

@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class FieldValueModel extends AlertSerializableModel {
     private static final long serialVersionUID = -4163785381973494922L;
     private Collection<String> values;
@@ -55,10 +57,14 @@ public class FieldValueModel extends AlertSerializableModel {
         cleanValues();
     }
 
+    // since we return these objects now in the controllers Jackson will create a value attribute in the JSON
+    // we want to ignore this value.
+    @JsonIgnore
     public Optional<String> getValue() {
         return getValues().stream().findFirst();
     }
 
+    @JsonIgnore
     public void setValue(String value) {
         if (null == value) {
             setValues(Set.of());

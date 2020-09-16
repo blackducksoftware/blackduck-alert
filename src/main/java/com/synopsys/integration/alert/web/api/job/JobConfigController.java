@@ -100,6 +100,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
 
     @Override
     public ValidationResponseModel test(JobFieldModel resource) {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.test(resource));
+        ValidationActionResponse response = jobConfigActions.test(resource);
+        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 }
