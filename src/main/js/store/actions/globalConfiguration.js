@@ -1,6 +1,7 @@
 import {
     CONFIG_ALL_FETCHED,
     CONFIG_CLEAR_FIELD_ERRORS,
+    CONFIG_DELETE_ERROR,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCH_ALL_ERROR,
@@ -13,6 +14,7 @@ import {
     CONFIG_TEST_FAILED,
     CONFIG_TEST_SUCCESS,
     CONFIG_TESTING,
+    CONFIG_UPDATE_ERROR,
     CONFIG_UPDATED,
     CONFIG_UPDATING,
     CONFIG_VALIDATE_ERROR,
@@ -87,7 +89,7 @@ function configUpdated(config) {
  * Triggers Scheduling Config Error
  * @returns {{type}}
  */
-function configError(type, message, errors) {
+function configError({ type = '', message, errors }) {
     return {
         type,
         message,
@@ -128,7 +130,7 @@ function testSuccess() {
     };
 }
 
-function testFailed(message, errors) {
+function testFailed({ message, errors }) {
     return {
         type: CONFIG_TEST_FAILED,
         message,
@@ -167,7 +169,7 @@ function validatedConfig() {
     };
 }
 
-function configValidationError(message, errors) {
+function configValidationError({ message, errors }) {
     return {
         type: CONFIG_VALIDATE_ERROR,
         message,
@@ -178,25 +180,16 @@ function configValidationError(message, errors) {
 function createErrorHandler(type, defaultHandler) {
     const errorHandlers = [];
     errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configError(type, HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configError({ type, message: HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION })));
     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
-/*
-function handleFailureResponse(dispatch, responseData, statusCode) {
-    const errorHandlers = [];
-    const configErrorHandler = () => configError(responseData.message, responseData.errors);
-    errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => configError(responseData.message, null)));
-    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(configErrorHandler));
-    errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(configErrorHandler));
-    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-    dispatch(handler(statusCode));
-} */
-
-export function refreshConfig(id) {
+export function
+refreshConfig(id) {
     return (dispatch, getState) => {
         dispatch(refreshingConfig());
         if (!id) {
@@ -281,16 +274,14 @@ export function getConfig(descriptorName) {
 export function validateConfig(config) {
     return (dispatch, getState) => {
         dispatch(validatingConfig());
-
         const { csrfToken } = getState().session;
-
-        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
+        const request = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
                 .then((responseData) => {
-                    const handler = createErrorHandler(() => validateRoleError(responseData));
+                    const handler = createErrorHandler(CONFIG_VALIDATE_ERROR, () => configValidationError(responseData));
                     if (responseData.errors && !Object.keys(responseData.errors).length) {
-                        dispatch(validatedRole());
+                        dispatch(validatedConfig());
                     } else if (!response.ok) {
                         dispatch(handler(response.status));
                     } else {
@@ -299,32 +290,6 @@ export function validateConfig(config) {
                 });
         }).catch(console.error);
     };
-
-    /*
-        const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => configFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
-
-        validateRequest.then((response) => {
-            if (response.ok) {
-                response.json()
-                    .then((validationResponse) => {
-                        if (!Object.keys(validationResponse.errors).length) {
-                            dispatch(validatedConfig());
-                        } else {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => configValidationError(validationResponse.message, validationResponse.errors));
-                        }
-                    });
-            } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => configValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
-            }
-        })
-            .catch(console.error);
-    };
-
-     */
 }
 
 export function updateConfig(config) {
@@ -339,17 +304,29 @@ export function updateConfig(config) {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        const newId = responseData.id;
-                        const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
-                        dispatch(configUpdated(updatedConfig));
-                        dispatch(refreshConfig(newId));
-                    } else {
-                        handleFailureResponse(dispatch, responseData, response.status);
-                    }
-                });
+            if (response.ok) {
+                if (response.status === 201) {
+                    response.json()
+                        .then((responseData) => {
+                            const newId = responseData.id;
+                            const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', newId);
+                            dispatch(configUpdated(updatedConfig));
+                            dispatch(refreshConfig(newId));
+                        });
+                } else {
+                    dispatch(refreshConfig(id));
+                }
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => configError({
+                            type: CONFIG_UPDATE_ERROR,
+                            ...responseData
+                        });
+                        const handler = createErrorHandler(CONFIG_UPDATE_ERROR, defaultHandler());
+                        dispatch(handler(response.status));
+                    });
+            }
         }).catch(console.error);
     };
 }
@@ -360,23 +337,17 @@ export function testConfig(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         request.then((response) => {
-            if (response.ok) {
-                dispatch(testSuccess());
-            } else {
-                response.json().then((data) => {
-                    switch (response.status) {
-                        case 400:
-                        case 401:
-                            let { message } = data;
-                            if (!data.message) {
-                                message = 'There was a problem testing your configuration.';
-                            }
-                            return dispatch(testFailed(message, data.errors));
-                        default:
-                            return dispatch(testFailed(data.message));
+            response.json()
+                .then((responseData) => {
+                    const handler = createErrorHandler(CONFIG_TEST_FAILED, () => testFailed(responseData));
+                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                        dispatch(testSuccess());
+                    } else if (!response.ok) {
+                        dispatch(handler(response.status));
+                    } else {
+                        dispatch(handler(400));
                     }
                 });
-            }
         }).catch(console.error);
     };
 }
@@ -387,15 +358,20 @@ export function deleteConfig(id) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(configDeleted());
-                        dispatch(refreshConfig());
-                    } else {
-                        handleFailureResponse(dispatch, responseData, response.status);
-                    }
-                });
+            if (response.ok) {
+                dispatch(configDeleted());
+                dispatch(refreshConfig());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => configError({
+                            type: CONFIG_DELETE_ERROR,
+                            ...responseData
+                        });
+                        const handler = createErrorHandler(CONFIG_DELETE_ERROR, defaultHandler);
+                        dispatch(handler(response.status));
+                    });
+            }
         }).catch(console.error);
     };
 }

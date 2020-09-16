@@ -1,6 +1,7 @@
 import {
     CONFIG_ALL_FETCHED,
     CONFIG_CLEAR_FIELD_ERRORS,
+    CONFIG_DELETE_ERROR,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCH_ALL_ERROR,
@@ -175,6 +176,14 @@ const globalConfiguration = (state = initialState, action) => {
                 error: HTTPErrorUtils.createEmptyErrorObject()
             };
 
+        case CONFIG_DELETE_ERROR:
+            return {
+                ...state,
+                updateStatus: 'ERROR',
+                actionMessage: null,
+                error: HTTPErrorUtils.createErrorObject(action)
+            };
+
         case CONFIG_CLEAR_FIELD_ERRORS:
             return { ...state, error: HTTPErrorUtils.createEmptyErrorObject() };
 
@@ -183,7 +192,7 @@ const globalConfiguration = (state = initialState, action) => {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: 'VALIDATING'
+                updateStatus: 'VALIDATING'
             };
 
         case CONFIG_VALIDATED:
@@ -192,7 +201,7 @@ const globalConfiguration = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                saveStatus: 'VALIDATED'
+                updateStatus: 'VALIDATED'
             };
 
         case CONFIG_VALIDATE_ERROR:
@@ -201,7 +210,7 @@ const globalConfiguration = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                saveStatus: 'ERROR'
+                updateStatus: 'ERROR'
             };
 
         case SERIALIZE:

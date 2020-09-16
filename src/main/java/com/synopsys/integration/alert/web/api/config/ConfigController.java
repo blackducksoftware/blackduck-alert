@@ -86,6 +86,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @Override
     public ValidationResponseModel test(FieldModel resource) {
-        return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
+        ValidationActionResponse response = configActions.test(resource);
+        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
     }
 }
