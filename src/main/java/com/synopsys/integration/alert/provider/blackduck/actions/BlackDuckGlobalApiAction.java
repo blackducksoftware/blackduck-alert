@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.provider.helper.ProviderAfterUpdateActionHelper;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -48,15 +47,13 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
-    private final ProviderAfterUpdateActionHelper providerAfterUpdateActionHelper;
 
     public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderSchedulingManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
-        ConfigurationAccessor configurationAccessor, ProviderAfterUpdateActionHelper providerAfterUpdateActionHelper) {
+        ConfigurationAccessor configurationAccessor) {
         this.blackDuckProvider = blackDuckProvider;
         this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
         this.configurationAccessor = configurationAccessor;
-        this.providerAfterUpdateActionHelper = providerAfterUpdateActionHelper;
     }
 
     @Override
@@ -75,7 +72,6 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     @Override
     public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
         handleNewOrUpdatedConfig(currentFieldModel);
-        providerAfterUpdateActionHelper.updateDistributionJobsWithNewProviderName(previousFieldModel, currentFieldModel);
         return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
