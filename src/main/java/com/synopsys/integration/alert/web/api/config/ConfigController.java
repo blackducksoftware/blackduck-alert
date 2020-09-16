@@ -25,13 +25,11 @@ package com.synopsys.integration.alert.web.api.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.ConfigResourceController;
@@ -74,11 +72,9 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @Override
     public ValidationResponseModel validate(FieldModel requestBody) {
-        ValidationActionResponse response = configActions.validate(requestBody);
-        // TODO A better API for validation. Validation response should not be null.
-        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
+        return ResponseFactory.createContentResponseFromAction(configActions.validate(requestBody));
     }
-
+    
     @Override
     public void delete(Long id) {
         ResponseFactory.createContentResponseFromAction(configActions.delete(id));
@@ -86,7 +82,6 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @Override
     public ValidationResponseModel test(FieldModel resource) {
-        ValidationActionResponse response = configActions.test(resource);
-        return ResponseFactory.createContentResponseFromAction(new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null)));
+        return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
     }
 }
