@@ -188,8 +188,7 @@ function createErrorHandler(type, defaultHandler) {
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
-export function
-refreshConfig(id) {
+export function refreshConfig(id) {
     return (dispatch, getState) => {
         dispatch(refreshingConfig());
         if (!id) {
