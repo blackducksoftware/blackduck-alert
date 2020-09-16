@@ -153,19 +153,19 @@ export function deleteDistributionJob(job) {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(deletingJobConfigSuccess(jobId));
-                    } else {
+            if (response.ok) {
+                dispatch(deletingJobConfigSuccess(jobId));
+            } else {
+                response.json()
+                    .then((responseData) => {
                         const deleteMessageHandler = () => jobDeleteError(responseData.message);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(deleteMessageHandler));
                         errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(deleteMessageHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => jobDeleteError(responseData.message, null)));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         }).catch(console.error);
     };
 }
