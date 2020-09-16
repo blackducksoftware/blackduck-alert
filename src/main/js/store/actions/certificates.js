@@ -76,14 +76,8 @@ function savedCertificate() {
 function saveCertificateErrorMessage(message) {
     return {
         type: CERTIFICATES_SAVE_ERROR,
-        message
-    };
-}
-
-function saveCertificateError(message) {
-    return {
-        type: CERTIFICATES_SAVE_ERROR,
-        message
+        message,
+        errors: {}
     };
 }
 
@@ -103,14 +97,6 @@ function deletingCertificateErrorMessage(message) {
     return {
         type: CERTIFICATES_DELETE_ERROR,
         message
-    };
-}
-
-function deletingCertificateError({ message, errors }) {
-    return {
-        type: CERTIFICATES_DELETE_ERROR,
-        message,
-        errors
     };
 }
 
@@ -163,6 +149,7 @@ export function fetchCertificates() {
     };
 }
 
+// FIXME clean this up
 export function validateCertificate(certificate) {
     return (dispatch, getState) => {
         dispatch(validatingCertificate());
@@ -208,20 +195,20 @@ export function saveCertificate(certificate) {
             saveRequest = RequestUtilities.createPostRequest(CERTIFICATES_API_URL, csrfToken, certificate);
         }
         saveRequest.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(savedCertificate());
-                        dispatch(fetchCertificates());
-                    } else {
-                        const defaultHandler = () => saveCertificateError(responseData.message);
+            if (response.ok) {
+                dispatch(savedCertificate());
+                dispatch(fetchCertificates());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => saveCertificateErrorMessage(responseData.message);
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         })
             .catch(console.error);
     };
@@ -238,19 +225,19 @@ export function deleteCertificate(certificateId) {
 
         const request = RequestUtilities.createDeleteRequest(url, csrfToken);
         request.then((response) => {
-            response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(deletedCertificate());
-                    } else {
-                        const defaultHandler = () => deletingCertificateError(responseData);
+            if (response.ok) {
+                dispatch(deletedCertificate());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => deletingCertificateErrorMessage(responseData.message);
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
 
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
-                    }
-                });
+                    });
+            }
         })
             .catch(console.error);
     };

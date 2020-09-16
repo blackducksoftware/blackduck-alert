@@ -5,7 +5,7 @@ import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
 import {
-    clearRoleFieldErrors, deleteRole, fetchRoles, saveRole
+    clearRoleFieldErrors, deleteRole, fetchRoles, validateRole, saveRole
 } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -28,19 +28,25 @@ class RoleTable extends Component {
                 permissions: []
             },
             incrementalId: 1,
-            saveCallback: () => null
+            saveCallback: () => null,
+            validateCallback: () => null
         };
     }
 
     componentDidUpdate(prevProps) {
         const { saveStatus } = this.props;
-        const { saveCallback } = this.state;
-        if (prevProps.saveStatus === 'SAVING' && (saveStatus === 'SAVED' || saveStatus === 'ERROR')) {
+        const { saveCallback, validateCallback } = this.state;
+        if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
+        if (prevProps.saveStatus === 'SAVING' && saveStatus === 'SAVED') {
             this.setState({
                 role: {
                     permissions: []
                 }
             }, () => saveCallback(true));
+        } else if (prevProps.saveStatus === 'SAVING' && saveStatus === 'ERROR') {
+            saveCallback(false);
         }
     }
 
@@ -59,13 +65,13 @@ class RoleTable extends Component {
     }
 
     onSave(callback) {
-        const { descriptors, saveRoleAction } = this.props;
+        const { descriptors, validateRoleAction, saveRoleAction } = this.props;
         const { role } = this.state;
         const { permissions } = role;
         const correctedPermissions = [];
         permissions.forEach((permission) => {
             const descriptorName = permission[PERMISSIONS_TABLE.DESCRIPTOR_NAME];
-            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === descriptorName);
+            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === descriptorName || currentDescriptor.name === descriptorName);
             if (descriptor) {
                 const descriptorKey = descriptor.name;
                 const permissionCopy = JSON.parse(JSON.stringify(permission));
@@ -75,9 +81,11 @@ class RoleTable extends Component {
         });
         role.permissions = correctedPermissions;
 
+        validateRoleAction(role);
         this.setState({
+            validateCallback: () => saveRoleAction(role),
             saveCallback: callback
-        }, () => saveRoleAction(role));
+        });
 
         return true;
     }
@@ -235,7 +243,7 @@ class RoleTable extends Component {
             canCreate, canDelete, fieldErrors, roleError, inProgress, fetching, roles
         } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
-        const hasErrors = fieldErrorKeys && fieldErrorKeys.length > 0;
+        const hasErrors = roleError || (fieldErrorKeys && fieldErrorKeys.length > 0);
         return (
             <div>
                 <TableDisplay
@@ -275,6 +283,7 @@ RoleTable.defaultProps = {
 };
 
 RoleTable.propTypes = {
+    validateRoleAction: PropTypes.func.isRequired,
     saveRoleAction: PropTypes.func.isRequired,
     deleteRoleAction: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -301,6 +310,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    validateRoleAction: (role) => dispatch(validateRole(role)),
     saveRoleAction: (role) => dispatch(saveRole(role)),
     deleteRoleAction: (roleId) => dispatch(deleteRole(roleId)),
     getRoles: () => dispatch(fetchRoles()),

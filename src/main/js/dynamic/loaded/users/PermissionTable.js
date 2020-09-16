@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',
@@ -47,7 +46,16 @@ class PermissionTable extends Component {
         const updatedValue = type === 'checkbox' ? checked.toString()
             .toLowerCase() === 'true' : value;
         const trimmedValue = (Array.isArray(updatedValue) && updatedValue.length > 0) ? updatedValue[0] : updatedValue;
-        const newPermissions = Object.assign(permissionsData, { [name]: trimmedValue });
+
+        let newPermissions = { ...permissionsData, [name]: trimmedValue };
+        if (newPermissions && newPermissions.descriptorName !== 'Authentication') {
+            newPermissions = {
+                ...newPermissions,
+                [PERMISSIONS_TABLE.UPLOAD_READ]: undefined,
+                [PERMISSIONS_TABLE.UPLOAD_WRITE]: undefined,
+                [PERMISSIONS_TABLE.UPLOAD_DELETE]: undefined
+            };
+        }
         this.setState({
             permissionsData: newPermissions
         });
@@ -147,13 +155,30 @@ class PermissionTable extends Component {
     }
 
     createContextOptions() {
-        return [{
-            label: CONTEXT_TYPE.DISTRIBUTION,
-            value: CONTEXT_TYPE.DISTRIBUTION
-        }, {
-            label: CONTEXT_TYPE.GLOBAL,
-            value: CONTEXT_TYPE.GLOBAL
-        }];
+        const { permissionsData } = this.state;
+        const { descriptors } = this.props;
+
+        const availableContexts = [];
+        if (permissionsData && permissionsData.descriptorName) {
+            descriptors.forEach((descriptor) => {
+                if (descriptor.label === permissionsData.descriptorName) {
+                    availableContexts.push(descriptor.context);
+                }
+            });
+
+            if (permissionsData.context && !availableContexts.includes(permissionsData.context)) {
+                this.setState({
+                    permissionsData: {
+                        descriptorName: permissionsData.descriptorName
+                    }
+                });
+            }
+        }
+
+        return availableContexts.map((context) => ({
+            label: context,
+            value: context
+        }));
     }
 
     onPermissionsClose(callback) {
@@ -170,19 +195,55 @@ class PermissionTable extends Component {
     }
 
     onCopy(selectedRow, callback) {
-        selectedRow.id = null;
-        const parsedPermissions = this.convertPermissionsColumn(selectedRow);
+        const selectedRowCopy = {
+            ...selectedRow,
+            id: null
+        };
+        const parsedPermissions = this.convertPermissionsColumn(selectedRowCopy);
         this.setState({
             permissionsData: parsedPermissions
         }, callback);
     }
 
     createPermissionsModal() {
-        const { permissionsData } = this.state;
+        const { permissionsData, errorMessage } = this.state;
+
+        let uploadInputs;
+        // Currently, there does not seem to be a good way to filter this dynamically.
+        // For now, restrict upload permissions to 'Authentication'.
+        if (permissionsData && permissionsData.descriptorName === 'Authentication') {
+            uploadInputs = (
+                <div>
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_READ}
+                        id={PERMISSIONS_TABLE.UPLOAD_READ}
+                        label="Upload Read"
+                        description="This permission shows or hides upload related content for the user."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]}
+                    />
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                        id={PERMISSIONS_TABLE.UPLOAD_WRITE}
+                        label="Upload Write"
+                        description="Allow users to modify uploaded content with this permission."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]}
+                    />
+                    <CheckboxInput
+                        name={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                        id={PERMISSIONS_TABLE.UPLOAD_DELETE}
+                        label="Upload Delete"
+                        description="Allow users to delete uploaded content with this permission."
+                        onChange={this.handlePermissionsChange}
+                        isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
+                    />
+                </div>
+            );
+        }
 
         return (
             <div>
-
                 <DynamicSelectInput
                     name={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
                     id={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
@@ -241,30 +302,14 @@ class PermissionTable extends Component {
                     onChange={this.handlePermissionsChange}
                     isChecked={permissionsData[PERMISSIONS_TABLE.EXECUTE]}
                 />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_READ}
-                    id={PERMISSIONS_TABLE.UPLOAD_READ}
-                    label="Upload Read"
-                    description="This permission shows or hides upload related content for the user."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_READ]}
-                />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_WRITE}
-                    id={PERMISSIONS_TABLE.UPLOAD_WRITE}
-                    label="Upload Write"
-                    description="Allow users to modify uploaded content with this permission."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_WRITE]}
-                />
-                <CheckboxInput
-                    name={PERMISSIONS_TABLE.UPLOAD_DELETE}
-                    id={PERMISSIONS_TABLE.UPLOAD_DELETE}
-                    label="Upload Delete"
-                    description="Allow users to delete uploaded content with this permission."
-                    onChange={this.handlePermissionsChange}
-                    isChecked={permissionsData[PERMISSIONS_TABLE.UPLOAD_DELETE]}
-                />
+                {uploadInputs}
+                {errorMessage
+                && (
+                    <p id="permissions-table-error-message">
+                        <br />
+                        {errorMessage}
+                    </p>
+                )}
             </div>
         );
     }
@@ -273,11 +318,12 @@ class PermissionTable extends Component {
         await this.setState({
             saveInProgress: true
         });
-        const { data } = this.props;
+        const { data, saveRole } = this.props;
         const { permissionsData } = this.state;
         if (!permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME] || !permissionsData[PERMISSIONS_TABLE.CONTEXT]) {
-            this.setState({
-                errorMessage: 'Please select Descriptor name and context'
+            await this.setState({
+                errorMessage: 'Please select Descriptor name and context',
+                saveInProgress: false
             });
             return false;
         }
@@ -287,13 +333,13 @@ class PermissionTable extends Component {
 
         if (duplicates && duplicates.length > 0) {
             await this.setState({
-                errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor:${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context:${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
+                errorMessage: `Can't add a duplicate permission. A permission already exists for Descriptor: ${permissionsData[PERMISSIONS_TABLE.DESCRIPTOR_NAME]} and Context: ${permissionsData[PERMISSIONS_TABLE.CONTEXT]}`,
                 saveInProgress: false
             });
             return false;
         }
 
-        const saved = this.props.saveRole(permissionsData);
+        const saved = saveRole(permissionsData);
         if (saved) {
             this.setState({
                 permissionsData: {}
@@ -307,17 +353,19 @@ class PermissionTable extends Component {
     }
 
     onDeletePermissions(permissionsToDelete, callback) {
+        const { deleteRole } = this.props;
         if (permissionsToDelete) {
-            this.props.deleteRole(permissionsToDelete);
+            deleteRole(permissionsToDelete);
             callback();
         }
     }
 
     render() {
+        const { saveInProgress } = this.state;
         const {
             canCreate, canDelete, inProgress, fetching, nestedInModal
         } = this.props;
-        const savingInProgress = inProgress || this.state.saveInProgress;
+        const savingInProgress = inProgress || saveInProgress;
         return (
             <div>
                 <TableDisplay
@@ -342,7 +390,6 @@ class PermissionTable extends Component {
                     deleteButton={canDelete}
                     newButton={canCreate}
                     sortName={PERMISSIONS_TABLE.DESCRIPTOR_NAME}
-                    errorDialogMessage={this.state.errorMessage}
                     clearModalFieldState={() => this.setState({ errorMessage: null })}
                     nestedInAnotherModal={nestedInModal}
                 />

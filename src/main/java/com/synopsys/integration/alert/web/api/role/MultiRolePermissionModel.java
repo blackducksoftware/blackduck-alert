@@ -20,22 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.web.api.role;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-@Component
-public class JiraServerChannelKey extends IssueTrackerChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
+public class MultiRolePermissionModel extends AlertSerializableModel {
+    private final List<RolePermissionModel> roles;
+
+    MultiRolePermissionModel() {
+        // For serialization
+        this(List.of());
     }
 
-    @Override
-    public String getDisplayName() {
-        return JiraServerDescriptor.JIRA_LABEL;
+    public MultiRolePermissionModel(List<RolePermissionModel> roles) {
+        this.roles = roles;
     }
+
+    public List<RolePermissionModel> getRoles() {
+        return roles;
+    }
+
 }

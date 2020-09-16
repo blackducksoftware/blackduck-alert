@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
@@ -43,10 +43,10 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {
-    private final ChannelKey channelKey;
+    private final IssueTrackerChannelKey channelKey;
     private final EventManager eventManager;
 
-    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, ChannelKey channelKey, EventManager eventManager) {
+    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, IssueTrackerChannelKey channelKey, EventManager eventManager) {
         super(gson, auditUtility);
         this.channelKey = channelKey;
         this.eventManager = eventManager;
