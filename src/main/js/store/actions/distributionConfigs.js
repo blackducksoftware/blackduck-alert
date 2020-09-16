@@ -250,7 +250,6 @@ export function testDistributionJob(config) {
                     } else {
                         dispatch(handler(400));
                     }
-                    dispatch(handler(response.status));
                 });
         }).catch(console.error);
     };
