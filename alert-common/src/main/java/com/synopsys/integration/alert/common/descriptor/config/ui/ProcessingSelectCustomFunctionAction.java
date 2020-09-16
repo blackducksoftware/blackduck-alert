@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,46 +20,50 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.custom;
+package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.action.CustomEndpointManager;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.SelectCustomEndpoint;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ProcessingSelectCustomEndpoint extends SelectCustomEndpoint {
+public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
     private final List<String> issueTrackerChannelKeys;
 
     @Autowired
-    public ProcessingSelectCustomEndpoint(CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, Gson gson, List<IssueTrackerChannelKey> issueTrackerChannelKeys) throws AlertException {
-        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, customEndpointManager, responseFactory, gson);
+    public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys) throws AlertException {
+        super(authorizationManager);
         this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
                                            .map(IssueTrackerChannelKey::getUniversalKey)
                                            .collect(Collectors.toList());
     }
 
     @Override
-    protected List<LabelValueSelectOption> createData(FieldModel fieldModel) throws AlertException {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
         String channelName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
-        return Arrays.stream(ProcessingType.values())
-                   .filter(processingType -> this.shouldInclude(processingType, channelName))
-                   .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
-                   .collect(Collectors.toList());
+        List<LabelValueSelectOption> options = Arrays.stream(ProcessingType.values())
+                                                   .filter(processingType -> this.shouldInclude(processingType, channelName))
+                                                   .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
+                                                   .collect(Collectors.toList());
+
+        LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
+        return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
     private boolean shouldInclude(ProcessingType processingType, String channelName) {
