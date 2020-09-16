@@ -115,7 +115,7 @@ class AboutInfo extends React.Component {
                     />
                     <ReadOnlyField
                         id="about-documentation-url"
-                        label="API Documentation (Beta)"
+                        label="API Documentation (Preview)"
                         name="documentationUrl"
                         readOnly="true"
                         value="Swagger UI"
