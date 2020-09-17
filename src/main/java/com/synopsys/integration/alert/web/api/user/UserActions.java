@@ -33,8 +33,12 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -51,7 +55,7 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Transactional
-public class UserActions {
+public class UserActions extends AbstractResourceActions<UserConfig> {
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
@@ -71,6 +75,60 @@ public class UserActions {
         this.authenticationTypeAccessor = authenticationTypeAccessor;
         this.userSystemValidator = userSystemValidator;
     }
+
+    @Override
+    protected ActionResponse<UserConfig> createAfterChecks(UserConfig resource) {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<UserConfig> deleteAfterChecks(Long id) {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<UserConfig> updateAfterChecks(Long id, UserConfig resource) {
+        return null;
+    }
+
+    // New implementation
+
+    @Override
+    protected Optional<UserConfig> findExisting(Long id) {
+        return userAccessor.getUser(id)
+                   .map(this::convertToCustomUserRoleModel);
+    }
+
+    @Override
+    protected ActionResponse<List<UserConfig>> readAllAfterChecks() {
+        List<UserConfig> users = userAccessor.getUsers().stream()
+                                     .map(this::convertToCustomUserRoleModel)
+                                     .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, users);
+    }
+
+    @Override
+    protected ActionResponse<UserConfig> readAfterChecks(Long id) {
+        Optional<UserConfig> user = findExisting(id);
+        if (user.isPresent()) {
+            return new ActionResponse<>(HttpStatus.OK, user.get());
+        }
+        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("The user with id: %d not found.", id));
+    }
+
+    @Override
+    protected ValidationActionResponse testAfterChecks(UserConfig resource) {
+        return validateAfterChecks(resource);
+    }
+
+    @Override
+    protected ValidationActionResponse validateAfterChecks(UserConfig resource) {
+        ValidationResponseModel validationResponseModel;
+
+        return null;
+    }
+
+    // Old code here
 
     public List<UserConfig> getUsers() {
         return userAccessor.getUsers().stream()
