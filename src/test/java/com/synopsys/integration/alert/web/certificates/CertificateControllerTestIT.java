@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -22,12 +23,18 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
+import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
 import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
 import com.synopsys.integration.alert.web.api.certificate.CertificatesController;
+
+import junit.framework.AssertionFailedError;
 
 @Transactional
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
@@ -35,9 +42,6 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     private CustomCertificateRepository customCertificateRepository;
-
-    @Autowired
-    private CertificateActions certificateActions;
 
     @Autowired
     private AlertProperties alertProperties;
@@ -48,10 +52,27 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private Gson gson;
+
+    @Autowired
+    private CertificatesDescriptorKey certificatesDescriptorKey;
+
+    @Autowired
+    private CertificateUtility certificateUtility;
+    @Autowired
+    private CustomCertificateAccessor certificateAccessor;
+
+    private CertificateActions certificateActions;
     private MockMvc mockMvc;
 
     @BeforeEach
     public void init() throws Exception {
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, certificateUtility);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         certTestUtil.init(alertProperties);
     }
@@ -74,7 +95,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void readSingleTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
 
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
@@ -100,7 +122,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void updateTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
         CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent(), expectedCertificate.getLastUpdated());
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
@@ -114,7 +137,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void deleteTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
@@ -133,7 +157,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void readSingleForbiddenTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
 
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
@@ -157,7 +182,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void updateForbiddenTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
         CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent());
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
@@ -170,7 +196,8 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void deleteForbiddenTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))

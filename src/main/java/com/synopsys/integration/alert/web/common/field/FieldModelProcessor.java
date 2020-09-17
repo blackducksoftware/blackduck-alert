@@ -164,7 +164,7 @@ public class FieldModelProcessor {
             String key = sensitiveConfigurationFieldModel.getFieldKey();
             if (newConfiguration.containsKey(key)) {
                 FieldValueModel sensitiveFieldValueModel = newConfiguration.get(key);
-                if (sensitiveFieldValueModel.isSet() && !sensitiveFieldValueModel.hasValues()) {
+                if (sensitiveFieldValueModel.getIsSet() && !sensitiveFieldValueModel.hasValues()) {
                     FieldValueModel newFieldModel = newConfiguration.get(key);
                     newFieldModel.setValues(sensitiveConfigurationFieldModel.getFieldValues());
                 }

@@ -22,26 +22,17 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import java.io.Serializable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.util.Stringable;
-
-public class OAuthEndpointResponse extends Stringable implements Serializable {
-    private final int httpStatus;
+public class OAuthEndpointResponse extends AlertSerializableModel {
     private final boolean authenticated;
     private final String authorizationUrl;
     private final String message;
 
-    // TODO when there is a common response object this should model that object.
-    public OAuthEndpointResponse(int httpStatus, boolean authenticated, String authorizationUrl, String message) {
-        this.httpStatus = httpStatus;
+    public OAuthEndpointResponse(boolean authenticated, String authorizationUrl, String message) {
         this.authenticated = authenticated;
         this.authorizationUrl = authorizationUrl;
         this.message = message;
-    }
-
-    public int getHttpStatus() {
-        return httpStatus;
     }
 
     public boolean isAuthenticated() {

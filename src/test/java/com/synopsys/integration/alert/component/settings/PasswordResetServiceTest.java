@@ -110,7 +110,7 @@ public class PasswordResetServiceTest {
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         String username = "username";
-        UserModel userModel = UserModel.newUser(username, "", "noreply@synopsys.com", AuthenticationType.DATABASE, Set.of(), true);
+        UserModel userModel = UserModel.newUser(username, "", "noreply@blackducksoftware.com", AuthenticationType.DATABASE, Set.of(), true);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);

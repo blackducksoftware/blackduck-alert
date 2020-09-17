@@ -6,7 +6,7 @@ import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import {
-    deleteConfig, getConfig, testConfig, updateConfig
+    deleteConfig, getConfig, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -50,6 +50,8 @@ class GlobalConfiguration extends React.Component {
             this.setState({
                 currentConfig: fieldModel
             });
+        } else if (prevProps.updateStatus === 'VALIDATING' && this.props.updateStatus === 'VALIDATED') {
+            this.props.updateConfig(this.state.currentConfig);
         }
     }
 
@@ -75,6 +77,7 @@ class GlobalConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const { currentFields, currentConfig, currentDescriptor } = this.state;
+        const { validateConfig } = this.props;
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
             return type !== 'EndpointButtonField';
@@ -86,7 +89,7 @@ class GlobalConfiguration extends React.Component {
             .forEach((key) => {
                 newConfig.keyToValues[key] = currentConfig.keyToValues[key];
             });
-        this.props.updateConfig(newConfig);
+        validateConfig(newConfig);
     }
 
     handleDelete() {
@@ -171,7 +174,8 @@ GlobalConfiguration.propTypes = {
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
-    deleteConfig: PropTypes.func.isRequired
+    deleteConfig: PropTypes.func.isRequired,
+    validateConfig: PropTypes.func.isRequired
 };
 
 // Default values
@@ -197,7 +201,8 @@ const mapDispatchToProps = (dispatch) => ({
     getConfig: (descriptorName) => dispatch(getConfig(descriptorName)),
     updateConfig: (config) => dispatch(updateConfig(config)),
     testConfig: (config) => dispatch(testConfig(config)),
-    deleteConfig: (id) => dispatch(deleteConfig(id))
+    deleteConfig: (id) => dispatch(deleteConfig(id)),
+    validateConfig: (config) => dispatch(validateConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GlobalConfiguration);

@@ -52,7 +52,7 @@ class OAuthEndpointButtonField extends Component {
             response.json()
                 .then((data) => {
                     const {
-                        httpStatus, authenticated, authorizationUrl, message
+                        authenticated, authorizationUrl, message
                     } = data;
                     const target = {
                         name: [fieldKey],
@@ -60,7 +60,7 @@ class OAuthEndpointButtonField extends Component {
                         type: 'checkbox'
                     };
                     onChange({ target });
-                    const okRequest = HTTPErrorUtils.isOk(httpStatus);
+                    const okRequest = HTTPErrorUtils.isOk(response.status);
                     this.setState({
                         authenticated
                     });

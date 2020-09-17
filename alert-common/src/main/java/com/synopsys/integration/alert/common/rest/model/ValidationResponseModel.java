@@ -58,4 +58,8 @@ public class ValidationResponseModel extends AlertSerializableModel {
         return errors;
     }
 
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
+
 }
