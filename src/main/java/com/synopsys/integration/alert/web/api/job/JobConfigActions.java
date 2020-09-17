@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -120,7 +118,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<List<JobFieldModel>> readAllAfterChecks() {
+    protected ActionResponse<List<JobFieldModel>> readAllWithoutChecks() {
         try {
             List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
             List<JobFieldModel> jobFieldModels = new LinkedList<>();
@@ -136,10 +134,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> deleteAfterChecks(UUID id) {
+    protected ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id) {
         try {
             Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
-            if (jobs.isPresent()) {
+            if (jobs.isEmpty()) {
+                return new ActionResponse<>(HttpStatus.NOT_FOUND);
+            } else {
                 LinkedList<FieldModel> processedFieldModels = new LinkedList<>();
                 ConfigurationJobModel configurationJobModel = jobs.get();
                 for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
@@ -151,7 +151,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 for (FieldModel fieldModel : processedFieldModels) {
                     fieldModelProcessor.performAfterDeleteAction(fieldModel);
                 }
-
             }
         } catch (AlertException ex) {
             logger.error("Error reading all jobs", ex);
@@ -162,7 +161,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> createAfterChecks(JobFieldModel resource) {
+    protected ActionResponse<JobFieldModel> createWithoutChecks(JobFieldModel resource) {
         try {
             Set<String> descriptorNames = new HashSet<>();
             Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
@@ -189,37 +188,42 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<JobFieldModel> updateAfterChecks(UUID id, JobFieldModel resource) {
+    protected ActionResponse<JobFieldModel> updateWithoutChecks(UUID id, JobFieldModel resource) {
         try {
-            ConfigurationJobModel previousJob = configurationAccessor.getJobById(id)
-                                                    .orElseThrow(() -> new IllegalStateException("No previous job present when the only possible valid state for this stage of the method would require it"));
-            Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
-            for (ConfigurationModel previousJobConfiguration : previousJob.getCopyOfConfigurations()) {
-                FieldModel previousJobFieldModel = modelConverter.convertToFieldModel(previousJobConfiguration);
-                descriptorAndContextToPreviousFieldModel.put(previousJobFieldModel.getDescriptorName() + previousJobFieldModel.getContext(), previousJobFieldModel);
-            }
+            Optional<ConfigurationJobModel> jobModel = configurationAccessor.getJobById(id);
+            if (jobModel.isEmpty()) {
+                return new ActionResponse<>(HttpStatus.NOT_FOUND);
+            } else {
+                ConfigurationJobModel previousJob = jobModel.get();
 
-            Set<String> descriptorNames = new HashSet<>();
-            Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-            for (FieldModel fieldModel : resource.getFieldModels()) {
-                FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-                descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
-                String beforeFieldModelId = beforeUpdateEventFieldModel.getId();
-                Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
-                Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
-                configurationFieldModels.addAll(updatedFieldModels);
-            }
+                Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
+                for (ConfigurationModel previousJobConfiguration : previousJob.getCopyOfConfigurations()) {
+                    FieldModel previousJobFieldModel = modelConverter.convertToFieldModel(previousJobConfiguration);
+                    descriptorAndContextToPreviousFieldModel.put(previousJobFieldModel.getDescriptorName() + previousJobFieldModel.getContext(), previousJobFieldModel);
+                }
 
-            ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
-            JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-            Set<FieldModel> updatedFieldModels = new HashSet<>();
-            for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
-                FieldModel previousFieldModel = descriptorAndContextToPreviousFieldModel.get(fieldModel.getDescriptorName() + fieldModel.getContext());
-                FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, fieldModel);
-                updatedFieldModels.add(updatedModel);
+                Set<String> descriptorNames = new HashSet<>();
+                Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+                for (FieldModel fieldModel : resource.getFieldModels()) {
+                    FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
+                    descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
+                    String beforeFieldModelId = beforeUpdateEventFieldModel.getId();
+                    Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
+                    Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
+                    configurationFieldModels.addAll(updatedFieldModels);
+                }
+
+                ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
+                JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
+                Set<FieldModel> updatedFieldModels = new HashSet<>();
+                for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
+                    FieldModel previousFieldModel = descriptorAndContextToPreviousFieldModel.get(fieldModel.getDescriptorName() + fieldModel.getContext());
+                    FieldModel updatedModel = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, fieldModel);
+                    updatedFieldModels.add(updatedModel);
+                }
+                savedJobFieldModel.setFieldModels(updatedFieldModels);
+                return new ActionResponse<>(HttpStatus.OK, savedJobFieldModel);
             }
-            savedJobFieldModel.setFieldModels(updatedFieldModels);
-            return new ActionResponse<>(HttpStatus.OK, savedJobFieldModel);
         } catch (AlertException ex) {
             logger.error("Error creating job", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
@@ -275,7 +279,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse validateAfterChecks(JobFieldModel resource) {
+    protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         UUID jobId = null;
         if (StringUtils.isNotBlank(resource.getJobId())) {
@@ -312,7 +316,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         List<JobFieldStatuses> errorsList = new LinkedList<>();
-        List<JobFieldModel> jobFieldModels = readAllAfterChecks().getContent().orElse(List.of());
+        List<JobFieldModel> jobFieldModels = readAllWithoutChecks().getContent().orElse(List.of());
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -327,7 +331,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ValidationActionResponse testAfterChecks(JobFieldModel resource) {
+    protected ValidationActionResponse testWithoutChecks(JobFieldModel resource) {
         ValidationResponseModel responseModel;
         String id = resource.getJobId();
         try {
@@ -463,12 +467,4 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
         return Optional.empty();
     }
-
-    private List<AlertFieldStatus> concatStatuses(List<AlertFieldStatus> firstStatuses, List<AlertFieldStatus> secondStatuses) {
-        return Stream.concat(
-            firstStatuses.stream(),
-            secondStatuses.stream()
-        ).collect(Collectors.toList());
-    }
-
 }

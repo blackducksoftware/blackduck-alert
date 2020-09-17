@@ -41,17 +41,19 @@ public abstract class CustomFunctionAction<T> {
 
     public ActionResponse<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
-            if (!authorizationManager.hasExecutePermission(fieldModel.getContext(), fieldModel.getDescriptorName())) {
+            if (!isAllowed(fieldModel)) {
                 return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
             }
             return createActionResponse(fieldModel, servletContentWrapper);
+        } catch (ResponseStatusException e) {
+            return new ActionResponse<>(e.getStatus(), e.getReason());
         } catch (Exception e) {
-            if (e instanceof ResponseStatusException) {
-                ResponseStatusException responseStatusException = (ResponseStatusException) e;
-                return new ActionResponse<>(responseStatusException.getStatus(), responseStatusException.getReason());
-            }
             return createErrorResponse(e);
         }
+    }
+
+    protected boolean isAllowed(FieldModel fieldModel) {
+        return authorizationManager.hasExecutePermission(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
 
     private ActionResponse<T> createErrorResponse(Exception e) {

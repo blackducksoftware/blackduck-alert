@@ -22,5 +22,7 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-public interface LongResourceActions<T> extends ResourceActions<T, Long> {
+import java.util.UUID;
+
+public interface UUIDIdResourceActions<T> extends ResourceActions<T, UUID> {
 }

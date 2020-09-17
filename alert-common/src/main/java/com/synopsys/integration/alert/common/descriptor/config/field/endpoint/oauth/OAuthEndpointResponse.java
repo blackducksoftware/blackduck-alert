@@ -22,11 +22,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import java.io.Serializable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.util.Stringable;
-
-public class OAuthEndpointResponse extends Stringable implements Serializable {
+public class OAuthEndpointResponse extends AlertSerializableModel {
     private final boolean authenticated;
     private final String authorizationUrl;
     private final String message;
@@ -36,7 +34,7 @@ public class OAuthEndpointResponse extends Stringable implements Serializable {
         this.authorizationUrl = authorizationUrl;
         this.message = message;
     }
-    
+
     public boolean isAuthenticated() {
         return authenticated;
     }

@@ -82,7 +82,7 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
             }
             boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
             if (!jiraPluginInstalled) {
-                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
+                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Unable to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
             }
             return new ActionResponse<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira Cloud");
         } catch (IntegrationException e) {
