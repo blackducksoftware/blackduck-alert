@@ -60,7 +60,7 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
     public final List<ConfigField> createFields() {
         ConfigField providerConfigEnabled = new CheckboxConfigField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED, ProviderDescriptor.LABEL_PROVIDER_CONFIG_ENABLED, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_ENABLED)
                                                 .applyDefaultValue(Boolean.TRUE.toString());
-        ConfigField providerConfigName = new TextInputConfigField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
+        ConfigField providerConfigName = new TextInputConfigField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_FIELD, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_FIELD)
                                              .applyRequired(true)
                                              .applyValidationFunctions(this::validateDuplicateNames);
 

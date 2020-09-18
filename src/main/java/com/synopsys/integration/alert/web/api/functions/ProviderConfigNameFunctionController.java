@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderConfig
 @RestController
 @RequestMapping(ProviderConfigNameFunctionController.PROVIDER_CONFIG_NAME_FUNCTION_URL)
 public class ProviderConfigNameFunctionController extends AbstractFunctionController {
-    public static final String PROVIDER_CONFIG_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME;
+    public static final String PROVIDER_CONFIG_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDescriptor.KEY_PROVIDER_CONFIG_ID;
 
     @Autowired
     public ProviderConfigNameFunctionController(ProviderConfigSelectCustomFunctionAction functionAction) {

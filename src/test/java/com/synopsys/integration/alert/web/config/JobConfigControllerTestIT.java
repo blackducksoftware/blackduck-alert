@@ -147,16 +147,18 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testUpdateConfig() throws Exception {
-        JobFieldModel fieldModel = createTestJobFieldModel("1", "2");
+        ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
+
+        JobFieldModel fieldModel = createTestJobFieldModel("1", "2", providerGlobalConfig);
         Map<String, Collection<String>> fieldValueModels = new HashMap<>();
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
         ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
-        addGlobalConfiguration(blackDuckProviderKey, Map.of(
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
+
         String configId = String.valueOf(emptyConfigurationModel.getJobId());
         String urlPath = url + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
@@ -174,7 +176,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
-        addGlobalConfiguration(blackDuckProviderKey, Map.of(
+        ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
@@ -182,7 +184,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        JobFieldModel fieldModel = createTestJobFieldModel(null, null);
+        JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
@@ -197,7 +199,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testValidateConfig() throws Exception {
         final String urlPath = url + "/validate";
-        addGlobalConfiguration(blackDuckProviderKey, Map.of(
+        ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
@@ -205,7 +207,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        JobFieldModel fieldModel = createTestJobFieldModel(null, null);
+        JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
@@ -213,11 +215,11 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    private JobFieldModel createTestJobFieldModel(String channelId, String providerId) {
+    private JobFieldModel createTestJobFieldModel(String channelId, String providerId, ConfigurationModel providerGlobalConfig) {
         String descriptorName = slackChannelKey.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
-        FieldValueModel providerConfig = new FieldValueModel(List.of(DEFAULT_BLACK_DUCK_CONFIG), true);
+        FieldValueModel providerConfigField = new FieldValueModel(List.of(providerGlobalConfig.getConfigurationId().toString()), true);
         FieldValueModel slackChannelName = new FieldValueModel(List.of("channelName"), true);
         FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         FieldValueModel name = new FieldValueModel(List.of("name"), true);
@@ -229,7 +231,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDistributionUIConfig.KEY_NAME, name,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerConfigField,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
             ChannelDistributionUIConfig.KEY_FREQUENCY, frequency
         );
@@ -247,7 +249,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
         Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType,
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, providerConfig,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerConfigField,
             ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, formatType,
             ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject,
             ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames

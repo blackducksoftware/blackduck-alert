@@ -60,11 +60,11 @@ public class EmailActionHelper {
         }
 
         boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        String providerConfigName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
+        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
         boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
-        if (StringUtils.isNotBlank(providerConfigName) && !onlyAdditionalEmails) {
-            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerConfigName);
+        if (null != providerConfigId && !onlyAdditionalEmails) {
+            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerConfigId);
             if (null != providerProjects) {
                 Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
                 emailAddresses.addAll(providerEmailAddresses);
@@ -84,8 +84,8 @@ public class EmailActionHelper {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, boolean filterByProject, String providerConfigName) {
-        List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, boolean filterByProject, Long providerConfigId) {
+        List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         if (filterByProject) {
             Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             Set<String> configuredProjects = new HashSet<>(projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()));

@@ -82,10 +82,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField providerConfigNameField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_NAME)
-                                                  .applyClearable(false)
-                                                  .applyValidationFunctions(this::validateConfigExists)
-                                                  .applyRequired(true);
+        ConfigField providerConfigIdField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, ProviderDescriptor.LABEL_PROVIDER_CONFIG_FIELD, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_FIELD)
+                                                .applyClearable(false)
+                                                .applyValidationFunctions(this::validateConfigExists)
+                                                .applyRequired(true);
         List<LabelValueSelectOption> notificationTypeOptions = providerContent.getContentTypes()
                                                                    .stream()
                                                                    .map(this::convertToLabelValueOption)
@@ -111,10 +111,10 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
                                             .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
                                             .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
-        List<ConfigField> configFields = List.of(providerConfigNameField, notificationTypesField, processingField, filterByProject, projectNamePattern, configuredProject);
+        List<ConfigField> configFields = List.of(providerConfigIdField, notificationTypesField, processingField, filterByProject, projectNamePattern, configuredProject);
         List<ConfigField> providerDistributionFields = createProviderDistributionFields();
         return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
@@ -143,17 +143,19 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     }
 
     private ValidationResult validateConfigExists(FieldValueModel fieldToValidate, FieldModel fieldModel) {
-        Optional<String> providerConfigName = fieldToValidate.getValue();
-        Optional<ConfigurationModel> configModel = providerConfigName.flatMap(this::readConfiguration);
+
+        Optional<ConfigurationModel> configModel = fieldToValidate.getValue()
+                                                       .map(Long::parseLong)
+                                                       .flatMap(this::readConfiguration);
         if (!configModel.isPresent()) {
             return ValidationResult.errors("Provider configuration missing.");
         }
         return ValidationResult.success();
     }
 
-    private Optional<ConfigurationModel> readConfiguration(String configName) {
+    private Optional<ConfigurationModel> readConfiguration(Long configId) {
         try {
-            return configurationAccessor.getProviderConfigurationByName(configName);
+            return configurationAccessor.getConfigurationById(configId);
         } catch (AlertDatabaseConstraintException ex) {
             return Optional.empty();
         }
