@@ -71,6 +71,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
     private static final String DESCRIPTION_PROCESSING = "Select the way messages will be processed: ";
 
+    private static final String DESCRIPTION_PROVIDER_CONFIG_FIELD = "The provider configuration to use with this distribution job.";
+
     private final ProviderContent providerContent;
     private final ConfigurationAccessor configurationAccessor;
 
@@ -82,7 +84,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField providerConfigIdField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, ProviderDescriptor.LABEL_PROVIDER_CONFIG_FIELD, ProviderDescriptor.DESCRIPTION_PROVIDER_CONFIG_FIELD)
+        ConfigField providerConfigIdField = new EndpointSelectField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME, DESCRIPTION_PROVIDER_CONFIG_FIELD)
                                                 .applyClearable(false)
                                                 .applyValidationFunctions(this::validateConfigExists)
                                                 .applyRequired(true);
