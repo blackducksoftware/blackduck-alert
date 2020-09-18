@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.email.web;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Component
 public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddressOptions> {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomFunctionAction.class);
-    private ProviderDataAccessor providerDataAccessor;
+    private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
     public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
@@ -54,17 +53,19 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddress
 
     @Override
     public ActionResponse<EmailAddressOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
+        Long providerConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                                    .map(Long::parseLong)
+                                    .orElse(null);
 
-        if (StringUtils.isBlank(providerConfigName)) {
+        if (null == providerConfigId) {
             logger.debug("Received provider user email data request with a blank provider config name");
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, "You must select a provider config to populate data.");
         }
 
         try {
-            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigName(providerConfigName);
+            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
             if (pageOfUsers.isEmpty()) {
-                logger.info("No user emails found in the database for the provider: {}", providerConfigName);
+                logger.info("No user emails found in the database for the provider with id: {}", providerConfigId);
             }
             List<EmailAddressSelectOption> options = pageOfUsers.stream()
                                                          .map(providerUser -> new EmailAddressSelectOption(providerUser.getEmailAddress(), providerUser.getOptOut()))

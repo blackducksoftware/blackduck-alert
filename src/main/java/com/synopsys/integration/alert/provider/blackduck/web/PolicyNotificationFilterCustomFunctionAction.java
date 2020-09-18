@@ -138,16 +138,14 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
         FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
-        Optional<ConfigurationModel> configurationModel = configurationAccessor.getProviderConfigurationByName(fieldAccessor.getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME));
-        Optional<FieldAccessor> providerFieldAccessor = configurationModel
-                                                            .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                                                            .map(FieldAccessor::new);
-
-        if (configurationModel.isPresent() && providerFieldAccessor.isPresent()) {
-            ConfigurationModel configModel = configurationModel.get();
-            return Optional.of(blackDuckPropertiesFactory.createProperties(configModel.getConfigurationId(), providerFieldAccessor.get()));
+        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
+        if (null == providerConfigId) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return configurationAccessor.getConfigurationById(providerConfigId)
+                   .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                   .map(FieldAccessor::new)
+                   .map(accessor -> blackDuckPropertiesFactory.createProperties(providerConfigId, accessor));
     }
 
 }

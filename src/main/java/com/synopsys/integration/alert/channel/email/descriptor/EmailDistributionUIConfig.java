@@ -70,7 +70,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
                                                    .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
                                                    .applySearchable(true)
                                                    .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                   .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+                                                   .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
                                                        .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
                                                        .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
