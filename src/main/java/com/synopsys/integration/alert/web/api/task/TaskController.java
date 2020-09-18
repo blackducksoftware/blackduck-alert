@@ -30,31 +30,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
-import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(TaskController.TASK_BASE_PATH)
 public class TaskController extends BaseController {
     public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
-    private final AuthorizationManager authorizationManager;
     private final TaskActions taskActions;
-    private final TaskManagementDescriptorKey descriptorKey;
 
     @Autowired
-    public TaskController(AuthorizationManager authorizationManager, TaskActions taskActions, TaskManagementDescriptorKey descriptorKey) {
-        this.authorizationManager = authorizationManager;
+    public TaskController(TaskActions taskActions) {
         this.taskActions = taskActions;
-        this.descriptorKey = descriptorKey;
     }
 
     @GetMapping
     public List<TaskMetaData> getAllTasks() {
-        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        return taskActions.getTasks();
+        return ResponseFactory.createContentResponseFromAction(taskActions.getTasks());
     }
 }
