@@ -22,6 +22,7 @@ class GlobalConfiguration extends React.Component {
         this.handleTest = this.handleTest.bind(this);
         this.handleTestCancel = this.handleTestCancel.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.createEmptyModel = this.createEmptyModel.bind(this);
 
         const { fields, name } = this.props.descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
@@ -40,19 +41,30 @@ class GlobalConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        const { currentFields, currentDescriptor } = this.state;
         if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
-            const newState = FieldModelUtilities.createFieldModelWithDefaults(this.state.currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, this.state.currentDescriptor.name);
+            const newState = FieldModelUtilities.createFieldModelWithDefaults(currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
         } else if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
             const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(this.props.currentConfig, this.state.currentFields);
+            const newConfigModel = FieldModelUtilities.checkContextAndDescriptor(fieldModel, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
-                currentConfig: fieldModel
+                currentConfig: newConfigModel
             });
         } else if (prevProps.updateStatus === 'VALIDATING' && this.props.updateStatus === 'VALIDATED') {
             this.props.updateConfig(this.state.currentConfig);
         }
+    }
+
+    createEmptyModel() {
+        const { currentFields, currentDescriptor } = this.state;
+        const filteredFieldKeys = currentFields.filter((field) => {
+            const { type } = field;
+            return type !== 'EndpointButtonField';
+        }).map((field) => field.key);
+        return FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentDescriptor.context, currentDescriptor.name);
     }
 
     handleTest() {
@@ -76,13 +88,13 @@ class GlobalConfiguration extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { currentFields, currentConfig, currentDescriptor } = this.state;
+        const { currentFields, currentConfig } = this.state;
         const { validateConfig } = this.props;
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
             return type !== 'EndpointButtonField';
         }).map((field) => field.key);
-        const newConfig = FieldModelUtilities.createEmptyFieldModel(filteredFieldKeys, currentDescriptor.context, currentDescriptor.name);
+        const newConfig = this.createEmptyModel();
         newConfig.id = currentConfig.id;
         Object.keys(currentConfig.keyToValues)
             .filter((key) => filteredFieldKeys.includes(key))
@@ -94,8 +106,12 @@ class GlobalConfiguration extends React.Component {
 
     handleDelete() {
         const { currentConfig } = this.state;
+        const { deleteConfig } = this.props;
         if (currentConfig.id) {
-            this.props.deleteConfig(currentConfig.id);
+            const emptyConfig = this.createEmptyModel();
+            this.setState({
+                currentConfig: emptyConfig
+            }, () => deleteConfig(currentConfig.id));
         }
     }
 
