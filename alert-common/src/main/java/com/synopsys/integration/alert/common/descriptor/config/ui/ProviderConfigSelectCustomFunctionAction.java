@@ -75,12 +75,9 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     }
 
     private Optional<LabelValueSelectOption> createNameToIdOption(ConfigurationModel configurationModel) {
-        Optional<String> providerConfigName = configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).flatMap(ConfigurationFieldModel::getFieldValue);
-        if (providerConfigName.isPresent()) {
-            LabelValueSelectOption providerConfigOption = new LabelValueSelectOption(providerConfigName.get(), configurationModel.getConfigurationId().toString());
-            return Optional.of(providerConfigOption);
-        }
-        return Optional.empty();
+        return configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                   .flatMap(ConfigurationFieldModel::getFieldValue)
+                   .map(providerConfigName -> new LabelValueSelectOption(providerConfigName, configurationModel.getConfigurationId().toString()));
     }
 
 }
