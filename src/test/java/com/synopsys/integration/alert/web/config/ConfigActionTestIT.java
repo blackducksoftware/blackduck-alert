@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.web.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,21 +13,27 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
+import com.synopsys.integration.alert.web.common.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
+
+import junit.framework.AssertionFailedError;
 
 public class ConfigActionTestIT extends AlertIntegrationTest {
     @Autowired
@@ -39,12 +46,22 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
     private ConfigurationFieldModelConverter configurationFieldModelConverter;
     @Autowired
     private SettingsDescriptorKey settingsDescriptorKey;
+    @Autowired
+    private PKIXErrorResponseFactory pkixErrorResponseFactory;
+    @Autowired
+    private DescriptorMap descriptorMap;
+    @Autowired
+    private DescriptorAccessor descriptorAccessor;
 
     @Test
-    public void deleteSensitiveFieldFromConfig() throws AlertException, AlertFieldException {
+    public void deleteSensitiveFieldFromConfig() throws AlertException {
         FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
         Mockito.doReturn(List.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
-        ConfigActions configActions = new ConfigActions(configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
+            pkixErrorResponseFactory);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);
@@ -67,8 +84,10 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         FieldModel fieldModel = new FieldModel(configId, settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(),
             new HashMap<>(Map.of(ProxyManager.KEY_PROXY_HOST, proxyHostFieldValue, ProxyManager.KEY_PROXY_PORT, proxyPortFieldValue,
                 ProxyManager.KEY_PROXY_USERNAME, proxyUsernameFieldValue, ProxyManager.KEY_PROXY_PWD, proxyPasswordFieldValue)));
-        FieldModel updatedConfig = configActions.updateConfig(longConfigId, fieldModel);
 
+        ActionResponse<FieldModel> response = configActions.update(longConfigId, fieldModel);
+        assertTrue(response.hasContent());
+        FieldModel updatedConfig = response.getContent().orElseThrow(() -> new AssertionFailedError("content missing from response."));
         Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
         assertEquals(newUsername, updatedValues.get(ProxyManager.KEY_PROXY_USERNAME).getValue().orElse(""));

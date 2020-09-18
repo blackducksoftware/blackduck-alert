@@ -1,6 +1,7 @@
 import {
     CONFIG_ALL_FETCHED,
     CONFIG_CLEAR_FIELD_ERRORS,
+    CONFIG_DELETE_ERROR,
     CONFIG_DELETED,
     CONFIG_DELETING,
     CONFIG_FETCH_ALL_ERROR,
@@ -16,6 +17,9 @@ import {
     CONFIG_UPDATE_ERROR,
     CONFIG_UPDATED,
     CONFIG_UPDATING,
+    CONFIG_VALIDATE_ERROR,
+    CONFIG_VALIDATED,
+    CONFIG_VALIDATING,
     SERIALIZE
 } from 'store/actions/types';
 
@@ -172,8 +176,42 @@ const globalConfiguration = (state = initialState, action) => {
                 error: HTTPErrorUtils.createEmptyErrorObject()
             };
 
+        case CONFIG_DELETE_ERROR:
+            return {
+                ...state,
+                updateStatus: 'ERROR',
+                actionMessage: null,
+                error: HTTPErrorUtils.createErrorObject(action)
+            };
+
         case CONFIG_CLEAR_FIELD_ERRORS:
             return { ...state, error: HTTPErrorUtils.createEmptyErrorObject() };
+
+        case CONFIG_VALIDATING:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                updateStatus: 'VALIDATING'
+            };
+
+        case CONFIG_VALIDATED:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                updateStatus: 'VALIDATED'
+            };
+
+        case CONFIG_VALIDATE_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                updateStatus: 'ERROR'
+            };
 
         case SERIALIZE:
             return initialState;

@@ -5,7 +5,7 @@ import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { connect } from 'react-redux';
 import {
-    clearUserFieldErrors, deleteUser, fetchUsers, saveUser
+    clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser
 } from 'store/actions/users';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import { fetchRoles } from 'store/actions/roles';
@@ -32,13 +32,17 @@ class UserTable extends Component {
 
         this.state = {
             user: {},
+            validateCallback: () => null,
             saveCallback: () => null
         };
     }
 
     componentDidUpdate(prevProps) {
         const { saveStatus } = this.props;
-        const { saveCallback } = this.state;
+        const { validateCallback, saveCallback } = this.state;
+        if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
         if (prevProps.saveStatus === 'SAVING' && saveStatus === 'SAVED') {
             saveCallback(true);
         } else if (prevProps.saveStatus === 'SAVING' && saveStatus === 'ERROR') {
@@ -48,11 +52,12 @@ class UserTable extends Component {
 
     onSave(callback) {
         const { user } = this.state;
-        const { saveUserAction } = this.props;
+        const { validateUserAction, saveUserAction } = this.props;
         if (this.checkIfPasswordsMatch(user)) {
             this.setState({
+                validateCallback: () => saveUserAction(user),
                 saveCallback: callback
-            }, () => saveUserAction(user));
+            }, () => validateUserAction(user));
             return true;
         }
         callback(false);
@@ -344,6 +349,7 @@ UserTable.defaultProps = {
 UserTable.propTypes = {
     saveUserAction: PropTypes.func.isRequired,
     deleteUserAction: PropTypes.func.isRequired,
+    validateUserAction: PropTypes.func.isRequired,
     getUsers: PropTypes.func.isRequired,
     getRoles: PropTypes.func.isRequired,
     clearFieldErrors: PropTypes.func.isRequired,
@@ -373,7 +379,8 @@ const mapDispatchToProps = (dispatch) => ({
     deleteUserAction: (userId) => dispatch(deleteUser(userId)),
     getUsers: () => dispatch(fetchUsers()),
     getRoles: () => dispatch(fetchRoles()),
-    clearFieldErrors: () => dispatch(clearUserFieldErrors())
+    clearFieldErrors: () => dispatch(clearUserFieldErrors()),
+    validateUserAction: (user) => dispatch(validateUser(user))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserTable);

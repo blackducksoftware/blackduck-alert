@@ -125,7 +125,7 @@ public class SettingsUIConfig extends UIConfig {
     private class EncryptionFieldsSetValidator extends EncryptionValidator {
         @Override
         public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
-            Function<FieldValueModel, Boolean> fieldSetCheck = field -> field.hasValues() || field.isSet();
+            Function<FieldValueModel, Boolean> fieldSetCheck = field -> field.hasValues() || field.getIsSet();
             boolean pwdFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_PWD).map(fieldSetCheck).orElse(false);
             boolean saltFieldSet = fieldModel.getFieldValueModel(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).map(fieldSetCheck).orElse(false);
             if (pwdFieldSet && saltFieldSet) {
@@ -138,7 +138,7 @@ public class SettingsUIConfig extends UIConfig {
     private class EncryptionFieldValidator extends EncryptionValidator {
         @Override
         public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
-            if (fieldValueModel.containsNoData() && !fieldValueModel.isSet()) {
+            if (fieldValueModel.containsNoData() && !fieldValueModel.getIsSet()) {
                 return ValidationResult.errors(ConfigField.REQUIRED_FIELD_MISSING);
             }
             return ValidationResult.success();

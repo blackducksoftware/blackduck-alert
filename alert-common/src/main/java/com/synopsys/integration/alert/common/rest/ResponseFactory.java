@@ -31,6 +31,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 // TODO make this a Utils class
@@ -72,6 +73,29 @@ public class ResponseFactory {
 
     public static ResponseStatusException createNotImplementedException(@Nullable String customMessage) {
         return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
+    }
+
+    public static <T> ResponseStatusException createStatusException(ActionResponse<T> actionResponse) {
+        String customMessage = actionResponse.getMessage().orElse(null);
+        return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);
+    }
+
+    public static <T> ResponseEntity<T> createResponseFromAction(ActionResponse<T> actionResponse) throws ResponseStatusException {
+        if (actionResponse.isError()) {
+            throw createStatusException(actionResponse);
+        }
+
+        if (actionResponse.hasContent()) {
+            return new ResponseEntity<>(actionResponse.getContent().get(), actionResponse.getHttpStatus());
+        }
+        return new ResponseEntity<>(actionResponse.getHttpStatus());
+    }
+
+    public static <T> T createContentResponseFromAction(ActionResponse<T> actionResponse) throws ResponseStatusException {
+        if (actionResponse.isSuccessful() && actionResponse.hasContent()) {
+            return actionResponse.getContent().get();
+        }
+        throw createStatusException(actionResponse);
     }
 
     // Unnecessarily stateful methods:
@@ -166,5 +190,4 @@ public class ResponseFactory {
         header.add("Location", location);
         return new ResponseEntity<>(header, HttpStatus.FOUND);
     }
-
 }

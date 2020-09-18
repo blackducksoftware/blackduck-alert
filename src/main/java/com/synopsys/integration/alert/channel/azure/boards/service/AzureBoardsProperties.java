@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
@@ -51,6 +52,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
@@ -106,6 +108,12 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
 
     public List<String> getScopes() {
         return scopes;
+    }
+
+    public void validateProperties() throws AlertConfigurationException {
+        if (StringUtils.isBlank(organizationName) || StringUtils.isBlank(clientId) || StringUtils.isBlank(clientSecret)) {
+            throw new AlertConfigurationException("The global configuration for Azure is missing required information.");
+        }
     }
 
     public AzureHttpService createAzureHttpService(ProxyInfo proxy, Gson gson, String authorizationCode) throws AlertException {

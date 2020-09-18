@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class FieldValueModel extends AlertSerializableModel {
     private static final long serialVersionUID = -4163785381973494922L;
     private Collection<String> values;
@@ -55,20 +57,30 @@ public class FieldValueModel extends AlertSerializableModel {
         cleanValues();
     }
 
+    // since we return these objects now in the controllers Jackson will create a value attribute in the JSON unless we ignore it.
+    // if we don't ignore it the setValue method is called with the value of the JSON object causing inconsistent state with the values attribute.
+    @JsonIgnore
     public Optional<String> getValue() {
         return getValues().stream().findFirst();
     }
 
+    @JsonIgnore
     public void setValue(String value) {
-        setValues(Set.of(value));
+        if (null == value) {
+            setValues(Set.of());
+        } else {
+            setValues(Set.of(value));
+        }
     }
 
-    public boolean isSet() {
+    // DO NOT CHANGE this method name unless you change the UI. Alert is serializing this object in controllers. Spring uses Jackson which uses getters and setters to serialize fields.
+    // Jackson will remove the is, get, and set prefixes from method names to determine the field names for the JSON object.  This changes what the UI expects so get was added to the method name.
+    public boolean getIsSet() {
         return isSet;
     }
 
-    public void setIsSet(boolean set) {
-        isSet = set;
+    public void setIsSet(boolean isSet) {
+        this.isSet = isSet;
     }
 
     public boolean hasValues() {
@@ -76,7 +88,7 @@ public class FieldValueModel extends AlertSerializableModel {
     }
 
     public boolean containsNoData() {
-        return !hasValues() && !isSet();
+        return !hasValues() && !getIsSet();
     }
 
     private void cleanValues() {

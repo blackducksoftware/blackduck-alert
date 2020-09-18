@@ -5,11 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
@@ -43,12 +45,12 @@ public class CertificateTestUtil extends AlertIntegrationTest {
         FileUtils.deleteQuietly(trustStoreFile);
     }
 
-    protected CertificateModel createCertificate(CertificateActions actions) throws AlertException, IOException {
+    protected Optional<CertificateModel> createCertificate(CertificateActions actions) throws AlertException, IOException {
         String certificateContent = readCertificateContents();
         CertificateModel certificateModel = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        CertificateModel savedCertificate = actions.createCertificate(certificateModel);
+        ActionResponse<CertificateModel> response = actions.create(certificateModel);
 
-        return savedCertificate;
+        return response.getContent();
     }
 
     protected String readCertificateContents() throws IOException {

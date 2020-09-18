@@ -108,7 +108,7 @@ public class AzureOAuthCallbackController {
             logger.debug("Request URI {}?{}", requestURI, requestQueryString);
             String authorizationCode = request.getParameter("code");
             if (!oAuthRequestValidator.hasRequestKey(state)) {
-                logger.info("OAuth request \"{}\" not found.", state);
+                logger.info(createOAuthRequestLoggerMessage(state, "not found."));
             } else {
                 logger.info(createOAuthRequestLoggerMessage(state, "Processing..."));
                 oAuthRequestValidator.removeAuthorizationRequest(state);

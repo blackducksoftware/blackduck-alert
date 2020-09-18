@@ -4,11 +4,7 @@ import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
 import {
-    clearConfigFieldErrors,
-    deleteConfig,
-    getAllConfigs,
-    testConfig,
-    updateConfig
+    clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -40,7 +36,8 @@ class ProviderTable extends Component {
 
         this.state = {
             providerConfig: {},
-            saveCallback: () => null
+            validateCallback: (config) => null,
+            saveCallback: (config) => null
         };
     }
 
@@ -61,9 +58,13 @@ class ProviderTable extends Component {
 
     componentDidUpdate(prevProps) {
         const { updateStatus } = this.props;
+        const { saveCallback, validateCallback } = this.state;
         const saveSuccess = updateStatus === 'UPDATED';
+        if (prevProps.updateStatus === 'VALIDATING' && updateStatus === 'VALIDATED') {
+            validateCallback(true);
+        }
         if (prevProps.updateStatus === 'UPDATING' && (updateStatus === 'UPDATED' || updateStatus === 'ERROR')) {
-            this.state.saveCallback(saveSuccess);
+            saveCallback(saveSuccess);
         }
     }
 
@@ -166,11 +167,12 @@ class ProviderTable extends Component {
 
     onSave(callback) {
         const { providerConfig } = this.state;
+        const { updateConfig, validateConfig } = this.props;
         const configToUpdate = this.combineModelWithDefaults(providerConfig);
-        this.props.updateConfig(configToUpdate);
         this.setState({
+            validateCallback: () => updateConfig(configToUpdate),
             saveCallback: callback
-        });
+        }, () => validateConfig(configToUpdate));
         return true;
     }
 
@@ -336,7 +338,8 @@ ProviderTable.propTypes = {
     actionMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
     getAllConfigs: PropTypes.func.isRequired,
-    descriptorName: PropTypes.string.isRequired
+    descriptorName: PropTypes.string.isRequired,
+    validateConfig: PropTypes.func.isRequired
 };
 
 ProviderTable.defaultProps = {
@@ -368,7 +371,8 @@ const mapDispatchToProps = (dispatch) => ({
     updateConfig: (config) => dispatch(updateConfig(config)),
     testConfig: (config) => dispatch(testConfig(config)),
     deleteConfig: (id) => dispatch(deleteConfig(id)),
-    clearFieldErrors: () => dispatch(clearConfigFieldErrors())
+    clearFieldErrors: () => dispatch(clearConfigFieldErrors()),
+    validateConfig: (config) => dispatch(validateConfig(config))
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProviderTable));

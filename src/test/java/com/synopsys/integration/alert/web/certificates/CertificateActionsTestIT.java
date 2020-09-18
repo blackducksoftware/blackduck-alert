@@ -4,8 +4,8 @@ import static com.synopsys.integration.alert.web.certificates.CertificateTestUti
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,16 +17,20 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
 import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
+
+import junit.framework.AssertionFailedError;
 
 @Transactional
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
@@ -36,9 +40,6 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     private CustomCertificateRepository customCertificateRepository;
 
     @Autowired
-    private CertificateActions certificateActions;
-
-    @Autowired
     private AlertProperties alertProperties;
 
     @Autowired
@@ -46,8 +47,24 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
 
     private final CertificateTestUtil certTestUtil = new CertificateTestUtil();
 
+    @Autowired
+    private CertificatesDescriptorKey certificatesDescriptorKey;
+
+    @Autowired
+    private CertificateUtility certificateUtility;
+
+    private CertificateActions certificateActions;
+
     @BeforeEach
     public void init() throws Exception {
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+
+        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, certificateUtility);
         certTestUtil.init(alertProperties);
     }
 
@@ -58,14 +75,18 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void readAllEmptyListTest() {
-        assertTrue(certificateActions.readCertificates().isEmpty());
+        ActionResponse<List<CertificateModel>> response = certificateActions.readAllWithoutChecks();
+        assertTrue(response.hasContent());
+        assertTrue(response.getContent().isPresent());
+        assertTrue(response.getContent().get().isEmpty());
     }
 
     @Test
     public void createCertificateTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions);
-
+        Optional<CertificateModel> certificate = certTestUtil.createCertificate(certificateActions);
+        assertTrue(certificate.isPresent());
+        CertificateModel savedCertificate = certificate.get();
         assertNotNull(savedCertificate.getId());
         assertEquals(TEST_ALIAS, savedCertificate.getAlias());
         assertEquals(certificateContent, savedCertificate.getCertificateContent());
@@ -74,26 +95,25 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Test
     public void createCertificateIdTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        try {
-            CertificateModel certificate = new CertificateModel("alias", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-            certificate.setId("badId");
-            certificateActions.createCertificate(certificate);
-            fail();
-        } catch (AlertDatabaseConstraintException ex) {
-            assertNotNull(ex.getMessage());
-        }
+        CertificateModel certificate = new CertificateModel("alias", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
+        certificate.setId("badId");
+        ActionResponse<CertificateModel> response = certificateActions.create(certificate);
+        assertTrue(response.isError());
     }
 
     @Test
     public void readAllTest() throws Exception {
         certTestUtil.createCertificate(certificateActions);
-        assertEquals(1, certificateActions.readCertificates().size());
+        List<CertificateModel> certificates = certificateActions.getAll().getContent().orElse(List.of());
+        assertEquals(1, certificates.size());
     }
 
     @Test
     public void readSingleCertificateTest() throws Exception {
-        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions);
-        Optional<CertificateModel> actualCertificate = certificateActions.readCertificate(Long.valueOf(expectedCertificate.getId()));
+        CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                   .orElseThrow(AssertionFailedError::new);
+        ActionResponse<CertificateModel> response = certificateActions.getOne(Long.valueOf(expectedCertificate.getId()));
+        Optional<CertificateModel> actualCertificate = response.getContent();
         assertTrue(actualCertificate.isPresent());
         assertEquals(expectedCertificate, actualCertificate.get());
     }
@@ -101,11 +121,12 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Test
     public void updateCertificateTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
-        CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions);
+        CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                .orElseThrow(AssertionFailedError::new);
 
         String updatedAlias = "updated-alias";
         CertificateModel newModel = new CertificateModel(savedCertificate.getId(), updatedAlias, certificateContent, savedCertificate.getLastUpdated());
-        Optional<CertificateModel> updatedCertificate = certificateActions.updateCertificate(Long.valueOf(savedCertificate.getId()), newModel);
+        Optional<CertificateModel> updatedCertificate = certificateActions.update(Long.valueOf(savedCertificate.getId()), newModel).getContent();
         assertTrue(updatedCertificate.isPresent());
 
         CertificateModel updatedModel = updatedCertificate.get();
@@ -118,14 +139,15 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     public void updateCertificateMissingIdTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
         CertificateModel certificate = new CertificateModel("-1", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        Optional<CertificateModel> result = certificateActions.updateCertificate(-1L, certificate);
+        Optional<CertificateModel> result = certificateActions.update(-1L, certificate).getContent();
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void deleteCertificateTest() throws Exception {
-        CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions);
-        certificateActions.deleteCertificate(Long.valueOf(savedCertificate.getId()));
+        CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions)
+                                                .orElseThrow(AssertionFailedError::new);
+        certificateActions.delete(Long.valueOf(savedCertificate.getId()));
         assertTrue(customCertificateRepository.findAll().isEmpty());
     }
 
@@ -134,14 +156,12 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
         String certificateContent = certTestUtil.readCertificateContents();
         CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         CertificateUtility certificateUtility = Mockito.mock(CertificateUtility.class);
+        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.doThrow(new AlertException("Test exception")).when(certificateUtility).importCertificate(Mockito.any(CustomCertificateModel.class));
-        CertificateActions certificateActions = new CertificateActions(certificateAccessor, certificateUtility);
-        try {
-            certificateActions.createCertificate(certificate);
-            fail();
-        } catch (AlertException ex) {
-            assertNotNull(ex.getMessage());
-        }
+        CertificateActions certificateActions = new CertificateActions(new CertificatesDescriptorKey(), authorizationManager, certificateAccessor, certificateUtility);
+        ActionResponse<CertificateModel> response = certificateActions.create(certificate);
+        assertTrue(response.isError());
         assertTrue(certificateAccessor.getCertificates().isEmpty());
     }
 

@@ -64,12 +64,12 @@ public class AzureBoardsRequestDelegator {
     public IssueTrackerResponse sendRequests(List<IssueTrackerRequest> requests) throws IntegrationException {
         IssueConfig azureIssueConfig = context.getIssueConfig();
         AzureBoardsProperties azureBoardsProperties = context.getIssueTrackerConfig();
+        azureBoardsProperties.validateProperties();
 
         HttpTransport httpTransport = azureBoardsProperties.createHttpTransport(proxyManager.createProxyInfo());
         Credential oAuthCredential = retrieveOAuthCredential(azureBoardsProperties, httpTransport);
         AzureHttpService azureHttpService = AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
 
-        // TODO validate configuration
 
         AzureApiVersionAppender azureApiVersionAppender = new AzureApiVersionAppender();
         AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, azureApiVersionAppender);

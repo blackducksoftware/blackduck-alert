@@ -135,7 +135,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
         descriptorConfigRepository.flush();
 
         UUID id = UUID.fromString(jobId);
@@ -168,9 +168,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
 
-        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
-        String response = mvcResult.getResponse().getContentAsString();
-        checkResponse(response);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent()).andReturn();
     }
 
     @Test
@@ -265,8 +263,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private void checkResponse(String response) throws AlertDatabaseConstraintException {
         assertNotNull(response);
 
-        Map<String, Object> responseEntity = gson.fromJson(response, Map.class);
-        String stringId = responseEntity.get("id").toString();
+        JobFieldModel responseEntity = gson.fromJson(response, JobFieldModel.class);
+        String stringId = responseEntity.getJobId();
         UUID id = UUID.fromString(stringId);
 
         Optional<ConfigurationJobModel> configurationModelOptional = getConfigurationAccessor().getJobById(id);

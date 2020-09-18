@@ -220,8 +220,9 @@ class TableSelectInput extends Component {
             });
             if (response.ok) {
                 return response.json().then((data) => {
+                    const { options } = data;
                     this.setState({
-                        data,
+                        data: options,
                         success: true
                     });
                     return data;
