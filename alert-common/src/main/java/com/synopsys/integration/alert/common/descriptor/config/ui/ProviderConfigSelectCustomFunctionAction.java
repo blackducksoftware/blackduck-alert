@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -66,8 +66,6 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
             options = configurationModels.stream()
-                          .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                          .map(FieldAccessor::new)
                           .map(this::createNameToIdOption)
                           .flatMap(Optional::stream)
                           .collect(Collectors.toList());
@@ -76,11 +74,10 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
-    private Optional<LabelValueSelectOption> createNameToIdOption(FieldAccessor providerGlobalConfigFieldAccessor) {
-        Optional<String> providerConfigName = providerGlobalConfigFieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        Optional<String> providerConfigId = providerGlobalConfigFieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).map(Object::toString);
-        if (providerConfigName.isPresent() && providerConfigId.isPresent()) {
-            LabelValueSelectOption providerConfigOption = new LabelValueSelectOption(providerConfigName.get(), providerConfigId.get());
+    private Optional<LabelValueSelectOption> createNameToIdOption(ConfigurationModel configurationModel) {
+        Optional<String> providerConfigName = configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).flatMap(ConfigurationFieldModel::getFieldValue);
+        if (providerConfigName.isPresent()) {
+            LabelValueSelectOption providerConfigOption = new LabelValueSelectOption(providerConfigName.get(), configurationModel.getConfigurationId().toString());
             return Optional.of(providerConfigOption);
         }
         return Optional.empty();
