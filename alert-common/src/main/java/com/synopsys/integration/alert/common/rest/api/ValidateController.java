@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
-public interface ValidateController<S> {
+public interface ValidateController<T> {
     @PostMapping("/validate")
-    ValidationResponseModel validate(@RequestBody S requestBody);
+    ValidationResponseModel validate(@RequestBody T requestBody);
 }

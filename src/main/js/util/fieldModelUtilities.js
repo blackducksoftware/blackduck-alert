@@ -191,6 +191,17 @@ export function createFieldModelErrorKey(fieldKey) {
     return fieldKey.concat('Error');
 }
 
+export function checkContextAndDescriptor(fieldModel, context, descriptorName) {
+    const copy = JSON.parse(JSON.stringify(fieldModel));
+    if (!copy.context) {
+        copy.context = context;
+    }
+    if (!copy.descriptorName) {
+        copy.descriptorName = descriptorName;
+    }
+    return copy;
+}
+
 export function checkModelOrCreateEmpty(fieldModel, fieldKeys) {
     const emptyFieldModel = createEmptyFieldModel(fieldKeys, fieldModel.context, fieldModel.descriptorName);
     const newModel = { ...emptyFieldModel, ...fieldModel };

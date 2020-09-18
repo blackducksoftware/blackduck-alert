@@ -36,7 +36,7 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
         String exceptionMessage = integrationRestException.getMessage();
         String message = exceptionMessage;
         if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
-            message += " : " + integrationRestException.getHttpStatusMessage();
+            message += ": " + integrationRestException.getHttpStatusMessage();
         }
         return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.withoutFieldStatuses(message));
     }

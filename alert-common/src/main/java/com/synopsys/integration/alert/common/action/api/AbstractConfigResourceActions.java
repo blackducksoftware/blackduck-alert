@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions implements LongResourceActions<FieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
+public abstract class AbstractConfigResourceActions implements LongIdResourceActions<FieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
 
@@ -48,43 +48,43 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
         this.descriptorAccessor = descriptorAccessor;
     }
 
-    protected abstract ActionResponse<FieldModel> createAfterChecks(FieldModel resource);
+    protected abstract ActionResponse<FieldModel> createWithoutChecks(FieldModel resource);
 
-    protected abstract ActionResponse<FieldModel> deleteAfterChecks(Long id);
+    protected abstract ActionResponse<FieldModel> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<List<FieldModel>> readAllAfterChecks();
+    protected abstract ActionResponse<List<FieldModel>> readAllWithoutChecks();
 
-    protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptorAfterChecks(String context, String descriptorName);
+    protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptorWithoutChecks(String context, String descriptorName);
 
     protected abstract Optional<FieldModel> findFieldModel(Long id);
 
-    protected abstract ValidationActionResponse testAfterChecks(FieldModel resource);
+    protected abstract ValidationActionResponse testWithoutChecks(FieldModel resource);
 
-    protected abstract ActionResponse<FieldModel> updateAfterChecks(Long id, FieldModel resource);
+    protected abstract ActionResponse<FieldModel> updateWithoutChecks(Long id, FieldModel resource);
 
-    protected abstract ValidationActionResponse validateAfterChecks(FieldModel resource);
+    protected abstract ValidationActionResponse validateWithoutChecks(FieldModel resource);
 
-    public ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
+    public final ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
             return ActionResponse.createForbiddenResponse();
         }
-        return readAllByContextAndDescriptorAfterChecks(context, descriptorName);
+        return readAllByContextAndDescriptorWithoutChecks(context, descriptorName);
     }
 
     @Override
-    public ActionResponse<FieldModel> create(FieldModel resource) {
+    public final ActionResponse<FieldModel> create(FieldModel resource) {
         if (!authorizationManager.hasCreatePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
         }
-        ValidationActionResponse validationResponse = validateAfterChecks(resource);
+        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return createAfterChecks(resource);
+        return createWithoutChecks(resource);
     }
 
     @Override
-    public ActionResponse<List<FieldModel>> getAll() {
+    public final ActionResponse<List<FieldModel>> getAll() {
         try {
             Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
                                               .stream()
@@ -93,14 +93,14 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
             if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name(), ConfigContextEnum.GLOBAL.name()), descriptorNames)) {
                 return ActionResponse.createForbiddenResponse();
             }
-            return readAllAfterChecks();
+            return readAllWithoutChecks();
         } catch (AlertException ex) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
         }
     }
 
     @Override
-    public ActionResponse<FieldModel> getOne(Long id) {
+    public final ActionResponse<FieldModel> getOne(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
@@ -114,7 +114,7 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
     }
 
     @Override
-    public ActionResponse<FieldModel> update(Long id, FieldModel resource) {
+    public final ActionResponse<FieldModel> update(Long id, FieldModel resource) {
         if (!authorizationManager.hasWritePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -124,15 +124,15 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        ValidationActionResponse validationResponse = validateAfterChecks(resource);
+        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateAfterChecks(id, resource);
+        return updateWithoutChecks(id, resource);
     }
 
     @Override
-    public ActionResponse<FieldModel> delete(Long id) {
+    public final ActionResponse<FieldModel> delete(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
             FieldModel model = fieldModel.get();
@@ -145,30 +145,30 @@ public abstract class AbstractConfigResourceActions implements LongResourceActio
         if (existingModel.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
-        return deleteAfterChecks(id);
+        return deleteWithoutChecks(id);
     }
 
     @Override
-    public ValidationActionResponse test(FieldModel resource) {
+    public final ValidationActionResponse test(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        ValidationActionResponse validationResponse = validateAfterChecks(resource);
+        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testAfterChecks(resource);
+        ValidationActionResponse response = testWithoutChecks(resource);
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
     @Override
-    public ValidationActionResponse validate(FieldModel resource) {
+    public final ValidationActionResponse validate(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
-        ValidationActionResponse response = validateAfterChecks(resource);
+        ValidationActionResponse response = validateWithoutChecks(resource);
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 

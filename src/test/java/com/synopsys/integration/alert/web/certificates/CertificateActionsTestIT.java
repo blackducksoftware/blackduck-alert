@@ -75,7 +75,7 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void readAllEmptyListTest() {
-        ActionResponse<List<CertificateModel>> response = certificateActions.readAllAfterChecks();
+        ActionResponse<List<CertificateModel>> response = certificateActions.readAllWithoutChecks();
         assertTrue(response.hasContent());
         assertTrue(response.getContent().isPresent());
         assertTrue(response.getContent().get().isEmpty());
