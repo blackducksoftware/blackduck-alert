@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectSelectOption;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -62,9 +61,11 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
-        String providerConfigName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
-        List<ProviderProject> content = providerDataAccessor.getProjectsByProviderConfigName(providerConfigName);
-        List<ProviderProjectSelectOption> options = content.stream()
+        List<ProviderProjectSelectOption> options = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                                                        .map(Long::parseLong)
+                                                        .map(providerDataAccessor::getProjectsByProviderConfigId)
+                                                        .orElse(List.of())
+                                                        .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
         ProviderProjectOptions optionList = new ProviderProjectOptions(options);

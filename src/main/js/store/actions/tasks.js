@@ -37,7 +37,7 @@ export function fetchTasks() {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        dispatch(fetchedAllTasks(responseData));
+                        dispatch(fetchedAllTasks(responseData.tasks));
                     } else {
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                             let message = '';

@@ -87,7 +87,7 @@ public class EmailChannel extends NamedDistributionChannel {
         if (host.isEmpty() || from.isEmpty()) {
             throw new AlertException("ERROR: Missing global config.");
         }
-        FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getProviderConfigName(), event.getContent(), fieldAccessor);
+        FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getProviderConfigId(), event.getContent(), fieldAccessor);
 
         Set<String> emailAddresses = new HashSet<>(updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
         EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);

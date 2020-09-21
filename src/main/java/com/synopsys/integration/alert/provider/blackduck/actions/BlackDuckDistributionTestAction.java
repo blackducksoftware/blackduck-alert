@@ -65,14 +65,14 @@ public class BlackDuckDistributionTestAction extends TestAction {
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
         ArrayList<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        Optional<String> optionalProviderConfigName = registeredFieldValues.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        if (optionalProviderConfigName.isPresent()) {
-            String providerConfigName = optionalProviderConfigName.get();
+        Optional<Long> optionalProviderConfigId = registeredFieldValues.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        if (optionalProviderConfigId.isPresent()) {
+            Long providerConfigId = optionalProviderConfigId.get();
             registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)
-                .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigName, projectNamePattern))
+                .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                 .ifPresent(fieldStatuses::add);
 
-            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getConfigurationById(providerConfigId)
                                                                             .map(blackDuckProvider::createStatefulProvider)
                                                                             .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
             if (optionalBlackDuckProperties.isPresent()) {
@@ -80,11 +80,11 @@ public class BlackDuckDistributionTestAction extends TestAction {
 
                 BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
                 if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-                    fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck."));
+                    fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "User permission failed, cannot read notifications from Black Duck."));
                 }
             }
         } else {
-            fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration is required"));
+            fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "A provider configuration is required"));
         }
 
         if (MessageResult.hasFieldStatusBySeverity(fieldStatuses, FieldStatusSeverity.ERROR)) {
@@ -93,8 +93,8 @@ public class BlackDuckDistributionTestAction extends TestAction {
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
-    private Optional<AlertFieldStatus> validatePatternMatchesProject(String providerConfigName, String projectNamePattern) {
-        List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.getProjectsByProviderConfigName(providerConfigName);
+    private Optional<AlertFieldStatus> validatePatternMatchesProject(Long providerConfigId, String projectNamePattern) {
+        List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             return Optional.of(AlertFieldStatus.warning(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects."));

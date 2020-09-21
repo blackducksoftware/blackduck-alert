@@ -27,14 +27,14 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 public class ContentEvent extends AlertEvent {
     private static final long serialVersionUID = 8592125218004089822L;
     private final String createdAt;
-    private final String providerConfigName;
+    private final Long providerConfigId;
     private final String formatType;
     private final MessageContentGroup contentGroup;
 
-    public ContentEvent(String destination, String createdAt, String providerConfigName, String formatType, MessageContentGroup contentGroup) {
+    public ContentEvent(String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup) {
         super(destination);
         this.createdAt = createdAt;
-        this.providerConfigName = providerConfigName;
+        this.providerConfigId = providerConfigId;
         this.formatType = formatType;
         this.contentGroup = contentGroup;
     }
@@ -43,8 +43,8 @@ public class ContentEvent extends AlertEvent {
         return createdAt;
     }
 
-    public String getProviderConfigName() {
-        return providerConfigName;
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
 
     public String getFormatType() {
