@@ -33,8 +33,6 @@ import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemRel
 import com.synopsys.integration.azure.boards.common.util.AzureFieldsExtractor;
 
 public class WorkItemResponseModel {
-    //protected static final List<AzureFieldDefinition> FIELD_DEFINITIONS = WorkItemResponseFields.list();
-
     private Integer id;
     private Integer rev;
     private JsonObject fields;
