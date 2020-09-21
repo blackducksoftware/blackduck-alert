@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.web;
 
-public class NotificationFilterModel {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class NotificationFilterModel extends AlertSerializableModel {
     private String name;
 
     public NotificationFilterModel(String name) {
