@@ -22,12 +22,12 @@
  */
 package com.synopsys.integration.alert.web.api.about;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.AboutReader;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 
 @Component
 public class AboutActions {
@@ -38,8 +38,10 @@ public class AboutActions {
         this.aboutReader = aboutReader;
     }
 
-    public Optional<AboutModel> getAboutModel() {
-        return Optional.ofNullable(aboutReader.getAboutModel());
+    public ActionResponse<AboutModel> getAboutModel() {
+        return aboutReader.getAboutModel()
+                   .map(content -> new ActionResponse<>(HttpStatus.OK, content))
+                   .orElse(new ActionResponse<>(HttpStatus.NOT_FOUND));
     }
 
 }

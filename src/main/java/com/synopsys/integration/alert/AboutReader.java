@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -60,28 +61,26 @@ public class AboutReader {
         this.descriptorActions = descriptorActions;
     }
 
-    public AboutModel getAboutModel() {
+    public Optional<AboutModel> getAboutModel() {
         try {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
             Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
             Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
+            AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
                 createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
+            return Optional.of(model);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return null;
+            return Optional.empty();
         }
     }
 
     public String getProductVersion() {
-        AboutModel aboutModel = getAboutModel();
-        if (aboutModel != null) {
-            return aboutModel.getVersion();
-        } else {
-            return PRODUCT_VERSION_UNKNOWN;
-        }
+        Optional<AboutModel> aboutModel = getAboutModel();
+        return aboutModel.map(AboutModel::getVersion)
+                   .orElse(PRODUCT_VERSION_UNKNOWN);
     }
 
     private String createInternalUrl(String path) {

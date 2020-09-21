@@ -77,9 +77,9 @@ public class UpdateChecker {
         IntHttpClient intHttpClient = createHttpClient();
         DockerTagRetriever dockerTagRetriever = new DockerTagRetriever(gson, intHttpClient);
 
-        AboutModel aboutModel = aboutReader.getAboutModel();
-        String currentVersion = aboutModel.getVersion();
-        String alertCreated = aboutModel.getCreated();
+        Optional<AboutModel> aboutModel = aboutReader.getAboutModel();
+        String currentVersion = aboutModel.map(AboutModel::getVersion).orElse(null);
+        String alertCreated = aboutModel.map(AboutModel::getCreated).orElse(null);
 
         boolean isProduction = isProductionVersion(currentVersion);
 

@@ -25,9 +25,9 @@ package com.synopsys.integration.alert.web.api.about;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AboutModel extends Stringable {
+public class AboutModel extends AlertSerializableModel {
     private String version;
     private String created;
     private String description;

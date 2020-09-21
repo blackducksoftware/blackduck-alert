@@ -23,11 +23,10 @@
 package com.synopsys.integration.alert.web.api.about;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
@@ -43,8 +42,7 @@ public class AboutController extends BaseController {
 
     @GetMapping(value = "/about")
     public AboutModel getAbout() {
-        return aboutActions.getAboutModel()
-                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND));
+        return ResponseFactory.createContentResponseFromAction(aboutActions.getAboutModel());
     }
 
 }
