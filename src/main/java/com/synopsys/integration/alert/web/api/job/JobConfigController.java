@@ -65,7 +65,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @Override
-    public List getAll() {
+    public List<JobFieldModel> getAll() {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
     }
 

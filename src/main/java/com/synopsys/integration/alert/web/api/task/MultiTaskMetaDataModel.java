@@ -22,27 +22,19 @@
  */
 package com.synopsys.integration.alert.web.api.task;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 
-@RestController
-@RequestMapping(TaskController.TASK_BASE_PATH)
-public class TaskController extends BaseController {
-    public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
-    private final TaskActions taskActions;
+public class MultiTaskMetaDataModel extends AlertSerializableModel {
+    private List<TaskMetaData> tasks;
 
-    @Autowired
-    public TaskController(TaskActions taskActions) {
-        this.taskActions = taskActions;
+    public MultiTaskMetaDataModel(List<TaskMetaData> tasks) {
+        this.tasks = tasks;
     }
 
-    @GetMapping
-    public MultiTaskMetaDataModel getAllTasks() {
-        return ResponseFactory.createContentResponseFromAction(taskActions.getTasks());
+    public List<TaskMetaData> getTasks() {
+        return tasks;
     }
 }
