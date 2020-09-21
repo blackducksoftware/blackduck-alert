@@ -1,14 +1,21 @@
 package com.synopsys.integration.alert.web.api.about;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 
 public class AboutActionsTest {
 
@@ -29,8 +36,24 @@ public class AboutActionsTest {
         AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getAboutModel()).thenReturn(model);
         AboutActions aboutActions = new AboutActions(aboutReader);
-        AboutModel resultModel = aboutActions.getAboutModel().get();
+        ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
+        assertTrue(resultModel.isSuccessful());
+        assertTrue(resultModel.hasContent());
+        assertEquals(model, resultModel.getContent().orElse(null));
+    }
 
-        assertEquals(model, resultModel);
+    @Test
+    public void testGetAboutDataNotPresent() {
+        Gson gson = Mockito.mock(Gson.class);
+        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
+        DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
+
+        Mockito.when(alertProperties.getServerUrl()).thenThrow(new NullPointerException("Exception for about test"));
+        AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusUtility, descriptorActions);
+        AboutActions aboutActions = new AboutActions(aboutReader);
+        ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
+        assertTrue(resultModel.isError());
+        assertFalse(resultModel.hasContent());
     }
 }
