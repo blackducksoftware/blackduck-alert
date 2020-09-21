@@ -52,7 +52,7 @@ public class TaskActions {
         this.taskManager = taskManager;
     }
 
-    public ActionResponse<List<TaskMetaData>> getTasks() {
+    public ActionResponse<MultiTaskMetaDataModel> getTasks() {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
@@ -62,6 +62,7 @@ public class TaskActions {
                                           .map(ScheduledTask::createTaskMetaData)
                                           .sorted(Comparator.comparing(TaskMetaData::getType))
                                           .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, taskList);
+        MultiTaskMetaDataModel content = new MultiTaskMetaDataModel(taskList);
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 }

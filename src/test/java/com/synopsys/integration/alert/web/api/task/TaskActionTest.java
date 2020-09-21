@@ -47,11 +47,13 @@ public class TaskActionTest {
         taskManager.registerTask(task);
         taskManager.scheduleExecutionAtFixedRate(expectedDelay, task.getTaskName());
         TaskActions actions = new TaskActions(descriptorKey, authorizationManager, taskManager);
-        ActionResponse<List<TaskMetaData>> response = actions.getTasks();
+        ActionResponse<MultiTaskMetaDataModel> response = actions.getTasks();
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
-        List<TaskMetaData> tasks = response.getContent().orElse(List.of());
-        TaskMetaData model = tasks.stream().findFirst().orElse(null);
+        MultiTaskMetaDataModel tasksModel = response.getContent().orElse(new MultiTaskMetaDataModel(List.of()));
+        TaskMetaData model = tasksModel.getTasks().stream()
+                                 .findFirst()
+                                 .orElse(null);
         assertNotNull(model);
         assertNotNull(task.getTaskName());
         assertEquals(task.getFormatedNextRunTime().orElse(""), model.getNextRunTime());
@@ -66,7 +68,7 @@ public class TaskActionTest {
 
         TaskManager taskManager = new TaskManager();
         TaskActions actions = new TaskActions(descriptorKey, authorizationManager, taskManager);
-        ActionResponse<List<TaskMetaData>> response = actions.getTasks();
+        ActionResponse<MultiTaskMetaDataModel> response = actions.getTasks();
         assertTrue(response.isError());
         assertFalse(response.hasContent());
     }
