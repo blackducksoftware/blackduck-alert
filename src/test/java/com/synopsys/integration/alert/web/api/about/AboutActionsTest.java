@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class AboutActionsTest {
 
         AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
         AboutReader aboutReader = Mockito.mock(AboutReader.class);
-        Mockito.when(aboutReader.getAboutModel()).thenReturn(model);
+        Mockito.when(aboutReader.getAboutModel()).thenReturn(Optional.of(model));
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
         assertTrue(resultModel.isSuccessful());
