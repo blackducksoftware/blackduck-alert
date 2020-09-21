@@ -30,11 +30,10 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemRelationModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldsExtractor;
 
 public class WorkItemResponseModel {
-    public static final List<AzureFieldDefinition> FIELD_DEFINITIONS = WorkItemResponseFields.list();
+    //protected static final List<AzureFieldDefinition> FIELD_DEFINITIONS = WorkItemResponseFields.list();
 
     private Integer id;
     private Integer rev;

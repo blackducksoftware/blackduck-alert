@@ -22,11 +22,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class FieldOptions<T> extends AlertSerializableModel {
+public class FieldOptions<T extends Serializable> extends AlertSerializableModel {
     // Do not rename this the UI looks for a field named options in the JSON object it receives.
     private List<T> options;
 
