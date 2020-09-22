@@ -109,14 +109,14 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void userLoginWithValidSessionTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
+        AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
+        AuthenticationController loginHandler = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
 
         HttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = request.getSession(true);
         session.setMaxInactiveInterval(30);
         HttpServletResponse httpResponse = new MockHttpServletResponse();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenReturn(true);
+        Mockito.when(authenticationActions.authenticateUser(Mockito.any())).thenReturn(true);
 
         try {
             loginHandler.login(request, httpResponse, null);
@@ -127,11 +127,11 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void userLoginWithInvalidSessionTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
+        AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
+        AuthenticationController loginHandler = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
 
         HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenReturn(false);
+        Mockito.when(authenticationActions.authenticateUser(Mockito.any())).thenReturn(false);
         HttpServletResponse httpResponse = new MockHttpServletResponse();
 
         assertErrorStatus(HttpStatus.UNAUTHORIZED, () -> loginHandler.login(request, httpResponse, null));
@@ -139,11 +139,11 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void userLoginWithBadCredentialsTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
+        AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
+        AuthenticationController loginHandler = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
 
         HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
+        Mockito.when(authenticationActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
         HttpServletResponse httpResponse = new MockHttpServletResponse();
 
         assertErrorStatus(HttpStatus.UNAUTHORIZED, () -> loginHandler.login(request, httpResponse, null));

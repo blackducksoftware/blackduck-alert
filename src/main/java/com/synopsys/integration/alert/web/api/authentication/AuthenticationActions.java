@@ -31,11 +31,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
 
 @Component
-public class LoginActions {
+public class AuthenticationActions {
     private final AlertAuthenticationProvider authenticationProvider;
 
     @Autowired
-    public LoginActions(AlertAuthenticationProvider authenticationProvider) {
+    public AuthenticationActions(AlertAuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
 

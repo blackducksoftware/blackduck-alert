@@ -45,13 +45,13 @@ import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 public class AuthenticationController extends BaseController {
-    private final LoginActions loginActions;
+    private final AuthenticationActions authenticationActions;
     private final PasswordResetService passwordResetService;
     private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public AuthenticationController(LoginActions loginActions, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
-        this.loginActions = loginActions;
+    public AuthenticationController(AuthenticationActions authenticationActions, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
+        this.authenticationActions = authenticationActions;
         this.passwordResetService = passwordResetService;
         this.csrfTokenRepository = csrfTokenRepository;
     }
@@ -71,7 +71,7 @@ public class AuthenticationController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
         try {
-            if (loginActions.authenticateUser(loginConfig)) {
+            if (authenticationActions.authenticateUser(loginConfig)) {
                 CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());

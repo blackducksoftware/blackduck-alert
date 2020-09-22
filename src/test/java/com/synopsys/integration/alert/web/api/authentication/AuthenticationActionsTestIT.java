@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.web.security.authentication.event.Authenti
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
-public class LoginActionsTestIT extends AlertIntegrationTest {
+public class AuthenticationActionsTestIT extends AlertIntegrationTest {
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
     @Autowired
@@ -63,8 +63,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void testAuthenticateDBUserIT() {
-        LoginActions loginActions = new LoginActions(authenticationProvider);
-        boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider);
+        boolean userAuthenticated = authenticationActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertTrue(userAuthenticated);
     }
@@ -72,10 +72,10 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Test
     public void testAuthenticateDBUserFailIT() {
         mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        LoginActions loginActions = new LoginActions(authenticationProvider);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setAlertPassword("badpassword");
-        boolean authenticated = loginActions.authenticateUser(badRestModel.createRestModel());
+        boolean authenticated = authenticationActions.authenticateUser(badRestModel.createRestModel());
         assertFalse(authenticated);
     }
 
@@ -84,9 +84,9 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         // add a user test then delete a user.
         String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setAlertUsername(userName);
-        LoginActions loginActions = new LoginActions(authenticationProvider);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider);
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
-        boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        boolean userAuthenticated = authenticationActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertFalse(userAuthenticated);
         Optional<UserModel> userModel = userAccessor.getUser(userName);
@@ -108,8 +108,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
-        LoginActions loginActions = new LoginActions(authenticationProvider);
-        boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider);
+        boolean authenticated = authenticationActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertTrue(authenticated);
     }
 
@@ -131,8 +131,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, authorizationUtility, databaseProvider);
 
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(alertDatabaseAuthenticationPerformer));
-        LoginActions loginActions = new LoginActions(authenticationProvider);
-        boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider);
+        boolean authenticated = authenticationActions.authenticateUser(mockLoginRestModel.createRestModel());
         assertFalse(authenticated);
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
     }
