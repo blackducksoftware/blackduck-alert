@@ -51,8 +51,8 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isAppCheckEnabled(FieldAccessor fieldAccessor) {
-        // FIXME implement
-        return true;
+        boolean isPluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return !isPluginCheckDisabled;
     }
 
     @Override
@@ -77,11 +77,13 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        return new JiraServerProperties(url, password, username);
+        boolean pluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
 
     @Override
     protected String getChannelDisplayName() {
         return JiraServerDescriptor.JIRA_LABEL;
     }
+
 }

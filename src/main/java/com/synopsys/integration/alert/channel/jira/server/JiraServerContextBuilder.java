@@ -23,8 +23,6 @@
 package com.synopsys.integration.alert.channel.jira.server;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerContext;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 
@@ -73,6 +71,8 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        return new JiraServerProperties(url, password, username);
+        boolean pluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
+
 }

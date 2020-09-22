@@ -104,8 +104,9 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
         String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_PASSWORD)
                               .map(this::getAppropriateAccessToken)
                               .orElse("");
+        boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK).map(Boolean::parseBoolean).orElse(false);
 
-        return new JiraServerProperties(url, password, username);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
