@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.audit.controller;
+package com.synopsys.integration.alert.web.api.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -68,8 +68,6 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.api.audit.AuditEntryActions;
-import com.synopsys.integration.alert.web.api.audit.AuditEntryController;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional

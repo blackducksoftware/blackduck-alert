@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.audit.controller;
+package com.synopsys.integration.alert.web.api.audit;
 
 import java.util.ArrayList;
 import java.util.List;
