@@ -114,7 +114,9 @@ public class AzureCustomFieldManager {
 
         TeamProjectReferenceResponseModel project = getProject(projectName);
         String processId = getProjectPropertyValue(project, ProjectPropertyResponseModel.COMMON_PROPERTIES_PROCESS_ID);
-        String workItemTypeRefName = getWorkItemTypeRefName(processId, workItemTypeName);
+        ProcessWorkItemTypesResponseModel workItemType = getWorkItemType(processId, workItemTypeName);
+        ProcessWorkItemTypesResponseModel newWorkItemType = copyWorkItemIfNeeded(processId, workItemType);
+        String workItemTypeRefName = newWorkItemType.getReferenceName();
 
         List<Future<ProcessFieldResponseModel>> processFieldAdditionHolders = new ArrayList<>(7);
         for (Future<ProjectWorkItemFieldModel> projectFieldFuture : projectFieldFindOrCreateHolders) {
@@ -194,25 +196,28 @@ public class AzureCustomFieldManager {
         }
     }
 
-    private String getWorkItemTypeRefName(String processId, String workItemTypeName) throws AlertException {
+    private ProcessWorkItemTypesResponseModel copyWorkItemIfNeeded(String processId, ProcessWorkItemTypesResponseModel workItemType) throws AlertException {
+        ProcessWorkItemTypesResponseModel newWorkItemType = workItemType;
+        if (workItemType.getReferenceName().startsWith(UNMODIFIABLE_WORK_ITEM_PREFIX)) {
+            // if the reference name starts with this prefix, we know it is a system default so it can not be modified and fields can not be added to it, so we need to create a "copy" of it
+            try {
+                newWorkItemType = processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(workItemType));
+            } catch (IOException | HttpServiceException e) {
+                throw new AlertException(String.format("There was a problem creating a modifiable work item from % in the Azure process with id: %s", workItemType.getReferenceName(), processId), e);
+            }
+        }
+        return newWorkItemType;
+    }
+
+    private ProcessWorkItemTypesResponseModel getWorkItemType(String processId, String workItemTypeName) throws AlertException {
         try {
             AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> processWorkItemTypes = processService.getWorkItemTypes(organizationName, processId);
-            ProcessWorkItemTypesResponseModel matchingWorkItemType = processWorkItemTypes.getValue()
-                                                                         .stream()
-                                                                         .filter(workItemType -> workItemType.getName().equals(workItemTypeName))
-                                                                         .findFirst()
-                                                                         .orElseThrow(
-                                                                             () -> new AlertException(String.format("No work item type '%s' exists for the Azure process with id: '%s'", workItemTypeName, processId)));
-
-            if (matchingWorkItemType.getReferenceName().startsWith(UNMODIFIABLE_WORK_ITEM_PREFIX)) {
-                // if the reference name starts with this prefix, we know it is a system default so it can not be modified and fields can not be added to it, so we need to create a "copy" of it
-                try {
-                    matchingWorkItemType = processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(matchingWorkItemType));
-                } catch (IOException e) {
-                    throw new AlertException(String.format("There was a problem creating a modifiable work item from % in the Azure process with id: %s", matchingWorkItemType.getReferenceName(), processId), e);
-                }
-            }
-            return matchingWorkItemType.getReferenceName();
+            return processWorkItemTypes.getValue()
+                       .stream()
+                       .filter(workItemType -> workItemType.getName().equals(workItemTypeName))
+                       .findFirst()
+                       .orElseThrow(
+                           () -> new AlertException(String.format("No work item type '%s' exists for the Azure process with id: '%s'", workItemTypeName, processId)));
         } catch (HttpServiceException e) {
             throw new AlertException(String.format("There was a problem trying to get the work item types for the Azure process with id: %s", processId), e);
         }
