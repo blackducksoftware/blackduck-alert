@@ -51,6 +51,15 @@ public class AzureProcessService {
         return azureHttpService.get(requestSpec, responseType);
     }
 
+    public ProcessWorkItemTypesResponseModel createWorkItemType(String organizationName, String processId, ProcessWorkItemTypeRequestModel requestBody) throws IOException, HttpServiceException {
+        String requestSpec = API_SPEC_ORGANIZATION_PROCESS_WORKITEMTYPES
+                                 .defineReplacement(PATH_ORGANIZATION_REPLACEMENT, organizationName)
+                                 .defineReplacement(PATH_PROCESS_ID_REPLACEMENT, processId)
+                                 .populateSpec();
+        requestSpec = appendApiVersionQueryParam(requestSpec);
+        return azureHttpService.post(requestSpec, requestBody, ProcessWorkItemTypesResponseModel.class);
+    }
+
     public ProcessFieldResponseModel addFieldToWorkItemType(String organizationName, String processId, String workItemTypeRefName, ProcessFieldRequestModel requestBody) throws IOException, HttpServiceException {
         String requestSpec = String.format("/%s/_apis/work/processes/%s/workItemTypes/%s/fields", organizationName, processId, workItemTypeRefName);
         requestSpec = azureApiVersionAppender.appendApiVersion5_1_Preview_2(requestSpec);
