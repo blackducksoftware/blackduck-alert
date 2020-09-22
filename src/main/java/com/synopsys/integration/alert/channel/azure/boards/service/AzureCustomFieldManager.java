@@ -195,13 +195,11 @@ public class AzureCustomFieldManager {
     }
 
     private ProcessWorkItemTypesResponseModel copyWorkItem(String processId, ProcessWorkItemTypesResponseModel workItemType) throws AlertException {
-        ProcessWorkItemTypesResponseModel newWorkItemType;
         try {
-            newWorkItemType = processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(workItemType));
+            return processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(workItemType));
         } catch (IOException | HttpServiceException e) {
             throw new AlertException(String.format("There was a problem creating a modifiable work item from % in the Azure process with id: %s", workItemType.getReferenceName(), processId), e);
         }
-        return newWorkItemType;
     }
 
     private String getWorkItemTypeRefName(String processId, String workItemTypeName) throws AlertException {
