@@ -50,6 +50,12 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
+    protected boolean isAppCheckEnabled(FieldAccessor fieldAccessor) {
+        // FIXME implement
+        return true;
+    }
+
+    @Override
     protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
         JiraServerProperties jiraProperties = createProperties(fieldAccessor);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);

@@ -50,6 +50,13 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
+    protected boolean isAppCheckEnabled(FieldAccessor fieldAccessor) {
+        // Keeping this two lines to improve readability (storing one bit until GC won't kill us)
+        boolean isPluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return !isPluginCheckDisabled;
+    }
+
+    @Override
     protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
         JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -73,11 +80,13 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
         String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        return new JiraCloudProperties(url, accessToken, username);
+        boolean isPluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return new JiraCloudProperties(url, accessToken, username, isPluginCheckDisabled);
     }
 
     @Override
     protected String getChannelDisplayName() {
         return JiraCloudDescriptor.JIRA_LABEL;
     }
+
 }

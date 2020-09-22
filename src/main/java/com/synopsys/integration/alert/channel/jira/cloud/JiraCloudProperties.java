@@ -37,11 +37,13 @@ public class JiraCloudProperties implements IssueTrackerServiceConfig {
     private final String url;
     private final String accessToken;
     private final String username;
+    private final boolean pluginCheckDisabled;
 
-    public JiraCloudProperties(String url, String accessToken, String username) {
+    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
+        this.pluginCheckDisabled = pluginCheckDisabled;
     }
 
     public JiraCloudRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -74,6 +76,10 @@ public class JiraCloudProperties implements IssueTrackerServiceConfig {
 
     public String getUsername() {
         return username;
+    }
+
+    public boolean isPluginCheckDisabled() {
+        return pluginCheckDisabled;
     }
 
 }
