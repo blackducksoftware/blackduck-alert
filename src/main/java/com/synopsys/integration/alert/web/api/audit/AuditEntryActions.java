@@ -31,14 +31,15 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
-import com.synopsys.integration.alert.common.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -46,7 +47,9 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
+import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -54,6 +57,8 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
+    private final AuthorizationManager authorizationManager;
+    private final AuditDescriptorKey descriptorKey;
     private final AuditUtility auditUtility;
     private final NotificationManager notificationManager;
     private final ConfigurationAccessor jobConfigReader;
@@ -61,7 +66,10 @@ public class AuditEntryActions {
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(AuditUtility auditUtility, NotificationManager notificationManager, ConfigurationAccessor jobConfigReader, ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
+    public AuditEntryActions(AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey, AuditUtility auditUtility, NotificationManager notificationManager, ConfigurationAccessor jobConfigReader,
+        ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
+        this.authorizationManager = authorizationManager;
+        this.descriptorKey = descriptorKey;
         this.auditUtility = auditUtility;
         this.notificationManager = notificationManager;
         this.jobConfigReader = jobConfigReader;
@@ -69,64 +77,89 @@ public class AuditEntryActions {
         this.notificationProcessor = notificationProcessor;
     }
 
-    public AlertPagedModel<AuditEntryModel> get() {
+    public ActionResponse<AlertPagedModel<AuditEntryModel>> get() {
         return get(null, null, null, null, null, false);
     }
 
-    public AlertPagedModel<AuditEntryModel> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
+    public ActionResponse<AlertPagedModel<AuditEntryModel>> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
+        }
         AlertPagedModel<AuditEntryModel> pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
-        return pagedRestModel;
+        return new ActionResponse<>(HttpStatus.OK, pagedRestModel);
     }
 
-    public Optional<AuditEntryModel> get(Long id) {
-        if (id != null) {
-            Optional<AlertNotificationModel> notificationContent = notificationManager.findById(id);
-            return notificationContent.map(auditUtility::convertToAuditEntryModelFromNotification);
+    public ActionResponse<AuditEntryModel> get(Long id) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        return Optional.empty();
-    }
-
-    public Optional<AuditJobStatusModel> getAuditInfoForJob(UUID jobId) {
-        if (jobId != null) {
-            return auditUtility.findFirstByJobId(jobId);
+        Optional<AlertNotificationModel> notificationContent = notificationManager.findById(id);
+        if (notificationContent.isPresent()) {
+            AuditEntryModel auditEntryModel = auditUtility.convertToAuditEntryModelFromNotification(notificationContent.get());
+            return new ActionResponse<>(HttpStatus.OK, auditEntryModel);
         }
-        return Optional.empty();
+        return new ActionResponse<>(HttpStatus.GONE, "This Audit entry could not be found.");
     }
 
-    public AlertPagedModel<AuditEntryModel> resendNotification(Long notificationId, UUID commonConfigId) throws IntegrationException {
-        AlertNotificationModel notificationContent = notificationManager
-                                                         .findById(notificationId)
-                                                         .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
-        List<DistributionEvent> distributionEvents;
-        if (null != commonConfigId) {
-            ConfigurationJobModel commonDistributionConfig = jobConfigReader.getJobById(commonConfigId).orElseThrow(() -> {
-                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
-                return new AlertJobMissingException("The Distribution Job with this id could not be found.", commonConfigId);
-            });
-            if (commonDistributionConfig.isEnabled()) {
-                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
-            } else {
-                UUID jobConfigId = commonDistributionConfig.getJobId();
-                logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
-                throw new AlertJobMissingException("The Distribution Job is currently disabled.", jobConfigId);
+    public ActionResponse<AuditJobStatusModel> getAuditInfoForJob(UUID jobId) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
+        }
+        Optional<AuditJobStatusModel> auditJobStatusModel = auditUtility.findFirstByJobId(jobId);
+        if (auditJobStatusModel.isPresent()) {
+            return new ActionResponse<>(HttpStatus.OK, auditJobStatusModel.get());
+        }
+        return new ActionResponse<>(HttpStatus.GONE, "The Audit information could not be found for this job.");
+    }
+
+    public ActionResponse<AlertPagedModel<AuditEntryModel>> resendNotification(Long notificationId, UUID commonConfigId) {
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
+        }
+        try {
+            Optional<AlertNotificationModel> notification = notificationManager
+                                                                .findById(notificationId);
+            if (notification.isEmpty()) {
+                return new ActionResponse<>(HttpStatus.GONE, "No notification with this id exists.");
             }
-        } else {
-            distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
-        }
-        if (distributionEvents.isEmpty()) {
-            logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
-        }
+            AlertNotificationModel notificationContent = notification.get();
 
-        for (DistributionEvent event : distributionEvents) {
-            UUID commonDistributionId = UUID.fromString(event.getConfigId());
-            Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
-            Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-            notificationIdToAuditId.put(notificationContent.getId(), auditId);
-            event.setNotificationIdToAuditId(notificationIdToAuditId);
-            eventManager.sendEvent(event);
+            List<DistributionEvent> distributionEvents;
+            if (null != commonConfigId) {
+                Optional<ConfigurationJobModel> commonDistributionConfig = jobConfigReader.getJobById(commonConfigId);
+                if (commonDistributionConfig.isEmpty()) {
+                    String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
+                    return new ActionResponse<>(HttpStatus.GONE, message);
+                }
+                ConfigurationJobModel commonConfig = commonDistributionConfig.get();
+                if (commonConfig.isEnabled()) {
+                    distributionEvents = notificationProcessor.processNotifications(commonConfig, List.of(notificationContent));
+                } else {
+                    UUID jobConfigId = commonConfig.getJobId();
+                    logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
+                    String message = String.format("The Distribution Job is currently disabled. %s", jobConfigId.toString());
+                    return new ActionResponse<>(HttpStatus.GONE, message);
+                }
+            } else {
+                distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
+            }
+            if (distributionEvents.isEmpty()) {
+                logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
+            }
+
+            for (DistributionEvent event : distributionEvents) {
+                UUID commonDistributionId = UUID.fromString(event.getConfigId());
+                Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
+                Map<Long, Long> notificationIdToAuditId = new HashMap<>();
+                notificationIdToAuditId.put(notificationContent.getId(), auditId);
+                event.setNotificationIdToAuditId(notificationIdToAuditId);
+                eventManager.sendEvent(event);
+            }
+            return get();
+        } catch (IntegrationException e) {
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return get();
     }
 
 }
