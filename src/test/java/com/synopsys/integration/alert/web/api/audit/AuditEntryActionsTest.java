@@ -29,10 +29,10 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
@@ -114,7 +114,7 @@ public class AuditEntryActionsTest {
         DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobConfigReader, null, null);
 
-        ActionResponse<AlertPagedModel<AuditEntryModel>> response = auditEntryActions.resendNotification(1L, null);
+        ActionResponse<AuditEntryPageModel> response = auditEntryActions.resendNotification(1L, null);
         assertTrue(response.isError());
         assertFalse(response.hasContent());
     }
@@ -164,10 +164,10 @@ public class AuditEntryActionsTest {
         DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, contentConverter);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobConfigReader, null, null);
 
-        ActionResponse<AlertPagedModel<AuditEntryModel>> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
+        ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
 
         assertTrue(response.hasContent());
-        AlertPagedModel<AuditEntryModel> restModel = response.getContent().orElse(null);
+        AuditEntryPageModel restModel = response.getContent().orElse(null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
@@ -217,11 +217,11 @@ public class AuditEntryActionsTest {
         DefaultAuditUtility auditEntryUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, jobConfigReader, notificationManager, contentConverter);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobConfigReader, null, null);
 
-        ActionResponse<AlertPagedModel<AuditEntryModel>> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
+        ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
 
         assertTrue(response.hasContent());
 
-        AlertPagedModel<AuditEntryModel> restModel = response.getContent().orElse(null);
+        AuditEntryPageModel restModel = response.getContent().orElse(null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content

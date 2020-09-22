@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.web.api.audit;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     MockNotificationContent mockNotificationContent = new MockNotificationContent();
 
     @BeforeEach
-    public void setup() throws AlertDatabaseConstraintException {
+    public void setup() throws AlertDatabaseConstraintException, IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         cleanup();
 
@@ -82,7 +83,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         blackduckUrl.setFieldValue("https://a-blackduck-server");
-        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue("300");
@@ -152,7 +153,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
-    public void testPostConfig() throws Exception {
+    public void testResendNotification() throws Exception {
         List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
         ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
         slackFields.add(providerConfigName);
@@ -169,6 +170,31 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
 
         String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    public void testResendJobConfig() throws Exception {
+        List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
+        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
+        slackFields.add(providerConfigName);
+
+        SlackChannelKey slackChannelKey = new SlackChannelKey();
+        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
+        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(List.of(slackChannelKey.getUniversalKey()), configurationModel.getCopyOfFieldList());
+
+        NotificationEntity notificationEntity = mockNotificationContent.createEntity();
+        notificationEntity = notificationRepository.save(notificationEntity);
+        mockAuditEntryEntity.setCommonConfigId(configurationJobModel.getJobId());
+        AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
+        auditEntity = auditEntryRepository.save(auditEntity);
+        auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
+
+        String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/job/" + auditEntity.getCommonConfigId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
