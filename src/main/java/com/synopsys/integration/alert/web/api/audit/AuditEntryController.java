@@ -35,11 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
@@ -47,21 +45,17 @@ import com.synopsys.integration.alert.web.common.BaseController;
 public class AuditEntryController extends BaseController {
     public static final String AUDIT_BASE_PATH = BaseController.BASE_PATH + "/audit";
     private final AuditEntryActions auditEntryActions;
-    private final AuthorizationManager authorizationManager;
-    private final AuditDescriptorKey descriptorKey;
 
     @Autowired
-    public AuditEntryController(AuditEntryActions auditEntryActions, AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey) {
+    public AuditEntryController(AuditEntryActions auditEntryActions) {
         this.auditEntryActions = auditEntryActions;
-        this.authorizationManager = authorizationManager;
-        this.descriptorKey = descriptorKey;
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryModel> getPage(@RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
+    public AuditEntryPageModel getPage(@RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam(value = "sortField", required = false) String sortField,
         @RequestParam(value = "sortOrder", required = false) String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) Boolean onlyShowSentNotifications) {
-        ActionResponse<AlertPagedModel<AuditEntryModel>> response = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
         return ResponseFactory.createContentResponseFromAction(response);
     }
 
@@ -77,13 +71,13 @@ public class AuditEntryController extends BaseController {
 
     @PostMapping(value = "/resend/{id}/")
     // TODO returning something other than the resource being interacted with is considered bad practice
-    public AlertPagedModel<AuditEntryModel> resendById(@PathVariable(value = "id") Long notificationId) {
+    public AuditEntryPageModel resendById(@PathVariable(value = "id") Long notificationId) {
         return ResponseFactory.createContentResponseFromAction(auditEntryActions.resendNotification(notificationId, null));
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     // TODO returning something other than the resource being interacted with is considered bad practice
-    public AlertPagedModel<AuditEntryModel> resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
+    public AuditEntryPageModel resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         return ResponseFactory.createContentResponseFromAction(auditEntryActions.resendNotification(notificationId, jobId));
     }
 }

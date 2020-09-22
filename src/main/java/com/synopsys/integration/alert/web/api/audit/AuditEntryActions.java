@@ -43,10 +43,10 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
@@ -77,15 +77,15 @@ public class AuditEntryActions {
         this.notificationProcessor = notificationProcessor;
     }
 
-    public ActionResponse<AlertPagedModel<AuditEntryModel>> get() {
+    public ActionResponse<AuditEntryPageModel> get() {
         return get(null, null, null, null, null, false);
     }
 
-    public ActionResponse<AlertPagedModel<AuditEntryModel>> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
+    public ActionResponse<AuditEntryPageModel> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        AlertPagedModel<AuditEntryModel> pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
+        AuditEntryPageModel pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return new ActionResponse<>(HttpStatus.OK, pagedRestModel);
     }
@@ -113,7 +113,7 @@ public class AuditEntryActions {
         return new ActionResponse<>(HttpStatus.GONE, "The Audit information could not be found for this job.");
     }
 
-    public ActionResponse<AlertPagedModel<AuditEntryModel>> resendNotification(Long notificationId, UUID commonConfigId) {
+    public ActionResponse<AuditEntryPageModel> resendNotification(Long notificationId, UUID commonConfigId) {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
