@@ -42,6 +42,7 @@ import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseMode
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldRequestModel;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldResponseModel;
+import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.project.ProjectPropertyResponseModel;
@@ -86,6 +87,8 @@ public class AzureCustomFieldManager {
         new AzureCustomFieldDescriptor(ALERT_SUB_COMPONENT_KEY_FIELD_NAME, ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, ALERT_SUB_COMPONENT_KEY_FIELD_DESCRIPTION),
         new AzureCustomFieldDescriptor(ALERT_ADDITIONAL_INFO_KEY_FIELD_NAME, ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, ALERT_ADDITIONAL_INFO_KEY_FIELD_DESCRIPTION)
     );
+
+    private static final String UNMODIFIABLE_WORK_ITEM_PREFIX = "Microsoft.VSTS.WorkItemTypes";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -194,12 +197,22 @@ public class AzureCustomFieldManager {
     private String getWorkItemTypeRefName(String processId, String workItemTypeName) throws AlertException {
         try {
             AzureArrayResponseModel<ProcessWorkItemTypesResponseModel> processWorkItemTypes = processService.getWorkItemTypes(organizationName, processId);
-            return processWorkItemTypes.getValue()
-                       .stream()
-                       .filter(workItemType -> workItemType.getName().equals(workItemTypeName))
-                       .map(ProcessWorkItemTypesResponseModel::getReferenceName)
-                       .findFirst()
-                       .orElseThrow(() -> new AlertException(String.format("No work item type '%s' exists for the Azure process with id: '%s'", workItemTypeName, processId)));
+            ProcessWorkItemTypesResponseModel matchingWorkItemType = processWorkItemTypes.getValue()
+                                                                         .stream()
+                                                                         .filter(workItemType -> workItemType.getName().equals(workItemTypeName))
+                                                                         .findFirst()
+                                                                         .orElseThrow(
+                                                                             () -> new AlertException(String.format("No work item type '%s' exists for the Azure process with id: '%s'", workItemTypeName, processId)));
+
+            if (matchingWorkItemType.getReferenceName().startsWith(UNMODIFIABLE_WORK_ITEM_PREFIX)) {
+                // if the reference name starts with this prefix, we know it is a system default so it can not be modified and fields can not be added to it, so we need to create a "copy" of it
+                try {
+                    matchingWorkItemType = processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(matchingWorkItemType));
+                } catch (IOException e) {
+                    throw new AlertException(String.format("There was a problem creating a modifiable work item from % in the Azure process with id: %s", matchingWorkItemType.getReferenceName(), processId), e);
+                }
+            }
+            return matchingWorkItemType.getReferenceName();
         } catch (HttpServiceException e) {
             throw new AlertException(String.format("There was a problem trying to get the work item types for the Azure process with id: %s", processId), e);
         }
