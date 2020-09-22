@@ -46,6 +46,7 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
         return new ValidationActionResponse(HttpStatus.OK, response.getContent().orElse(null));
     }
 
+    // TODO there's no need for a status code here; if there isn't an unexpected exception, this will always be HttpStatus.OK
     public ValidationActionResponse(HttpStatus httpStatus, ValidationResponseModel content) {
         super(httpStatus, null, content);
     }
