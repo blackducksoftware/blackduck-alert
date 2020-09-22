@@ -17,7 +17,7 @@ export const KEY_NAME = 'channel.common.name';
 export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
-export const KEY_PROVIDER_CONFIG_NAME = 'provider.common.config.name';
+export const KEY_PROVIDER_CONFIG_ID = 'provider.common.config.id';
 
 export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 
@@ -182,7 +182,7 @@ class DistributionConfiguration extends Component {
             providerConfig, channelConfig, currentProvider
         } = this.state;
         const { fieldErrors } = this.props;
-        const configNameFields = currentProvider.fields.filter((field) => field.key === KEY_PROVIDER_CONFIG_NAME);
+        const configNameFields = currentProvider.fields.filter((field) => field.key === KEY_PROVIDER_CONFIG_ID);
         return (
             <div>
                 <FieldsPanel
@@ -205,7 +205,7 @@ class DistributionConfiguration extends Component {
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const channelDescriptorName = channelConfig && channelConfig.descriptorName;
-        const providerFields = currentProvider.fields.filter((field) => field.key !== KEY_PROVIDER_CONFIG_NAME);
+        const providerFields = currentProvider.fields.filter((field) => field.key !== KEY_PROVIDER_CONFIG_ID);
         return (
             <div>
                 <FieldsPanel
