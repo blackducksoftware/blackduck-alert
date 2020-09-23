@@ -192,8 +192,9 @@ function processValidationResponse(dispatch, response, responseData, errorHandle
     if (response.ok) {
         if (responseData.hasErrors) {
             dispatch(errorHandler(400));
+        } else {
+            dispatch(validatedConfig());
         }
-        dispatch(validatedConfig());
     } else {
         dispatch(errorHandler(response.status));
     }
