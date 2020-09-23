@@ -189,7 +189,8 @@ export function fetchDistributionJobs() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            responseData.forEach((jobConfig) => {
+                            const { jobs } = responseData;
+                            jobs.forEach((jobConfig) => {
                                 dispatch(fetchAuditInfoForJob(jobConfig));
                             });
                             dispatch(allJobsFetched());
