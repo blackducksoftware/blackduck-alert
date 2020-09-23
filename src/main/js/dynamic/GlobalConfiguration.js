@@ -47,21 +47,21 @@ class GlobalConfiguration extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const { currentFields, currentDescriptor } = this.state;
-        const { updateStatus, updateConfigAction, currentConfig } = this.props;
-        if (currentConfig !== prevProps.currentConfig && updateStatus === 'DELETED') {
+        const { currentFields, currentDescriptor, currentConfig: stateCurrentConfig } = this.state;
+        const { updateStatus, updateConfigAction, currentConfig: propsCurrentConfig } = this.props;
+        if (propsCurrentConfig !== prevProps.currentConfig && updateStatus === 'DELETED') {
             const newState = FieldModelUtilities.createFieldModelWithDefaults(currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
-        } else if (currentConfig !== prevProps.currentConfig && (updateStatus === 'FETCHED' || updateStatus === 'UPDATED')) {
-            const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(currentConfig, currentFields);
+        } else if (propsCurrentConfig !== prevProps.currentConfig && (updateStatus === 'FETCHED' || updateStatus === 'UPDATED')) {
+            const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(propsCurrentConfig, currentFields);
             const newConfigModel = FieldModelUtilities.checkContextAndDescriptor(fieldModel, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
                 currentConfig: newConfigModel
             });
         } else if (prevProps.updateStatus === 'VALIDATING' && updateStatus === 'VALIDATED') {
-            updateConfigAction(currentConfig);
+            updateConfigAction(stateCurrentConfig);
         }
     }
 
