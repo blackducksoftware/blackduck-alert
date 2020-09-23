@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.database.certificates.CustomCertificateRep
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
 import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
+import com.synopsys.integration.alert.web.api.certificate.MultiCertificateModel;
 
 import junit.framework.AssertionFailedError;
 
@@ -75,10 +76,10 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void readAllEmptyListTest() {
-        ActionResponse<List<CertificateModel>> response = certificateActions.readAllWithoutChecks();
+        ActionResponse<MultiCertificateModel> response = certificateActions.readAllWithoutChecks();
         assertTrue(response.hasContent());
         assertTrue(response.getContent().isPresent());
-        assertTrue(response.getContent().get().isEmpty());
+        assertTrue(response.getContent().get().getCertificates().isEmpty());
     }
 
     @Test
@@ -104,7 +105,9 @@ public class CertificateActionsTestIT extends AlertIntegrationTest {
     @Test
     public void readAllTest() throws Exception {
         certTestUtil.createCertificate(certificateActions);
-        List<CertificateModel> certificates = certificateActions.getAll().getContent().orElse(List.of());
+        List<CertificateModel> certificates = certificateActions.getAll().getContent()
+                                                  .map(MultiCertificateModel::getCertificates)
+                                                  .orElse(List.of());
         assertEquals(1, certificates.size());
     }
 

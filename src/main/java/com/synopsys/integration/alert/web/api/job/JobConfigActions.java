@@ -71,6 +71,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
+import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.common.PKIXErrorResponseFactory;
@@ -118,7 +119,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<List<JobFieldModel>> readAllWithoutChecks() {
+    protected ActionResponse<MultiJobFieldModel> readAllWithoutChecks() {
         try {
             List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
             List<JobFieldModel> jobFieldModels = new LinkedList<>();
@@ -126,7 +127,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 JobFieldModel jobFieldModel = readJobConfiguration(configurationJobModel);
                 jobFieldModels.add(jobFieldModel);
             }
-            return new ActionResponse<>(HttpStatus.OK, jobFieldModels);
+            return new ActionResponse<>(HttpStatus.OK, new MultiJobFieldModel(jobFieldModels));
         } catch (AlertException ex) {
             logger.error("Error reading all jobs", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
@@ -316,7 +317,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         List<JobFieldStatuses> errorsList = new LinkedList<>();
-        List<JobFieldModel> jobFieldModels = readAllWithoutChecks().getContent().orElse(List.of());
+        List<JobFieldModel> jobFieldModels = readAllWithoutChecks().getContent()
+                                                 .map(MultiJobFieldModel::getJobs)
+                                                 .orElse(List.of());
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {

@@ -36,10 +36,11 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions implements LongIdResourceActions<FieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
+public abstract class AbstractConfigResourceActions implements LongIdResourceActions<FieldModel>, ReadAllAction<MultiFieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
 
@@ -52,9 +53,9 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
 
     protected abstract ActionResponse<FieldModel> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<List<FieldModel>> readAllWithoutChecks();
+    protected abstract ActionResponse<MultiFieldModel> readAllWithoutChecks();
 
-    protected abstract ActionResponse<List<FieldModel>> readAllByContextAndDescriptorWithoutChecks(String context, String descriptorName);
+    protected abstract ActionResponse<MultiFieldModel> readAllByContextAndDescriptorWithoutChecks(String context, String descriptorName);
 
     protected abstract Optional<FieldModel> findFieldModel(Long id);
 
@@ -64,7 +65,7 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
 
     protected abstract ValidationActionResponse validateWithoutChecks(FieldModel resource);
 
-    public final ActionResponse<List<FieldModel>> getAllByContextAndDescriptor(String context, String descriptorName) {
+    public final ActionResponse<MultiFieldModel> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -84,7 +85,7 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
     }
 
     @Override
-    public final ActionResponse<List<FieldModel>> getAll() {
+    public final ActionResponse<MultiFieldModel> getAll() {
         try {
             Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
                                               .stream()

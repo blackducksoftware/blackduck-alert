@@ -22,11 +22,9 @@
  */
 package com.synopsys.integration.alert.common.rest.api;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.GetMapping;
 
 public interface ReadAllController<T> {
     @GetMapping
-    List<T> getAll();
+    T getAll();
 }

@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.common.PKIXErrorResponseFactory;
@@ -86,12 +87,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
     }
 
     @Override
-    protected ActionResponse<List<FieldModel>> readAllWithoutChecks() {
+    protected ActionResponse<MultiFieldModel> readAllWithoutChecks() {
         return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
-    protected ActionResponse<List<FieldModel>> readAllByContextAndDescriptorWithoutChecks(String context, String descriptorName) {
+    protected ActionResponse<MultiFieldModel> readAllByContextAndDescriptorWithoutChecks(String context, String descriptorName) {
         ConfigContextEnum configContext = ConfigContextEnum.valueOf(context);
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(descriptorName);
         if (!descriptorKey.isPresent()) {
@@ -100,7 +101,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         try {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), configContext);
             List<FieldModel> fieldModels = convertConfigurationModelList(descriptorName, context, configurationModels);
-            return new ActionResponse<>(HttpStatus.OK, fieldModels);
+            return new ActionResponse<>(HttpStatus.OK, new MultiFieldModel(fieldModels));
         } catch (AlertDatabaseConstraintException ex) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
         }
