@@ -25,12 +25,13 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.util.Collection;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     private String message;
-    private boolean hasErrors;
+    private Boolean hasErrors;
     private Map<String, AlertFieldStatus> errors;
 
     public static ValidationResponseModel success(String message) {
@@ -66,6 +67,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
         return errors;
     }
 
+    @JsonProperty("hasErrors")
     public boolean hasErrors() {
         return hasErrors;
     }

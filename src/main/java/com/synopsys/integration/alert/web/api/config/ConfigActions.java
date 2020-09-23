@@ -245,6 +245,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 responseModel = ValidationResponseModel.fromStatusCollection(e.getMessage(), e.getFieldErrors());
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationException e) {
+                // FIXME there are definitely other possibilities than this
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
                                     .orElse(ValidationResponseModel.genericError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
