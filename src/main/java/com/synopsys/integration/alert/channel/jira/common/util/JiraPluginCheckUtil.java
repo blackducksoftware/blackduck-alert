@@ -24,15 +24,17 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import java.util.concurrent.TimeUnit;
 
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingSupplier;
+import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public final class JiraPluginCheckUtil {
-    public static boolean checkIsAppInstalledAndRetryIfNecessary(ThrowingSupplier<Boolean, IntegrationException> isAppInstalled) throws IntegrationException, InterruptedException {
+    public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService, String username, String passwordOrApiToken) throws IntegrationException, InterruptedException {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
         while (checkAgain <= maxTimeForChecks) {
-            if (isAppInstalled.get()) {
+            boolean isAppInstalled = pluginManagerService.isAppInstalled(username, passwordOrApiToken, JiraConstants.JIRA_APP_KEY);
+            if (isAppInstalled) {
                 return true;
             }
             TimeUnit.SECONDS.sleep(checkAgain);
