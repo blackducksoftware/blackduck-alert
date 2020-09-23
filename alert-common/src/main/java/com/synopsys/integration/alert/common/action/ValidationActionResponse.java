@@ -38,7 +38,7 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
         if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
             message += ": " + integrationRestException.getHttpStatusMessage();
         }
-        return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.withoutFieldStatuses(message));
+        return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.generalError(message));
     }
 
     public static ValidationActionResponse createOKResponseWithContent(ValidationActionResponse response) {
