@@ -139,7 +139,7 @@ public class AuditEntryActions {
                     UUID jobConfigId = commonConfig.getJobId();
                     logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
                     String message = String.format("The Distribution Job is currently disabled. %s", jobConfigId.toString());
-                    return new ActionResponse<>(HttpStatus.GONE, message);
+                    return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
                 }
             } else {
                 distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
@@ -158,7 +158,7 @@ public class AuditEntryActions {
             }
             return get();
         } catch (IntegrationException e) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
