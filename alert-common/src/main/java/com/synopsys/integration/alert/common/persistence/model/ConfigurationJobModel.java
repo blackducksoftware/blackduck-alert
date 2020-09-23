@@ -76,8 +76,12 @@ public class ConfigurationJobModel extends AlertSerializableModel {
         return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
     }
 
-    public String getProviderConfigName() {
-        return getFieldAccessor().getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+    public String getProviderConfigId() {
+        return getFieldAccessor().getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+    }
+
+    public Long getProviderConfigIdAsLong() {
+        return getFieldAccessor().getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
     }
 
     public FrequencyType getFrequencyType() {
@@ -99,4 +103,5 @@ public class ConfigurationJobModel extends AlertSerializableModel {
         }
         return fieldMap;
     }
+
 }

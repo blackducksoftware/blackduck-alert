@@ -6,6 +6,7 @@ services:
       - POSTGRES_USER=sa
       - POSTGRES_PASSWORD=blackduck
       - POSTGRES_DB=alertdb
+#    # If you have previously used the above environment variables, then you cannot use the ALERT_DB secrets, the Alert DB container will fail to start if you do.
 #    # uncomment the variables that end in _FILE if secrets are being used.
 #      - POSTGRES_USER_FILE=/run/secrets/ALERT_DB_USERNAME
 #      - POSTGRES_PASSWORD_FILE=/run/secrets/ALERT_DB_PASSWORD
@@ -136,6 +137,8 @@ services:
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
+#      - ALERT_DB_USERNAME
+#      - ALERT_DB_PASSWORD
 #      # -- Custom Certificate Usage
 #      - source: jssecacerts
 #        target: jssecacerts
@@ -143,8 +146,6 @@ services:
 #      - source: cacerts
 #        target: cacerts
 #        mode: 0664
-#      - ALERT_DB_USERNAME
-#      - ALERT_DB_PASSWORD
 #
 # uncomment the secrets in use; both the required and the optional secrets.
 #secrets:

@@ -1,8 +1,6 @@
 package com.synopsys.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
@@ -52,15 +50,15 @@ public class AboutReaderTest {
     @Test
     public void testAboutReadNull() {
         AboutReader reader = new AboutReader(null, alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
-        AboutModel aboutModel = reader.getAboutModel();
-        assertNull(aboutModel);
+        Optional<AboutModel> aboutModel = reader.getAboutModel();
+        assertTrue(aboutModel.isEmpty());
     }
 
     @Test
     public void testAboutRead() {
         AboutReader reader = new AboutReader(new Gson(), alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
-        AboutModel aboutModel = reader.getAboutModel();
-        assertNotNull(aboutModel);
+        Optional<AboutModel> aboutModel = reader.getAboutModel();
+        assertTrue(aboutModel.isPresent());
     }
 
     @Test

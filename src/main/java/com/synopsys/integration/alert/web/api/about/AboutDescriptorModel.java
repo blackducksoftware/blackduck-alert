@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.web.api.about;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class AboutDescriptorModel extends Stringable {
+public class AboutDescriptorModel extends AlertSerializableModel {
     private final String iconKey;
     private final String name;
 

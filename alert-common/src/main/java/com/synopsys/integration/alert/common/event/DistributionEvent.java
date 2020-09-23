@@ -36,8 +36,8 @@ public class DistributionEvent extends ContentEvent {
     private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(String configId, String destination, String createdAt, String providerConfigName, String formatType, MessageContentGroup contentGroup, FieldAccessor fieldAccessor) {
-        super(destination, createdAt, providerConfigName, formatType, contentGroup);
+    public DistributionEvent(String configId, String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup, FieldAccessor fieldAccessor) {
+        super(destination, createdAt, providerConfigId, formatType, contentGroup);
         this.fieldAccessor = fieldAccessor;
         this.configId = configId;
     }

@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field;
+package com.synopsys.integration.alert.web.api.task;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 
-public class FieldOptions<T extends Serializable> extends AlertSerializableModel {
-    // Do not rename this the UI looks for a field named options in the JSON object it receives.
-    private List<T> options;
+public class MultiTaskMetaDataModel extends AlertSerializableModel {
+    private List<TaskMetaData> tasks;
 
-    public FieldOptions(List<T> options) {
-        this.options = options;
+    public MultiTaskMetaDataModel(List<TaskMetaData> tasks) {
+        this.tasks = tasks;
     }
 
-    public List<T> getOptions() {
-        return options;
+    public List<TaskMetaData> getTasks() {
+        return tasks;
     }
 }

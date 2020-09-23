@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -66,14 +66,18 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
             options = configurationModels.stream()
-                          .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                          .map(FieldAccessor::new)
-                          .map(accessor -> accessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                          .map(this::createNameToIdOption)
                           .flatMap(Optional::stream)
-                          .map(LabelValueSelectOption::new)
                           .collect(Collectors.toList());
         }
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
+
+    private Optional<LabelValueSelectOption> createNameToIdOption(ConfigurationModel configurationModel) {
+        return configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                   .flatMap(ConfigurationFieldModel::getFieldValue)
+                   .map(providerConfigName -> new LabelValueSelectOption(providerConfigName, configurationModel.getConfigurationId().toString()));
+    }
+
 }

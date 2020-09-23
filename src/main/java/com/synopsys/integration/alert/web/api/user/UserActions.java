@@ -111,12 +111,12 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     protected ValidationActionResponse validateWithoutChecks(UserConfig resource) {
         ValidationResponseModel responseModel;
         if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("Invalid resource id");
+            responseModel = ValidationResponseModel.generalError("Invalid resource id");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
         List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(resource);
         if (fieldErrors.isEmpty()) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("The user is valid");
+            responseModel = ValidationResponseModel.success("The user is valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
         responseModel = ValidationResponseModel.fromStatusCollection("There were problems validating this user.", fieldErrors);

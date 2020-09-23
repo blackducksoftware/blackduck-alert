@@ -99,12 +99,12 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     protected ValidationActionResponse validateWithoutChecks(CertificateModel resource) {
         ValidationResponseModel responseModel;
         if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("Invalid resource id");
+            responseModel = ValidationResponseModel.generalError("Invalid resource id");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
         List<AlertFieldStatus> fieldErrors = validateCertificateFields(resource);
         if (fieldErrors.isEmpty()) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("The certificate configuration is valid");
+            responseModel = ValidationResponseModel.success("The certificate configuration is valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
         responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the certificate configuration", fieldErrors);
