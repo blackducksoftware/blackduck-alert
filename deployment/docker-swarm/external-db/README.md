@@ -314,7 +314,7 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
 ##### 4. Create ALERT_DB_PASSWORD secret.
-
+ 
 - Create a docker secret containing the database password for Alert.
     ```bash
     docker secret create <STACK_NAME>_ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>

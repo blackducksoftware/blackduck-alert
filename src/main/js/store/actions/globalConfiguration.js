@@ -188,6 +188,18 @@ function createErrorHandler(type, defaultHandler) {
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
+function processValidationResponse(dispatch, response, responseData, successHandler, errorHandler) {
+    if (response.ok) {
+        if (responseData.hasErrors) {
+            dispatch(errorHandler(400));
+        } else {
+            dispatch(successHandler());
+        }
+    } else {
+        dispatch(errorHandler(response.status));
+    }
+}
+
 export function refreshConfig(id) {
     return (dispatch, getState) => {
         dispatch(refreshingConfig());
@@ -279,13 +291,7 @@ export function validateConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_VALIDATE_ERROR, () => configValidationError(responseData));
-                    if (responseData.errors && !Object.keys(responseData.errors).length) {
-                        dispatch(validatedConfig());
-                    } else if (!response.ok) {
-                        dispatch(handler(response.status));
-                    } else {
-                        dispatch(handler(400));
-                    }
+                    processValidationResponse(dispatch, response, responseData, validatedConfig, handler);
                 });
         }).catch(console.error);
     };
@@ -339,13 +345,7 @@ export function testConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_TEST_FAILED, () => testFailed(responseData));
-                    if (responseData.errors && !Object.keys(responseData.errors).length) {
-                        dispatch(testSuccess());
-                    } else if (!response.ok) {
-                        dispatch(handler(response.status));
-                    } else {
-                        dispatch(handler(400));
-                    }
+                    processValidationResponse(dispatch, response, responseData, testSuccess, handler);
                 });
         }).catch(console.error);
     };

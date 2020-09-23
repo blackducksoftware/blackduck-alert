@@ -122,6 +122,8 @@ services:
 #      - ALERT_ENCRYPTION_GLOBAL_SALT
 #      - WEBSERVER_CUSTOM_CERT_FILE
 #      - WEBSERVER_CUSTOM_KEY_FILE
+#      - ALERT_DB_USERNAME
+#      - ALERT_DB_PASSWORD
 #      # -- Custom Certificate Usage
 #      - source: jssecacerts
 #        target: jssecacerts
@@ -130,8 +132,6 @@ services:
 #        target: cacerts
 #        mode: 0664
 #      - ALERT_TRUST_STORE_PASSWORD
-#      - ALERT_DB_USERNAME
-#      - ALERT_DB_PASSWORD
 #
 # uncomment the secrets in use; both the required and the optional secrets.
 #secrets:
