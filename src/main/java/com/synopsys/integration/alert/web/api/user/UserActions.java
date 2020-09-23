@@ -171,7 +171,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                return new ActionResponse<>(HttpStatus.OK);
+                return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
