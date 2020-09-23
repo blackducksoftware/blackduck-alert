@@ -119,10 +119,6 @@ This section will walk through each step of the installation procedure.
 
 ##### 3. Create ALERT_DB_USERNAME secret.
 
-Note: If you have previously started Alert with the POSTGRES_USER environment variable then you 
-cannot switch to using the ALERT_DB_USERNAME secret. The Alert database container will fail to 
-start if you try this.
-
 - Create a docker secret containing the database username for Alert.
     ```bash
     docker secret create <STACK_NAME>_ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
@@ -147,10 +143,6 @@ start if you try this.
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
 ##### 4. Create ALERT_DB_PASSWORD secret.
-
-Note: If you have previously started Alert with the POSTGRES_PASSWORD environment variable then you 
-cannot switch to using the ALERT_DB_PASSWORD secret. The Alert database container will fail to start
- if you try this.
 
 - Create a docker secret containing the database password for Alert.
     ```bash
@@ -273,10 +265,6 @@ Please remove any Alert configuration from the docker-compose.local-overrides.ym
 
 ##### 3. Create ALERT_DB_USERNAME secret.
 
-Note: If you have previously started Alert with the POSTGRES_USER environment variable then you 
-cannot switch to using the ALERT_DB_USERNAME secret. The Alert database container will fail to 
-start if you try this.
-
 - Create a docker secret containing the database username for Alert.
     ```bash
     docker secret create <STACK_NAME>_ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
@@ -326,10 +314,6 @@ start if you try this.
     - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
 ##### 4. Create ALERT_DB_PASSWORD secret.
-
-Note: If you have previously started Alert with the POSTGRES_PASSWORD environment variable then you 
-cannot switch to using the ALERT_DB_PASSWORD secret. The Alert database container will fail to start
- if you try this.
  
 - Create a docker secret containing the database password for Alert.
     ```bash
