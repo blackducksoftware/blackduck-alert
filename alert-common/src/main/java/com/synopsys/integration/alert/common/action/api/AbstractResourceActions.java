@@ -34,9 +34,9 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public abstract class AbstractResourceActions<T, M> implements LongIdResourceActions<T>, ReadAllAction<M>, ValidateAction<T>, TestAction<T> {
-    private DescriptorKey descriptorKey;
-    private AuthorizationManager authorizationManager;
-    private ConfigContextEnum context;
+    private final DescriptorKey descriptorKey;
+    private final AuthorizationManager authorizationManager;
+    private final ConfigContextEnum context;
 
     public AbstractResourceActions(DescriptorKey descriptorKey, ConfigContextEnum context, AuthorizationManager authorizationManager) {
         this.descriptorKey = descriptorKey;
@@ -131,7 +131,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
@@ -145,7 +145,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse response = validateWithoutChecks(resource);

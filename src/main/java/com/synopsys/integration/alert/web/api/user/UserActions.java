@@ -82,7 +82,7 @@ public class UserActions {
         List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(userConfig);
 
         if (fieldErrors.isEmpty()) {
-            return ValidationResponseModel.withoutFieldStatuses("The user is valid");
+            return ValidationResponseModel.success("The user is valid");
         }
         return ValidationResponseModel.fromStatusCollection("There were problems validating this user.", fieldErrors);
     }

@@ -232,14 +232,13 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
-        ValidationResponseModel responseModel = ValidationResponseModel.withoutFieldStatuses("Valid name");
+        ValidationResponseModel responseModel = ValidationResponseModel.success("Valid name");
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             responseModel = validateJobNameUnique(currentJobId, fieldModel);
             if (responseModel.hasErrors()) {
                 return responseModel;
             }
         }
-
         return responseModel;
     }
 
@@ -268,7 +267,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             AlertFieldStatus fieldStatus = AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error);
             return ValidationResponseModel.fromStatusCollection("Job name not unique", List.of(fieldStatus));
         }
-        return ValidationResponseModel.withoutFieldStatuses("Job Name Vaild");
+        return ValidationResponseModel.success("Job Name Valid");
     }
 
     private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
@@ -295,7 +294,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         if (fieldStatuses.isEmpty()) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("Valid");
+            responseModel = ValidationResponseModel.success("Valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
         responseModel = ValidationResponseModel.fromStatusCollection("Invalid", fieldStatuses);
@@ -369,11 +368,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 } else {
                     String descriptorName = channelFieldModel.getDescriptorName();
                     logger.error("Test action did not exist: {}", descriptorName);
-                    responseModel = ValidationResponseModel.withoutFieldStatuses("Test functionality not implemented for " + descriptorName);
+                    responseModel = ValidationResponseModel.generalError("Test functionality not implemented for " + descriptorName);
                     return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, responseModel);
                 }
             }
-            responseModel = ValidationResponseModel.withoutFieldStatuses("No field model of type channel was was sent to test.");
+            responseModel = ValidationResponseModel.generalError("No field model of type channel was was sent to test.");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         } catch (IntegrationRestException e) {
             logger.error(e.getMessage(), e);
@@ -384,15 +383,15 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (AlertMethodNotAllowedException e) {
             logger.error(e.getMessage(), e);
-            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.withoutFieldStatuses(e.getMessage()));
+            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                .orElse(ValidationResponseModel.withoutFieldStatuses(e.getMessage()));
+                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                .orElse(ValidationResponseModel.withoutFieldStatuses(e.getMessage()));
+                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
     }
