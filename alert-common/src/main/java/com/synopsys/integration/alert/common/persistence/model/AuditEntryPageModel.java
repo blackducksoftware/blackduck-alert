@@ -20,21 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action;
+package com.synopsys.integration.alert.common.persistence.model;
 
-import java.util.Map;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public class SSLValidationResponseModel extends ValidationResponseModel {
-    private final boolean isDetailed;
-
-    public SSLValidationResponseModel(String message) {
-        super(message, Map.of());
-        this.isDetailed = true;
-    }
-
-    public boolean isDetailed() {
-        return isDetailed;
+public class AuditEntryPageModel extends AlertPagedModel<AuditEntryModel> {
+    public AuditEntryPageModel(int totalPages, int currentPage, int pageSize, List<AuditEntryModel> content) {
+        super(totalPages, currentPage, pageSize, content);
     }
 }

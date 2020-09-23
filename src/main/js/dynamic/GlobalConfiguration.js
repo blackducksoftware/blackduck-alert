@@ -6,7 +6,11 @@ import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import {
-    deleteConfig, getConfig, testConfig, updateConfig, validateConfig
+    deleteConfig,
+    getConfig,
+    testConfig,
+    updateConfig,
+    validateConfig
 } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -24,37 +28,40 @@ class GlobalConfiguration extends React.Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.createEmptyModel = this.createEmptyModel.bind(this);
 
-        const { fields, name } = this.props.descriptor;
+        const { descriptor } = this.props;
+        const { fields, name } = descriptor;
         const fieldKeys = FieldMapping.retrieveKeys(fields);
         const fieldModel = FieldModelUtilities.createEmptyFieldModel(fieldKeys, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, name);
         this.state = {
             currentConfig: fieldModel,
-            currentDescriptor: this.props.descriptor,
+            currentDescriptor: descriptor,
             currentFields: fields,
             showTest: false
         };
     }
 
     componentDidMount() {
-        const fieldModel = this.state.currentConfig;
-        this.props.getConfig(fieldModel.descriptorName);
+        const { currentConfig } = this.state;
+        const { getConfigAction } = this.props;
+        getConfigAction(currentConfig.descriptorName);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { currentFields, currentDescriptor } = this.state;
-        if (this.props.currentConfig !== prevProps.currentConfig && this.props.updateStatus === 'DELETED') {
+        const { updateStatus, updateConfigAction, currentConfig } = this.props;
+        if (currentConfig !== prevProps.currentConfig && updateStatus === 'DELETED') {
             const newState = FieldModelUtilities.createFieldModelWithDefaults(currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
                 currentConfig: newState
             });
-        } else if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(this.props.currentConfig, this.state.currentFields);
+        } else if (currentConfig !== prevProps.currentConfig && (updateStatus === 'FETCHED' || updateStatus === 'UPDATED')) {
+            const fieldModel = FieldModelUtilities.checkModelOrCreateModelWithDefaults(currentConfig, currentFields);
             const newConfigModel = FieldModelUtilities.checkContextAndDescriptor(fieldModel, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
                 currentConfig: newConfigModel
             });
-        } else if (prevProps.updateStatus === 'VALIDATING' && this.props.updateStatus === 'VALIDATED') {
-            this.props.updateConfig(this.state.currentConfig);
+        } else if (prevProps.updateStatus === 'VALIDATING' && updateStatus === 'VALIDATED') {
+            updateConfigAction(currentConfig);
         }
     }
 
@@ -68,14 +75,16 @@ class GlobalConfiguration extends React.Component {
     }
 
     handleTest() {
-        const { testFields } = this.state.currentDescriptor;
+        const { currentDescriptor, currentConfig } = this.state;
+        const { testFields } = currentDescriptor;
         if (testFields && testFields.length > 0) {
             this.setState({
                 showTest: true
             });
         } else {
-            const fieldModel = this.state.currentConfig;
-            this.props.testConfig(fieldModel);
+            const fieldModel = currentConfig;
+            const { testConfigAction } = this.props;
+            testConfigAction(fieldModel);
         }
     }
 
@@ -89,7 +98,7 @@ class GlobalConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const { currentFields, currentConfig } = this.state;
-        const { validateConfig } = this.props;
+        const { validateConfigAction } = this.props;
         const filteredFieldKeys = currentFields.filter((field) => {
             const { type } = field;
             return type !== 'EndpointButtonField';
@@ -101,31 +110,34 @@ class GlobalConfiguration extends React.Component {
             .forEach((key) => {
                 newConfig.keyToValues[key] = currentConfig.keyToValues[key];
             });
-        validateConfig(newConfig);
+        validateConfigAction(newConfig);
     }
 
     handleDelete() {
         const { currentConfig } = this.state;
-        const { deleteConfig } = this.props;
+        const { deleteConfigAction } = this.props;
         if (currentConfig.id) {
             const emptyConfig = this.createEmptyModel();
             this.setState({
                 currentConfig: emptyConfig
-            }, () => deleteConfig(currentConfig.id));
+            }, () => deleteConfigAction(currentConfig.id));
         }
     }
 
     render() {
+        const { currentDescriptor, showTest } = this.state;
         const {
             label, description, fields, type, testFields
-        } = this.state.currentDescriptor;
-        const { errorMessage, actionMessage } = this.props;
+        } = currentDescriptor;
+        const {
+            errorMessage, actionMessage, fieldErrors, testConfigAction
+        } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
         const includeTestButton = (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT) || testFields && testFields.length > 0;
-        const displayTest = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.EXECUTE) && includeTestButton;
-        const displaySave = DescriptorUtilities.isOneOperationAssigned(this.state.currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
-        const displayDelete = DescriptorUtilities.isOperationAssigned(this.state.currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
+        const displayTest = DescriptorUtilities.isOperationAssigned(currentDescriptor, OPERATIONS.EXECUTE) && includeTestButton;
+        const displaySave = DescriptorUtilities.isOneOperationAssigned(currentDescriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
+        const displayDelete = DescriptorUtilities.isOperationAssigned(currentDescriptor, OPERATIONS.DELETE) && (type !== DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT);
         const body = (!Array.isArray(fields) || !fields.length)
             ? (
                 <div className="form-horizontal">There is no global configuration required. The configuration is handled in the distribution jobs.</div>
@@ -135,7 +147,7 @@ class GlobalConfiguration extends React.Component {
                         <FieldsPanel
                             descriptorFields={fields}
                             currentConfig={currentConfig}
-                            fieldErrors={this.props.fieldErrors}
+                            fieldErrors={fieldErrors}
                             handleChange={this.handleChange}
                             self={this}
                             stateName="currentConfig"
@@ -151,8 +163,8 @@ class GlobalConfiguration extends React.Component {
                         confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     />
                     <ChannelTestModal
-                        sendTestMessage={this.props.testConfig}
-                        showTestModal={this.state.showTest}
+                        sendTestMessage={testConfigAction}
+                        showTestModal={showTest}
                         handleCancel={this.handleTestCancel}
                         fieldModel={currentConfig}
                         testFields={testFields}
@@ -187,11 +199,11 @@ GlobalConfiguration.propTypes = {
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
-    getConfig: PropTypes.func.isRequired,
-    updateConfig: PropTypes.func.isRequired,
-    testConfig: PropTypes.func.isRequired,
-    deleteConfig: PropTypes.func.isRequired,
-    validateConfig: PropTypes.func.isRequired
+    getConfigAction: PropTypes.func.isRequired,
+    updateConfigAction: PropTypes.func.isRequired,
+    testConfigAction: PropTypes.func.isRequired,
+    deleteConfigAction: PropTypes.func.isRequired,
+    validateConfigAction: PropTypes.func.isRequired
 };
 
 // Default values
@@ -214,11 +226,11 @@ const mapStateToProps = (state) => ({
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = (dispatch) => ({
-    getConfig: (descriptorName) => dispatch(getConfig(descriptorName)),
-    updateConfig: (config) => dispatch(updateConfig(config)),
-    testConfig: (config) => dispatch(testConfig(config)),
-    deleteConfig: (id) => dispatch(deleteConfig(id)),
-    validateConfig: (config) => dispatch(validateConfig(config))
+    getConfigAction: (descriptorName) => dispatch(getConfig(descriptorName)),
+    updateConfigAction: (config) => dispatch(updateConfig(config)),
+    testConfigAction: (config) => dispatch(testConfig(config)),
+    deleteConfigAction: (id) => dispatch(deleteConfig(id)),
+    validateConfigAction: (config) => dispatch(validateConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GlobalConfiguration);
