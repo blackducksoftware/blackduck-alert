@@ -247,17 +247,17 @@ public class ConfigActions extends AbstractConfigResourceActions {
             } catch (IntegrationException e) {
                 // FIXME there are definitely other possibilities than this
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                    .orElse(ValidationResponseModel.genericError(e.getMessage()));
+                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                    .orElse(ValidationResponseModel.genericError(e.getMessage()));
+                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
         }
         String descriptorName = resource.getDescriptorName();
-        responseModel = ValidationResponseModel.genericError("Test functionality not implemented for " + descriptorName);
+        responseModel = ValidationResponseModel.generalError("Test functionality not implemented for " + descriptorName);
         return new ValidationActionResponse(HttpStatus.NOT_IMPLEMENTED, responseModel);
     }
 }

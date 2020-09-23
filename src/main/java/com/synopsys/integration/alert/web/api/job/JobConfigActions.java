@@ -365,11 +365,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 } else {
                     String descriptorName = channelFieldModel.getDescriptorName();
                     logger.error("Test action did not exist: {}", descriptorName);
-                    responseModel = ValidationResponseModel.genericError("Test functionality not implemented for " + descriptorName);
+                    responseModel = ValidationResponseModel.generalError("Test functionality not implemented for " + descriptorName);
                     return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, responseModel);
                 }
             }
-            responseModel = ValidationResponseModel.genericError("No field model of type channel was was sent to test.");
+            responseModel = ValidationResponseModel.generalError("No field model of type channel was was sent to test.");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         } catch (IntegrationRestException e) {
             logger.error(e.getMessage(), e);
@@ -380,15 +380,15 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (AlertMethodNotAllowedException e) {
             logger.error(e.getMessage(), e);
-            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.genericError(e.getMessage()));
+            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                .orElse(ValidationResponseModel.genericError(e.getMessage()));
+                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                .orElse(ValidationResponseModel.genericError(e.getMessage()));
+                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
     }

@@ -133,7 +133,7 @@ public abstract class AbstractResourceActions<T> implements LongIdResourceAction
     @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.genericError(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
@@ -147,7 +147,7 @@ public abstract class AbstractResourceActions<T> implements LongIdResourceAction
     @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            ValidationResponseModel responseModel = ValidationResponseModel.genericError(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse response = validateWithoutChecks(resource);

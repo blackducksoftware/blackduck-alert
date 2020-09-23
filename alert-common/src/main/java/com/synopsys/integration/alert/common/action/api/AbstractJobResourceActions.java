@@ -175,7 +175,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     public final ValidationActionResponse test(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
-            ValidationResponseModel responseModel = ValidationResponseModel.genericError(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
@@ -195,7 +195,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
                                                        || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
                                                        || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
-            ValidationResponseModel responseModel = ValidationResponseModel.genericError(ActionResponse.FORBIDDEN_MESSAGE);
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
         ValidationActionResponse response = validateWithoutChecks(resource);

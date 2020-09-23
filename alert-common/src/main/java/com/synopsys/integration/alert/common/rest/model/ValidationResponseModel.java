@@ -38,7 +38,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
         return new ValidationResponseModel(message, Map.of());
     }
 
-    public static ValidationResponseModel genericError(String message) {
+    public static ValidationResponseModel generalError(String message) {
         ValidationResponseModel invalid = new ValidationResponseModel(message, Map.of());
         invalid.hasErrors = true;
         return invalid;
