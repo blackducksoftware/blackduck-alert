@@ -42,13 +42,13 @@ class GlobalConfiguration extends React.Component {
 
     componentDidMount() {
         const { currentConfig } = this.state;
-        const { getConfig: getConfig1 } = this.props;
-        getConfig1(currentConfig.descriptorName);
+        const { getConfigAction } = this.props;
+        getConfigAction(currentConfig.descriptorName);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { currentFields, currentDescriptor } = this.state;
-        const { updateStatus, updateConfig: updateConfig1, currentConfig } = this.props;
+        const { updateStatus, updateConfigAction, currentConfig } = this.props;
         if (currentConfig !== prevProps.currentConfig && updateStatus === 'DELETED') {
             const newState = FieldModelUtilities.createFieldModelWithDefaults(currentFields, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, currentDescriptor.name);
             this.setState({
@@ -61,7 +61,7 @@ class GlobalConfiguration extends React.Component {
                 currentConfig: newConfigModel
             });
         } else if (prevProps.updateStatus === 'VALIDATING' && updateStatus === 'VALIDATED') {
-            updateConfig1(currentConfig);
+            updateConfigAction(currentConfig);
         }
     }
 
@@ -199,8 +199,8 @@ GlobalConfiguration.propTypes = {
     errorMessage: PropTypes.string,
     actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
-    getConfig: PropTypes.func.isRequired,
-    updateConfig: PropTypes.func.isRequired,
+    getConfigAction: PropTypes.func.isRequired,
+    updateConfigAction: PropTypes.func.isRequired,
     testConfigAction: PropTypes.func.isRequired,
     deleteConfigAction: PropTypes.func.isRequired,
     validateConfigAction: PropTypes.func.isRequired
@@ -226,8 +226,8 @@ const mapStateToProps = (state) => ({
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = (dispatch) => ({
-    getConfig: (descriptorName) => dispatch(getConfig(descriptorName)),
-    updateConfig: (config) => dispatch(updateConfig(config)),
+    getConfigAction: (descriptorName) => dispatch(getConfig(descriptorName)),
+    updateConfigAction: (config) => dispatch(updateConfig(config)),
     testConfigAction: (config) => dispatch(testConfig(config)),
     deleteConfigAction: (id) => dispatch(deleteConfig(id)),
     validateConfigAction: (config) => dispatch(validateConfig(config))
