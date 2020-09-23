@@ -76,7 +76,7 @@ public class RoleActions {
     public ValidationResponseModel validateRoleFields(RolePermissionModel rolePermissionModel) {
         return validateRoleNameFieldRequired(rolePermissionModel.getRoleName())
                    .map(requiredFieldError -> ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", List.of(requiredFieldError)))
-                   .orElseGet(() -> ValidationResponseModel.withoutFieldStatuses("The role name is valid"));
+                   .orElseGet(() -> ValidationResponseModel.success("The role name is valid"));
     }
 
     public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {

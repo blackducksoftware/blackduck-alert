@@ -214,7 +214,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
         if (fieldStatuses.isEmpty()) {
-            responseModel = ValidationResponseModel.withoutFieldStatuses("The configuration is valid");
+            responseModel = ValidationResponseModel.success("The configuration is valid");
         } else {
             status = HttpStatus.BAD_REQUEST;
             responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the configuration", fieldStatuses);
@@ -235,7 +235,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
                 // TODO return the message from the result of testAction.testConfig(...)
                 testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldAccessor);
-                responseModel = ValidationResponseModel.withoutFieldStatuses("Successfully sent test message.");
+                responseModel = ValidationResponseModel.success("Successfully sent test message.");
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationRestException e) {
                 logger.error(e.getMessage(), e);
@@ -246,17 +246,17 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationException e) {
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                    .orElse(ValidationResponseModel.withoutFieldStatuses(e.getMessage()));
+                                    .orElse(ValidationResponseModel.genericError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
-                                    .orElse(ValidationResponseModel.withoutFieldStatuses(e.getMessage()));
+                                    .orElse(ValidationResponseModel.genericError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
         }
         String descriptorName = resource.getDescriptorName();
-        responseModel = ValidationResponseModel.withoutFieldStatuses("Test functionality not implemented for " + descriptorName);
+        responseModel = ValidationResponseModel.genericError("Test functionality not implemented for " + descriptorName);
         return new ValidationActionResponse(HttpStatus.NOT_IMPLEMENTED, responseModel);
     }
 }

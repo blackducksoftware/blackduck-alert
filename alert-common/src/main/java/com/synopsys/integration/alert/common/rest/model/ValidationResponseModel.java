@@ -30,10 +30,17 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     private String message;
+    private boolean hasErrors;
     private Map<String, AlertFieldStatus> errors;
 
-    public static ValidationResponseModel withoutFieldStatuses(String message) {
+    public static ValidationResponseModel success(String message) {
         return new ValidationResponseModel(message, Map.of());
+    }
+
+    public static ValidationResponseModel genericError(String message) {
+        ValidationResponseModel invalid = new ValidationResponseModel(message, Map.of());
+        invalid.hasErrors = true;
+        return invalid;
     }
 
     public static ValidationResponseModel fromStatusCollection(String message, Collection<AlertFieldStatus> fieldStatuses) {
@@ -48,6 +55,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
     public ValidationResponseModel(String message, Map<String, AlertFieldStatus> errors) {
         this.message = message;
         this.errors = errors;
+        this.hasErrors = !errors.isEmpty();
     }
 
     public String getMessage() {
@@ -59,7 +67,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
     }
 
     public boolean hasErrors() {
-        return !errors.isEmpty();
+        return hasErrors;
     }
 
 }
