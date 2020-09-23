@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "6.2.0-SIGQA8-SNAPSHOT",
+    "version": "6.2.0-SIGQA8",
     "description": "Alert npm project",
     "keywords": [
         "blackduck",
