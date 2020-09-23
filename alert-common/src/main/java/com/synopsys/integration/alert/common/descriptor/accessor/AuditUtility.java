@@ -30,16 +30,16 @@ import java.util.function.Function;
 
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface AuditUtility {
     Optional<Long> findMatchingAuditId(Long notificationId, UUID commonDistributionId);
 
     Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId);
 
-    AlertPagedModel<AuditEntryModel> getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
+    AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
     Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup content);

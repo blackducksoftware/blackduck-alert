@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.audit.controller;
+package com.synopsys.integration.alert.web.api.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,26 +33,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
-import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -68,16 +69,10 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.api.audit.AuditEntryActions;
-import com.synopsys.integration.alert.web.api.audit.AuditEntryController;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
-    @Autowired
-    public ResponseFactory responseFactory;
-    @Autowired
-    public Gson gson;
     @Autowired
     private SlackChannelKey slackChannelKey;
     @Autowired
@@ -87,10 +82,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
-    private ContentConverter contentConverter;
-    @Autowired
-    private AuditEntryActions auditEntryActions;
-    @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
@@ -98,6 +89,15 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private FieldValueRepository fieldValueRepository;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
+
+    @Autowired
+    private AuditUtility auditUtility;
+    @Autowired
+    private NotificationProcessor notificationProcessor;
+    @Autowired
+    private NotificationManager notificationManager;
+    @Autowired
+    private ChannelEventManager channelEventManager;
 
     private ConfigurationModel providerConfigModel = null;
 
@@ -147,6 +147,11 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         fieldValueRepository.deleteAllInBatch();
     }
 
+    private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
+        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditUtility, notificationManager, configurationAccessor,
+            channelEventManager, notificationProcessor);
+    }
+
     @Test
     public void getTestIT() throws Exception {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
@@ -163,13 +168,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
-        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryController.getPage(null, null, null, null, null, true);
+        AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
+        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
         assertEquals(1, auditEntries.getContent().size());
 
-        AuditEntryModel auditEntryResponse = auditEntryController.get(savedNotificationEntity.getId());
+        AuditEntryModel auditEntryResponse = auditEntryActions.get(savedNotificationEntity.getId()).getContent().orElse(null);
         assertNotNull(auditEntryResponse);
 
         AuditEntryModel auditEntry = auditEntries.getContent().get(0);
@@ -186,7 +191,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
 
-        auditEntries = auditEntryController.getPage(null, null, null, null, null, false);
+        auditEntries = auditEntryActions.get(null, null, null, null, null, false).getContent().orElse(null);
         assertEquals(2, auditEntries.getContent().size());
     }
 
@@ -202,9 +207,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
+        AuditEntryActions auditEntryController = createAuditActions(authorizationManager);
 
-        AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
+        AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId()).getContent().orElse(null);
         assertNotNull(jobStatusModel);
     }
 
@@ -233,18 +238,18 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
-        AuditEntryController auditEntryController = new AuditEntryController(auditEntryActions, authorizationManager, new AuditDescriptorKey());
+        AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
 
         try {
-            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), null);
-            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), null);
-            auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), configurationJobModel.getJobId());
+            auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
+            auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
+            auditEntryActions.resendNotification(savedNotificationEntity.getId(), configurationJobModel.getJobId());
         } catch (Exception e) {
             fail("Expected the Audit POST request(s) not to throw an exception");
         }
 
-        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryController.resendByIdAndJobId(-1L, null));
-        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryController.resendByIdAndJobId(savedNotificationEntity.getId(), UUID.randomUUID()));
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActions.resendNotification(-1L, null));
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActions.resendNotification(savedNotificationEntity.getId(), UUID.randomUUID()));
     }
 
     private void assertResponseStatusException(HttpStatus expectedStatus, Supplier<?> auditRequest) {
