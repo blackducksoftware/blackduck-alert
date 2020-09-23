@@ -86,7 +86,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ActionResponse<List<UserConfig>> readAllAfterChecks() {
+    protected ActionResponse<List<UserConfig>> readAllWithoutChecks() {
         List<UserConfig> users = userAccessor.getUsers().stream()
                                      .map(this::convertToCustomUserRoleModel)
                                      .collect(Collectors.toList());
@@ -94,7 +94,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ActionResponse<UserConfig> readAfterChecks(Long id) {
+    protected ActionResponse<UserConfig> readWithoutChecks(Long id) {
         Optional<UserConfig> user = findExisting(id);
         if (user.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, user.get());
@@ -103,14 +103,14 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ValidationActionResponse testAfterChecks(UserConfig resource) {
-        return validateAfterChecks(resource);
+    protected ValidationActionResponse testWithoutChecks(UserConfig resource) {
+        return validateWithoutChecks(resource);
     }
 
     @Override
-    protected ValidationActionResponse validateAfterChecks(UserConfig resource) {
+    protected ValidationActionResponse validateWithoutChecks(UserConfig resource) {
         ValidationResponseModel responseModel;
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
+        if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
             responseModel = ValidationResponseModel.withoutFieldStatuses("Invalid resource id");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
@@ -124,7 +124,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ActionResponse<UserConfig> createAfterChecks(UserConfig resource) {
+    protected ActionResponse<UserConfig> createWithoutChecks(UserConfig resource) {
         try {
             String userName = resource.getUsername();
             String password = resource.getPassword();
@@ -140,14 +140,14 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
                 authorizationUtility.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
-            return new ActionResponse<>(HttpStatus.OK, convertToCustomUserRoleModel(userModel));
+            return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
         } catch (AlertException ex) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
         }
     }
 
     @Override
-    protected ActionResponse<UserConfig> updateAfterChecks(Long id, UserConfig resource) {
+    protected ActionResponse<UserConfig> updateWithoutChecks(Long id, UserConfig resource) {
         Optional<UserModel> userModel = userAccessor.getUser(id);
         if (userModel.isPresent()) {
             UserModel existingUser = userModel.get();
@@ -171,7 +171,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                return new ActionResponse<>(HttpStatus.NO_CONTENT, user);
+                return new ActionResponse<>(HttpStatus.OK);
             } catch (AlertException ex) {
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
@@ -180,7 +180,7 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ActionResponse<UserConfig> deleteAfterChecks(Long id) {
+    protected ActionResponse<UserConfig> deleteWithoutChecks(Long id) {
         Optional<UserModel> user = userAccessor.getUser(id);
         if (user.isPresent()) {
             try {
