@@ -188,12 +188,12 @@ function createErrorHandler(type, defaultHandler) {
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
-function processValidationResponse(dispatch, response, responseData, errorHandler) {
+function processValidationResponse(dispatch, response, responseData, successHandler, errorHandler) {
     if (response.ok) {
         if (responseData.hasErrors) {
             dispatch(errorHandler(400));
         } else {
-            dispatch(validatedConfig());
+            dispatch(successHandler());
         }
     } else {
         dispatch(errorHandler(response.status));
@@ -292,7 +292,7 @@ export function validateConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_VALIDATE_ERROR, () => configValidationError(responseData));
-                    processValidationResponse(dispatch, response, responseData, handler);
+                    processValidationResponse(dispatch, response, responseData, validatedConfig, handler);
                 });
         }).catch(console.error);
     };
@@ -346,7 +346,7 @@ export function testConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_TEST_FAILED, () => testFailed(responseData));
-                    processValidationResponse(dispatch, response, responseData, handler);
+                    processValidationResponse(dispatch, response, responseData, testSuccess, handler);
                 });
         }).catch(console.error);
     };
