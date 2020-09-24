@@ -45,8 +45,8 @@ public class JiraServerGlobalUIConfig extends UIConfig {
     public static final String LABEL_SERVER_CONFIGURE_PLUGIN = "Configure Jira server plugin";
 
     public static final String DESCRIPTION_SERVER_URL = "The URL of the Jira server";
-    public static final String DESCRIPTION_SERVER_USER_NAME = "The username of the Jira server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin";
-    public static final String DESCRIPTION_SERVER_PASSWORD = "The admin of the Jira server's password.";
+    public static final String DESCRIPTION_SERVER_USER_NAME = "The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin.";
+    public static final String DESCRIPTION_SERVER_PASSWORD = "The password of the specified Jira Server user.";
     public static final String DESCRIPTION_SERVER_DISABLE_PLUGIN_CHECK = "This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance."
                                                                              + " Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly.";
     public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira server.";
