@@ -26,13 +26,17 @@ import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
@@ -49,42 +53,58 @@ public class SystemActions {
 
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private final FieldModelProcessor fieldModelProcessor;
     private final SettingsUtility settingsUtility;
 
     @Autowired
     public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
-        this.fieldModelProcessor = fieldModelProcessor;
         this.settingsUtility = settingsUtility;
     }
 
-    public boolean isSystemInitialized() {
-        return systemStatusUtility.isSystemInitialized();
+    public ActionResponse<MultiSystemMessageModel> getSystemMessages(@Nullable String startDate, @Nullable String endDate) {
+        try {
+            if (StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)) {
+                return getSystemMessages();
+            } else if (StringUtils.isNotBlank(startDate) && StringUtils.isBlank(endDate)) {
+                return getSystemMessagesAfter(startDate);
+            } else if (StringUtils.isBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+                return getSystemMessagesBefore(endDate);
+            } else {
+                return getSystemMessagesBetween(startDate, endDate);
+            }
+        } catch (ParseException ex) {
+            logger.error("error occurred getting system messages", ex);
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
-    public List<SystemMessageModel> getSystemMessagesSinceStartup() {
-        return systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime());
+    public ActionResponse<MultiSystemMessageModel> getSystemMessagesSinceStartup() {
+        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime());
+        return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
-    public List<SystemMessageModel> getSystemMessagesAfter(String startDate) throws ParseException {
+    public ActionResponse<MultiSystemMessageModel> getSystemMessagesAfter(String startDate) throws ParseException {
         OffsetDateTime date = DateUtils.parseDate(startDate, RestConstants.JSON_DATE_FORMAT);
-        return systemMessageUtility.getSystemMessagesAfter(date);
+        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesAfter(date);
+        return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
-    public List<SystemMessageModel> getSystemMessagesBefore(String endDate) throws ParseException {
+    public ActionResponse<MultiSystemMessageModel> getSystemMessagesBefore(String endDate) throws ParseException {
         OffsetDateTime date = DateUtils.parseDate(endDate, RestConstants.JSON_DATE_FORMAT);
-        return systemMessageUtility.getSystemMessagesBefore(date);
+        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
+        return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
-    public List<SystemMessageModel> getSystemMessagesBetween(String startDate, String endDate) throws ParseException {
+    public ActionResponse<MultiSystemMessageModel> getSystemMessagesBetween(String startDate, String endDate) throws ParseException {
         DateRange dateRange = DateRange.of(startDate, endDate);
-        return systemMessageUtility.findBetween(dateRange);
+        List<SystemMessageModel> messages = systemMessageUtility.findBetween(dateRange);
+        return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
-    public List<SystemMessageModel> getSystemMessages() {
-        return systemMessageUtility.getSystemMessages();
+    public ActionResponse<MultiSystemMessageModel> getSystemMessages() {
+        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessages();
+        return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     public FieldModel getCurrentSystemSetup() {
@@ -96,20 +116,4 @@ public class SystemActions {
 
         return null;
     }
-
-    public FieldModel saveRequiredInformation(FieldModel settingsToSave, List<AlertFieldStatus> fieldErrors) throws AlertException {
-        FieldModel systemSettings = settingsToSave;
-        fieldErrors.addAll(fieldModelProcessor.validateFieldModel(systemSettings));
-        if (fieldErrors.isEmpty()) {
-            if (settingsUtility.doesConfigurationExist()) {
-                systemSettings = settingsUtility.updateSettings(Long.valueOf(settingsToSave.getId()), settingsToSave);
-            } else {
-                systemSettings = settingsUtility.saveSettings(settingsToSave);
-            }
-            systemStatusUtility.setSystemInitialized(true);
-        }
-
-        return systemSettings;
-    }
-
 }

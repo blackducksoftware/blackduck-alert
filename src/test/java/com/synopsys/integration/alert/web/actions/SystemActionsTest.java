@@ -1,11 +1,8 @@
 package com.synopsys.integration.alert.web.actions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -40,7 +35,7 @@ public class SystemActionsTest {
     private SettingsUtility settingsUtility;
 
     @BeforeEach
-    public void initiailize() throws AlertException {
+    public void initiailize() {
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
         settingsUtility = Mockito.mock(SettingsUtility.class);
@@ -89,15 +84,6 @@ public class SystemActionsTest {
     }
 
     @Test
-    public void testIsInitiailzed() {
-        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
-
-        assertFalse(systemActions.isSystemInitialized());
-        Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        assertTrue(systemActions.isSystemInitialized());
-    }
-
-    @Test
     public void testGetCurrentSystemSetup() throws Exception {
         SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
         final String globalEncryptionPassword = "password";
@@ -126,32 +112,6 @@ public class SystemActionsTest {
         assertEquals(proxyPort, actual.getFieldValueModel(ProxyManager.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(proxyUsername, actual.getFieldValueModel(ProxyManager.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(proxyPassword, actual.getFieldValueModel(ProxyManager.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
-    }
-
-    @Test
-    public void testSaveRequiredInformation() throws Exception {
-        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
-        final String globalEncryptionPassword = "password";
-        final String globalEncryptionSalt = "salt";
-        final String proxyHost = "host";
-        final String proxyPort = "port";
-        final String proxyUsername = "username";
-        final String proxyPassword = "password";
-
-        Map<String, FieldValueModel> valueMap = new HashMap<>();
-        FieldModel model = new FieldModel(SETTINGS_DESCRIPTOR_KEY.getUniversalKey(), "GLOBAL", valueMap);
-        model.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
-        model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
-        model.putField(ProxyManager.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
-        model.putField(ProxyManager.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
-        model.putField(ProxyManager.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
-        model.putField(ProxyManager.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
-
-        Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(false);
-
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        systemActions.saveRequiredInformation(model, fieldErrors);
-        assertTrue(fieldErrors.isEmpty());
     }
 
     private List<SystemMessageModel> createSystemMessageList() {
