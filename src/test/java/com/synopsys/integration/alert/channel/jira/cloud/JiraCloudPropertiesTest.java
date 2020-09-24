@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -17,10 +18,11 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testBuildConfigException() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties(null, null, null);
+            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, false);
             assertNull(properties.getUrl());
             assertNull(properties.getAccessToken());
             assertNull(properties.getUsername());
+            assertFalse(properties.isPluginCheckDisabled());
             properties.createJiraServerConfig();
             fail();
         } catch (IssueTrackerException ex) {
@@ -31,13 +33,15 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testBuildConfig() {
         try {
-            final String url = "http://localhost:2990";
-            final String token = "token";
-            final String user = "user";
-            JiraCloudProperties properties = new JiraCloudProperties(url, token, user);
+            String url = "http://localhost:2990";
+            String token = "token";
+            String user = "user";
+            boolean pluginCheckDisabled = true;
+            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled);
             assertEquals(url, properties.getUrl());
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
+            assertEquals(pluginCheckDisabled, properties.isPluginCheckDisabled());
             JiraCloudRestConfig config = properties.createJiraServerConfig();
             assertNotNull(config);
         } catch (IssueTrackerException ex) {
@@ -49,7 +53,7 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testServerServiceFactory() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user");
+            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false);
             JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), new Gson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {
@@ -57,4 +61,5 @@ public class JiraCloudPropertiesTest {
             fail();
         }
     }
+
 }

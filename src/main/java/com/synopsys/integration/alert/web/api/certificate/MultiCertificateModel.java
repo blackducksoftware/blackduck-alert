@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.web.api.certificate;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import java.util.List;
 
-public interface ResourceActions<T, I> {
-    ActionResponse<T> create(T resource);
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-    ActionResponse<T> getOne(I id);
+public class MultiCertificateModel extends AlertSerializableModel {
+    private List<CertificateModel> certificates;
 
-    ActionResponse<T> update(I id, T resource);
+    public MultiCertificateModel(List<CertificateModel> certificates) {
+        this.certificates = certificates;
+    }
 
-    ActionResponse<T> delete(I id);
+    public List<CertificateModel> getCertificates() {
+        return certificates;
+    }
 }

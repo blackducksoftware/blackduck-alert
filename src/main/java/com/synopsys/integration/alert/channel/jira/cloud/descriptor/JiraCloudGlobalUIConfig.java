@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -38,13 +39,16 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 @Component
 public class JiraCloudGlobalUIConfig extends UIConfig {
     public static final String LABEL_URL = "Url";
-    public static final String LABEL_ADMIN_EMAIL_ADDRESS = "Admin Email Address";
-    public static final String LABEL_ADMIN_API_TOKEN = "Admin API Token";
+    public static final String LABEL_EMAIL_ADDRESS = "Email Address";
+    public static final String LABEL_API_TOKEN = "API Token";
+    public static final String LABEL_DISABLE_PLUGIN_CHECK = "Disable Plugin Check";
     public static final String LABEL_CONFIGURE_PLUGIN = "Configure Jira Cloud plugin";
 
     public static final String DESCRIPTION_URL = "The URL of the Jira Cloud server.";
-    public static final String DESCRIPTION_ADMIN_USER_NAME = "The email address of the admin used to log into the Jira Cloud server that has generated the API token.";
-    public static final String DESCRIPTION_ADMIN_API_TOKEN = "The admin API token used to send API requests to the Jira Cloud server.";
+    public static final String DESCRIPTION_USER_NAME = "The email address of the Jira Cloud user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin.";
+    public static final String DESCRIPTION_API_TOKEN = "The API token of the specified Jira user.";
+    public static final String DESCRIPTION_DISABLE_PLUGIN_CHECK = "This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance."
+                                                                      + " Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly.";
     public static final String DESCRIPTION_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira Cloud server.";
 
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
@@ -60,14 +64,15 @@ public class JiraCloudGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         ConfigField jiraUrl = new URLInputConfigField(JiraCloudDescriptor.KEY_JIRA_URL, LABEL_URL, DESCRIPTION_URL).applyRequired(true);
-        ConfigField jiraUserName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_ADMIN_EMAIL_ADDRESS, DESCRIPTION_ADMIN_USER_NAME).applyRequired(true);
-        ConfigField jiraAccessToken = new PasswordConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_ADMIN_API_TOKEN, DESCRIPTION_ADMIN_API_TOKEN, encryptionValidator).applyRequired(true);
+        ConfigField jiraUserName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, LABEL_EMAIL_ADDRESS, DESCRIPTION_USER_NAME).applyRequired(true);
+        ConfigField jiraAccessToken = new PasswordConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_API_TOKEN, DESCRIPTION_API_TOKEN, encryptionValidator).applyRequired(true);
+        ConfigField jiraDisablePluginCheck = new CheckboxConfigField(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK, LABEL_DISABLE_PLUGIN_CHECK, DESCRIPTION_DISABLE_PLUGIN_CHECK).applyDefaultValue(Boolean.FALSE.toString());
         ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
                                               .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_URL)
                                               .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
                                               .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
-        return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraConfigurePlugin);
+        return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraDisablePluginCheck, jiraConfigurePlugin);
     }
 
 }

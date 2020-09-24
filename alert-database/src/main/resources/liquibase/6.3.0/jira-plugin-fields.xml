@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Jira Cloud -->
+    <changeSet author="gavink" id="create-disable-plugin-check-field-cloud">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.defined_fields WHERE source_key = 'jira.cloud.disable.plugin.check'</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="jira.cloud.disable.plugin.check"/>
+            <column name="sensitive" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="associate-disable-plugin-check-field-with-channel-cloud">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.descriptor_fields WHERE field_id = GET_FIELD_ID('jira.cloud.disable.plugin.check')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('jira.cloud.disable.plugin.check')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="add-context-to-disable-plugin-check-field-cloud">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.field_contexts WHERE field_id = GET_FIELD_ID('jira.cloud.disable.plugin.check')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('jira.cloud.disable.plugin.check')"/>
+        </insert>
+    </changeSet>
+
+    <!-- Jira Server -->
+    <changeSet author="gavink" id="create-disable-plugin-check-field-server">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.defined_fields WHERE source_key = 'jira.server.disable.plugin.check'</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key" value="jira.server.disable.plugin.check"/>
+            <column name="sensitive" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="associate-disable-plugin-check-field-with-channel-server">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.descriptor_fields WHERE field_id = GET_FIELD_ID('jira.server.disable.plugin.check')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('jira.server.disable.plugin.check')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="gavink" id="add-context-to-disable-plugin-check-field-server">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.field_contexts WHERE field_id = GET_FIELD_ID('jira.server.disable.plugin.check')</sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('jira.server.disable.plugin.check')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

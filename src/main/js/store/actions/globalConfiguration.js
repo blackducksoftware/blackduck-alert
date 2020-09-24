@@ -242,8 +242,9 @@ export function getAllConfigs(descriptorName) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        if (responseData.length > 0) {
-                            dispatch(configAllFetched(responseData));
+                        const { fieldModels } = responseData;
+                        if (fieldModels && fieldModels.length > 0) {
+                            dispatch(configAllFetched(fieldModels));
                         } else {
                             dispatch(configAllFetched({}));
                         }
@@ -268,8 +269,8 @@ export function getConfig(descriptorName) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        if (responseData.length > 0) {
-                            dispatch(configFetched(responseData[0]));
+                        if (responseData.fieldModels && responseData.fieldModels.length === 1) {
+                            dispatch(configFetched(responseData.fieldModels[0]));
                         } else {
                             dispatch(configFetched({}));
                         }

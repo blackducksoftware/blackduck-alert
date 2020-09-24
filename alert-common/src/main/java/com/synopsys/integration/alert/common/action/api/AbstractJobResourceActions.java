@@ -43,10 +43,11 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractJobResourceActions implements JobResourceActions, ValidateAction<JobFieldModel>, TestAction<JobFieldModel> {
+public abstract class AbstractJobResourceActions implements JobResourceActions, ReadAllAction<MultiJobFieldModel>, ValidateAction<JobFieldModel>, TestAction<JobFieldModel> {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
@@ -62,7 +63,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
 
-    protected abstract ActionResponse<List<JobFieldModel>> readAllWithoutChecks();
+    protected abstract ActionResponse<MultiJobFieldModel> readAllWithoutChecks();
 
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
 
@@ -99,21 +100,21 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
     }
 
     @Override
-    public final ActionResponse<List<JobFieldModel>> getAll() {
+    public final ActionResponse<MultiJobFieldModel> getAll() {
         Set<String> descriptorNames = getDescriptorNames();
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
             return ActionResponse.createForbiddenResponse();
         }
         List<JobFieldModel> models = new LinkedList<>();
-        ActionResponse<List<JobFieldModel>> response = readAllWithoutChecks();
-        List<JobFieldModel> allModels = response.getContent().orElse(List.of());
+        ActionResponse<MultiJobFieldModel> response = readAllWithoutChecks();
+        List<JobFieldModel> allModels = response.getContent().map(MultiJobFieldModel::getJobs).orElse(List.of());
         for (JobFieldModel jobModel : allModels) {
             boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (includeJob) {
                 models.add(jobModel);
             }
         }
-        return new ActionResponse<>(HttpStatus.OK, models);
+        return new ActionResponse<>(HttpStatus.OK, new MultiJobFieldModel(models));
     }
 
     @Override
