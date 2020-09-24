@@ -36,13 +36,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -51,13 +49,11 @@ public class SystemActions {
 
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
-    private final SettingsUtility settingsUtility;
 
     @Autowired
-    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
+    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
-        this.settingsUtility = settingsUtility;
     }
 
     public ActionResponse<MultiSystemMessageModel> getSystemMessages(@Nullable String startDate, @Nullable String endDate) {

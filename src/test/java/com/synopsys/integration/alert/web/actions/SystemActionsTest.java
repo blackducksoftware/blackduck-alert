@@ -17,37 +17,26 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
 import com.synopsys.integration.alert.web.api.system.MultiSystemMessageModel;
 import com.synopsys.integration.alert.web.api.system.SystemActions;
-import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SystemActionsTest {
-    private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
-
     private DefaultSystemStatusUtility defaultSystemStatusUtility;
     private DefaultSystemMessageUtility defaultSystemMessageUtility;
-    private FieldModelProcessor fieldModelProcessor;
-    private SettingsUtility settingsUtility;
 
     @BeforeEach
     public void initiailize() {
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
         defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
-        settingsUtility = Mockito.mock(SettingsUtility.class);
-        fieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
         List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesBefore(Mockito.any())).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.findBetween(Mockito.any())).thenReturn(messages);
-        Mockito.when(settingsUtility.getKey()).thenReturn(SETTINGS_DESCRIPTOR_KEY);
-        Mockito.when(settingsUtility.doesConfigurationExist()).thenReturn(true);
     }
 
     public static List<Pair<String, String>> getStartAndEndTimes() {
@@ -62,7 +51,7 @@ public class SystemActionsTest {
     @ParameterizedTest
     @MethodSource("getStartAndEndTimes")
     public void testGetSystemMessages(Pair<String, String> startAndEndTimes) {
-        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility);
         String startTime = startAndEndTimes.getLeft();
         String endTime = startAndEndTimes.getRight();
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessages(startTime, endTime);
@@ -76,7 +65,7 @@ public class SystemActionsTest {
 
     @Test
     public void getSystemMessagesSinceStartup() {
-        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility);
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessagesSinceStartup();
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
@@ -89,7 +78,7 @@ public class SystemActionsTest {
     @Test
     public void testInvalidDate() {
         String invalidDate = "2018-13--13T00/00:00.000Z";
-        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility, fieldModelProcessor, settingsUtility);
+        SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility);
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessages(invalidDate, null);
         assertTrue(response.isError());
         assertFalse(response.hasContent());
