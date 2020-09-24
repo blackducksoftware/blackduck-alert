@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -94,12 +95,12 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         String response = mvcResult.getResponse().getContentAsString();
 
-        TypeToken fieldModelListType = new TypeToken<List<JobFieldModel>>() {};
-        List<JobFieldModel> fieldModels = gson.fromJson(response, fieldModelListType.getType());
+        TypeToken fieldModelListType = new TypeToken<MultiJobFieldModel>() {};
+        MultiJobFieldModel fieldModels = gson.fromJson(response, fieldModelListType.getType());
 
         assertNotNull(fieldModels);
-        assertFalse(fieldModels.isEmpty());
-        assertTrue(fieldModels.stream()
+        assertFalse(fieldModels.getJobs().isEmpty());
+        assertTrue(fieldModels.getJobs().stream()
                        .anyMatch(fieldModel -> fieldModel.getJobId().equals(configId)));
     }
 

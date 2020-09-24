@@ -20,16 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.common.rest.model;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import java.util.List;
 
-public interface ResourceActions<T, I> {
-    ActionResponse<T> create(T resource);
+public class MultiFieldModel extends AlertSerializableModel {
+    private List<FieldModel> fieldModels;
 
-    ActionResponse<T> getOne(I id);
+    public MultiFieldModel(List<FieldModel> fieldModels) {
+        this.fieldModels = fieldModels;
+    }
 
-    ActionResponse<T> update(I id, T resource);
-
-    ActionResponse<T> delete(I id);
+    public List<FieldModel> getFieldModels() {
+        return fieldModels;
+    }
 }

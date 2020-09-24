@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.web.api.system;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import java.util.List;
 
-public interface ResourceActions<T, I> {
-    ActionResponse<T> create(T resource);
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-    ActionResponse<T> getOne(I id);
+public class MultiSystemMessageModel extends AlertSerializableModel {
+    private List<SystemMessageModel> systemMessages;
 
-    ActionResponse<T> update(I id, T resource);
+    public MultiSystemMessageModel(List<SystemMessageModel> systemMessages) {
+        this.systemMessages = systemMessages;
+    }
 
-    ActionResponse<T> delete(I id);
+    public List<SystemMessageModel> getSystemMessages() {
+        return systemMessages;
+    }
 }

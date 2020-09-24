@@ -126,7 +126,7 @@ export function fetchCertificates() {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        dispatch(fetchedAllCertificates(responseData));
+                        dispatch(fetchedAllCertificates(responseData.certificates));
                     } else {
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                             let message = '';

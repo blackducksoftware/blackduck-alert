@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.api.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +34,7 @@ import com.synopsys.integration.alert.common.rest.api.ConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.web.common.BaseController;
 
@@ -51,7 +50,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
     }
 
     @GetMapping
-    public List<FieldModel> getAll(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
+    public MultiFieldModel getAll(@RequestParam ConfigContextEnum context, @RequestParam(required = false) String descriptorName) {
         return ResponseFactory.createContentResponseFromAction(configActions.readAllByContextAndDescriptorWithoutChecks(context.name(), descriptorName));
     }
 
