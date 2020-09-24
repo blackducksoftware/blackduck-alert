@@ -31,7 +31,7 @@ export function getLatestMessages() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            dispatch(latestSystemMessagesFetched(responseData));
+                            dispatch(latestSystemMessagesFetched(responseData.systemMessages));
                         } else {
                             const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                             dispatch(handler(response.status));

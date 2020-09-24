@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,18 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.web.api.system;
 
 import java.util.List;
 
-public class MultiFieldModel extends AlertSerializableModel {
-    private List<FieldModel> fieldModels;
+import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-    public MultiFieldModel(List<FieldModel> fieldModels) {
-        this.fieldModels = fieldModels;
+public class MultiSystemMessageModel extends AlertSerializableModel {
+    private List<SystemMessageModel> systemMessages;
+
+    public MultiSystemMessageModel(List<SystemMessageModel> systemMessages) {
+        this.systemMessages = systemMessages;
     }
 
-    public List<FieldModel> getFieldModels() {
-        return fieldModels;
+    public List<SystemMessageModel> getSystemMessages() {
+        return systemMessages;
     }
 }
