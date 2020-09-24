@@ -37,11 +37,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -52,20 +56,65 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
+import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 
 @Component
-public class RoleActions {
+public class RoleActions extends AbstractResourceActions<RolePermissionModel> {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final AuthorizationUtility authorizationUtility;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public RoleActions(AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+    public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+        super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
         this.descriptorMap = descriptorMap;
     }
+
+    @Override
+    protected ActionResponse<RolePermissionModel> createWithoutChecks(RolePermissionModel resource) {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<RolePermissionModel> deleteWithoutChecks(Long id) {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<List<RolePermissionModel>> readAllWithoutChecks() {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<RolePermissionModel> readWithoutChecks(Long id) {
+        return null;
+    }
+
+    @Override
+    protected ValidationActionResponse testWithoutChecks(RolePermissionModel resource) {
+        return null;
+    }
+
+    @Override
+    protected ActionResponse<RolePermissionModel> updateWithoutChecks(Long id, RolePermissionModel resource) {
+        return null;
+    }
+
+    @Override
+    protected ValidationActionResponse validateWithoutChecks(RolePermissionModel resource) {
+        return null;
+    }
+
+    @Override
+    protected Optional<RolePermissionModel> findExisting(Long id) {
+        //TODO run tests here, see if there is more than 1 element of Set<UserRoleModel
+        return authorizationUtility.getRoles(List.of(id)).stream().findFirst().map(this::convertUserRoleModel);
+    }
+
+    //OLD CODE HERE:
 
     public List<RolePermissionModel> getRoles() {
         return authorizationUtility.getRoles().stream()
@@ -233,5 +282,4 @@ public class RoleActions {
             }
         }
     }
-
 }
