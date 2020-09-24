@@ -28,58 +28,39 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
 
 @Controller
 public class HomeController {
-    private static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
-    private final HttpSessionCsrfTokenRepository csrfTokenRespository;
-    private final SAMLContext samlContext;
+    private final HomeActions actions;
 
     @Autowired
-    public HomeController(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLContext samlContext) {
-        this.csrfTokenRespository = csrfTokenRepository;
-        this.samlContext = samlContext;
+    public HomeController(HomeActions actions) {
+        this.actions = actions;
     }
 
     @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
+        // This is using Thymeleaf templating therefore we cannot return just a string from an ActionResponse otherwise the templating will not be
+        // setup correctly and Alert will return a 404 on the main page because index.html will not be served up by this method.
         return "index";
     }
 
     @GetMapping("/api/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void checkAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAnonymous = authentication.getAuthorities().stream()
-                                  .map(GrantedAuthority::getAuthority)
-                                  .anyMatch(authority -> authority.equals(ROLE_ANONYMOUS));
-        boolean authorized = authentication.isAuthenticated() && !isAnonymous && csrfToken != null;
-
-        if (!authorized) {
-            request.getSession().invalidate();
-            throw ResponseFactory.createUnauthorizedException();
-        } else {
-            response.addHeader(csrfToken.getHeaderName(), csrfToken.getToken());
-        }
+        ResponseFactory.createResponseFromAction(actions.verifyAuthentication(request, response));
     }
 
     @ResponseBody
     @GetMapping("/api/verify/saml")
     public SAMLEnabledResponseModel checkSaml() {
-        return new SAMLEnabledResponseModel(samlContext.isSAMLEnabled());
+        return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
     }
 
 }

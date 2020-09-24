@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.api.home;
 
 import java.util.UUID;
 
