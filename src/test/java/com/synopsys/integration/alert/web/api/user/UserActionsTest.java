@@ -249,7 +249,7 @@ public class UserActionsTest {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
-        doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);  //TODO fix me
+        doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
