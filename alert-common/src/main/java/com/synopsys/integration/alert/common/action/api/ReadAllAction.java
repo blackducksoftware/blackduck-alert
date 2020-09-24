@@ -24,12 +24,6 @@ package com.synopsys.integration.alert.common.action.api;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
-public interface ResourceActions<T, I> {
-    ActionResponse<T> create(T resource);
-
-    ActionResponse<T> getOne(I id);
-
-    ActionResponse<T> update(I id, T resource);
-
-    ActionResponse<T> delete(I id);
+public interface ReadAllAction<T> {
+    ActionResponse<T> getAll();
 }

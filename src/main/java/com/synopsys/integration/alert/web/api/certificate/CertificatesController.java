@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.api.certificate;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +35,7 @@ import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(CertificatesController.API_BASE_URL)
-public class CertificatesController implements ReadAllController<CertificateModel>, BaseResourceController<CertificateModel>, ValidateController<CertificateModel> {
+public class CertificatesController implements ReadAllController<MultiCertificateModel>, BaseResourceController<CertificateModel>, ValidateController<CertificateModel> {
     public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
     private final CertificateActions actions;
 
@@ -67,7 +65,7 @@ public class CertificatesController implements ReadAllController<CertificateMode
     }
 
     @Override
-    public List<CertificateModel> getAll() {
+    public MultiCertificateModel getAll() {
         return ResponseFactory.createContentResponseFromAction(actions.getAll());
     }
 

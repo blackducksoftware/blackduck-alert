@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.api.home;
 
 import java.util.UUID;
 
@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.web.common.BaseController;
 public class HomeControllerTestIT extends AlertIntegrationTest {
     private static final String HOME_VERIFY_URL = BaseController.BASE_PATH + "/verify";
     private static final String HOME_URL = "/";
+    private static final String HOME_SAML_VERIFY_URL = BaseController.BASE_PATH + "/verify/saml";
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -82,12 +83,18 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testVerifyNullStringCSRFToken() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
         request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void testVerifySamlEnabled() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_SAML_VERIFY_URL);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test

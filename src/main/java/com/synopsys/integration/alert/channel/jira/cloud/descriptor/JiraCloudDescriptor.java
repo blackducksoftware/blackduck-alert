@@ -36,6 +36,7 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String KEY_JIRA_URL = JIRA_CLOUD_PREFIX + "url";
     public static final String KEY_JIRA_ADMIN_EMAIL_ADDRESS = JIRA_CLOUD_PREFIX + "admin.email.address";
     public static final String KEY_JIRA_ADMIN_API_TOKEN = JIRA_CLOUD_PREFIX + "admin.api.token";
+    public static final String KEY_JIRA_DISABLE_PLUGIN_CHECK = JIRA_CLOUD_PREFIX + "disable.plugin.check";
     public static final String KEY_JIRA_CONFIGURE_PLUGIN = JIRA_CLOUD_PREFIX + "configure.plugin";
 
     public static final String KEY_ADD_COMMENTS = JIRA_CLOUD_CHANNEL_PREFIX + "add.comments";

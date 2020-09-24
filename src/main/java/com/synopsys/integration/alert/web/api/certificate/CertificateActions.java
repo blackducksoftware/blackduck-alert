@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
-public class CertificateActions extends AbstractResourceActions<CertificateModel> {
+public class CertificateActions extends AbstractResourceActions<CertificateModel, MultiCertificateModel> {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
     private final CertificateUtility certificateUtility;
@@ -73,11 +73,11 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    protected ActionResponse<List<CertificateModel>> readAllWithoutChecks() {
+    public ActionResponse<MultiCertificateModel> readAllWithoutChecks() {
         List<CertificateModel> certificates = certificateAccessor.getCertificates().stream()
                                                   .map(this::convertFromDatabaseModel)
                                                   .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, certificates);
+        return new ActionResponse<>(HttpStatus.OK, new MultiCertificateModel(certificates));
     }
 
     @Override

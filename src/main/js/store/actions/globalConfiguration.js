@@ -188,12 +188,13 @@ function createErrorHandler(type, defaultHandler) {
     return HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
 }
 
-function processValidationResponse(dispatch, response, responseData, errorHandler) {
+function processValidationResponse(dispatch, response, responseData, successHandler, errorHandler) {
     if (response.ok) {
         if (responseData.hasErrors) {
             dispatch(errorHandler(400));
+        } else {
+            dispatch(successHandler());
         }
-        dispatch(validatedConfig());
     } else {
         dispatch(errorHandler(response.status));
     }
@@ -241,8 +242,9 @@ export function getAllConfigs(descriptorName) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        if (responseData.length > 0) {
-                            dispatch(configAllFetched(responseData));
+                        const { fieldModels } = responseData;
+                        if (fieldModels && fieldModels.length > 0) {
+                            dispatch(configAllFetched(fieldModels));
                         } else {
                             dispatch(configAllFetched({}));
                         }
@@ -267,8 +269,8 @@ export function getConfig(descriptorName) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        if (responseData.length > 0) {
-                            dispatch(configFetched(responseData[0]));
+                        if (responseData.fieldModels && responseData.fieldModels.length === 1) {
+                            dispatch(configFetched(responseData.fieldModels[0]));
                         } else {
                             dispatch(configFetched({}));
                         }
@@ -290,7 +292,7 @@ export function validateConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_VALIDATE_ERROR, () => configValidationError(responseData));
-                    processValidationResponse(dispatch, response, responseData, handler);
+                    processValidationResponse(dispatch, response, responseData, validatedConfig, handler);
                 });
         }).catch(console.error);
     };
@@ -344,7 +346,7 @@ export function testConfig(config) {
             response.json()
                 .then((responseData) => {
                     const handler = createErrorHandler(CONFIG_TEST_FAILED, () => testFailed(responseData));
-                    processValidationResponse(dispatch, response, responseData, handler);
+                    processValidationResponse(dispatch, response, responseData, testSuccess, handler);
                 });
         }).catch(console.error);
     };

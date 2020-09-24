@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.web;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -85,7 +84,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
                 }
                 createBadRequestIntegrationException(e);
             }
-            boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, password, username, JiraConstants.JIRA_APP_KEY);
+            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService, username, password);
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
             }
@@ -105,8 +104,9 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
         String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_PASSWORD)
                               .map(this::getAppropriateAccessToken)
                               .orElse("");
+        boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK).map(Boolean::parseBoolean).orElse(false);
 
-        return new JiraServerProperties(url, password, username);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
@@ -127,22 +127,6 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
         }
 
         return accessToken;
-    }
-
-    private boolean isJiraPluginInstalled(PluginManagerService jiraAppService, String accessToken, String username, String appKey) throws IntegrationException, InterruptedException {
-        long maxTimeForChecks = 5L;
-        long checkAgain = 1L;
-        while (checkAgain <= maxTimeForChecks) {
-            boolean foundPlugin = jiraAppService.isAppInstalled(username, accessToken, appKey);
-            if (foundPlugin) {
-                return true;
-            }
-
-            TimeUnit.SECONDS.sleep(checkAgain);
-            checkAgain++;
-        }
-
-        return false;
     }
 
     private ActionResponse<String> createBadRequestIntegrationException(IntegrationException error) {

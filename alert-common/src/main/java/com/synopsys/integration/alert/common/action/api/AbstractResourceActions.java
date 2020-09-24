@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -34,8 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T> implements LongIdResourceActions<T>, ValidateAction<T>, TestAction<T> {
-
+public abstract class AbstractResourceActions<T, M> implements LongIdResourceActions<T>, ReadAllAction<M>, ValidateAction<T>, TestAction<T> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -52,7 +50,7 @@ public abstract class AbstractResourceActions<T> implements LongIdResourceAction
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<List<T>> readAllWithoutChecks();
+    protected abstract ActionResponse<M> readAllWithoutChecks();
 
     protected abstract ActionResponse<T> readWithoutChecks(Long id);
 
@@ -77,7 +75,7 @@ public abstract class AbstractResourceActions<T> implements LongIdResourceAction
     }
 
     @Override
-    public final ActionResponse<List<T>> getAll() {
+    public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             return ActionResponse.createForbiddenResponse();
         }

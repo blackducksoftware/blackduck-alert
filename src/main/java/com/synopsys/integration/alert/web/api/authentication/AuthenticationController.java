@@ -24,14 +24,9 @@ package com.synopsys.integration.alert.web.api.authentication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,19 +34,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 public class AuthenticationController extends BaseController {
-    private final LoginActions loginActions;
+    private final AuthenticationActions authenticationActions;
     private final PasswordResetService passwordResetService;
     private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public AuthenticationController(LoginActions loginActions, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
-        this.loginActions = loginActions;
+    public AuthenticationController(AuthenticationActions authenticationActions, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
+        this.authenticationActions = authenticationActions;
         this.passwordResetService = passwordResetService;
         this.csrfTokenRepository = csrfTokenRepository;
     }
@@ -59,42 +53,18 @@ public class AuthenticationController extends BaseController {
     @PostMapping(value = "/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        SecurityContextHolder.clearContext();
-        response.addHeader("Location", "/");
+        ResponseFactory.createResponseFromAction(authenticationActions.logout(request, response));
     }
 
     @PostMapping(value = "/login")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
-        try {
-            if (loginActions.authenticateUser(loginConfig)) {
-                CsrfToken token = csrfTokenRepository.generateToken(request);
-                csrfTokenRepository.saveToken(token, request, response);
-                response.setHeader(token.getHeaderName(), token.getToken());
-            } else {
-                throw ResponseFactory.createUnauthorizedException();
-            }
-        } catch (AuthenticationException authException) {
-            throw ResponseFactory.createUnauthorizedException();
-        }
+        ResponseFactory.createResponseFromAction(authenticationActions.authenticateUser(request, response, loginConfig));
     }
 
     @PostMapping(value = "/resetPassword/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPassword(@PathVariable(required = false) String username) {
-        if (StringUtils.isBlank(username)) {
-            throw ResponseFactory.createBadRequestException("Username cannot be blank");
-        }
-
-        try {
-            passwordResetService.resetPassword(username);
-        } catch (AlertException alertException) {
-            throw ResponseFactory.createBadRequestException(alertException.getMessage());
-        }
+        ResponseFactory.createResponseFromAction(authenticationActions.resetPassword(username));
     }
-
 }

@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.web.api.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.Charset;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,10 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -34,7 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -47,7 +43,6 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String loginUrl = BaseController.BASE_PATH + "/login";
     private final String logoutUrl = BaseController.BASE_PATH + "/logout";
-    private final HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
@@ -56,6 +51,8 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     protected LdapManager ldapManager;
     @Autowired
     protected AuthorizationManager authorizationManager;
+    @Autowired
+    protected CsrfTokenRepository csrfTokenRepository;
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -88,38 +85,19 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void userLogoutWithValidSessionTest() {
-        AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        MockHttpSession session = (MockHttpSession) request.getSession(true);
-        session.setMaxInactiveInterval(30);
-        loginHandler.logout(request, response);
-        assertTrue(session.isInvalid(), "Expected the session to be invalid");
-        assertTrue(response.containsHeader("Location"), "Expected the response to contain a Location header");
-    }
-
-    @Test
-    public void userLogoutWithInvalidSessionTest() {
-        AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
-        HttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        loginHandler.logout(request, response);
-    }
-
-    @Test
     public void userLoginWithValidSessionTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
+        AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
+        Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
+            .thenReturn(new ActionResponse<>(HttpStatus.NO_CONTENT));
+        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
 
-        HttpServletRequest request = new MockHttpServletRequest();
-        HttpSession session = request.getSession(true);
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
+        HttpSession session = servletRequest.getSession(true);
         session.setMaxInactiveInterval(30);
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenReturn(true);
+        HttpServletResponse servletResponse = new MockHttpServletResponse();
 
         try {
-            loginHandler.login(request, httpResponse, null);
+            loginController.login(servletRequest, servletResponse, null);
         } catch (ResponseStatusException e) {
             fail("Expect an OK response, but a ResponseStatusException was thrown: " + e.getMessage());
         }
@@ -127,70 +105,28 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void userLoginWithInvalidSessionTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
+        AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
+        Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
+            .thenReturn(new ActionResponse<>(HttpStatus.UNAUTHORIZED));
+        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
 
-        HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenReturn(false);
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-
-        assertErrorStatus(HttpStatus.UNAUTHORIZED, () -> loginHandler.login(request, httpResponse, null));
-    }
-
-    @Test
-    public void userLoginWithBadCredentialsTest() {
-        LoginActions loginActions = Mockito.mock(LoginActions.class);
-        AuthenticationController loginHandler = new AuthenticationController(loginActions, null, csrfTokenRepository);
-
-        HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-
-        assertErrorStatus(HttpStatus.UNAUTHORIZED, () -> loginHandler.login(request, httpResponse, null));
-    }
-
-    @Test
-    public void resetPasswordNullTest() {
-        AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
-        assertErrorStatus(HttpStatus.BAD_REQUEST, () -> loginHandler.resetPassword(null));
-    }
-
-    @Test
-    public void resetPasswordBlankTest() {
-        AuthenticationController loginHandler = new AuthenticationController(null, null, csrfTokenRepository);
-        assertErrorStatus(HttpStatus.BAD_REQUEST, () -> loginHandler.resetPassword(StringUtils.EMPTY));
-    }
-
-    @Test
-    public void resetPasswordValidTest() throws AlertException {
-        PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
-        Mockito.doNothing().when(passwordResetService).resetPassword(Mockito.anyString());
-
-        AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, csrfTokenRepository);
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
+        HttpServletResponse servletResponse = new MockHttpServletResponse();
 
         try {
-            loginHandler.resetPassword("exampleUsername");
-        } catch (ResponseStatusException e) {
-            fail("Expect an OK response, but a ResponseStatusException was thrown: " + e.getMessage());
+            loginController.login(servletRequest, servletResponse, null);
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
         }
     }
 
     @Test
-    public void resetPasswordAlertExceptionTest() throws AlertException {
-        PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
-        Mockito.doThrow(new AlertException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
-
-        AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, csrfTokenRepository);
-
-        assertErrorStatus(HttpStatus.BAD_REQUEST, () -> loginHandler.resetPassword("exampleUsername"));
+    public void testResetPasswordControllerPath() throws Exception {
+        TestProperties testProperties = new TestProperties();
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
+        String url = BaseController.BASE_PATH + "/resetPassword/alertuser";
+        // by default the 3 alert users don't have the email address set so a bad request is expected.
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
-
-    private void assertErrorStatus(HttpStatus errorStatus, Runnable requestMethod) {
-        try {
-            requestMethod.run();
-        } catch (ResponseStatusException e) {
-            assertEquals(errorStatus, e.getStatus());
-        }
-    }
-
 }
