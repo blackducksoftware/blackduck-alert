@@ -269,7 +269,7 @@ export function getConfig(descriptorName) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        if (responseData.fieldModels && responseData.fieldModels.length > 0) {
+                        if (responseData.fieldModels && responseData.fieldModels.length === 1) {
                             dispatch(configFetched(responseData.fieldModels[0]));
                         } else {
                             dispatch(configFetched({}));
