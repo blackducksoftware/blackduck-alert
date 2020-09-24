@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-public class MultiFieldModel {
+public class MultiFieldModel extends AlertSerializableModel {
     private List<FieldModel> fieldModels;
 
     public MultiFieldModel(List<FieldModel> fieldModels) {
