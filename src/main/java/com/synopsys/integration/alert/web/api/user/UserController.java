@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.web.api.user;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +35,7 @@ import com.synopsys.integration.alert.web.api.config.ConfigController;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)
-public class UserController implements ReadAllController<UserConfig>, BaseResourceController<UserConfig>, ValidateController<UserConfig> {
+public class UserController implements ReadAllController<MultiUserConfigResponseModel>, BaseResourceController<UserConfig>, ValidateController<UserConfig> {
     public static final String USER_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/user";
 
     private final UserActions actions;
@@ -68,7 +66,7 @@ public class UserController implements ReadAllController<UserConfig>, BaseResour
     }
 
     @Override
-    public List<UserConfig> getAll() {
+    public MultiUserConfigResponseModel getAll() {
         return ResponseFactory.createContentResponseFromAction(actions.getAll());
     }
 

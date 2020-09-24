@@ -56,7 +56,7 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Transactional
-public class UserActions extends AbstractResourceActions<UserConfig> {
+public class UserActions extends AbstractResourceActions<UserConfig, MultiUserConfigResponseModel> {
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
@@ -86,11 +86,11 @@ public class UserActions extends AbstractResourceActions<UserConfig> {
     }
 
     @Override
-    protected ActionResponse<List<UserConfig>> readAllWithoutChecks() {
+    protected ActionResponse<MultiUserConfigResponseModel> readAllWithoutChecks() {
         List<UserConfig> users = userAccessor.getUsers().stream()
                                      .map(this::convertToCustomUserRoleModel)
                                      .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, users);
+        return new ActionResponse<>(HttpStatus.OK, new MultiUserConfigResponseModel(users));
     }
 
     @Override

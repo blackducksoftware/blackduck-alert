@@ -89,10 +89,12 @@ public class UserActionsTest {
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
-        ActionResponse<List<UserConfig>> actionResponse = userActions.readAllWithoutChecks();
+        ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.readAllWithoutChecks();
 
         assertTrue(actionResponse.hasContent());
-        List<UserConfig> userModels = actionResponse.getContent().get();
+        List<UserConfig> userModels = actionResponse.getContent()
+                                          .get()
+                                          .getUsers();
         assertEquals(1, userModels.size());
         UserConfig userConfig = userModels.get(0);
         assertUserConfig(userConfig);
