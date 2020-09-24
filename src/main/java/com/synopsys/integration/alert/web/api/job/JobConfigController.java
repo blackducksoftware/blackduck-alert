@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
+import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
 
@@ -65,7 +66,7 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @Override
-    public List<JobFieldModel> getAll() {
+    public MultiJobFieldModel getAll() {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
     }
 
