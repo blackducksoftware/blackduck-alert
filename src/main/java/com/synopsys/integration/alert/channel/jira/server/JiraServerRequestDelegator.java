@@ -50,6 +50,7 @@ import com.synopsys.integration.jira.common.server.service.ProjectService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 public class JiraServerRequestDelegator {
+    public static final String ERROR_MESSAGE_PLUGIN_CONFIG = "Please configure the Jira Server plugin for your instance via the global Jira Server channel settings.";
     private final Logger logger = LoggerFactory.getLogger(JiraServerRequestDelegator.class);
 
     private final Gson gson;
@@ -69,11 +70,9 @@ public class JiraServerRequestDelegator {
         }
         JiraServerProperties jiraProperties = (JiraServerProperties) context.getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
-        logger.debug("Verifying the required application is installed on the Jira server...");
-        boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY);
-        if (missingApp) {
-            throw new IssueTrackerException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
+
+        if (!jiraProperties.isPluginCheckDisabled()) {
+            checkIfAlertPluginIsInstalled(jiraServerServiceFactory, jiraProperties);
         }
 
         ProjectService projectService = jiraServerServiceFactory.createProjectService();
@@ -92,6 +91,20 @@ public class JiraServerRequestDelegator {
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
+    }
+
+    private void checkIfAlertPluginIsInstalled(JiraServerServiceFactory jiraServerServiceFactory, JiraServerProperties jiraProperties) throws IssueTrackerException {
+        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
+        logger.debug("Verifying the required application is installed on the Jira server...");
+
+        try {
+            boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY);
+            if (missingApp) {
+                throw new IssueTrackerException(ERROR_MESSAGE_PLUGIN_CONFIG);
+            }
+        } catch (IntegrationException ex) {
+            throw new IssueTrackerException(ERROR_MESSAGE_PLUGIN_CONFIG, ex);
+        }
     }
 
 }

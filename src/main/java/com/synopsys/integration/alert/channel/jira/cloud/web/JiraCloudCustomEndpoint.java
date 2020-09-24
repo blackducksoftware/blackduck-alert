@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.web;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +35,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -80,7 +79,8 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
             if (BooleanUtils.isTrue(response.isStatusCodeError())) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + response.getStatusCode());
             }
-            boolean jiraPluginInstalled = isJiraPluginInstalled(jiraAppService, accessToken, username, JiraConstants.JIRA_APP_KEY);
+
+            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService, username, accessToken);
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, "Unable to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
             }
@@ -101,8 +101,11 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
         String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
                                  .map(this::getAppropriateAccessToken)
                                  .orElse("");
+        boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
+                                          .map(Boolean::parseBoolean)
+                                          .orElse(false);
 
-        return new JiraCloudProperties(url, accessToken, username);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled);
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
@@ -123,22 +126,6 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
         }
 
         return accessToken;
-    }
-
-    private boolean isJiraPluginInstalled(PluginManagerService jiraAppService, String accessToken, String username, String appKey) throws IntegrationException, InterruptedException {
-        long maxTimeForChecks = 5L;
-        long checkAgain = 1L;
-        while (checkAgain <= maxTimeForChecks) {
-            boolean foundPlugin = jiraAppService.isAppInstalled(username, accessToken, appKey);
-            if (foundPlugin) {
-                return true;
-            }
-
-            TimeUnit.SECONDS.sleep(checkAgain);
-            checkAgain++;
-        }
-
-        return false;
     }
 
 }

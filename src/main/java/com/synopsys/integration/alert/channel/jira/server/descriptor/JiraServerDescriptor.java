@@ -43,6 +43,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String KEY_SERVER_URL = JIRA_SERVER_PREFIX + "url";
     public static final String KEY_SERVER_USERNAME = JIRA_SERVER_PREFIX + "username";
     public static final String KEY_SERVER_PASSWORD = JIRA_SERVER_PREFIX + "password";
+    public static final String KEY_JIRA_DISABLE_PLUGIN_CHECK = JIRA_SERVER_PREFIX + "disable.plugin.check";
     public static final String KEY_JIRA_SERVER_CONFIGURE_PLUGIN = JIRA_SERVER_PREFIX + "configure.plugin";
 
     public static final String JIRA_LABEL = "Jira Server";

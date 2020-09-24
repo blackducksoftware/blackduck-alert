@@ -37,11 +37,13 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
     private final String url;
     private final String password;
     private final String username;
+    private final boolean pluginCheckDisabled;
 
-    public JiraServerProperties(String url, String password, String username) {
+    public JiraServerProperties(String url, String password, String username, boolean pluginCheckDisabled) {
         this.url = url;
         this.password = password;
         this.username = username;
+        this.pluginCheckDisabled = pluginCheckDisabled;
     }
 
     public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -75,4 +77,9 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
     public String getUsername() {
         return username;
     }
+
+    public boolean isPluginCheckDisabled() {
+        return pluginCheckDisabled;
+    }
+
 }

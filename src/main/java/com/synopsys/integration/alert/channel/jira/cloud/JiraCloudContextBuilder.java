@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContext;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -73,6 +71,8 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
         String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
         String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        return new JiraCloudProperties(url, accessToken, username);
+        boolean pluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled);
     }
+
 }

@@ -30,6 +30,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraGlobalTestAction extends TestAction {
+    protected abstract boolean isAppCheckEnabled(FieldAccessor fieldAccessor);
+
     protected abstract boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException;
 
     protected abstract boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException;
@@ -43,7 +45,7 @@ public abstract class JiraGlobalTestAction extends TestAction {
                 throw new AlertException("User did not match any known users.");
             }
 
-            if (isAppMissing(registeredFieldValues)) {
+            if (isAppCheckEnabled(registeredFieldValues) && isAppMissing(registeredFieldValues)) {
                 throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
             }
         } catch (IntegrationException e) {
@@ -51,4 +53,5 @@ public abstract class JiraGlobalTestAction extends TestAction {
         }
         return new MessageResult(String.format("Successfully connected to %s instance.", getChannelDisplayName()));
     }
+
 }
