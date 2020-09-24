@@ -45,7 +45,7 @@
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM alert.descriptor_fields WHERE field_id = GET_FIELD_ID('jira.server.disable.plugin.check')</sqlCheck>
         </preConditions>
         <insert schemaName="alert" tableName="descriptor_fields">
-            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
             <column name="field_id" valueComputed="GET_FIELD_ID('jira.server.disable.plugin.check')"/>
         </insert>
     </changeSet>
