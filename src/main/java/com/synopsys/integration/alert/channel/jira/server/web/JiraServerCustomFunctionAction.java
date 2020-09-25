@@ -76,7 +76,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
             String username = jiraProperties.getUsername();
             String password = jiraProperties.getPassword();
             try {
-                jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
+                jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
                     return new ActionResponse<>(HttpStatus.NOT_FOUND,
@@ -84,7 +84,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
                 }
                 createBadRequestIntegrationException(e);
             }
-            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService, username, password);
+            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
             }

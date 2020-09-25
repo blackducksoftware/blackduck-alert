@@ -30,11 +30,15 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraGlobalTestAction extends TestAction {
+    public static final String JIRA_ADMIN_PERMISSION_NAME = "ADMINISTER";
+
     protected abstract boolean isAppCheckEnabled(FieldAccessor fieldAccessor);
 
     protected abstract boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException;
 
     protected abstract boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException;
+
+    protected abstract boolean isUserAdmin(FieldAccessor fieldAccessor) throws IntegrationException;
 
     protected abstract String getChannelDisplayName();
 
@@ -45,8 +49,14 @@ public abstract class JiraGlobalTestAction extends TestAction {
                 throw new AlertException("User did not match any known users.");
             }
 
-            if (isAppCheckEnabled(registeredFieldValues) && isAppMissing(registeredFieldValues)) {
-                throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
+            if (isAppCheckEnabled(registeredFieldValues)) {
+                if (isUserAdmin(registeredFieldValues)) {
+                    throw new AlertException("The configured user must be an admin if 'Plugin Check' is enabled");
+                }
+
+                if (isAppMissing(registeredFieldValues)) {
+                    throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
+                }
             }
         } catch (IntegrationException e) {
             throw new AlertException("An error occurred during testing: " + e.getMessage());

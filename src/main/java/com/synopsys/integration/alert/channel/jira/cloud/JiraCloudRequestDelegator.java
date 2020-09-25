@@ -71,7 +71,7 @@ public class JiraCloudRequestDelegator {
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
 
         if (!jiraProperties.isPluginCheckDisabled()) {
-            checkIfAlertPluginIsInstalled(jiraCloudServiceFactory, jiraProperties);
+            checkIfAlertPluginIsInstalled(jiraCloudServiceFactory.createPluginManagerService());
         }
 
         ProjectService projectService = jiraCloudServiceFactory.createProjectService();
@@ -92,11 +92,10 @@ public class JiraCloudRequestDelegator {
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 
-    private void checkIfAlertPluginIsInstalled(JiraCloudServiceFactory jiraCloudServiceFactory, JiraCloudProperties jiraProperties) throws IssueTrackerException {
-        PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
+    private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
         try {
-            boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY);
+            boolean missingApp = !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
             if (missingApp) {
                 throw new IssueTrackerException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
             }

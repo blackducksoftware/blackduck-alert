@@ -36,6 +36,7 @@ import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.Is
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.model.RequestFactory;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
 
 public class BlackDuckProviderIssueHandler {
@@ -77,7 +78,7 @@ public class BlackDuckProviderIssueHandler {
     private Optional<IssueView> retrieveExistingIssue(String bomComponentVersionIssuesUrl, String issueKey) throws IntegrationException {
         String issueLookupUrl = createIssueLookupUrl(bomComponentVersionIssuesUrl);
         Request.Builder requestBuilder = RequestFactory.createCommonGetRequestBuilder(issueLookupUrl)
-                                             .addAdditionalHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6);
+                                             .addHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6);
 
         // This is really a List<BomComponentIssueView>, but BomComponentIssueView is not considered a BlackDuckResponse.
         List<IssueView> bomComponentIssues = blackDuckService.getAllResponses(requestBuilder, IssueView.class);
@@ -88,11 +89,12 @@ public class BlackDuckProviderIssueHandler {
     }
 
     private void performRequest(String uri, IssueView requestModel, Function<String, Request.Builder> requestBuilderCreator) throws IntegrationException {
+        HttpUrl httpUrl = new HttpUrl(uri);
         String requestJson = gson.toJson(requestModel);
         Request request = requestBuilderCreator.apply(requestJson)
-                              .uri(uri)
-                              .addAdditionalHeader(HttpHeaders.CONTENT_TYPE, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
-                              .addAdditionalHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .url(httpUrl)
+                              .addHeader(HttpHeaders.CONTENT_TYPE, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
+                              .addHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
                               .build();
         blackDuckService.execute(request);
     }
