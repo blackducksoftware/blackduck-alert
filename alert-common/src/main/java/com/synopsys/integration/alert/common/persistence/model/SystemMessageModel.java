@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-public class SystemMessageModel {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class SystemMessageModel extends AlertSerializableModel {
     private final String id;
     private final String severity;
     private final String createdAt;
