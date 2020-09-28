@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +51,7 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
     private static final String BLACKDUCK_URL_DESCRIPTION = "The URL of the Black Duck server.";
     private static final String BLACKDUCK_API_KEY_DESCRIPTION = "The API token used to retrieve data from the Black Duck server. The API token should be for a super user.";
     private static final String BLACKDUCK_TIMEOUT_DESCRIPTION = "The timeout in seconds for all connections to the Black Duck server.";
-    private EncryptionSettingsValidator encryptionValidator;
+    private final EncryptionSettingsValidator encryptionValidator;
 
     @Autowired
     public BlackDuckProviderUIConfig(BlackDuckProviderKey blackDuckProviderKey, EncryptionSettingsValidator encryptionValidator, ConfigurationAccessor configurationAccessor) {
@@ -67,6 +68,7 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
         String defaultTimeout = String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT);
         ConfigField blackDuckTimeout = new NumberConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, LABEL_TIMEOUT, BLACKDUCK_TIMEOUT_DESCRIPTION)
                                            .applyRequired(true)
+                                           .applyValidationFunctions(this::validateTimeout)
                                            .applyDefaultValue(defaultTimeout);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout);
@@ -76,6 +78,18 @@ public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
         String apiKey = fieldToValidate.getValue().orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {
             return ValidationResult.errors("Invalid Black Duck API Token.");
+        }
+        return ValidationResult.success();
+    }
+
+    private ValidationResult validateTimeout(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        int timeoutInt = fieldToValidate.getValue()
+                             .map(NumberUtils::toInt)
+                             .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
+        if (timeoutInt < 1) {
+            return ValidationResult.errors("Invalid timeout: The timeout must be a positive integer");
+        } else if (timeoutInt > 300) {
+            ValidationResult.warnings("The provided timeout is greater than five minutes. Please ensure this is the desired behavior.");
         }
         return ValidationResult.success();
     }
