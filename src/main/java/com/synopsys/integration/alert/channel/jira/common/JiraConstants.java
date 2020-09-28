@@ -26,6 +26,7 @@ public final class JiraConstants {
     public static final String DEFAULT_ISSUE_TYPE = "Task";
     // This String must always match the String found in the atlassian-connect.json file under key.
     public static final String JIRA_APP_KEY = "com.synopsys.integration.alert";
+    public static final String JIRA_ALERT_APP_NAME = "Alert Issue Property Indexer";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.
     public static final String JIRA_ISSUE_PROPERTY_KEY = "com-synopsys-integration-alert";
 

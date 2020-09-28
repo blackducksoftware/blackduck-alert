@@ -55,7 +55,7 @@ public abstract class JiraGlobalTestAction extends TestAction {
                 }
 
                 if (isAppMissing(registeredFieldValues)) {
-                    throw new AlertException(String.format("Please configure the %s plugin for your server.", getChannelDisplayName()));
+                    throw new AlertException(String.format("Please configure the '%s' plugin for your server.", JiraConstants.JIRA_ALERT_APP_NAME));
                 }
             }
         } catch (IntegrationException e) {
