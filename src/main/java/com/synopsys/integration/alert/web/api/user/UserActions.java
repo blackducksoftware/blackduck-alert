@@ -32,14 +32,18 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
@@ -47,11 +51,12 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Transactional
-public class UserActions {
+public class UserActions extends AbstractResourceActions<UserConfig, MultiUserConfigResponseModel> {
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
@@ -63,8 +68,10 @@ public class UserActions {
     private final UserSystemValidator userSystemValidator;
 
     @Autowired
-    public UserActions(UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, AuthenticationTypeAccessor authenticationTypeAccessor,
+    public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager,
+        AuthenticationTypeAccessor authenticationTypeAccessor,
         UserSystemValidator userSystemValidator) {
+        super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.userAccessor = userAccessor;
         this.authorizationUtility = authorizationUtility;
         this.authorizationManager = authorizationManager;
@@ -72,83 +79,118 @@ public class UserActions {
         this.userSystemValidator = userSystemValidator;
     }
 
-    public List<UserConfig> getUsers() {
-        return userAccessor.getUsers().stream()
-                   .map(this::convertToCustomUserRoleModel)
-                   .collect(Collectors.toList());
+    @Override
+    protected Optional<UserConfig> findExisting(Long id) {
+        return userAccessor.getUser(id)
+                   .map(this::convertToCustomUserRoleModel);
     }
 
-    public ValidationResponseModel validateUser(UserConfig userConfig) {
-        List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(userConfig);
+    @Override
+    protected ActionResponse<MultiUserConfigResponseModel> readAllWithoutChecks() {
+        List<UserConfig> users = userAccessor.getUsers().stream()
+                                     .map(this::convertToCustomUserRoleModel)
+                                     .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, new MultiUserConfigResponseModel(users));
+    }
 
+    @Override
+    protected ActionResponse<UserConfig> readWithoutChecks(Long id) {
+        Optional<UserConfig> user = findExisting(id);
+        if (user.isPresent()) {
+            return new ActionResponse<>(HttpStatus.OK, user.get());
+        }
+        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("The user with id: %d not found.", id));
+    }
+
+    @Override
+    protected ValidationActionResponse testWithoutChecks(UserConfig resource) {
+        return validateWithoutChecks(resource);
+    }
+
+    @Override
+    protected ValidationActionResponse validateWithoutChecks(UserConfig resource) {
+        ValidationResponseModel responseModel;
+        if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
+            responseModel = ValidationResponseModel.generalError("Invalid resource id");
+            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
+        }
+        List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(resource);
         if (fieldErrors.isEmpty()) {
-            return ValidationResponseModel.success("The user is valid");
+            responseModel = ValidationResponseModel.success("The user is valid");
+            return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
-        return ValidationResponseModel.fromStatusCollection("There were problems validating this user.", fieldErrors);
+        responseModel = ValidationResponseModel.fromStatusCollection("There were problems validating this user.", fieldErrors);
+        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
-    public UserConfig createUser(UserConfig userConfig) throws AlertDatabaseConstraintException, AlertFieldException {
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        fieldErrors.addAll(validateCreationRequiredFields(userConfig));
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        String userName = userConfig.getUsername();
-        String password = userConfig.getPassword();
-        String emailAddress = userConfig.getEmailAddress();
-        UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
-        Long userId = userModel.getId();
-        Set<String> configuredRoleNames = userConfig.getRoleNames();
-        if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
-            Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
-                                                      .filter(role -> configuredRoleNames.contains(role.getName()))
-                                                      .collect(Collectors.toList());
-            authorizationUtility.updateUserRoles(userId, roleNames);
-        }
-        userModel = userAccessor.getUser(userId).orElse(userModel);
-        return convertToCustomUserRoleModel(userModel);
-    }
+    @Override
+    protected ActionResponse<UserConfig> createWithoutChecks(UserConfig resource) {
+        try {
+            String userName = resource.getUsername();
+            String password = resource.getPassword();
+            String emailAddress = resource.getEmailAddress();
 
-    public UserConfig updateUser(Long userId, UserConfig userConfig) throws AlertFieldException, AlertDatabaseConstraintException {
-        Optional<UserModel> userModel = userAccessor.getUser(userId);
-        if (userModel.isPresent()) {
-            UserModel existingUser = userModel.get();
-            boolean passwordMissing = StringUtils.isBlank(userConfig.getPassword());
-            String userName = userConfig.getUsername();
-            String password = passwordMissing ? existingUser.getPassword() : userConfig.getPassword();
-            String emailAddress = userConfig.getEmailAddress();
-
-            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-            validateUserExistsById(userId, userName).ifPresent(fieldErrors::add);
-            fieldErrors.addAll(validateCreationRequiredFields(userConfig));
-            if (!fieldErrors.isEmpty()) {
-                throw new AlertFieldException(fieldErrors);
-            }
-            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
-            userAccessor.updateUser(newUserModel, passwordMissing);
-
-            Set<String> configuredRoleNames = userConfig.getRoleNames();
+            UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
+            Long userId = userModel.getId();
+            Set<String> configuredRoleNames = resource.getRoleNames();
             if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
                 Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
-                authorizationUtility.updateUserRoles(existingUser.getId(), roleNames);
-                authorizationManager.loadPermissionsIntoCache();
+                authorizationUtility.updateUserRoles(userId, roleNames);
             }
+            userModel = userAccessor.getUser(userId).orElse(userModel);
+            return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
+        } catch (AlertException ex) {
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
         }
-        userSystemValidator.validateDefaultAdminUser(userId);
-        return userAccessor.getUser(userId)
-                   .map(this::convertToCustomUserRoleModel)
-                   .orElse(userConfig);
     }
 
-    public boolean deleteUser(Long userId) throws AlertForbiddenOperationException {
-        Optional<UserModel> user = userAccessor.getUser(userId);
-        if (user.isPresent()) {
-            userAccessor.deleteUser(userId);
-            return true;
+    @Override
+    protected ActionResponse<UserConfig> updateWithoutChecks(Long id, UserConfig resource) {
+        Optional<UserModel> userModel = userAccessor.getUser(id);
+        if (userModel.isPresent()) {
+            UserModel existingUser = userModel.get();
+            boolean passwordMissing = StringUtils.isBlank(resource.getPassword());
+            String userName = resource.getUsername();
+            String password = passwordMissing ? existingUser.getPassword() : resource.getPassword();
+            String emailAddress = resource.getEmailAddress();
+
+            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
+            try {
+                userAccessor.updateUser(newUserModel, passwordMissing);
+                Set<String> configuredRoleNames = resource.getRoleNames();
+                if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
+                    Collection<UserRoleModel> roleNames = authorizationUtility.getRoles().stream()
+                                                              .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                              .collect(Collectors.toList());
+                    authorizationUtility.updateUserRoles(existingUser.getId(), roleNames);
+                    authorizationManager.loadPermissionsIntoCache();
+                }
+                userSystemValidator.validateDefaultAdminUser(id);
+                UserConfig user = userAccessor.getUser(id)
+                                      .map(this::convertToCustomUserRoleModel)
+                                      .orElse(resource);
+                return new ActionResponse<>(HttpStatus.NO_CONTENT);
+            } catch (AlertException ex) {
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
         }
-        return false;
+        return new ActionResponse<>(HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    protected ActionResponse<UserConfig> deleteWithoutChecks(Long id) {
+        Optional<UserModel> user = userAccessor.getUser(id);
+        if (user.isPresent()) {
+            try {
+                userAccessor.deleteUser(id);
+            } catch (AlertException ex) {
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+            return new ActionResponse<>(HttpStatus.NO_CONTENT);
+        }
+        return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
     private UserConfig convertToCustomUserRoleModel(UserModel userModel) {

@@ -81,7 +81,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> readWithoutChecks(Long id) {
+    protected ActionResponse<CertificateModel> readWithoutChecks(Long id) {
         Optional<CertificateModel> model = findExisting(id);
         if (model.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, model.get());
@@ -91,12 +91,12 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ValidationActionResponse testWithoutChecks(CertificateModel resource) {
+    protected ValidationActionResponse testWithoutChecks(CertificateModel resource) {
         return validateWithoutChecks(resource);
     }
 
     @Override
-    public ValidationActionResponse validateWithoutChecks(CertificateModel resource) {
+    protected ValidationActionResponse validateWithoutChecks(CertificateModel resource) {
         ValidationResponseModel responseModel;
         if (StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
             responseModel = ValidationResponseModel.generalError("Invalid resource id");
@@ -112,12 +112,12 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> createWithoutChecks(CertificateModel resource) {
+    protected ActionResponse<CertificateModel> createWithoutChecks(CertificateModel resource) {
         String loggableAlias = escapeUtil.replaceWithUnderscore(resource.getAlias());
         logger.info("Importing certificate with alias {}", loggableAlias);
         try {
             CertificateModel certificateModel = importCertificate(resource);
-            return new ActionResponse<>(HttpStatus.OK, certificateModel);
+            return new ActionResponse<>(HttpStatus.CREATED, certificateModel);
         } catch (AlertException ex) {
             String message = ex.getMessage();
             logger.error("There was an issue importing the certificate. {}", message);
@@ -127,7 +127,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> updateWithoutChecks(Long id, CertificateModel resource) {
+    protected ActionResponse<CertificateModel> updateWithoutChecks(Long id, CertificateModel resource) {
         try {
             Optional<CustomCertificateModel> existingCertificate = certificateAccessor.getCertificate(id);
             String logableId = escapeUtil.replaceWithUnderscore(resource.getId());
@@ -158,7 +158,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    public ActionResponse<CertificateModel> deleteWithoutChecks(Long id) {
+    protected ActionResponse<CertificateModel> deleteWithoutChecks(Long id) {
         try {
             Optional<CustomCertificateModel> certificate = certificateAccessor.getCertificate(id);
             if (certificate.isPresent()) {

@@ -22,115 +22,56 @@
  */
 package com.synopsys.integration.alert.web.api.user;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
+import com.synopsys.integration.alert.common.rest.api.ReadAllController;
+import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)
-public class UserController extends BaseController {
+public class UserController implements ReadAllController<MultiUserConfigResponseModel>, BaseResourceController<UserConfig>, ValidateController<UserConfig> {
     public static final String USER_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/user";
 
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private final AuthorizationManager authorizationManager;
-    private final UserActions userActions;
-    private final UserManagementDescriptorKey descriptorKey;
+    private final UserActions actions;
 
     @Autowired
-    public UserController(AuthorizationManager authorizationManager, UserActions userActions,
-        UserManagementDescriptorKey descriptorKey) {
-        this.authorizationManager = authorizationManager;
-        this.userActions = userActions;
-        this.descriptorKey = descriptorKey;
+    public UserController(UserActions actions) {
+        this.actions = actions;
     }
 
-    @GetMapping
-    public MultiUserConfigResponseModel getAllUsers() {
-        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        List<UserConfig> allUsers = userActions.getUsers();
-        return new MultiUserConfigResponseModel(allUsers);
+    @Override
+    public UserConfig create(UserConfig resource) {
+        return ResponseFactory.createContentResponseFromAction(actions.create(resource));
     }
 
-    @PostMapping("/validate")
-    public ValidationResponseModel validateUserModel(@RequestBody UserConfig userConfig) {
-        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        return userActions.validateUser(userConfig);
+    @Override
+    public UserConfig getOne(Long id) {
+        return ResponseFactory.createContentResponseFromAction(actions.getOne(id));
     }
 
-    @PostMapping
-    public UserConfig createUser(@RequestBody UserConfig userModel) {
-        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        try {
-            return userActions.createUser(userModel);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("There was an issue with the DB: {}", e.getMessage());
-            logger.debug("Cause", e);
-            throw ResponseFactory.createInternalServerErrorException("There was an issue with the DB");
-        } catch (AlertFieldException fieldException) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were errors with the configuration: %s", fieldException.getFlattenedErrorMessages()));
-        }
-
+    @Override
+    public void update(Long id, UserConfig resource) {
+        ResponseFactory.createResponseFromAction(actions.update(id, resource));
     }
 
-    @PutMapping(value = "/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@PathVariable Long userId, @RequestBody UserConfig userModel) {
-        if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        try {
-            userActions.updateUser(userId, userModel);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("There was an issue with the DB: {}", e.getMessage());
-            logger.debug("Cause", e);
-            throw ResponseFactory.createInternalServerErrorException("There was an issue with the DB");
-        } catch (AlertFieldException fieldException) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("There were errors with the configuration: %s", fieldException.getFlattenedErrorMessages()));
-        }
+    @Override
+    public void delete(Long id) {
+        ResponseFactory.createResponseFromAction(actions.delete(id));
     }
 
-    @DeleteMapping(value = "/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long userId) {
-        if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        try {
-            boolean existed = userActions.deleteUser(userId);
-            if (!existed) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            }
-        } catch (AlertForbiddenOperationException ex) {
-            throw ResponseFactory.createForbiddenException(ex.getMessage());
-        }
+    @Override
+    public MultiUserConfigResponseModel getAll() {
+        return ResponseFactory.createContentResponseFromAction(actions.getAll());
+    }
+
+    @Override
+    public ValidationResponseModel validate(UserConfig requestBody) {
+        return ResponseFactory.createContentResponseFromAction(actions.validate(requestBody));
     }
 }
