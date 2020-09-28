@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,7 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -59,7 +61,7 @@ import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 
 @Component
-public class RoleActions extends AbstractResourceActions<RolePermissionModel> {
+public class RoleActions extends AbstractResourceActions<RolePermissionModel, MultiRolePermissionModel> {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final AuthorizationUtility authorizationUtility;
     private final AuthorizationManager authorizationManager;
@@ -75,37 +77,115 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel> {
 
     @Override
     protected ActionResponse<RolePermissionModel> createWithoutChecks(RolePermissionModel resource) {
-        return null;
+        try {
+            String roleName = resource.getRoleName();
+            Set<PermissionModel> permissions = resource.getPermissions();
+            validatePermissions(permissions);
+            PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+            UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
+            authorizationManager.loadPermissionsIntoCache();
+            return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
+        } catch (AlertException ex) {
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
+        }
     }
 
     @Override
     protected ActionResponse<RolePermissionModel> deleteWithoutChecks(Long id) {
-        return null;
+        Optional<UserRoleModel> existingRole = authorizationUtility.getRoles(List.of(id))
+                                                   .stream()
+                                                   .findFirst();
+        if (existingRole.isPresent()) {
+            try {
+                authorizationUtility.deleteRole(id);
+                authorizationManager.loadPermissionsIntoCache();
+            } catch (AlertException ex) {
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
+            }
+            return new ActionResponse<>(HttpStatus.NO_CONTENT);
+        }
+        return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
-    protected ActionResponse<List<RolePermissionModel>> readAllWithoutChecks() {
-        return null;
+    protected ActionResponse<MultiRolePermissionModel> readAllWithoutChecks() {
+        List<RolePermissionModel> roles = authorizationUtility.getRoles().stream()
+                                              .map(this::convertUserRoleModel)
+                                              .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, new MultiRolePermissionModel(roles));
     }
 
     @Override
     protected ActionResponse<RolePermissionModel> readWithoutChecks(Long id) {
-        return null;
+        Optional<RolePermissionModel> role = findExisting(id);
+        if (role.isPresent()) {
+            return new ActionResponse<>(HttpStatus.OK, role.get());
+        }
+        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
     }
 
     @Override
     protected ValidationActionResponse testWithoutChecks(RolePermissionModel resource) {
-        return null;
+        return validateWithoutChecks(resource);
     }
 
     @Override
     protected ActionResponse<RolePermissionModel> updateWithoutChecks(Long id, RolePermissionModel resource) {
-        return null;
+        try {
+            String roleName = resource.getRoleName();
+            //TODO: Determine if this is not required (tested by validateWithoutChecks already)
+            /*
+            Optional<AlertFieldStatus> roleNameMissingError = validateRoleNameFieldRequired(roleName);
+            if (roleNameMissingError.isPresent()) {
+                //throw AlertFieldException.singleFieldError(roleNameMissingError.get());
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, roleNameMissingError.get());
+            }
+             */
+
+            //UserRoleModel existingRole = getExistingRoleOrThrow404(id);
+            Optional<UserRoleModel> existingRole = authorizationUtility.getRoles(List.of(id))
+                                                       .stream()
+                                                       .findFirst();
+            if (existingRole.isPresent()) {
+                boolean targetRoleNameIsUsedByDifferentRole = authorizationUtility.getRoles()
+                                                                  .stream()
+                                                                  .filter(role -> !role.getId().equals(existingRole.get().getId()))
+                                                                  .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
+                if (targetRoleNameIsUsedByDifferentRole) {
+                    return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The role name is already in use");
+                }
+                if (!existingRole.get().getName().equals(roleName)) {
+                    authorizationUtility.updateRoleName(id, roleName);
+                }
+                Set<PermissionModel> permissions = resource.getPermissions();
+                validatePermissions(permissions);
+                PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+                PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
+                authorizationManager.loadPermissionsIntoCache();
+
+                RolePermissionModel updatedRolePermissionModel = convertUserRoleModel(new UserRoleModel(id, roleName, true, updatedPermissionsMatrixModel));
+                return new ActionResponse<>(HttpStatus.NO_CONTENT, updatedRolePermissionModel);
+            }
+            return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
+        } catch (AlertException ex) {
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }
     }
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(RolePermissionModel resource) {
-        return null;
+        ValidationResponseModel responseModel;
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
+            responseModel = ValidationResponseModel.generalError("Invalid resource id");
+            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
+        }
+        Optional<AlertFieldStatus> alertFieldStatus = validateRoleNameFieldRequired(resource.getRoleName());
+        if (alertFieldStatus.isEmpty()) {
+            responseModel = ValidationResponseModel.success("The role name is valid");
+            return new ValidationActionResponse(HttpStatus.OK, responseModel);
+        }
+        responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", List.of(alertFieldStatus.get()));
+        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
     @Override

@@ -22,47 +22,61 @@
  */
 package com.synopsys.integration.alert.web.api.role;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
+import com.synopsys.integration.alert.common.rest.api.ReadAllController;
+import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
 import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(RoleController.ROLE_BASE_PATH)
-public class RoleController extends BaseController {
+public class RoleController extends BaseController implements ReadAllController<MultiRolePermissionModel>, BaseResourceController<RolePermissionModel>, ValidateController<RolePermissionModel> {
     public static final String ROLE_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/role";
-    private final AuthorizationManager authorizationManager;
     private final RoleActions roleActions;
-    private final UserManagementDescriptorKey descriptorKey;
 
     @Autowired
-    public RoleController(AuthorizationManager authorizationManager, RoleActions roleActions, UserManagementDescriptorKey descriptorKey) {
-        this.authorizationManager = authorizationManager;
+    public RoleController(RoleActions roleActions) {
+        //TODO get rid of AuthorizationManager and DescriptorKey if not needed
         this.roleActions = roleActions;
-        this.descriptorKey = descriptorKey;
     }
 
+    @Override
+    public RolePermissionModel create(RolePermissionModel resource) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.create(resource));
+    }
+
+    @Override
+    public RolePermissionModel getOne(Long id) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.getOne(id));
+    }
+
+    @Override
+    public void update(Long id, RolePermissionModel resource) {
+        ResponseFactory.createResponseFromAction(roleActions.update(id, resource));
+    }
+
+    @Override
+    public void delete(Long id) {
+        ResponseFactory.createResponseFromAction(roleActions.delete(id));
+    }
+
+    @Override
+    public MultiRolePermissionModel getAll() {
+        return ResponseFactory.createContentResponseFromAction(roleActions.getAll());
+    }
+
+    @Override
+    public ValidationResponseModel validate(RolePermissionModel requestBody) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.validate(requestBody));
+    }
+
+    /*
     @GetMapping
     public MultiRolePermissionModel getRoles() {
         if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
@@ -124,5 +138,6 @@ public class RoleController extends BaseController {
             throw ResponseFactory.createForbiddenException(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
         }
     }
+     */
 
 }
