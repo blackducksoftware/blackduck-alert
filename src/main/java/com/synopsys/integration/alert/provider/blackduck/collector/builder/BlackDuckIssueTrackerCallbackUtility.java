@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItemCallback
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.rest.HttpUrl;
 
 @Component
 public final class BlackDuckIssueTrackerCallbackUtility {
@@ -44,7 +45,8 @@ public final class BlackDuckIssueTrackerCallbackUtility {
     }
 
     public Optional<ComponentItemCallbackInfo> createCallbackInfo(NotificationType notificationType, ProjectVersionComponentView projectVersionComponentView) {
-        return projectVersionComponentView.getFirstLink(COMPONENT_ISSUES_LINK_NAME)
+        return projectVersionComponentView.getFirstLinkSafely(COMPONENT_ISSUES_LINK_NAME)
+                   .map(HttpUrl::toString)
                    .map(componentIssuesLink -> new ComponentItemCallbackInfo(componentIssuesLink, blackDuckProviderKey, notificationType.name()));
     }
 

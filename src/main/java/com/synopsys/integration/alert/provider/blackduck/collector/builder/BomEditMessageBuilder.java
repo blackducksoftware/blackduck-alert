@@ -61,9 +61,9 @@ import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.Vu
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
+import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 
 @Component
@@ -85,7 +85,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
-        BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
         Optional<ProjectVersionComponentView> optionalBomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
@@ -101,9 +101,9 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
 
                 messageContentBuilder
                     .applyCommonData(commonMessageData)
-                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().orElse(null))
+                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().toString())
                     .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
-                        projectVersionData.getProjectVersionView().getHref().orElse(null));
+                        projectVersionData.getProjectVersionView().getHref().toString());
 
                 List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent).stream())
                                                           .collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
         String componentName = versionBomComponent.getComponentName();
         String componentVersionName = versionBomComponent.getComponentVersionName();
-        String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
+        String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().toString();
         try {
             ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.VULNERABLE_COMPONENTS_LINK);
             if (VulnerabilityUtil.doesSecurityRiskProfileHaveVulnerabilities(logger, securityRiskProfile)) {
@@ -169,7 +169,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         try {
             String componentName = versionBomComponent.getComponentName();
             String componentVersionName = versionBomComponent.getComponentVersionName();
-            String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().orElse(null);
+            String projectVersionUrl = projectVersionWrapper.getProjectVersionView().getHref().toString();
             ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
             List<ComponentPolicyRulesView> policyRules = blackDuckService.getAllResponses(versionBomComponent, ProjectVersionComponentView.POLICY_RULES_LINK_RESPONSE);
             for (ComponentPolicyRulesView rule : policyRules) {
@@ -205,7 +205,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         } catch (Exception e) {
             logger.error("BOM Edit: Error processing policy ", e);
         }
-
         return items;
     }
+
 }
