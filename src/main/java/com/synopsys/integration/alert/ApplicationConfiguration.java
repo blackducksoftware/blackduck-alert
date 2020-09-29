@@ -133,8 +133,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
-        AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
-        return authorizationManager;
+        return new AuthorizationManager(roleAccessor);
     }
 
 }

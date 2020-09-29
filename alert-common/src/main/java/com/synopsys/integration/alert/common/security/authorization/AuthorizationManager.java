@@ -139,6 +139,29 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
+    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        UserRoleModel roleWithPermissions = roleAccessor.createRoleWithPermissions(roleName, permissionMatrix);
+        updateRoleInCache(roleWithPermissions.getName(), roleWithPermissions.getPermissions());
+        return roleWithPermissions;
+    }
+
+    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        PermissionMatrixModel permissionMatrixModel = roleAccessor.updatePermissionsForRole(roleName, permissionMatrix);
+        updateRoleInCache(roleName, permissionMatrixModel);
+        return permissionMatrixModel;
+    }
+
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        roleAccessor.deleteRole(roleId);
+        loadPermissionsIntoCache();
+    }
+
+    public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
+        roleAccessor.updateUserRoles(userId, roles);
+        roles.stream()
+            .forEach(userRoleModel -> updateRoleInCache(userRoleModel.getName(), userRoleModel.getPermissions()));
+    }
+
     private boolean isAlertRole(String roleName) {
         return roleAccessor.doesRoleNameExist(roleName);
     }
@@ -174,28 +197,5 @@ public class AuthorizationManager {
 
     private final void updateRoleInCache(String roleName, PermissionMatrixModel permissions) {
         permissionCache.put(roleName, permissions);
-    }
-
-    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
-        UserRoleModel roleWithPermissions = roleAccessor.createRoleWithPermissions(roleName, permissionMatrix);
-        updateRoleInCache(roleWithPermissions.getName(), roleWithPermissions.getPermissions());
-        return roleWithPermissions;
-    }
-
-    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
-        PermissionMatrixModel permissionMatrixModel = roleAccessor.updatePermissionsForRole(roleName, permissionMatrix);
-        updateRoleInCache(roleName, permissionMatrixModel);
-        return permissionMatrixModel;
-    }
-
-    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
-        roleAccessor.deleteRole(roleId);
-        loadPermissionsIntoCache();
-    }
-
-    public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
-        roleAccessor.updateUserRoles(userId, roles);
-        roles.stream()
-            .forEach(userRoleModel -> updateRoleInCache(userRoleModel.getName(), userRoleModel.getPermissions()));
     }
 }
