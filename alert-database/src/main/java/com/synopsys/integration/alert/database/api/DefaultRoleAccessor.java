@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -58,7 +58,7 @@ import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
 @Transactional
-public class DefaultAuthorizationAccessor implements AuthorizationAccessor {
+public class DefaultRoleAccessor implements RoleAccessor {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PermissionMatrixRepository permissionMatrixRepository;
@@ -66,7 +66,7 @@ public class DefaultAuthorizationAccessor implements AuthorizationAccessor {
     private final ConfigContextRepository configContextRepository;
 
     @Autowired
-    public DefaultAuthorizationAccessor(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository,
+    public DefaultRoleAccessor(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository,
         RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository) {
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;

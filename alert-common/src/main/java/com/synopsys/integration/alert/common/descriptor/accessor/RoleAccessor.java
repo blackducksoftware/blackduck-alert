@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
-public interface AuthorizationAccessor {
+public interface RoleAccessor {
     Set<UserRoleModel> getRoles();
 
     Set<UserRoleModel> getRoles(Collection<Long> roleIds);

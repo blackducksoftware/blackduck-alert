@@ -36,7 +36,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -45,12 +45,12 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthorizationManager {
-    private final AuthorizationAccessor authorizationAccessor;
+    private final RoleAccessor roleAccessor;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
     @Autowired
-    public AuthorizationManager(AuthorizationAccessor authorizationAccessor) {
-        this.authorizationAccessor = authorizationAccessor;
+    public AuthorizationManager(RoleAccessor roleAccessor) {
+        this.roleAccessor = roleAccessor;
         this.permissionCache = new HashMap<>();
     }
 
@@ -137,7 +137,7 @@ public class AuthorizationManager {
     }
 
     private boolean isAlertRole(String roleName) {
-        return authorizationAccessor.doesRoleNameExist(roleName);
+        return roleAccessor.doesRoleNameExist(roleName);
     }
 
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
@@ -165,7 +165,7 @@ public class AuthorizationManager {
     }
 
     public final void loadPermissionsIntoCache() {
-        Collection<UserRoleModel> roles = authorizationAccessor.getRoles();
+        Collection<UserRoleModel> roles = roleAccessor.getRoles();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 

@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -62,18 +62,18 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private final UserAccessor userAccessor;
-    private final AuthorizationAccessor authorizationAccessor;
+    private final RoleAccessor roleAccessor;
     private final AuthorizationManager authorizationManager;
     private final AuthenticationTypeAccessor authenticationTypeAccessor;
     private final UserSystemValidator userSystemValidator;
 
     @Autowired
-    public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, AuthorizationAccessor authorizationAccessor, AuthorizationManager authorizationManager,
+    public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
         AuthenticationTypeAccessor authenticationTypeAccessor,
         UserSystemValidator userSystemValidator) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.userAccessor = userAccessor;
-        this.authorizationAccessor = authorizationAccessor;
+        this.roleAccessor = roleAccessor;
         this.authorizationManager = authorizationManager;
         this.authenticationTypeAccessor = authenticationTypeAccessor;
         this.userSystemValidator = userSystemValidator;
@@ -134,10 +134,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
             Long userId = userModel.getId();
             Set<String> configuredRoleNames = resource.getRoleNames();
             if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
-                Collection<UserRoleModel> roleNames = authorizationAccessor.getRoles().stream()
+                Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
-                authorizationAccessor.updateUserRoles(userId, roleNames);
+                roleAccessor.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
@@ -161,10 +161,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 userAccessor.updateUser(newUserModel, passwordMissing);
                 Set<String> configuredRoleNames = resource.getRoleNames();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
-                    Collection<UserRoleModel> roleNames = authorizationAccessor.getRoles().stream()
+                    Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
                                                               .filter(role -> configuredRoleNames.contains(role.getName()))
                                                               .collect(Collectors.toList());
-                    authorizationAccessor.updateUserRoles(existingUser.getId(), roleNames);
+                    roleAccessor.updateUserRoles(existingUser.getId(), roleNames);
                     authorizationManager.loadPermissionsIntoCache();
                 }
                 userSystemValidator.validateDefaultAdminUser(id);
