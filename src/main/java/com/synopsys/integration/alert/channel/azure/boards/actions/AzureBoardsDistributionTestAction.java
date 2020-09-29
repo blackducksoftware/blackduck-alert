@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMe
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -59,7 +59,7 @@ public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAc
     }
 
     @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.build(registeredFieldValues);
         AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(registeredFieldValues, azureBoardsRequestCreator, azureBoardsMessageParser);
         AzureBoardsCreateIssueTestAction azureBoardsCreateIssueTestAction = new AzureBoardsCreateIssueTestAction((AzureBoardsChannel) getDistributionChannel(), gson, issueCreator, proxyManager);

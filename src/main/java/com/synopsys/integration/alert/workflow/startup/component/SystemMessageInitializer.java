@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -48,15 +48,15 @@ public class SystemMessageInitializer extends StartupComponent {
     private final SettingsValidator settingsValidator;
     private final ConfigurationAccessor configurationAccessor;
     private final UserSystemValidator userSystemValidator;
-    private final SystemMessageUtility systemMessageUtility;
+    private final SystemMessageAccessor systemMessageAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator, SystemMessageUtility systemMessageUtility) {
+    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator, SystemMessageAccessor systemMessageAccessor) {
         this.providers = providers;
         this.settingsValidator = settingsValidator;
         this.configurationAccessor = configurationAccessor;
         this.userSystemValidator = userSystemValidator;
-        this.systemMessageUtility = systemMessageUtility;
+        this.systemMessageAccessor = systemMessageAccessor;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class SystemMessageInitializer extends StartupComponent {
     }
 
     private void clearOldMessages() {
-        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessages();
-        systemMessageUtility.deleteSystemMessages(messages);
+        List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessages();
+        systemMessageAccessor.deleteSystemMessages(messages);
     }
 
     public boolean validateProviders() {

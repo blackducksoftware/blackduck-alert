@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -68,9 +68,9 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
-        FieldAccessor fieldAccessor = event.getFieldAccessor();
-        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldAccessor);
-        IssueConfig issueConfig = createIssueConfig(fieldAccessor);
+        FieldUtility fieldUtility = event.getFieldUtility();
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldUtility);
+        IssueConfig issueConfig = createIssueConfig(fieldUtility);
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
 
@@ -85,12 +85,12 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
         return issueTrackerService.sendRequests(requests);
     }
 
-    private IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
-        String azureProjectName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
-        String workItemTypeName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
-        boolean commentOnWorkItems = fieldAccessor.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
-        String completedStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
-        String reopenStateName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
+    private IssueConfig createIssueConfig(FieldUtility fieldUtility) {
+        String azureProjectName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
+        String workItemTypeName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
+        boolean commentOnWorkItems = fieldUtility.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
+        String completedStateName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
+        String reopenStateName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
         return new IssueConfig(
             azureProjectName,
             null,

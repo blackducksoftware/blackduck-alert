@@ -18,16 +18,16 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
+import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
     private AlertProperties alertProperties;
-    private DefaultSystemStatusUtility defaultSystemStatusUtility;
-    private DefaultSystemMessageUtility defaultSystemMessageUtility;
+    private DefaultSystemStatusAccessor defaultSystemStatusUtility;
+    private DefaultSystemMessageAccessor defaultSystemMessageUtility;
     private DescriptorMetadataActions descriptorMetadataActions;
 
     @BeforeEach
@@ -35,11 +35,11 @@ public class AboutReaderTest {
         alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getServerUrl()).thenReturn(Optional.empty());
 
-        defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
+        defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
 
-        defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel("1", RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
 
         descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);

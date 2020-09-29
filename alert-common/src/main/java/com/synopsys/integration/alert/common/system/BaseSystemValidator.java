@@ -24,36 +24,36 @@ package com.synopsys.integration.alert.common.system;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 
 public class BaseSystemValidator {
-    private SystemMessageUtility systemMessageUtility;
+    private SystemMessageAccessor systemMessageAccessor;
 
-    public BaseSystemValidator(SystemMessageUtility systemMessageUtility) {
-        this.systemMessageUtility = systemMessageUtility;
+    public BaseSystemValidator(SystemMessageAccessor systemMessageAccessor) {
+        this.systemMessageAccessor = systemMessageAccessor;
     }
 
     public boolean addSystemMessageForError(String errorMessage, SystemMessageSeverity systemMessageSeverity, SystemMessageType messageType, boolean hasError) {
         return addSystemMessageForError(errorMessage, systemMessageSeverity, messageType.name(), hasError);
     }
-    
+
     public boolean addSystemMessageForError(String errorMessage, SystemMessageSeverity systemMessageSeverity, String messageType, boolean hasError) {
         if (hasError) {
-            getSystemMessageUtility().addSystemMessage(errorMessage, systemMessageSeverity, messageType);
+            getSystemMessageAccessor().addSystemMessage(errorMessage, systemMessageSeverity, messageType);
             return true;
         }
         return false;
     }
 
     public void removeSystemMessagesByType(SystemMessageType messageType) {
-        getSystemMessageUtility().removeSystemMessagesByType(messageType);
+        getSystemMessageAccessor().removeSystemMessagesByType(messageType);
     }
 
     public void removeSystemMessagesByTypeString(String systemMessageType) {
-        getSystemMessageUtility().removeSystemMessagesByTypeString(systemMessageType);
+        getSystemMessageAccessor().removeSystemMessagesByTypeString(systemMessageType);
     }
 
-    public SystemMessageUtility getSystemMessageUtility() {
-        return systemMessageUtility;
+    public SystemMessageAccessor getSystemMessageAccessor() {
+        return systemMessageAccessor;
     }
 }

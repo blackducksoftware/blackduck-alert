@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
@@ -42,7 +42,7 @@ public class UserActionsTest {
 
     private UserManagementDescriptorKey userManagementDescriptorKey;
     private UserAccessor userAccessor;
-    private AuthorizationUtility authorizationUtility;
+    private AuthorizationAccessor authorizationAccessor;
     private AuthorizationManager authorizationManager;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
     private UserSystemValidator userSystemValidator;
@@ -51,7 +51,7 @@ public class UserActionsTest {
     public void init() {
         userManagementDescriptorKey = Mockito.mock(UserManagementDescriptorKey.class);
         userAccessor = Mockito.mock(UserAccessor.class);
-        authorizationUtility = Mockito.mock(AuthorizationUtility.class);
+        authorizationAccessor = Mockito.mock(AuthorizationAccessor.class);
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
         userSystemValidator = Mockito.mock(UserSystemValidator.class);
@@ -63,7 +63,7 @@ public class UserActionsTest {
 
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         Optional<UserConfig> userConfigOptional = userActions.findExisting(id);
 
         assertTrue(userConfigOptional.isPresent());
@@ -75,7 +75,7 @@ public class UserActionsTest {
     public void testFindExistingEmpty() {
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         Optional<UserConfig> userConfigOptional = userActions.findExisting(id);
 
         assertFalse(userConfigOptional.isPresent());
@@ -88,7 +88,7 @@ public class UserActionsTest {
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.readAllWithoutChecks();
 
         assertTrue(actionResponse.hasContent());
@@ -109,7 +109,7 @@ public class UserActionsTest {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.getUser(2L)).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> actionResponse = userActions.readWithoutChecks(id);
         ActionResponse<UserConfig> actionResponseEmpty = userActions.readWithoutChecks(2L);
 
@@ -129,7 +129,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ValidationActionResponse validationActionResponse = userActions.testWithoutChecks(userConfig);
 
         assertFalse(validationActionResponse.isError());
@@ -149,7 +149,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
         assertFalse(userConfigActionResponse.isError());
@@ -168,7 +168,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -187,7 +187,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertFalse(userConfigActionResponse.isError());
@@ -207,7 +207,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -223,7 +223,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -236,7 +236,7 @@ public class UserActionsTest {
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         Mockito.verify(userAccessor).deleteUser(id);
@@ -251,7 +251,7 @@ public class UserActionsTest {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
@@ -262,7 +262,7 @@ public class UserActionsTest {
     public void testDeleteWithoutChecksEmpty() {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
@@ -281,7 +281,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
 
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 
@@ -306,7 +306,7 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationTypeLDAP.name(), true);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationUtility, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, authorizationAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
 
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 

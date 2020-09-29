@@ -28,20 +28,20 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public class EmailProperties {
     // property keys
 
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
     private String mailSmtpPassword;
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
 
-    public EmailProperties(final FieldAccessor fieldAccessor) {
-        if (fieldAccessor == null) {
+    public EmailProperties(FieldUtility fieldUtility) {
+        if (fieldUtility == null) {
             throw new IllegalArgumentException("Could not find the global Email configuration");
         }
-        this.fieldAccessor = fieldAccessor;
+        this.fieldUtility = fieldUtility;
         updateFromConfig();
     }
 
@@ -93,7 +93,7 @@ public class EmailProperties {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USERSET_KEY);
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY);
 
-        mailSmtpPassword = fieldAccessor.getStringOrNull(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+        mailSmtpPassword = fieldUtility.getStringOrNull(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, mailSmtpPassword);
     }
 
@@ -101,11 +101,11 @@ public class EmailProperties {
         return javamailConfigProperties;
     }
 
-    public String getJavamailOption(final EmailPropertyKeys key) {
+    public String getJavamailOption(EmailPropertyKeys key) {
         return getJavamailOption(key.getPropertyKey());
     }
 
-    public String getJavamailOption(final String key) {
+    public String getJavamailOption(String key) {
         return javamailConfigProperties.get(key);
     }
 
@@ -113,11 +113,11 @@ public class EmailProperties {
         return mailSmtpPassword;
     }
 
-    private void addJavaMailOption(final EmailPropertyKeys emailPropertyKeys) {
-        addJavaMailOption(emailPropertyKeys, fieldAccessor.getStringOrNull(emailPropertyKeys.getPropertyKey()));
+    private void addJavaMailOption(EmailPropertyKeys emailPropertyKeys) {
+        addJavaMailOption(emailPropertyKeys, fieldUtility.getStringOrNull(emailPropertyKeys.getPropertyKey()));
     }
 
-    private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final String value) {
+    private void addJavaMailOption(EmailPropertyKeys emailPropertyKey, String value) {
         if (StringUtils.isNotEmpty(value)) {
             javamailConfigProperties.put(emailPropertyKey.getPropertyKey(), value);
         }

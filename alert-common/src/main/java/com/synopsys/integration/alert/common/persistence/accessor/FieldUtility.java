@@ -33,10 +33,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class FieldAccessor extends AlertSerializableModel {
+public class FieldUtility extends AlertSerializableModel {
     private final Map<String, ConfigurationFieldModel> fields;
 
-    public FieldAccessor(Map<String, ConfigurationFieldModel> fields) {
+    public FieldUtility(Map<String, ConfigurationFieldModel> fields) {
         this.fields = fields;
     }
 

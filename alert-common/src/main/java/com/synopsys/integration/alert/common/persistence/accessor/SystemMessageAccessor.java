@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 
-public interface SystemMessageUtility {
+public interface SystemMessageAccessor {
 
     void addSystemMessage(String message, SystemMessageSeverity severity, SystemMessageType messageType);
 

@@ -39,20 +39,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
 @Transactional
-public class DefaultSystemMessageUtility implements SystemMessageUtility {
+public class DefaultSystemMessageAccessor implements SystemMessageAccessor {
 
-    private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageUtility.class);
+    private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageAccessor.class);
     private final SystemMessageRepository systemMessageRepository;
 
     @Autowired
-    public DefaultSystemMessageUtility(SystemMessageRepository systemMessageRepository) {
+    public DefaultSystemMessageAccessor(SystemMessageRepository systemMessageRepository) {
         this.systemMessageRepository = systemMessageRepository;
     }
 

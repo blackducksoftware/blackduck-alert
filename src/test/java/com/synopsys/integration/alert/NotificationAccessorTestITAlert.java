@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class NotificationManagerTestITAlert extends AlertIntegrationTest {
+public class NotificationAccessorTestITAlert extends AlertIntegrationTest {
     private static final String NOTIFICATION_TYPE = "notificationType";
 
     @Autowired
@@ -82,7 +82,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired
-    private DefaultNotificationManager notificationManager;
+    private DefaultNotificationAccessor notificationManager;
 
     private ConfigurationModel providerConfigModel = null;
 

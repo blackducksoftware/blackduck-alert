@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -81,24 +81,24 @@ public class LdapManager {
         return false;
     }
 
-    public FieldAccessor getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertConfigurationException {
+    public FieldUtility getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertConfigurationException {
         ConfigurationModel configModel = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                                              .stream()
                                              .findFirst()
                                              .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
-        return new FieldAccessor(configModel.getCopyOfKeyToFieldMap());
+        return new FieldUtility(configModel.getCopyOfKeyToFieldMap());
     }
 
     public Optional<LdapAuthenticationProvider> getAuthenticationProvider() throws AlertConfigurationException {
         try {
-            FieldAccessor fieldAccessor = getCurrentConfiguration();
-            return createAuthProvider(fieldAccessor);
+            FieldUtility fieldUtility = getCurrentConfiguration();
+            return createAuthProvider(fieldUtility);
         } catch (AlertDatabaseConstraintException ex) {
             throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
         }
     }
 
-    public Optional<LdapAuthenticationProvider> createAuthProvider(FieldAccessor configuration) throws AlertConfigurationException {
+    public Optional<LdapAuthenticationProvider> createAuthProvider(FieldUtility configuration) throws AlertConfigurationException {
         try {
             boolean enabled = configuration.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
             if (!enabled) {
@@ -128,7 +128,7 @@ public class LdapManager {
         return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
     }
 
-    private DirContextAuthenticationStrategy createAuthenticationStrategy(FieldAccessor configuration) {
+    private DirContextAuthenticationStrategy createAuthenticationStrategy(FieldUtility configuration) {
         String authenticationType = configuration.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
         DirContextAuthenticationStrategy strategy = null;
         if (StringUtils.isNotBlank(authenticationType)) {
@@ -142,13 +142,13 @@ public class LdapManager {
         return strategy;
     }
 
-    private LdapAuthenticationProvider updateAuthenticationProvider(FieldAccessor configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {
+    private LdapAuthenticationProvider updateAuthenticationProvider(FieldUtility configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {
         LdapAuthenticator authenticator = createAuthenticator(configurationModel, contextSource);
         LdapAuthoritiesPopulator ldapAuthoritiesPopulator = createAuthoritiesPopulator(configurationModel, contextSource);
         return new LdapAuthenticationProvider(authenticator, ldapAuthoritiesPopulator);
     }
 
-    private LdapAuthenticator createAuthenticator(FieldAccessor configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {
+    private LdapAuthenticator createAuthenticator(FieldUtility configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {
         BindAuthenticator authenticator = new BindAuthenticator(contextSource);
         try {
             String[] userDnArray = createArrayFromCSV(configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS));
@@ -167,7 +167,7 @@ public class LdapManager {
         return StringUtils.split(commaSeparatedString, ",");
     }
 
-    private LdapAuthoritiesPopulator createAuthoritiesPopulator(FieldAccessor configurationModel, LdapContextSource contextSource) {
+    private LdapAuthoritiesPopulator createAuthoritiesPopulator(FieldUtility configurationModel, LdapContextSource contextSource) {
         String groupSearchBase = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
         String groupSearchFilter = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
         String groupRoleAttribute = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
@@ -180,7 +180,7 @@ public class LdapManager {
         return mappingLdapAuthoritiesPopulator;
     }
 
-    private LdapUserSearch createLdapUserSearch(FieldAccessor configurationModel, LdapContextSource contextSource) {
+    private LdapUserSearch createLdapUserSearch(FieldUtility configurationModel, LdapContextSource contextSource) {
         LdapUserSearch userSearch = null;
         String userSearchFilter = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER);
         String userSearchBase = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE);

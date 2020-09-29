@@ -79,12 +79,12 @@ public class DefaultAuditUtility implements AuditUtility {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
-    private final DefaultNotificationManager notificationManager;
+    private final DefaultNotificationAccessor notificationManager;
     private final ContentConverter contentConverter;
 
     @Autowired
     public DefaultAuditUtility(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
-        DefaultNotificationManager notificationManager, ContentConverter contentConverter) {
+        DefaultNotificationAccessor notificationManager, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;

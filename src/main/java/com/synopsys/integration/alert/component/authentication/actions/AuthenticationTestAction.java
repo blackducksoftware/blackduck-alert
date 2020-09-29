@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -61,7 +61,7 @@ public class AuthenticationTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         logger.info("Testing authentication.");
         boolean ldapEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
         boolean samlEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED);
@@ -84,7 +84,7 @@ public class AuthenticationTestAction extends TestAction {
         return new MessageResult("Successfully tested authentication configuration.");
     }
 
-    private void performLdapTest(FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+    private void performLdapTest(FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         logger.info("LDAP enabled testing LDAP authentication.");
         String userName = fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_USERNAME).orElse("");
         Optional<LdapAuthenticationProvider> ldapProvider = ldapManager.createAuthProvider(registeredFieldValues);
@@ -107,7 +107,7 @@ public class AuthenticationTestAction extends TestAction {
         }
     }
 
-    private void performSAMLTest(FieldAccessor registeredFieldValues) throws IntegrationException {
+    private void performSAMLTest(FieldUtility registeredFieldValues) throws IntegrationException {
         Optional<ConfigurationFieldModel> metaDataURLField = registeredFieldValues.getField(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
         Optional<ConfigurationFieldModel> metaDataFileField = registeredFieldValues.getField(AuthenticationDescriptor.KEY_SAML_METADATA_FILE);
         boolean testMetaDataURL = metaDataURLField.map(ConfigurationFieldModel::isSet).orElse(false);

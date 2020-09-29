@@ -32,19 +32,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.workflow.startup.component.StartupComponent;
 
 @Configuration
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
-    private final SystemStatusUtility systemStatusUtility;
+    private final SystemStatusAccessor systemStatusAccessor;
     private final List<StartupComponent> startupComponents;
 
     @Autowired
-    public StartupManager(final SystemStatusUtility systemStatusUtility, final List<StartupComponent> startupComponents) {
-        this.systemStatusUtility = systemStatusUtility;
+    public StartupManager(SystemStatusAccessor systemStatusAccessor, List<StartupComponent> startupComponents) {
+        this.systemStatusAccessor = systemStatusAccessor;
         this.startupComponents = startupComponents;
     }
 
@@ -56,7 +56,7 @@ public class StartupManager {
 
     public void startup() {
         logger.info("Alert Starting...");
-        systemStatusUtility.startupOccurred();
+        systemStatusAccessor.startupOccurred();
         startupComponents.forEach(StartupComponent::initializeComponent);
     }
 

@@ -35,7 +35,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
@@ -50,14 +50,14 @@ public class AboutReader {
 
     private final Gson gson;
     private final AlertProperties alertProperties;
-    private final SystemStatusUtility systemStatusUtility;
+    private final SystemStatusAccessor systemStatusAccessor;
     private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, AlertProperties alertProperties, SystemStatusUtility systemStatusUtility, DescriptorMetadataActions descriptorActions) {
+    public AboutReader(Gson gson, AlertProperties alertProperties, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
         this.alertProperties = alertProperties;
-        this.systemStatusUtility = systemStatusUtility;
+        this.systemStatusAccessor = systemStatusAccessor;
         this.descriptorActions = descriptorActions;
     }
 
@@ -65,11 +65,11 @@ public class AboutReader {
         try {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
+            String startupDate = systemStatusAccessor.getStartupTime() != null ? DateUtils.formatDate(systemStatusAccessor.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
             Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
             Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
             AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
-                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
+                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
             return Optional.of(model);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

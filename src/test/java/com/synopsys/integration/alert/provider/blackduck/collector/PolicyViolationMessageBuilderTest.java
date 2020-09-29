@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
@@ -76,7 +76,7 @@ public class PolicyViolationMessageBuilderTest {
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
-        Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
+        Mockito.when(job.getFieldUtility()).thenReturn(new FieldUtility(Map.of()));
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
         List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());

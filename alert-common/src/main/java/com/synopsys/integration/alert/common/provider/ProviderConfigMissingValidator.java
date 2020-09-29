@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProvidersMissingTask;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
@@ -47,9 +47,9 @@ public class ProviderConfigMissingValidator extends BaseSystemValidator {
     private ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public ProviderConfigMissingValidator(SystemMessageUtility systemMessageUtility, List<Provider> providers,
+    public ProviderConfigMissingValidator(SystemMessageAccessor systemMessageAccessor, List<Provider> providers,
         ConfigurationAccessor configurationAccessor) {
-        super(systemMessageUtility);
+        super(systemMessageAccessor);
         this.providers = providers;
         this.configurationAccessor = configurationAccessor;
     }

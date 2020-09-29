@@ -39,7 +39,7 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -154,13 +154,13 @@ public class BlackDuckDataSyncTask extends ProviderTask {
     private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
         Set<String> configuredProjectNames = new HashSet<>();
         for (ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
-            FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-            String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
+            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (StringUtils.isNotBlank(projectNamePattern)) {
                 Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
                 configuredProjectNames.addAll(matchedProjectNames);
             }
-            Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             configuredProjectNames.addAll(configuredProjects);
         }
 

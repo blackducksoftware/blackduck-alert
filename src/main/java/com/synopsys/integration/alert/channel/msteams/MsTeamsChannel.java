@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -58,7 +58,7 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fields = event.getFieldAccessor();
+        FieldUtility fields = event.getFieldUtility();
         String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 

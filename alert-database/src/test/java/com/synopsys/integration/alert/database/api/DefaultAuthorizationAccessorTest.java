@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.user.RoleEntity;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
-public class DefaultAuthorizationUtilityTest {
+public class DefaultAuthorizationAccessorTest {
 
     private RoleRepository roleRepository;
     private UserRoleRepository userRoleRepository;
@@ -57,7 +57,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.findAll()).thenReturn(List.of(roleEntity));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         Set<UserRoleModel> userRoleModelsSet = authorizationUtility.getRoles();
 
         UserRoleModel expectedUserRoleModel = createUserRoleModel(1L, DefaultUserRole.ALERT_USER.name(), true);
@@ -73,7 +73,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         Set<UserRoleModel> userRoleModelsSet = authorizationUtility.getRoles(List.of(1L));
 
         UserRoleModel expectedUserRoleModel = createUserRoleModel(1L, DefaultUserRole.ALERT_USER.name(), true);
@@ -85,7 +85,7 @@ public class DefaultAuthorizationUtilityTest {
     @Test
     public void doesRoleNameExistTest() {
         Mockito.when(roleRepository.existsRoleEntityByRoleName(Mockito.any())).thenReturn(true);
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         assertTrue(authorizationUtility.doesRoleNameExist("name"));
     }
@@ -96,7 +96,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.save(Mockito.any())).thenReturn(new RoleEntity(roleName, true));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         UserRoleModel userRoleModel = authorizationUtility.createRole(roleName);
 
         UserRoleModel expectedUserRoleModel = createUserRoleModel(null, roleName, true);
@@ -106,7 +106,7 @@ public class DefaultAuthorizationUtilityTest {
 
     @Test
     public void createRoleNullTest() throws Exception {
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         try {
             authorizationUtility.createRole("");
             fail("Blank roleName did not throw expected AlertDatabaseConstraintException.");
@@ -136,7 +136,7 @@ public class DefaultAuthorizationUtilityTest {
         mockUpdateRoleOperations(permissionMatrixRelation, configContextEntity, registeredDescriptorEntity);
         mockCreateModelFromPermission(configContextEntity, registeredDescriptorEntity);
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
 
         Mockito.verify(permissionMatrixRepository).deleteAll(Mockito.any());
@@ -156,7 +156,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         authorizationUtility.updateRoleName(roleId, roleName);
 
         Mockito.verify(roleRepository).save(Mockito.any());
@@ -164,7 +164,7 @@ public class DefaultAuthorizationUtilityTest {
 
     @Test
     public void updateRoleNameCustomFalseTest() throws Exception {
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), false);
         roleEntity.setId(1L);
@@ -200,7 +200,7 @@ public class DefaultAuthorizationUtilityTest {
         mockUpdateRoleOperations(permissionMatrixRelation, configContextEntity, registeredDescriptorEntity);
         mockCreateModelFromPermission(configContextEntity, registeredDescriptorEntity);
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         PermissionMatrixModel permissionMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrix);
 
         Mockito.verify(permissionMatrixRepository).saveAll(Mockito.any());
@@ -219,7 +219,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         authorizationUtility.deleteRole(roleId);
 
         Mockito.verify(roleRepository).deleteById(Mockito.any());
@@ -227,7 +227,7 @@ public class DefaultAuthorizationUtilityTest {
 
     @Test
     public void deleteRoleCustomFalseTest() throws Exception {
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         RoleEntity roleEntity = new RoleEntity("name", false);
         roleEntity.setId(1L);
@@ -254,7 +254,7 @@ public class DefaultAuthorizationUtilityTest {
 
         Mockito.when(roleRepository.findRoleEntitiesByRoleNames(Mockito.any())).thenReturn(List.of(roleEntity));
 
-        DefaultAuthorizationUtility authorizationUtility = new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility = new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         authorizationUtility.updateUserRoles(userId, userRoleModelCollection);
 
         Mockito.verify(userRoleRepository).deleteAllByUserId(Mockito.any());
@@ -314,8 +314,8 @@ public class DefaultAuthorizationUtilityTest {
         Mockito.when(permissionMatrixRepository.findAllByRoleId(Mockito.eq(userRole.getId()))).thenReturn(List.of(userRelation_1, userRelation_2));
         Mockito.when(permissionMatrixRepository.findAllByRoleIdIn(Mockito.eq(roleIds))).thenReturn(List.of(adminRelation_1, adminRelation_3, userRelation_1, userRelation_2));
 
-        DefaultAuthorizationUtility authorizationUtility =
-            new DefaultAuthorizationUtility(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
+        DefaultAuthorizationAccessor authorizationUtility =
+            new DefaultAuthorizationAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         // order matters here.  The userRole has less privileges so we want to test that the more restrictive privileges don't overwrite the admin privileges.  We want a union of the permissions
         List<String> roles = List.of(adminRole.getRoleName(), userRole.getRoleName());

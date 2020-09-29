@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -101,8 +101,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             if (!savedFieldModel.isPresent()) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("The configuration is invalid. Please test the configuration."));
             }
-            FieldAccessor fieldAccessor = createFieldAccessor(savedFieldModel.get());
-            Optional<String> clientId = fieldAccessor.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
+            FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
+            Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
             }
@@ -115,7 +115,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
             logger.debug("Authenticating Azure OAuth URL: " + authUrl);
-            return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldAccessor), authUrl, "Authenticating..."));
+            return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
 
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -139,7 +139,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         }
     }
 
-    private FieldAccessor createFieldAccessor(FieldModel fieldModel) {
+    private FieldUtility createFieldAccessor(FieldModel fieldModel) {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
         try {
             fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
@@ -152,11 +152,11 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error creating field accessor for Azure authentication", ex);
         }
-        return new FieldAccessor(fields);
+        return new FieldUtility(fields);
     }
 
-    private boolean isAuthenticated(FieldAccessor fieldAccessor) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldAccessor);
+    private boolean isAuthenticated(FieldUtility fieldUtility) {
+        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldUtility);
         return properties.hasOAuthCredentials(proxyManager.createProxyInfo());
     }
 

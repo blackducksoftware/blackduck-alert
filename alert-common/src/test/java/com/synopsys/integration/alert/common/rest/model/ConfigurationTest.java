@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 
 public class ConfigurationTest {
@@ -22,8 +22,8 @@ public class ConfigurationTest {
         Map<String, ConfigurationFieldModel> keyToFieldMapTest = new HashMap<>();
         keyToFieldMapTest.put(fieldKey, testConfigurationFieldModel);
         Configuration testConfig = new Configuration(keyToFieldMapTest);
-        FieldAccessor testFieldAccessor = testConfig.getFieldAccessor();
-        Optional<ConfigurationFieldModel> newConfigurationFieldModel = testFieldAccessor.getField(fieldKey);
+        FieldUtility testFieldUtility = testConfig.getFieldUtility();
+        Optional<ConfigurationFieldModel> newConfigurationFieldModel = testFieldUtility.getField(fieldKey);
 
         assertTrue(newConfigurationFieldModel.isPresent());
         assertEquals(testConfigurationFieldModel, newConfigurationFieldModel.get());

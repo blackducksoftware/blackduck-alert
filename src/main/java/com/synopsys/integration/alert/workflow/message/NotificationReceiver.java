@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
@@ -45,14 +45,14 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private NotificationManager notificationManager;
+    private NotificationAccessor notificationAccessor;
     private NotificationProcessor notificationProcessor;
     private ChannelEventManager eventManager;
 
     @Autowired
-    public NotificationReceiver(Gson gson, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
+    public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
         super(gson, NotificationEvent.class);
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
     }
@@ -65,7 +65,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 return;
             }
             logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
-            List<AlertNotificationModel> notifications = notificationManager.findByIds(event.getNotificationIds());
+            List<AlertNotificationModel> notifications = notificationAccessor.findByIds(event.getNotificationIds());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             eventManager.sendEvents(distributionEvents);
         } else {

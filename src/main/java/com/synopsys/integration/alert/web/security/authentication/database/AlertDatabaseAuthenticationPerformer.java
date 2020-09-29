@@ -29,7 +29,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.web.security.authentication.AuthenticationPerformer;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
@@ -41,8 +41,8 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
     private DaoAuthenticationProvider alertDatabaseAuthProvider;
 
     @Autowired
-    public AlertDatabaseAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility, DaoAuthenticationProvider alertDatabaseAuthProvider) {
-        super(authenticationEventManager, authorizationUtility);
+    public AlertDatabaseAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationAccessor authorizationAccessor, DaoAuthenticationProvider alertDatabaseAuthProvider) {
+        super(authenticationEventManager, authorizationAccessor);
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
     }
 

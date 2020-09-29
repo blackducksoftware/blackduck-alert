@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.util.TestProperties;
 
@@ -45,13 +45,13 @@ public class EmailMessagingServiceTest {
         emailMessagingService.sendMessages(emailProperties, mockSession, List.of(message));
     }
 
-    private FieldAccessor createEmailGlobalConfigEntity() {
+    private FieldUtility createEmailGlobalConfigEntity() {
         ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
         fieldModel.setFieldValue("true");
         Map<String, ConfigurationFieldModel> fieldMap = Map.of(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), fieldModel);
 
-        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        return fieldAccessor;
+        FieldUtility fieldUtility = new FieldUtility(fieldMap);
+        return fieldUtility;
     }
 
 }

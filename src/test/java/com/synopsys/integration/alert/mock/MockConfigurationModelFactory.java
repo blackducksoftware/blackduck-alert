@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -156,8 +156,8 @@ public class MockConfigurationModelFactory {
 
         ConfigurationModel configurationModel = createCommonConfigModel(id, descriptorId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapFieldKeyToFields(configurationModel.getCopyOfFieldList());
-        FieldAccessor fieldAccessor = new FieldAccessor(fieldModelMap);
-        Mockito.when(configurationJobModel.getFieldAccessor()).thenReturn(fieldAccessor);
+        FieldUtility fieldUtility = new FieldUtility(fieldModelMap);
+        Mockito.when(configurationJobModel.getFieldUtility()).thenReturn(fieldUtility);
 
         return configurationJobModel;
     }

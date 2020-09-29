@@ -6,15 +6,15 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 
 public class ProviderPropertiesTest {
     @Test
     public void getConfigIdTest() {
         Long id = 23L;
-        FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
-        ProviderProperties properties = new ProviderProperties(id, fieldAccessor) {};
+        FieldUtility fieldUtility = new FieldUtility(Map.of());
+        ProviderProperties properties = new ProviderProperties(id, fieldUtility) {};
         assertEquals(id, properties.getConfigId());
     }
 
