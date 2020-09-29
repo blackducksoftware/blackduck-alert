@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueCo
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
@@ -55,10 +55,10 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     private final AzureRedirectUtil azureRedirectUtil;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditUtility auditUtility, AzureBoardsChannelKey channelKey, EventManager eventManager, ProxyManager proxyManager,
+    public AzureBoardsChannel(Gson gson, AuditAccessor auditAccessor, AzureBoardsChannelKey channelKey, EventManager eventManager, ProxyManager proxyManager,
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser,
         AzureRedirectUtil azureRedirectUtil) {
-        super(gson, auditUtility, channelKey, eventManager);
+        super(gson, auditAccessor, channelKey, eventManager);
         this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;

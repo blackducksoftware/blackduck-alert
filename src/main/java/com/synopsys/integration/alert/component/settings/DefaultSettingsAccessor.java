@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -39,11 +39,11 @@ import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalA
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 
 @Component
-public class DefaultSettingsUtility implements SettingsUtility {
+public class DefaultSettingsAccessor implements SettingsAccessor {
     private DefaultDescriptorGlobalConfigUtility configUtility;
 
     @Autowired
-    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
+    public DefaultSettingsAccessor(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.configUtility = new DefaultDescriptorGlobalConfigUtility(settingsDescriptorKey, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
     }

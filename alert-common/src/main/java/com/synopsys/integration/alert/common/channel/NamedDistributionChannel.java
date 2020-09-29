@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.channel;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
@@ -32,8 +32,8 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class NamedDistributionChannel extends DistributionChannel {
     private ChannelKey channelKey;
 
-    public NamedDistributionChannel(ChannelKey channelKey, Gson gson, AuditUtility auditUtility) {
-        super(gson, auditUtility);
+    public NamedDistributionChannel(ChannelKey channelKey, Gson gson, AuditAccessor auditAccessor) {
+        super(gson, auditAccessor);
         this.channelKey = channelKey;
     }
 

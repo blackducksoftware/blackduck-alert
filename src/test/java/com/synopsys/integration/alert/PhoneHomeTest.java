@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
@@ -32,8 +32,8 @@ public class PhoneHomeTest {
 
     @Test
     public void runTest() throws AlertDatabaseConstraintException {
-        AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        Mockito.when(auditUtility.findFirstByJobId(Mockito.any())).thenReturn(Optional.empty());
+        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
+        Mockito.when(auditAccessor.findFirstByJobId(Mockito.any())).thenReturn(Optional.empty());
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -53,7 +53,7 @@ public class PhoneHomeTest {
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
         List<ProviderPhoneHomeHandler> providerHandlers = List.of();
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditUtility, providerHandlers);
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers);
 
         try {
             phoneHomeTask.run();

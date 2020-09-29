@@ -43,7 +43,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -132,8 +132,8 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AuthorizationManager authorizationManager(AuthorizationUtility authorizationUtility) {
-        AuthorizationManager authorizationManager = new AuthorizationManager(authorizationUtility);
+    public AuthorizationManager authorizationManager(AuthorizationAccessor authorizationAccessor) {
+        AuthorizationManager authorizationManager = new AuthorizationManager(authorizationAccessor);
         authorizationManager.loadPermissionsIntoCache();
         return authorizationManager;
     }

@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -183,7 +183,7 @@ public class EmailGlobalTestActionTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigITTest() throws Exception {
         TestProperties properties = new TestProperties();
-        DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
+        DefaultAuditAccessor auditUtility = Mockito.mock(DefaultAuditAccessor.class);
 
         TestAlertProperties testAlertProperties = new TestAlertProperties();
 

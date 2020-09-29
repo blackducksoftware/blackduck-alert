@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public interface SettingsUtility {
+public interface SettingsAccessor {
 
     DescriptorKey getKey();
 
@@ -39,7 +39,7 @@ public interface SettingsUtility {
 
     Optional<FieldModel> getFieldModel() throws AlertException;
 
-    FieldModel saveSettings(final FieldModel fieldModel) throws AlertException;
+    FieldModel saveSettings(FieldModel fieldModel) throws AlertException;
 
-    FieldModel updateSettings(final Long id, final FieldModel fieldModel) throws AlertException;
+    FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException;
 }
