@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -65,18 +65,18 @@ public class AlertStartupInitializer extends StartupComponent {
     private final ConfigurationAccessor fieldConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final FieldModelProcessor fieldModelProcessor;
-    private final SettingsAccessor settingsAccessor;
+    private final SettingsUtility settingsUtility;
 
     @Autowired
     public AlertStartupInitializer(DescriptorMap descriptorMap, EnvironmentVariableUtility environmentUtility, DescriptorAccessor descriptorAccessor, ConfigurationAccessor fieldConfigurationAccessor,
-        ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsAccessor settingsAccessor) {
+        ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
         this.descriptorMap = descriptorMap;
         this.environmentUtility = environmentUtility;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.fieldModelProcessor = fieldModelProcessor;
-        this.settingsAccessor = settingsAccessor;
+        this.settingsUtility = settingsUtility;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AlertStartupInitializer extends StartupComponent {
     private void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info(String.format("** %s **", LINE_DIVIDER));
         logger.info("Initializing descriptors with environment variables...");
-        DescriptorKey settingsKey = settingsAccessor.getKey();
+        DescriptorKey settingsKey = settingsUtility.getKey();
         initializeConfiguration(List.of(settingsKey));
         List<DescriptorKey> descriptorKeys = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(settingsKey)).collect(Collectors.toList());
         initializeConfiguration(descriptorKeys);

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -22,14 +22,14 @@ public class ProxyManagerTest {
     public static final String PASSWORD = "password";
     private ConfigurationModel configurationModel;
     private ProxyManager proxyManager;
-    private SettingsAccessor settingsAccessor;
+    private SettingsUtility settingsUtility;
 
     @BeforeEach
     public void initTest() {
         configurationModel = Mockito.mock(ConfigurationModel.class);
 
-        settingsAccessor = Mockito.mock(SettingsAccessor.class);
-        proxyManager = new ProxyManager(settingsAccessor);
+        settingsUtility = Mockito.mock(SettingsUtility.class);
+        proxyManager = new ProxyManager(settingsUtility);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ProxyManagerTest {
         Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
         Mockito.when(configurationModel.getField(ProxyManager.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
 
-        Mockito.when(settingsAccessor.getConfiguration()).thenReturn(Optional.of(configurationModel));
+        Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.of(configurationModel));
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         assertEquals(HOST, proxyInfo.getHost().orElse(null));

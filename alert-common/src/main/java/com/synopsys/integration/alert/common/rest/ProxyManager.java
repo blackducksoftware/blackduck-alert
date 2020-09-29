@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsAccessor;
+import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -48,16 +48,16 @@ public class ProxyManager {
 
     private final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
 
-    private SettingsAccessor settingsAccessor;
+    private SettingsUtility settingsUtility;
 
     @Autowired
-    public ProxyManager(SettingsAccessor settingsAccessor) {
-        this.settingsAccessor = settingsAccessor;
+    public ProxyManager(SettingsUtility settingsUtility) {
+        this.settingsUtility = settingsUtility;
     }
 
     private Optional<ConfigurationModel> getSettingsConfiguration() {
         try {
-            return settingsAccessor.getConfiguration();
+            return settingsUtility.getConfiguration();
         } catch (AlertException ex) {
             logger.error("Could not find the settings configuration for proxy data", ex);
         }

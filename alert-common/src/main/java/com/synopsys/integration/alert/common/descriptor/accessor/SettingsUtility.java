@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public interface SettingsAccessor {
+public interface SettingsUtility {
 
     DescriptorKey getKey();
 
