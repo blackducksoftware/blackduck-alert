@@ -134,7 +134,6 @@ public class ApplicationConfiguration {
     @Bean
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
         AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
-        authorizationManager.loadPermissionsIntoCache();
         return authorizationManager;
     }
 

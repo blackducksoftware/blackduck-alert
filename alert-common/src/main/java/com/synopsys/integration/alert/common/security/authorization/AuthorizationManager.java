@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -52,6 +54,7 @@ public class AuthorizationManager {
     public AuthorizationManager(RoleAccessor roleAccessor) {
         this.roleAccessor = roleAccessor;
         this.permissionCache = new HashMap<>();
+        loadPermissionsIntoCache();
     }
 
     public final Set<Integer> getOperations(String context, String descriptorName) {
@@ -164,9 +167,35 @@ public class AuthorizationManager {
                    .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
     }
 
-    public final void loadPermissionsIntoCache() {
+    private final void loadPermissionsIntoCache() {
         Collection<UserRoleModel> roles = roleAccessor.getRoles();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 
+    private final void updateRoleInCache(String roleName, PermissionMatrixModel permissions) {
+        permissionCache.put(roleName, permissions);
+    }
+
+    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        UserRoleModel roleWithPermissions = roleAccessor.createRoleWithPermissions(roleName, permissionMatrix);
+        updateRoleInCache(roleWithPermissions.getName(), roleWithPermissions.getPermissions());
+        return roleWithPermissions;
+    }
+
+    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+        PermissionMatrixModel permissionMatrixModel = roleAccessor.updatePermissionsForRole(roleName, permissionMatrix);
+        updateRoleInCache(roleName, permissionMatrixModel);
+        return permissionMatrixModel;
+    }
+
+    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
+        roleAccessor.deleteRole(roleId);
+        loadPermissionsIntoCache();
+    }
+
+    public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
+        roleAccessor.updateUserRoles(userId, roles);
+        roles.stream()
+            .forEach(userRoleModel -> updateRoleInCache(userRoleModel.getName(), userRoleModel.getPermissions()));
+    }
 }
