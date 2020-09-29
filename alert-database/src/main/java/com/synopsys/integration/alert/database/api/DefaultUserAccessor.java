@@ -54,16 +54,16 @@ public class DefaultUserAccessor implements UserAccessor {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
-    private final DefaultAuthorizationAccessor authorizationUtility;
+    private final DefaultRoleAccessor roleAccessor;
     private final AuthenticationTypeAccessor authenticationTypeAccessor;
 
     @Autowired
-    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultAuthorizationAccessor authorizationUtility,
+    public DefaultUserAccessor(UserRepository userRepository, UserRoleRepository userRoleRepository, PasswordEncoder defaultPasswordEncoder, DefaultRoleAccessor roleAccessor,
         AuthenticationTypeAccessor authenticationTypeAccessor) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
-        this.authorizationUtility = authorizationUtility;
+        this.roleAccessor = roleAccessor;
         this.authenticationTypeAccessor = authenticationTypeAccessor;
     }
 
@@ -103,7 +103,7 @@ public class DefaultUserAccessor implements UserAccessor {
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
-        authorizationUtility.updateUserRoles(model.getId(), user.getRoles());
+        roleAccessor.updateUserRoles(model.getId(), user.getRoles());
 
         return model;
     }
@@ -137,7 +137,7 @@ public class DefaultUserAccessor implements UserAccessor {
             savedEntity = userRepository.save(newEntity);
         }
 
-        authorizationUtility.updateUserRoles(existingUserId, user.getRoles());
+        roleAccessor.updateUserRoles(existingUserId, user.getRoles());
 
         return createModel(savedEntity);
     }
@@ -146,7 +146,7 @@ public class DefaultUserAccessor implements UserAccessor {
     public boolean assignRoles(String username, Set<Long> roleIds) {
         Optional<Long> optionalUserId = userRepository.findByUserName(username).map(UserEntity::getId);
         if (optionalUserId.isPresent()) {
-            authorizationUtility.updateUserRoles(optionalUserId.get(), authorizationUtility.getRoles(roleIds));
+            roleAccessor.updateUserRoles(optionalUserId.get(), roleAccessor.getRoles(roleIds));
             return true;
         }
         return false;
@@ -203,7 +203,7 @@ public class DefaultUserAccessor implements UserAccessor {
     private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
         Long userId = userEntity.getId();
         if (!RESERVED_USER_IDS.contains(userId)) {
-            authorizationUtility.updateUserRoles(userId, Set.of());
+            roleAccessor.updateUserRoles(userId, Set.of());
             userRepository.deleteById(userId);
         } else {
             String userIdentifier = userRepository.findById(userId).map(UserEntity::getUserName).orElse(String.valueOf(userId));
@@ -214,7 +214,7 @@ public class DefaultUserAccessor implements UserAccessor {
     private UserModel createModel(UserEntity user) {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        Set<UserRoleModel> roles = authorizationUtility.getRoles(roleIdsForUser);
+        Set<UserRoleModel> roles = roleAccessor.getRoles(roleIdsForUser);
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
         return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles, user.isEnabled());
     }

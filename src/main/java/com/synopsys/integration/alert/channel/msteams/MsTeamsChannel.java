@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescript
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -48,9 +48,9 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
         MsTeamsMessageParser msTeamsMessageParser) {
-        super(msTeamsKey, gson, auditUtility);
+        super(msTeamsKey, gson, auditAccessor);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
         this.msTeamsMessageParser = msTeamsMessageParser;

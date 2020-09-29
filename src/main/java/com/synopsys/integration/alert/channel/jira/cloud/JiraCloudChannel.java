@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -44,8 +44,8 @@ public class JiraCloudChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
 
     @Autowired
-    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditUtility auditUtility, JiraMessageContentConverter jiraContentConverter, EventManager eventManager) {
-        super(gson, auditUtility, jiraChannelKey, eventManager);
+    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager) {
+        super(gson, auditAccessor, jiraChannelKey, eventManager);
         this.jiraContentConverter = jiraContentConverter;
     }
 

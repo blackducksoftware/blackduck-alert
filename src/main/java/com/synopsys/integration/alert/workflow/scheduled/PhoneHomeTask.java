@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -79,7 +79,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
-    private final AuditUtility auditUtility;
+    private final AuditAccessor auditAccessor;
     private List<ProviderPhoneHomeHandler> providerHandlers;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
@@ -87,13 +87,13 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     @Autowired
     public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
-        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditUtility auditUtility, List<ProviderPhoneHomeHandler> providerHandlers) {
+        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditAccessor auditAccessor, List<ProviderPhoneHomeHandler> providerHandlers) {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.gson = gson;
-        this.auditUtility = auditUtility;
+        this.auditAccessor = auditAccessor;
         this.providerHandlers = providerHandlers;
     }
 
@@ -180,7 +180,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     }
 
     private boolean hasAuditSuccess(UUID jobId) {
-        return auditUtility.findFirstByJobId(jobId)
+        return auditAccessor.findFirstByJobId(jobId)
                    .map(AuditJobStatusModel::getStatus)
                    .stream()
                    .anyMatch(status -> AuditEntryStatus.SUCCESS.getDisplayName().equals(status));

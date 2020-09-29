@@ -36,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -91,7 +91,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private BlackDuckProviderKey blackDuckProviderKey;
 
     @Autowired
-    private AuditUtility auditUtility;
+    private AuditAccessor auditAccessor;
     @Autowired
     private NotificationProcessor notificationProcessor;
     @Autowired
@@ -148,7 +148,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditUtility, notificationAccessor, configurationAccessor,
+        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationAccessor, configurationAccessor,
             channelEventManager, notificationProcessor);
     }
 

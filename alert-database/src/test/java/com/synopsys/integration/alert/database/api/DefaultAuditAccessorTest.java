@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
-public class DefaultAuditUtilityTest {
+public class DefaultAuditAccessorTest {
 
     private final Gson gson = new Gson();
 
@@ -58,7 +58,7 @@ public class DefaultAuditUtilityTest {
     public void findMatchingAuditIdTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findMatchingAudit(Mockito.anyLong(), Mockito.any(UUID.class))).thenReturn(Optional.empty());
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, null);
         Optional<Long> nullValue = auditUtility.findMatchingAuditId(1L, UUID.randomUUID());
 
         assertFalse(nullValue.isPresent());
@@ -78,7 +78,7 @@ public class DefaultAuditUtilityTest {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.empty());
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, contentConverter);
 
         assertFalse(auditUtility.findFirstByJobId(UUID.randomUUID()).isPresent());
     }
@@ -90,7 +90,7 @@ public class DefaultAuditUtilityTest {
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(null, null, null, null, null, null);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
 
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, contentConverter);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, contentConverter);
 
         UUID testUUID = UUID.randomUUID();
         AuditJobStatusModel auditJobStatusModel = auditUtility.findFirstByJobId(testUUID).get();
@@ -115,7 +115,7 @@ public class DefaultAuditUtilityTest {
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(testUUID, timeCreated, timeLastSent, status.name(), null, null);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any(UUID.class))).thenReturn(Optional.of(auditEntryEntity));
 
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, null);
         AuditJobStatusModel auditJobStatusModel = auditUtility.findFirstByJobId(testUUID).get();
 
         String testTimeAuditCreated = auditJobStatusModel.getTimeAuditCreated();
@@ -164,7 +164,7 @@ public class DefaultAuditUtilityTest {
         AuditEntryModel auditEntryModel = new AuditEntryModel("2", notificationConfig, List.of(), overallStatus, lastSent);
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter = (AlertNotificationModel notificationModel) -> auditEntryModel;
 
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, null, notificationManager, null);
         AlertPagedModel<AuditEntryModel> alertPagedModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, notificationToAuditEntryConverter);
 
         assertEquals(1, alertPagedModel.getTotalPages());
@@ -222,7 +222,7 @@ public class DefaultAuditUtilityTest {
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
         Mockito.when(configurationAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
 
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, configurationAccessor, null, contentConverter);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, configurationAccessor, null, contentConverter);
         AuditEntryModel testAuditEntryModel = auditUtility.convertToAuditEntryModelFromNotification(alertNotificationModel);
 
         assertEquals(id, Long.valueOf(testAuditEntryModel.getId()));
@@ -240,7 +240,7 @@ public class DefaultAuditUtilityTest {
     public void createAuditEntryTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, null, null, null);
         ProviderMessageContent content = createMessageContent();
         UUID commonConfigUUID = UUID.randomUUID();
         AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
@@ -264,7 +264,7 @@ public class DefaultAuditUtilityTest {
     public void createAuditEntryNullEntryIdTest() throws Exception {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, auditNotificationRepository, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, null, null, null);
         ProviderMessageContent content = createMessageContent();
         UUID commonConfigUUID = UUID.randomUUID();
         AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
@@ -282,14 +282,14 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(null, null, null, null, null);
         auditUtility.setAuditEntrySuccess(Collections.singletonList(1L));
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, null);
 
         AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
@@ -303,14 +303,14 @@ public class DefaultAuditUtilityTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(null, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(null, null, null, null, null);
         auditUtility.setAuditEntryFailure(Collections.singletonList(1L), null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        DefaultAuditUtility auditUtility = new DefaultAuditUtility(auditEntryRepository, null, null, null, null);
+        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, null);
         AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));

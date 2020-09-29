@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.database.api.DefaultAuthenticationTypeAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuthorizationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultRoleAccessor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -57,7 +57,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private DefaultUserAccessor defaultUserAccessor;
     @Autowired
-    private DefaultAuthorizationAccessor defaultAuthorizationUtility;
+    private DefaultRoleAccessor defaultRoleAccessor;
     @Autowired
     private DefaultAuthenticationTypeAccessor defaultAuthenticationTypeAccessor;
     @Autowired
@@ -81,7 +81,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        userActions = new UserActions(userManagementDescriptorKey, defaultUserAccessor, defaultAuthorizationUtility, authorizationManager, defaultAuthenticationTypeAccessor, userSystemValidator);
+        userActions = new UserActions(userManagementDescriptorKey, defaultUserAccessor, defaultRoleAccessor, authorizationManager, defaultAuthenticationTypeAccessor, userSystemValidator);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
 

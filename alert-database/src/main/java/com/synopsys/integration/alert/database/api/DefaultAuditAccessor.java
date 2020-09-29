@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -74,21 +74,21 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 @Component
-public class DefaultAuditUtility implements AuditUtility {
-    private final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
+public class DefaultAuditAccessor implements AuditAccessor {
+    private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
-    private final DefaultNotificationAccessor notificationManager;
+    private final DefaultNotificationAccessor notificationAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditUtility(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
-        DefaultNotificationAccessor notificationManager, ContentConverter contentConverter) {
+    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
+        DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.contentConverter = contentConverter;
     }
 
@@ -323,12 +323,12 @@ public class DefaultAuditUtility implements AuditUtility {
     }
 
     private Page<AlertNotificationModel> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {
-        PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
+        PageRequest pageRequest = notificationAccessor.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
         Page<AlertNotificationModel> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
-            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
+            auditPage = notificationAccessor.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
-            auditPage = notificationManager.findAll(pageRequest, onlyShowSentNotifications);
+            auditPage = notificationAccessor.findAll(pageRequest, onlyShowSentNotifications);
         }
         return auditPage;
     }
