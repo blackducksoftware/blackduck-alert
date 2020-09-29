@@ -50,7 +50,7 @@ public abstract class JiraGlobalTestAction extends TestAction {
             }
 
             if (isAppCheckEnabled(registeredFieldValues)) {
-                if (isUserAdmin(registeredFieldValues)) {
+                if (!isUserAdmin(registeredFieldValues)) {
                     throw new AlertException("The configured user must be an admin if 'Plugin Check' is enabled");
                 }
 
