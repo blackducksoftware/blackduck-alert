@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -17,22 +16,17 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
-import com.synopsys.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.database.api.DefaultAuthenticationTypeAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuthorizationUtility;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -52,21 +46,9 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private Gson gson;
 
-    @Autowired
-    private UserManagementDescriptorKey userManagementDescriptorKey;
-    @Autowired
-    private DefaultUserAccessor defaultUserAccessor;
-    @Autowired
-    private DefaultAuthorizationUtility defaultAuthorizationUtility;
-    @Autowired
-    private DefaultAuthenticationTypeAccessor defaultAuthenticationTypeAccessor;
-    @Autowired
-    private UserSystemValidator userSystemValidator;
-
-    private UserActions userActions;
     private MockMvc mockMvc;
 
-    private final Long id = 4L;
+    private final Long id = Long.MAX_VALUE - 1;
     private final String name = "user";
     private final String password = "password";
     private final String emailAddress = "noreply@synopsys.com";
@@ -75,13 +57,6 @@ public class UserControllerTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
-        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        userActions = new UserActions(userManagementDescriptorKey, defaultUserAccessor, defaultAuthorizationUtility, authorizationManager, defaultAuthenticationTypeAccessor, userSystemValidator);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
 
@@ -175,13 +150,24 @@ public class UserControllerTestIT extends AlertIntegrationTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    private Optional<UserConfig> createDefaultUserConfig() {
+    private Optional<UserConfig> createDefaultUserConfig() throws Exception {
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        ActionResponse<UserConfig> savedUserConfig = userActions.create(userConfig);
-        return savedUserConfig.getContent();
+
+        String url = UserController.USER_BASE_PATH;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(gson.toJson(userConfig))
+                                                    .contentType(contentType);
+        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+
+        TypeToken userConfigType = new TypeToken<UserConfig>() {};
+        UserConfig newUserConfig = gson.fromJson(response, userConfigType.getType());
+        return Optional.of(newUserConfig);
     }
 }
