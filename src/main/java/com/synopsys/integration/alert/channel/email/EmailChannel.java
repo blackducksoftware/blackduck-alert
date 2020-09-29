@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.channel.email.template.EmailChannelMessage
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -67,9 +67,9 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
-    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditUtility auditUtility,
+    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditAccessor auditAccessor,
         EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser, EmailAttachmentFileCreator emailAttachmentFileCreator) {
-        super(emailChannelKey, gson, auditUtility);
+        super(emailChannelKey, gson, auditAccessor);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;

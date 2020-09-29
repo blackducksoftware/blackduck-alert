@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -37,11 +37,11 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class DistributionChannel extends MessageReceiver<DistributionEvent> implements AlertEventListener {
     private final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
-    private final AuditUtility auditUtility;
+    private final AuditAccessor auditAccessor;
 
-    public DistributionChannel(Gson gson, AuditUtility auditUtility) {
+    public DistributionChannel(Gson gson, AuditAccessor auditAccessor) {
         super(gson, DistributionEvent.class);
-        this.auditUtility = auditUtility;
+        this.auditAccessor = auditAccessor;
     }
 
     @Override
@@ -60,14 +60,14 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
     public void sendAuditedMessage(DistributionEvent event) throws IntegrationException {
         try {
             sendMessage(event);
-            auditUtility.setAuditEntrySuccess(event.getAuditIds());
+            auditAccessor.setAuditEntrySuccess(event.getAuditIds());
         } catch (IntegrationRestException irex) {
-            auditUtility.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
+            auditAccessor.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             throw new AlertException(irex.getMessage(), irex);
         } catch (Exception e) {
             logger.error("Error occurred sending message: ", e);
-            auditUtility.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
+            auditAccessor.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
             throw new AlertException(e.getMessage(), e);
         }
     }

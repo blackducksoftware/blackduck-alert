@@ -37,7 +37,7 @@ public class DefaultUserAccessorTest {
     private UserRepository userRepository;
     private UserRoleRepository userRoleRepository;
     private PasswordEncoder defaultPasswordEncoder;
-    private DefaultAuthorizationUtility authorizationUtility;
+    private DefaultRoleAccessor authorizationUtility;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
 
     @BeforeEach
@@ -45,7 +45,7 @@ public class DefaultUserAccessorTest {
         this.userRepository = Mockito.mock(UserRepository.class);
         this.userRoleRepository = Mockito.mock(UserRoleRepository.class);
         this.defaultPasswordEncoder = Mockito.mock(PasswordEncoder.class);
-        this.authorizationUtility = Mockito.mock(DefaultAuthorizationUtility.class);
+        this.authorizationUtility = Mockito.mock(DefaultRoleAccessor.class);
         this.authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
     }
 

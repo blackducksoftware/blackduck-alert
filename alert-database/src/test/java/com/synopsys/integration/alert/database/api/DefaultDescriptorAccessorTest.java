@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 
 public class DefaultDescriptorAccessorTest {
-    private final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
 
     @Test
     public void getRegisteredDescriptorsTest() throws Exception {

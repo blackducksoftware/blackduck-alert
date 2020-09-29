@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -43,7 +43,7 @@ public class EmailChannelTestIT extends ChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
-        DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
+        DefaultAuditAccessor auditUtility = Mockito.mock(DefaultAuditAccessor.class);
         TestAlertProperties testAlertProperties = new TestAlertProperties();
         EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
 

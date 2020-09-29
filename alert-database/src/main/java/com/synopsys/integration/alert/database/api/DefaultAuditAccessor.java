@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -74,8 +74,8 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 @Component
-public class DefaultAuditUtility implements AuditUtility {
-    private final Logger logger = LoggerFactory.getLogger(DefaultAuditUtility.class);
+public class DefaultAuditAccessor implements AuditAccessor {
+    private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
@@ -83,7 +83,7 @@ public class DefaultAuditUtility implements AuditUtility {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditUtility(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
+    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
         DefaultNotificationManager notificationManager, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;

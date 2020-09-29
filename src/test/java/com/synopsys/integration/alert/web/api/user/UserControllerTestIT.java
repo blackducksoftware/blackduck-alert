@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.database.api.DefaultAuthenticationTypeAccessor;
-import com.synopsys.integration.alert.database.api.DefaultAuthorizationUtility;
+import com.synopsys.integration.alert.database.api.DefaultRoleAccessor;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -57,7 +57,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private DefaultUserAccessor defaultUserAccessor;
     @Autowired
-    private DefaultAuthorizationUtility defaultAuthorizationUtility;
+    private DefaultRoleAccessor defaultAuthorizationUtility;
     @Autowired
     private DefaultAuthenticationTypeAccessor defaultAuthenticationTypeAccessor;
     @Autowired
