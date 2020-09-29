@@ -40,6 +40,7 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckResponseCache {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckResponseCache.class);
@@ -92,7 +93,8 @@ public class BlackDuckResponseCache {
     public Optional<String> getProjectLink(String projectVersionUrl, String link) {
         Optional<ProjectVersionView> optionalProjectVersionFuture = getItem(ProjectVersionView.class, projectVersionUrl);
         return optionalProjectVersionFuture
-                   .flatMap(view -> view.getFirstLink(link));
+                   .map(view -> view.getFirstLink(link))
+                   .map(HttpUrl::toString);
     }
 
     public Optional<ProjectVersionComponentView> getBomComponentView(String bomComponentUrl) {
@@ -119,7 +121,7 @@ public class BlackDuckResponseCache {
         Optional<ProjectVersionView> projectVersion = getItem(ProjectVersionView.class, projectVersionUrl);
         ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
         projectVersion.ifPresent(wrapper::setProjectVersionView);
-        projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
+        projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).toString()))
             .ifPresent(wrapper::setProjectView);
         return Optional.of(wrapper);
     }

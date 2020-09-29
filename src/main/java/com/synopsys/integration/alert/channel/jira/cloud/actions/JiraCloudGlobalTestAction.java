@@ -35,7 +35,10 @@ import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.MyPermissionsService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
+import com.synopsys.integration.jira.common.model.response.PermissionModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
@@ -62,7 +65,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
-        return !jiraAppService.isAppInstalled(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY);
+        return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
     }
 
     @Override
@@ -74,6 +77,16 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         return userSearchService.findUser(username).stream()
                    .map(UserDetailsResponseModel::getEmailAddress)
                    .noneMatch(email -> email.equals(username));
+    }
+
+    @Override
+    protected boolean isUserAdmin(FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
+        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+        MyPermissionsService myPermissionsService = jiraCloudServiceFactory.createMyPermissionsService();
+        MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        return null != adminPermission && adminPermission.getHavePermission();
     }
 
     private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {

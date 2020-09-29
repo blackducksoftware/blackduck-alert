@@ -34,9 +34,12 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
+import com.synopsys.integration.jira.common.model.response.PermissionModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
 import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
@@ -60,8 +63,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         JiraServerProperties jiraProperties = createProperties(fieldAccessor);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
-        String username = jiraProperties.getUsername();
-        return !jiraAppService.isAppInstalled(username, jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY);
+        return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
     }
 
     @Override
@@ -71,6 +73,16 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
         String username = jiraProperties.getUsername();
         return userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getName).noneMatch(email -> email.equals(username));
+    }
+
+    @Override
+    protected boolean isUserAdmin(FieldAccessor fieldAccessor) throws IntegrationException {
+        JiraServerProperties jiraProperties = createProperties(fieldAccessor);
+        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+        MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
+        MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
+        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        return null != adminPermission && adminPermission.getHavePermission();
     }
 
     private JiraServerProperties createProperties(FieldAccessor fieldAccessor) {

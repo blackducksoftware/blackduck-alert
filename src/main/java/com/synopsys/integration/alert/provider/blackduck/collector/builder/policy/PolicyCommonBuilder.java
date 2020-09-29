@@ -156,7 +156,7 @@ public class PolicyCommonBuilder {
             String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
             String vulnerabilityUrl = null;
             if (vulnerabilityViews.containsKey(vulnerabilityId)) {
-                vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().orElse(null);
+                vulnerabilityUrl = vulnerabilityViews.get(vulnerabilityId).getHref().toString();
             }
             LinkableItem vulnerabilityIdItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITIES, vulnerabilityId, vulnerabilityUrl);
             vulnerabilityIdItem.setCollapsible(true);
@@ -197,7 +197,7 @@ public class PolicyCommonBuilder {
                 logger.error("Error building policy bom edit component cause ", ex);
             }
         }
-
         return vulnerabilityItems;
     }
+
 }

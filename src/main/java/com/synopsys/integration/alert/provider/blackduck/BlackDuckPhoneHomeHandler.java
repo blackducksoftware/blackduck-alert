@@ -37,10 +37,10 @@ import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.response.CurrentVersionView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckRegistrationService;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.BlackDuckRegistrationService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.UniquePhoneHomeProduct;
@@ -52,8 +52,8 @@ import com.synopsys.integration.util.NameVersion;
 public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckPhoneHomeHandler.class);
 
-    private BlackDuckProvider provider;
-    private DescriptorAccessor descriptorAccessor;
+    private final BlackDuckProvider provider;
+    private final DescriptorAccessor descriptorAccessor;
 
     @Autowired
     public BlackDuckPhoneHomeHandler(BlackDuckProvider provider, DescriptorAccessor descriptorAccessor) {
@@ -81,7 +81,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
                 BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
-                BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
                 CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
                 blackDuckVersion = currentVersionView.getVersion();
                 registrationId = blackDuckRegistrationService.getRegistrationId();

@@ -48,17 +48,18 @@ import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotifica
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckProjectNameExtractor {
     private static final BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>> DEFAULT_EXTRACTOR = (x, y) -> List.of();
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectNameExtractor.class);
-    private Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>>> extractorMap = new HashMap<>();
-    private BlackDuckProperties blackDuckProperties;
+    private final Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>>> extractorMap = new HashMap<>();
+    private final BlackDuckProperties blackDuckProperties;
 
     public BlackDuckProjectNameExtractor(BlackDuckProperties blackDuckProperties) {
         this.blackDuckProperties = blackDuckProperties;
@@ -76,12 +77,13 @@ public class BlackDuckProjectNameExtractor {
         if (optionalBlackDuckHttpClient.isPresent()) {
             BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
-            BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+            BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
 
             BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
             String bomComponentUri = notificationView.getContent().getBomComponent();
             try {
-                ProjectVersionComponentView bomComponentView = blackDuckService.getResponse(bomComponentUri, ProjectVersionComponentView.class);
+                HttpUrl bomComponentUrl = new HttpUrl(bomComponentUri);
+                ProjectVersionComponentView bomComponentView = blackDuckService.getResponse(bomComponentUrl, ProjectVersionComponentView.class);
                 return getProjectName(blackDuckService, bomComponentView)
                            .stream()
                            .collect(Collectors.toSet());
@@ -128,15 +130,13 @@ public class BlackDuckProjectNameExtractor {
 
     private Optional<String> getProjectName(BlackDuckService blackDuckService, ProjectVersionComponentView versionBomComponent) {
         try {
-            Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-            if (versionBomComponentHref.isPresent()) {
-                String versionHref = versionBomComponentHref.get();
-                int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
-                String projectUri = versionHref.substring(0, projectVersionIndex - 1);
+            String versionHref = versionBomComponent.getHref().toString();
+            int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
+            String projectUri = versionHref.substring(0, projectVersionIndex - 1);
 
-                ProjectView projectView = blackDuckService.getResponse(projectUri, ProjectView.class);
-                return Optional.of(projectView.getName());
-            }
+            HttpUrl projectHttpUrl = new HttpUrl(projectUri);
+            ProjectView projectView = blackDuckService.getResponse(projectHttpUrl, ProjectView.class);
+            return Optional.of(projectView.getName());
         } catch (IntegrationException ie) {
             logger.error("Error getting project version for Bom Component. ", ie);
         }
