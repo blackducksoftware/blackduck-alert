@@ -120,7 +120,7 @@ spec:
               command:
                 - sh
                 - -c
-                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql12/root/usr/lib64 /opt/rh/rh-postgresql12/root/usr/bin/pg_ctl -D /var/lib/postgresql/data/userdata -l logfile stop
+                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql12/root/usr/lib64 /opt/rh/rh-postgresql12/root/usr/bin/pg_ctl -D /var/lib/pgsql/data/userdata -l logfile stop
         name: {{ .Release.Name }}-postgres
         ports:
         - containerPort: {{ .Values.postgres.port }}
@@ -143,8 +143,8 @@ spec:
 {{ toYaml . | indent 10 }}
         {{- end }}
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: alert-postgres-data-volume
+          - mountPath: /var/lib/pgsql/data
+            name: alert-postgres-data-volume
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.postgres.nodeSelector }}

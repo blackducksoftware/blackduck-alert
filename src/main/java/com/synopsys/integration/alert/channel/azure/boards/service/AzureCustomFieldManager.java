@@ -196,7 +196,8 @@ public class AzureCustomFieldManager {
         try {
             return processService.createWorkItemType(organizationName, processId, ProcessWorkItemTypeRequestModel.copyWorkItem(workItemType));
         } catch (IOException | HttpServiceException e) {
-            throw new AlertException(String.format("There was a problem creating a modifiable work item from % in the Azure process with id: %s", workItemType.getReferenceName(), processId), e);
+            throw new AlertException(
+                String.format("There was a problem creating a modifiable work item from '%s' in the Azure process with id: %s. Make sure you are not using a template process.", workItemType.getReferenceName(), processId), e);
         }
     }
 
