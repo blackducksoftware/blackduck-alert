@@ -120,7 +120,7 @@ public class JiraCloudRequestDelegatorTest {
         requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
-        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             service.sendRequests(requests);
             fail();
@@ -131,7 +131,7 @@ public class JiraCloudRequestDelegatorTest {
 
     @Test
     public void testCreateIssue() throws Exception {
-        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);
@@ -169,7 +169,7 @@ public class JiraCloudRequestDelegatorTest {
 
     @Test
     public void testResolveIssue() throws Exception {
-        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);

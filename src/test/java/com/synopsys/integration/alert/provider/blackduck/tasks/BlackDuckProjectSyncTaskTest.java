@@ -21,15 +21,17 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
-import com.synopsys.integration.blackduck.api.core.BlackDuckPathSingleResponse;
+import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.api.manual.component.ResourceMetadata;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckProjectSyncTaskTest {
     @Test
@@ -49,7 +51,7 @@ public class BlackDuckProjectSyncTaskTest {
         ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
 
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
-        Mockito.when(blackDuckServicesFactory.createBlackDuckService()).thenReturn(blackDuckService);
+        Mockito.when(blackDuckServicesFactory.getBlackDuckService()).thenReturn(blackDuckService);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
@@ -57,9 +59,9 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckHttpClient.class)));
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(blackDuckServicesFactory);
 
-        ProjectView projectView = createProjectView("project", "description1", "projectUrl1");
-        ProjectView projectView2 = createProjectView("project2", "description2", "projectUrl2");
-        ProjectView projectView3 = createProjectView("project3", "description3", "projectUrl3");
+        ProjectView projectView = createProjectView("project", "description1", "https://projectUrl1");
+        ProjectView projectView2 = createProjectView("project2", "description2", "https://projectUrl2");
+        ProjectView projectView3 = createProjectView("project3", "description3", "https://projectUrl3");
 
         Mockito.when(blackDuckService.getAllResponses(Mockito.eq(ApiDiscovery.PROJECTS_LINK_RESPONSE))).thenReturn(List.of(projectView, projectView2, projectView3));
         Mockito.doReturn(null).when(blackDuckService).getResponse(Mockito.any(BlackDuckPathSingleResponse.class));
@@ -103,12 +105,12 @@ public class BlackDuckProjectSyncTaskTest {
         return userView;
     }
 
-    private ProjectView createProjectView(String name, String description, String href) {
+    private ProjectView createProjectView(String name, String description, String href) throws IntegrationException {
         ProjectView projectView = new ProjectView();
         projectView.setName(name);
         projectView.setDescription(description);
         ResourceMetadata resourceMetadata = new ResourceMetadata();
-        resourceMetadata.setHref(href);
+        resourceMetadata.setHref(new HttpUrl(href));
         projectView.setMeta(resourceMetadata);
         return projectView;
     }
