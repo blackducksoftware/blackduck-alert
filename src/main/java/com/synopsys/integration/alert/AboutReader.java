@@ -33,12 +33,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.alert.web.documentation.SwaggerConfiguration;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
@@ -66,8 +68,8 @@ public class AboutReader {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             String startupDate = systemStatusUtility.getStartupTime() != null ? DateUtils.formatDate(systemStatusUtility.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
-            Set<DescriptorMetadata> providers = descriptorActions.getDescriptorsByType(DescriptorType.PROVIDER.name());
-            Set<DescriptorMetadata> channels = descriptorActions.getDescriptorsByType(DescriptorType.CHANNEL.name());
+            Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
+            Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
             AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
                 createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusUtility.isSystemInitialized(), startupDate, providers, channels);
             return Optional.of(model);
@@ -75,6 +77,16 @@ public class AboutReader {
             logger.error(e.getMessage(), e);
             return Optional.empty();
         }
+    }
+
+    private Set<DescriptorMetadata> getDescriptorData(DescriptorType descriptorType) {
+        Set<DescriptorMetadata> descriptorData = Set.of();
+        ActionResponse<DescriptorsResponseModel> response = descriptorActions.getDescriptorsByType(descriptorType.name());
+        if (response.hasContent()) {
+            DescriptorsResponseModel providersData = response.getContent().get();
+            descriptorData = providersData.getDescriptors();
+        }
+        return descriptorData;
     }
 
     public String getProductVersion() {

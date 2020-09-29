@@ -15,15 +15,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -244,6 +247,7 @@ public class UpdateCheckerTest {
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
 
         DescriptorMetadataActions descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);
+        Mockito.when(descriptorMetadataActions.getDescriptorsByType(Mockito.anyString())).thenReturn(new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel()));
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
