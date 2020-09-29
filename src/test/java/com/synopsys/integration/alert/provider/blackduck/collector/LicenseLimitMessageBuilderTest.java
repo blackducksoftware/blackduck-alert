@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Licen
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class LicenseLimitMessageBuilderTest {

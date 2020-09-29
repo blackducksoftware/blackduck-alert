@@ -42,9 +42,9 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
+import com.synopsys.integration.blackduck.service.dataservice.NotificationService;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
