@@ -140,7 +140,7 @@ public class DefaultAuditAccessorTest {
         String lastSent = DateUtils.createCurrentDateString(DateUtils.AUDIT_DATE_FORMAT);
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        DefaultNotificationManager notificationManager = Mockito.mock(DefaultNotificationManager.class);
+        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
 
         PageRequest pageRequest = PageRequest.of(0, 10);

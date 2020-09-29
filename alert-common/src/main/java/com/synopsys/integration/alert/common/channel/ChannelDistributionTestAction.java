@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -48,19 +48,19 @@ public abstract class ChannelDistributionTestAction extends TestAction {
     }
 
     @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor fieldAccessor) throws IntegrationException {
-        DistributionEvent event = createChannelTestEvent(jobId, fieldAccessor);
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility fieldUtility) throws IntegrationException {
+        DistributionEvent event = createChannelTestEvent(jobId, fieldUtility);
         return distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(String configId, FieldAccessor fieldAccessor) throws AlertException {
-        ProviderMessageContent messageContent = createTestNotificationContent(fieldAccessor, ItemOperation.ADD, UUID.randomUUID().toString());
+    public DistributionEvent createChannelTestEvent(String configId, FieldUtility fieldUtility) throws AlertException {
+        ProviderMessageContent messageContent = createTestNotificationContent(fieldUtility, ItemOperation.ADD, UUID.randomUUID().toString());
 
-        String channelName = fieldAccessor.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
-        String formatType = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
+        String channelName = fieldUtility.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
+        String formatType = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
 
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigId, formatType, MessageContentGroup.singleton(messageContent), fieldAccessor);
+        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigId, formatType, MessageContentGroup.singleton(messageContent), fieldUtility);
     }
 
     public DistributionChannel getDistributionChannel() {

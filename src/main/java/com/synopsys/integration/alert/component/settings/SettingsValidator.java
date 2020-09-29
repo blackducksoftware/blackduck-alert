@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
@@ -40,13 +40,13 @@ public class SettingsValidator extends BaseSystemValidator {
     private EncryptionUtility encryptionUtility;
 
     @Autowired
-    public SettingsValidator(EncryptionUtility encryptionUtility, SystemMessageUtility systemMessageUtility) {
-        super(systemMessageUtility);
+    public SettingsValidator(EncryptionUtility encryptionUtility, SystemMessageAccessor systemMessageAccessor) {
+        super(systemMessageAccessor);
         this.encryptionUtility = encryptionUtility;
     }
 
     public boolean validateEncryption() {
-        getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+        getSystemMessageAccessor().removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         boolean valid = true;
         if (!encryptionUtility.isInitialized()) {
             logger.error("Encryption utilities: Not Initialized");

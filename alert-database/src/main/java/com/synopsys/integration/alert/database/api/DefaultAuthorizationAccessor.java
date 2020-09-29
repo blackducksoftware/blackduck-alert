@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,17 +20,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
-
-import java.time.OffsetDateTime;
-
-public interface SystemStatusUtility {
-
-    boolean isSystemInitialized();
-
-    void setSystemInitialized(boolean systemInitialized);
-
-    void startupOccurred();
-
-    OffsetDateTime getStartupTime();
-}

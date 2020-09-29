@@ -32,19 +32,19 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ConfigurationJobModel extends AlertSerializableModel {
     private static final long serialVersionUID = 4714533679724412017L;
     private final UUID jobId;
     private final Set<ConfigurationModel> configurations;
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
 
     public ConfigurationJobModel(UUID jobId, Set<ConfigurationModel> configurations) {
         this.jobId = jobId;
         this.configurations = configurations;
-        this.fieldAccessor = new FieldAccessor(createKeyToFieldMap());
+        this.fieldUtility = new FieldUtility(createKeyToFieldMap());
     }
 
     public UUID getJobId() {
@@ -55,45 +55,45 @@ public class ConfigurationJobModel extends AlertSerializableModel {
         return Set.copyOf(configurations);
     }
 
-    public FieldAccessor getFieldAccessor() {
+    public FieldUtility getFieldUtility() {
 
-        return fieldAccessor;
+        return fieldUtility;
     }
 
     public String getName() {
-        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_NAME);
+        return getFieldUtility().getStringOrNull(ChannelDistributionUIConfig.KEY_NAME);
     }
 
     public boolean isEnabled() {
-        return getFieldAccessor().getBoolean(ChannelDistributionUIConfig.KEY_ENABLED).orElse(Boolean.TRUE);
+        return getFieldUtility().getBoolean(ChannelDistributionUIConfig.KEY_ENABLED).orElse(Boolean.TRUE);
     }
 
     public String getChannelName() {
-        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        return getFieldUtility().getStringOrNull(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
     }
 
     public String getProviderName() {
-        return getFieldAccessor().getStringOrNull(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        return getFieldUtility().getStringOrNull(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
     }
 
     public String getProviderConfigId() {
-        return getFieldAccessor().getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        return getFieldUtility().getStringOrNull(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
     }
 
     public Long getProviderConfigIdAsLong() {
-        return getFieldAccessor().getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
+        return getFieldUtility().getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
     }
 
     public FrequencyType getFrequencyType() {
-        return getFieldAccessor().getEnum(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
+        return getFieldUtility().getEnum(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
     }
 
     public ProcessingType getProcessingType() {
-        return getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, ProcessingType.class).orElse(null);
+        return getFieldUtility().getEnum(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, ProcessingType.class).orElse(null);
     }
 
     public Set<String> getNotificationTypes() {
-        return Set.copyOf(getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
+        return Set.copyOf(getFieldUtility().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES));
     }
 
     private Map<String, ConfigurationFieldModel> createKeyToFieldMap() {

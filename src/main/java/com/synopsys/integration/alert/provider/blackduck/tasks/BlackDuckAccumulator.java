@@ -37,7 +37,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
@@ -60,15 +60,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final NotificationManager notificationManager;
+    private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
 
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
         ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
     }
@@ -180,7 +180,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     protected void write(List<AlertNotificationModel> contentList) {
         logger.info("Writing Notifications...");
-        notificationManager.saveAllNotifications(contentList);
+        notificationAccessor.saveAllNotifications(contentList);
     }
 
     private List<NotificationView> sort(List<NotificationView> notifications) {

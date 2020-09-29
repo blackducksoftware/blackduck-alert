@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -51,9 +51,9 @@ public class JiraServerChannel extends IssueTrackerChannel {
 
     @Override
     protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
-        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        FieldUtility fieldUtility = event.getFieldUtility();
         JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
-        return contextBuilder.build(fieldAccessor);
+        return contextBuilder.build(fieldUtility);
     }
 
     @Override

@@ -18,20 +18,20 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
+import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.web.api.system.MultiSystemMessageModel;
 import com.synopsys.integration.alert.web.api.system.SystemActions;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SystemActionsTest {
-    private DefaultSystemStatusUtility defaultSystemStatusUtility;
-    private DefaultSystemMessageUtility defaultSystemMessageUtility;
+    private DefaultSystemStatusAccessor defaultSystemStatusUtility;
+    private DefaultSystemMessageAccessor defaultSystemMessageUtility;
 
     @BeforeEach
     public void initiailize() {
-        defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusUtility.class);
-        defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
+        defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
         List<SystemMessageModel> messages = createSystemMessageList();
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(defaultSystemMessageUtility.getSystemMessagesBefore(Mockito.any())).thenReturn(messages);

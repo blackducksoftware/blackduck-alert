@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validators.
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -75,7 +75,7 @@ public class ConfigurationFieldModelTest {
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
-        FieldAccessor accessor = modelConverter.convertToFieldAccessor(fieldModel);
+        FieldUtility accessor = modelConverter.convertToFieldAccessor(fieldModel);
 
         assertEquals(VALUE_FIELD_1, accessor.getString(KEY_FIELD_1).orElseThrow(IllegalArgumentException::new));
         assertEquals(VALUE_FIELD_2, accessor.getString(KEY_FIELD_2).orElseThrow(IllegalArgumentException::new));

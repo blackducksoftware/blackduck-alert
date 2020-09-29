@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.rest.RestConstants;
@@ -47,13 +47,13 @@ import com.synopsys.integration.rest.RestConstants;
 public class SystemActions {
     private final Logger logger = LoggerFactory.getLogger(SystemActions.class);
 
-    private final SystemStatusUtility systemStatusUtility;
-    private final SystemMessageUtility systemMessageUtility;
+    private final SystemStatusAccessor systemStatusAccessor;
+    private final SystemMessageAccessor systemMessageAccessor;
 
     @Autowired
-    public SystemActions(SystemStatusUtility systemStatusUtility, SystemMessageUtility systemMessageUtility) {
-        this.systemStatusUtility = systemStatusUtility;
-        this.systemMessageUtility = systemMessageUtility;
+    public SystemActions(SystemStatusAccessor systemStatusAccessor, SystemMessageAccessor systemMessageAccessor) {
+        this.systemStatusAccessor = systemStatusAccessor;
+        this.systemMessageAccessor = systemMessageAccessor;
     }
 
     public ActionResponse<MultiSystemMessageModel> getSystemMessages(@Nullable String startDate, @Nullable String endDate) {
@@ -74,30 +74,30 @@ public class SystemActions {
     }
 
     public ActionResponse<MultiSystemMessageModel> getSystemMessagesSinceStartup() {
-        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime());
+        List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesAfter(systemStatusAccessor.getStartupTime());
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessagesAfter(String startDate) throws ParseException {
         OffsetDateTime date = DateUtils.parseDate(startDate, RestConstants.JSON_DATE_FORMAT);
-        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesAfter(date);
+        List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesAfter(date);
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessagesBefore(String endDate) throws ParseException {
         OffsetDateTime date = DateUtils.parseDate(endDate, RestConstants.JSON_DATE_FORMAT);
-        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
+        List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesBefore(date);
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessagesBetween(String startDate, String endDate) throws ParseException {
         DateRange dateRange = DateRange.of(startDate, endDate);
-        List<SystemMessageModel> messages = systemMessageUtility.findBetween(dateRange);
+        List<SystemMessageModel> messages = systemMessageAccessor.findBetween(dateRange);
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessages() {
-        List<SystemMessageModel> messages = systemMessageUtility.getSystemMessages();
+        List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessages();
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 }

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderPropertiesFactory;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -46,8 +46,8 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
     }
 
     @Override
-    public BlackDuckProperties createProperties(Long configId, FieldAccessor fieldAccessor) {
-        return new BlackDuckProperties(configId, gson, alertProperties, proxyManager, fieldAccessor);
+    public BlackDuckProperties createProperties(Long configId, FieldUtility fieldUtility) {
+        return new BlackDuckProperties(configId, gson, alertProperties, proxyManager, fieldUtility);
     }
 
 }

@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 
 public class AboutActionsTest {
@@ -47,11 +47,11 @@ public class AboutActionsTest {
     public void testGetAboutDataNotPresent() {
         Gson gson = Mockito.mock(Gson.class);
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
+        SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
 
         Mockito.when(alertProperties.getServerUrl()).thenThrow(new NullPointerException("Exception for about test"));
-        AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusUtility, descriptorActions);
+        AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
         assertTrue(resultModel.isError());

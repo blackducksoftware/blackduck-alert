@@ -79,16 +79,16 @@ public class DefaultAuditAccessor implements AuditAccessor {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
-    private final DefaultNotificationManager notificationManager;
+    private final DefaultNotificationAccessor notificationAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
     public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
-        DefaultNotificationManager notificationManager, ContentConverter contentConverter) {
+        DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.contentConverter = contentConverter;
     }
 
@@ -323,12 +323,12 @@ public class DefaultAuditAccessor implements AuditAccessor {
     }
 
     private Page<AlertNotificationModel> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {
-        PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
+        PageRequest pageRequest = notificationAccessor.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
         Page<AlertNotificationModel> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
-            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
+            auditPage = notificationAccessor.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
-            auditPage = notificationManager.findAll(pageRequest, onlyShowSentNotifications);
+            auditPage = notificationAccessor.findAll(pageRequest, onlyShowSentNotifications);
         }
         return auditPage;
     }

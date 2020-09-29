@@ -25,25 +25,25 @@ package com.synopsys.integration.alert.channel.jira.common;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class JiraGlobalTestAction extends TestAction {
     public static final String JIRA_ADMIN_PERMISSION_NAME = "ADMINISTER";
 
-    protected abstract boolean isAppCheckEnabled(FieldAccessor fieldAccessor);
+    protected abstract boolean isAppCheckEnabled(FieldUtility fieldUtility);
 
-    protected abstract boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException;
+    protected abstract boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException;
 
-    protected abstract boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException;
+    protected abstract boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException;
 
-    protected abstract boolean isUserAdmin(FieldAccessor fieldAccessor) throws IntegrationException;
+    protected abstract boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException;
 
     protected abstract String getChannelDisplayName();
 
     @Override
-    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         try {
             if (isUserMissing(registeredFieldValues)) {
                 throw new AlertException("User did not match any known users.");

@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -60,7 +60,7 @@ public class SlackChannelEventParser {
     }
 
     public List<Request> createRequests(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fields = event.getFieldAccessor();
+        FieldUtility fields = event.getFieldUtility();
 
         String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
         String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");

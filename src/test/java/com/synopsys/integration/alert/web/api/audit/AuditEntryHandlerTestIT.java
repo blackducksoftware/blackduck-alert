@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -95,7 +95,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private NotificationProcessor notificationProcessor;
     @Autowired
-    private NotificationManager notificationManager;
+    private NotificationAccessor notificationAccessor;
     @Autowired
     private ChannelEventManager channelEventManager;
 
@@ -148,7 +148,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationManager, configurationAccessor,
+        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationAccessor, configurationAccessor,
             channelEventManager, notificationProcessor);
     }
 
@@ -181,7 +181,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
-        FieldAccessor keyToFieldMap = configurationJobModel.getFieldAccessor();
+        FieldUtility keyToFieldMap = configurationJobModel.getFieldUtility();
         assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).get(), auditEntry.getJobs().get(0).getEventType());
         assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_NAME).get(), auditEntry.getJobs().get(0).getName());
 

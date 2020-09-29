@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -212,8 +212,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), descriptorNames, Set.of(configField1, configField2));
         assertEquals(job.getJobId(), updatedJob.getJobId());
 
-        FieldAccessor originalFieldMap = job.getFieldAccessor();
-        FieldAccessor newFieldMap = updatedJob.getFieldAccessor();
+        FieldUtility originalFieldMap = job.getFieldUtility();
+        FieldUtility newFieldMap = updatedJob.getFieldUtility();
         assertEquals(newValue, newFieldMap.getString(configField1.getFieldKey()).orElseThrow());
         assertEquals(originalFieldMap.getString(configField2.getFieldKey()), newFieldMap.getString(configField2.getFieldKey()));
     }

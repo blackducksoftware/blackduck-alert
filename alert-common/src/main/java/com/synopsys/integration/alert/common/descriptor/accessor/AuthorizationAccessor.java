@@ -20,23 +20,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
-
-import java.util.Map;
-
-import javax.validation.constraints.NotNull;
-
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-
-public class Configuration extends AlertSerializableModel {
-    private final FieldUtility fieldUtility;
-
-    public Configuration(@NotNull Map<String, ConfigurationFieldModel> keyToFieldMap) {
-        fieldUtility = new FieldUtility(keyToFieldMap);
-    }
-
-    public FieldUtility getFieldUtility() {
-        return fieldUtility;
-    }
-}
