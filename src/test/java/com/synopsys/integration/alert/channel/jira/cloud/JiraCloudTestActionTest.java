@@ -76,7 +76,7 @@ public class JiraCloudTestActionTest {
 
     @Test
     public void testCreateTestAction() throws Exception {
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);

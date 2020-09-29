@@ -122,7 +122,7 @@ public class JiraServerRequestDelegatorTest {
         requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             jiraServerChannel.sendRequests(createContext(), requests);
             fail();
@@ -133,7 +133,7 @@ public class JiraServerRequestDelegatorTest {
 
     @Test
     public void testCreateIssue() throws Exception {
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
         projectComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectComponents);
@@ -168,7 +168,7 @@ public class JiraServerRequestDelegatorTest {
 
     @Test
     public void testResolveIssue() throws Exception {
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
         projectComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectComponents);

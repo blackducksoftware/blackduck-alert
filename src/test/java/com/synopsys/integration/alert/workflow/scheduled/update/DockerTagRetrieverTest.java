@@ -20,6 +20,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
@@ -48,11 +49,12 @@ public class DockerTagRetrieverTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void getTagsModelTestIT() {
+    public void getTagsModelTestIT() throws IntegrationException {
         IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         IntHttpClient intHttpClient = new IntHttpClient(intLogger, 10, true, ProxyInfo.NO_PROXY_INFO);
 
-        Request testRequest = new Request.Builder("https://google.com").build();
+        HttpUrl httpUrl = new HttpUrl("https://google.com");
+        Request testRequest = new Request.Builder(httpUrl).build();
         try (Response googleResponse = intHttpClient.execute(testRequest)) {
             googleResponse.throwExceptionForError();
         } catch (IntegrationException | IOException e) {

@@ -54,6 +54,7 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.request.Request;
 
 public class SlackChannelTest extends ChannelTest {
+    private static final String TEST_WEBHOOK_URL = "https://webhook";
     private static final SlackChannelKey CHANNEL_KEY = new SlackChannelKey();
 
     private SlackChannel createSlackChannel() {
@@ -114,7 +115,7 @@ public class SlackChannelTest extends ChannelTest {
     @Test
     public void testCreateRequestMissingChannelName() {
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, TEST_WEBHOOK_URL);
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
 
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -141,7 +142,7 @@ public class SlackChannelTest extends ChannelTest {
     @Test
     public void testCreateRequestMissingContent() {
         FieldUtility fieldUtility = Mockito.mock(FieldUtility.class);
-        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
+        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of(TEST_WEBHOOK_URL));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
@@ -162,7 +163,7 @@ public class SlackChannelTest extends ChannelTest {
     @Test
     public void testCreateRequestSingleCategory() throws Exception {
         FieldUtility fieldUtility = Mockito.mock(FieldUtility.class);
-        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
+        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of(TEST_WEBHOOK_URL));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         SortedSet<LinkableItem> items = new TreeSet<>();
@@ -191,14 +192,14 @@ public class SlackChannelTest extends ChannelTest {
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         Request actualRequest = requests.get(0);
-        assertEquals("webhook", actualRequest.getUri());
+        assertEquals(TEST_WEBHOOK_URL, actualRequest.getUrl().toString());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestSingleCategoryWithItemUrl() throws Exception {
         FieldUtility fieldUtility = Mockito.mock(FieldUtility.class);
-        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
+        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of(TEST_WEBHOOK_URL));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         SortedSet<LinkableItem> items = new TreeSet<>();
@@ -228,14 +229,14 @@ public class SlackChannelTest extends ChannelTest {
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         Request actualRequest = requests.get(0);
-        assertEquals("webhook", actualRequest.getUri());
+        assertEquals(TEST_WEBHOOK_URL, actualRequest.getUrl().toString());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestMultipleCategory() throws Exception {
         FieldUtility fieldUtility = Mockito.mock(FieldUtility.class);
-        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
+        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of(TEST_WEBHOOK_URL));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         SortedSet<LinkableItem> items = new TreeSet<>();
@@ -275,14 +276,14 @@ public class SlackChannelTest extends ChannelTest {
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         Request actualRequest = requests.get(0);
-        assertEquals("webhook", actualRequest.getUri());
+        assertEquals(TEST_WEBHOOK_URL, actualRequest.getUrl().toString());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
     @Test
     public void testCreateRequestMultipleCategoryWithItemUrls() throws Exception {
         FieldUtility fieldUtility = Mockito.mock(FieldUtility.class);
-        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
+        Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of(TEST_WEBHOOK_URL));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
         Mockito.when(fieldUtility.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
         SortedSet<LinkableItem> items = new TreeSet<>();
@@ -321,7 +322,7 @@ public class SlackChannelTest extends ChannelTest {
         assertFalse(requests.isEmpty(), "Expected requests to be created");
         assertEquals(1, requests.size());
         Request actualRequest = requests.get(0);
-        assertEquals("webhook", actualRequest.getUri());
+        assertEquals(TEST_WEBHOOK_URL, actualRequest.getUrl().toString());
         assertNotNull(actualRequest.getBodyContent(), "Expected the body content to be set");
     }
 
@@ -356,7 +357,7 @@ public class SlackChannelTest extends ChannelTest {
         }
 
         fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, TEST_WEBHOOK_URL);
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
@@ -383,7 +384,7 @@ public class SlackChannelTest extends ChannelTest {
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, TEST_WEBHOOK_URL);
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
@@ -404,7 +405,7 @@ public class SlackChannelTest extends ChannelTest {
         SlackChannel slackChannel = new SlackChannel(CHANNEL_KEY, gson, null, null, slackChannelEventParser);
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, TEST_WEBHOOK_URL);
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
         addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
