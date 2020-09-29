@@ -31,6 +31,7 @@ public class DescriptorMetadataActionsTest {
     @Test
     public void getDescriptorsWithoutPermissionTest() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(false).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
 
         DescriptorMetadataActions actions = new DescriptorMetadataActions(descriptors, authorizationManager);
