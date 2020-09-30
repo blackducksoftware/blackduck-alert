@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.web.api.role;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +31,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -48,10 +45,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -59,6 +53,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
+import com.synopsys.integration.alert.web.api.role.util.PermissionModelUtil;
 
 @Component
 public class RoleActions extends AbstractResourceActions<RolePermissionModel, MultiRolePermissionModel> {
@@ -81,7 +76,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
             validatePermissions(permissions);
-            PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+            PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
             UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
             authorizationManager.loadPermissionsIntoCache();
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
@@ -133,16 +128,6 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     protected ActionResponse<RolePermissionModel> updateWithoutChecks(Long id, RolePermissionModel resource) {
         try {
             String roleName = resource.getRoleName();
-            //TODO: Determine if this is not required (tested by validateWithoutChecks already)
-            /*
-            Optional<AlertFieldStatus> roleNameMissingError = validateRoleNameFieldRequired(roleName);
-            if (roleNameMissingError.isPresent()) {
-                //throw AlertFieldException.singleFieldError(roleNameMissingError.get());
-                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, roleNameMissingError.get());
-            }
-             */
-
-            //UserRoleModel existingRole = getExistingRoleOrThrow404(id);
             Optional<UserRoleModel> existingRole = authorizationUtility.getRoles(List.of(id))
                                                        .stream()
                                                        .findFirst();
@@ -159,12 +144,10 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 validatePermissions(permissions);
-                PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-                PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
+                PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
+                authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
                 authorizationManager.loadPermissionsIntoCache();
-
-                RolePermissionModel updatedRolePermissionModel = convertUserRoleModel(new UserRoleModel(id, roleName, true, updatedPermissionsMatrixModel));
-                return new ActionResponse<>(HttpStatus.NO_CONTENT, updatedRolePermissionModel);
+                return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
@@ -175,16 +158,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     @Override
     protected ValidationActionResponse validateWithoutChecks(RolePermissionModel resource) {
         ValidationResponseModel responseModel;
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(resource.getId()) && !NumberUtils.isCreatable(resource.getId())) {
-            responseModel = ValidationResponseModel.generalError("Invalid resource id");
-            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
-        }
-        Optional<AlertFieldStatus> alertFieldStatus = validateRoleNameFieldRequired(resource.getRoleName());
+        List<AlertFieldStatus> alertFieldStatus = fullyValidateRoleNameField(resource.getRoleName());
         if (alertFieldStatus.isEmpty()) {
             responseModel = ValidationResponseModel.success("The role name is valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
-        responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", List.of(alertFieldStatus.get()));
+        responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", alertFieldStatus);
         return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
@@ -195,7 +174,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     }
 
     //OLD CODE HERE:
-
+    /*
     public List<RolePermissionModel> getRoles() {
         return authorizationUtility.getRoles().stream()
                    .map(this::convertUserRoleModel)
@@ -217,7 +196,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
 
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
         UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
         authorizationManager.loadPermissionsIntoCache();
         return userRoleModel;
@@ -244,7 +223,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
         PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
         authorizationManager.loadPermissionsIntoCache();
         return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
@@ -263,6 +242,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                    .findFirst()
                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
+
+     */
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
         String roleName = userRoleModel.getName();
@@ -295,6 +276,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         return permissionMatrix;
     }
 
+    /*
     private PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {
         Map<PermissionKey, Integer> permissionMatrix = new HashMap<>();
         for (PermissionModel permissionModel : permissionModels) {
@@ -332,6 +314,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         }
         return new PermissionMatrixModel(permissionMatrix);
     }
+     */
 
     private List<AlertFieldStatus> fullyValidateRoleNameField(String roleName) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
