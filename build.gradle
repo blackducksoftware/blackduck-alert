@@ -321,7 +321,7 @@ task helmPackage(type: Exec) {
 task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmPackage]) {
     helmLint.mustRunAfter copyDeploymentFiles
     helmDryRun.mustRunAfter helmLint
-    helmPackage.musRunAfter helmDryRun
+    helmPackage.mustRunAfter helmDryRun
 }
 
 task helmPushChart(type: Exec) {
