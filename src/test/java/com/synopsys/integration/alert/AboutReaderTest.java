@@ -12,9 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -22,6 +24,7 @@ import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
@@ -43,8 +46,9 @@ public class AboutReaderTest {
         Mockito.when(defaultSystemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessageModel("1", RestConstants.formatDate(new Date()), "ERROR", "startup errors", "type")));
 
         descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);
+        DescriptorsResponseModel descriptorsResponseModel = new DescriptorsResponseModel(Set.of(Mockito.mock(DescriptorMetadata.class), Mockito.mock(DescriptorMetadata.class)));
         Mockito.when(descriptorMetadataActions.getDescriptorsByType(Mockito.anyString()))
-            .thenReturn(Set.of(Mockito.mock(DescriptorMetadata.class), Mockito.mock(DescriptorMetadata.class)));
+            .thenReturn(new ActionResponse<>(HttpStatus.OK, descriptorsResponseModel));
     }
 
     @Test

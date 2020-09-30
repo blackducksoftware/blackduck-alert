@@ -35,14 +35,17 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 @Component
 public class DescriptorMetadataActions {
@@ -55,15 +58,15 @@ public class DescriptorMetadataActions {
         this.authorizationManager = authorizationManager;
     }
 
-    public Set<DescriptorMetadata> getDescriptorsByType(@Nonnull String type) {
+    public ActionResponse<DescriptorsResponseModel> getDescriptorsByType(@Nonnull String type) {
         return getDescriptors(null, type, null, this::generateUIComponents);
     }
 
-    public Set<DescriptorMetadata> getDescriptorsByPermissions(@Nullable String name, @Nullable String type, @Nullable String context) {
+    public ActionResponse<DescriptorsResponseModel> getDescriptorsByPermissions(@Nullable String name, @Nullable String type, @Nullable String context) {
         return getDescriptors(name, type, context, this::generateUIComponentsByPermissions);
     }
 
-    private Set<DescriptorMetadata> getDescriptors(@Nullable String name, @Nullable String type, @Nullable String context,
+    private ActionResponse<DescriptorsResponseModel> getDescriptors(@Nullable String name, @Nullable String type, @Nullable String context,
         BiFunction<Set<Descriptor>, ConfigContextEnum, Set<DescriptorMetadata>> generatorFunction) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
@@ -74,18 +77,19 @@ public class DescriptorMetadataActions {
         if (typeEnum != null) {
             filter = filter.and(descriptor -> typeEnum.equals(descriptor.getType()));
         } else if (type != null) {
-            return Set.of();
+            return new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel());
         }
 
         ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
         if (contextEnum != null) {
             filter = filter.and(descriptor -> descriptor.hasUIConfigForType(contextEnum));
         } else if (context != null) {
-            return Set.of();
+            return new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel());
         }
 
         Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
-        return generatorFunction.apply(filteredDescriptors, contextEnum);
+        DescriptorsResponseModel content = new DescriptorsResponseModel(generatorFunction.apply(filteredDescriptors, contextEnum));
+        return new ActionResponse<>(HttpStatus.OK, content);
     }
 
     private Set<Descriptor> filter(Collection<Descriptor> descriptors, Predicate<Descriptor> predicate) {

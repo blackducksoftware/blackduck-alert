@@ -22,15 +22,13 @@
  */
 package com.synopsys.integration.alert.web.api.metadata;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 @RestController
@@ -47,8 +45,7 @@ public class DescriptorController {
 
     @GetMapping
     public DescriptorsResponseModel getDescriptors(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String context) {
-        Set<DescriptorMetadata> permittedDescriptors = descriptorMetadataActions.getDescriptorsByPermissions(name, type, context);
-        return new DescriptorsResponseModel(permittedDescriptors);
+        return ResponseFactory.createContentResponseFromAction(descriptorMetadataActions.getDescriptorsByPermissions(name, type, context));
     }
 
 }
