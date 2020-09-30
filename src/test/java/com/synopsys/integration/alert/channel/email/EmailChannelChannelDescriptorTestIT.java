@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
@@ -86,7 +86,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Autowired
     private Gson gson;
     @Autowired
-    private DefaultAuditUtility auditUtility;
+    private DefaultAuditAccessor auditUtility;
     @Autowired
     private EmailAddressHandler emailAddressHandler;
     @Autowired
@@ -199,10 +199,10 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
             fieldMap.putAll(model.getCopyOfKeyToFieldMap());
         }
 
-        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
-            MessageContentGroup.singleton(content), fieldAccessor);
+            MessageContentGroup.singleton(content), fieldUtility);
         return event;
     }
 

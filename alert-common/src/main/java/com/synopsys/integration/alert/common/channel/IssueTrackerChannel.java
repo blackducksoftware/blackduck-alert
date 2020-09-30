@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertI
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
@@ -46,8 +46,8 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
     private final IssueTrackerChannelKey channelKey;
     private final EventManager eventManager;
 
-    public IssueTrackerChannel(Gson gson, AuditUtility auditUtility, IssueTrackerChannelKey channelKey, EventManager eventManager) {
-        super(gson, auditUtility);
+    public IssueTrackerChannel(Gson gson, AuditAccessor auditAccessor, IssueTrackerChannelKey channelKey, EventManager eventManager) {
+        super(gson, auditAccessor);
         this.channelKey = channelKey;
         this.eventManager = eventManager;
     }

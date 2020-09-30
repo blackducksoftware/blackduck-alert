@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.common;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public abstract class JiraContextBuilder<T> {
     protected abstract String getProjectFieldKey();
@@ -40,15 +40,15 @@ public abstract class JiraContextBuilder<T> {
 
     protected abstract String getDefaultIssueCreatorFieldKey();
 
-    public abstract T build(FieldAccessor fieldAccessor);
+    public abstract T build(FieldUtility fieldUtility);
 
-    protected IssueConfig createIssueConfig(FieldAccessor fieldAccessor) {
-        String projectName = fieldAccessor.getStringOrNull(getProjectFieldKey());
-        String issueCreator = fieldAccessor.getString(getIssueCreatorFieldKey()).orElseGet(() -> fieldAccessor.getStringOrNull(getDefaultIssueCreatorFieldKey()));
-        String issueType = fieldAccessor.getString(getIssueTypeFieldKey()).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);
-        Boolean commentOnIssues = fieldAccessor.getBooleanOrFalse(getAddCommentsFieldKey());
-        String resolveTransition = fieldAccessor.getStringOrNull(getResolveTransitionFieldKey());
-        String openTransition = fieldAccessor.getStringOrNull(getOpenTransitionFieldKey());
+    protected IssueConfig createIssueConfig(FieldUtility fieldUtility) {
+        String projectName = fieldUtility.getStringOrNull(getProjectFieldKey());
+        String issueCreator = fieldUtility.getString(getIssueCreatorFieldKey()).orElseGet(() -> fieldUtility.getStringOrNull(getDefaultIssueCreatorFieldKey()));
+        String issueType = fieldUtility.getString(getIssueTypeFieldKey()).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);
+        Boolean commentOnIssues = fieldUtility.getBooleanOrFalse(getAddCommentsFieldKey());
+        String resolveTransition = fieldUtility.getStringOrNull(getResolveTransitionFieldKey());
+        String openTransition = fieldUtility.getStringOrNull(getOpenTransitionFieldKey());
 
         IssueConfig issueConfig = new IssueConfig();
         issueConfig.setProjectName(projectName);

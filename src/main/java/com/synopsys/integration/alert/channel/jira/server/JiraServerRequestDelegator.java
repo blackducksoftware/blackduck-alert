@@ -72,7 +72,7 @@ public class JiraServerRequestDelegator {
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
 
         if (!jiraProperties.isPluginCheckDisabled()) {
-            checkIfAlertPluginIsInstalled(jiraServerServiceFactory, jiraProperties);
+            checkIfAlertPluginIsInstalled(jiraServerServiceFactory.createPluginManagerService());
         }
 
         ProjectService projectService = jiraServerServiceFactory.createProjectService();
@@ -93,12 +93,11 @@ public class JiraServerRequestDelegator {
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 
-    private void checkIfAlertPluginIsInstalled(JiraServerServiceFactory jiraServerServiceFactory, JiraServerProperties jiraProperties) throws IssueTrackerException {
-        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
+    private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {
         logger.debug("Verifying the required application is installed on the Jira server...");
 
         try {
-            boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY);
+            boolean missingApp = !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
             if (missingApp) {
                 throw new IssueTrackerException(ERROR_MESSAGE_PLUGIN_CONFIG);
             }

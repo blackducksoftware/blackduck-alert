@@ -37,7 +37,7 @@ public class DefaultUserAccessorTest {
     private UserRepository userRepository;
     private UserRoleRepository userRoleRepository;
     private PasswordEncoder defaultPasswordEncoder;
-    private DefaultAuthorizationUtility authorizationUtility;
+    private DefaultRoleAccessor roleAccessor;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
 
     @BeforeEach
@@ -45,7 +45,7 @@ public class DefaultUserAccessorTest {
         this.userRepository = Mockito.mock(UserRepository.class);
         this.userRoleRepository = Mockito.mock(UserRoleRepository.class);
         this.defaultPasswordEncoder = Mockito.mock(PasswordEncoder.class);
-        this.authorizationUtility = Mockito.mock(DefaultAuthorizationUtility.class);
+        this.roleAccessor = Mockito.mock(DefaultRoleAccessor.class);
         this.authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
     }
 
@@ -62,7 +62,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findAll()).thenReturn(List.of(userEntity));
         createModelMocks(userRoleRelation, userRoleModel, AuthenticationType.DATABASE);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         List<UserModel> userModelList = defaultUserAccessor.getUsers();
 
         assertEquals(1, userModelList.size());
@@ -86,7 +86,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findById(emptyUserId)).thenReturn(Optional.empty());
         createModelMocks(userRoleRelation, userRoleModel, AuthenticationType.DATABASE);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         Optional<UserModel> userModelOptional = defaultUserAccessor.getUser(userId);
         Optional<UserModel> userModelOptionalEmpty = defaultUserAccessor.getUser(emptyUserId);
 
@@ -111,7 +111,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findByUserName(emptyUsername)).thenReturn(Optional.empty());
         createModelMocks(userRoleRelation, userRoleModel, AuthenticationType.DATABASE);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         Optional<UserModel> userModelOptional = defaultUserAccessor.getUser(username);
         Optional<UserModel> userModelOptionalEmpty = defaultUserAccessor.getUser(emptyUsername);
 
@@ -136,7 +136,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(userEntity);
         createModelMocks(userRoleRelation, userRoleModel, AuthenticationType.DATABASE);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         UserModel userModel = defaultUserAccessor.addUser(username, password, emailAddress);
 
         testUserModel(userEntity.getId(), username, emailAddress, roleName, userModel);
@@ -149,7 +149,7 @@ public class DefaultUserAccessorTest {
 
         Mockito.when(userRepository.findByUserName(Mockito.any())).thenReturn(Optional.of(userEntity));
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         try {
             defaultUserAccessor.addUser(username, password, emailAddress);
@@ -176,11 +176,11 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(userEntity);
         createModelMocks(userRoleRelation, userRoleModel, authenticationType);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         UserModel newUserModel = defaultUserAccessor.updateUser(userModel, false);
 
-        Mockito.verify(authorizationUtility).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
+        Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
 
         testUserModel(userEntity.getId(), username, emailAddress, roleName, newUserModel);
     }
@@ -190,7 +190,7 @@ public class DefaultUserAccessorTest {
         UserRoleModel roles = createUserRoleModel(1L, "roleName", true);
         UserModel userModel = UserModel.newUser(username, password, emailAddress, AuthenticationType.DATABASE, Set.of(roles), true);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         try {
             defaultUserAccessor.updateUser(userModel, false);
@@ -213,7 +213,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         try {
             defaultUserAccessor.updateUser(userModel, false);
@@ -240,10 +240,10 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(userEntity);
         createModelMocks(userRoleRelation, userRoleModel, authenticationType);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         UserModel updatedUserModel = defaultUserAccessor.updateUser(userModel, false);
 
-        Mockito.verify(authorizationUtility).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
+        Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
 
         testUserModel(userEntity.getId(), username, emailAddress, roleName, updatedUserModel);
     }
@@ -267,7 +267,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(existingUserEntity);
         createModelMocks(userRoleRelation, userRoleModel, authenticationType);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         try {
             defaultUserAccessor.updateUser(userModel, false);
@@ -288,12 +288,12 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
         Mockito.when(userRepository.findByUserName(Mockito.eq(badUsername))).thenReturn(Optional.empty());
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         boolean assignedRoles = defaultUserAccessor.assignRoles(username, Set.of(roleId));
         boolean assignedRolesFalse = defaultUserAccessor.assignRoles(badUsername, Set.of(roleId));
 
-        Mockito.verify(authorizationUtility).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
-        Mockito.verify(authorizationUtility).getRoles(Mockito.any());
+        Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
+        Mockito.verify(roleAccessor).getRoles(Mockito.any());
 
         assertTrue(assignedRoles);
         assertFalse(assignedRolesFalse);
@@ -314,7 +314,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(defaultPasswordEncoder.encode(Mockito.any())).thenReturn(newPassword);
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(newUserEntity);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         assertTrue(defaultUserAccessor.changeUserPassword(username, newPassword));
         assertFalse(defaultUserAccessor.changeUserPassword(badUsername, newPassword));
@@ -334,7 +334,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findByUserName(Mockito.eq(badUsername))).thenReturn(Optional.empty());
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(newUserEntity);
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         assertTrue(defaultUserAccessor.changeUserEmailAddress(username, newEmailAddress));
         assertFalse(defaultUserAccessor.changeUserEmailAddress(badUsername, newEmailAddress));
@@ -348,10 +348,10 @@ public class DefaultUserAccessorTest {
 
         Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         defaultUserAccessor.deleteUser(username);
 
-        Mockito.verify(authorizationUtility).updateUserRoles(Mockito.any(), Mockito.any());
+        Mockito.verify(roleAccessor).updateUserRoles(Mockito.any(), Mockito.any());
         Mockito.verify(userRepository).deleteById(Mockito.any());
     }
 
@@ -362,10 +362,10 @@ public class DefaultUserAccessorTest {
 
         Mockito.when(userRepository.findById(Mockito.eq(userEntity.getId()))).thenReturn(Optional.of(userEntity));
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         defaultUserAccessor.deleteUser(userEntity.getId());
 
-        Mockito.verify(authorizationUtility).updateUserRoles(Mockito.any(), Mockito.any());
+        Mockito.verify(roleAccessor).updateUserRoles(Mockito.any(), Mockito.any());
         Mockito.verify(userRepository).deleteById(Mockito.any());
     }
 
@@ -377,7 +377,7 @@ public class DefaultUserAccessorTest {
         Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
 
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, authorizationUtility, authenticationTypeAccessor);
+        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
 
         try {
             defaultUserAccessor.deleteUser(username);
@@ -389,7 +389,7 @@ public class DefaultUserAccessorTest {
 
     private void createModelMocks(UserRoleRelation userRoleRelation, UserRoleModel userRoleModel, AuthenticationType authenticationType) {
         Mockito.when(userRoleRepository.findAllByUserId(Mockito.any())).thenReturn(List.of(userRoleRelation));
-        Mockito.when(authorizationUtility.getRoles(Mockito.any())).thenReturn(Set.of(userRoleModel));
+        Mockito.when(roleAccessor.getRoles(Mockito.any())).thenReturn(Set.of(userRoleModel));
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(2L)).thenReturn(Optional.of(authenticationType));
     }
 

@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventPars
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
@@ -43,8 +43,8 @@ public class SlackChannel extends NamedDistributionChannel implements AutoAction
     private final SlackChannelEventParser slackChannelEventParser;
 
     @Autowired
-    public SlackChannel(SlackChannelKey slackChannelKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, SlackChannelEventParser slackChannelEventParser) {
-        super(slackChannelKey, gson, auditUtility);
+    public SlackChannel(SlackChannelKey slackChannelKey, Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, SlackChannelEventParser slackChannelEventParser) {
+        super(slackChannelKey, gson, auditAccessor);
         this.restChannelUtility = restChannelUtility;
         this.slackChannelEventParser = slackChannelEventParser;
     }

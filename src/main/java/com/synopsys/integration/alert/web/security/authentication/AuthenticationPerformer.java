@@ -33,18 +33,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
 
 public abstract class AuthenticationPerformer {
     private AuthenticationEventManager authenticationEventManager;
-    private AuthorizationUtility authorizationUtility;
+    private RoleAccessor roleAccessor;
 
-    protected AuthenticationPerformer(AuthenticationEventManager authenticationEventManager, AuthorizationUtility authorizationUtility) {
+    protected AuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor) {
         this.authenticationEventManager = authenticationEventManager;
-        this.authorizationUtility = authorizationUtility;
+        this.roleAccessor = roleAccessor;
     }
 
     public final Optional<Authentication> performAuthentication(Authentication authentication) {
@@ -65,7 +65,7 @@ public abstract class AuthenticationPerformer {
     public abstract AuthenticationType getAuthenticationType();
 
     private boolean isAuthorized(Authentication authentication) {
-        Set<String> allowedRoles = authorizationUtility.getRoles()
+        Set<String> allowedRoles = roleAccessor.getRoles()
                                        .stream()
                                        .map(UserRoleModel::getName)
                                        .collect(Collectors.toSet());

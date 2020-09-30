@@ -32,8 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -76,7 +78,16 @@ public class RestChannelUtility {
     }
 
     public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters, String jsonString) {
-        Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST).uri(url).additionalHeaders(headers);
+        HttpUrl httpUrl;
+        try {
+            httpUrl = new HttpUrl(url);
+        } catch (IntegrationException e) {
+            throw new AlertRuntimeException(e);
+        }
+
+        Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST)
+                                             .url(httpUrl);
+        requestBuilder.getHeaders().putAll(headers);
         if (queryParameters != null && !queryParameters.isEmpty()) {
             requestBuilder.queryParameters(queryParameters);
         }

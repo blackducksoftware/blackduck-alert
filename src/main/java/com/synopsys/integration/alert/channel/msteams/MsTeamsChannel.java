@@ -34,10 +34,10 @@ import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescript
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -48,9 +48,9 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditUtility auditUtility, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
+    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
         MsTeamsMessageParser msTeamsMessageParser) {
-        super(msTeamsKey, gson, auditUtility);
+        super(msTeamsKey, gson, auditAccessor);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
         this.msTeamsMessageParser = msTeamsMessageParser;
@@ -58,7 +58,7 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fields = event.getFieldAccessor();
+        FieldUtility fields = event.getFieldUtility();
         String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 

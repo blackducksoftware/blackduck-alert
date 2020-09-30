@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageUtility;
+import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.util.OutputLogger;
 
 public class SettingsValidatorTest {
@@ -32,7 +32,7 @@ public class SettingsValidatorTest {
     @Test
     public void testValidateEncryptionProperties() throws IOException {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        DefaultSystemMessageAccessor defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = new SettingsValidator(encryptionUtility, defaultSystemMessageUtility);
         settingsValidator.validateEncryption();
@@ -43,7 +43,7 @@ public class SettingsValidatorTest {
     @Test
     public void testValidateEncryptionPropertiesSuccess() throws IOException {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        DefaultSystemMessageUtility defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageUtility.class);
+        DefaultSystemMessageAccessor defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DefaultUserAccessor userAccessor = Mockito.mock(DefaultUserAccessor.class);
         SettingsValidator settingsValidator = new SettingsValidator(encryptionUtility, defaultSystemMessageUtility);

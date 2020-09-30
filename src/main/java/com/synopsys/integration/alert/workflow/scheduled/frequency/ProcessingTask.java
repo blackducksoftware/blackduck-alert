@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
@@ -43,14 +43,14 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private NotificationManager notificationManager;
+    private NotificationAccessor notificationAccessor;
     private NotificationProcessor notificationProcessor;
     private ChannelEventManager eventManager;
     private OffsetDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, NotificationManager notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
+    public ProcessingTask(TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
         super(taskScheduler, taskManager);
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
         lastRunTime = DateUtils.createCurrentDateTimestamp();
@@ -83,7 +83,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
             OffsetDateTime startDate = dateRange.getStart();
             OffsetDateTime endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
-            List<AlertNotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+            List<AlertNotificationModel> entityList = notificationAccessor.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
                 return List.of();

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.api.DefaultSystemStatusUtility;
+import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
@@ -25,7 +25,7 @@ public class DefaultTestIT extends AlertIntegrationTest {
     private SystemStatusRepository systemStatusRepository;
 
     @Autowired
-    private DefaultSystemStatusUtility defaultSystemStatusUtility;
+    private DefaultSystemStatusAccessor defaultSystemStatusUtility;
 
     @BeforeEach
     public void init() {
@@ -43,12 +43,12 @@ public class DefaultTestIT extends AlertIntegrationTest {
     public void testSetSystemInitialized() {
         defaultSystemStatusUtility.setSystemInitialized(false);
         List<SystemStatusEntity> statusList = systemStatusRepository.findAll();
-        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusAccessor.SYSTEM_STATUS_ID);
         assertFalse(systemStatus.isInitialConfigurationPerformed());
         assertFalse(defaultSystemStatusUtility.isSystemInitialized());
 
         defaultSystemStatusUtility.setSystemInitialized(true);
-        systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        systemStatus = systemStatusRepository.getOne(DefaultSystemStatusAccessor.SYSTEM_STATUS_ID);
         assertTrue(systemStatus.isInitialConfigurationPerformed());
         assertTrue(defaultSystemStatusUtility.isSystemInitialized());
     }
@@ -57,7 +57,7 @@ public class DefaultTestIT extends AlertIntegrationTest {
     public void testSaveStartupTime() {
         ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         defaultSystemStatusUtility.startupOccurred();
-        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusAccessor.SYSTEM_STATUS_ID);
         OffsetDateTime date = systemStatus.getStartupTime();
         ZonedDateTime savedTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         assertNotNull(date);
@@ -71,7 +71,7 @@ public class DefaultTestIT extends AlertIntegrationTest {
     @Test
     public void testGetStartupTime() {
         defaultSystemStatusUtility.startupOccurred();
-        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusUtility.SYSTEM_STATUS_ID);
+        SystemStatusEntity systemStatus = systemStatusRepository.getOne(DefaultSystemStatusAccessor.SYSTEM_STATUS_ID);
         OffsetDateTime expectedDate = systemStatus.getStartupTime();
 
         assertEquals(expectedDate, defaultSystemStatusUtility.getStartupTime());

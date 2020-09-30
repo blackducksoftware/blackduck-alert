@@ -91,7 +91,7 @@ public class JiraServerTestActionTest {
 
     @Test
     public void testCreateTestAction() throws Exception {
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
         projectComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectComponents);

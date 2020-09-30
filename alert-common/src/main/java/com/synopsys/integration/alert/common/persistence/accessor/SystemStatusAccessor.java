@@ -23,27 +23,14 @@
 package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+public interface SystemStatusAccessor {
 
-public interface NotificationManager {
-    List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications);
+    boolean isSystemInitialized();
 
-    List<AlertNotificationModel> findByIds(List<Long> notificationIds);
+    void setSystemInitialized(boolean systemInitialized);
 
-    Optional<AlertNotificationModel> findById(Long notificationId);
+    void startupOccurred();
 
-    List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
-
-    List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
-
-    List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
-
-    void deleteNotificationList(List<AlertNotificationModel> notifications);
-
-    void deleteNotification(AlertNotificationModel notification);
-
+    OffsetDateTime getStartupTime();
 }

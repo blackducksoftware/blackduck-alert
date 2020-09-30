@@ -29,7 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -60,7 +60,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private AuditEntryRepository auditEntryRepository;
     @Autowired
-    private AuditUtility auditUtility;
+    private AuditAccessor auditAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 
@@ -210,7 +210,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         for (NotificationEntity notification : savedNotifications) {
             MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());
-            auditUtility.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
+            auditAccessor.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
         }
 
         auditEntryRepository.flush();

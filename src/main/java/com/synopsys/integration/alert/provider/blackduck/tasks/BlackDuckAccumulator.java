@@ -37,7 +37,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
@@ -48,9 +48,9 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
+import com.synopsys.integration.blackduck.service.dataservice.NotificationService;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -60,15 +60,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final NotificationManager notificationManager;
+    private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
 
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationManager notificationManager, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
+    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
         ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
-        this.notificationManager = notificationManager;
+        this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
     }
@@ -180,7 +180,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     protected void write(List<AlertNotificationModel> contentList) {
         logger.info("Writing Notifications...");
-        notificationManager.saveAllNotifications(contentList);
+        notificationAccessor.saveAllNotifications(contentList);
     }
 
     private List<NotificationView> sort(List<NotificationView> notifications) {

@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.database.api.mock.MockSystemStatusReposito
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
-public class DefaultSystemStatusUtilityTest {
+public class DefaultSystemStatusAccessorTest {
 
     @Test
     public void isSystemInitializedTest() {
@@ -26,14 +26,14 @@ public class DefaultSystemStatusUtilityTest {
         SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, DateUtils.createCurrentDateTimestamp());
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 
-        DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
+        DefaultSystemStatusAccessor systemStatusUtility = new DefaultSystemStatusAccessor(systemStatusRepository);
         assertTrue(systemStatusUtility.isSystemInitialized());
     }
 
     @Test
     public void setSystemInitializedTest() {
         SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository(Boolean.FALSE);
-        DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
+        DefaultSystemStatusAccessor systemStatusUtility = new DefaultSystemStatusAccessor(systemStatusRepository);
         systemStatusUtility.setSystemInitialized(Boolean.TRUE);
 
         SystemStatusEntity testSystemStatus = systemStatusRepository.findAll().get(0);
@@ -43,7 +43,7 @@ public class DefaultSystemStatusUtilityTest {
     @Test
     public void startupOccurred() {
         SystemStatusRepository systemStatusRepository = new MockSystemStatusRepository(Boolean.FALSE);
-        DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
+        DefaultSystemStatusAccessor systemStatusUtility = new DefaultSystemStatusAccessor(systemStatusRepository);
         systemStatusUtility.startupOccurred();
 
         //createCurrentDateTimestamp can't be modified, so the expected values for getStartupTime must be estimated
@@ -67,7 +67,7 @@ public class DefaultSystemStatusUtilityTest {
         SystemStatusEntity systemStatus = new SystemStatusEntity(Boolean.TRUE, date);
         Mockito.when(systemStatusRepository.findById(Mockito.any())).thenReturn(Optional.of(systemStatus));
 
-        DefaultSystemStatusUtility systemStatusUtility = new DefaultSystemStatusUtility(systemStatusRepository);
+        DefaultSystemStatusAccessor systemStatusUtility = new DefaultSystemStatusAccessor(systemStatusRepository);
         assertEquals(date, systemStatusUtility.getStartupTime());
     }
 }

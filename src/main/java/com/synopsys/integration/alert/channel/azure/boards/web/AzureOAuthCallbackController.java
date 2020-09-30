@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -112,15 +112,15 @@ public class AzureOAuthCallbackController {
             } else {
                 logger.info(createOAuthRequestLoggerMessage(state, "Processing..."));
                 oAuthRequestValidator.removeAuthorizationRequest(state);
-                FieldAccessor fieldAccessor = createFieldAccessor();
-                if (fieldAccessor.getFields().isEmpty()) {
+                FieldUtility fieldUtility = createFieldAccessor();
+                if (fieldUtility.getFields().isEmpty()) {
                     logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Channel global configuration missing"));
                 } else {
                     if (StringUtils.isBlank(authorizationCode)) {
                         logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Authorization code isn't valid. Stop processing"));
                     } else {
                         String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
-                        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
+                        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
                         testOAuthConnection(properties, authorizationCode, state);
                     }
                 }
@@ -167,7 +167,7 @@ public class AzureOAuthCallbackController {
         }
     }
 
-    private FieldAccessor createFieldAccessor() {
+    private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
         try {
             List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
@@ -180,6 +180,6 @@ public class AzureOAuthCallbackController {
         } catch (AlertDatabaseConstraintException ex) {
             logger.error("Error reading Azure Channel configuration", ex);
         }
-        return new FieldAccessor(fields);
+        return new FieldUtility(fields);
     }
 }

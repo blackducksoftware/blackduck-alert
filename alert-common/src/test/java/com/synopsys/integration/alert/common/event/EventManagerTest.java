@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EventManagerTest {
@@ -31,9 +31,9 @@ public class EventManagerTest {
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        FieldAccessor fieldAccessor = new FieldAccessor(Map.of());
+        FieldUtility fieldUtility = new FieldUtility(Map.of());
         DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
-            MessageContentGroup.singleton(content), fieldAccessor);
+            MessageContentGroup.singleton(content), fieldUtility);
         eventManager.sendEvents(List.of(event));
     }
 

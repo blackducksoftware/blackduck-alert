@@ -45,19 +45,19 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.util.UrlUtils;
 
 //TODO: This is a near copy of JiraTestIssueRequestCreator, we should abstract out this class
 public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsTestIssueRequestCreator.class);
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
-    public AzureBoardsTestIssueRequestCreator(FieldAccessor fieldAccessor, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
-        this.fieldAccessor = fieldAccessor;
+    public AzureBoardsTestIssueRequestCreator(FieldUtility fieldUtility, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
+        this.fieldUtility = fieldUtility;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
@@ -65,8 +65,8 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
     @Override
     public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
         try {
-            String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-            String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
+            String topic = fieldUtility.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
+            String customMessage = fieldUtility.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
             ProviderMessageContent providerMessageContent = createTestNotificationContent(ItemOperation.ADD, messageId, topic, customMessage);
             ComponentItem arbitraryItem = providerMessageContent.getComponentItems().stream()
                                               .findAny()

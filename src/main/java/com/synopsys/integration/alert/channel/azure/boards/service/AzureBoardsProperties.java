@@ -54,7 +54,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
@@ -71,11 +71,11 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
     private final List<String> scopes;
     private final String redirectUri;
 
-    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldAccessor fieldAccessor) {
-        String organizationName = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-        String clientId = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
-        String clientSecret = fieldAccessor.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
-        String oAuthUserEmail = fieldAccessor.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
+    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldUtility fieldUtility) {
+        String organizationName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
+        String clientId = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        String clientSecret = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
+        String oAuthUserEmail = fieldUtility.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
     }

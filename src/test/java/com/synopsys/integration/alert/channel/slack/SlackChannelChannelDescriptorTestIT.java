@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -100,11 +100,11 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
             fieldMap.putAll(model.getCopyOfKeyToFieldMap());
         }
 
-        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(
             String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content),
-            fieldAccessor);
+            fieldUtility);
         return event;
     }
 

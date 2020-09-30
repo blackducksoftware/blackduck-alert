@@ -39,7 +39,7 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -50,13 +50,14 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
@@ -78,7 +79,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
+                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
 
                 List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
@@ -112,13 +113,14 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 String projectOwnerEmail = null;
                 if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
                     try {
-                        UserView projectOwner = blackDuckService.getResponse(projectView.getProjectOwner(), UserView.class);
+                        HttpUrl projectOwnerHttpUrl = new HttpUrl(projectView.getProjectOwner());
+                        UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
                         projectOwnerEmail = projectOwner.getEmail();
                     } catch (IntegrationException e) {
                         logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
                     }
                 }
-                projectMap.put(projectView, new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref(), projectOwnerEmail));
+                projectMap.put(projectView, new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref().toString(), projectOwnerEmail));
             });
         return projectMap;
     }
@@ -152,13 +154,13 @@ public class BlackDuckDataSyncTask extends ProviderTask {
     private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
         Set<String> configuredProjectNames = new HashSet<>();
         for (ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
-            FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-            String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
+            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (StringUtils.isNotBlank(projectNamePattern)) {
                 Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
                 configuredProjectNames.addAll(matchedProjectNames);
             }
-            Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             configuredProjectNames.addAll(configuredProjects);
         }
 

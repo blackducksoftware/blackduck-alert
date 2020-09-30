@@ -31,19 +31,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 
 @Component
 public class ChannelEventManager extends EventManager {
-    private final AuditUtility auditUtility;
+    private final AuditAccessor auditAccessor;
 
     @Autowired
-    public ChannelEventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate, AuditUtility auditUtility) {
+    public ChannelEventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate, AuditAccessor auditAccessor) {
         super(contentConverter, jmsTemplate);
-        this.auditUtility = auditUtility;
+        this.auditAccessor = auditAccessor;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ChannelEventManager extends EventManager {
             String destination = alertEvent.getDestination();
             DistributionEvent distributionEvent = (DistributionEvent) alertEvent;
             UUID jobId = UUID.fromString(distributionEvent.getConfigId());
-            Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
+            Map<Long, Long> notificationIdToAuditId = auditAccessor.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
             distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
             String jsonMessage = getContentConverter().getJsonString(distributionEvent);
             getJmsTemplate().convertAndSend(destination, jsonMessage);

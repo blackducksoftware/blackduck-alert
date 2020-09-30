@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -58,9 +58,9 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
         ValidationResult result = ValidationResult.success();
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-            FieldAccessor fieldAccessor = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
+            FieldUtility fieldUtility = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
             String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
-            AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldAccessor);
+            AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
             if (!properties.hasOAuthCredentials(proxyInfo)) {
                 result = ValidationResult.warnings("OAuth token credentials missing. Please save then authenticate.");
             }

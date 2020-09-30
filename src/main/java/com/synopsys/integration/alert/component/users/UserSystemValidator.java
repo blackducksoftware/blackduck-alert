@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
@@ -46,8 +46,8 @@ public class UserSystemValidator extends BaseSystemValidator {
     private UserAccessor userAccessor;
 
     @Autowired
-    public UserSystemValidator(UserAccessor userAccessor, SystemMessageUtility systemMessageUtility) {
-        super(systemMessageUtility);
+    public UserSystemValidator(UserAccessor userAccessor, SystemMessageAccessor systemMessageAccessor) {
+        super(systemMessageAccessor);
         this.userAccessor = userAccessor;
     }
 
@@ -61,7 +61,7 @@ public class UserSystemValidator extends BaseSystemValidator {
     public boolean validateDefaultAdminUser() {
         boolean valid = true;
         try {
-            getSystemMessageUtility().removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+            getSystemMessageAccessor().removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
             Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
             boolean missingEmailAddress = userModel.map(UserModel::getEmailAddress).filter(StringUtils::isNotBlank).isEmpty();
             boolean missingEmailError = addSystemMessageForError(FIELD_ERROR_DEFAULT_USER_EMAIL, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR, missingEmailAddress);

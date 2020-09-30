@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
@@ -57,18 +57,18 @@ public class PurgeTask extends StartupScheduledTask {
     private static final int DEFAULT_DAY_OFFSET = 1;
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final SchedulingDescriptorKey schedulingDescriptorKey;
-    private final NotificationManager notificationManager;
-    private final SystemMessageUtility systemMessageUtility;
+    private final NotificationAccessor notificationAccessor;
+    private final SystemMessageAccessor systemMessageAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationManager notificationManager, SystemMessageUtility systemMessageUtility, TaskManager taskManager,
+    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, SystemMessageAccessor systemMessageAccessor, TaskManager taskManager,
         ConfigurationAccessor configurationAccessor) {
         super(taskScheduler, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
-        this.notificationManager = notificationManager;
-        this.systemMessageUtility = systemMessageUtility;
+        this.notificationAccessor = notificationAccessor;
+        this.systemMessageAccessor = systemMessageAccessor;
         this.configurationAccessor = configurationAccessor;
         this.dayOffset = 1;
     }
@@ -113,14 +113,14 @@ public class PurgeTask extends StartupScheduledTask {
         try {
             OffsetDateTime date = createNotificationOlderThanSearchDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
-            List<AlertNotificationModel> notifications = notificationManager.findByCreatedAtBefore(date);
+            List<AlertNotificationModel> notifications = notificationAccessor.findByCreatedAtBefore(date);
 
             if (notifications == null || notifications.isEmpty()) {
                 logger.info("No notifications found to purge");
             } else {
                 logger.info("Found {} notifications to purge", notifications.size());
                 logger.info("Purging {} notifications.", notifications.size());
-                notificationManager.deleteNotificationList(notifications);
+                notificationAccessor.deleteNotificationList(notifications);
             }
         } catch (Exception ex) {
             logger.error("Error in purging notifications", ex);
@@ -130,8 +130,8 @@ public class PurgeTask extends StartupScheduledTask {
     private void purgeSystemMessages() {
         try {
             OffsetDateTime date = createNotificationOlderThanSearchDate();
-            List<SystemMessageModel> messages = systemMessageUtility.getSystemMessagesBefore(date);
-            systemMessageUtility.deleteSystemMessages(messages);
+            List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesBefore(date);
+            systemMessageAccessor.deleteSystemMessages(messages);
         } catch (Exception ex) {
             logger.error("Error purging system messages", ex);
         }

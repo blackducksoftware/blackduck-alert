@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.channel.email.template.EmailChannelMessage
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -67,9 +67,9 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
-    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditUtility auditUtility,
+    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditAccessor auditAccessor,
         EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser, EmailAttachmentFileCreator emailAttachmentFileCreator) {
-        super(emailChannelKey, gson, auditUtility);
+        super(emailChannelKey, gson, auditAccessor);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;
@@ -79,20 +79,20 @@ public class EmailChannel extends NamedDistributionChannel {
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        FieldAccessor fieldAccessor = event.getFieldAccessor();
+        FieldUtility fieldUtility = event.getFieldUtility();
 
-        Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        Optional<String> from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        Optional<String> host = fieldUtility.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        Optional<String> from = fieldUtility.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
         if (host.isEmpty() || from.isEmpty()) {
             throw new AlertException("ERROR: Missing global config.");
         }
-        FieldAccessor updatedFieldAccessor = emailAddressHandler.updateEmailAddresses(event.getProviderConfigId(), event.getContent(), fieldAccessor);
+        FieldUtility updatedFieldUtility = emailAddressHandler.updateEmailAddresses(event.getProviderConfigId(), event.getContent(), fieldUtility);
 
-        Set<String> emailAddresses = new HashSet<>(updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
-        EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
-        String subjectLine = fieldAccessor.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
-        EmailAttachmentFormat attachmentFormat = fieldAccessor.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
+        Set<String> emailAddresses = new HashSet<>(updatedFieldUtility.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
+        EmailProperties emailProperties = new EmailProperties(updatedFieldUtility);
+        String subjectLine = fieldUtility.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
+        EmailAttachmentFormat attachmentFormat = fieldUtility.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
                                                      .map(EmailAttachmentFormat::getValueSafely)
                                                      .orElse(EmailAttachmentFormat.NONE);
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), attachmentFormat, event.getContent());

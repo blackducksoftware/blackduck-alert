@@ -32,10 +32,13 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.MyPermissionsService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
+import com.synopsys.integration.jira.common.model.response.PermissionModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
@@ -50,24 +53,24 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean isAppCheckEnabled(FieldAccessor fieldAccessor) {
+    protected boolean isAppCheckEnabled(FieldUtility fieldUtility) {
         // Keeping this two lines to improve readability (storing one bit until GC won't kill us)
-        boolean isPluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        boolean isPluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         return !isPluginCheckDisabled;
     }
 
     @Override
-    protected boolean isAppMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
+    protected boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException {
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
-        return !jiraAppService.isAppInstalled(username, jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY);
+        return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
     }
 
     @Override
-    protected boolean isUserMissing(FieldAccessor fieldAccessor) throws IntegrationException {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldAccessor);
+    protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
         String username = jiraProperties.getUsername();
@@ -76,11 +79,21 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
                    .noneMatch(email -> email.equals(username));
     }
 
-    private JiraCloudProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
-        String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        boolean isPluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+    @Override
+    protected boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException {
+        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
+        JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
+        MyPermissionsService myPermissionsService = jiraCloudServiceFactory.createMyPermissionsService();
+        MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        return null != adminPermission && adminPermission.getHavePermission();
+    }
+
+    private JiraCloudProperties createJiraProperties(FieldUtility fieldUtility) {
+        String url = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        boolean isPluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         return new JiraCloudProperties(url, accessToken, username, isPluginCheckDisabled);
     }
 

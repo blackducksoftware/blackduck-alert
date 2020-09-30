@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 @Component
 @Order(20)
 public class SystemStatusValidator extends StartupComponent {
-    private final SystemStatusUtility systemStatusUtility;
+    private final SystemStatusAccessor systemStatusAccessor;
     private final EncryptionUtility encryptionUtility;
     private final UserAccessor userAccessor;
 
     @Autowired
-    public SystemStatusValidator(SystemStatusUtility systemStatusUtility, EncryptionUtility encryptionUtility, UserAccessor userAccessor) {
-        this.systemStatusUtility = systemStatusUtility;
+    public SystemStatusValidator(SystemStatusAccessor systemStatusAccessor, EncryptionUtility encryptionUtility, UserAccessor userAccessor) {
+        this.systemStatusAccessor = systemStatusAccessor;
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
     }
@@ -49,7 +49,7 @@ public class SystemStatusValidator extends StartupComponent {
     @Override
     protected void initialize() {
         boolean systemInitializationStatus = isSystemInitialized();
-        systemStatusUtility.setSystemInitialized(systemInitializationStatus);
+        systemStatusAccessor.setSystemInitialized(systemInitializationStatus);
     }
 
     private boolean isSystemInitialized() {

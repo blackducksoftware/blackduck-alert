@@ -66,7 +66,7 @@ public class NotificationToDistributionEventConverter {
         } catch (AlertException e) {
             logger.error(e.getMessage());
         }
-        job.getFieldAccessor().addFields(globalFields);
+        job.getFieldUtility().addFields(globalFields);
         List<DistributionEvent> events = messages
                                              .stream()
                                              .map(message -> createChannelEvent(job, message))
@@ -87,7 +87,7 @@ public class NotificationToDistributionEventConverter {
 
     private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
         // TODO fix date usage
-        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigIdAsLong(), job.getProcessingType().name(), contentGroup, job.getFieldAccessor());
+        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigIdAsLong(), job.getProcessingType().name(), contentGroup, job.getFieldUtility());
     }
 
 }

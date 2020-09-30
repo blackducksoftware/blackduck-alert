@@ -91,7 +91,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -117,7 +117,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
-    private final AuthorizationUtility authorizationUtility;
+    private final RoleAccessor roleAccessor;
 
     private final FilePersistenceUtil filePersistenceUtil;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
@@ -126,13 +126,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
-    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, AuthorizationUtility authorizationUtility,
+    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
         AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
-        this.authorizationUtility = authorizationUtility;
+        this.roleAccessor = roleAccessor;
         this.filePersistenceUtil = filePersistenceUtil;
         this.authoritiesPopulator = authoritiesPopulator;
         this.configurationAccessor = configurationAccessor;
@@ -232,7 +232,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     private String[] retrieveAllowedRoles() {
-        return authorizationUtility.getRoles()
+        return roleAccessor.getRoles()
                    .stream()
                    .map(UserRoleModel::getName)
                    .toArray(String[]::new);
