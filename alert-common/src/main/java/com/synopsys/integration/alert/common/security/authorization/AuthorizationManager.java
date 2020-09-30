@@ -139,6 +139,11 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
+    public void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException {
+        roleAccessor.updateRoleName(roleId, roleName);
+        loadPermissionsIntoCache();
+    }
+
     public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
         UserRoleModel roleWithPermissions = roleAccessor.createRoleWithPermissions(roleName, permissionMatrix);
         updateRoleInCache(roleWithPermissions.getName(), roleWithPermissions.getPermissions());

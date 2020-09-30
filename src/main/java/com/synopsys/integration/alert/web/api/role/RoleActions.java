@@ -110,7 +110,7 @@ public class RoleActions {
         }
 
         if (!existingRole.getName().equals(roleName)) {
-            roleAccessor.updateRoleName(roleId, roleName);
+            authorizationManager.updateRoleName(roleId, roleName);
         }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
