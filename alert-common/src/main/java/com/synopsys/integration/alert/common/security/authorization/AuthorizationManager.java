@@ -139,18 +139,6 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
-    public Set<UserRoleModel> getRoles() {
-        return roleAccessor.getRoles();
-    }
-
-    public Set<UserRoleModel> getRoles(Collection<Long> roleIds) {
-        return roleAccessor.getRoles(roleIds);
-    }
-
-    public boolean doesRoleNameExist(String name) {
-        return permissionCache.containsKey(name);
-    }
-
     public void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException {
         roleAccessor.updateRoleName(roleId, roleName);
         loadPermissionsIntoCache();

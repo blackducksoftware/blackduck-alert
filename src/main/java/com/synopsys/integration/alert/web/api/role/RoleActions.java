@@ -39,6 +39,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
@@ -55,17 +56,19 @@ import com.synopsys.integration.alert.common.util.BitwiseUtil;
 @Component
 public class RoleActions {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
+    private final RoleAccessor roleAccessor;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public RoleActions(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+    public RoleActions(RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+        this.roleAccessor = roleAccessor;
         this.authorizationManager = authorizationManager;
         this.descriptorMap = descriptorMap;
     }
 
     public List<RolePermissionModel> getRoles() {
-        return authorizationManager.getRoles().stream()
+        return roleAccessor.getRoles().stream()
                    .map(this::convertUserRoleModel)
                    .collect(Collectors.toList());
     }
@@ -98,7 +101,7 @@ public class RoleActions {
         }
 
         UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
-        boolean targetRoleNameIsUsedByDifferentRole = authorizationManager.getRoles()
+        boolean targetRoleNameIsUsedByDifferentRole = roleAccessor.getRoles()
                                                           .stream()
                                                           .filter(role -> !role.getId().equals(existingRole.getId()))
                                                           .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
@@ -123,7 +126,7 @@ public class RoleActions {
 
     // TODO update this when response statuses are handled consistently across actions and controllers
     private UserRoleModel getExistingRoleOrThrow404(Long roleId) {
-        return authorizationManager.getRoles(List.of(roleId))
+        return roleAccessor.getRoles(List.of(roleId))
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -202,7 +205,7 @@ public class RoleActions {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         validateRoleNameFieldRequired(roleName)
             .ifPresent(fieldStatuses::add);
-        boolean exists = authorizationManager.doesRoleNameExist(roleName);
+        boolean exists = roleAccessor.doesRoleNameExist(roleName);
         if (exists) {
             fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
         }
