@@ -137,7 +137,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
                                                           .filter(role -> configuredRoleNames.contains(role.getName()))
                                                           .collect(Collectors.toList());
-                roleAccessor.updateUserRoles(userId, roleNames);
+                authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
@@ -164,8 +164,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                     Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
                                                               .filter(role -> configuredRoleNames.contains(role.getName()))
                                                               .collect(Collectors.toList());
-                    roleAccessor.updateUserRoles(existingUser.getId(), roleNames);
-                    authorizationManager.loadPermissionsIntoCache();
+                    authorizationManager.updateUserRoles(existingUser.getId(), roleNames);
                 }
                 userSystemValidator.validateDefaultAdminUser(id);
                 UserConfig user = userAccessor.getUser(id)

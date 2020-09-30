@@ -89,8 +89,7 @@ public class RoleActions {
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        UserRoleModel userRoleModel = roleAccessor.createRoleWithPermissions(roleName, permissionMatrixModel);
-        authorizationManager.loadPermissionsIntoCache();
+        UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
         return userRoleModel;
     }
 
@@ -116,15 +115,13 @@ public class RoleActions {
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
         PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        PermissionMatrixModel updatedPermissionsMatrixModel = roleAccessor.updatePermissionsForRole(roleName, permissionMatrixModel);
-        authorizationManager.loadPermissionsIntoCache();
+        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
         return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
     }
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         getExistingRoleOrThrow404(roleId);
-        roleAccessor.deleteRole(roleId);
-        authorizationManager.loadPermissionsIntoCache();
+        authorizationManager.deleteRole(roleId);
     }
 
     // TODO update this when response statuses are handled consistently across actions and controllers
