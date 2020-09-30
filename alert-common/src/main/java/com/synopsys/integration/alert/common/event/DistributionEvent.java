@@ -28,22 +28,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public class DistributionEvent extends ContentEvent {
     private static final long serialVersionUID = -2067819359358348281L;
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
     private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(String configId, String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup, FieldAccessor fieldAccessor) {
+    public DistributionEvent(String configId, String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup, FieldUtility fieldUtility) {
         super(destination, createdAt, providerConfigId, formatType, contentGroup);
-        this.fieldAccessor = fieldAccessor;
+        this.fieldUtility = fieldUtility;
         this.configId = configId;
     }
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
+    public FieldUtility getFieldUtility() {
+        return fieldUtility;
     }
 
     public String getConfigId() {

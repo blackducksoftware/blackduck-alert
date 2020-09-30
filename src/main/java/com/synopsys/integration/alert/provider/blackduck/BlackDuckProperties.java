@@ -32,14 +32,14 @@ import org.slf4j.Logger;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -60,25 +60,25 @@ public class BlackDuckProperties extends ProviderProperties {
         this(configId, gson, alertProperties, proxyManager, createFieldAccessor(configurationModel));
     }
 
-    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, FieldAccessor fieldAccessor) {
-        super(configId, fieldAccessor);
+    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility) {
+        super(configId, fieldUtility);
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
-        this.url = fieldAccessor
+        this.url = fieldUtility
                        .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
                        .filter(StringUtils::isNotBlank)
                        .orElse(null);
-        this.timeout = fieldAccessor
+        this.timeout = fieldUtility
                            .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
                            .orElse(DEFAULT_TIMEOUT);
-        this.apiToken = fieldAccessor.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        this.apiToken = fieldUtility.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
     }
 
-    private static FieldAccessor createFieldAccessor(ConfigurationModel configurationModel) {
+    private static FieldUtility createFieldAccessor(ConfigurationModel configurationModel) {
         return Optional.ofNullable(configurationModel)
-                   .map(config -> new FieldAccessor(config.getCopyOfKeyToFieldMap()))
-                   .orElse(new FieldAccessor(Map.of()));
+                   .map(config -> new FieldUtility(config.getCopyOfKeyToFieldMap()))
+                   .orElse(new FieldUtility(Map.of()));
     }
 
     public Optional<String> getBlackDuckUrl() {
@@ -95,7 +95,7 @@ public class BlackDuckProperties extends ProviderProperties {
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
         return new BlackDuckServicesFactory(
-            new IntEnvironmentVariables(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultMediaTypeDiscovery());
+            IntEnvironmentVariables.empty(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultRequestFactory());
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {

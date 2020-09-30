@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultNotificationManager;
+import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
@@ -42,9 +42,9 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
+import com.synopsys.integration.blackduck.service.dataservice.NotificationService;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -54,7 +54,7 @@ public class BlackDuckAccumulatorTest {
     private File testAccumulatorParent;
 
     private TestBlackDuckProperties testBlackDuckProperties;
-    private DefaultNotificationManager notificationManager;
+    private DefaultNotificationAccessor notificationManager;
     private TaskScheduler taskScheduler;
     private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private BlackDuckValidator blackDuckValidator;
@@ -71,7 +71,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, new TestProperties(), proxyManager);
 
-        notificationManager = Mockito.mock(DefaultNotificationManager.class);
+        notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
 
         providerTaskPropertiesAccessor = new ProviderTaskPropertiesAccessor() {

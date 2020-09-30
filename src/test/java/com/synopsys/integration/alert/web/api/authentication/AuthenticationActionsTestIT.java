@@ -38,7 +38,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -157,10 +157,10 @@ public class AuthenticationActionsTestIT extends AlertIntegrationTest {
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         AuthenticationEventManager authenticationEventManager = Mockito.mock(AuthenticationEventManager.class);
         Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any(), Mockito.eq(AuthenticationType.LDAP));
-        AuthorizationUtility authorizationUtility = Mockito.mock(AuthorizationUtility.class);
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
 
-        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, authorizationUtility, databaseProvider);
-        LdapAuthenticationPerformer ldapAuthenticationPerformer = new LdapAuthenticationPerformer(authenticationEventManager, authorizationUtility, mockLdapManager);
+        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, roleAccessor, databaseProvider);
+        LdapAuthenticationPerformer ldapAuthenticationPerformer = new LdapAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLdapManager);
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);

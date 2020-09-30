@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuthorizationUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -58,14 +58,14 @@ import com.synopsys.integration.alert.web.api.role.util.PermissionModelUtil;
 @Component
 public class RoleActions extends AbstractResourceActions<RolePermissionModel, MultiRolePermissionModel> {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
-    private final AuthorizationUtility authorizationUtility;
+    private final RoleAccessor roleAccessor;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, AuthorizationUtility authorizationUtility, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+    public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
-        this.authorizationUtility = authorizationUtility;
+        this.roleAccessor = roleAccessor;
         this.authorizationManager = authorizationManager;
         this.descriptorMap = descriptorMap;
     }
@@ -77,8 +77,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             Set<PermissionModel> permissions = resource.getPermissions();
             validatePermissions(permissions);
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-            UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
-            authorizationManager.loadPermissionsIntoCache();
+            UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
@@ -87,13 +86,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
 
     @Override
     protected ActionResponse<RolePermissionModel> deleteWithoutChecks(Long id) {
-        Optional<UserRoleModel> existingRole = authorizationUtility.getRoles(List.of(id))
+        Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
                                                    .stream()
                                                    .findFirst();
         if (existingRole.isPresent()) {
             try {
-                authorizationUtility.deleteRole(id);
-                authorizationManager.loadPermissionsIntoCache();
+                authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
@@ -104,7 +102,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
 
     @Override
     protected ActionResponse<MultiRolePermissionModel> readAllWithoutChecks() {
-        List<RolePermissionModel> roles = authorizationUtility.getRoles().stream()
+        List<RolePermissionModel> roles = roleAccessor.getRoles().stream()
                                               .map(this::convertUserRoleModel)
                                               .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, new MultiRolePermissionModel(roles));
@@ -128,11 +126,11 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     protected ActionResponse<RolePermissionModel> updateWithoutChecks(Long id, RolePermissionModel resource) {
         try {
             String roleName = resource.getRoleName();
-            Optional<UserRoleModel> existingRole = authorizationUtility.getRoles(List.of(id))
+            Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
-                boolean targetRoleNameIsUsedByDifferentRole = authorizationUtility.getRoles()
+                boolean targetRoleNameIsUsedByDifferentRole = roleAccessor.getRoles()
                                                                   .stream()
                                                                   .filter(role -> !role.getId().equals(existingRole.get().getId()))
                                                                   .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
@@ -140,13 +138,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                     return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The role name is already in use");
                 }
                 if (!existingRole.get().getName().equals(roleName)) {
-                    authorizationUtility.updateRoleName(id, roleName);
+                    roleAccessor.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 validatePermissions(permissions);
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-                authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
-                authorizationManager.loadPermissionsIntoCache();
+                authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
@@ -170,13 +167,13 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     @Override
     protected Optional<RolePermissionModel> findExisting(Long id) {
         //TODO run tests here, see if there is more than 1 element of Set<UserRoleModel
-        return authorizationUtility.getRoles(List.of(id)).stream().findFirst().map(this::convertUserRoleModel);
+        return roleAccessor.getRoles(List.of(id)).stream().findFirst().map(this::convertUserRoleModel);
     }
 
     //OLD CODE HERE:
     /*
     public List<RolePermissionModel> getRoles() {
-        return authorizationUtility.getRoles().stream()
+        return roleAccessor.getRoles().stream()
                    .map(this::convertUserRoleModel)
                    .collect(Collectors.toList());
     }
@@ -196,9 +193,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
 
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-        UserRoleModel userRoleModel = authorizationUtility.createRoleWithPermissions(roleName, permissionMatrixModel);
-        authorizationManager.loadPermissionsIntoCache();
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
         return userRoleModel;
     }
 
@@ -210,7 +206,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         }
 
         UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
-        boolean targetRoleNameIsUsedByDifferentRole = authorizationUtility.getRoles()
+        boolean targetRoleNameIsUsedByDifferentRole = roleAccessor.getRoles()
                                                           .stream()
                                                           .filter(role -> !role.getId().equals(existingRole.getId()))
                                                           .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
@@ -219,25 +215,23 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         }
 
         if (!existingRole.getName().equals(roleName)) {
-            authorizationUtility.updateRoleName(roleId, roleName);
+            roleAccessor.updateRoleName(roleId, roleName);
         }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationUtility.updatePermissionsForRole(roleName, permissionMatrixModel);
-        authorizationManager.loadPermissionsIntoCache();
+        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
+        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
         return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
     }
 
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         getExistingRoleOrThrow404(roleId);
-        authorizationUtility.deleteRole(roleId);
-        authorizationManager.loadPermissionsIntoCache();
+        authorizationManager.deleteRole(roleId);
     }
 
     // TODO update this when response statuses are handled consistently across actions and controllers
     private UserRoleModel getExistingRoleOrThrow404(Long roleId) {
-        return authorizationUtility.getRoles(List.of(roleId))
+        return roleAccessor.getRoles(List.of(roleId))
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -320,7 +314,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         validateRoleNameFieldRequired(roleName)
             .ifPresent(fieldStatuses::add);
-        boolean exists = authorizationUtility.doesRoleNameExist(roleName);
+        boolean exists = roleAccessor.doesRoleNameExist(roleName);
         if (exists) {
             fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
         }

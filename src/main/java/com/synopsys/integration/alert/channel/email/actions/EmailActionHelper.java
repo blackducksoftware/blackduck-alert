@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -53,20 +53,20 @@ public class EmailActionHelper {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldAccessor createUpdatedFieldAccessor(FieldAccessor fieldAccessor, String destination) throws IntegrationException {
+    public FieldUtility createUpdatedFieldAccessor(FieldUtility fieldUtility, String destination) throws IntegrationException {
         Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);
         }
 
-        boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
-        boolean onlyAdditionalEmails = fieldAccessor.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
+        boolean filterByProject = fieldUtility.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
+        boolean onlyAdditionalEmails = fieldUtility.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
         if (null != providerConfigId && !onlyAdditionalEmails) {
-            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldAccessor, filterByProject, providerConfigId);
+            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldUtility, filterByProject, providerConfigId);
             if (null != providerProjects) {
-                Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldAccessor);
+                Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldUtility);
                 emailAddresses.addAll(providerEmailAddresses);
             }
         }
@@ -74,22 +74,22 @@ public class EmailActionHelper {
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         configurationFieldModel.setFieldValues(emailAddresses);
 
-        Map<String, ConfigurationFieldModel> fields = fieldAccessor.getFields();
+        Map<String, ConfigurationFieldModel> fields = fieldUtility.getFields();
         fields.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, configurationFieldModel);
 
-        return new FieldAccessor(fields);
+        return new FieldUtility(fields);
     }
 
     private boolean doesProjectMatchConfiguration(String currentProjectName, String projectNamePattern, Set<String> configuredProjectNames) {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(FieldAccessor fieldAccessor, boolean filterByProject, Long providerConfigId) {
+    private Set<ProviderProject> retrieveProviderProjects(FieldUtility fieldUtility, boolean filterByProject, Long providerConfigId) {
         List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         if (filterByProject) {
-            Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            Optional<ConfigurationFieldModel> projectField = fieldUtility.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
             Set<String> configuredProjects = new HashSet<>(projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()));
-            String projectNamePattern = fieldAccessor.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             return providerProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
@@ -98,8 +98,8 @@ public class EmailActionHelper {
         return new HashSet<>(providerProjects);
     }
 
-    private Set<String> addEmailAddresses(Set<ProviderProject> providerProjects, FieldAccessor fieldAccessor) throws AlertFieldException {
-        boolean projectOwnerOnly = fieldAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
+    private Set<String> addEmailAddresses(Set<ProviderProject> providerProjects, FieldUtility fieldUtility) throws AlertFieldException {
+        boolean projectOwnerOnly = fieldUtility.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
 
         Set<String> emailAddresses = new HashSet<>();
         Set<String> projectsWithoutEmails = new HashSet<>();
@@ -119,7 +119,7 @@ public class EmailActionHelper {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
             String errorField = ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
-            boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            boolean filterByProject = fieldUtility.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
             if (!filterByProject) {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }

@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -231,11 +231,11 @@ public class ConfigActions extends AbstractConfigResourceActions {
         if (testActionOptional.isPresent()) {
             try {
                 FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(resource);
-                FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
+                FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(upToDateFieldModel);
                 TestAction testAction = testActionOptional.get();
 
                 // TODO return the message from the result of testAction.testConfig(...)
-                testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldAccessor);
+                testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldUtility);
                 responseModel = ValidationResponseModel.success("Successfully sent test message.");
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationRestException e) {

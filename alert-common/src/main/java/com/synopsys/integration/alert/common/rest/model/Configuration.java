@@ -26,17 +26,17 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 
 public class Configuration extends AlertSerializableModel {
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
 
-    public Configuration(@NotNull final Map<String, ConfigurationFieldModel> keyToFieldMap) {
-        fieldAccessor = new FieldAccessor(keyToFieldMap);
+    public Configuration(@NotNull Map<String, ConfigurationFieldModel> keyToFieldMap) {
+        fieldUtility = new FieldUtility(keyToFieldMap);
     }
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
+    public FieldUtility getFieldUtility() {
+        return fieldUtility;
     }
 }

@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.web;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.google.api.client.http.HttpStatusCodes;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
@@ -73,25 +72,24 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
-            String username = jiraProperties.getUsername();
-            String accessToken = jiraProperties.getAccessToken();
-            Response response = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY, username, accessToken);
-            if (BooleanUtils.isTrue(response.isStatusCodeError())) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + response.getStatusCode());
+            int statusCode = jiraAppService.installMarketplaceCloudApp(JiraConstants.JIRA_APP_KEY);
+            if (!HttpStatusCodes.isSuccess(statusCode)) {
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + statusCode);
             }
 
-            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService, username, accessToken);
+            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
-                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Unable to confirm Jira Cloud successfully installed the Jira Cloud plugin. Please verify the installation on you Jira Cloud server.");
+                return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format(
+                    "Unable to confirm successful installation of the Jira Cloud '%s' plugin. Please verify the installation on your Jira Cloud server.", JiraConstants.JIRA_ALERT_APP_NAME));
             }
-            return new ActionResponse<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira Cloud");
+            return new ActionResponse<>(HttpStatus.OK, String.format("Successfully installed the '%s' plugin on Jira Cloud", JiraConstants.JIRA_ALERT_APP_NAME));
         } catch (IntegrationException e) {
             logger.error("There was an issue connecting to Jira Cloud", e);
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The following error occurred when connecting to Jira Cloud: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating jira install.", e);
             Thread.currentThread().interrupt();
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
         }
     }
 
@@ -124,7 +122,6 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
                 logger.error("Unable to retrieve existing Jira configuration.");
             }
         }
-
         return accessToken;
     }
 

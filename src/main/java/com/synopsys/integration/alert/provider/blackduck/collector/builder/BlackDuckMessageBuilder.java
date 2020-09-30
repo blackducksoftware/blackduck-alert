@@ -30,9 +30,10 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public abstract class BlackDuckMessageBuilder<T> {
     private final String providerName = "Black Duck";
@@ -55,11 +56,13 @@ public abstract class BlackDuckMessageBuilder<T> {
     protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
         try {
             return projectService.getProjectByName(projectName)
-                       .flatMap(ProjectView::getHref)
+                       .map(ProjectView::getHref)
+                       .map(HttpUrl::toString)
                        .orElse(null);
         } catch (IntegrationException e) {
             logMethod.accept(String.format("Could not get the href for '%s': %s", projectName, e.getMessage()));
         }
         return null;
     }
+
 }

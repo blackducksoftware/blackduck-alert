@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class DescriptorsResponseModel extends AlertSerializableModel {
     private final Set<DescriptorMetadata> descriptors;
 
-    DescriptorsResponseModel() {
+    public DescriptorsResponseModel() {
         // For serialization
         this.descriptors = Set.of();
     }

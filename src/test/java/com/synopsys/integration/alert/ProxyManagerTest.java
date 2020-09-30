@@ -34,10 +34,10 @@ public class ProxyManagerTest {
 
     @Test
     public void testCreate() throws AlertException {
-        final ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
-        final ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
-        final ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
-        final ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
+        ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
+        ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
+        ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
+        ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
 
         Mockito.when(hostModel.getFieldValue()).thenReturn(Optional.of(HOST));
         Mockito.when(portModel.getFieldValue()).thenReturn(Optional.of(PORT));
@@ -51,7 +51,7 @@ public class ProxyManagerTest {
 
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.of(configurationModel));
 
-        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         assertEquals(HOST, proxyInfo.getHost().orElse(null));
         assertEquals(Integer.valueOf(PORT).intValue(), proxyInfo.getPort());
         assertEquals(USERNAME, proxyInfo.getUsername().orElse(null));

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -53,8 +53,8 @@ public class BlackDuckValidator extends BaseSystemValidator {
         return String.format("%d_%s", properties.getConfigId(), systemMessageType.name());
     }
 
-    public BlackDuckValidator(SystemMessageUtility systemMessageUtility) {
-        super(systemMessageUtility);
+    public BlackDuckValidator(SystemMessageAccessor systemMessageAccessor) {
+        super(systemMessageAccessor);
     }
 
     public boolean validate(BlackDuckProperties blackDuckProperties) {
@@ -124,6 +124,6 @@ public class BlackDuckValidator extends BaseSystemValidator {
 
     private void connectivityWarning(BlackDuckProperties properties, String message) {
         logger.warn(message);
-        getSystemMessageUtility().addSystemMessage(message, SystemMessageSeverity.WARNING, createProviderSystemMessageType(properties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY));
+        getSystemMessageAccessor().addSystemMessage(message, SystemMessageSeverity.WARNING, createProviderSystemMessageType(properties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY));
     }
 }

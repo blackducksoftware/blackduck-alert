@@ -28,7 +28,7 @@ import org.springframework.lang.Nullable;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
@@ -52,11 +52,11 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
             return true;
         }
 
-        FieldAccessor fieldAccessor = configurationJobModel.getFieldAccessor();
-        boolean filterByProject = fieldAccessor.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
+        boolean filterByProject = fieldUtility.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         if (filterByProject) {
-            Collection<String> configuredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            String nullablePattern = fieldAccessor.getStringOrNull(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+            String nullablePattern = fieldUtility.getStringOrNull(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             return doProjectsFromNotificationMatchConfiguredProjects(notification, configuredProjects, nullablePattern);
         }
         return true;

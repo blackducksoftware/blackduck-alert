@@ -37,11 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditUtility;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -59,19 +59,19 @@ public class AuditEntryActions {
 
     private final AuthorizationManager authorizationManager;
     private final AuditDescriptorKey descriptorKey;
-    private final AuditUtility auditUtility;
-    private final NotificationManager notificationManager;
+    private final NotificationAccessor notificationAccessor;
+    private final AuditAccessor auditAccessor;
     private final ConfigurationAccessor jobConfigReader;
     private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey, AuditUtility auditUtility, NotificationManager notificationManager, ConfigurationAccessor jobConfigReader,
+    public AuditEntryActions(AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey, AuditAccessor auditAccessor, NotificationAccessor notificationAccessor, ConfigurationAccessor jobConfigReader,
         ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
         this.authorizationManager = authorizationManager;
         this.descriptorKey = descriptorKey;
-        this.auditUtility = auditUtility;
-        this.notificationManager = notificationManager;
+        this.auditAccessor = auditAccessor;
+        this.notificationAccessor = notificationAccessor;
         this.jobConfigReader = jobConfigReader;
         this.eventManager = eventManager;
         this.notificationProcessor = notificationProcessor;
@@ -85,7 +85,7 @@ public class AuditEntryActions {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        AuditEntryPageModel pagedRestModel = auditUtility.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditUtility::convertToAuditEntryModelFromNotification);
+        AuditEntryPageModel pagedRestModel = auditAccessor.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditAccessor::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return new ActionResponse<>(HttpStatus.OK, pagedRestModel);
     }
@@ -94,9 +94,9 @@ public class AuditEntryActions {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        Optional<AlertNotificationModel> notificationContent = notificationManager.findById(id);
+        Optional<AlertNotificationModel> notificationContent = notificationAccessor.findById(id);
         if (notificationContent.isPresent()) {
-            AuditEntryModel auditEntryModel = auditUtility.convertToAuditEntryModelFromNotification(notificationContent.get());
+            AuditEntryModel auditEntryModel = auditAccessor.convertToAuditEntryModelFromNotification(notificationContent.get());
             return new ActionResponse<>(HttpStatus.OK, auditEntryModel);
         }
         return new ActionResponse<>(HttpStatus.GONE, "This Audit entry could not be found.");
@@ -106,7 +106,7 @@ public class AuditEntryActions {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        Optional<AuditJobStatusModel> auditJobStatusModel = auditUtility.findFirstByJobId(jobId);
+        Optional<AuditJobStatusModel> auditJobStatusModel = auditAccessor.findFirstByJobId(jobId);
         if (auditJobStatusModel.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, auditJobStatusModel.get());
         }
@@ -118,7 +118,7 @@ public class AuditEntryActions {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         try {
-            Optional<AlertNotificationModel> notification = notificationManager
+            Optional<AlertNotificationModel> notification = notificationAccessor
                                                                 .findById(notificationId);
             if (notification.isEmpty()) {
                 return new ActionResponse<>(HttpStatus.GONE, "No notification with this id exists.");
@@ -150,7 +150,7 @@ public class AuditEntryActions {
 
             for (DistributionEvent event : distributionEvents) {
                 UUID commonDistributionId = UUID.fromString(event.getConfigId());
-                Long auditId = auditUtility.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
+                Long auditId = auditAccessor.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
                 Map<Long, Long> notificationIdToAuditId = new HashMap<>();
                 notificationIdToAuditId.put(notificationContent.getId(), auditId);
                 event.setNotificationIdToAuditId(notificationIdToAuditId);

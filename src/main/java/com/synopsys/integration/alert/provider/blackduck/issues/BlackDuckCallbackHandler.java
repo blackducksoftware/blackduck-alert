@@ -61,7 +61,7 @@ public class BlackDuckCallbackHandler extends ProviderCallbackHandler {
                                                                                   .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger));
         if (optionalBlackDuckServicesFactory.isPresent()) {
             BlackDuckServicesFactory blackDuckServicesFactory = optionalBlackDuckServicesFactory.get();
-            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.createBlackDuckService());
+            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.getBlackDuckService(), blackDuckServicesFactory.getRequestFactory());
 
             BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
             blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel);

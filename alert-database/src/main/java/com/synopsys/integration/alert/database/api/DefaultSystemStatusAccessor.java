@@ -28,18 +28,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 
 @Component
-public class DefaultSystemStatusUtility implements SystemStatusUtility {
+public class DefaultSystemStatusAccessor implements SystemStatusAccessor {
     public static final Long SYSTEM_STATUS_ID = 1L;
     private final SystemStatusRepository systemStatusRepository;
 
     @Autowired
-    public DefaultSystemStatusUtility(SystemStatusRepository systemStatusRepository) {
+    public DefaultSystemStatusAccessor(SystemStatusRepository systemStatusRepository) {
         this.systemStatusRepository = systemStatusRepository;
     }
 

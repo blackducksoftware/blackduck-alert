@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCr
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -50,7 +50,7 @@ public class JiraCloudDistributionTestAction extends ChannelDistributionTestActi
     }
 
     @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
+    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
         IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);

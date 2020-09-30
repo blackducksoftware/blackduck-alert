@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -62,9 +62,9 @@ public class ConfigurationFieldModelConverter {
         this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
     }
 
-    public final FieldAccessor convertToFieldAccessor(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public final FieldUtility convertToFieldAccessor(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         Map<String, ConfigurationFieldModel> fields = convertToConfigurationFieldModelMap(fieldModel);
-        return new FieldAccessor(fields);
+        return new FieldUtility(fields);
     }
 
     public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(DefinedFieldModel definedFieldModel, String value, boolean isSet) {

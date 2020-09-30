@@ -29,11 +29,11 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public final class JiraPluginCheckUtil {
-    public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService, String username, String passwordOrApiToken) throws IntegrationException, InterruptedException {
+    public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService) throws IntegrationException, InterruptedException {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
         while (checkAgain <= maxTimeForChecks) {
-            boolean isAppInstalled = pluginManagerService.isAppInstalled(username, passwordOrApiToken, JiraConstants.JIRA_APP_KEY);
+            boolean isAppInstalled = pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
             if (isAppInstalled) {
                 return true;
             }

@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -116,12 +116,12 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         return model;
     }
 
-    public FieldAccessor createValidFieldAccessor(ConfigurationModel configurationModel) {
+    public FieldUtility createValidFieldAccessor(ConfigurationModel configurationModel) {
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(configurationModel.getCopyOfKeyToFieldMap());
         global_config.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
-        FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
-        return fieldAccessor;
+        FieldUtility fieldUtility = new FieldUtility(fieldMap);
+        return fieldUtility;
 
     }
 
@@ -205,12 +205,12 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
-        FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
+        FieldUtility fieldUtility = createValidFieldAccessor(distribution_config);
 
         FieldModel fieldModel = createTestConfigDestination();
         try {
             TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), fieldModel, fieldAccessor);
+            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), fieldModel, fieldUtility);
         } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -220,10 +220,10 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     @Test
     public void testGlobalConfig() {
         ConfigurationModel configurationModel = global_config.orElse(null);
-        FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
+        FieldUtility fieldUtility = createValidFieldAccessor(configurationModel);
         try {
             TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldAccessor);
+            descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldUtility);
         } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();

@@ -73,28 +73,26 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
-            String username = jiraProperties.getUsername();
-            String password = jiraProperties.getPassword();
             try {
-                jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY, username, password);
+                jiraAppService.installMarketplaceServerApp(JiraConstants.JIRA_APP_KEY);
             } catch (IntegrationRestException e) {
                 if (RestConstants.NOT_FOUND_404 == e.getHttpStatusCode()) {
-                    return new ActionResponse<>(HttpStatus.NOT_FOUND,
-                        "The marketplace listing of the Alert Issue Property Indexer app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: " + e.getMessage());
+                    return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format(
+                        "The marketplace listing of the '%s' app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
                 }
                 createBadRequestIntegrationException(e);
             }
-            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService, username, password);
+            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
-                return new ActionResponse<>(HttpStatus.NOT_FOUND, "Was not able to confirm Jira server successfully installed the Jira Server plugin. Please verify the installation on you Jira server.");
+                return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Unable to confirm Jira server successfully installed the '%s' plugin. Please verify the installation on you Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
             }
-            return new ActionResponse<>(HttpStatus.OK, "Successfully installed the Alert plugin on Jira server.");
+            return new ActionResponse<>(HttpStatus.OK, String.format("Successfully installed the '%s' plugin on Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
         } catch (IntegrationException e) {
             return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
-            logger.error("Thread was interrupted while validating jira install.", e);
+            logger.error("Thread was interrupted while validating Jira plugin installation.", e);
             Thread.currentThread().interrupt();
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Thread was interrupted while validating Jira plugin installation: " + e.getMessage());
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
         }
     }
 

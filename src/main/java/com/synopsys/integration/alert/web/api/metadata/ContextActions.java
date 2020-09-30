@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,17 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.web.api.metadata;
 
-import java.time.OffsetDateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
-public interface SystemStatusUtility {
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.api.ReadAllAction;
+import com.synopsys.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 
-    boolean isSystemInitialized();
-
-    void setSystemInitialized(boolean systemInitialized);
-
-    void startupOccurred();
-
-    OffsetDateTime getStartupTime();
+@Component
+public class ContextActions implements ReadAllAction<ConfigContextsResponseModel> {
+    @Override
+    public ActionResponse<ConfigContextsResponseModel> getAll() {
+        return new ActionResponse<>(HttpStatus.OK, ConfigContextsResponseModel.DEFAULT);
+    }
 }

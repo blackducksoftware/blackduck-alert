@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.common.provider.state;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public abstract class ProviderProperties {
     public static final Long UNKNOWN_CONFIG_ID = -1L;
@@ -32,10 +32,10 @@ public abstract class ProviderProperties {
     private boolean configEnabled;
     private String configName;
 
-    public ProviderProperties(Long configId, FieldAccessor fieldAccessor) {
+    public ProviderProperties(Long configId, FieldUtility fieldUtility) {
         this.configId = configId;
-        this.configEnabled = fieldAccessor.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
-        this.configName = fieldAccessor.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME);
+        this.configEnabled = fieldUtility.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        this.configName = fieldUtility.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME);
     }
 
     public Long getConfigId() {

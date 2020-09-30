@@ -45,25 +45,25 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.util.UrlUtils;
 
 public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(JiraTestIssueRequestCreator.class);
-    private final FieldAccessor fieldAccessor;
+    private final FieldUtility fieldUtility;
     private final JiraMessageParser jiraMessageParser;
 
-    public JiraTestIssueRequestCreator(FieldAccessor fieldAccessor, JiraMessageParser jiraMessageParser) {
-        this.fieldAccessor = fieldAccessor;
+    public JiraTestIssueRequestCreator(FieldUtility fieldUtility, JiraMessageParser jiraMessageParser) {
+        this.fieldUtility = fieldUtility;
         this.jiraMessageParser = jiraMessageParser;
     }
 
     @Override
     public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
         try {
-            String topic = fieldAccessor.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-            String customMessage = fieldAccessor.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
+            String topic = fieldUtility.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
+            String customMessage = fieldUtility.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
             ProviderMessageContent providerMessageContent = createTestNotificationContent(ItemOperation.ADD, messageId, topic, customMessage);
             ComponentItem arbitraryItem = providerMessageContent.getComponentItems().stream()
                                               .findAny()

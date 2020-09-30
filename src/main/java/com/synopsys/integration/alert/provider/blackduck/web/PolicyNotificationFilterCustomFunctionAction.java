@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -51,9 +51,9 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.PolicyRuleService;
+import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -137,14 +137,14 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
-        FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
-        Long providerConfigId = fieldAccessor.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
+        FieldUtility fieldUtility = fieldModelConverter.convertToFieldAccessor(fieldModel);
+        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
         if (null == providerConfigId) {
             return Optional.empty();
         }
         return configurationAccessor.getConfigurationById(providerConfigId)
                    .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                   .map(FieldAccessor::new)
+                   .map(FieldUtility::new)
                    .map(accessor -> blackDuckPropertiesFactory.createProperties(providerConfigId, accessor));
     }
 

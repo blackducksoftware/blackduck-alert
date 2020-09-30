@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageMod
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 
-public interface AuditUtility {
+public interface AuditAccessor {
     Optional<Long> findMatchingAuditId(Long notificationId, UUID commonDistributionId);
 
     Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId);

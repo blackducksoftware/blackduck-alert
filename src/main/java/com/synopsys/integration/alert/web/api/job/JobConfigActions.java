@@ -61,7 +61,7 @@ import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedExce
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -352,16 +352,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
                     messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
                     TestAction testAction = testActionOptional.get();
-                    FieldAccessor fieldAccessor = new FieldAccessor(fields);
+                    FieldUtility fieldUtility = new FieldUtility(fields);
                     String jobId = channelFieldModel.getId();
 
-                    MessageResult providerTestResult = testProviderConfig(fieldAccessor, jobId, channelFieldModel);
+                    MessageResult providerTestResult = testProviderConfig(fieldUtility, jobId, channelFieldModel);
                     if (providerTestResult.hasErrors()) {
                         responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    MessageResult testActionResult = testAction.testConfig(jobId, channelFieldModel, fieldAccessor);
+                    MessageResult testActionResult = testAction.testConfig(jobId, channelFieldModel, fieldUtility);
                     List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
                     responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -433,11 +433,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return fields;
     }
 
-    private MessageResult testProviderConfig(FieldAccessor fieldAccessor, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+    private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
+        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                       .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
-            return providerTestAction.get().testConfig(jobId, fieldModel, fieldAccessor);
+            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
         }
         return new MessageResult("Provider Config Valid");
     }

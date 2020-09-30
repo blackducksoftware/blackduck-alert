@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.jira.server;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
     @Override
@@ -63,15 +63,15 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
     }
 
     @Override
-    public JiraServerContext build(FieldAccessor fieldAccessor) {
-        return new JiraServerContext(createJiraProperties(fieldAccessor), createIssueConfig(fieldAccessor));
+    public JiraServerContext build(FieldUtility fieldUtility) {
+        return new JiraServerContext(createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
     }
 
-    private JiraServerProperties createJiraProperties(FieldAccessor fieldAccessor) {
-        String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
-        String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
-        String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        boolean pluginCheckDisabled = fieldAccessor.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+    private JiraServerProperties createJiraProperties(FieldUtility fieldUtility) {
+        String url = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
+        String username = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
 

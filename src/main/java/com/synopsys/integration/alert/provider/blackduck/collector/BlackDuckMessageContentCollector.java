@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
@@ -70,9 +70,9 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             if (null == blackDuckMessageBuilder) {
                 logger.warn("Could not find a message builder for notification type: {}", notificationType);
             } else {
-                String url = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl();
+                String baseUrlString = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().toString();
                 CommonMessageData commonMessageData = new CommonMessageData(
-                    notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), url, notification.getProviderCreationTime(), job);
+                    notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), baseUrlString, notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
                     blackDuckMessageBuilder.buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);

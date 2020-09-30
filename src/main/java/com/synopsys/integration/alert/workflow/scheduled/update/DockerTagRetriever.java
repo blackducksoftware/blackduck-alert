@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
@@ -66,7 +67,14 @@ public class DockerTagRetriever {
     }
 
     private DockerTagsResponseModel getTagResponseModel(String pageUrl) {
-        Request dockerTagsRequest = new Request.Builder(pageUrl).build();
+        HttpUrl httpUrl;
+        try {
+            httpUrl = new HttpUrl(pageUrl);
+        } catch (IntegrationException e) {
+            logger.warn("Invalid url: " + pageUrl);
+            return DockerTagsResponseModel.EMPTY;
+        }
+        Request dockerTagsRequest = new Request.Builder(httpUrl).build();
 
         try (Response tagsResponse = intHttpClient.execute(dockerTagsRequest)) {
             tagsResponse.throwExceptionForError();

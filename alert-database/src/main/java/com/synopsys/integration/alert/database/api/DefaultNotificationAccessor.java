@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationManager;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -59,8 +59,8 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
 @Transactional
-public class DefaultNotificationManager implements NotificationManager {
-    private final Logger logger = LoggerFactory.getLogger(DefaultNotificationManager.class);
+public class DefaultNotificationAccessor implements NotificationAccessor {
+    private final Logger logger = LoggerFactory.getLogger(DefaultNotificationAccessor.class);
 
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -69,7 +69,7 @@ public class DefaultNotificationManager implements NotificationManager {
     private final EventManager eventManager;
 
     @Autowired
-    public DefaultNotificationManager(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
+    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
         ConfigurationAccessor configurationAccessor, EventManager eventManager) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;

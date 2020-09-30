@@ -34,13 +34,13 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.database.api.DefaultAuditUtility;
+import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -125,9 +125,9 @@ public class EmailGlobalTestActionTest {
         EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldUtility fieldUtility = new FieldUtility(keyToValues);
 
-        emailGlobalTestAction.testConfig(null, createFieldModel(null), fieldAccessor);
+        emailGlobalTestAction.testConfig(null, createFieldModel(null), fieldUtility);
 
         ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -147,9 +147,9 @@ public class EmailGlobalTestActionTest {
         EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldUtility fieldUtility = new FieldUtility(keyToValues);
         try {
-            emailGlobalTestAction.testConfig(null, createFieldModel("fake"), fieldAccessor);
+            emailGlobalTestAction.testConfig(null, createFieldModel("fake"), fieldUtility);
             fail("Should have thrown exception");
         } catch (AlertException e) {
             assertTrue(e.getMessage().contains("fake is not a valid email address."));
@@ -162,9 +162,9 @@ public class EmailGlobalTestActionTest {
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 
         Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
-        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        FieldUtility fieldUtility = new FieldUtility(keyToValues);
 
-        emailGlobalTestAction.testConfig(null, createFieldModel("fake@synopsys.com"), fieldAccessor);
+        emailGlobalTestAction.testConfig(null, createFieldModel("fake@synopsys.com"), fieldUtility);
 
         ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
         ArgumentCaptor<Set> emailAddresses = ArgumentCaptor.forClass(Set.class);
@@ -183,7 +183,7 @@ public class EmailGlobalTestActionTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigITTest() throws Exception {
         TestProperties properties = new TestProperties();
-        DefaultAuditUtility auditUtility = Mockito.mock(DefaultAuditUtility.class);
+        DefaultAuditAccessor auditUtility = Mockito.mock(DefaultAuditAccessor.class);
 
         TestAlertProperties testAlertProperties = new TestAlertProperties();
 
@@ -206,8 +206,8 @@ public class EmailGlobalTestActionTest {
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
-        emailGlobalTestAction.testConfig(null, createFieldModel(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), fieldAccessor);
+        FieldUtility fieldUtility = new FieldUtility(keyToValues);
+        emailGlobalTestAction.testConfig(null, createFieldModel(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), fieldUtility);
 
     }
 

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -59,7 +59,7 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldAccessor updateEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, FieldAccessor originalAccessor) {
+    public FieldUtility updateEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, FieldUtility originalAccessor) {
         Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
 
@@ -90,7 +90,7 @@ public class EmailAddressHandler {
         ConfigurationFieldModel newEmailFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
         newEmailFieldModel.setFieldValues(emailAddresses);
         fieldMap.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, newEmailFieldModel);
-        return new FieldAccessor(fieldMap);
+        return new FieldUtility(fieldMap);
     }
 
     public Set<String> getEmailAddressesForProject(ProviderProject project, boolean projectOwnerOnly) {
@@ -111,8 +111,8 @@ public class EmailAddressHandler {
         return emailAddresses;
     }
 
-    public Set<String> collectAdditionalEmailAddresses(Long providerConfigId, FieldAccessor fieldAccessor) {
-        Collection<String> additionalEmailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
+    public Set<String> collectAdditionalEmailAddresses(Long providerConfigId, FieldUtility fieldUtility) {
+        Collection<String> additionalEmailAddresses = fieldUtility.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
         if (!additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
             return providerDataAccessor.getUsersByProviderConfigId(providerConfigId)
@@ -137,16 +137,16 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldAccessor fieldAccessor, Long providerConfigId, boolean projectOwnerOnly) {
+    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldUtility fieldUtility, Long providerConfigId, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
                                   .stream()
                                   .map(ProviderMessageContent::getSubTopic)
                                   .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
-            boolean filterByProject = fieldAccessor.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            boolean filterByProject = fieldUtility.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
             List<String> associatedProjects;
             if (filterByProject) {
-                Collection<String> allConfiguredProjects = fieldAccessor.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+                Collection<String> allConfiguredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
                 associatedProjects = new ArrayList<>(allConfiguredProjects);
             } else {
                 associatedProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId)
