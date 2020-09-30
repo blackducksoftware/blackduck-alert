@@ -124,7 +124,7 @@
   border-radius: $border-radius;
   border: 1px solid $border-color;
   background-color: $synopsys-color-section-background;
-  overflow-y: scroll !important;
+  overflow-y: inherit !important;
   padding-top: 15px;
 }
 
