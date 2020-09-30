@@ -313,9 +313,28 @@ task helmDryRun(type: Exec) {
     commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
 }
 
+task helmPackage(type: Exec) {
+    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/"
+}
+
 task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun]) {
     helmLint.mustRunAfter copyDeploymentFiles
     helmDryRun.mustRunAfter helmLint
+    helmPackage.musRunAfter helmDryRun
+}
+
+task helmPushChart(type: Exec) {
+    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    doLast {
+        if (!project.ext.isSnapshot) {
+            // if we need to setup helm again to push the charts please run the following command to add the repo
+            // helm repo add sig-cloudnative-local https://${System.env.ARTIFACTORY_HOST}/artifactory/sig-cloudnative-local
+            commandLine "helm", "push-artifactory", "synopsys-alert*.tgz", "sig-cloudnative-local", "-u", "${project.ext.artifactoryDeployerUsername}", "-p", "${project.ext.artifactoryDeployerPassword}"
+        } else {
+            throw new GradleException("'Can not push SNAPSHOT helm charts'")
+        }
+    }
 }
 
 task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
@@ -362,6 +381,10 @@ artifactory {
         defaults { publications('mavenJava') }
     }
 }
+
+tasks.dockerLogin.mustRunAfter(helmPushChart)
+
+tasks.helmPushChart.mustRunAfter(helmValidation)
 
 task all(dependsOn: [build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
     helmValidation.mustRunAfter build
