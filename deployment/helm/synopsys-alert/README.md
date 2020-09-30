@@ -198,6 +198,11 @@ $ helm install . --name <name> --namespace <namespace> --set enableStandalone=tr
 ### Persistent Storage
 The section will describe the changes needed to configure persistent storage.  
 
+Note: If you are using the HostPath persistent volume then you must ensure the correct permissions and ownership.
+If you are using the security context then the ownership must match the UID of the user and the GID of the group specified
+in the security context.  The file permissions must allow a write to the HostPath volume.
+Please see: https://unofficial-kubernetes.readthedocs.io/en/latest/concepts/storage/volumes/#hostpath for further details.
+
 #### Enable Persistent Storage
 - In the 'values.yaml' file ensure 
   ```yaml
