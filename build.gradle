@@ -318,7 +318,7 @@ task helmPackage(type: Exec) {
     commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/"
 }
 
-task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun]) {
+task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmPackage]) {
     helmLint.mustRunAfter copyDeploymentFiles
     helmDryRun.mustRunAfter helmLint
     helmPackage.musRunAfter helmDryRun
