@@ -62,7 +62,7 @@ task helmPushChart(type: Exec) {
     if (!project.ext.isSnapshot) {
         // if we need to setup helm again to push the charts please run the following command to add the repo
         // helm repo add sig-cloudnative-local https://${System.env.ARTIFACTORY_HOST}/artifactory/sig-cloudnative-local
-        commandLine "helm", "push-artifactory", "synopsys-alert*.tgz", "sig-cloudnative-local", "-u", "${project.ext.artifactoryDeployerUsername}", "-p", "${project.ext.artifactoryDeployerPassword}"
+        commandLine "helm", "push-artifactory", "${project.buildDir}/deployment/helm/synopsys-alert/synopsys-alert-${project.version}.tgz", "sig-cloudnative-local", "-u", "${project.ext.artifactoryDeployerUsername}", "-p", "${project.ext.artifactoryDeployerPassword}"
     } else {
         throw new GradleException("'Can not push SNAPSHOT helm charts'")
     }
