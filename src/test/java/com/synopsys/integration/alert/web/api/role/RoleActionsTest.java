@@ -317,7 +317,7 @@ public class RoleActionsTest {
     }
 
     private PermissionModel createPermissionModel() {
-        return new PermissionModel(roleName, context, true, true, true, true, true, true, true, true);
+        return new PermissionModel(descriptorKey.getUniversalKey(), context, true, true, true, true, true, true, true, true);
     }
 
     private DescriptorKey createDescriptorKey(String key) {
