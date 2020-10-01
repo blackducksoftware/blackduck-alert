@@ -100,7 +100,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         // TODO the processing type field should be moved to the ChannelDistributionUIConfig
         // TODO add validation for this field, should add a warning if the User has chosen the Summary processing type with an issue tracker channel
         ConfigField processingField = new EndpointSelectField(KEY_PROCESSING_TYPE, LABEL_PROCESSING, DESCRIPTION_PROCESSING + createProcessingDescription())
-                                          .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)
+                                          .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)
                                           .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)

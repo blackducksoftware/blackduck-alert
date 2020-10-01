@@ -64,10 +64,10 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
         ConfigField vulnerabilityNotificationTypeFilter = new EndpointSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
             DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER)
-                                                              .applyRequestedDataFieldKey(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                               .applyMultiSelect(true)
                                                               .applyClearable(true)
-                                                              .applyPanel(PANEL_NOTIFICATION_FILTERING);
+                                                              .applyPanel(PANEL_NOTIFICATION_FILTERING)
+                                                              .applyRequiredRelatedField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
 
         return List.of(policyNotificationTypeFilter, vulnerabilityNotificationTypeFilter);
     }
