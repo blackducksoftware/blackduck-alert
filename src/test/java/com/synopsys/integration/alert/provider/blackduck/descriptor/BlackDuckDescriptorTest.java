@@ -7,8 +7,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;

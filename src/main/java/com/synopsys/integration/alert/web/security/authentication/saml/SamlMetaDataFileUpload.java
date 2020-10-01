@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.synopsys.integration.alert.common.action.UploadEndpointManager;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;

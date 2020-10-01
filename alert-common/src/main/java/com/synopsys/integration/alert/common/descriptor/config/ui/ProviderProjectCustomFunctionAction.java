@@ -50,7 +50,7 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
 
     @Autowired
     public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.providerDataAccessor = providerDataAccessor;
     }
 

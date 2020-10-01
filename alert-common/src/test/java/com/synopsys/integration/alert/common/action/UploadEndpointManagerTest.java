@@ -18,8 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.UploadValidationFunction;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;

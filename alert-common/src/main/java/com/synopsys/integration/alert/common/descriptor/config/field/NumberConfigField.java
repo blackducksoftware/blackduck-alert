@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;

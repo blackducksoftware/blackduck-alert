@@ -44,12 +44,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 
 @Component
 public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
-    private DescriptorMap descriptorMap;
-    private AuthorizationManager authorizationManager;
+    private final DescriptorMap descriptorMap;
+    private final AuthorizationManager authorizationManager;
 
     @Autowired
     public ChannelSelectCustomFunctionAction(DescriptorMap descriptorMap, AuthorizationManager authorizationManager) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.descriptorMap = descriptorMap;
         this.authorizationManager = authorizationManager;
     }

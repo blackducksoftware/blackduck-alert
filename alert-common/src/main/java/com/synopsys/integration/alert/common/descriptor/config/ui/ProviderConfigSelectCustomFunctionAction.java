@@ -53,7 +53,7 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
 
     @Autowired
     public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }

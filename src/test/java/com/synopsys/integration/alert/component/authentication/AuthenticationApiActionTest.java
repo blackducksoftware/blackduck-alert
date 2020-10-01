@@ -12,7 +12,8 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -24,7 +25,6 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationUIConfig;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
-import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 
 public class AuthenticationApiActionTest {
 
@@ -44,7 +44,7 @@ public class AuthenticationApiActionTest {
         fieldModel.putField(AuthenticationDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
 
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(authenticationUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(AuthenticationDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(AuthenticationDescriptor.KEY_LDAP_SERVER));

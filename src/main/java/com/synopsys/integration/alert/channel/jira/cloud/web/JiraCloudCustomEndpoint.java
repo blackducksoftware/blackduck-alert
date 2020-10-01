@@ -60,7 +60,7 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
 
     @Autowired
     public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;

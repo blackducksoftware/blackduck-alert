@@ -27,13 +27,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthTokenValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthAuthenticateValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthTokenValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component

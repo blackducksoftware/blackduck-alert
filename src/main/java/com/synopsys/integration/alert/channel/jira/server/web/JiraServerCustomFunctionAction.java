@@ -61,7 +61,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
 
     @Autowired
     public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;

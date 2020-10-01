@@ -67,7 +67,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     @Autowired
     protected PolicyNotificationFilterCustomFunctionAction(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
         ConfigurationAccessor configurationAccessor) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
         this.configurationAccessor = configurationAccessor;

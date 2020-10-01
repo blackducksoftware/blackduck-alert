@@ -44,11 +44,11 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
-    private DescriptorMap descriptorMap;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
     public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.descriptorMap = descriptorMap;
     }
 

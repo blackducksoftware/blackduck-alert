@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component

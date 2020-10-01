@@ -14,9 +14,11 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -24,11 +26,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
-import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 
@@ -56,7 +56,7 @@ public class AlertStartupInitializerTest {
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
 
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
+        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
@@ -75,7 +75,7 @@ public class AlertStartupInitializerTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, List.of());
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
+        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
@@ -108,7 +108,7 @@ public class AlertStartupInitializerTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(value);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
+        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
@@ -135,7 +135,7 @@ public class AlertStartupInitializerTest {
         DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, channelDescriptors, providerDescriptors, componentDescriptors);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenThrow(new AlertDatabaseConstraintException("Test Exception"));
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
+        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -174,7 +174,7 @@ public class AlertStartupInitializerTest {
         Mockito.when(environment.getProperty(Mockito.startsWith("ALERT_CHANNEL_"))).thenReturn(value);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationAction(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
+        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);

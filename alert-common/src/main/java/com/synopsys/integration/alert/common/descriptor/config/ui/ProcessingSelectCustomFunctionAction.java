@@ -48,7 +48,7 @@ public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<L
 
     @Autowired
     public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys) throws AlertException {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
                                            .map(IssueTrackerChannelKey::getUniversalKey)
                                            .collect(Collectors.toList());

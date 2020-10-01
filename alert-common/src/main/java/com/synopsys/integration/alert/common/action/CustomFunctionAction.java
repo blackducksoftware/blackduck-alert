@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.action;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -33,10 +34,12 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class CustomFunctionAction<T> {
     public static final String API_FUNCTION_URL = "/api/function";
-    private AuthorizationManager authorizationManager;
+    private final AuthorizationManager authorizationManager;
+    private final FieldModelProcessor fieldModelProcessor;
 
-    public CustomFunctionAction(AuthorizationManager authorizationManager) {
+    public CustomFunctionAction(AuthorizationManager authorizationManager, FieldModelProcessor fieldModelProcessor) {
         this.authorizationManager = authorizationManager;
+        this.fieldModelProcessor = fieldModelProcessor;
     }
 
     public ActionResponse<T> createResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
@@ -44,6 +47,13 @@ public abstract class CustomFunctionAction<T> {
             if (!isAllowed(fieldModel)) {
                 return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
             }
+
+            // TODO
+            //            List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateFieldModel(fieldModel);
+            //            if () {
+            //                return new ActionResponse<>();
+            //            }
+
             return createActionResponse(fieldModel, servletContentWrapper);
         } catch (ResponseStatusException e) {
             return new ActionResponse<>(e.getStatus(), e.getReason());

@@ -47,7 +47,7 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddress
 
     @Autowired
     public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.providerDataAccessor = providerDataAccessor;
     }
 

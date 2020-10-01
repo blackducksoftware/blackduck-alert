@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.common.field;
+package com.synopsys.integration.alert.common.rest;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,8 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -43,16 +45,15 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
 
 @Component
 public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
-    private final FieldValidationAction fieldValidationAction;
+    private final FieldValidationUtility fieldValidationAction;
     private final DescriptorProcessor descriptorProcessor;
 
     @Autowired
-    public FieldModelProcessor(ConfigurationFieldModelConverter fieldModelConverter, FieldValidationAction fieldValidationAction, DescriptorProcessor descriptorProcessor) {
+    public FieldModelProcessor(ConfigurationFieldModelConverter fieldModelConverter, FieldValidationUtility fieldValidationAction, DescriptorProcessor descriptorProcessor) {
         this.fieldModelConverter = fieldModelConverter;
         this.fieldValidationAction = fieldValidationAction;
         this.descriptorProcessor = descriptorProcessor;

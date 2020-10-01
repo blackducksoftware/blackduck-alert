@@ -20,31 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.field.validators;
+package com.synopsys.integration.alert.common.descriptor.config.field.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
-@Component
-public final class EncryptionSettingsValidator extends EncryptionValidator {
-    public static final String ENCRYPTION_MISSING = "Encryption configuration missing.";
-    private EncryptionUtility encryptionUtility;
-
-    @Autowired
-    public EncryptionSettingsValidator(EncryptionUtility encryptionUtility) {
-        this.encryptionUtility = encryptionUtility;
-    }
-
-    @Override
-    public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
-        if (encryptionUtility.isInitialized()) {
-            return ValidationResult.success();
-        }
-        return ValidationResult.errors(ENCRYPTION_MISSING);
-    }
-
+@FunctionalInterface
+public interface ConfigValidationFunction extends BiFunction<FieldValueModel, FieldModel, ValidationResult> {
 }

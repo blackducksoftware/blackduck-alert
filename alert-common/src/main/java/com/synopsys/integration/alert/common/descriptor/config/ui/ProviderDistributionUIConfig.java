@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;

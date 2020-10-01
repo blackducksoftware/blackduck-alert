@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.common.field;
+package com.synopsys.integration.alert.common.descriptor.config.field.validation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +33,13 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
-public class FieldValidationAction {
-    private final Logger logger = LoggerFactory.getLogger(FieldValidationAction.class);
+public class FieldValidationUtility {
+    private final Logger logger = LoggerFactory.getLogger(FieldValidationUtility.class);
 
     public List<AlertFieldStatus> validateConfig(Map<String, ConfigField> descriptorFields, FieldModel fieldModel) {
         logger.debug("Begin validating fields in configuration field model.");

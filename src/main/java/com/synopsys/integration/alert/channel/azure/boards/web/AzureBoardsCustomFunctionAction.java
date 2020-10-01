@@ -77,7 +77,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager) {
-        super(authorizationManager);
+        super(authorizationManager, fieldModelProcessor);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
