@@ -99,9 +99,9 @@ public abstract class CustomFunctionAction<T> {
             String errorMessages = fieldStatuses
                                        .stream()
                                        .filter(hasErrorSeverity)
-                                       .map(status -> createFieldStatusErrorMessage(configFields, status))
+                                       .map(AlertFieldStatus::getFieldMessage)
                                        .collect(Collectors.joining(", "));
-            ActionResponse<T> errorActionResponse = new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("There were errors with the required fields of this action: %s", errorMessages));
+            ActionResponse<T> errorActionResponse = new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("There were errors with the fields related to this action: %s", errorMessages));
             return Optional.of(errorActionResponse);
         }
         return Optional.empty();
@@ -109,11 +109,6 @@ public abstract class CustomFunctionAction<T> {
 
     private ActionResponse<T> createErrorResponse(Exception e) {
         return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("An internal issue occurred while trying to retrieve your data: %s", e.getMessage()));
-    }
-
-    private String createFieldStatusErrorMessage(Map<String, ConfigField> configFields, AlertFieldStatus fieldStatus) {
-        ConfigField relatedField = configFields.get(fieldStatus.getFieldName());
-        return String.format("The related field '%s' had an error: %s", relatedField.getLabel(), fieldStatus.getFieldMessage());
     }
 
 }

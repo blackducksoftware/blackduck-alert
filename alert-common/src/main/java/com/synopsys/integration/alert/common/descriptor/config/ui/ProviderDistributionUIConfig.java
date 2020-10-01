@@ -112,8 +112,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applySearchable(true)
                                             .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
                                             .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
-                                            .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                                            .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                            .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
         List<ConfigField> configFields = List.of(providerConfigIdField, notificationTypesField, processingField, filterByProject, projectNamePattern, configuredProject);

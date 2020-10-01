@@ -22,29 +22,17 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public abstract class EndpointField extends ConfigField {
-    private String buttonLabel;
-    private String url;
-    private Set<String> requestedDataFieldKeys;
+    private final String buttonLabel;
+    private final String url;
 
     public EndpointField(String key, String label, String description, FieldType type, String buttonLabel, String url) {
         super(key, label, description, type);
         this.buttonLabel = buttonLabel;
         this.url = url;
-        this.requestedDataFieldKeys = new HashSet<>();
-    }
-
-    public EndpointField applyRequestedDataFieldKey(String key) {
-        if (key != null) {
-            requestedDataFieldKeys.add(key);
-        }
-        return this;
     }
 
     public String getButtonLabel() {
@@ -53,10 +41,6 @@ public abstract class EndpointField extends ConfigField {
 
     public String getUrl() {
         return url;
-    }
-
-    public Set<String> getRequestedDataFieldKeys() {
-        return requestedDataFieldKeys;
     }
 
 }

@@ -70,9 +70,9 @@ public class JiraServerGlobalUIConfig extends UIConfig {
                                                  .applyDefaultValue(Boolean.FALSE.toString());
 
         ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, LABEL_SERVER_CONFIGURE_PLUGIN, DESCRIPTION_SERVER_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_URL)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_USERNAME)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_URL)
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_USERNAME)
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_PASSWORD);
 
         return List.of(serverUrlField, jiraUserName, jiraPassword, jiraDisablePluginCheck, jiraConfigurePlugin);
     }
