@@ -36,6 +36,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -91,7 +92,7 @@ public class UserManagementAuthoritiesPopulator {
     private Set<String> getRolesFromDatabase(String userName, boolean appendRolePrefix) {
         Function<String, String> function = appendRolePrefix ? roleName -> UserModel.ROLE_PREFIX + roleName : Function.identity();
         Optional<UserModel> userModel = userAccessor.getUser(userName);
-        Set<String> roleNames = userModel.map(UserModel::getRoleNames).orElse(Set.of());
+        Set<String> roleNames = userModel.map(UserModel::getRoleNames).orElse(Set.of(DefaultUserRole.ALERT_USER.name()));
         Set<String> newRoleNames = new LinkedHashSet<>(roleNames.size());
         for (String roleName : roleNames) {
             newRoleNames.add(function.apply(roleName));
