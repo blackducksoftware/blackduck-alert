@@ -49,14 +49,14 @@ public class UserDetailsService implements SAMLUserDetailsService {
         String userName = credential.getNameID().getValue();
         String emailAddress = StringUtils.contains(userName, "@") ? userName : null;
         String[] alertRoles = credential.getAttributeAsStringArray(authoritiesPopulator.getSAMLRoleAttributeName("AlertRoles"));
-        Set<UserRoleModel> roles = Set.of();
-
+        Set<String> existingRoles = Set.of();
         if (alertRoles != null) {
-            Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(userName, Arrays.stream(alertRoles).collect(Collectors.toSet()), false);
-            roles = roleNames.stream()
-                        .map(UserRoleModel::of)
-                        .collect(Collectors.toSet());
+            existingRoles = Arrays.stream(alertRoles).collect(Collectors.toSet());
         }
+        Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(userName, existingRoles, false);
+        Set<UserRoleModel> roles = roleNames.stream()
+                                       .map(UserRoleModel::of)
+                                       .collect(Collectors.toSet());
 
         UserModel userModel = UserModel.newUser(userName, "", emailAddress, AuthenticationType.SAML, roles, true);
         return new UserPrincipal(userModel);
