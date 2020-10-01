@@ -34,9 +34,11 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -52,8 +54,9 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
-        super(authorizationManager, fieldModelProcessor);
+    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap, DescriptorProcessor descriptorProcessor,
+        FieldValidationUtility fieldValidationUtility) {
+        super(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, authorizationManager, descriptorProcessor, fieldValidationUtility);
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }

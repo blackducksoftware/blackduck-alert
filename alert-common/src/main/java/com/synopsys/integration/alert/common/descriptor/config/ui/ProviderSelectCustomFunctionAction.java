@@ -33,8 +33,10 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -47,8 +49,8 @@ public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<Lab
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
-        super(authorizationManager, fieldModelProcessor);
+    public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
+        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, authorizationManager, descriptorProcessor, fieldValidationUtility);
         this.descriptorMap = descriptorMap;
     }
 

@@ -31,9 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -46,8 +49,8 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddress
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor) {
-        super(authorizationManager, fieldModelProcessor);
+    public EmailCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
+        super(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, authorizationManager, descriptorProcessor, fieldValidationUtility);
         this.providerDataAccessor = providerDataAccessor;
     }
 

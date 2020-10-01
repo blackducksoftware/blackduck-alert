@@ -34,8 +34,10 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -48,8 +50,8 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<Labe
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public ChannelSelectCustomFunctionAction(DescriptorMap descriptorMap, AuthorizationManager authorizationManager) {
-        super(authorizationManager, fieldModelProcessor);
+    public ChannelSelectCustomFunctionAction(DescriptorMap descriptorMap, AuthorizationManager authorizationManager, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
+        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, authorizationManager, descriptorProcessor, fieldValidationUtility);
         this.descriptorMap = descriptorMap;
         this.authorizationManager = authorizationManager;
     }
