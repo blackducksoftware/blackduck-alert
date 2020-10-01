@@ -215,7 +215,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         }
 
         if (!existingRole.getName().equals(roleName)) {
-            roleAccessor.updateRoleName(roleId, roleName);
+            authorizationManager.updateRoleName(roleId, roleName);
         }
         Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
         validatePermissions(permissions);
