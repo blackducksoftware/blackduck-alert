@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.web.security.authentication.ldap;
 
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
@@ -31,6 +33,7 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
 import com.synopsys.integration.alert.web.security.authentication.UserManagementAuthoritiesPopulator;
 
 public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
+    private final Logger logger = LoggerFactory.getLogger(MappingLdapAuthoritiesPopulator.class);
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
 
     public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator authoritiesPopulator) {
@@ -40,6 +43,12 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
 
     @Override
     public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String userName) {
-        return authoritiesPopulator.addAdditionalRoles(userName, super.getGroupMembershipRoles(userDn, userName));
+        Set<GrantedAuthority> grantedAuthorities = Set.of();
+        try {
+            grantedAuthorities = super.getGroupMembershipRoles(userDn, userName);
+        } catch (Exception ex) {
+            logger.error("Error determining LDAP group membership", ex);
+        }
+        return authoritiesPopulator.addAdditionalRoles(userName, grantedAuthorities);
     }
 }
