@@ -163,7 +163,6 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
 
     @Override
     protected Optional<RolePermissionModel> findExisting(Long id) {
-        //TODO run tests here, see if there is more than 1 element of Set<UserRoleModel
         return roleAccessor.getRoles(List.of(id))
                    .stream()
                    .findFirst()

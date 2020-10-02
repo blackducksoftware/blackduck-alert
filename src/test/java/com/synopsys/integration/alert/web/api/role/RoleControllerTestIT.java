@@ -79,7 +79,6 @@ public class RoleControllerTestIT extends AlertIntegrationTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
-    //TODO DELETE THIS TEST AFTER
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testCreateDuplicate() throws Exception {
