@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -28,7 +29,6 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingUIConfig;
 import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
-import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
@@ -54,7 +54,7 @@ public class SchedulingGlobalApiActionTest {
         FIELD_HOUR_OF_DAY.setValue("1");
         FIELD_PURGE_FREQUENCY.setValue("1");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL);
 
         Map<String, String> fieldErrorsMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
@@ -70,7 +70,7 @@ public class SchedulingGlobalApiActionTest {
         FIELD_HOUR_OF_DAY.setValue("");
         FIELD_PURGE_FREQUENCY.setValue("");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL);
 
         Map<String, String> fieldErrorsMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
@@ -86,7 +86,7 @@ public class SchedulingGlobalApiActionTest {
         FIELD_HOUR_OF_DAY.setValue("not a number");
         FIELD_PURGE_FREQUENCY.setValue("not a number");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL);
 
         String actualDailyProcessorError = AlertFieldStatusConverter.convertToStringMap(fieldErrors).get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
@@ -104,7 +104,7 @@ public class SchedulingGlobalApiActionTest {
 
         FIELD_HOUR_OF_DAY.setValue("-1");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> initialFieldErrors = fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL);
 
         String actualError = AlertFieldStatusConverter.convertToStringMap(initialFieldErrors).get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
@@ -124,7 +124,7 @@ public class SchedulingGlobalApiActionTest {
 
         FIELD_PURGE_FREQUENCY.setValue("0");
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(schedulingUIConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> initialFieldErrors = fieldValidationAction.validateConfig(configFieldMap, FIELD_MODEL);
         String actualError = AlertFieldStatusConverter.convertToStringMap(initialFieldErrors).get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);

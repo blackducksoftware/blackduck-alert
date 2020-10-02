@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
@@ -68,9 +68,9 @@ public class JiraCloudGlobalUIConfig extends UIConfig {
         ConfigField jiraAccessToken = new PasswordConfigField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, LABEL_API_TOKEN, DESCRIPTION_API_TOKEN, encryptionValidator).applyRequired(true);
         ConfigField jiraDisablePluginCheck = new CheckboxConfigField(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK, LABEL_DISABLE_PLUGIN_CHECK, DESCRIPTION_DISABLE_PLUGIN_CHECK).applyDefaultValue(Boolean.FALSE.toString());
         ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, LABEL_CONFIGURE_PLUGIN, DESCRIPTION_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_URL)
-                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
-                                              .applyRequestedDataFieldKey(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+                                              .applyRequiredRelatedField(JiraCloudDescriptor.KEY_JIRA_URL)
+                                              .applyRequiredRelatedField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS)
+                                              .applyRequiredRelatedField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
         return List.of(jiraUrl, jiraUserName, jiraAccessToken, jiraDisablePluginCheck, jiraConfigurePlugin);
     }

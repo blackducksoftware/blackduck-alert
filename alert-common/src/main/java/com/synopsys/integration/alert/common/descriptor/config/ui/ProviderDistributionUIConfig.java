@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -100,7 +100,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         // TODO the processing type field should be moved to the ChannelDistributionUIConfig
         // TODO add validation for this field, should add a warning if the User has chosen the Summary processing type with an issue tracker channel
         ConfigField processingField = new EndpointSelectField(KEY_PROCESSING_TYPE, LABEL_PROCESSING, DESCRIPTION_PROCESSING + createProcessingDescription())
-                                          .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)
+                                          .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)
                                           .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
@@ -112,8 +112,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applySearchable(true)
                                             .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
                                             .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
-                                            .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                            .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                                            .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                            .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                                             .applyValidationFunctions(this::validateConfiguredProject);
 
         List<ConfigField> configFields = List.of(providerConfigIdField, notificationTypesField, processingField, filterByProject, projectNamePattern, configuredProject);

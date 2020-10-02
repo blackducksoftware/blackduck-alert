@@ -27,13 +27,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthTokenValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthAuthenticateValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.AzureOAuthTokenValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
@@ -71,9 +71,9 @@ public class AzureBoardsGlobalUIConfig extends UIConfig {
         ConfigField clientId = new TextInputConfigField(AzureBoardsDescriptor.KEY_CLIENT_ID, LABEL_CLIENT_ID, DESCRIPTION_CLIENT_ID).applyRequired(true);
         ConfigField clientSecret = new PasswordConfigField(AzureBoardsDescriptor.KEY_CLIENT_SECRET, LABEL_CLIENT_SECRET, DESCRIPTION_CLIENT_SECRET, encryptionValidator).applyRequired(true);
         ConfigField configureOAuth = new OAuthEndpointButtonField(AzureBoardsDescriptor.KEY_OAUTH, LABEL_OAUTH, DESCRIPTION_OAUTH, BUTTON_LABEL_OAUTH)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_ID)
-                                         .applyRequestedDataFieldKey(AzureBoardsDescriptor.KEY_CLIENT_SECRET)
+                                         .applyRequiredRelatedField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME)
+                                         .applyRequiredRelatedField(AzureBoardsDescriptor.KEY_CLIENT_ID)
+                                         .applyRequiredRelatedField(AzureBoardsDescriptor.KEY_CLIENT_SECRET)
                                          .applyValidationFunctions(azureOAuthAuthenticateValidator);
         // FIXME when we have consistent result objects containing the HTTP status code, content, and warnings versus errors this validator can be added.
         //.applyValidationFunctions(azureOAuthAuthenticateValidator, authTokenValidator);

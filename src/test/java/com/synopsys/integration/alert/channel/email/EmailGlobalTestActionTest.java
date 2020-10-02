@@ -27,7 +27,8 @@ import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplati
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -47,7 +48,6 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.common.field.FieldValidationAction;
 
 public class EmailGlobalTestActionTest {
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
@@ -62,7 +62,7 @@ public class EmailGlobalTestActionTest {
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
 
         Map<String, String> fieldErrorMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
@@ -85,7 +85,7 @@ public class EmailGlobalTestActionTest {
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
 
         Map<String, String> fieldErrorMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);
@@ -109,7 +109,7 @@ public class EmailGlobalTestActionTest {
 
         FieldModel fieldModel = new FieldModel(EMAIL_CHANNEL_KEY.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
-        FieldValidationAction fieldValidationAction = new FieldValidationAction();
+        FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
 
         Map<String, String> fieldErrorMap = AlertFieldStatusConverter.convertToStringMap(fieldErrors);

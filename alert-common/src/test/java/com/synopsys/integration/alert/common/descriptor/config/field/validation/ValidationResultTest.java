@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.descriptor.config.field.validators;
+package com.synopsys.integration.alert.common.descriptor.config.field.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

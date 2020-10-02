@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +48,7 @@ import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActio
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -67,6 +67,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -75,8 +76,6 @@ import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.web.common.PKIXErrorResponseFactory;
-import com.synopsys.integration.alert.web.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.web.common.field.FieldModelProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -280,7 +279,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
-        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         UUID jobId = null;
         if (StringUtils.isNotBlank(resource.getJobId())) {
             jobId = UUID.fromString(resource.getJobId());
@@ -289,10 +287,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         if (responseModel.hasErrors()) {
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
-        for (FieldModel fieldModel : resource.getFieldModels()) {
-            fieldStatuses.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
-        }
 
+        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateJobFieldModel(resource);
         if (fieldStatuses.isEmpty()) {
             responseModel = ValidationResponseModel.success("Valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -320,10 +316,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                  .map(MultiJobFieldModel::getJobs)
                                                  .orElse(List.of());
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-            for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-                fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
-            }
+            List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }

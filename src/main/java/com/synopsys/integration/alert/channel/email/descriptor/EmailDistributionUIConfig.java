@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.EndpointTableSelectField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.ValidationResult;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -69,8 +69,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
                                                    .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
                                                    .applySearchable(true)
-                                                   .applyRequestedDataFieldKey(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                   .applyRequestedDataFieldKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+                                                   .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                   .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
                                                        .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
                                                        .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);

@@ -43,9 +43,9 @@ class OAuthEndpointButtonField extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, requestedDataFieldKeys
+            fieldKey, csrfToken, onChange, currentConfig, endpoint, requiredRelatedFields
         } = this.props;
-        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requestedDataFieldKeys);
+        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
@@ -146,7 +146,7 @@ OAuthEndpointButtonField.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
-    requestedDataFieldKeys: PropTypes.array,
+    requiredRelatedFields: PropTypes.array,
     value: PropTypes.bool,
     name: PropTypes.string,
     errorValue: PropTypes.string,
@@ -158,7 +158,7 @@ OAuthEndpointButtonField.defaultProps = {
     id: 'oauthEndpointButtonFieldId',
     value: false,
     fields: [],
-    requestedDataFieldKeys: [],
+    requiredRelatedFields: [],
     name: '',
     errorValue: null,
     readOnly: false,

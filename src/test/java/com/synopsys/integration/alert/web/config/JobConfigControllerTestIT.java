@@ -228,7 +228,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         FieldValueModel channel = new FieldValueModel(List.of("channel_slack"), true);
         FieldValueModel webhook = new FieldValueModel(List.of("http://slack_webhook_url"), true);
 
-        Map<String, FieldValueModel> fields = Map.of(SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
+        Map<String, FieldValueModel> fields = Map.of(
+            SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDistributionUIConfig.KEY_NAME, name,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,

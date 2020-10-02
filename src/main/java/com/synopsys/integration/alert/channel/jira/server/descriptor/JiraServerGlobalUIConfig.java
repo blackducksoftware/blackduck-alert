@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointButtonField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validators.EncryptionValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
@@ -70,9 +70,9 @@ public class JiraServerGlobalUIConfig extends UIConfig {
                                                  .applyDefaultValue(Boolean.FALSE.toString());
 
         ConfigField jiraConfigurePlugin = new EndpointButtonField(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, LABEL_SERVER_CONFIGURE_PLUGIN, DESCRIPTION_SERVER_CONFIGURE_PLUGIN, BUTTON_LABEL_PLUGIN_CONFIGURATION)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_URL)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_USERNAME)
-                                              .applyRequestedDataFieldKey(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_URL)
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_USERNAME)
+                                              .applyRequiredRelatedField(JiraServerDescriptor.KEY_SERVER_PASSWORD);
 
         return List.of(serverUrlField, jiraUserName, jiraPassword, jiraDisablePluginCheck, jiraConfigurePlugin);
     }
