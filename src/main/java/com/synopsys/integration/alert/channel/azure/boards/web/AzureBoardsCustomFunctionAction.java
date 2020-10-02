@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsPr
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -79,8 +79,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, ConfigActions configActions, AuthorizationManager authorizationManager,
-        DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
-        super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorProcessor, fieldValidationUtility);
+        DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorMap, fieldValidationUtility);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;

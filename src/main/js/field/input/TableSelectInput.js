@@ -209,10 +209,10 @@ class TableSelectInput extends Component {
             success: false
         });
         const {
-            fieldKey, csrfToken, currentConfig, endpoint, requestedDataFieldKeys
+            fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
         } = this.props;
 
-        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requestedDataFieldKeys);
+        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         return request.then((response) => {
             this.setState({
@@ -480,11 +480,11 @@ TableSelectInput.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
     columns: PropTypes.array.isRequired,
-    requestedDataFieldKeys: PropTypes.array
+    requiredRelatedFields: PropTypes.array
 };
 
 TableSelectInput.defaultProps = {
-    requestedDataFieldKeys: []
+    requiredRelatedFields: []
 };
 
 const mapStateToProps = (state) => ({

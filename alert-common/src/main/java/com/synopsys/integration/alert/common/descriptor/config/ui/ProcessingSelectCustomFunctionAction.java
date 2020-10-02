@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -48,8 +48,8 @@ public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<L
     private final List<String> issueTrackerChannelKeys;
 
     @Autowired
-    public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
-        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, authorizationManager, descriptorProcessor, fieldValidationUtility);
+    public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, authorizationManager, descriptorMap, fieldValidationUtility);
         this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
                                            .map(IssueTrackerChannelKey::getUniversalKey)
                                            .collect(Collectors.toList());

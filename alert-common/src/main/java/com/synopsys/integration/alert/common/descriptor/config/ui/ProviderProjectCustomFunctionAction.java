@@ -33,7 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectSelectOption;
@@ -50,8 +50,8 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
-        super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorProcessor, fieldValidationUtility);
+    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorMap, fieldValidationUtility);
         this.providerDataAccessor = providerDataAccessor;
     }
 

@@ -67,7 +67,7 @@ function buildSelectInput(items, field) {
 
 function buildEndpointSelectInput(items, field) {
     const {
-        searchable, multiSelect, readOnly, url, key, removeSelected, clearable, requestedDataFieldKeys
+        searchable, multiSelect, readOnly, url, key, removeSelected, clearable, requiredRelatedFields
     } = field;
 
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -83,7 +83,7 @@ function buildEndpointSelectInput(items, field) {
     });
     return (
         <EndpointSelectField
-            requestedDataFieldKeys={requestedDataFieldKeys}
+            requiredRelatedFields={requiredRelatedFields}
             endpoint={url}
             fieldKey={key}
             {...items}
@@ -151,7 +151,7 @@ function buildCounterField(items, field) {
 function buildEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, url, successBox, subFields, key, requestedDataFieldKeys
+        buttonLabel, url, successBox, subFields, key, requiredRelatedFields
     } = field;
     const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
@@ -164,7 +164,7 @@ function buildEndpointField(items, field) {
     return (
         <EndpointButtonField
             fields={subFields}
-            requestedDataFieldKeys={requestedDataFieldKeys}
+            requiredRelatedFields={requiredRelatedFields}
             buttonLabel={buttonLabel}
             endpoint={url}
             successBox={successBox}
@@ -176,7 +176,7 @@ function buildEndpointField(items, field) {
 
 function buildTableSelectInput(items, field) {
     const {
-        url, key, columns, paged, searchable, requestedDataFieldKeys
+        url, key, columns, paged, searchable, requiredRelatedFields
     } = field;
     const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
@@ -186,7 +186,7 @@ function buildTableSelectInput(items, field) {
         searchable
     });
 
-    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requestedDataFieldKeys={requestedDataFieldKeys} {...items} />;
+    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requiredRelatedFields={requiredRelatedFields} {...items} />;
 }
 
 function buildUploadFileButtonField(items, field) {
@@ -216,7 +216,7 @@ function buildUploadFileButtonField(items, field) {
 function buildOAuthEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, url, successBox, subFields, key, requestedDataFieldKeys
+        buttonLabel, url, successBox, subFields, key, requiredRelatedFields
     } = field;
     const checkedValue = convertStringToBoolean(value);
     const { readOnly } = field;
@@ -229,7 +229,7 @@ function buildOAuthEndpointField(items, field) {
     return (
         <OAuthEndpointButtonField
             fields={subFields}
-            requestedDataFieldKeys={requestedDataFieldKeys}
+            requiredRelatedFields={requiredRelatedFields}
             buttonLabel={buttonLabel}
             endpoint={url}
             successBox={successBox}

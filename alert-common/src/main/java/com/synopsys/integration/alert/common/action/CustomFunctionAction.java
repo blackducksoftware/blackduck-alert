@@ -22,25 +22,28 @@
  */
 package com.synopsys.integration.alert.common.action;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.github.jsonldjava.shaded.com.google.common.base.Predicate;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class CustomFunctionAction<T> {
@@ -48,13 +51,13 @@ public abstract class CustomFunctionAction<T> {
 
     private final String fieldKey;
     private final AuthorizationManager authorizationManager;
-    private final DescriptorProcessor descriptorProcessor;
+    private final DescriptorMap descriptorMap;
     private final FieldValidationUtility fieldValidationUtility;
 
-    public CustomFunctionAction(String fieldKey, AuthorizationManager authorizationManager, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
+    public CustomFunctionAction(String fieldKey, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
         this.fieldKey = fieldKey;
         this.authorizationManager = authorizationManager;
-        this.descriptorProcessor = descriptorProcessor;
+        this.descriptorMap = descriptorMap;
         this.fieldValidationUtility = fieldValidationUtility;
     }
 
@@ -85,8 +88,24 @@ public abstract class CustomFunctionAction<T> {
 
     // TODO consider making custom-endpoints declaring a validation endpoint that must be checked first by the UI
     private Optional<ActionResponse<T>> validateRelatedFieldsAndCreateErrorResponseIfNecessary(FieldModel fieldModel) {
-        List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
-        Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
+        // TODO replace this with a cleaner lookup
+        ConfigContextEnum fieldModelContext = ConfigContextEnum.valueOf(fieldModel.getContext());
+        List<UIConfig> uiConfigs = descriptorMap.getDescriptorMap().values()
+                                       .stream()
+                                       .filter(Descriptor::hasUIConfigs)
+                                       .map(descriptor -> descriptor.getUIConfig(fieldModelContext))
+                                       .flatMap(Optional::stream)
+                                       .collect(Collectors.toList());
+
+        Map<String, ConfigField> configFields = new HashMap<>();
+        for (UIConfig uiConfig : uiConfigs) {
+            for (ConfigField configField : uiConfig.getFields()) {
+                String configFieldKey = configField.getKey();
+                if (!configFields.containsKey(configFieldKey)) {
+                    configFields.put(configFieldKey, configField);
+                }
+            }
+        }
 
         ConfigField configField = configFields.get(fieldKey);
         List<AlertFieldStatus> fieldStatuses = fieldValidationUtility.validateRelatedFields(configField, configFields, fieldModel);

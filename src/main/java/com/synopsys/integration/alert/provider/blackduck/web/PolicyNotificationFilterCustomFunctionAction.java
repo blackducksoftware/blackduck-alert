@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -69,8 +69,8 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
 
     @Autowired
     protected PolicyNotificationFilterCustomFunctionAction(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
-        ConfigurationAccessor configurationAccessor, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
-        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, authorizationManager, descriptorProcessor, fieldValidationUtility);
+        ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, authorizationManager, descriptorMap, fieldValidationUtility);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
         this.configurationAccessor = configurationAccessor;

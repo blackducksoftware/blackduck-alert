@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -62,9 +62,9 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorProcessor descriptorProcessor,
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
         FieldValidationUtility fieldValidationUtility) {
-        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, authorizationManager, descriptorProcessor, fieldValidationUtility);
+        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;

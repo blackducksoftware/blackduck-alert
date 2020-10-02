@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -61,9 +61,9 @@ public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorProcessor descriptorProcessor,
+    public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
         FieldValidationUtility fieldValidationUtility) {
-        super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, authorizationManager, descriptorProcessor, fieldValidationUtility);
+        super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
         this.jiraChannelKey = jiraChannelKey;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;

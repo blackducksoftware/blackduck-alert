@@ -50,7 +50,7 @@ public class ProviderSelectCustomFunctionAction extends CustomFunctionAction<Lab
 
     @Autowired
     public ProviderSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, DescriptorProcessor descriptorProcessor, FieldValidationUtility fieldValidationUtility) {
-        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, authorizationManager, descriptorProcessor, fieldValidationUtility);
+        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, authorizationManager, descriptorMap, fieldValidationUtility);
         this.descriptorMap = descriptorMap;
     }
 
