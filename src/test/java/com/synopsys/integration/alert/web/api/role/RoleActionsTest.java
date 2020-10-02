@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.component.users.UserManagementDescriptorKe
 import com.synopsys.integration.alert.web.api.role.util.PermissionModelUtil;
 
 public class RoleActionsTest {
-    private final String id = "1L";
     private final String roleName = "roleName";
     private final String context = "GLOBAL";
 
@@ -49,7 +48,7 @@ public class RoleActionsTest {
     @Test
     public void createWithoutChecksTest() throws Exception {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(1L, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
         Mockito.when(authorizationManager.createRoleWithPermissions(Mockito.eq(roleName), Mockito.any())).thenReturn(userRoleModel);
@@ -65,7 +64,7 @@ public class RoleActionsTest {
     @Test
     public void createWithoutChecksErrorTest() throws Exception {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
         Mockito.when(authorizationManager.createRoleWithPermissions(Mockito.eq(roleName), Mockito.any())).thenThrow(new AlertDatabaseConstraintException("Exception for test"));
 
@@ -168,7 +167,7 @@ public class RoleActionsTest {
     @Test
     public void testWithoutChecksTest() {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
         Mockito.when(roleAccessor.doesRoleNameExist(Mockito.eq(roleName))).thenReturn(false);
 
@@ -183,7 +182,7 @@ public class RoleActionsTest {
     @Test
     public void validateWithoutChecksTest() {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
         Mockito.when(roleAccessor.doesRoleNameExist(Mockito.eq(roleName))).thenReturn(false);
 
@@ -198,7 +197,7 @@ public class RoleActionsTest {
     @Test
     public void validateWithoutChecksMissingRoleNameTest() {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, "", Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, "", Set.of(permissionModel));
 
         Mockito.when(roleAccessor.doesRoleNameExist(Mockito.eq(roleName))).thenReturn(true);
 
@@ -213,7 +212,7 @@ public class RoleActionsTest {
     @Test
     public void validateWithoutChecksBadRequestTest() {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
         Mockito.when(roleAccessor.doesRoleNameExist(Mockito.eq(roleName))).thenReturn(true);
 
@@ -230,7 +229,7 @@ public class RoleActionsTest {
         String newRoleName = "newRoleName";
         Long longId = 1L;
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, newRoleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, newRoleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(longId, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
         Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of(userRoleModel));
@@ -239,7 +238,7 @@ public class RoleActionsTest {
         RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap, List.of(descriptorKey));
         ActionResponse<RolePermissionModel> rolePermissionModelActionResponse = roleActions.updateWithoutChecks(1L, rolePermissionModel);
 
-        Mockito.verify(roleAccessor).updateRoleName(Mockito.eq(longId), Mockito.eq(newRoleName));
+        Mockito.verify(authorizationManager).updateRoleName(Mockito.eq(longId), Mockito.eq(newRoleName));
         Mockito.verify(authorizationManager).updatePermissionsForRole(Mockito.anyString(), Mockito.any());
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
@@ -250,7 +249,7 @@ public class RoleActionsTest {
     @Test
     public void updateWithoutChecksBadRequestTest() {
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, roleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(1L, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
         UserRoleModel userRoleModelInUse = new UserRoleModel(2L, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
@@ -269,7 +268,7 @@ public class RoleActionsTest {
     public void updateWithoutChecksNoContentTest() {
         String newRoleName = "newRoleName";
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, newRoleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, newRoleName, Set.of(permissionModel));
 
         Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of());
 
@@ -286,7 +285,7 @@ public class RoleActionsTest {
         String newRoleName = "newRoleName";
         Long longId = 1L;
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(id, newRoleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, newRoleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(longId, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
         Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of(userRoleModel));
@@ -296,7 +295,7 @@ public class RoleActionsTest {
         RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap, List.of(descriptorKey));
         ActionResponse<RolePermissionModel> rolePermissionModelActionResponse = roleActions.updateWithoutChecks(1L, rolePermissionModel);
 
-        Mockito.verify(roleAccessor).updateRoleName(Mockito.eq(longId), Mockito.eq(newRoleName));
+        Mockito.verify(authorizationManager).updateRoleName(Mockito.eq(longId), Mockito.eq(newRoleName));
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
