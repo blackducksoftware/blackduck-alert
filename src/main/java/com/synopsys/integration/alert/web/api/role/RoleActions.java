@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -75,7 +74,6 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         try {
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
-            validatePermissions(permissions);
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
@@ -138,10 +136,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                     return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The role name is already in use");
                 }
                 if (!existingRole.get().getName().equals(roleName)) {
-                    roleAccessor.updateRoleName(id, roleName);
+                    authorizationManager.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
-                validatePermissions(permissions);
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
@@ -155,7 +152,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     @Override
     protected ValidationActionResponse validateWithoutChecks(RolePermissionModel resource) {
         ValidationResponseModel responseModel;
-        List<AlertFieldStatus> alertFieldStatus = fullyValidateRoleNameField(resource.getRoleName());
+        List<AlertFieldStatus> alertFieldStatus = fullyValidateRoleNameField(resource);
         if (alertFieldStatus.isEmpty()) {
             responseModel = ValidationResponseModel.success("The role name is valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -167,77 +164,11 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     @Override
     protected Optional<RolePermissionModel> findExisting(Long id) {
         //TODO run tests here, see if there is more than 1 element of Set<UserRoleModel
-        return roleAccessor.getRoles(List.of(id)).stream().findFirst().map(this::convertUserRoleModel);
-    }
-
-    //OLD CODE HERE:
-    /*
-    public List<RolePermissionModel> getRoles() {
-        return roleAccessor.getRoles().stream()
-                   .map(this::convertUserRoleModel)
-                   .collect(Collectors.toList());
-    }
-
-    public ValidationResponseModel validateRoleFields(RolePermissionModel rolePermissionModel) {
-        return validateRoleNameFieldRequired(rolePermissionModel.getRoleName())
-                   .map(requiredFieldError -> ValidationResponseModel.fromStatusCollection("There were problems with the role configuration", List.of(requiredFieldError)))
-                   .orElseGet(() -> ValidationResponseModel.success("The role name is valid"));
-    }
-
-    public UserRoleModel createRole(RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertFieldException, AlertConfigurationException {
-        String roleName = rolePermissionModel.getRoleName();
-        List<AlertFieldStatus> fieldErrors = fullyValidateRoleNameField(roleName);
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-
-        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
-        validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
-        return userRoleModel;
-    }
-
-    public UserRoleModel updateRole(Long roleId, RolePermissionModel rolePermissionModel) throws AlertDatabaseConstraintException, AlertConfigurationException, AlertFieldException {
-        String roleName = rolePermissionModel.getRoleName();
-        Optional<AlertFieldStatus> roleNameMissingError = validateRoleNameFieldRequired(roleName);
-        if (roleNameMissingError.isPresent()) {
-            throw AlertFieldException.singleFieldError(roleNameMissingError.get());
-        }
-
-        UserRoleModel existingRole = getExistingRoleOrThrow404(roleId);
-        boolean targetRoleNameIsUsedByDifferentRole = roleAccessor.getRoles()
-                                                          .stream()
-                                                          .filter(role -> !role.getId().equals(existingRole.getId()))
-                                                          .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
-        if (targetRoleNameIsUsedByDifferentRole) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The role name is already in use");
-        }
-
-        if (!existingRole.getName().equals(roleName)) {
-            authorizationManager.updateRoleName(roleId, roleName);
-        }
-        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
-        validatePermissions(permissions);
-        PermissionMatrixModel permissionMatrixModel = convertToPermissionMatrixModel(permissions);
-        PermissionMatrixModel updatedPermissionsMatrixModel = authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
-        return new UserRoleModel(roleId, roleName, true, updatedPermissionsMatrixModel);
-    }
-
-    public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
-        getExistingRoleOrThrow404(roleId);
-        authorizationManager.deleteRole(roleId);
-    }
-
-    // TODO update this when response statuses are handled consistently across actions and controllers
-    private UserRoleModel getExistingRoleOrThrow404(Long roleId) {
-        return roleAccessor.getRoles(List.of(roleId))
+        return roleAccessor.getRoles(List.of(id))
                    .stream()
                    .findFirst()
-                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                   .map(this::convertUserRoleModel);
     }
-
-     */
 
     private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
         String roleName = userRoleModel.getName();
@@ -270,53 +201,20 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         return permissionMatrix;
     }
 
-    /*
-    private PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {
-        Map<PermissionKey, Integer> permissionMatrix = new HashMap<>();
-        for (PermissionModel permissionModel : permissionModels) {
-            String descriptorKey = permissionModel.getDescriptorName();
-            String context = permissionModel.getContext();
-            PermissionKey permissionKey = new PermissionKey(context, descriptorKey);
-
-            int accessOperationsBits = 0;
-            if (permissionModel.isCreate()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.CREATE.getBit());
-            }
-            if (permissionModel.isRead()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.READ.getBit());
-            }
-            if (permissionModel.isDelete()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.DELETE.getBit());
-            }
-            if (permissionModel.isExecute()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.EXECUTE.getBit());
-            }
-            if (permissionModel.isWrite()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.WRITE.getBit());
-            }
-            if (permissionModel.isUploadDelete()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_DELETE.getBit());
-            }
-            if (permissionModel.isUploadRead()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_READ.getBit());
-            }
-            if (permissionModel.isUploadWrite()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_WRITE.getBit());
-            }
-
-            permissionMatrix.put(permissionKey, accessOperationsBits);
-        }
-        return new PermissionMatrixModel(permissionMatrix);
-    }
-     */
-
-    private List<AlertFieldStatus> fullyValidateRoleNameField(String roleName) {
+    private List<AlertFieldStatus> fullyValidateRoleNameField(RolePermissionModel rolePermissionModel) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        validateRoleNameFieldRequired(roleName)
-            .ifPresent(fieldStatuses::add);
-        boolean exists = roleAccessor.doesRoleNameExist(roleName);
-        if (exists) {
-            fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
+        String roleName = rolePermissionModel.getRoleName();
+
+        validateRoleNameFieldRequired(roleName).ifPresent(fieldStatuses::add);
+
+        Set<PermissionModel> permissions = rolePermissionModel.getPermissions();
+        validatePermissions(permissions).ifPresent(fieldStatuses::add);
+
+        if (rolePermissionModel.getId() == null) {
+            boolean exists = roleAccessor.doesRoleNameExist(roleName);
+            if (exists) {
+                fieldStatuses.add(AlertFieldStatus.error(FIELD_KEY_ROLE_NAME, "A role with that name already exists."));
+            }
         }
         return fieldStatuses;
     }
@@ -328,15 +226,17 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         return Optional.empty();
     }
 
-    private void validatePermissions(Set<PermissionModel> permissionModels) throws AlertConfigurationException {
+    private Optional<AlertFieldStatus> validatePermissions(Set<PermissionModel> permissionModels) {
         Set<PermissionKey> descriptorContexts = new HashSet<>();
         for (PermissionModel permissionModel : permissionModels) {
             PermissionKey pair = new PermissionKey(permissionModel.getContext(), permissionModel.getDescriptorName());
             if (descriptorContexts.contains(pair)) {
-                throw new AlertConfigurationException(String.format("Can't save duplicate permissions for a role. Duplicate permission for '%s' with context '%s' found.", pair.getDescriptorName(), pair.getContext()));
+                return Optional.of(AlertFieldStatus.error(RoleActions.FIELD_KEY_ROLE_NAME,
+                    String.format("Can't save duplicate permissions for a role. Duplicate permission for '%s' with context '%s' found.", pair.getDescriptorName(), pair.getContext())));
             } else {
                 descriptorContexts.add(pair);
             }
         }
+        return Optional.empty();
     }
 }
