@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -55,7 +56,8 @@ public class UserManagementAuthoritiesPopulatorTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
 
         GrantedAuthority testAdminRole = new SimpleGrantedAuthority(roleNameMapping);
-        Set<GrantedAuthority> inputRoles = Set.of(testAdminRole);
+        GrantedAuthority alertUserRole = new SimpleGrantedAuthority("ROLE_" + DefaultUserRole.ALERT_USER.name());
+        Set<GrantedAuthority> inputRoles = Set.of(alertUserRole, testAdminRole);
         Set<GrantedAuthority> actualRoles = authoritiesPopulator.addAdditionalRoles(TEST_USERNAME, inputRoles);
 
         assertEquals(inputRoles, actualRoles);
@@ -67,7 +69,7 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenThrow(AlertDatabaseConstraintException.class);
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
-        Set<String> inputRoles = Set.of(roleNameMapping);
+        Set<String> inputRoles = Set.of(DefaultUserRole.ALERT_USER.name(), roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
         assertEquals(inputRoles, actualRoles);
@@ -95,7 +97,7 @@ public class UserManagementAuthoritiesPopulatorTest {
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
         UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
-        Set<String> inputRoles = Set.of(roleNameMapping);
+        Set<String> inputRoles = Set.of(DefaultUserRole.ALERT_USER.name(), roleNameMapping);
         Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
 
         assertEquals(inputRoles, actualRoles);
