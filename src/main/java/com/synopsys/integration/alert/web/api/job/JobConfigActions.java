@@ -290,7 +290,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
         for (FieldModel fieldModel : resource.getFieldModels()) {
-            fieldStatuses.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
+            fieldStatuses.addAll(fieldModelProcessor.validateFieldModelFromJob(resource, fieldModel));
         }
 
         if (fieldStatuses.isEmpty()) {
@@ -322,7 +322,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = new ArrayList<>();
             for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-                fieldErrors.addAll(fieldModelProcessor.validateFieldModel(fieldModel));
+                fieldErrors.addAll(fieldModelProcessor.validateFieldModelFromJob(jobFieldModel, fieldModel));
             }
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));

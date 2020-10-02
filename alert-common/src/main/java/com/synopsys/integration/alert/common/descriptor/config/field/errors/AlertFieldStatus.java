@@ -37,7 +37,7 @@ public class AlertFieldStatus extends AlertSerializableModel {
         return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, fieldWarningMessage);
     }
 
-    private AlertFieldStatus(String fieldName, FieldStatusSeverity severity, String fieldMessage) {
+    public AlertFieldStatus(String fieldName, FieldStatusSeverity severity, String fieldMessage) {
         this.fieldName = fieldName;
         this.severity = severity;
         this.fieldMessage = fieldMessage;

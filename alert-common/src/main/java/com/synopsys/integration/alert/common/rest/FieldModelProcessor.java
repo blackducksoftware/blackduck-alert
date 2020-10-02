@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Component
@@ -125,6 +126,20 @@ public class FieldModelProcessor {
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         return fieldValidationAction.validateConfig(configFields, fieldModel);
+    }
+
+    public List<AlertFieldStatus> validateFieldModelFromJob(JobFieldModel jobFieldModel, FieldModel targetFieldModel) {
+        Map<String, ConfigField> configFields = new HashMap<>();
+        for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {
+            List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
+            for (ConfigField fieldFromModel : fieldsFromModel) {
+                String fieldKey = fieldFromModel.getKey();
+                if (!configFields.containsKey(fieldKey)) {
+                    configFields.put(fieldKey, fieldFromModel);
+                }
+            }
+        }
+        return fieldValidationAction.validateConfig(configFields, targetFieldModel);
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {

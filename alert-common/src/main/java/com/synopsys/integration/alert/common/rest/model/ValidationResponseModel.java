@@ -23,11 +23,12 @@
 package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     private String message;
@@ -45,7 +46,20 @@ public class ValidationResponseModel extends AlertSerializableModel {
     }
 
     public static ValidationResponseModel fromStatusCollection(String message, Collection<AlertFieldStatus> fieldStatuses) {
-        Map<String, AlertFieldStatus> fieldNameToStatus = DataStructureUtils.mapToValues(fieldStatuses, AlertFieldStatus::getFieldName);
+        Map<String, AlertFieldStatus> fieldNameToStatus = new HashMap<>();
+        for (AlertFieldStatus fieldStatus : fieldStatuses) {
+            String fieldName = fieldStatus.getFieldName();
+            AlertFieldStatus existingStatus = fieldNameToStatus.get(fieldName);
+            if (null != existingStatus) {
+                if (existingStatus.getSeverity().equals(fieldStatus.getSeverity())) {
+                    String combinedMessage = String.format("%s, %s", existingStatus.getFieldMessage(), fieldStatus.getFieldMessage());
+                    fieldNameToStatus.put(fieldName, new AlertFieldStatus(fieldName, fieldStatus.getSeverity(), combinedMessage));
+                } else if (FieldStatusSeverity.WARNING.equals(fieldStatus.getSeverity())) {
+                    continue;
+                }
+            }
+            fieldNameToStatus.put(fieldName, fieldStatus);
+        }
         return new ValidationResponseModel(message, fieldNameToStatus);
     }
 
