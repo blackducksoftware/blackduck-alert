@@ -93,13 +93,20 @@ public class AuthenticationTestAction extends TestAction {
         if (!ldapProvider.isPresent()) {
             errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
         } else {
-            Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(userName,
-                fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_PASSWORD).orElse(""));
-            Authentication authentication = ldapProvider.get().authenticate(pendingAuthentication);
-            if (!authentication.isAuthenticated()) {
+            try {
+                Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(userName,
+                    fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_PASSWORD).orElse(""));
+                Authentication authentication = ldapProvider.get().authenticate(pendingAuthentication);
+                if (!authentication.isAuthenticated()) {
+                    errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
+                }
+                authentication.setAuthenticated(false);
+            } catch (Exception ex) {
+                logger.error("Exception occurred testing LDAP authentication", ex);
+                String exceptionMessage = ex.getMessage();
+                errorMessage = String.format("%s Additional details: %s", errorMessage, exceptionMessage);
                 errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
             }
-            authentication.setAuthenticated(false);
         }
 
         if (!errors.isEmpty()) {
