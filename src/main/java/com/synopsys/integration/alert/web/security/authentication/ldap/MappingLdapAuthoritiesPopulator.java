@@ -45,8 +45,10 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
 
     @Override
     public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String userName) {
-        //The parent class adds the additional roles to the set of roles returned by this method.
-        // therefore it needs to return a mutable set.
+        /*
+            The parent class adds the additional roles to the set of roles returned by this method.
+            It needs to return a mutable set.
+         */
         Set<GrantedAuthority> grantedAuthorities = new LinkedHashSet<>();
         try {
             grantedAuthorities.addAll(super.getGroupMembershipRoles(userDn, userName));
