@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -128,9 +129,10 @@ public class FieldModelProcessor {
         return fieldValidationAction.validateConfig(configFields, fieldModel);
     }
 
-    public List<AlertFieldStatus> validateFieldModelFromJob(JobFieldModel jobFieldModel, FieldModel targetFieldModel) {
+    public List<AlertFieldStatus> validateJobFieldModel(JobFieldModel jobFieldModel) {
         Map<String, ConfigField> configFields = new HashMap<>();
-        for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {
+        Set<FieldModel> fieldModels = jobFieldModel.getFieldModels();
+        for (FieldModel singleFieldModelFromJob : fieldModels) {
             List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
             for (ConfigField fieldFromModel : fieldsFromModel) {
                 String fieldKey = fieldFromModel.getKey();
@@ -139,7 +141,7 @@ public class FieldModelProcessor {
                 }
             }
         }
-        return fieldValidationAction.validateConfig(configFields, targetFieldModel);
+        return fieldValidationAction.validateConfig(configFields, fieldModels);
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {

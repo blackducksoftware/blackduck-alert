@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -280,7 +279,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
-        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         UUID jobId = null;
         if (StringUtils.isNotBlank(resource.getJobId())) {
             jobId = UUID.fromString(resource.getJobId());
@@ -289,10 +287,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         if (responseModel.hasErrors()) {
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
-        for (FieldModel fieldModel : resource.getFieldModels()) {
-            fieldStatuses.addAll(fieldModelProcessor.validateFieldModelFromJob(resource, fieldModel));
-        }
 
+        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateJobFieldModel(resource);
         if (fieldStatuses.isEmpty()) {
             responseModel = ValidationResponseModel.success("Valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -320,10 +316,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                  .map(MultiJobFieldModel::getJobs)
                                                  .orElse(List.of());
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-            for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-                fieldErrors.addAll(fieldModelProcessor.validateFieldModelFromJob(jobFieldModel, fieldModel));
-            }
+            List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
