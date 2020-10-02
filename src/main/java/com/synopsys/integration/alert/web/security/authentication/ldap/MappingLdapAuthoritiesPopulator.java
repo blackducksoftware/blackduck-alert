@@ -22,11 +22,13 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.ldap;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
@@ -43,12 +45,20 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
 
     @Override
     public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String userName) {
-        Set<GrantedAuthority> grantedAuthorities = Set.of();
+        //The parent class adds the additional roles to the set of roles returned by this method.
+        // therefore it needs to return a mutable set.
+        Set<GrantedAuthority> grantedAuthorities = new LinkedHashSet<>();
         try {
-            grantedAuthorities = super.getGroupMembershipRoles(userDn, userName);
+            grantedAuthorities.addAll(super.getGroupMembershipRoles(userDn, userName));
         } catch (Exception ex) {
             logger.error("Error determining LDAP group membership", ex);
         }
-        return authoritiesPopulator.addAdditionalRoles(userName, grantedAuthorities);
+        return grantedAuthorities;
+    }
+
+    @Override
+    protected Set<GrantedAuthority> getAdditionalRoles(DirContextOperations user, String username) {
+        // load the roles from the database.  These roles will be added to the set of roles for the user.
+        return authoritiesPopulator.addAdditionalRoles(username, Set.of());
     }
 }

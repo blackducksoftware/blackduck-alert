@@ -107,6 +107,7 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String TEST_FIELD_KEY_SAML_INFORMATION = "test.field.saml.no.input";
     private static final String TEST_FIELD_LABEL_SAML = "No Input Required";
     private static final String TEST_FIELD_DESCRIPTION_SAML = "No input required here. SAML metadata fields will be tested by the server.";
+    private static final String DEFAULT_GROUP_SEARCH_FILTER = "uniqueMember={0}";
 
     private final EncryptionSettingsValidator encryptionValidator;
     private final FilePersistenceUtil filePersistenceUtil;
@@ -148,7 +149,8 @@ public class AuthenticationUIConfig extends UIConfig {
         ConfigField ldapUserDNPatterns = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS, LABEL_LDAP_USER_DN_PATTERNS, AUTHENTICATION_LDAP_USER_DN_PATTERNS_DESCRIPTION);
         ConfigField ldapUserAttributes = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES, LABEL_LDAP_USER_ATTRIBUTES, AUTHENTICATION_LDAP_USER_ATTRIBUTES_DESCRIPTION);
         ConfigField ldapGroupSearchBase = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, LABEL_LDAP_GROUP_SEARCH_BASE, AUTHENTICATION_LDAP_GROUP_SEARCH_BASE_DESCRIPTION);
-        ConfigField ldapGroupSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION);
+        ConfigField ldapGroupSearchFilter = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, LABEL_LDAP_GROUP_SEARCH_FILTER, AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION)
+                                                .applyDefaultValue(DEFAULT_GROUP_SEARCH_FILTER);
         ConfigField ldapGroupRoleAttribute = new TextInputConfigField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, LABEL_LDAP_GROUP_ROLE_ATTRIBUTE, AUTHENTICATION_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION);
         ConfigField ldapEnabled = new CheckboxConfigField(AuthenticationDescriptor.KEY_LDAP_ENABLED, LABEL_LDAP_ENABLED, AUTHENTICATION_LDAP_ENABLED_DESCRIPTION)
                                       .applyRequiredRelatedField(ldapServer.getKey())
