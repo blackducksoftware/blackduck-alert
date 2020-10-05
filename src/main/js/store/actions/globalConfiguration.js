@@ -319,6 +319,9 @@ export function updateConfig(config) {
                             dispatch(configUpdated(updatedConfig));
                             dispatch(refreshConfig(newId));
                         });
+                } else if (response.status === 204) {
+                    dispatch(configUpdated(config));
+                    dispatch(refreshConfig(id));
                 } else {
                     dispatch(refreshConfig(id));
                 }

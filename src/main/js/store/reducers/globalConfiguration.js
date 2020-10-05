@@ -125,7 +125,7 @@ const globalConfiguration = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'UPDATED',
                 testing: false,
-                actionMessage: 'Update successful',
+                actionMessage: 'Save successful',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 config: action.config
             };
