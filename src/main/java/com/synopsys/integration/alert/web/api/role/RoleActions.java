@@ -128,13 +128,6 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
-                boolean targetRoleNameIsUsedByDifferentRole = roleAccessor.getRoles()
-                                                                  .stream()
-                                                                  .filter(role -> !role.getId().equals(existingRole.get().getId()))
-                                                                  .anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
-                if (targetRoleNameIsUsedByDifferentRole) {
-                    return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The role name is already in use");
-                }
                 if (!existingRole.get().getName().equals(roleName)) {
                     authorizationManager.updateRoleName(id, roleName);
                 }

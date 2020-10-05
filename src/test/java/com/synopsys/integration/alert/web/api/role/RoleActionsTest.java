@@ -241,6 +241,25 @@ public class RoleActionsTest {
     }
 
     @Test
+    public void validateDuplicatePermissionsTest() {
+        PermissionModel permissionModel = createPermissionModel();
+        PermissionModel permissionModelDuplicate = new PermissionModel(descriptorKey.getUniversalKey(), context, false, true, true, true, true, true, true, true);
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel, permissionModelDuplicate));
+
+        Mockito.when(roleAccessor.doesRoleNameExist(Mockito.eq(roleName))).thenReturn(false);
+
+        RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap, List.of(descriptorKey));
+        ValidationActionResponse validationActionResponse = roleActions.validate(rolePermissionModel);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
     public void updateTest() throws Exception {
         String newRoleName = "newRoleName";
         Long longId = 1L;
@@ -260,24 +279,6 @@ public class RoleActionsTest {
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertFalse(rolePermissionModelActionResponse.hasContent());
         assertEquals(HttpStatus.NO_CONTENT, rolePermissionModelActionResponse.getHttpStatus());
-    }
-
-    @Test
-    public void updateWithoutChecksBadRequestTest() {
-        PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
-        UserRoleModel userRoleModel = new UserRoleModel(1L, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
-        UserRoleModel userRoleModelInUse = new UserRoleModel(2L, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
-
-        Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of(userRoleModel));
-        Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of(userRoleModelInUse));
-
-        RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap, List.of(descriptorKey));
-        ActionResponse<RolePermissionModel> rolePermissionModelActionResponse = roleActions.update(1L, rolePermissionModel);
-
-        assertTrue(rolePermissionModelActionResponse.isError());
-        assertFalse(rolePermissionModelActionResponse.hasContent());
-        assertEquals(HttpStatus.BAD_REQUEST, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
