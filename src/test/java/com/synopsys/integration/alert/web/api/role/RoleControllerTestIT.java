@@ -1,10 +1,9 @@
-package com.synopsys.integration.alert.web.api.user;
+package com.synopsys.integration.alert.web.api.role;
 
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,17 +24,14 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.user.UserRepository;
+import com.synopsys.integration.alert.database.user.RoleRepository;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 import junit.framework.AssertionFailedError;
 
-public class UserControllerTestIT extends AlertIntegrationTest {
+public class RoleControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -44,16 +40,18 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     protected HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private Gson gson;
+
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
 
     private MockMvc mockMvc;
 
-    private final Long id = Long.MAX_VALUE - 1;
-    private final String name = "user";
-    private final String password = "password";
-    private final String emailAddress = "noreply@synopsys.com";
-    private final Set<UserRoleModel> roles = Set.of();
-    private final AuthenticationType authenticationType = AuthenticationType.DATABASE;
+    private final String roleName = "roleName";
+    private final String context = "GLOBAL";
 
     @BeforeEach
     public void init() {
@@ -62,34 +60,56 @@ public class UserControllerTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
-        userRepository.flush();
-        userRepository.deleteAllInBatch();
+        roleRepository.flush();
+        roleRepository.deleteAllInBatch();
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testCreate() throws Exception {
-        Set<String> roleNames = roles
-                                    .stream()
-                                    .map(UserRoleModel::getName)
-                                    .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
+        PermissionModel permissionModel = new PermissionModel(blackDuckProviderKey.getUniversalKey(), context, true, true, true, true, true, true, true, true);
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
-        String url = UserController.USER_BASE_PATH;
+        String url = RoleController.ROLE_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(userConfig))
+                                                    .content(gson.toJson(rolePermissionModel))
                                                     .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
-    public void testGetOne() throws Exception {
-        UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
+    public void testCreateDuplicate() throws Exception {
+        PermissionModel permissionModel = new PermissionModel(blackDuckProviderKey.getUniversalKey(), context, true, true, true, true, true, true, true, true);
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
-        String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
+        String url = RoleController.ROLE_BASE_PATH;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(gson.toJson(rolePermissionModel))
+                                                    .contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
+
+        PermissionModel permissionModel2 = new PermissionModel(blackDuckProviderKey.getUniversalKey(), context, true, true, true, true, true, true, true, true);
+        RolePermissionModel rolePermissionModel2 = new RolePermissionModel(null, roleName, Set.of(permissionModel2));
+
+        MockHttpServletRequestBuilder request2 = MockMvcRequestBuilders.post(new URI(url))
+                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                     .content(gson.toJson(rolePermissionModel2))
+                                                     .contentType(contentType);
+        mockMvc.perform(request2).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    public void testGetOne() throws Exception {
+        RolePermissionModel rolePermissionModel = createRolePermissionModel().orElseThrow(AssertionFailedError::new);
+
+        String url = RoleController.ROLE_BASE_PATH + String.format("/%s", rolePermissionModel.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -99,18 +119,15 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testUpdate() throws Exception {
-        UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
-        Set<String> roleNames = roles
-                                    .stream()
-                                    .map(UserRoleModel::getName)
-                                    .collect(Collectors.toSet());
-        UserConfig updatedUserConfig = new UserConfig(userConfig.getId(), userConfig.getUsername(), password, "newEmailAddress", roleNames, false, false, false, true, false, userConfig.getAuthenticationType(), false);
+        RolePermissionModel rolePermissionModel = createRolePermissionModel().orElseThrow(AssertionFailedError::new);
+        PermissionModel permissionModel = new PermissionModel(blackDuckProviderKey.getUniversalKey(), context, false, false, false, false, false, false, false, false);
+        RolePermissionModel updatedRolePermissionModel = new RolePermissionModel(rolePermissionModel.getId(), roleName, Set.of(permissionModel));
 
-        String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
+        String url = RoleController.ROLE_BASE_PATH + String.format("/%s", rolePermissionModel.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(updatedUserConfig))
+                                                    .content(gson.toJson(updatedRolePermissionModel))
                                                     .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -118,9 +135,9 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDelete() throws Exception {
-        UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
+        RolePermissionModel rolePermissionModel = createRolePermissionModel().orElseThrow(AssertionFailedError::new);
 
-        String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
+        String url = RoleController.ROLE_BASE_PATH + String.format("/%s", rolePermissionModel.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -130,7 +147,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetAll() throws Exception {
-        String url = UserController.USER_BASE_PATH;
+        String url = RoleController.ROLE_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -140,34 +157,34 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testValidate() throws Exception {
-        UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
-        String url = UserController.USER_BASE_PATH + "/validate";
+        RolePermissionModel rolePermissionModel = createRolePermissionModel().orElseThrow(AssertionFailedError::new);
+
+        String url = RoleController.ROLE_BASE_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(userConfig))
+                                                    .content(gson.toJson(rolePermissionModel))
                                                     .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    private Optional<UserConfig> createDefaultUserConfig() throws Exception {
-        Set<String> roleNames = roles
-                                    .stream()
-                                    .map(UserRoleModel::getName)
-                                    .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
+    private Optional<RolePermissionModel> createRolePermissionModel() throws Exception {
+        PermissionModel permissionModel = new PermissionModel(blackDuckProviderKey.getUniversalKey(), context, true, true, true, true, true, true, true, true);
+        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, roleName, Set.of(permissionModel));
 
-        String url = UserController.USER_BASE_PATH;
+        String url = RoleController.ROLE_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(userConfig))
+                                                    .content(gson.toJson(rolePermissionModel))
                                                     .contentType(contentType);
         MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
         String response = mvcResult.getResponse().getContentAsString();
 
-        TypeToken userConfigType = new TypeToken<UserConfig>() {};
-        UserConfig newUserConfig = gson.fromJson(response, userConfigType.getType());
-        return Optional.of(newUserConfig);
+        TypeToken rolePermissionModelType = new TypeToken<RolePermissionModel>() {};
+        RolePermissionModel newRolePermissionModel = gson.fromJson(response, rolePermissionModelType.getType());
+
+        return Optional.of(newRolePermissionModel);
     }
+
 }
