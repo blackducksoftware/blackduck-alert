@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,7 @@ public class EndToEndTest {
     private String csrfToken = null;
 
     @Test
+    @Ignore
     public void testEndToEnd() throws Exception {
         IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
         loginToAlert(client);
