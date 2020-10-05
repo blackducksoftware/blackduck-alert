@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.web.api.role.PermissionModel;
 
-public class PermissionModelUtil {
+public final class PermissionModelUtil {
     public static PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {
         Map<PermissionKey, Integer> permissionMatrix = new HashMap<>();
         for (PermissionModel permissionModel : permissionModels) {
