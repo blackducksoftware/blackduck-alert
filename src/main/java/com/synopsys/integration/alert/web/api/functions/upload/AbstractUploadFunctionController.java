@@ -20,14 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.upload;
+package com.synopsys.integration.alert.web.api.functions.upload;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,46 +32,33 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.synopsys.integration.alert.common.action.UploadEndpointManager;
+import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 
 @RestController
-@RequestMapping(UploadEndpointManager.UPLOAD_ENDPOINT_URL)
-public class UploadEndpointController {
-    public static final String TARGET_KEY_MISSING = "Must be given the key associated with the custom functionality.";
+@RequestMapping(AbstractUploadAction.API_FUNCTION_UPLOAD_URL)
+public abstract class AbstractUploadFunctionController {
+    private final AbstractUploadAction action;
 
-    private final UploadEndpointManager uploadEndpointManager;
-
-    @Autowired
-    public UploadEndpointController(UploadEndpointManager uploadEndpointManager) {
-        this.uploadEndpointManager = uploadEndpointManager;
+    public AbstractUploadFunctionController(AbstractUploadAction action) {
+        this.action = action;
     }
 
-    @GetMapping("/{key}/exists")
-    public ExistenceModel checkUploadedFileExists(@PathVariable String key) {
-        throwBadRequestExceptionIfBlank(key);
-        return uploadEndpointManager.checkExists(key);
+    @GetMapping("/exists")
+    public ExistenceModel checkUploadedFileExists() {
+        return ResponseFactory.createContentResponseFromAction(action.uploadFileExists());
     }
 
-    @PostMapping("/{key}")
+    @PostMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void postFileUpload(@PathVariable String key, @RequestParam("file") MultipartFile file) {
-        throwBadRequestExceptionIfBlank(key);
-        uploadEndpointManager.performUpload(key, file.getResource());
+    public void postFileUpload(@RequestParam("file") MultipartFile file) {
+        ResponseFactory.createResponseFromAction(action.uploadFile(file.getResource()));
     }
 
-    @DeleteMapping("/{key}")
+    @DeleteMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUploadedFile(@PathVariable String key) {
-        throwBadRequestExceptionIfBlank(key);
-        uploadEndpointManager.deleteUploadedFile(key);
+    public void deleteUploadedFile() {
+        ResponseFactory.createResponseFromAction(action.deleteFile());
     }
-
-    private void throwBadRequestExceptionIfBlank(String key) {
-        if (StringUtils.isBlank(key)) {
-            throw ResponseFactory.createBadRequestException(TARGET_KEY_MISSING);
-        }
-    }
-
 }
