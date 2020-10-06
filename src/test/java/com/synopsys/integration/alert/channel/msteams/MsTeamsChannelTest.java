@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.ChannelTest;
+import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
-public class MsTeamsChannelTest extends ChannelTest {
+public class MsTeamsChannelTest extends AbstractChannelTest {
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)

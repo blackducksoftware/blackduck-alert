@@ -29,16 +29,16 @@ public class MimeMultipartBuilderTest {
     public void buildTest() throws MessagingException {
         final String html = "<html></html>";
         final String text = "content";
-        final List<String> attachmentFilePaths = new ArrayList<>();
+        List<String> attachmentFilePaths = new ArrayList<>();
         attachmentFilePaths.add(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
-        final Map<String, String> contentIdsToFilePaths = new HashMap<>();
+        Map<String, String> contentIdsToFilePaths = new HashMap<>();
         contentIdsToFilePaths.put("entry", "synopsys.png");
 
-        final String originalValue = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
+        String originalValue = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
         try {
             System.setProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME, "src/main/resources/email");
 
-            final MimeMultipartBuilder builder = new MimeMultipartBuilder();
+            MimeMultipartBuilder builder = new MimeMultipartBuilder();
             builder.addHtmlContent(html);
             builder.addTextContent(text);
             builder.addAttachments(attachmentFilePaths);
@@ -53,4 +53,5 @@ public class MimeMultipartBuilderTest {
             }
         }
     }
+
 }

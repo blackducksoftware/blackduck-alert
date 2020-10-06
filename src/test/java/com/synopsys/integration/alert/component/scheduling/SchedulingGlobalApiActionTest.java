@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -28,7 +29,6 @@ import com.synopsys.integration.alert.component.scheduling.actions.SchedulingGlo
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingUIConfig;
-import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
