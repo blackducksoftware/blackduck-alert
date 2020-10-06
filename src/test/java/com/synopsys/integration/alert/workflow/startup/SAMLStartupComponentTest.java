@@ -32,7 +32,7 @@ public class SAMLStartupComponentTest {
         Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
-        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(samlManager);
         startupComponent.initializeComponent();
 
         Mockito.verify(metadataGenerator).setEntityId(Mockito.anyString());
@@ -52,7 +52,7 @@ public class SAMLStartupComponentTest {
         Mockito.when(context.getCurrentConfiguration()).thenThrow(new AlertDatabaseConstraintException("Test exception"));
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
-        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(samlManager);
         startupComponent.initializeComponent();
 
         Mockito.verify(metadataGenerator, Mockito.times(0)).setEntityId(Mockito.anyString());

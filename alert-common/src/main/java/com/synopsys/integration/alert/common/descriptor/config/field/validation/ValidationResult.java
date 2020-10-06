@@ -106,4 +106,9 @@ public class ValidationResult {
                    .flatMap(Collection::stream)
                    .collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return String.format("Validation Errors: %s, Warnings: %s", combineErrorMessages(), combineWarningMessages());
+    }
 }
