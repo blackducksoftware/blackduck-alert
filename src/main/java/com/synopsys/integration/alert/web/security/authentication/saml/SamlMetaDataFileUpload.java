@@ -40,24 +40,26 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.synopsys.integration.alert.common.action.UploadEndpointManager;
+import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
+import com.synopsys.integration.alert.common.action.upload.UploadTarget;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
-public class SamlMetaDataFileUpload {
+public class SamlMetaDataFileUpload extends AbstractUploadAction {
     private final Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
 
     @Autowired
-    public SamlMetaDataFileUpload(UploadEndpointManager uploadEndpointManager, AuthenticationDescriptorKey descriptorKey) throws AlertException {
-        uploadEndpointManager.registerTarget(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, AuthenticationDescriptor.SAML_METADATA_FILE, this::validateXMLFile);
+    public SamlMetaDataFileUpload(AuthenticationDescriptorKey descriptorKey, AuthorizationManager authorizationManager, FilePersistenceUtil filePersistenceUtil) {
+        super(authorizationManager, filePersistenceUtil);
+        setTarget(new UploadTarget(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ConfigContextEnum.GLOBAL, descriptorKey, AuthenticationDescriptor.SAML_METADATA_FILE, this::validateXMLFile));
     }
 
     private ValidationResult validateXMLFile(File file) {
-
         try (InputStream fileInputStream = new FileInputStream(file)) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(false);
