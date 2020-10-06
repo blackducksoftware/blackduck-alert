@@ -50,8 +50,8 @@ task createAboutText(type: Task) {
     aboutFile << aboutJson
 }
 
-task copyToTemplates(type: Copy, dependsOn: [build]) {
-    from "${project.buildDir}/resources/main/static/index.html"
+task copyToTemplates(type: Copy) {
+    from "${project(':web').buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
 
