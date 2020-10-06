@@ -91,7 +91,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> getOne(Long id) {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
-            logger.error("Get One action is forbidden. This user is not authorized to perform this action."); //TODO come up with a better string
+            logger.error("Get One action is forbidden. This user is not authorized to perform this action.");
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -155,7 +155,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
-            logger.error("Validate action is forbidden. This user is not authorized to perform this action."); //TODO come up with a better string
+            logger.error("Validate action is forbidden. This user is not authorized to perform this action.");
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
