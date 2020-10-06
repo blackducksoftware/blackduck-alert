@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.web.security.authentication.saml.SamlMetaDataFileUpload;
 
-public class UploadEndpointManagerTest {
+public class SamlMetadataFileUploadTest {
     private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
     private final FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
     private Resource testResource;
