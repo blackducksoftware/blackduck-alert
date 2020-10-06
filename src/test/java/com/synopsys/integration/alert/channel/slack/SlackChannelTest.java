@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.ChannelTest;
+import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventParser;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelMessageParser;
@@ -53,7 +53,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.request.Request;
 
-public class SlackChannelTest extends ChannelTest {
+public class SlackChannelTest extends AbstractChannelTest {
     private static final String TEST_WEBHOOK_URL = "https://webhook";
     private static final SlackChannelKey CHANNEL_KEY = new SlackChannelKey();
 

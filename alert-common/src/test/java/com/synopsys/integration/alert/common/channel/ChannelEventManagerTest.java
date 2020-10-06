@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.util.event;
+package com.synopsys.integration.alert.common.channel;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.ContentEvent;
@@ -22,7 +21,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ChannelEventManagerTest {
-
     @Test
     public void testSendEvents() throws Exception {
         AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
@@ -59,4 +57,5 @@ public class ChannelEventManagerTest {
         AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }
+
 }

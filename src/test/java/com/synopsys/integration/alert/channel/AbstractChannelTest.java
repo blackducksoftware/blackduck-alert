@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public abstract class ChannelTest {
+public abstract class AbstractChannelTest {
     protected Gson gson;
     protected TestProperties properties;
     protected OutputLogger outputLogger;

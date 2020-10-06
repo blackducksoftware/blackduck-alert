@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.common.channel.template;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -6,14 +6,11 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 public class FreemarkerTemplatingServiceTest {
-
     @Test
     public void testLoadingByClass() throws IOException {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();

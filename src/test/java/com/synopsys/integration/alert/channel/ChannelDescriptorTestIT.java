@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
-public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
+public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected Gson gson;
     protected DistributionEvent channelEvent;
 
