@@ -145,10 +145,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
-            logger.info("User created successfully.");
+            logger.info(String.format("User %s created successfully.", userName));
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
         } catch (AlertException ex) {
-            logger.error("Error occurred while creating user.", ex);
+            logger.error(String.format("Error occurred while creating user %s", resource.getUsername()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
         }
     }
@@ -178,10 +178,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                logger.info("User updated successfully.");
+                logger.info(String.format("User %s updated successfully.", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
-                logger.error("An error occurred while updating the user.", ex);
+                logger.error(String.format("An error occurred while updating the user.", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
@@ -193,14 +193,15 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
     protected ActionResponse<UserConfig> deleteWithoutChecks(Long id) {
         Optional<UserModel> user = userAccessor.getUser(id);
         if (user.isPresent()) {
+            String userName = user.get().getName();
             try {
-                logger.info(String.format("Deleting User: %s", user.get().getName()));
+                logger.info(String.format("Deleting User: %s", userName));
                 userAccessor.deleteUser(id);
             } catch (AlertException ex) {
-                logger.error("Error occurred while deleting user.", ex);
+                logger.error(String.format("Error occurred while deleting user: %s", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
-            logger.info("User deleted successfully.");
+            logger.info(String.format("User %s deleted successfully.", userName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
         logger.error(String.format("User with id %s not found", id));

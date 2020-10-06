@@ -81,7 +81,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
             logger.info(String.format("Creating role: %s", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
-            logger.info("Role created successfully.");
+            logger.info(String.format("Role %s created successfully.", roleName));
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
             logger.error("Error occurred while creating role.");
@@ -95,14 +95,15 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                    .stream()
                                                    .findFirst();
         if (existingRole.isPresent()) {
+            String roleName = existingRole.get().getName();
             try {
-                logger.info(String.format("Deleting Role: %s", existingRole.get().getName()));
+                logger.info(String.format("Deleting Role: %s", roleName));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
-                logger.error("Error occurred while deleting the role.");
+                logger.error(String.format("Error occurred while deleting the role: %s", existingRole.get().getName()));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
-            logger.info("Role deleted successfully.");
+            logger.info(String.format("Role %s deleted successfully.", roleName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
         logger.error(String.format("Role with id %s not found", id));
@@ -123,7 +124,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         if (role.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, role.get());
         }
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
+        //This is covered by the findExistingCheck in AbstractResourceActions. TODO for 6.4.0
+        return null;
+        //return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
     }
 
     @Override
@@ -146,7 +149,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                 Set<PermissionModel> permissions = resource.getPermissions();
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
-                logger.info("Role updated successfully.");
+                logger.info(String.format("Role %s updated successfully.", roleName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
             logger.error(String.format("Role with id %s not found", id));
