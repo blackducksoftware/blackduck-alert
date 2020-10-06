@@ -45,6 +45,8 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsPr
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
+import com.synopsys.integration.alert.common.action.api.LongIdResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -58,7 +60,6 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.temp.TempConfigActions;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
@@ -73,13 +74,13 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final AzureRedirectUtil azureRedirectUtil;
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
-    // FIXME this config-actions class is temporary to resolve dependency issues
-    private final TempConfigActions configActions;
+    // TODO create and use intermediate class for this
+    private final LongIdResourceActions<FieldModel> configActions;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
-        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, TempConfigActions configActions, AuthorizationManager authorizationManager,
+        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, AbstractConfigResourceActions configActions, AuthorizationManager authorizationManager,
         DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
         super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorMap, fieldValidationUtility);
         this.alertProperties = alertProperties;
