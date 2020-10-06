@@ -1,0 +1,24 @@
+@import 'variables';
+
+.errorStatus {
+  color: $synopsys-color-platform-red;
+}
+
+.validStatus {
+  color: $synopsys-color-platform-green;
+}
+
+.warningStatus {
+  color: $synopsys-color-orange;
+}
+
+.messageHeader {
+  width: 100%;
+  border-top: 1px solid $synopsys-color-dark-gray;
+}
+
+.messageDate {
+  margin-left: 5px;
+  margin-right: 5px;
+  font-weight: bold;
+}

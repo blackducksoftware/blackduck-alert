@@ -18,7 +18,6 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'com.moowork.node' version '1.3.1'
 }
 
 ext {
@@ -88,6 +87,7 @@ dependencies {
     implementation project(':azure-boards-common')
     implementation project(':alert-common')
     implementation project(':alert-database')
+    implementation project(':web')
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
