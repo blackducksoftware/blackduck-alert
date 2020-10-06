@@ -37,26 +37,26 @@ public class ChannelRestConnectionFactoryTest {
     public void testConnectionFields() throws Exception {
         final String host = "host";
         final int port = 1;
-        final CredentialsBuilder builder = Credentials.newBuilder();
+        CredentialsBuilder builder = Credentials.newBuilder();
         builder.setUsername("username");
         builder.setPassword("password");
-        final Credentials credentials = builder.build();
+        Credentials credentials = builder.build();
 
-        final ProxyInfoBuilder proxyBuilder = ProxyInfo.newBuilder();
+        ProxyInfoBuilder proxyBuilder = ProxyInfo.newBuilder();
         proxyBuilder.setHost(host);
         proxyBuilder.setPort(port);
         proxyBuilder.setCredentials(credentials);
         proxyBuilder.setNtlmDomain(null);
         proxyBuilder.setNtlmWorkstation(null);
-        final ProxyInfo expectedProxyInfo = proxyBuilder.build();
+        ProxyInfo expectedProxyInfo = proxyBuilder.build();
 
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
-        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
 
-        final IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
+        IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
 
         assertNotNull(intHttpClient);
         assertEquals(expectedProxyInfo, intHttpClient.getProxyInfo());
