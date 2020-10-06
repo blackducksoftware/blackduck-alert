@@ -13,8 +13,8 @@ import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHand
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.common.JiraTestConfigHelper;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
-import com.synopsys.integration.alert.channel.jira.server.JiraTestConfigHelper;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;

@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerD
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
@@ -109,4 +109,5 @@ public class JiraServerIssueConfigValidatorTest {
             Assertions.assertFalse(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
         }
     }
+
 }

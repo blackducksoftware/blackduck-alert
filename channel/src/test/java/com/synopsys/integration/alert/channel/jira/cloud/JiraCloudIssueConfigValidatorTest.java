@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusConverter;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.util.AlertFieldStatusConverter;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;

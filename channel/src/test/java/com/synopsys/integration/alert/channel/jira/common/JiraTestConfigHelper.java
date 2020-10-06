@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.channel.jira.common;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 

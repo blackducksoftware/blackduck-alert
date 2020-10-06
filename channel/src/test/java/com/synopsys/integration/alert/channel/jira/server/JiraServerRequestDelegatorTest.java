@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.model.TestIssueCreator;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.server.model.TestIssueCreator;
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueResponse;
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueSearchIssueComponent;
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueTypeResponseModel;

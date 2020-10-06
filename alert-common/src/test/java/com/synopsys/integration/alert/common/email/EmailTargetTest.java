@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.common.email;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-
-import com.synopsys.integration.alert.common.email.EmailTarget;
 
 public class EmailTargetTest {
     @Test

@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.common.message.model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,11 +6,9 @@ import java.time.OffsetDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 public class DateRangeTest {
-
     @Test
     public void testGetTimes() {
         OffsetDateTime start = DateUtils.createCurrentDateTimestamp();
@@ -20,4 +18,5 @@ public class DateRangeTest {
         assertEquals(start, dateRange.getStart());
         assertEquals(end, dateRange.getEnd());
     }
+
 }
