@@ -51,7 +51,7 @@ public class SlackChannelEventParser {
     private static final int MRKDWN_MAX_SIZE_PRE_SPLIT = 3500;
 
     private final SlackChannelMessageParser slackChannelMessageParser;
-    private final com.synopsys.integration.alert.channel.util.RestChannelUtility restChannelUtility;
+    private final RestChannelUtility restChannelUtility;
 
     @Autowired
     public SlackChannelEventParser(SlackChannelMessageParser slackChannelMessageParser, RestChannelUtility restChannelUtility) {

@@ -39,7 +39,7 @@ import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class SlackChannel extends NamedDistributionChannel implements AutoActionable {
-    private final com.synopsys.integration.alert.channel.util.RestChannelUtility restChannelUtility;
+    private final RestChannelUtility restChannelUtility;
     private final SlackChannelEventParser slackChannelEventParser;
 
     @Autowired

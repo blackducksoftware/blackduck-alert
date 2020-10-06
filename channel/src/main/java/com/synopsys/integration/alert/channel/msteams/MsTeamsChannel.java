@@ -43,7 +43,7 @@ import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
-    private final com.synopsys.integration.alert.channel.util.RestChannelUtility restChannelUtility;
+    private final RestChannelUtility restChannelUtility;
     private final MsTeamsEventParser msTeamsEventParser;
     private final MsTeamsMessageParser msTeamsMessageParser;
 
