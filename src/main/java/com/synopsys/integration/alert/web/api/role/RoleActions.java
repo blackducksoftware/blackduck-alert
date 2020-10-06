@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -61,6 +63,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
+    private final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+
     @Autowired
     public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
@@ -75,9 +79,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
+            logger.info(String.format("Creating role: %s", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
+            logger.info("Role created successfully.");
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
+            logger.error("Error occurred while creating role.");
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
         }
     }
@@ -89,12 +96,16 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                    .findFirst();
         if (existingRole.isPresent()) {
             try {
+                logger.info(String.format("Deleting Role: %s", existingRole.get().getName()));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
+                logger.error("Error occurred while deleting the role.");
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
+            logger.info("Role deleted successfully.");
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
+        logger.error(String.format("Role with id %s not found", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -128,16 +139,20 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
+                logger.info(String.format("Updating role: %s", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
                     authorizationManager.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
+                logger.info("Role updated successfully.");
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
+            logger.error(String.format("Role with id %s not found", id));
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
+            logger.error("An error occurred while updating the role.");
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
     }

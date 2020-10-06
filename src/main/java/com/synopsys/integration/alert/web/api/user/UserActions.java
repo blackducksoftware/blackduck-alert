@@ -33,6 +33,8 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -66,6 +68,8 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
     private final AuthorizationManager authorizationManager;
     private final AuthenticationTypeAccessor authenticationTypeAccessor;
     private final UserSystemValidator userSystemValidator;
+
+    private final Logger logger = LoggerFactory.getLogger(UserActions.class);
 
     @Autowired
     public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
@@ -130,6 +134,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
             String password = resource.getPassword();
             String emailAddress = resource.getEmailAddress();
 
+            logger.info(String.format("Creating User: %s", userName));
             UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
             Long userId = userModel.getId();
             Set<String> configuredRoleNames = resource.getRoleNames();
@@ -140,8 +145,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
+            logger.info("User created successfully.");
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
         } catch (AlertException ex) {
+            logger.error("Error occurred while creating user.", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
         }
     }
@@ -158,6 +165,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
 
             UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
             try {
+                logger.info(String.format("Updating user: %s", userName));
                 userAccessor.updateUser(newUserModel, passwordMissing);
                 Set<String> configuredRoleNames = resource.getRoleNames();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
@@ -170,11 +178,14 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
+                logger.info("User updated successfully.");
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
+                logger.error("An error occurred while updating the user.", ex);
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
+        logger.error(String.format("User with id %s not found", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -183,12 +194,16 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
         Optional<UserModel> user = userAccessor.getUser(id);
         if (user.isPresent()) {
             try {
+                logger.info(String.format("Deleting User: %s", user.get().getName()));
                 userAccessor.deleteUser(id);
             } catch (AlertException ex) {
+                logger.error("Error occurred while deleting user.", ex);
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
+            logger.info("User deleted successfully.");
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
+        logger.error(String.format("User with id %s not found", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 

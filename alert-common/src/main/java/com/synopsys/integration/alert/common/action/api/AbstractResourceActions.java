@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -37,6 +39,8 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public AbstractResourceActions(DescriptorKey descriptorKey, ConfigContextEnum context, AuthorizationManager authorizationManager) {
         this.descriptorKey = descriptorKey;
@@ -65,6 +69,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Create action is forbidden. This user is not authorized to perform this action.");
             return ActionResponse.createForbiddenResponse();
         }
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
@@ -77,6 +82,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Get All action is forbidden. This user is not authorized to perform this action.");
             return ActionResponse.createForbiddenResponse();
         }
         return readAllWithoutChecks();
@@ -85,6 +91,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> getOne(Long id) {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Get One action is forbidden. This user is not authorized to perform this action."); //TODO come up with a better string
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -99,6 +106,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> update(Long id, T resource) {
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Update action is forbidden. This user is not authorized to perform this action.");
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -117,6 +125,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> delete(Long id) {
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Delete action is forbidden. This user is not authorized to perform this action.");
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -131,6 +140,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Test action is forbidden. This user is not authorized to perform this action.");
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
@@ -145,6 +155,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.error("Validate action is forbidden. This user is not authorized to perform this action."); //TODO come up with a better string
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
