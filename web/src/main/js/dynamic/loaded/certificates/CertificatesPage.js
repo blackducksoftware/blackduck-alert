@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
+    clearCertificateFieldErrors,
+    deleteCertificate,
+    fetchCertificates,
+    saveCertificate,
+    validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
