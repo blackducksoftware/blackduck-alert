@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderSelectCustomFunctionAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(ProviderNameFunctionController.PROVIDER_NAME_FUNCTION_URL)

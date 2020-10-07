@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.api.BaseController;
 
 @RestController
 public class AboutController extends BaseController {

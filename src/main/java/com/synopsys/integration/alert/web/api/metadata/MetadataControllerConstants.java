@@ -22,9 +22,9 @@
  */
 package com.synopsys.integration.alert.web.api.metadata;
 
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 public final class MetadataControllerConstants {
-    public static final String METADATA_BASE_PATH = BaseController.BASE_PATH + "/metadata";
+    public static final String METADATA_BASE_PATH = AlertRestConstants.BASE_PATH + "/metadata";
 
 }

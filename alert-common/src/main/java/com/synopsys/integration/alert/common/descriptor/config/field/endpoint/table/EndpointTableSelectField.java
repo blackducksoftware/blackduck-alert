@@ -25,17 +25,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 import java.util.LinkedList;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 public class EndpointTableSelectField extends EndpointField {
     private boolean paged;
     private boolean searchable;
-    private List<TableSelectColumn> columns;
+    private final List<TableSelectColumn> columns;
 
     public EndpointTableSelectField(String key, String label, String description) {
-        super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", CustomFunctionAction.API_FUNCTION_URL);
+        super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", AbstractFunctionController.API_FUNCTION_URL);
         this.paged = false;
         this.searchable = true;
         columns = new LinkedList<>();

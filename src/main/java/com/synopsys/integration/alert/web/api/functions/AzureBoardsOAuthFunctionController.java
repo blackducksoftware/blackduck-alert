@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.web.AzureBoardsCustomFunctionAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(AzureBoardsOAuthFunctionController.AZURE_OAUTH_FUNCTION_URL)

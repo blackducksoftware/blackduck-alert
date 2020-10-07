@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.web.JiraServerCustomFunctionAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(JiraServerFuntionController.JIRA_SERVER_FUNCTION_URL)

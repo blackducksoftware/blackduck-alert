@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.common.rest.api;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,10 +33,9 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 public abstract class AbstractFunctionController<T> extends BaseController {
-    public static final String API_FUNCTION_URL = CustomFunctionAction.API_FUNCTION_URL;
+    public static final String API_FUNCTION_URL = "/api/function";
     private final CustomFunctionAction<T> functionAction;
 
     public AbstractFunctionController(CustomFunctionAction<T> functionAction) {

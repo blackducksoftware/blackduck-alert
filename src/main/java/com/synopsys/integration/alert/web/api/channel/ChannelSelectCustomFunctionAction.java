@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.web.api.channel;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;

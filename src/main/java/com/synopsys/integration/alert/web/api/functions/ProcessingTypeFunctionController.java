@@ -25,12 +25,14 @@ package com.synopsys.integration.alert.web.api.functions;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProcessingSelectCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(ProcessingTypeFunctionController.PROCESSING_TYPE_FUNCTION_URL)
-public class ProcessingTypeFunctionController extends AbstractFunctionController {
+public class ProcessingTypeFunctionController extends AbstractFunctionController<LabelValueSelectOptions> {
     public static final String PROCESSING_TYPE_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_PROCESSING_TYPE;
 
     public ProcessingTypeFunctionController(ProcessingSelectCustomFunctionAction functionAction) {

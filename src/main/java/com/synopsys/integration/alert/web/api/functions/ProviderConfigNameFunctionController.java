@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderConfigSelectCustomFunctionAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(ProviderConfigNameFunctionController.PROVIDER_CONFIG_NAME_FUNCTION_URL)

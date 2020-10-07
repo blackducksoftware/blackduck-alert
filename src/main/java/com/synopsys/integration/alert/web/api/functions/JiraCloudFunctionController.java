@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCloudCustomEndpoint;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(JiraCloudFunctionController.JIRA_CLOUD_FUNCTION_URL)

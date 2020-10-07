@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -43,11 +44,10 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @Transactional
 public class AuditEntryControllerTestIT extends AlertIntegrationTest {
-    private final String auditUrl = BaseController.BASE_PATH + "/audit";
+    private final String auditUrl = AlertRestConstants.BASE_PATH + "/audit";
     @Autowired
     NotificationContentRepository notificationRepository;
     @Autowired

@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * channel
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.channel.email.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.email.web.EmailCustomFunctionAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
