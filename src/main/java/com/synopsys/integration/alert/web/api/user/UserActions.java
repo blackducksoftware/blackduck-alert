@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
-import com.synopsys.integration.alert.common.action.api.ActionMessages;
+import com.synopsys.integration.alert.common.action.api.ActionMessageCreator;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -71,7 +71,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
     private final UserSystemValidator userSystemValidator;
 
     private final Logger logger = LoggerFactory.getLogger(UserActions.class);
-    private final ActionMessages actionMessages = new ActionMessages();
+    private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
     public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
@@ -136,7 +136,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
             String password = resource.getPassword();
             String emailAddress = resource.getEmailAddress();
 
-            logger.info(actionMessages.createStartMessage("user", userName));
+            logger.info(actionMessageCreator.createStartMessage("user", userName));
             UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
             Long userId = userModel.getId();
             Set<String> configuredRoleNames = resource.getRoleNames();
@@ -147,10 +147,10 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
-            logger.info(actionMessages.createSuccessMessage("User", userName));
+            logger.info(actionMessageCreator.createSuccessMessage("User", userName));
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
         } catch (AlertException ex) {
-            logger.error(actionMessages.createErrorMessage("user", resource.getUsername()));
+            logger.error(actionMessageCreator.createErrorMessage("user", resource.getUsername()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
         }
     }
@@ -167,7 +167,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
 
             UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
             try {
-                logger.info(actionMessages.updateStartMessage("user", userName));
+                logger.info(actionMessageCreator.updateStartMessage("user", userName));
                 userAccessor.updateUser(newUserModel, passwordMissing);
                 Set<String> configuredRoleNames = resource.getRoleNames();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
@@ -180,14 +180,14 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                logger.info(actionMessages.updateSuccessMessage("User", userName));
+                logger.info(actionMessageCreator.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
-                logger.error(actionMessages.updateErrorMessage("User", userName));
+                logger.error(actionMessageCreator.updateErrorMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
-        logger.error(actionMessages.updateNotFoundMessage("User", id));
+        logger.error(actionMessageCreator.updateNotFoundMessage("User", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -197,16 +197,16 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
         if (user.isPresent()) {
             String userName = user.get().getName();
             try {
-                logger.info(actionMessages.deleteStartMessage("user", userName));
+                logger.info(actionMessageCreator.deleteStartMessage("user", userName));
                 userAccessor.deleteUser(id);
             } catch (AlertException ex) {
-                logger.error(actionMessages.deleteErrorMessage("user", userName));
+                logger.error(actionMessageCreator.deleteErrorMessage("user", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
-            logger.info(actionMessages.deleteSuccessMessage("User", userName));
+            logger.info(actionMessageCreator.deleteSuccessMessage("User", userName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
-        logger.error(actionMessages.deleteNotFoundMessage("User", id));
+        logger.error(actionMessageCreator.deleteNotFoundMessage("User", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 

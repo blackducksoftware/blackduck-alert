@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.common.action.api;
 
-public class ActionMessages {
+public class ActionMessageCreator {
     public static final String CREATE_START_MESSAGE = "Creating %s: %s";
     public static final String CREATE_SUCCESS_MESSAGE = "%s %s created successfully.";
     public static final String CREATE_ERROR_MESSAGE = "An error occurred while creating %s: %s";
