@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as IconUtility from 'util/iconUtility';
 
 class ConfigurationLabel extends Component {
     constructor(props) {

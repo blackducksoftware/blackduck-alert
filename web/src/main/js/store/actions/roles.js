@@ -10,8 +10,8 @@ import {
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING,
     USER_MANAGEMENT_ROLE_VALIDATED,
-    USER_MANAGEMENT_ROLE_VALIDATION_ERROR,
-    USER_MANAGEMENT_ROLE_VALIDATING
+    USER_MANAGEMENT_ROLE_VALIDATING,
+    USER_MANAGEMENT_ROLE_VALIDATION_ERROR
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';

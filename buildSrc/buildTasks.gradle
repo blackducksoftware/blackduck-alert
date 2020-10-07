@@ -1,5 +1,4 @@
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 
 def findJar(Object... prefixes) {
     configurations.runtimeClasspath.filter { file ->
@@ -22,12 +21,6 @@ task cleanBundles(type: Delete) {
         testDatabaseDirectory.deleteDir()
     }
 
-    File staticResourcesDirectory = new File('src/main/static')
-    if (staticResourcesDirectory.exists()) {
-        println "Deleting ${staticResourcesDirectory.canonicalPath}"
-        staticResourcesDirectory.deleteDir()
-    }
-
     File emailFileDirectory = new File('email')
     if (emailFileDirectory.exists()) {
         println "Deleting ${emailFileDirectory.canonicalPath}"
@@ -36,34 +29,6 @@ task cleanBundles(type: Delete) {
 }
 
 tasks.clean.finalizedBy(cleanBundles)
-
-task updateNpmVersion(type: Task) {
-    final def packageJsonFile = new File("${projectDir}/package.json")
-    def packageSlurper = new JsonSlurper()
-    def packageJson = packageSlurper.parse file("${projectDir}/package.json")
-    if (packageJson.version != version) {
-        packageJson.version = version
-
-        final def updatedPackageJson = JsonOutput.toJson(packageJson)
-
-        packageJsonFile.delete()
-        packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
-    }
-}
-
-npm_run() {
-    args = ['build']
-}
-
-tasks.npm_run.mustRunAfter(updateNpmVersion)
-
-task webpack(type: Exec) {
-    inputs.file("package-lock.json")
-    inputs.file("webpack.config.js")
-    inputs.dir("$projectDir/src/main")
-
-    commandLine "$projectDir/node_modules/.bin/webpack"
-}
 
 task createAboutText(type: Task) {
     final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
@@ -85,9 +50,14 @@ task createAboutText(type: Task) {
     aboutFile << aboutJson
 }
 
-task copyToTemplates(type: Copy, dependsOn: [npm_run]) {
+task copyStaticWebContent(type: Copy, dependsOn: ':web:build') {
+    from "${project(':web').buildDir}/resources/main/static/"
+    into "${project.buildDir}/resources/main/static/"
+}
+
+task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebContent') {
     from "${project.buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
-
+tasks.copyToTemplates.mustRunAfter(copyStaticWebContent)
 tasks.compileJava.mustRunAfter(createAboutText)

@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as IconUtility from 'util/iconUtility';
 
 function DescriptorOption(props) {
     return (
