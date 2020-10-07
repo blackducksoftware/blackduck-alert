@@ -1,7 +1,8 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.performance;
 
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -42,17 +43,15 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.body.BodyContent;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
+import com.synopsys.integration.wait.WaitJob;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
-public class AlertSetupTest {
+public class AlertPerformanceTest {
     private final IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
     private final String blackDuckProviderKey = new BlackDuckProviderKey().getUniversalKey();
     private final String blackDuckProviderUrl = System.getenv("TEST_BLACKDUCK_URL");
@@ -71,37 +70,45 @@ public class AlertSetupTest {
     private final String alertURL = "https://localhost:8443/alert/";
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-    private IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
+    private final IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
+    private final AlertRequestUtility alertRequestUtility = new AlertRequestUtility(intLogger, client, alertURL);
 
     private BlackDuckServicesFactory blackDuckServicesFactory = null;
     private String blackDuckProviderID = "-1";
 
     @Test
     @Ignore
-    public void testConfigureAlert() throws Exception {
-        LocalTime startingTime = LocalTime.now();
+    public void testAlertPerformance() throws Exception {
+        LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
 
         // Create an authenticated connection to Alert
         loginToAlert();
 
-        logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalTime.now());
-        startingTime = LocalTime.now();
+        logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
+        startingTime = LocalDateTime.now();
 
         // Create the Black Duck Global provider configuration
         setupBlackDuck();
 
-        logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalTime.now());
-        startingTime = LocalTime.now();
+        logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
+        startingTime = LocalDateTime.now();
 
-        int currentJobNum = 1;
+        int currentJobNum = 0;
         // create 10 slack jobs
         currentJobNum = createSlackJobs(startingTime, currentJobNum, 10, 10);
-        intLogger.info("Current job number = " + currentJobNum);
+
+        LocalDateTime startingSearchDateTime = LocalDateTime.now();
         // trigger BD notification
         triggerBlackDuckNotification();
+
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, 10);
+        WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20, notificationWaitJobTask);
+        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+
+        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
 
         // TODO check that all jobs have processed the notification, log how long it took
 
@@ -124,6 +131,7 @@ public class AlertSetupTest {
     @Test
     @Ignore
     public void testSandbox() throws Exception {
+        // trigger BD notification
         triggerBlackDuckNotification();
     }
 
@@ -166,27 +174,27 @@ public class AlertSetupTest {
         }
     }
 
-    private int createSlackJobs(LocalTime startingTime, int startingJobNum, int numberOfJobsToCreate, int intervalToLog) throws Exception {
+    private int createSlackJobs(LocalDateTime startingTime, int startingJobNum, int numberOfJobsToCreate, int intervalToLog) throws Exception {
         int jobNumber = startingJobNum;
 
-        while (jobNumber <= startingJobNum + numberOfJobsToCreate) {
-
+        while (jobNumber < startingJobNum + numberOfJobsToCreate) {
+            jobNumber++;
             // Create a Slack Job with a unique name using the job number
             createSlackJob(jobNumber);
 
             if (jobNumber % intervalToLog == 0) {
                 String message = String.format("Creating %s jobs took", jobNumber);
-                logTimeElapsedWithMessage(message + " %s", startingTime, LocalTime.now());
+                logTimeElapsedWithMessage(message + " %s", startingTime, LocalDateTime.now());
             }
-            jobNumber++;
         }
+        intLogger.info(String.format("Finished creating %s jobs. Current Job number %s.", numberOfJobsToCreate, jobNumber));
         return jobNumber;
     }
 
     private void loginToAlert() throws Exception {
         String loginBody = "{\"alertUsername\":\"sysadmin\",\"alertPassword\":\"blackduck\"}";
         BodyContent requestBody = new StringBodyContent(loginBody);
-        Response response = executePostRequest("api/login", requestBody, "Could not log into Alert.");
+        Response response = alertRequestUtility.executePostRequest("api/login", requestBody, "Could not log into Alert.");
 
         String csrfToken = response.getHeaderValue("X-CSRF-TOKEN");
         String cookie = response.getHeaderValue("Set-Cookie");
@@ -206,7 +214,7 @@ public class AlertSetupTest {
 
     private void findBlackDuckProvider() throws Exception {
         String blackDuckProviderSearch = String.format("api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
-        Response response = executeGetRequest(blackDuckProviderSearch, "Could not find the Black Duck provider.");
+        Response response = alertRequestUtility.executeGetRequest(blackDuckProviderSearch, "Could not find the Black Duck provider.");
 
         MultiFieldModel blackDuckConfigurations = gson.fromJson(response.getContentString(), MultiFieldModel.class);
         FieldModel blackDuckProviderConfiguration = blackDuckConfigurations.getFieldModels().stream()
@@ -231,9 +239,9 @@ public class AlertSetupTest {
         String blackDuckConfigBody = gson.toJson(blackDuckProviderConfiguration);
         BodyContent requestBody = new StringBodyContent(blackDuckConfigBody);
 
-        executePostRequest("api/configuration/validate", requestBody, "Validating the Black Duck provider failed.");
-        executePostRequest("api/configuration/test", requestBody, "Testing the Black Duck provider failed.");
-        Response creationResponse = executePostRequest("api/configuration", requestBody, "Could not create the Black Duck provider.");
+        alertRequestUtility.executePostRequest("api/configuration/validate", requestBody, "Validating the Black Duck provider failed.");
+        alertRequestUtility.executePostRequest("api/configuration/test", requestBody, "Testing the Black Duck provider failed.");
+        Response creationResponse = alertRequestUtility.executePostRequest("api/configuration", requestBody, "Could not create the Black Duck provider.");
 
         JsonObject jsonObject = gson.fromJson(creationResponse.getContentString(), JsonObject.class);
         blackDuckProviderID = jsonObject.get("id").getAsString();
@@ -267,47 +275,16 @@ public class AlertSetupTest {
         String jobConfigBody = gson.toJson(jobFieldModel);
         BodyContent requestBody = new StringBodyContent(jobConfigBody);
 
-        executePostRequest("api/configuration/job/validate", requestBody, String.format("Validating the Slack Job #%s failed.", jobNumber));
+        alertRequestUtility.executePostRequest("api/configuration/job/validate", requestBody, String.format("Validating the Slack Job #%s failed.", jobNumber));
         // executePostRequest("api/configuration/job/test", requestBody, String.format("Testing the Slack Job #%s failed.", jobNumber));
-        executePostRequest("api/configuration/job", requestBody, String.format("Could not create the Slack Job #%s.", jobNumber));
+        alertRequestUtility.executePostRequest("api/configuration/job", requestBody, String.format("Could not create the Slack Job #%s.", jobNumber));
     }
 
-    private void logTimeElapsedWithMessage(String messageFormat, LocalTime start, LocalTime end) {
+    private void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
         Duration duration = Duration.between(start, end);
         String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
         intLogger.info(String.format(messageFormat, durationFormatted));
         intLogger.info(String.format("Current time %s.", dateTimeFormatter.format(end)));
-    }
-
-    private Response executeGetRequest(String path, String error) throws Exception {
-        Request.Builder requestBuilder = createRequestBuilder(path);
-        requestBuilder.method(HttpMethod.GET);
-        Request request = requestBuilder.build();
-        Response response = client.execute(request);
-        if (response.isStatusCodeError()) {
-            intLogger.error(error);
-            response.throwExceptionForError();
-        }
-        return response;
-    }
-
-    private Response executePostRequest(String path, BodyContent requestBody, String error) throws Exception {
-        Request.Builder requestBuilder = createRequestBuilder(path);
-        requestBuilder.method(HttpMethod.POST);
-        requestBuilder.bodyContent(requestBody);
-        Request request = requestBuilder.build();
-        Response response = client.execute(request);
-        if (response.isStatusCodeError()) {
-            intLogger.error(error);
-            response.throwExceptionForError();
-        }
-        return response;
-    }
-
-    private Request.Builder createRequestBuilder(String path) throws IntegrationException {
-        Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url(new HttpUrl(alertURL + path));
-        return requestBuilder;
     }
 
 }
