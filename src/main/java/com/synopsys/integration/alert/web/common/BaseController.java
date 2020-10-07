@@ -39,6 +39,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @RequestMapping(BaseController.BASE_PATH)
 // TODO this class is an improper use of abstraction, it should be removed
 public abstract class BaseController {
+    // FIXME These constants have been copied to com.synopsys.integration.alert.common.rest.AlertRestConstants
     public static final String BASE_PATH = "/api";
     public static final String CALLBACKS_PATH = BASE_PATH + "/callbacks";
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/oauth";

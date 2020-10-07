@@ -84,9 +84,9 @@ repositories {
 }
 
 dependencies {
-    implementation project(':azure-boards-common')
     implementation project(':alert-common')
     implementation project(':alert-database')
+    implementation project(':channel')
     implementation project(':web')
 
     // Spring
@@ -112,7 +112,6 @@ dependencies {
     // XML
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
     // =============
     // Test and Dev
