@@ -21,21 +21,23 @@ public class AlertRequestUtility {
     }
 
     public Response executeGetRequest(String path, String error) throws IntegrationException {
-        Request.Builder requestBuilder = createRequestBuilder(path);
-        requestBuilder.method(HttpMethod.GET);
-        Request request = requestBuilder.build();
-        Response response = client.execute(request);
-        if (response.isStatusCodeError()) {
-            intLogger.error(error);
-            response.throwExceptionForError();
-        }
-        return response;
+        return executeRequest(path, HttpMethod.GET, null, error);
     }
 
     public Response executePostRequest(String path, BodyContent requestBody, String error) throws IntegrationException {
+        return executeRequest(path, HttpMethod.POST, null, error);
+    }
+
+    public Response executePutRequest(String path, BodyContent requestBody, String error) throws IntegrationException {
+        return executeRequest(path, HttpMethod.PUT, null, error);
+    }
+
+    private Response executeRequest(String path, HttpMethod httpMethod, BodyContent requestBody, String error) throws IntegrationException {
         Request.Builder requestBuilder = createRequestBuilder(path);
-        requestBuilder.method(HttpMethod.POST);
-        requestBuilder.bodyContent(requestBody);
+        requestBuilder.method(httpMethod);
+        if (null != requestBody) {
+            requestBuilder.bodyContent(requestBody);
+        }
         Request request = requestBuilder.build();
         Response response = client.execute(request);
         if (response.isStatusCodeError()) {
