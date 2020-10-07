@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
+import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
 import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -62,7 +62,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
-public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
+public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
 
