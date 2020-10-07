@@ -31,18 +31,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.web.common.BaseController;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-    private final String loginUrl = BaseController.BASE_PATH + "/login";
-    private final String logoutUrl = BaseController.BASE_PATH + "/logout";
+    private final String loginUrl = AlertRestConstants.BASE_PATH + "/login";
+    private final String logoutUrl = AlertRestConstants.BASE_PATH + "/logout";
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
@@ -124,7 +124,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     public void testResetPasswordControllerPath() throws Exception {
         TestProperties testProperties = new TestProperties();
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
-        String url = BaseController.BASE_PATH + "/resetPassword/alertuser";
+        String url = AlertRestConstants.BASE_PATH + "/resetPassword/alertuser";
         // by default the 3 alert users don't have the email address set so a bad request is expected.
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());

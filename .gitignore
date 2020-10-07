@@ -27,7 +27,7 @@ classes/
 /activemq-data/
 *-lastrun.txt
 *-last-search.txt
-/node_modules
+web/node_modules
 /data/
 /data*/
 sonar-project.properties

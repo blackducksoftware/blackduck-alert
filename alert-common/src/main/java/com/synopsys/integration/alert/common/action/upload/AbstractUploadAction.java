@@ -33,15 +33,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 public abstract class AbstractUploadAction {
-    public static final String API_FUNCTION_UPLOAD_URL = CustomFunctionAction.API_FUNCTION_URL + "/upload";
+    public static final String API_FUNCTION_UPLOAD_URL = AbstractFunctionController.API_FUNCTION_URL + "/upload";
     private static final String META_DATA_MISSING = "Target meta data missing.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private UploadTarget target;

@@ -3,4 +3,5 @@ include 'azure-boards-common'
 include 'alert-common'
 include 'alert-database'
 include 'channel'
+include 'web'
 

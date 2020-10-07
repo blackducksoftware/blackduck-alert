@@ -1,0 +1,72 @@
+@import 'variables';
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: $synopsys-color-section-background;
+  height: 24px;
+  line-height: 24px;
+  text-align: left;
+  margin: 0;
+  border-top: 1px solid $synopsys-color-light-gray;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  font-size: 11px;
+  color: $synopsys-color-subhead-copy;
+  display: inline-flex;
+  transition: opacity .3s ease-in-out 0s;
+  z-index: 9999;
+}
+
+.footer a {
+  color: $synopsys-color-subhead-copy;
+}
+
+.footer a:hover {
+  color: $synopsys-color-subhead-copy;
+}
+
+.productName {
+  text-align: left;
+  float: left;
+}
+
+.productVersion {
+  text-align: left;
+  margin-left: .4em;
+  margin-right: auto;
+}
+
+.copyright {
+  margin-left: auto;
+  text-align: left;
+  float: right;
+}
+
+.statusPopover {
+  float: right;
+  border: 1px solid transparent;
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+.statusPopover:hover {
+  cursor: pointer;
+}
+
+.statusPopoverError {
+  animation: errorBlinker 3s linear infinite;
+}
+
+@keyframes errorBlinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.popoverContainer {
+  width: 50%;
+}

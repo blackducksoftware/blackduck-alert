@@ -27,13 +27,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.api.BaseController;
 
 @RestController
 @RequestMapping(TaskController.TASK_BASE_PATH)
 public class TaskController extends BaseController {
-    public static final String TASK_BASE_PATH = BaseController.BASE_PATH + "/task";
+    public static final String TASK_BASE_PATH = AlertRestConstants.BASE_PATH + "/task";
     private final TaskActions taskActions;
 
     @Autowired
