@@ -81,9 +81,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-            logger.info(actionMessageCreator.createStartMessage("role", roleName));
+            logger.debug(actionMessageCreator.createStartMessage("role", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
-            logger.info(actionMessageCreator.createSuccessMessage("Role", roleName));
+            logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("role", resource.getRoleName()));
@@ -99,16 +99,16 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         if (existingRole.isPresent()) {
             String roleName = existingRole.get().getName();
             try {
-                logger.info(actionMessageCreator.deleteStartMessage("role", roleName));
+                logger.debug(actionMessageCreator.deleteStartMessage("role", roleName));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
                 logger.error(actionMessageCreator.deleteErrorMessage("role", existingRole.get().getName()));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
-            logger.info(actionMessageCreator.deleteSuccessMessage("Role", roleName));
+            logger.debug(actionMessageCreator.deleteSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
-        logger.error(actionMessageCreator.deleteNotFoundMessage("Role", id));
+        logger.warn(actionMessageCreator.deleteNotFoundMessage("Role", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -143,17 +143,17 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
-                logger.info(actionMessageCreator.updateStartMessage("role", existingRole.get().getName()));
+                logger.debug(actionMessageCreator.updateStartMessage("role", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
                     authorizationManager.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
-                logger.info(actionMessageCreator.updateSuccessMessage("Role", roleName));
+                logger.debug(actionMessageCreator.updateSuccessMessage("Role", roleName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
-            logger.error(actionMessageCreator.updateNotFoundMessage("Role", id));
+            logger.warn(actionMessageCreator.updateNotFoundMessage("Role", id));
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.updateErrorMessage("role", resource.getRoleName()));

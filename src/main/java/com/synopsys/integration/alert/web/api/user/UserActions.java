@@ -136,7 +136,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
             String password = resource.getPassword();
             String emailAddress = resource.getEmailAddress();
 
-            logger.info(actionMessageCreator.createStartMessage("user", userName));
+            logger.debug(actionMessageCreator.createStartMessage("user", userName));
             UserModel userModel = userAccessor.addUser(userName, password, emailAddress);
             Long userId = userModel.getId();
             Set<String> configuredRoleNames = resource.getRoleNames();
@@ -147,7 +147,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
-            logger.info(actionMessageCreator.createSuccessMessage("User", userName));
+            logger.debug(actionMessageCreator.createSuccessMessage("User", userName));
             return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("user", resource.getUsername()));
@@ -167,7 +167,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
 
             UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
             try {
-                logger.info(actionMessageCreator.updateStartMessage("user", userName));
+                logger.debug(actionMessageCreator.updateStartMessage("user", userName));
                 userAccessor.updateUser(newUserModel, passwordMissing);
                 Set<String> configuredRoleNames = resource.getRoleNames();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
@@ -180,14 +180,14 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                logger.info(actionMessageCreator.updateSuccessMessage("User", userName));
+                logger.debug(actionMessageCreator.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
                 logger.error(actionMessageCreator.updateErrorMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
-        logger.error(actionMessageCreator.updateNotFoundMessage("User", id));
+        logger.warn(actionMessageCreator.updateNotFoundMessage("User", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -197,16 +197,16 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
         if (user.isPresent()) {
             String userName = user.get().getName();
             try {
-                logger.info(actionMessageCreator.deleteStartMessage("user", userName));
+                logger.debug(actionMessageCreator.deleteStartMessage("user", userName));
                 userAccessor.deleteUser(id);
             } catch (AlertException ex) {
                 logger.error(actionMessageCreator.deleteErrorMessage("user", userName));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
-            logger.info(actionMessageCreator.deleteSuccessMessage("User", userName));
+            logger.debug(actionMessageCreator.deleteSuccessMessage("User", userName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
-        logger.error(actionMessageCreator.deleteNotFoundMessage("User", id));
+        logger.warn(actionMessageCreator.deleteNotFoundMessage("User", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
