@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 
 public abstract class AbstractUploadAction {
     public static final String API_FUNCTION_UPLOAD_URL = CustomFunctionAction.API_FUNCTION_URL + "/upload";
+    private static final String META_DATA_MISSING = "Target meta data missing.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private UploadTarget target;
     private final AuthorizationManager authorizationManager;
@@ -62,7 +63,7 @@ public abstract class AbstractUploadAction {
 
     public ActionResponse<ExistenceModel> uploadFileExists() {
         if (!isTargetDefined()) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Target meta data missing");
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadReadPermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
@@ -77,7 +78,7 @@ public abstract class AbstractUploadAction {
 
     public ActionResponse<Void> uploadFile(Resource fileToUpload) {
         if (!isTargetDefined()) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Target meta data missing");
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
@@ -87,7 +88,7 @@ public abstract class AbstractUploadAction {
 
     public ActionResponse<Void> deleteFile() {
         if (!isTargetDefined()) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Target meta data missing");
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadDeletePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
