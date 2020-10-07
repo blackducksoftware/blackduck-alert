@@ -20,15 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions.upload;
+package com.synopsys.integration.alert.web.api.saml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
+import com.synopsys.integration.alert.common.rest.api.AbstractUploadFunctionController;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.web.security.authentication.saml.SamlMetaDataFileUpload;
 
 @Controller
 @RequestMapping(SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL)
