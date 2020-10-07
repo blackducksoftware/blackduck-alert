@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
+import com.synopsys.integration.alert.common.action.api.ActionMessages;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -64,6 +65,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     private final DescriptorMap descriptorMap;
 
     private final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+    private final ActionMessages actionMessages = new ActionMessages();
 
     @Autowired
     public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
@@ -79,12 +81,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-            logger.info(String.format("Creating role: %s", roleName));
+            logger.info(actionMessages.createStartMessage("role", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
-            logger.info(String.format("Role %s created successfully.", roleName));
+            logger.info(actionMessages.createSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
-            logger.error("Error occurred while creating role.");
+            logger.error(actionMessages.createErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
         }
     }
@@ -97,16 +99,16 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         if (existingRole.isPresent()) {
             String roleName = existingRole.get().getName();
             try {
-                logger.info(String.format("Deleting Role: %s", roleName));
+                logger.info(actionMessages.deleteErrorMessage("role", roleName));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
-                logger.error(String.format("Error occurred while deleting the role: %s", existingRole.get().getName()));
+                logger.error(actionMessages.deleteErrorMessage("role", existingRole.get().getName()));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
-            logger.info(String.format("Role %s deleted successfully.", roleName));
+            logger.info(actionMessages.deleteSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
-        logger.error(String.format("Role with id %s not found", id));
+        logger.error(actionMessages.deleteNotFoundMessage("Role", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -125,8 +127,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             return new ActionResponse<>(HttpStatus.OK, role.get());
         }
         //This is covered by the findExistingCheck in AbstractResourceActions. TODO for 6.4.0
-        return null;
-        //return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
+        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
     }
 
     @Override
@@ -142,20 +143,20 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
-                logger.info(String.format("Updating role: %s", existingRole.get().getName()));
+                logger.info(actionMessages.updateStartMessage("role", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
                     authorizationManager.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
-                logger.info(String.format("Role %s updated successfully.", roleName));
+                logger.info(actionMessages.updateSuccessMessage("Role", roleName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
-            logger.error(String.format("Role with id %s not found", id));
+            logger.error(actionMessages.updateNotFoundMessage("Role", id));
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
-            logger.error("An error occurred while updating the role.");
+            logger.error(actionMessages.updateErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
     }
