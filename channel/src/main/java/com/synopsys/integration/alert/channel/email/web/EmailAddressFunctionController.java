@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * channel
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,23 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions.upload;
+package com.synopsys.integration.alert.channel.email.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.web.security.authentication.saml.SamlMetaDataFileUpload;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
-@Controller
-@RequestMapping(SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL)
-public class SAMLMetadataUploadFunctionController extends AbstractUploadFunctionController {
-    public static final String SAML_UPLOAD_URL = AbstractUploadAction.API_FUNCTION_UPLOAD_URL + "/" + AuthenticationDescriptor.KEY_SAML_METADATA_FILE;
+@RestController
+@RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
+public class EmailAddressFunctionController extends AbstractFunctionController {
+    public static final String EMAIL_ADDRESS_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES;
 
     @Autowired
-    public SAMLMetadataUploadFunctionController(SamlMetaDataFileUpload action) {
-        super(action);
+    public EmailAddressFunctionController(EmailCustomFunctionAction functionAction) {
+        super(functionAction);
     }
 }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.ConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
@@ -36,12 +37,11 @@ import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
 public class ConfigController implements ConfigResourceController, TestController<FieldModel>, ValidateController<FieldModel> {
-    public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
+    public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
     private final ConfigActions configActions;
 
     @Autowired

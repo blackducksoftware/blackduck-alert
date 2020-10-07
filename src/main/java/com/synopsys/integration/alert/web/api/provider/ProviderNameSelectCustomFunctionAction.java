@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,10 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.web.api.provider;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,43 +32,37 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
-    private final List<String> issueTrackerChannelKeys;
+public class ProviderNameSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
-        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, authorizationManager, descriptorMap, fieldValidationUtility);
-        this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
-                                           .map(IssueTrackerChannelKey::getUniversalKey)
-                                           .collect(Collectors.toList());
+    public ProviderNameSelectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, authorizationManager, descriptorMap, fieldValidationUtility);
+        this.descriptorMap = descriptorMap;
     }
 
     @Override
-    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
-        String channelName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
-        List<LabelValueSelectOption> options = Arrays.stream(ProcessingType.values())
-                                                   .filter(processingType -> this.shouldInclude(processingType, channelName))
-                                                   .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER).stream()
+                                                   .map(descriptor -> descriptor.createMetaData(ConfigContextEnum.DISTRIBUTION))
+                                                   .flatMap(Optional::stream)
+                                                   .map(descriptorMetadata -> new LabelValueSelectOption(descriptorMetadata.getLabel(), descriptorMetadata.getName()))
+                                                   .sorted()
                                                    .collect(Collectors.toList());
-
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
-    private boolean shouldInclude(ProcessingType processingType, String channelName) {
-        // We do not want to expose the summary processing type as an option for issue tracker channels
-        return !(issueTrackerChannelKeys.contains(channelName) && processingType == ProcessingType.SUMMARY);
-    }
 }

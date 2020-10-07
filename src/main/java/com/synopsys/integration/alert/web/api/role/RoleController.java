@@ -27,12 +27,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.api.BaseController;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ReadAllController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(RoleController.ROLE_BASE_PATH)

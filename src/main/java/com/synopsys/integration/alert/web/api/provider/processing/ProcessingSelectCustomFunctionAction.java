@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,10 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.web.api.provider.processing;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,44 +32,44 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
-    private final DescriptorMap descriptorMap;
-    private final AuthorizationManager authorizationManager;
+public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
+    private final List<String> issueTrackerChannelKeys;
 
     @Autowired
-    public ChannelSelectCustomFunctionAction(DescriptorMap descriptorMap, AuthorizationManager authorizationManager, FieldValidationUtility fieldValidationUtility) {
-        super(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, authorizationManager, descriptorMap, fieldValidationUtility);
-        this.descriptorMap = descriptorMap;
-        this.authorizationManager = authorizationManager;
+    public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, authorizationManager, descriptorMap, fieldValidationUtility);
+        this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
+                                           .map(IssueTrackerChannelKey::getUniversalKey)
+                                           .collect(Collectors.toList());
     }
 
     @Override
     public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                                                   .filter(this::hasPermission)
-                                                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                                                   .flatMap(Optional::stream)
-                                                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                                                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
-                                                   .sorted()
+        String channelName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
+        List<LabelValueSelectOption> options = Arrays.stream(ProcessingType.values())
+                                                   .filter(processingType -> this.shouldInclude(processingType, channelName))
+                                                   .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
                                                    .collect(Collectors.toList());
+
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
-    private boolean hasPermission(Descriptor descriptor) {
-        return authorizationManager.hasPermissions(ConfigContextEnum.DISTRIBUTION.name(), descriptor.getDescriptorKey().getUniversalKey());
+    private boolean shouldInclude(ProcessingType processingType, String channelName) {
+        // We do not want to expose the summary processing type as an option for issue tracker channels
+        return !(issueTrackerChannelKeys.contains(channelName) && processingType == ProcessingType.SUMMARY);
     }
 }
