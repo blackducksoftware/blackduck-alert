@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * channel
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.channel.azure.boards.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.web.PolicyNotificationFilterCustomFunctionAction;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
-@RequestMapping(PolicyFilterFunctionController.POLICY_FILTER_FUNCTION_URL)
-public class PolicyFilterFunctionController extends AbstractFunctionController {
-    public static final String POLICY_FILTER_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER;
+@RequestMapping(AzureBoardsOAuthFunctionController.AZURE_OAUTH_FUNCTION_URL)
+public class AzureBoardsOAuthFunctionController extends AbstractFunctionController<OAuthEndpointResponse> {
+    public static final String AZURE_OAUTH_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + AzureBoardsDescriptor.KEY_OAUTH;
 
     @Autowired
-    public PolicyFilterFunctionController(PolicyNotificationFilterCustomFunctionAction functionAction) {
+    public AzureBoardsOAuthFunctionController(AzureBoardsCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

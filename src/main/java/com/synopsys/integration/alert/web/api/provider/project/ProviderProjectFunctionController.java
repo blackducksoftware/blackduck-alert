@@ -20,20 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.web.api.provider.project;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProcessingSelectCustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
-@RequestMapping(ProcessingTypeFunctionController.PROCESSING_TYPE_FUNCTION_URL)
-public class ProcessingTypeFunctionController extends AbstractFunctionController {
-    public static final String PROCESSING_TYPE_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_PROCESSING_TYPE;
+@RequestMapping(ProviderProjectFunctionController.CHANNEL_CONFIGURED_PROJECT_FUNCTION_URL)
+public class ProviderProjectFunctionController extends AbstractFunctionController<ProviderProjectOptions> {
+    public static final String CHANNEL_CONFIGURED_PROJECT_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
 
-    public ProcessingTypeFunctionController(ProcessingSelectCustomFunctionAction functionAction) {
+    @Autowired
+    public ProviderProjectFunctionController(ProviderProjectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

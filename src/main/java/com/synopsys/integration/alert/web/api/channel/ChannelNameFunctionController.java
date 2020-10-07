@@ -20,22 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.web.api.channel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.channel.jira.server.web.JiraServerCustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
-@RequestMapping(JiraServerFuntionController.JIRA_SERVER_FUNCTION_URL)
-public class JiraServerFuntionController extends AbstractFunctionController {
-    public static final String JIRA_SERVER_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN;
+@RequestMapping(ChannelNameFunctionController.CHANNEL_NAME_FUNCTION_URL)
+public class ChannelNameFunctionController extends AbstractFunctionController<LabelValueSelectOptions> {
+    public static final String CHANNEL_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME;
 
     @Autowired
-    public JiraServerFuntionController(JiraServerCustomFunctionAction functionAction) {
+    public ChannelNameFunctionController(ChannelSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }
+
+

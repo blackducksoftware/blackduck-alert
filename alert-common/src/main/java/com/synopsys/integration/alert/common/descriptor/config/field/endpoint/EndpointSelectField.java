@@ -24,16 +24,16 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import java.util.LinkedList;
 
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 public class EndpointSelectField extends SelectConfigField {
     private String url;
 
     public EndpointSelectField(String key, String label, String description) {
         super(key, label, description, FieldType.ENDPOINT_SELECT, new LinkedList<>());
-        this.url = CustomFunctionAction.API_FUNCTION_URL;
+        this.url = AbstractFunctionController.API_FUNCTION_URL;
     }
 
     public EndpointSelectField applyUrl(String url) {

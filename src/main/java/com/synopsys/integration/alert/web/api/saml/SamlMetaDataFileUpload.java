@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security.authentication.saml;
+package com.synopsys.integration.alert.web.api.saml;
 
 import java.io.File;
 import java.io.FileInputStream;

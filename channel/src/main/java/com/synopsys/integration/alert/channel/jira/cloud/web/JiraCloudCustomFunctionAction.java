@@ -53,15 +53,15 @@ import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactor
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
-public class JiraCloudCustomEndpoint extends CustomFunctionAction<String> {
-    private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomEndpoint.class);
+public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {
+    private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomFunctionAction.class);
 
     private final JiraCloudChannelKey jiraChannelKey;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomEndpoint(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
+    public JiraCloudCustomFunctionAction(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
         FieldValidationUtility fieldValidationUtility) {
         super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
         this.jiraChannelKey = jiraChannelKey;

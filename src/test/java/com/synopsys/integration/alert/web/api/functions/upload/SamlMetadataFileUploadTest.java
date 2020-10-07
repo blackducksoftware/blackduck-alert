@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.web.security.authentication.saml.SamlMetaDataFileUpload;
+import com.synopsys.integration.alert.web.api.saml.SamlMetaDataFileUpload;
 
 public class SamlMetadataFileUploadTest {
     private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);

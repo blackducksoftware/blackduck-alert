@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class CustomFunctionAction<T> {
-    public static final String API_FUNCTION_URL = "/api/function";
 
     private final String fieldKey;
     private final AuthorizationManager authorizationManager;
