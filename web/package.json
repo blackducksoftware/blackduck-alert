@@ -37,7 +37,7 @@
   },
   "scripts": {
     "watch": "webpack --watch -d",
-    "start": "webpack-dev-server --config web/webpack.dev.config.js -w --hot",
+    "start": "webpack-dev-server --config webpack.dev.config.js -w --hot",
     "build": "webpack --progress",
     "test": "jest --watch",
     "lint": "eslint src/main/js"

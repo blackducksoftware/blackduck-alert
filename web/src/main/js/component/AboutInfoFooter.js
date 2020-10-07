@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    Overlay, Popover, PopoverContent, PopoverTitle
+    Overlay,
+    Popover,
+    PopoverContent,
+    PopoverTitle
 } from 'react-bootstrap';
 
 import SystemMessage from 'component/common/SystemMessage';

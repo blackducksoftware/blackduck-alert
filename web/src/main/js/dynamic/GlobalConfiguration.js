@@ -6,7 +6,11 @@ import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import {
-    deleteConfig, getConfig, testConfig, updateConfig, validateConfig
+    deleteConfig,
+    getConfig,
+    testConfig,
+    updateConfig,
+    validateConfig
 } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
