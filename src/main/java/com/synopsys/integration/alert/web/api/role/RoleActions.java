@@ -99,7 +99,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         if (existingRole.isPresent()) {
             String roleName = existingRole.get().getName();
             try {
-                logger.info(actionMessages.deleteErrorMessage("role", roleName));
+                logger.info(actionMessages.deleteStartMessage("role", roleName));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
                 logger.error(actionMessages.deleteErrorMessage("role", existingRole.get().getName()));

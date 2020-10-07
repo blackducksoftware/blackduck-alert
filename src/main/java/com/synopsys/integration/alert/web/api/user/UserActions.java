@@ -180,7 +180,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertToCustomUserRoleModel)
                                       .orElse(resource);
-                logger.info(actionMessages.updateStartMessage("User", userName));
+                logger.info(actionMessages.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
                 logger.error(actionMessages.updateErrorMessage("User", userName));
