@@ -1,0 +1,362 @@
+@import 'variables';
+
+html,
+body {
+  background-color: $synopsys-color-footer-background;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
+  font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+h1 {
+  border-bottom: 1px solid $border-color;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 17px;
+  margin-top: 2px;
+  padding-bottom: 17px;
+
+  & .fa {
+    margin-right: 0.33em;
+  }
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 20px 0 4px;
+}
+
+form.form-horizontal {
+  padding: 0 20px;
+}
+
+button {
+  border-radius: $border-radius;
+}
+
+button + button {
+  margin-left: 5px;
+}
+
+.accumulator-countdown .btn {
+  margin-left: 20px;
+}
+
+.form-control {
+  font-size: 13px;
+}
+
+.navigation {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  background-color: $navigation-background-color;
+  color: $synopsys-color-section-background;
+  border: 0;
+  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
+  z-index: 100;
+  padding: 0 20px;
+
+  .navigationContent {
+    overflow-y: auto;
+    position: absolute;
+    top: 5px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 20px 20px;
+
+    > ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      > li {
+        padding: 0;
+
+        a {
+          color: $synopsys-color-section-background;
+          text-decoration: none;
+          border-left: 4px solid transparent;
+          font-weight: 300;
+          letter-spacing: 0.07rem;
+          display: block;
+          padding: 8px 10px;
+
+          &.activeNav {
+            border-left: 4px solid $synopsys-color-section-background;
+            background-color: $synopsys-color-dark-gray;
+          }
+
+          &:hover {
+            background-color: $synopsys-color-dark-gray;
+            cursor: pointer;
+          }
+        }
+
+        &.divider {
+          margin: 15px 0;
+          border-bottom: $navigation-border;
+        }
+
+        &.navHeader {
+          text-transform: uppercase;
+          font-size: 0.8em;
+          opacity: 0.75;
+          margin: 15px 0 5px;
+        }
+      }
+    }
+  }
+}
+
+.contentArea {
+  background-color: $synopsys-color-section-background;
+  position: fixed;
+  overflow: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 250px;
+  z-index: 99;
+  padding: 15px;
+}
+
+.btn {
+  border-radius: $border-radius;
+}
+
+.hidden {
+  display: none;
+}
+
+.wrapper {
+  padding: 0px;
+  font-size: $base-font-size;
+  height: 800px;
+  width: 100%;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  display: inline-block;
+  position: absolute;
+}
+
+.advancedWrapper {
+  text-align: right;
+  padding-right: 10px;
+}
+
+.advanced {
+  cursor: pointer;
+  color: $synopsys-color-platform-blue;
+  text-align: right;
+}
+
+.alignCenter {
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.submitButtons {
+  margin-right: 10px;
+  color: $synopsys-color-section-background;
+  background: $synopsys-color-platform-blue;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px 10px 5px 10px;
+  font-size: 1em;
+  display: inline-block;
+}
+
+.submitContainers {
+  display: inline-block;
+  padding: 5px;
+  text-align: right;
+  padding-right: 20px;
+  width: 100%;
+}
+
+.submitButtonsFixed {
+  margin-right: 10px;
+  color: $synopsys-color-section-background;
+  background: $synopsys-color-platform-blue;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px 10px 5px 10px;
+  font-size: 1em;
+  display: inline-block;
+  margin: 10px;
+}
+
+.submitContainersFixed {
+  display: inline-block;
+  padding: 5px;
+  text-align: right;
+  padding-right: 20px;
+  width: 100%;
+}
+
+.configurationError {
+  color: $synopsys-color-platform-red;
+  text-align: center;
+}
+
+form.form-horizontal.loginForm {
+  padding: 15px;
+}
+
+.loginContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginBox {
+  background-color: $synopsys-color-section-background;
+  border: 0;
+  border-radius: $border-radius;
+  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
+  margin-bottom: 20px;
+  max-width: 500px;
+  min-height: 175px;
+  min-width: 300px;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.topLevelModal {
+  background-color: $synopsys-color-section-background;
+  border: 0;
+  border-radius: $border-radius;
+  box-shadow: 1px 1px 100px $synopsys-color-dark-gray;
+}
+
+.modal-content {
+  border-radius: $border-radius;
+}
+
+.border {
+  border: 1px solid $border-color;
+}
+
+.alertHeader {
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-size: 2.5em;
+  padding-top: 50px;
+}
+
+.alertHeaderTag {
+  margin: 0 auto;
+  padding-top: 10px;
+}
+
+.descriptorHeader {
+  padding-bottom: 0px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.descriptorDescription {
+  position: relative;
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+.descriptorBorder {
+  margin: 15px 0;
+  border-bottom: $navigation-border;
+}
+
+.timeStampContainer {
+  float: right;
+}
+
+.table {
+  display: table;
+  margin: 0 auto;
+}
+
+.tableBorder {
+  border: 1px solid $border-color;
+  margin: 0 auto;
+  margin-top: 10px;
+  width: 75%;
+  height: 100%;
+  padding: 10px;
+  background-color: $synopsys-color-section-background;
+  position: relative;
+  overflow: hidden;
+}
+
+.modalContainer {
+  padding: 15px;
+  margin-top: 65px;
+}
+
+.progressContainer {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: 0px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.progressIcon {
+  display: inline;
+  margin: 0 10px;
+}
+
+.configButtonContainer {
+  display: block;
+  margin: 0px auto;
+}
+
+.missingData {
+  color: $color-danger;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.fontAwesomeLabel {
+  padding-right: 5px;
+}
+
+.productLogo {
+  margin-top: 4px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.collapsiblePanel {
+  .icon {
+    margin-right: 5px;
+  }
+
+  .shown {
+    visibility: visible;
+    opacity: 1;
+    padding-left: 0.75rem;
+  }
+
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+.pull-right {
+  float: right;
+}
+
+.alert-icon {
+  padding: 3px;
+}
+

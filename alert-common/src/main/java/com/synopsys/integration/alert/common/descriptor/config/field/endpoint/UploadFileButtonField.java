@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.UploadEndpointManager;
+import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class UploadFileButtonField extends EndpointField {
@@ -33,7 +33,7 @@ public class UploadFileButtonField extends EndpointField {
     private final boolean multiple;
 
     public UploadFileButtonField(String key, String label, String description, String buttonLabel, List<String> accept, String capture, boolean multiple) {
-        super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, buttonLabel, UploadEndpointManager.UPLOAD_ENDPOINT_URL);
+        super(key, label, description, FieldType.UPLOAD_FILE_BUTTON, buttonLabel, AbstractUploadAction.API_FUNCTION_UPLOAD_URL);
         this.accept = accept;
         this.capture = capture;
         this.multiple = multiple;

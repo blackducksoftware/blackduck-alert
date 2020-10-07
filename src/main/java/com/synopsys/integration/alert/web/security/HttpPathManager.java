@@ -30,7 +30,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class HttpPathManager {
@@ -45,13 +45,13 @@ public class HttpPathManager {
     public static final String PATH_JS_BUNDLE_JS = "/js/bundle.js";
     public static final String PATH_JS_BUNDLE_JS_MAP = "/js/bundle.js.map";
     public static final String PATH_SAML_ROOT = "/saml/**";
-    public static final String PATH_ABOUT = BaseController.BASE_PATH + "/about";
-    public static final String PATH_LOGIN = BaseController.BASE_PATH + "/login";
-    public static final String PATH_LOGOUT = BaseController.BASE_PATH + "/logout";
-    public static final String PATH_PASSWORD_RESET = BaseController.BASE_PATH + "/resetPassword";
-    public static final String PATH_PASSWORD_RESET_ROOT = BaseController.BASE_PATH + "/resetPassword/**";
-    public static final String PATH_SYSTEM_MESSAGES_LATEST = BaseController.BASE_PATH + "/system/messages/latest";
-    public static final String PATH_VERIFY = BaseController.BASE_PATH + "/verify";
+    public static final String PATH_ABOUT = AlertRestConstants.BASE_PATH + "/about";
+    public static final String PATH_LOGIN = AlertRestConstants.BASE_PATH + "/login";
+    public static final String PATH_LOGOUT = AlertRestConstants.BASE_PATH + "/logout";
+    public static final String PATH_PASSWORD_RESET = AlertRestConstants.BASE_PATH + "/resetPassword";
+    public static final String PATH_PASSWORD_RESET_ROOT = AlertRestConstants.BASE_PATH + "/resetPassword/**";
+    public static final String PATH_SYSTEM_MESSAGES_LATEST = AlertRestConstants.BASE_PATH + "/system/messages/latest";
+    public static final String PATH_VERIFY = AlertRestConstants.BASE_PATH + "/verify";
     public static final String PATH_VERIFY_SAML = PATH_VERIFY + "/saml";
 
     private static final String[] DEFAULT_PATHS = {

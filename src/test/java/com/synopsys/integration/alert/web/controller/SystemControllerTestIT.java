@@ -18,12 +18,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.system.SystemActions;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
-    private static final String SYSTEM_MESSAGE_BASE_URL = BaseController.BASE_PATH + "/system/messages";
+    private static final String SYSTEM_MESSAGE_BASE_URL = AlertRestConstants.BASE_PATH + "/system/messages";
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final Gson gson = new Gson();
 

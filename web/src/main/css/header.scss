@@ -1,0 +1,50 @@
+@import 'variables';
+
+.header, .fixedHeader {
+  background-color: $synopsys-color-subhead-copy;
+  height: 50px;
+  line-height: 50px;
+  width: 100%;
+  text-align: left;
+  margin: 0;
+  padding-left: 15px;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  color: $synopsys-color-section-background;
+  display: inline-flex;
+}
+
+.fixedHeader {
+  position: fixed;
+  z-index: 9999;
+}
+
+.submitButtons {
+  margin-right: 10px;
+  color: $synopsys-color-section-background;
+  background: $synopsys-color-platform-blue;
+  text-align: center;
+  padding: 5px 10px 5px 10px;
+  font-size: 1em;
+  display: inline-flex;
+  height: 30px;
+  line-height: normal;
+}
+
+.submitContainers {
+  padding-right: 10px;
+  display: inline-flex;
+  margin: 10px;
+  text-align: right;
+  float: right;
+}
+
+.title {
+  font-size: 19px;
+  text-align: left;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.loginSpacer {
+  min-width: 150px;
+}

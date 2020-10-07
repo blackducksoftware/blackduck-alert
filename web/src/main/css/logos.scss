@@ -1,0 +1,36 @@
+@import 'variables';
+
+.synopsysLogoSpan {
+  display: inline-flex;
+  font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.synopsysHeaderLogo {
+  background: none;
+  margin: auto;
+  width: auto;
+  max-height: 17px;
+}
+
+.synopsysHeaderLogoVerticalBarSpace {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.synopsysFooterLogo {
+  background: none;
+  margin: auto;
+  width: auto;
+  max-height: 12px;
+}
+
+.synopsysFooterLogoVerticalBarSpace {
+  margin-left: 5.5px;
+  margin-right: 5.5px;
+}
+
+.headerStandardSize {
+  margin-bottom: 3px;
+  font-size: 1.25em;
+  font-weight: lighter;
+}
