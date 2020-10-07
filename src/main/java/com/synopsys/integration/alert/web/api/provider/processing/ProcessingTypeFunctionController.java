@@ -20,23 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.web.api.provider.processing;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderSelectCustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
-@RequestMapping(ProviderNameFunctionController.PROVIDER_NAME_FUNCTION_URL)
-public class ProviderNameFunctionController extends AbstractFunctionController {
-    public static final String PROVIDER_NAME_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ChannelDistributionUIConfig.KEY_PROVIDER_NAME;
+@RequestMapping(ProcessingTypeFunctionController.PROCESSING_TYPE_FUNCTION_URL)
+public class ProcessingTypeFunctionController extends AbstractFunctionController<LabelValueSelectOptions> {
+    public static final String PROCESSING_TYPE_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_PROCESSING_TYPE;
 
-    @Autowired
-    public ProviderNameFunctionController(ProviderSelectCustomFunctionAction functionAction) {
+    public ProcessingTypeFunctionController(ProcessingSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }

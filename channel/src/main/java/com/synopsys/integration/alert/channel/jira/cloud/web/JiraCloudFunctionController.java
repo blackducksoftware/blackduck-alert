@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * channel
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,23 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.api.functions;
+package com.synopsys.integration.alert.channel.jira.cloud.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderProjectCustomFunctionAction;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
-@RequestMapping(ProviderProjectFunctionController.CHANNEL_CONFIGURED_PROJECT_FUNCTION_URL)
-public class ProviderProjectFunctionController extends AbstractFunctionController {
-    public static final String CHANNEL_CONFIGURED_PROJECT_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
+@RequestMapping(JiraCloudFunctionController.JIRA_CLOUD_FUNCTION_URL)
+public class JiraCloudFunctionController extends AbstractFunctionController<String> {
+    public static final String JIRA_CLOUD_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN;
 
     @Autowired
-    public ProviderProjectFunctionController(ProviderProjectCustomFunctionAction functionAction) {
+    public JiraCloudFunctionController(JiraCloudCustomFunctionAction functionAction) {
         super(functionAction);
     }
 }
