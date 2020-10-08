@@ -55,7 +55,7 @@ task copyStaticWebModuleContent(type: Copy, dependsOn: ':web:copyStaticWebConten
     into "${project.buildDir}/resources/main/static/"
 }
 
-task copyToTemplates(type: Copy, dependsOn: [copyStaticWebModuleContent]) {
+task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
     from "${project.buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
