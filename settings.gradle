@@ -4,4 +4,5 @@ include 'alert-common'
 include 'alert-database'
 include 'channel'
 include 'web'
+include 'workflow'
 

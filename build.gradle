@@ -87,7 +87,9 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':channel')
+    implementation project(':workflow')
     implementation project(':web')
+
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
