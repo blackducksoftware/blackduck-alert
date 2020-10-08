@@ -43,8 +43,8 @@ task webpack(type: Exec) {
 }
 
 task copyStaticWebContent(type: Copy, dependsOn: [npm_run]) {
-    from "${project.projectDir}/src/css"
-    from "${project.projectDir}/src/img"
+    from('src/css')
+    from('src/img')
     into "${project.buildDir}/resources/main/static"
 }
 tasks.copyStaticWebContent.dependsOn(npm_run)
