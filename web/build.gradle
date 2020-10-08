@@ -42,7 +42,7 @@ task webpack(type: Exec) {
     commandLine "${project.projectDir}/node_modules/.bin/webpack"
 }
 
-task copyStaticWebContent(type: Copy, dependsOn: [npm_run]) {
+task copyStaticWebContent(type: Copy) {
     from("${project.projectDir}/src/main/css") {
         into 'css'
     }
@@ -51,6 +51,6 @@ task copyStaticWebContent(type: Copy, dependsOn: [npm_run]) {
     }
     into "${project.buildDir}/resources/main/static"
 }
-tasks.copyStaticWebContent.dependsOn(npm_run)
-tasks.copyStaticWebContent.mustRunAfter(npm_run)
+tasks.copyStaticWebContent.finalizedBy(npm_run)
+tasks.npm_run.mustRunAfter(copyStaticWebContent)
 tasks.clean.finalizedBy(cleanBundles)
