@@ -48,7 +48,6 @@ task copyStaticWebContent(type: Copy, dependsOn: [npm_run]) {
     into "${project.buildDir}/resources/main/static"
 }
 tasks.copyStaticWebContent.dependsOn(npm_run)
-tasks.copyStaticWebContent.mustRunAfter(npm_run)
 tasks.clean.finalizedBy(cleanBundles)
 tasks.build.dependsOn(copyStaticWebContent)
 tasks.build.mustRunAfter(copyStaticWebContent)
