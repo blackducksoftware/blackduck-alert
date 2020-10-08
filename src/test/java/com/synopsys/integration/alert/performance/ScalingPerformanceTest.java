@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -19,14 +21,19 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.performance.model.SlackPerformanceProperties;
-import com.synopsys.integration.rest.body.BodyContent;
-import com.synopsys.integration.rest.body.StringBodyContent;
-import com.synopsys.integration.rest.response.Response;
+import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
+import com.synopsys.integration.rest.client.IntHttpClient;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.wait.WaitJob;
 
 public class ScalingPerformanceTest extends BasePerformanceTest {
     private final static String SLACK_SCALING_PERFORMANCE_JOB_NAME = "Slack Scaling Performance Job";
     private final SlackPerformanceProperties slackProperties = new SlackPerformanceProperties();
+
+    private final IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
+    private final String alertURL = "https://localhost:8443/alert";
 
     private String blackDuckProviderID = "-1";
 
@@ -37,7 +44,7 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         intLogger.info(String.format("Starting time %s", getDateTimeFormatter().format(startingTime)));
 
         // Create an authenticated connection to Alert
-        loginToAlert();
+        getExternalAlertRequestUtility().loginToExternalAlert();
 
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
         startingTime = LocalDateTime.now();
@@ -52,17 +59,20 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         // create 10 slack jobs
         createSlackJobs(startingTime, jobIds, 10, 10);
 
-        LocalDateTime startingSearchDateTime = LocalDateTime.now();
+        LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
         triggerBlackDuckNotification();
+        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
 
-        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, getDateTimeFormatter(), getGson(), getAlertRequestUtility(), startingSearchDateTime, jobIds);
-        WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20, notificationWaitJobTask);
+        LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
+        // check that all jobs have processed the notification successfully, log how long it took
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, getDateTimeFormatter(), getGson(), getAlertRequestUtility(), startingNotificationSearchDateTime, jobIds);
+        WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 600, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        logTimeElapsedWithMessage("Waiting for 10 jobs to process the notification took %s", startingNotificationWaitForTenJobs, LocalDateTime.now());
 
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
-
-        // TODO check that all jobs have processed the notification, log how long it took
+        assertTrue(isComplete);
 
         // TODO create 90 more slack jobs for a total of 100
         // trigger BD notification
@@ -124,14 +134,21 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobSlackConfiguration, jobProviderConfiguration));
 
         String jobConfigBody = getGson().toJson(jobFieldModel);
-        BodyContent requestBody = new StringBodyContent(jobConfigBody);
 
-        getAlertRequestUtility().executePostRequest("api/configuration/job/validate", requestBody, String.format("Validating the Job %s failed.", jobName));
-        // executePostRequest("api/configuration/job/test", requestBody, String.format("Testing the Slack Job #%s failed.", jobNumber));
-        Response creationResponse = getAlertRequestUtility().executePostRequest("api/configuration/job", requestBody, String.format("Could not create the Job %s.", jobName));
+        getAlertRequestUtility().executePostRequest("/api/configuration/job/validate", jobConfigBody, String.format("Validating the Job %s failed.", jobName));
+        // executePostRequest("/api/configuration/job/test", requestBody, String.format("Testing the Slack Job #%s failed.", jobNumber));
+        String creationResponse = getAlertRequestUtility().executePostRequest("/api/configuration/job", jobConfigBody, String.format("Could not create the Job %s.", jobName));
 
-        JsonObject jsonObject = getGson().fromJson(creationResponse.getContentString(), JsonObject.class);
-        return jsonObject.get("id").getAsString();
+        JsonObject jsonObject = getGson().fromJson(creationResponse, JsonObject.class);
+        return jsonObject.get("jobId").getAsString();
     }
 
+    @Override
+    public AlertRequestUtility createAlertRequestUtility() {
+        return new ExternalAlertRequestUtility(intLogger, client, alertURL);
+    }
+
+    public ExternalAlertRequestUtility getExternalAlertRequestUtility() {
+        return (ExternalAlertRequestUtility) getAlertRequestUtility();
+    }
 }

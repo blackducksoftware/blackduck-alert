@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.performance;
+package com.synopsys.integration.alert.performance.utility;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +18,6 @@ import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNoti
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.wait.WaitJobTask;
 
 public class NotificationWaitJobTask implements WaitJobTask {
@@ -49,9 +48,8 @@ public class NotificationWaitJobTask implements WaitJobTask {
     }
 
     private boolean waitForNotificationToBeProcessedByAllJobs() throws IntegrationException {
-        Response response = alertRequestUtility.executeGetRequest("api/audit?pageNumber=0&pageSize=2&searchTerm=VULNERABILITY&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false", "Could not get the Alert audit entries.");
-        String contentString = response.getContentString();
-        AuditEntryPageModel auditEntryPageModel = gson.fromJson(contentString, AuditEntryPageModel.class);
+        String response = alertRequestUtility.executeGetRequest("/api/audit?pageNumber=0&pageSize=2&searchTerm=VULNERABILITY&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false", "Could not get the Alert audit entries.");
+        AuditEntryPageModel auditEntryPageModel = gson.fromJson(response, AuditEntryPageModel.class);
         Optional<AuditEntryModel> matchingAuditEntry = auditEntryPageModel.getContent().stream()
                                                            .filter(auditEntryModel -> isNotificationAfterTime(startSearchTime, auditEntryModel.getNotification()))
                                                            .filter(auditEntryModel -> NotificationType.VULNERABILITY.name().equals(auditEntryModel.getNotification().getNotificationType()))
@@ -87,7 +85,7 @@ public class NotificationWaitJobTask implements WaitJobTask {
                                         .allMatch(jobAuditModel -> AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()));
         List<String> remainingJobs = new ArrayList<>(jobIdsToMatch);
         auditJobs.stream()
-            .forEach(jobAuditModel -> remainingJobs.remove(jobAuditModel.getId()));
+            .forEach(jobAuditModel -> remainingJobs.remove(jobAuditModel.getConfigId()));
 
         if (allJobsSuccessful && remainingJobs.isEmpty()) {
             return true;
