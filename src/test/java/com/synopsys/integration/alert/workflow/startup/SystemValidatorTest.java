@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
