@@ -165,7 +165,6 @@ artifactory {
     }
 }
 
-evaluationDependsOnChildren()
 tasks.dockerLogin.mustRunAfter(helmPushChart)
 
 tasks.helmPushChart.mustRunAfter(helmValidation)
