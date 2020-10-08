@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.tasks;
+package com.synopsys.integration.alert.provider.blackduck.task;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;

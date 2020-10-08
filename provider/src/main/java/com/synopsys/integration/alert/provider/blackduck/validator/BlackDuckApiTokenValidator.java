@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.validators;
+package com.synopsys.integration.alert.provider.blackduck.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

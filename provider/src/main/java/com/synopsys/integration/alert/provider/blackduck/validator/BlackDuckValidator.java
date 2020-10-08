@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.validators;
+package com.synopsys.integration.alert.provider.blackduck.validator;
 
 import java.net.MalformedURLException;
 import java.net.URL;

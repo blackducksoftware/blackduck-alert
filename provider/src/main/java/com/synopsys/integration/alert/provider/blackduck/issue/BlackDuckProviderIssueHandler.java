@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.issues;
+package com.synopsys.integration.alert.provider.blackduck.issue;
 
 import java.time.Instant;
 import java.util.Date;

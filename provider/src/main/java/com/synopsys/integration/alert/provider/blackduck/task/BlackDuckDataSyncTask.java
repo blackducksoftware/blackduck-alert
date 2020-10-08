@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.tasks;
+package com.synopsys.integration.alert.provider.blackduck.task;
 
 import java.util.Collection;
 import java.util.HashSet;

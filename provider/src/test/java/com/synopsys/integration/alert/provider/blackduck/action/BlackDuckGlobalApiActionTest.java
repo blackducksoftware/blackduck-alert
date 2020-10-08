@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.actions;
+package com.synopsys.integration.alert.provider.blackduck.action;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,9 +23,9 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
 import com.synopsys.integration.function.ThrowingBiFunction;
 
 public class BlackDuckGlobalApiActionTest {

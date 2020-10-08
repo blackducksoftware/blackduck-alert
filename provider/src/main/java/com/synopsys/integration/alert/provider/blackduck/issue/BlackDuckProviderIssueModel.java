@@ -20,11 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.issues;
+package com.synopsys.integration.alert.provider.blackduck.issue;
 
 public class BlackDuckProviderIssueModel {
     public static final String DEFAULT_ASSIGNEE = "Alert User";
-    
+
     private final String key;
     private final String status;
     private final String summary;

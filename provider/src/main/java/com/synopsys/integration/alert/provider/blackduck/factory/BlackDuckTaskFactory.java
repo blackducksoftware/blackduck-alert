@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.factories;
+package com.synopsys.integration.alert.provider.blackduck.factory;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTaskFactory;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {

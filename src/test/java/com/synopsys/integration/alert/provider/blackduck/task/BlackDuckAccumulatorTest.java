@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.tasks;
+package com.synopsys.integration.alert.provider.blackduck.task;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;

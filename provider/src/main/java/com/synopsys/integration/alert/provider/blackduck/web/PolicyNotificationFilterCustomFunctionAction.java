@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;

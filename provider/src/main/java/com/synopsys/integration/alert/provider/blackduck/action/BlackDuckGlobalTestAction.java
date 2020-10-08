@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.actions;
+package com.synopsys.integration.alert.provider.blackduck.action;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.factories.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckApiTokenValidator;
+import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.builder.BuilderStatus;

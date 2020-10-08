@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.actions;
+package com.synopsys.integration.alert.provider.blackduck.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.validators.BlackDuckApiTokenValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
