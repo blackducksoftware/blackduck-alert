@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
+import com.synopsys.integration.alert.common.action.api.ActionMessageCreator;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -61,6 +64,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
+    private final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+    private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
+
     @Autowired
     public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
@@ -75,9 +81,12 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             String roleName = resource.getRoleName();
             Set<PermissionModel> permissions = resource.getPermissions();
             PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
+            logger.debug(actionMessageCreator.createStartMessage("role", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
+            logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
         } catch (AlertException ex) {
+            logger.error(actionMessageCreator.createErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
         }
     }
@@ -88,13 +97,18 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                    .stream()
                                                    .findFirst();
         if (existingRole.isPresent()) {
+            String roleName = existingRole.get().getName();
             try {
+                logger.debug(actionMessageCreator.deleteStartMessage("role", roleName));
                 authorizationManager.deleteRole(id);
             } catch (AlertException ex) {
+                logger.error(actionMessageCreator.deleteErrorMessage("role", existingRole.get().getName()));
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting role: %s", ex.getMessage()));
             }
+            logger.debug(actionMessageCreator.deleteSuccessMessage("Role", roleName));
             return new ActionResponse<>(HttpStatus.NO_CONTENT);
         }
+        logger.warn(actionMessageCreator.deleteNotFoundMessage("Role", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -112,6 +126,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         if (role.isPresent()) {
             return new ActionResponse<>(HttpStatus.OK, role.get());
         }
+        //This is covered by the findExistingCheck in AbstractResourceActions. TODO for 6.4.0
         return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
     }
 
@@ -128,16 +143,20 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
                                                        .stream()
                                                        .findFirst();
             if (existingRole.isPresent()) {
+                logger.debug(actionMessageCreator.updateStartMessage("role", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
                     authorizationManager.updateRoleName(id, roleName);
                 }
                 Set<PermissionModel> permissions = resource.getPermissions();
                 PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
                 authorizationManager.updatePermissionsForRole(roleName, permissionMatrixModel);
+                logger.debug(actionMessageCreator.updateSuccessMessage("Role", roleName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             }
+            logger.warn(actionMessageCreator.updateNotFoundMessage("Role", id));
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
+            logger.error(actionMessageCreator.updateErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
     }
