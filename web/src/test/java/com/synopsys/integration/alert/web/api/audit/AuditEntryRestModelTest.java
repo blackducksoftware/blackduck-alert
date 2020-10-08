@@ -1,25 +1,35 @@
 package com.synopsys.integration.alert.web.api.audit;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.synopsys.integration.alert.audit.mock.MockAuditEntryRestModel;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.web.model.RestModelTest;
+import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
+import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 
-public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
+public class AuditEntryRestModelTest {
 
-    @Override
-    public MockAuditEntryRestModel getMockUtil() {
-        return new MockAuditEntryRestModel();
-    }
+    @Test
+    public void testRestModel() {
+        String id = "1";
+        String timeLastSent = new Date(500).toString();
+        String overallStatus = AuditEntryStatus.SUCCESS.name();
+        NotificationConfig notification = new NotificationConfig();
+        List<JobAuditModel> jobAuditModels = Collections.singletonList(new JobAuditModel());
 
-    @Override
-    public void assertRestModelFieldsFull(AuditEntryModel restModel) {
-        Assertions.assertEquals(getMockUtil().getNotification(), restModel.getNotification());
-        Assertions.assertEquals(getMockUtil().getJobAuditModels(), restModel.getJobs());
-        Assertions.assertEquals(getMockUtil().getOverallStatus(), restModel.getOverallStatus());
-        Assertions.assertEquals(getMockUtil().getTimeLastSent(), restModel.getLastSent());
-        Assertions.assertEquals(getMockUtil().getId().toString(), restModel.getId());
+        AuditEntryModel restModel = new AuditEntryModel(id, notification, jobAuditModels, overallStatus, timeLastSent);
+
+        assertEquals(notification, restModel.getNotification());
+        assertEquals(jobAuditModels, restModel.getJobs());
+        assertEquals(overallStatus, restModel.getOverallStatus());
+        assertEquals(timeLastSent, restModel.getLastSent());
+        assertEquals(id, restModel.getId());
     }
 
 }
