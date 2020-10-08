@@ -50,14 +50,14 @@ task createAboutText(type: Task) {
     aboutFile << aboutJson
 }
 
-task copyStaticWebContent(type: Copy, dependsOn: ':web:build') {
+task copyStaticWebModuleContent(type: Copy, dependsOn: ':web:build') {
     from "${project(':web').buildDir}/resources/main/static/"
     into "${project.buildDir}/resources/main/static/"
 }
 
-task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebContent') {
+task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
     from "${project.buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
-tasks.copyToTemplates.mustRunAfter(copyStaticWebContent)
+tasks.copyToTemplates.mustRunAfter(copyStaticWebModuleContent)
 tasks.compileJava.mustRunAfter(createAboutText)
