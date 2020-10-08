@@ -9,23 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.performance.model.SlackPerformanceProperties;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
 import com.synopsys.integration.wait.WaitJob;
@@ -35,25 +28,6 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
     private final SlackPerformanceProperties slackProperties = new SlackPerformanceProperties();
 
     private String blackDuckProviderID = "-1";
-
-    @Autowired
-    DescriptorConfigRepository descriptorConfigRepository;
-
-    @Autowired
-    RegisteredDescriptorRepository registeredDescriptorRepository;
-
-    @Autowired
-    FieldValueRepository fieldValueRepository;
-
-    private Long getDescriptorIdOrThrowException(String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
-        }
-        return registeredDescriptorRepository
-                   .findFirstByName(descriptorName)
-                   .map(RegisteredDescriptorEntity::getId)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor with the provided name was registered"));
-    }
 
     @Test
     @Ignore
@@ -66,10 +40,7 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
 
         // Create the Black Duck Global provider configuration
         blackDuckProviderID = setupBlackDuck();
-
-        fieldValueRepository.flush();
-        descriptorConfigRepository.flush();
-
+        
         logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
         startingTime = LocalDateTime.now();
 
