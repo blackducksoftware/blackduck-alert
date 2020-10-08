@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.tasks;
+package com.synopsys.integration.alert.provider.blackduck.task;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckDataSyncTask;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
