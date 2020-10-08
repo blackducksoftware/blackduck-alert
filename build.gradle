@@ -87,6 +87,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':channel')
+    implementation project(':provider')
     implementation project(':web')
 
     // Spring

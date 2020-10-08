@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
 
 @Component
 @Order(55)
@@ -57,10 +57,10 @@ public class LastSearchDataMigration extends StartupComponent {
     // Because pg_stat_file requires admin privileges to run, we have to migrate the last search file data in code.
     // We don't have admin privileges to postgres when alert starts.
 
-    private BlackDuckProviderKey blackDuckProviderKey;
-    private ConfigurationAccessor configurationAccessor;
-    private FilePersistenceUtil filePersistenceUtil;
-    private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
+    private final BlackDuckProviderKey blackDuckProviderKey;
+    private final ConfigurationAccessor configurationAccessor;
+    private final FilePersistenceUtil filePersistenceUtil;
+    private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
     public LastSearchDataMigration(BlackDuckProviderKey providerKey, ConfigurationAccessor configurationAccessor, FilePersistenceUtil filePersistenceUtil, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
         this.blackDuckProviderKey = providerKey;
