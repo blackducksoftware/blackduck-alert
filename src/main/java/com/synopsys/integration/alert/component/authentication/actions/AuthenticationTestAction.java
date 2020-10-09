@@ -44,8 +44,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationUIConfig;
-import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component

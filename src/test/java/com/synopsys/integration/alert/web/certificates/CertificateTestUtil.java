@@ -16,8 +16,8 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
-import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
+import com.synopsys.integration.alert.component.certificates.web.CertificateActions;
+import com.synopsys.integration.alert.component.certificates.web.CertificateModel;
 
 public class CertificateTestUtil extends AlertIntegrationTest {
     public static final String CERTIFICATE_FILE_PATH = "certificates/selfsigned.cert.pem";

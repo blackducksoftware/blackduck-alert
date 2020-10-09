@@ -35,7 +35,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
 @Component
 public class HomeActions {

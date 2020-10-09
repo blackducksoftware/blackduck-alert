@@ -10,8 +10,8 @@ import org.springframework.security.saml.metadata.MetadataManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.component.SAMLStartupComponent;
 
 public class SAMLStartupComponentTest {

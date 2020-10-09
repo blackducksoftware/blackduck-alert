@@ -27,6 +27,8 @@ import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.component.users.web.user.UserConfig;
+import com.synopsys.integration.alert.component.users.web.user.UserController;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

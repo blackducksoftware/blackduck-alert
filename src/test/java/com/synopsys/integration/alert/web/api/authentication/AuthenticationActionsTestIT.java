@@ -45,17 +45,19 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
+import com.synopsys.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
+import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.component.authentication.security.ldap.LdapAuthenticationPerformer;
+import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
+import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
+import com.synopsys.integration.alert.component.authentication.web.PasswordResetService;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
-import com.synopsys.integration.alert.web.security.authentication.AlertAuthenticationProvider;
-import com.synopsys.integration.alert.web.security.authentication.database.AlertDatabaseAuthenticationPerformer;
-import com.synopsys.integration.alert.web.security.authentication.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.web.security.authentication.ldap.LdapAuthenticationPerformer;
-import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 public class AuthenticationActionsTestIT extends AlertIntegrationTest {

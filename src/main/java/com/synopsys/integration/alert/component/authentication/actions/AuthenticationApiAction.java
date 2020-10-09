@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 
 @Component
 public class AuthenticationApiAction extends ApiAction {

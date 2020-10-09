@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
-import com.synopsys.integration.alert.web.api.role.util.PermissionModelUtil;
+import com.synopsys.integration.alert.component.users.web.role.util.PermissionModelUtil;
 
 public class RoleActionsTest {
     private final String roleName = "roleName";

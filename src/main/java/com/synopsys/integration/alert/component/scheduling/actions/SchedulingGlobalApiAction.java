@@ -33,8 +33,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.synopsys.integration.alert.component.scheduling.workflow.DailyTask;
+import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
 
 @Component
 public class SchedulingGlobalApiAction extends ApiAction {

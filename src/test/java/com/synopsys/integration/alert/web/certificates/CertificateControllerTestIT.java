@@ -30,9 +30,9 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.web.api.certificate.CertificateActions;
-import com.synopsys.integration.alert.web.api.certificate.CertificateModel;
-import com.synopsys.integration.alert.web.api.certificate.CertificatesController;
+import com.synopsys.integration.alert.component.certificates.web.CertificateActions;
+import com.synopsys.integration.alert.component.certificates.web.CertificateModel;
+import com.synopsys.integration.alert.component.certificates.web.CertificatesController;
 
 import junit.framework.AssertionFailedError;
 

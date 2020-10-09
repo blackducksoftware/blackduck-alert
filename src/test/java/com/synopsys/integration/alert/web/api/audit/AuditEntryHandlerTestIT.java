@@ -56,6 +56,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
+import com.synopsys.integration.alert.component.audit.web.AuditEntryActions;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;

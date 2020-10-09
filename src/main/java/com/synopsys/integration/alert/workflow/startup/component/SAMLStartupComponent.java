@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLContext;
-import com.synopsys.integration.alert.web.security.authentication.saml.SAMLManager;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 
 @Component
 @Order(70)

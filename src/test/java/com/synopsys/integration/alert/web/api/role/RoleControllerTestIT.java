@@ -24,6 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.component.users.web.role.PermissionModel;
+import com.synopsys.integration.alert.component.users.web.role.RoleController;
+import com.synopsys.integration.alert.component.users.web.role.RolePermissionModel;
 import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
