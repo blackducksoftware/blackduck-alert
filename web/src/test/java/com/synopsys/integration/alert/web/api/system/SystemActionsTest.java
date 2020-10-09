@@ -1,13 +1,14 @@
 package com.synopsys.integration.alert.web.api.system;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,8 +20,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
-import com.synopsys.integration.alert.web.api.system.MultiSystemMessageModel;
-import com.synopsys.integration.alert.web.api.system.SystemActions;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SystemActionsTest {
@@ -54,8 +53,8 @@ public class SystemActionsTest {
         String startTime = startAndEndTimes.getLeft();
         String endTime = startAndEndTimes.getRight();
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessages(startTime, endTime);
-        Assertions.assertTrue(response.isSuccessful());
-        Assertions.assertTrue(response.hasContent());
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
         List<SystemMessageModel> messages = response.getContent()
                                                 .map(MultiSystemMessageModel::getSystemMessages)
                                                 .orElse(List.of());
@@ -66,8 +65,8 @@ public class SystemActionsTest {
     public void getSystemMessagesSinceStartup() {
         SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility);
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessagesSinceStartup();
-        Assertions.assertTrue(response.isSuccessful());
-        Assertions.assertTrue(response.hasContent());
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
         List<SystemMessageModel> messages = response.getContent()
                                                 .map(MultiSystemMessageModel::getSystemMessages)
                                                 .orElse(List.of());
@@ -79,9 +78,9 @@ public class SystemActionsTest {
         String invalidDate = "2018-13--13T00/00:00.000Z";
         SystemActions systemActions = new SystemActions(defaultSystemStatusUtility, defaultSystemMessageUtility);
         ActionResponse<MultiSystemMessageModel> response = systemActions.getSystemMessages(invalidDate, null);
-        Assertions.assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
 
     private List<SystemMessageModel> createSystemMessageList() {

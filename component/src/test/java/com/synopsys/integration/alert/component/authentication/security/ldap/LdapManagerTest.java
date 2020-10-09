@@ -1,11 +1,13 @@
 package com.synopsys.integration.alert.component.authentication.security.ldap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -95,19 +97,19 @@ public class LdapManagerTest {
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
 
         FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        Assertions.assertEquals(DEFAULT_ENABLED, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_SERVER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_AUTHENTICATION_TYPE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_REFERRAL).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_USER_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_USER_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_USER_DN_PATTERNS, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_USER_ATTRIBUTES, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_GROUP_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_GROUP_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
-        Assertions.assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_ENABLED, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_SERVER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_REFERRAL).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_DN_PATTERNS, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_USER_ATTRIBUTES, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_SEARCH_BASE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_SEARCH_FILTER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test
@@ -117,9 +119,9 @@ public class LdapManagerTest {
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
-        Assertions.assertTrue(ldapManager.isLdapEnabled());
+        assertTrue(ldapManager.isLdapEnabled());
         configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).ifPresent(field -> field.setFieldValue("false"));
-        Assertions.assertFalse(ldapManager.isLdapEnabled());
+        assertFalse(ldapManager.isLdapEnabled());
     }
 
     @Test
@@ -133,7 +135,7 @@ public class LdapManagerTest {
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.getAuthenticationProvider();
         FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        Assertions.assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test
@@ -147,7 +149,7 @@ public class LdapManagerTest {
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.getAuthenticationProvider();
         FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        Assertions.assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
     }
 
     @Test

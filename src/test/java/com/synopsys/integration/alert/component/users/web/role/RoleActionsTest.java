@@ -2,12 +2,12 @@ package com.synopsys.integration.alert.component.users.web.role;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -83,7 +83,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.NO_CONTENT, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NO_CONTENT, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertTrue(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.OK, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertTrue(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.OK, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class RoleActionsTest {
         ValidationActionResponse validationActionResponse = roleActions.test(rolePermissionModel);
 
         assertTrue(validationActionResponse.isSuccessful());
-        Assert.assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
     }
 
@@ -199,7 +199,7 @@ public class RoleActionsTest {
         ValidationActionResponse validationActionResponse = roleActions.validate(rolePermissionModel);
 
         assertTrue(validationActionResponse.isSuccessful());
-        Assert.assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
     }
 
@@ -214,7 +214,7 @@ public class RoleActionsTest {
         ValidationActionResponse validationActionResponse = roleActions.validate(rolePermissionModel);
 
         assertTrue(validationActionResponse.isSuccessful());
-        Assert.assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
 
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
@@ -232,7 +232,7 @@ public class RoleActionsTest {
         ValidationActionResponse validationActionResponse = roleActions.validate(rolePermissionModel);
 
         assertTrue(validationActionResponse.isSuccessful());
-        Assert.assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
 
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
@@ -251,7 +251,7 @@ public class RoleActionsTest {
         ValidationActionResponse validationActionResponse = roleActions.validate(rolePermissionModel);
 
         assertTrue(validationActionResponse.isSuccessful());
-        Assert.assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
 
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
@@ -277,7 +277,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.NO_CONTENT, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NO_CONTENT, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -293,7 +293,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NOT_FOUND, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -315,7 +315,7 @@ public class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test

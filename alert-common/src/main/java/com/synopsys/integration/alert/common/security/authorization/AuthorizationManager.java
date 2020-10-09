@@ -189,9 +189,7 @@ public class AuthorizationManager {
         boolean hasPermission = roleNames.stream()
                                     .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
         if (!hasPermission) {
-            String currentUserName = getCurrentUserName().orElse("UNKNOWN");
-            String operationName = operation.name();
-            logger.debug(String.format("User %s does not have permission: %s", currentUserName, operationName));
+            logger.debug(String.format("User %s does not have permission: %s", getCurrentUserName().orElse("UNKNOWN"), operation.name()));
         }
         return hasPermission;
     }

@@ -1,12 +1,12 @@
 package com.synopsys.integration.alert.web.model;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -23,9 +23,9 @@ public class AlertPagedRestModelTest {
 
         AlertPagedModel<AuditEntryModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
-        Assert.assertEquals(totalPages, restModel.getTotalPages());
-        Assert.assertEquals(currentPage, restModel.getCurrentPage());
-        Assert.assertEquals(pageSize, restModel.getPageSize());
+        assertEquals(totalPages, restModel.getTotalPages());
+        assertEquals(currentPage, restModel.getCurrentPage());
+        assertEquals(pageSize, restModel.getPageSize());
         assertNull(restModel.getContent());
     }
 
@@ -41,9 +41,9 @@ public class AlertPagedRestModelTest {
 
         AlertPagedModel<AuditEntryModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
-        Assert.assertEquals(totalPages, restModel.getTotalPages());
-        Assert.assertEquals(currentPage, restModel.getCurrentPage());
-        Assert.assertEquals(pageSize, restModel.getPageSize());
-        Assert.assertEquals(contentList, restModel.getContent());
+        assertEquals(totalPages, restModel.getTotalPages());
+        assertEquals(currentPage, restModel.getCurrentPage());
+        assertEquals(pageSize, restModel.getPageSize());
+        assertEquals(contentList, restModel.getContent());
     }
 }

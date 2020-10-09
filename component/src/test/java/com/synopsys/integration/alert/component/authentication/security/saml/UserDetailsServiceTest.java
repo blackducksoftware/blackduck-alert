@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.authentication.security.saml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -11,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -69,9 +69,9 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         UserPrincipal principal = (UserPrincipal) result;
-        Assertions.assertEquals(USER_NAME, principal.getUsername());
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
-        Assertions.assertEquals(VALID_ROLES.length + VALID_DB_ROLES.length, principal.getAuthorities().size());
+        assertEquals(VALID_ROLES.length + VALID_DB_ROLES.length, principal.getAuthorities().size());
         List<String> expectedRoles = new ArrayList<>();
         expectedRoles.addAll(Arrays.asList(VALID_ROLES));
         expectedRoles.addAll(Arrays.asList(VALID_DB_ROLES));
@@ -96,9 +96,9 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         UserPrincipal principal = (UserPrincipal) result;
-        Assertions.assertEquals(USER_NAME, principal.getUsername());
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
-        Assertions.assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
+        assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
         List<String> expectedRoles = Arrays.asList(VALID_DB_ROLES);
         List<String> actualRoles = extractRoleNamesFromPrincipal(principal);
         assertTrue(expectedRoles.containsAll(actualRoles));
@@ -121,9 +121,9 @@ public class UserDetailsServiceTest {
         assertNotNull(result);
         assertTrue(UserPrincipal.class.isInstance(result));
         UserPrincipal principal = (UserPrincipal) result;
-        Assertions.assertEquals(USER_NAME, principal.getUsername());
+        assertEquals(USER_NAME, principal.getUsername());
         assertTrue(StringUtils.isBlank(principal.getPassword()));
-        Assertions.assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
+        assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
         List<String> expectedRoles = Arrays.asList(VALID_DB_ROLES);
         List<String> actualRoles = extractRoleNamesFromPrincipal(principal);
         assertTrue(expectedRoles.containsAll(actualRoles));

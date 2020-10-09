@@ -1,12 +1,14 @@
 package com.synopsys.integration.alert.component.tasks.web;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
@@ -46,15 +48,15 @@ public class TaskActionTest {
         taskManager.scheduleExecutionAtFixedRate(expectedDelay, task.getTaskName());
         TaskActions actions = new TaskActions(descriptorKey, authorizationManager, taskManager);
         ActionResponse<MultiTaskMetaDataModel> response = actions.getTasks();
-        Assertions.assertTrue(response.isSuccessful());
-        Assertions.assertTrue(response.hasContent());
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
         MultiTaskMetaDataModel tasksModel = response.getContent().orElse(new MultiTaskMetaDataModel(List.of()));
         TaskMetaData model = tasksModel.getTasks().stream()
                                  .findFirst()
                                  .orElse(null);
         assertNotNull(model);
         assertNotNull(task.getTaskName());
-        Assertions.assertEquals(task.getFormatedNextRunTime().orElse(""), model.getNextRunTime());
+        assertEquals(task.getFormatedNextRunTime().orElse(""), model.getNextRunTime());
     }
 
     @Test
@@ -67,7 +69,7 @@ public class TaskActionTest {
         TaskManager taskManager = new TaskManager();
         TaskActions actions = new TaskActions(descriptorKey, authorizationManager, taskManager);
         ActionResponse<MultiTaskMetaDataModel> response = actions.getTasks();
-        Assertions.assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
     }
 }

@@ -1,12 +1,15 @@
 package com.synopsys.integration.alert.web.api.home;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -47,8 +50,8 @@ public class HomeActionsTest {
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
         ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        Assertions.assertTrue(response.isSuccessful());
-        Assertions.assertFalse(response.hasContent());
+        assertTrue(response.isSuccessful());
+        assertFalse(response.hasContent());
     }
 
     @Test
@@ -75,9 +78,9 @@ public class HomeActionsTest {
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
         ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        Assertions.assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }
 
     @Test
@@ -104,9 +107,9 @@ public class HomeActionsTest {
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
         ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        Assertions.assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }
 
     @Test
@@ -129,9 +132,9 @@ public class HomeActionsTest {
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
         ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        Assertions.assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }
 
     @Test
@@ -140,9 +143,9 @@ public class HomeActionsTest {
         Mockito.when(samlContext.isSAMLEnabled()).thenReturn(Boolean.TRUE);
         HomeActions actions = new HomeActions(null, samlContext);
         ActionResponse<SAMLEnabledResponseModel> response = actions.verifySaml();
-        Assertions.assertTrue(response.isSuccessful());
-        Assertions.assertTrue(response.hasContent());
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
         SAMLEnabledResponseModel samlEnabledResponseModel = response.getContent().orElse(null);
-        Assertions.assertTrue(samlEnabledResponseModel.getSamlEnabled());
+        assertTrue(samlEnabledResponseModel.getSamlEnabled());
     }
 }

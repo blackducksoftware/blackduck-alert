@@ -1,9 +1,12 @@
 package com.synopsys.integration.alert.web.api.about;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -34,9 +37,9 @@ public class AboutActionsTest {
         Mockito.when(aboutReader.getAboutModel()).thenReturn(Optional.of(model));
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
-        Assertions.assertTrue(resultModel.isSuccessful());
-        Assertions.assertTrue(resultModel.hasContent());
-        Assertions.assertEquals(model, resultModel.getContent().orElse(null));
+        assertTrue(resultModel.isSuccessful());
+        assertTrue(resultModel.hasContent());
+        assertEquals(model, resultModel.getContent().orElse(null));
     }
 
     @Test
@@ -50,7 +53,7 @@ public class AboutActionsTest {
         AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
-        Assertions.assertTrue(resultModel.isError());
-        Assertions.assertFalse(resultModel.hasContent());
+        assertTrue(resultModel.isError());
+        assertFalse(resultModel.hasContent());
     }
 }

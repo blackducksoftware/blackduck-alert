@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.web.api.metadata;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -17,7 +17,7 @@ public class ContextActionsTest {
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
         ConfigContextEnum[] contexts = response.getContent().get().configContexts;
-        Assertions.assertArrayEquals(ConfigContextEnum.values(), contexts);
+        assertArrayEquals(ConfigContextEnum.values(), contexts);
     }
 
 }

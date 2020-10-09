@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.component.audit.web;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -10,9 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -75,7 +75,7 @@ public class AuditEntryActionsTest {
 
         ActionResponse<AuditEntryModel> auditEntryModel = auditEntryActions.get(1L);
         assertTrue(auditEntryModel.isError());
-        Assertions.assertFalse(auditEntryModel.hasContent());
+        assertFalse(auditEntryModel.hasContent());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AuditEntryActionsTest {
 
         ActionResponse<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(UUID.randomUUID());
         assertTrue(jobAuditModel.isError());
-        Assertions.assertFalse(jobAuditModel.hasContent());
+        assertFalse(jobAuditModel.hasContent());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class AuditEntryActionsTest {
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.resendNotification(1L, null);
         assertTrue(response.isError());
-        Assertions.assertFalse(response.hasContent());
+        assertFalse(response.hasContent());
     }
 
     @Test
@@ -168,14 +168,14 @@ public class AuditEntryActionsTest {
 
         assertTrue(response.hasContent());
         AuditEntryPageModel restModel = response.getContent().orElse(null);
-        Assert.assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
-        Assert.assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
-        Assert.assertEquals(pageResponse.getSize(), restModel.getPageSize());
+        assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
+        assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
+        assertEquals(pageResponse.getSize(), restModel.getPageSize());
 
         for (int index = 0; index < pageSize; index++) {
             AlertNotificationModel entity = pageResponse.getContent().get(index);
             AuditEntryModel entryRestModel = restModel.getContent().get(index);
-            Assert.assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
+            assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
         }
     }
 
@@ -222,10 +222,10 @@ public class AuditEntryActionsTest {
         assertTrue(response.hasContent());
 
         AuditEntryPageModel restModel = response.getContent().orElse(null);
-        Assert.assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
-        Assert.assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
+        assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
+        assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content
-        Assert.assertEquals(0, restModel.getPageSize());
+        assertEquals(0, restModel.getPageSize());
         assertTrue(restModel.getContent().isEmpty());
     }
 }

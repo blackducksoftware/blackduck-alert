@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -91,7 +90,7 @@ public class UserActionsTest {
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.readAllWithoutChecks();
 
-        Assertions.assertTrue(actionResponse.hasContent());
+        assertTrue(actionResponse.hasContent());
         List<UserConfig> userModels = actionResponse.getContent()
                                           .get()
                                           .getUsers();
@@ -113,13 +112,13 @@ public class UserActionsTest {
         ActionResponse<UserConfig> actionResponse = userActions.readWithoutChecks(id);
         ActionResponse<UserConfig> actionResponseEmpty = userActions.readWithoutChecks(2L);
 
-        Assertions.assertTrue(actionResponse.hasContent());
-        Assertions.assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
         UserConfig userConfig = actionResponse.getContent().get();
         assertUserConfig(userConfig);
 
         assertFalse(actionResponseEmpty.hasContent());
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, actionResponseEmpty.getHttpStatus());
+        assertEquals(HttpStatus.NOT_FOUND, actionResponseEmpty.getHttpStatus());
     }
 
     @Test
@@ -133,7 +132,7 @@ public class UserActionsTest {
         ValidationActionResponse validationActionResponse = userActions.testWithoutChecks(userConfig);
 
         assertFalse(validationActionResponse.isError());
-        Assertions.assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.hasContent());
         assertFalse(validationActionResponse.getContent().get().hasErrors());
     }
 
@@ -153,10 +152,10 @@ public class UserActionsTest {
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
         assertFalse(userConfigActionResponse.isError());
-        Assertions.assertTrue(userConfigActionResponse.hasContent());
+        assertTrue(userConfigActionResponse.hasContent());
         UserConfig testUserConfig = userConfigActionResponse.getContent().get();
         assertUserConfig(testUserConfig);
-        Assertions.assertEquals(HttpStatus.CREATED, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.CREATED, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -171,9 +170,9 @@ public class UserActionsTest {
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
-        Assertions.assertTrue(userConfigActionResponse.isError());
+        assertTrue(userConfigActionResponse.isError());
         assertFalse(userConfigActionResponse.hasContent());
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -191,7 +190,7 @@ public class UserActionsTest {
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertFalse(userConfigActionResponse.isError());
-        Assertions.assertEquals(HttpStatus.NO_CONTENT, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NO_CONTENT, userConfigActionResponse.getHttpStatus());
         assertFalse(userConfigActionResponse.hasContent());
     }
 
@@ -210,8 +209,8 @@ public class UserActionsTest {
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
-        Assertions.assertTrue(userConfigActionResponse.isError());
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
+        assertTrue(userConfigActionResponse.isError());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -226,8 +225,8 @@ public class UserActionsTest {
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
-        Assertions.assertTrue(userConfigActionResponse.isError());
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, userConfigActionResponse.getHttpStatus());
+        assertTrue(userConfigActionResponse.isError());
+        assertEquals(HttpStatus.NOT_FOUND, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -241,7 +240,7 @@ public class UserActionsTest {
 
         Mockito.verify(userAccessor).deleteUser(id);
         assertFalse(userConfigActionResponse.hasContent());
-        Assertions.assertEquals(HttpStatus.NO_CONTENT, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NO_CONTENT, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -255,7 +254,7 @@ public class UserActionsTest {
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -266,7 +265,7 @@ public class UserActionsTest {
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, userConfigActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.NOT_FOUND, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
@@ -286,10 +285,10 @@ public class UserActionsTest {
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 
         assertFalse(validationActionResponse.isError());
-        Assertions.assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        Assertions.assertTrue(validationResponseModel.hasErrors());
-        Assertions.assertTrue(validationResponseModel.getErrors().containsKey(UserActions.FIELD_KEY_USER_MGMT_EMAILADDRESS));
+        assertTrue(validationResponseModel.hasErrors());
+        assertTrue(validationResponseModel.getErrors().containsKey(UserActions.FIELD_KEY_USER_MGMT_EMAILADDRESS));
     }
 
     @Test
@@ -311,10 +310,10 @@ public class UserActionsTest {
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 
         assertFalse(validationActionResponse.isError());
-        Assertions.assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertFalse(validationResponseModel.hasErrors());
-        Assertions.assertEquals("The user is valid", validationActionResponse.getMessage().get());
+        assertEquals("The user is valid", validationActionResponse.getMessage().get());
     }
 
     private void assertUserConfig(UserConfig userConfig) {
