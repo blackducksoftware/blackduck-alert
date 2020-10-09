@@ -54,7 +54,7 @@ public class AuthorizationManager {
     private final RoleAccessor roleAccessor;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
-    private final Logger logger = LoggerFactory.getLogger(AuthorizationManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationManager.class);
 
     @Autowired
     public AuthorizationManager(RoleAccessor roleAccessor) {
@@ -189,7 +189,9 @@ public class AuthorizationManager {
         boolean hasPermission = roleNames.stream()
                                     .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
         if (!hasPermission) {
-            logger.debug(String.format("User %s does not have permission: %s", getCurrentUserName().get(), operation));
+            String currentUserName = getCurrentUserName().orElse("UNKNOWN");
+            String operationName = operation.name();
+            logger.debug(String.format("User %s does not have permission: %s", currentUserName, operationName));
         }
         return hasPermission;
     }

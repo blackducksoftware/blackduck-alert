@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.web.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.web.api.authentication.LoginConfig;
+import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 
 public class LoginConfigTest {
 

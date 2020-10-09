@@ -50,8 +50,6 @@ import com.synopsys.integration.alert.component.authentication.security.database
 import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.component.authentication.security.ldap.LdapAuthenticationPerformer;
 import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
-import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
-import com.synopsys.integration.alert.component.authentication.web.PasswordResetService;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;

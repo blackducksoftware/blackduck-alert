@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * web
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -39,9 +39,8 @@ import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
-@RequestMapping(ConfigController.CONFIGURATION_PATH)
+@RequestMapping(AlertRestConstants.CONFIGURATION_PATH)
 public class ConfigController implements ConfigResourceController, TestController<FieldModel>, ValidateController<FieldModel> {
-    public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
     private final ConfigActions configActions;
 
     @Autowired

@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * web
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
 import com.synopsys.integration.alert.common.rest.api.ReadAllController;
@@ -41,12 +42,11 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.web.api.config.ConfigController;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
 public class JobConfigController implements BaseJobResourceController, ReadAllController, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
-    public static final String JOB_CONFIGURATION_PATH = ConfigController.CONFIGURATION_PATH + "/job";
+    public static final String JOB_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/job";
     private final JobConfigActions jobConfigActions;
 
     @Autowired

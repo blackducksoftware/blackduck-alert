@@ -41,7 +41,7 @@ public class AboutActionsTest {
 
     @Test
     public void testGetAboutDataNotPresent() {
-        Gson gson = Mockito.mock(Gson.class);
+        Gson gson = new Gson();
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);

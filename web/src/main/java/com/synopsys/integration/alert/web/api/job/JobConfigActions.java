@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * web
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -75,7 +75,7 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.web.common.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 

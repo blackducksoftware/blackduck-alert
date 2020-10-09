@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * workflow
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *

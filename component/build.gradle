@@ -1,0 +1,24 @@
+ext.moduleName = 'com.synopsys.integration.alert.component'
+
+repositories {
+    // Need this repository to resolve the spring-security-saml2-core dependencies
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+    }
+}
+
+dependencies {
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+    implementation project(':channel')
+    implementation project(":workflow")
+
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-ldap'
+    implementation 'org.springframework.security:spring-security-web'
+
+    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
+}
