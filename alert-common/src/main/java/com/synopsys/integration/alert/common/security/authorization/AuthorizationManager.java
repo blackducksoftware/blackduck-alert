@@ -54,7 +54,7 @@ public class AuthorizationManager {
     private final RoleAccessor roleAccessor;
     private final Map<String, PermissionMatrixModel> permissionCache;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorizationManager.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthorizationManager.class);
 
     @Autowired
     public AuthorizationManager(RoleAccessor roleAccessor) {
