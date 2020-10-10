@@ -13,12 +13,11 @@ dependencies {
     implementation project(':channel')
     implementation project(":workflow")
 
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
-
-    implementation 'org.springframework.security:spring-security-core'
+    // Spring Security
     implementation 'org.springframework.security:spring-security-config'
-    implementation 'org.springframework.security:spring-security-ldap'
-    implementation 'org.springframework.security:spring-security-web'
+    api 'org.springframework.security:spring-security-core'
+    api 'org.springframework.security:spring-security-ldap'
+    api 'org.springframework.security:spring-security-web'
 
-    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
+    api 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
 }
