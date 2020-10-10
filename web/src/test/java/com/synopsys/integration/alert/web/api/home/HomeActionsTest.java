@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -26,12 +27,19 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
 public class HomeActionsTest {
+    private HttpServletRequest servletRequest;
+    private HttpServletResponse servletResponse;
+    private HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    @BeforeEach
+    public void init() {
+        servletRequest = new MockHttpServletRequest();
+        servletResponse = new MockHttpServletResponse();
+        csrfTokenRepository = new HttpSessionCsrfTokenRepository();
+    }
+
     @Test
     public void testVerifyAuthenticationValid() {
-        HttpServletRequest servletRequest = new MockHttpServletRequest();
-        HttpServletResponse servletResponse = new MockHttpServletResponse();
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
-
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -56,10 +64,6 @@ public class HomeActionsTest {
 
     @Test
     public void testVerifyAuthenticationInvalidAnonymousUser() {
-        HttpServletRequest servletRequest = new MockHttpServletRequest();
-        HttpServletResponse servletResponse = new MockHttpServletResponse();
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
-
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -85,10 +89,6 @@ public class HomeActionsTest {
 
     @Test
     public void testVerifyAuthenticationInvalidAuthentication() {
-        HttpServletRequest servletRequest = new MockHttpServletRequest();
-        HttpServletResponse servletResponse = new MockHttpServletResponse();
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
-
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -114,7 +114,6 @@ public class HomeActionsTest {
 
     @Test
     public void testVerifyAuthenticationInvalidCSRFToken() {
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -125,9 +124,6 @@ public class HomeActionsTest {
         Mockito.doReturn(grantedAuthorities).when(authentication).getAuthorities();
         Mockito.when(authentication.isAuthenticated()).thenReturn(Boolean.TRUE);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-
-        HttpServletRequest servletRequest = new MockHttpServletRequest();
-        HttpServletResponse servletResponse = new MockHttpServletResponse();
 
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
