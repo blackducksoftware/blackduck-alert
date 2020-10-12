@@ -87,11 +87,11 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        const headers = new Headers();
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch(fetchUrl, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
+            headers
         })
             .then((response) => {
                 response.json()
@@ -122,13 +122,13 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch(resendUrl, {
             method: 'POST',
             credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
+            headers
         })
             .then((response) => {
                 response.json()

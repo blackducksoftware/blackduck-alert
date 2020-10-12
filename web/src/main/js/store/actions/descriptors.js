@@ -16,7 +16,8 @@ function descriptorsFetched(descriptors) {
         const sortedList = descriptors.sort((first, second) => {
             if (first.label < second.label) {
                 return -1;
-            } if (first.label > second.label) {
+            }
+            if (first.label > second.label) {
                 return 1;
             }
             return 0;
@@ -46,11 +47,11 @@ export function getDescriptors() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
         fetch(getUrl, {
             credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers
         })
             .then((response) => {
                 response.json()

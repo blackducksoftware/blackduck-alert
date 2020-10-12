@@ -114,12 +114,12 @@ function fetchAuditInfoForJob(jobConfig) {
         let currentStatus = 'Unknown';
 
         if (jobConfig) {
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            headers.append('X-CSRF-TOKEN', csrfToken);
             fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
                 credentials: 'same-origin',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json'
-                }
+                headers
             }).then((response) => {
                 if (response.ok) {
                     response.json().then((auditInfo) => {
@@ -178,12 +178,12 @@ export function fetchDistributionJobs() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch(ConfigRequestBuilder.JOB_API_URL, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers
         })
             .then((response) => {
                 response.json()
@@ -222,12 +222,12 @@ export function fetchJobsValidationResults() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch(`${ConfigRequestBuilder.JOB_API_URL}/validate`, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers
         })
             .then((response) => {
                 response.json()

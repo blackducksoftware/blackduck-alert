@@ -132,12 +132,12 @@ export function fetchUsers() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers
         })
             .then((response) => {
                 response.json()

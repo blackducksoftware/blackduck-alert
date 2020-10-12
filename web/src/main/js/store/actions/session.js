@@ -118,12 +118,12 @@ export function login(username, password) {
             alertPassword: password
         };
 
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
         fetch('/alert/api/login', {
             method: 'POST',
             credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers,
             body: JSON.stringify(body)
         }).then((response) => {
             if (response.ok) {
@@ -156,13 +156,13 @@ export function logout() {
     return (dispatch, getState) => {
         // dispatch(loggingOut());
         const { csrfToken } = getState().session;
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         fetch('/alert/api/logout', {
             method: 'POST',
             credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
+            headers
         })
             .then(() => dispatch(loggedOut()))
             .then(() => dispatch(logOut()))

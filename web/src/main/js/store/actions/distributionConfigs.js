@@ -260,14 +260,14 @@ export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
         dispatch(checkingDescriptorGlobalConfig());
         const { csrfToken } = getState().session;
         const url = `${ConfigRequestBuilder.JOB_API_URL}/descriptorCheck`;
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRF-TOKEN', csrfToken);
         const request = fetch(url, {
             credentials: 'same-origin',
             method: 'POST',
             body: descriptorName,
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
+            headers
         });
         request.then((response) => {
             if (response.ok) {
