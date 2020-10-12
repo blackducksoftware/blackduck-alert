@@ -243,7 +243,7 @@ export function testDistributionJob(config) {
                         ...responseData
                     });
                     const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler);
-                    if (responseData.errors && !Object.keys(responseData.errors).length) {
+                    if (!responseData.hasErrors) {
                         dispatch(testJobSuccess(responseData.message));
                     } else if (!response.ok) {
                         dispatch(handler(response.status));

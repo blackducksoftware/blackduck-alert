@@ -15,16 +15,19 @@ class StatusMessage extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.errorMessage !== prevProps.errorMessage && !this.state.showError) {
+        const { showError, showMessage } = this.state;
+        const { actionMessage, errorMessage } = this.props;
+        if (errorMessage !== prevProps.errorMessage && !showError) {
             this.setState({ showError: true });
         }
 
-        if (this.props.actionMessage !== prevProps.actionMessage && !this.state.showMessage) {
+        if (actionMessage !== prevProps.actionMessage && !showMessage) {
             this.setState({ showMessage: true });
         }
     }
 
     render() {
+        const { showError, showMessage } = this.state;
         const { id, errorMessage, actionMessage } = this.props;
         const onErrorClose = () => {
             this.setState({ showError: false });
@@ -32,11 +35,16 @@ class StatusMessage extends Component {
         const onMessageClose = () => {
             this.setState({ showMessage: false });
         };
+        const alwaysInFront = {
+            // It's over 9000!!!
+            overlay: { zIndex: 9001 }
+        };
         return (
             <div id={id}>
-                {errorMessage && this.state.showError
+                {errorMessage && showError
                 && (
                     <Alert
+                        style={alwaysInFront}
                         bsPrefix="statusAlert alert"
                         dismissible
                         onClose={onErrorClose}
@@ -46,7 +54,7 @@ class StatusMessage extends Component {
                     </Alert>
                 )}
 
-                {actionMessage && !errorMessage && this.state.showMessage
+                {actionMessage && !errorMessage && showMessage
                 && (
                     <FadeField>
                         <Alert
