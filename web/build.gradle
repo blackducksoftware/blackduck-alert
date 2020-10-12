@@ -7,6 +7,28 @@ plugins {
 
 ext.moduleName = 'com.synopsys.integration.alert.web'
 
+repositories {
+    // Need this repository to resolve the spring-security-saml2-core dependencies
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+    }
+}
+
+dependencies {
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+    implementation project(':channel')
+    implementation project(':component')
+
+    // Spring
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Documentation
+    implementation 'io.springfox:springfox-swagger2:2.8.0'
+    implementation 'io.springfox:springfox-swagger-ui:2.8.0'
+}
+
 task cleanBundles(type: Delete) {
     File staticResourcesDirectory = new File('src/main/static')
     if (staticResourcesDirectory.exists()) {
@@ -42,12 +64,15 @@ task webpack(type: Exec) {
     commandLine "${project.projectDir}/node_modules/.bin/webpack"
 }
 
-task copyStaticWebContent(type: Copy, dependsOn: [npm_run]) {
-    from "${project.projectDir}/src/css"
-    from "${project.projectDir}/src/img"
+task copyStaticWebContent(type: Copy) {
+    from("${project.projectDir}/src/main/css") {
+        into 'css'
+    }
+    from("${project.projectDir}/src/main/img") {
+        into 'img'
+    }
     into "${project.buildDir}/resources/main/static"
 }
-tasks.copyStaticWebContent.dependsOn(npm_run)
+tasks.copyStaticWebContent.finalizedBy(npm_run)
+tasks.npm_run.mustRunAfter(copyStaticWebContent)
 tasks.clean.finalizedBy(cleanBundles)
-tasks.build.dependsOn(copyStaticWebContent)
-tasks.build.mustRunAfter(copyStaticWebContent)

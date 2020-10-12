@@ -18,13 +18,13 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.AboutReader;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;

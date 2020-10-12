@@ -19,4 +19,8 @@ dependencies {
     // This needs to be declared as api in order to annotate
     // the Application.java with the datasource
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // XML
+    api 'com.fasterxml.jackson.core:jackson-databind'
+    api 'com.fasterxml.jackson.core:jackson-annotations'
 }
