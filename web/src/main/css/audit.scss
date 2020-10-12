@@ -1,0 +1,91 @@
+@import 'variables';
+
+.notification {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.highVulnerability {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-platform-red;
+}
+
+.mediumVulnerability {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: lighten($synopsys-color-platform-red, 10%);
+}
+
+.lowVulnerability, .bomEdit {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-light-gray;
+}
+
+.vulnerability {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-lightest-gray;
+}
+
+.policyViolationCleared {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-platform-green;
+}
+
+.policyViolationOverride {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-dark-gray;
+}
+
+.policyViolation {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: darken($synopsys-color-platform-red, 10%);
+}
+
+.issueCountIncreased {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: darken($synopsys-color-platform-red, 10%);
+}
+
+.issueCountDecreased {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-platform-green;
+}
+
+.licenseLimit {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-light-gray;
+}
+
+.licenseLimitCrossOver {
+  padding-left: 3px;
+  padding-right: 3px;
+  color: $synopsys-color-platform-red;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.legendContainer {
+  margin-bottom: 17px;
+}
+
+.legendDescription {
+  display: inline-block;
+  width: 150px;
+}
+
+.notificationTitlePiece {
+  display: inline-block;
+  padding-left: 6px;
+  padding-right: 6px;
+}

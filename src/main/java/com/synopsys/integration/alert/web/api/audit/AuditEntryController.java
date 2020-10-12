@@ -37,13 +37,14 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.web.common.BaseController;
+import com.synopsys.integration.alert.common.rest.api.BaseController;
 
 @RestController
 @RequestMapping(AuditEntryController.AUDIT_BASE_PATH)
 public class AuditEntryController extends BaseController {
-    public static final String AUDIT_BASE_PATH = BaseController.BASE_PATH + "/audit";
+    public static final String AUDIT_BASE_PATH = AlertRestConstants.BASE_PATH + "/audit";
     private final AuditEntryActions auditEntryActions;
 
     @Autowired

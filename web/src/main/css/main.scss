@@ -1,0 +1,14 @@
+@import 'variables';
+// Alert specific
+@import 'app';
+@import 'audit';
+@import 'field';
+@import 'footer';
+@import 'header';
+@import 'logos';
+@import 'messages';
+@import 'settings';
+@import 'table';
+// Third-party
+@import '~bootstrap/dist/css/bootstrap.css';
+@import '~react-bootstrap-table/dist/react-bootstrap-table-all.min.css';

@@ -22,107 +22,56 @@
  */
 package com.synopsys.integration.alert.web.api.role;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.api.BaseController;
+import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
+import com.synopsys.integration.alert.common.rest.api.ReadAllController;
+import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.web.api.config.ConfigController;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(RoleController.ROLE_BASE_PATH)
-public class RoleController extends BaseController {
+public class RoleController extends BaseController implements ReadAllController<MultiRolePermissionModel>, BaseResourceController<RolePermissionModel>, ValidateController<RolePermissionModel> {
     public static final String ROLE_BASE_PATH = ConfigController.CONFIGURATION_PATH + "/role";
-    private final AuthorizationManager authorizationManager;
     private final RoleActions roleActions;
-    private final UserManagementDescriptorKey descriptorKey;
 
     @Autowired
-    public RoleController(AuthorizationManager authorizationManager, RoleActions roleActions, UserManagementDescriptorKey descriptorKey) {
-        this.authorizationManager = authorizationManager;
+    public RoleController(RoleActions roleActions) {
         this.roleActions = roleActions;
-        this.descriptorKey = descriptorKey;
     }
 
-    @GetMapping
-    public MultiRolePermissionModel getRoles() {
-        if (!hasGlobalPermission(authorizationManager::hasReadPermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        List<RolePermissionModel> allRoles = roleActions.getRoles();
-        return new MultiRolePermissionModel(allRoles);
+    @Override
+    public RolePermissionModel create(RolePermissionModel resource) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.create(resource));
     }
 
-    @PostMapping("/validate")
-    public ValidationResponseModel validateRoleFields(@RequestBody RolePermissionModel rolePermissionModel) {
-        return roleActions.validateRoleFields(rolePermissionModel);
+    @Override
+    public RolePermissionModel getOne(Long id) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.getOne(id));
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserRoleModel createRole(@RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasGlobalPermission(authorizationManager::hasCreatePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        try {
-            return roleActions.createRole(rolePermissionModel);
-        } catch (AlertDatabaseConstraintException ex) {
-            throw ResponseFactory.createInternalServerErrorException(String.format("Failed to create the role: %s", ex.getMessage()));
-        } catch (AlertFieldException e) {
-            throw ResponseFactory.createBadRequestException(String.format("There were errors with the configuration: %s", e.getFlattenedErrorMessages()));
-        } catch (AlertConfigurationException e) {
-            throw ResponseFactory.createBadRequestException(e.getMessage());
-        }
+    @Override
+    public void update(Long id, RolePermissionModel resource) {
+        ResponseFactory.createResponseFromAction(roleActions.update(id, resource));
     }
 
-    @PutMapping(value = "/{roleId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateRole(@PathVariable Long roleId, @RequestBody RolePermissionModel rolePermissionModel) {
-        if (!hasGlobalPermission(authorizationManager::hasWritePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-
-        try {
-            roleActions.updateRole(roleId, rolePermissionModel);
-        } catch (AlertDatabaseConstraintException ex) {
-            throw ResponseFactory.createInternalServerErrorException(String.format("Failed to update role: %s", ex.getMessage()));
-        } catch (AlertFieldException e) {
-            throw ResponseFactory.createBadRequestException(String.format("There were errors with the configuration: %s", e.getFlattenedErrorMessages()));
-        } catch (AlertConfigurationException e) {
-            throw ResponseFactory.createBadRequestException(e.getMessage());
-        }
+    @Override
+    public void delete(Long id) {
+        ResponseFactory.createResponseFromAction(roleActions.delete(id));
     }
 
-    @DeleteMapping(value = "/{roleId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRole(@PathVariable Long roleId) {
-        if (!hasGlobalPermission(authorizationManager::hasDeletePermission, descriptorKey)) {
-            throw ResponseFactory.createForbiddenException();
-        }
-        try {
-            roleActions.deleteRole(roleId);
-        } catch (AlertForbiddenOperationException ex) {
-            throw ResponseFactory.createForbiddenException(String.format("The role is reserved and cannot be deleted. %s", ex.getMessage()));
-        }
+    @Override
+    public MultiRolePermissionModel getAll() {
+        return ResponseFactory.createContentResponseFromAction(roleActions.getAll());
     }
 
+    @Override
+    public ValidationResponseModel validate(RolePermissionModel requestBody) {
+        return ResponseFactory.createContentResponseFromAction(roleActions.validate(requestBody));
+    }
 }

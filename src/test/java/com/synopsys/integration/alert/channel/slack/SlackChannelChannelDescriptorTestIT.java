@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
+import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
-public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
+public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
 

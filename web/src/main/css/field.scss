@@ -1,0 +1,185 @@
+@import 'variables';
+
+label {
+  display: inline-block;
+  max-width: 100%;
+  font-weight: bold;
+}
+
+input {
+  border-radius: $border-radius;
+}
+
+small {
+  font-size: 65%;
+  font-weight: normal;
+  line-height: 1;
+  color: $synopsys-color-light-gray;
+}
+
+#description-tooltip {
+  pointer-events: none;
+}
+
+#description-tooltip > .tooltip-inner {
+  background-color: $synopsys-color-subhead-copy;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
+  font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.descriptionPlaceHolder {
+  padding-right: 10px;
+  display: inline-flex;
+}
+
+.descriptionIcon:hover, .configurationDescriptionIcon:hover {
+  cursor: pointer;
+}
+
+.configurationDescriptionIcon {
+  padding-left: 6.5px;
+  padding-top: 6.5px;
+}
+
+.checkbox {
+  vertical-align: middle;
+}
+
+.textInput {
+  width: 100%;
+}
+
+.textInput::placeholder {
+  color: black;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.fieldError {
+  color: $synopsys-color-platform-red;
+  padding: 4px 0px 0px;
+}
+
+.fieldWarning {
+  color: $synopsys-color-yellow;
+  padding: 4px 0px 0px;
+}
+
+.Select {
+
+  &.Select--multi {
+    .Select-control {
+      .Select-multi-value-wrapper {
+        .Select-value {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  .Select-control {
+    border-color: $synopsys-color-lightest-gray;
+    border-radius: $border-radius;
+
+    .Select-value,
+    .Select-placeholder,
+    .Select-input {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .Select-value {
+      .Select-value-label {
+        &:focus,
+        > :focus {
+          outline: none;
+        }
+      }
+    }
+  }
+
+  &.is-open > .Select-control {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0
+  }
+
+  &.is-focused:not(.is-open) > .Select-control {
+    border-color: $synopsys-color-blue;
+    box-shadow: inset 0 1px 1px $synopsys-color-subhead-copy, 0 0 8px $synopsys-color-platform-blue;
+  }
+}
+
+.typeAheadField, .accumulatorTypeAheadField {
+  display: inline-block;
+  width: 100%;
+}
+
+.statusAlert {
+  position: fixed;
+  top: 5px;
+  left: 255px;
+  right: 20px;
+  z-index: 100;
+}
+
+.visibleField {
+  opacity: 1;
+}
+
+.fadingField {
+  opacity: 0;
+  transition: opacity 2s ease-in-out 0s;
+}
+
+
+.fixedButtonGroupBuffer {
+  height: 29px;
+}
+
+.fixedButtonGroup {
+  position: fixed;
+  bottom: 29px;
+  left: 255px;
+  right: 20px;
+  z-index: 100;
+}
+
+.selectButton {
+  margin-left: 5px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  vertical-align: middle !important;
+}
+
+.selectClearButton {
+  margin: 3px;
+  vertical-align: middle !important;
+  border: 1px solid darken($color-danger, 5%);
+  background-color: $color-danger;
+  color: $synopsys-color-section-background;
+
+  &:hover {
+    background-color: darken($color-danger, 10%);
+    border-color: darken($color-danger, 17%);
+    color: $synopsys-color-section-background;
+  }
+}
+
+.tableSelectOkButton {
+  float: right;
+}
+
+.uploadButton {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.required::after {
+  padding-left: 2px;
+  content: "*";
+  color: red;
+}

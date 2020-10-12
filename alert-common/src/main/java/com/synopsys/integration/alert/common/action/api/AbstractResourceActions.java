@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -37,6 +39,10 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public static final String FORBIDDEN_ACTION_FORMAT = "%s action is forbidden. This user is not authorized to perform this action.";
 
     public AbstractResourceActions(DescriptorKey descriptorKey, ConfigContextEnum context, AuthorizationManager authorizationManager) {
         this.descriptorKey = descriptorKey;
@@ -65,6 +71,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Create"));
             return ActionResponse.createForbiddenResponse();
         }
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
@@ -77,6 +84,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
         return readAllWithoutChecks();
@@ -85,6 +93,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> getOne(Long id) {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get one"));
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -99,6 +108,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> update(Long id, T resource) {
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Update"));
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -117,6 +127,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ActionResponse<T> delete(Long id) {
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Delete"));
             return ActionResponse.createForbiddenResponse();
         }
 
@@ -131,6 +142,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Test"));
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
@@ -145,6 +157,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+            logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Validate"));
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }

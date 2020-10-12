@@ -26,17 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ReadAllController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.web.common.BaseController;
 
 @RestController
 @RequestMapping(CertificatesController.API_BASE_URL)
 public class CertificatesController implements ReadAllController<MultiCertificateModel>, BaseResourceController<CertificateModel>, ValidateController<CertificateModel> {
-    public static final String API_BASE_URL = BaseController.BASE_PATH + "/certificates";
+    public static final String API_BASE_URL = AlertRestConstants.BASE_PATH + "/certificates";
     private final CertificateActions actions;
 
     @Autowired

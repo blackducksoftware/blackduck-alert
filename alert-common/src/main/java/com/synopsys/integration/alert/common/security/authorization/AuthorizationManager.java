@@ -26,14 +26,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -49,6 +53,8 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 public class AuthorizationManager {
     private final RoleAccessor roleAccessor;
     private final Map<String, PermissionMatrixModel> permissionCache;
+
+    private final Logger logger = LoggerFactory.getLogger(AuthorizationManager.class);
 
     @Autowired
     public AuthorizationManager(RoleAccessor roleAccessor) {
@@ -180,8 +186,12 @@ public class AuthorizationManager {
     private boolean currentUserHasPermission(AccessOperation operation, String context, String descriptorName) {
         PermissionKey permissionKey = new PermissionKey(context, descriptorName);
         Collection<String> roleNames = getCurrentUserRoleNames();
-        return roleNames.stream()
-                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
+        boolean hasPermission = roleNames.stream()
+                                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
+        if (!hasPermission) {
+            logger.debug(String.format("User %s does not have permission: %s", getCurrentUserName().get(), operation));
+        }
+        return hasPermission;
     }
 
     private Set<String> getCurrentUserRoleNames() {
@@ -195,12 +205,22 @@ public class AuthorizationManager {
                    .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
     }
 
-    private final void loadPermissionsIntoCache() {
+    private Optional<String> getCurrentUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null == authentication || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return Optional.of(userDetails.getUsername());
+    }
+
+    private void loadPermissionsIntoCache() {
         Collection<UserRoleModel> roles = roleAccessor.getRoles();
         permissionCache.putAll(roles.stream().collect(Collectors.toMap(UserRoleModel::getName, UserRoleModel::getPermissions)));
     }
 
-    private final void updateRoleInCache(String roleName, PermissionMatrixModel permissions) {
+    private void updateRoleInCache(String roleName, PermissionMatrixModel permissions) {
         permissionCache.put(roleName, permissions);
     }
 }
