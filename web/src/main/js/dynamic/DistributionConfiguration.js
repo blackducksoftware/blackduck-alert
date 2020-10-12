@@ -11,7 +11,7 @@ import {
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
-import StatusMessage from '../field/StatusMessage';
+import StatusMessage from 'field/StatusMessage';
 
 export const KEY_ENABLED = 'channel.common.enabled';
 export const KEY_NAME = 'channel.common.name';

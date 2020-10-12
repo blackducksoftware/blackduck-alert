@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
-import StatusMessage from '../../../field/StatusMessage';
+import StatusMessage from 'field/StatusMessage';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',
