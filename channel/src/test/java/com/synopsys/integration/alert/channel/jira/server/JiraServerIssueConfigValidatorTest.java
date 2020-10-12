@@ -1,5 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -7,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -67,10 +69,10 @@ public class JiraServerIssueConfigValidatorTest {
         try {
             IssueTrackerContext context = new IssueTrackerContext(null, issueConfig);
             jiraIssueConfigValidator.createValidIssueConfig(context);
-            Assertions.assertEquals(resolveTransitionString, issueConfig.getResolveTransition().orElse(""));
-            Assertions.assertEquals(projectName, issueConfig.getProjectName());
-            Assertions.assertEquals(issueCreatorString, issueConfig.getIssueCreator());
-            Assertions.assertEquals(issueTypeString, issueConfig.getIssueType());
+            assertEquals(resolveTransitionString, issueConfig.getResolveTransition().orElse(""));
+            assertEquals(projectName, issueConfig.getProjectName());
+            assertEquals(issueCreatorString, issueConfig.getIssueCreator());
+            assertEquals(issueTypeString, issueConfig.getIssueType());
         } catch (AlertFieldException e) {
             fail();
         }
@@ -104,9 +106,9 @@ public class JiraServerIssueConfigValidatorTest {
             fail();
         } catch (AlertFieldException e) {
             Map<String, AlertFieldStatus> errorMap = AlertFieldStatusConverter.convertToMap(e.getFieldErrors());
-            Assertions.assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME));
-            Assertions.assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_CREATOR));
-            Assertions.assertFalse(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
+            assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME));
+            assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_CREATOR));
+            assertFalse(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
         }
     }
 

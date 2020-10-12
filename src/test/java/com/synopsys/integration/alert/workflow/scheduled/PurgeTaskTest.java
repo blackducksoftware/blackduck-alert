@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
+import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
 
 public class PurgeTaskTest {
 
