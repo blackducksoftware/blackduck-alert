@@ -124,7 +124,7 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(resendUrl, {
             method: 'POST',

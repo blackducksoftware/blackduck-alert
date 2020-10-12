@@ -120,7 +120,7 @@ export function login(username, password) {
         };
 
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         fetch('/alert/api/login', {
             method: 'POST',
             credentials: 'same-origin',
@@ -158,7 +158,7 @@ export function logout() {
         // dispatch(loggingOut());
         const { csrfToken } = getState().session;
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch('/alert/api/logout', {
             method: 'POST',

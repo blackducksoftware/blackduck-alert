@@ -7,7 +7,7 @@ class HeaderUtilities {
         this.headers.append('Accept', 'application/json');
     }
 
-    addContentType() {
+    addApplicationJsonContentType() {
         this.headers.append('Content-Type', 'application/json');
     }
 
@@ -17,7 +17,7 @@ class HeaderUtilities {
 
     addDefaultHeaders(csrfToken) {
         this.addAccept();
-        this.addContentType();
+        this.addApplicationJsonContentType();
         this.addXCsrfToken(csrfToken);
     }
 

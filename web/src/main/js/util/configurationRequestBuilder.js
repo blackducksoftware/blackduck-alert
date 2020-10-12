@@ -89,7 +89,7 @@ export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
     }
 
     const headersUtil = new HeaderUtilities();
-    headersUtil.addXCsrfToken();
+    headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
         method: 'DELETE',

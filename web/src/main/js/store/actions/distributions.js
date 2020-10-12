@@ -116,7 +116,7 @@ function fetchAuditInfoForJob(jobConfig) {
 
         if (jobConfig) {
             const headersUtil = new HeaderUtilities();
-            headersUtil.addContentType();
+            headersUtil.addApplicationJsonContentType();
             headersUtil.addXCsrfToken(csrfToken);
             fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
                 credentials: 'same-origin',
@@ -180,7 +180,7 @@ export function fetchDistributionJobs() {
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.JOB_API_URL, {
             credentials: 'same-origin',
@@ -224,7 +224,7 @@ export function fetchJobsValidationResults() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(`${ConfigRequestBuilder.JOB_API_URL}/validate`, {
             credentials: 'same-origin',

@@ -49,7 +49,7 @@ export function getDescriptors() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()

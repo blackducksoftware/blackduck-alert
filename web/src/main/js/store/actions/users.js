@@ -134,8 +134,8 @@ export function fetchUsers() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
-        headersUtil.addXCsrfToken();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()

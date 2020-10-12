@@ -122,7 +122,7 @@ export function fetchRoles() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllRolesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const headersUtil = new HeaderUtilities();
-        headersUtil.addContentType();
+        headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.ROLE_API_URL, {
             credentials: 'same-origin',
