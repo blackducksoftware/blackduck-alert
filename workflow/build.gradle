@@ -1,0 +1,6 @@
+ext.moduleName = 'com.synopsys.integration.alert.component'
+
+dependencies {
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+}

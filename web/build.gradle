@@ -7,6 +7,28 @@ plugins {
 
 ext.moduleName = 'com.synopsys.integration.alert.web'
 
+repositories {
+    // Need this repository to resolve the spring-security-saml2-core dependencies
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+    }
+}
+
+dependencies {
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+    implementation project(':channel')
+    implementation project(':component')
+
+    // Spring
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Documentation
+    implementation 'io.springfox:springfox-swagger2:2.8.0'
+    implementation 'io.springfox:springfox-swagger-ui:2.8.0'
+}
+
 task cleanBundles(type: Delete) {
     File staticResourcesDirectory = new File('src/main/static')
     if (staticResourcesDirectory.exists()) {

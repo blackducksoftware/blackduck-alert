@@ -37,7 +37,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.synopsys.integration.alert.web.security.authentication.database.UserDatabaseService;
+import com.synopsys.integration.alert.component.authentication.security.database.UserDatabaseService;
 
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
 @EnableTransactionManagement
@@ -52,13 +52,13 @@ public class Application {
     @Autowired
     private UserDatabaseService userDatabaseService;
 
-    public static void main(final String[] args) {
+    public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
     }
 
     @Bean
-    public DaoAuthenticationProvider alertDatabaseAuthProvider(final PasswordEncoder defaultPasswordEncoder) {
-        final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    public DaoAuthenticationProvider alertDatabaseAuthProvider(PasswordEncoder defaultPasswordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDatabaseService);
         provider.setPasswordEncoder(defaultPasswordEncoder);
         return provider;
