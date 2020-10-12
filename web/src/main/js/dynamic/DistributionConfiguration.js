@@ -11,6 +11,7 @@ import {
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
+import StatusMessage from 'field/StatusMessage';
 
 export const KEY_ENABLED = 'channel.common.enabled';
 export const KEY_NAME = 'channel.common.name';
@@ -201,7 +202,9 @@ class DistributionConfiguration extends Component {
         const {
             providerConfig, channelConfig, currentChannel, currentProvider, showSendMessage
         } = this.state;
-        const { fieldErrors, testDistribution, configurationMessage } = this.props;
+        const {
+            success, inProgress, fieldErrors, testDistribution, configurationMessage
+        } = this.props;
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
         const channelDescriptorName = channelConfig && channelConfig.descriptorName;
@@ -235,12 +238,27 @@ class DistributionConfiguration extends Component {
                     handleCancel={() => this.setSendMessageVisible(false)}
                     channelDescriptorName={channelDescriptorName}
                 />
-                <p
-                    id="distribution-configuration-message"
-                    name="configurationMessage"
-                >
-                    {configurationMessage}
-                </p>
+                {success && !inProgress && (
+                    <StatusMessage
+                        id="distribution-configuration-status-message"
+                        actionMessage={configurationMessage}
+                    />
+                )}
+                {!success && !inProgress && (
+                    <StatusMessage
+                        id="distribution-configuration-status-message"
+                        errorMessage={configurationMessage}
+                    />
+                )}
+                {inProgress
+                && (
+                    <p
+                        id="distribution-configuration-message"
+                        name="configurationMessage"
+                    >
+                        {configurationMessage}
+                    </p>
+                )}
             </div>
         );
     }
