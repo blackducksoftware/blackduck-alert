@@ -294,9 +294,13 @@ class TableDisplay extends Component {
                     title={modalTitle}
                     okLabel="Save"
                     performingAction={inProgress}
-                    actionMessage={popupActionMessage}
                 >
                     {configFields}
+                    <StatusMessage
+                        id={`${id}-status-message`}
+                        actionMessage={popupActionMessage}
+                        errorMessage={errorDialogMessage}
+                    />
                 </PopUp>
             </div>
         );
@@ -415,9 +419,8 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showConfiguration, showDelete } = this.state;
         const {
-            id, actionMessage, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton,
-            data, tableSearchable, enableEdit, editColumnText, enableCopy, copyColumnText, inProgress,
-            tableRefresh, hasFieldErrors, errorDialogMessage
+            id, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton,
+            data, tableSearchable, enableEdit, editColumnText, enableCopy, copyColumnText, inProgress, tableRefresh
         } = this.props;
         if (enableEdit) {
             const editColumn = this.createIconTableHeader(this.editColumnFormatter(), editColumnText);
@@ -465,17 +468,8 @@ class TableDisplay extends Component {
                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
             </div>
         );
-        const status = !hasFieldErrors
-            && (
-                <StatusMessage
-                    id={`${id}-status-message`}
-                    errorMessage={errorDialogMessage}
-                    actionMessage={actionMessage}
-                />
-            );
         const content = (
             <div>
-                {status}
                 <BootstrapTable
                     version="4"
                     hover
@@ -494,10 +488,7 @@ class TableDisplay extends Component {
                 >
                     {tableColumns}
                 </BootstrapTable>
-
                 {inProgress && progressIndicator}
-
-                <p id="tableMessage">{tableMessage}</p>
             </div>
         );
 
