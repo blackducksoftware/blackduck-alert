@@ -10,6 +10,7 @@ import {
     SESSION_LOGIN_ERROR,
     SESSION_LOGOUT
 } from 'store/actions/types';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 /**
  * Triggers Logging In Reducer
@@ -118,12 +119,12 @@ export function login(username, password) {
             alertPassword: password
         };
 
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addContentType();
         fetch('/alert/api/login', {
             method: 'POST',
             credentials: 'same-origin',
-            headers,
+            headers: headersUtil.getHeaders(),
             body: JSON.stringify(body)
         }).then((response) => {
             if (response.ok) {
@@ -156,13 +157,13 @@ export function logout() {
     return (dispatch, getState) => {
         // dispatch(loggingOut());
         const { csrfToken } = getState().session;
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('X-CSRF-TOKEN', csrfToken);
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch('/alert/api/logout', {
             method: 'POST',
             credentials: 'same-origin',
-            headers
+            headers: headersUtil.getHeaders()
         })
             .then(() => dispatch(loggedOut()))
             .then(() => dispatch(logOut()))

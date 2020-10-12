@@ -17,6 +17,7 @@ import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import * as RequestUtils from 'util/RequestUtilities';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 function fetchingAllRoles() {
     return {
@@ -120,12 +121,12 @@ export function fetchRoles() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllRolesError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('X-CSRF-TOKEN', csrfToken);
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.ROLE_API_URL, {
             credentials: 'same-origin',
-            headers
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()

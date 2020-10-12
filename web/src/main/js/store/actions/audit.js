@@ -8,6 +8,7 @@ import {
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 const FETCH_URL = '/alert/api/audit';
 
@@ -87,11 +88,11 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-        const headers = new Headers();
-        headers.append('X-CSRF-TOKEN', csrfToken);
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(fetchUrl, {
             credentials: 'same-origin',
-            headers
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()
@@ -122,13 +123,13 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('X-CSRF-TOKEN', csrfToken);
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(resendUrl, {
             method: 'POST',
             credentials: 'same-origin',
-            headers
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()

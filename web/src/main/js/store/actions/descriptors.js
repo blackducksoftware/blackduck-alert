@@ -2,6 +2,7 @@ import { DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING } fr
 
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 const FETCH_DESCRIPTOR_URL = '/alert/api/metadata/descriptors';
 
@@ -47,11 +48,11 @@ export function getDescriptors() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addContentType();
         fetch(getUrl, {
             credentials: 'same-origin',
-            headers
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()
