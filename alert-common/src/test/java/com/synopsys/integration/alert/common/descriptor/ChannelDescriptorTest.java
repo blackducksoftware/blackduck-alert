@@ -1,8 +1,9 @@
 package com.synopsys.integration.alert.common.descriptor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
@@ -32,7 +33,7 @@ public class ChannelDescriptorTest {
             }
         };
 
-        Assert.assertEquals(name, channelDescriptor.getDescriptorKey().getUniversalKey());
+        assertEquals(name, channelDescriptor.getDescriptorKey().getUniversalKey());
     }
 
 }

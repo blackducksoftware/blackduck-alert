@@ -3,6 +3,8 @@ include 'azure-boards-common'
 include 'alert-common'
 include 'alert-database'
 include 'channel'
+include 'component'
 include 'provider'
 include 'web'
+include 'workflow'
 

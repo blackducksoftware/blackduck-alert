@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
+import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.rest.RestConstants;

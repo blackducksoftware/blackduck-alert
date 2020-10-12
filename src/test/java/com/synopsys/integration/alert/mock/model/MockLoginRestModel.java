@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.mock.model;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.web.api.authentication.LoginConfig;
+import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 
 public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
     private String alertUsername = "alertUsername";
