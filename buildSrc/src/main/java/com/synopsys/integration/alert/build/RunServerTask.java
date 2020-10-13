@@ -81,16 +81,25 @@ public class RunServerTask extends Exec {
             String.format("--server.ssl.trust-store=%s/certs/blackduck-alert.truststore", buildDirectory),
             "--server.port=8443",
 
-            "--hibernate.default_schema=alert",
-            "--spring.jpa.hibernate.ddl-auto=none",
-            "--spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect",
+            // Spring Boot Test Containers https://github.com/testcontainers/testcontainers-spring-boot
+            "--embedded.postgresql.enabled=true",
+            "--embedded.postgresql.dockerImage=postgres:" + postgresVersion,
+            "--embedded.postgresql.reuseContainer=" + reuseContainer,
+            "--embedded.postgresql.waitTimeoutInSeconds=20",
+            "--embedded.containers.forceShutdown=true",
+
+            // Note: A logging bug in testcontainers causes this to be logged as "embedded.postgresql.schema={value}". Ignore it.
+            "--embedded.postgresql.database=alertdb",
+            "--embedded.postgresql.user=test",
+            "--embedded.postgresql.password=test",
+            "--embedded.postgresql.initScriptPath=file:buildSrc/src/main/resources/init_test_db.sql",
+
             "--spring.datasource.username=sa",
             "--spring.datasource.password=blackduck",
-            "--spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver",
-            String.format("--spring.datasource.url=jdbc:tc:postgresql:%s:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=%s",
-                postgresVersion, reuseContainer),
-            String.format("--spring.datasource.hikari.jdbc-url=jdbc:tc:postgresql:%s:///alertdb?TC_INITSCRIPT=file:src/test/resources/testDatabase/init_test_db.sql&TC_TMPFS=/testtmpfs:rw&TC_REUSABLE=%s",
-                postgresVersion, reuseContainer),
+            "--spring.datasource.url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}",
+            "--spring.datasource.hikari.jdbc-url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}",
+
+            "--hibernate.default_schema=alert",
             "--spring.test.database.replace=none",
 
             String.format("--alert.images.dir=%s/resources/main/images", buildDirectory),
