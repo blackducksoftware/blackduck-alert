@@ -75,13 +75,11 @@ public class SAMLContext implements Serializable {
             ConfigurationModel configurationModel = getCurrentConfiguration();
             Map<String, ConfigurationFieldModel> fields = configurationModel.getCopyOfKeyToFieldMap();
             ConfigurationFieldModel enabledField = fields.get(AuthenticationDescriptor.KEY_SAML_ENABLED);
-            if (null != enabledField) {
-                enabledField.setFieldValue(String.valueOf(false));
-            } else {
+            if (null == enabledField) {
                 enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_SAML_ENABLED);
-                enabledField.setFieldValue(String.valueOf(false));
                 fields.put(AuthenticationDescriptor.KEY_SAML_ENABLED, enabledField);
             }
+            enabledField.setFieldValue(String.valueOf(false));
             configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fields.values());
         } catch (AlertException ex) {
             logger.error("Error disabling SAML configuration.");
