@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 
 @Component
@@ -38,7 +37,7 @@ public class SAMLStartupComponent extends StartupComponent {
     private final SAMLManager samlManager;
 
     @Autowired
-    public SAMLStartupComponent(SAMLContext samlContext, SAMLManager samlManager) {
+    public SAMLStartupComponent(SAMLManager samlManager) {
         this.samlManager = samlManager;
     }
 

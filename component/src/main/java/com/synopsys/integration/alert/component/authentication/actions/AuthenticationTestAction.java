@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationUIConfig;
@@ -115,35 +114,33 @@ public class AuthenticationTestAction extends TestAction {
     }
 
     private void performSAMLTest(FieldUtility registeredFieldValues) throws IntegrationException {
-        Optional<ConfigurationFieldModel> metaDataURLField = registeredFieldValues.getField(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-        Optional<ConfigurationFieldModel> metaDataFileField = registeredFieldValues.getField(AuthenticationDescriptor.KEY_SAML_METADATA_FILE);
-        boolean testMetaDataURL = metaDataURLField.map(ConfigurationFieldModel::isSet).orElse(false);
-        boolean testMetaDataFile = metaDataFileField.map(ConfigurationFieldModel::isSet).orElse(false);
         List<AlertFieldStatus> errors = new ArrayList<>();
-        if (testMetaDataURL) {
-            logger.info("Testing SAML Metadata URL...");
-            try {
-                Optional<ExtendedMetadataDelegate> provider = samlManager.createHttpProvider(registeredFieldValues.getStringOrEmpty(AuthenticationDescriptor.KEY_SAML_METADATA_URL));
-                if (provider.isPresent()) {
-                    provider.get().initialize();
-                }
-            } catch (Exception ex) {
-                logger.error("Testing SAML Metadata URL error: ", ex);
-                errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, ex.getMessage()));
+        Optional<String> registeredEntityId = registeredFieldValues.getString(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
+        if (registeredEntityId.isEmpty()) {
+            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, "Entity ID missing."));
+        }
+        logger.info("Testing SAML Metadata URL...");
+        try {
+            Optional<ExtendedMetadataDelegate> provider = samlManager.createHttpProvider(registeredFieldValues.getStringOrEmpty(AuthenticationDescriptor.KEY_SAML_METADATA_URL));
+            if (provider.isPresent()) {
+                ExtendedMetadataDelegate extendedMetadataDelegate = provider.get();
+                extendedMetadataDelegate.initialize();
             }
+        } catch (Exception ex) {
+            logger.error("Testing SAML Metadata URL error: ", ex);
+            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, ex.getMessage()));
         }
 
-        if (testMetaDataFile) {
-            logger.info("Testing SAML Metadata File...");
-            try {
-                Optional<ExtendedMetadataDelegate> provider = samlManager.createFileProvider();
-                if (provider.isPresent()) {
-                    provider.get().initialize();
-                }
-            } catch (Exception ex) {
-                logger.error("Testing SAML Metadata File error: ", ex);
-                errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ex.getMessage()));
+        logger.info("Testing SAML Metadata File...");
+        try {
+            Optional<ExtendedMetadataDelegate> provider = samlManager.createFileProvider();
+            if (provider.isPresent()) {
+                ExtendedMetadataDelegate extendedMetadataDelegate = provider.get();
+                extendedMetadataDelegate.initialize();
             }
+        } catch (Exception ex) {
+            logger.error("Testing SAML Metadata File error: ", ex);
+            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ex.getMessage()));
         }
         samlManager.initializeConfiguration();
         if (!errors.isEmpty()) {
