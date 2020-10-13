@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 public class SamlManagerTest {
     private Gson gson;
@@ -52,9 +53,9 @@ public class SamlManagerTest {
     public void testInitializeEntityIDInvalid() throws Exception {
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn(null);
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_METADATA_URL))).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_ID))).thenReturn(null);
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL))).thenReturn("baseURL");
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
         samlManager.initializeConfiguration();
@@ -66,9 +67,9 @@ public class SamlManagerTest {
     public void testInitializeHttpProviderInvalid() throws Exception {
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("entityId");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_METADATA_URL))).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_ID))).thenReturn("entityId");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL))).thenReturn("baseURL");
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
         samlManager.initializeConfiguration();
@@ -113,9 +114,9 @@ public class SamlManagerTest {
     public void testUpdateSamlEnabled() throws Exception {
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("entityId");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_METADATA_URL))).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_ID))).thenReturn("entityId");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL))).thenReturn("baseURL");
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
         samlManager.updateSAMLConfiguration(Boolean.TRUE.booleanValue(), "metadataURL", "entityId", "baseURL");
