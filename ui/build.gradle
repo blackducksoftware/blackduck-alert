@@ -54,3 +54,4 @@ task copyStaticWebContent(type: Copy) {
 tasks.copyStaticWebContent.finalizedBy(npm_run)
 tasks.npm_run.mustRunAfter(copyStaticWebContent)
 tasks.clean.finalizedBy(cleanBundles)
+tasks.test.enabled = false
