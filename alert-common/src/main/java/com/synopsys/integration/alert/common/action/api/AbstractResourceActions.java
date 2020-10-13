@@ -32,10 +32,11 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T, M> implements LongIdResourceActions<T>, ReadAllAction<M>, ValidateAction<T>, TestAction<T> {
+public abstract class AbstractResourceActions<T extends AlertSerializableModel> implements CompositeResourceActions<T, Long> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -49,14 +50,13 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         this.context = context;
         // to do change the authorization manager to use the context enum and the descriptor key
         this.authorizationManager = authorizationManager;
-
     }
 
     protected abstract ActionResponse<T> createWithoutChecks(T resource);
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<M> readAllWithoutChecks();
+    protected abstract ActionResponse<MultiResponseModel<T>> readAllWithoutChecks();
 
     protected abstract ActionResponse<T> readWithoutChecks(Long id);
 
@@ -82,7 +82,7 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
     }
 
     @Override
-    public final ActionResponse<M> getAll() {
+    public final ActionResponse<MultiResponseModel<T>> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();

@@ -24,14 +24,15 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-public class MultiJobFieldModel extends AlertSerializableModel {
-    private List<JobFieldModel> jobs;
+import com.synopsys.integration.alert.common.action.api.MultiResponseModel;
 
-    public MultiJobFieldModel(List<JobFieldModel> jobs) {
-        this.jobs = jobs;
+public class MultiJobFieldModel extends MultiResponseModel<JobFieldModel> {
+    public MultiJobFieldModel(final List models) {
+        super(models);
     }
 
     public List<JobFieldModel> getJobs() {
-        return jobs;
+        return getModels();
     }
+
 }

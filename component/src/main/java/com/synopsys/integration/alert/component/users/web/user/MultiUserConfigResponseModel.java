@@ -24,21 +24,14 @@ package com.synopsys.integration.alert.component.users.web.user;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.action.api.MultiResponseModel;
 
-public class MultiUserConfigResponseModel extends AlertSerializableModel {
-    private final List<UserConfig> users;
-
-    MultiUserConfigResponseModel() {
-        // For serialization
-        this(List.of());
-    }
-
-    public MultiUserConfigResponseModel(List<UserConfig> users) {
-        this.users = users;
+public class MultiUserConfigResponseModel extends MultiResponseModel<UserConfig> {
+    public MultiUserConfigResponseModel(final List<UserConfig> models) {
+        super(models);
     }
 
     public List<UserConfig> getUsers() {
-        return users;
+        return getModels();
     }
 }

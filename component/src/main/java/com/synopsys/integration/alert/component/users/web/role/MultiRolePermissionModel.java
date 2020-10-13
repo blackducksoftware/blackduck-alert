@@ -24,22 +24,15 @@ package com.synopsys.integration.alert.component.users.web.role;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.action.api.MultiResponseModel;
 
-public class MultiRolePermissionModel extends AlertSerializableModel {
-    private final List<RolePermissionModel> roles;
-
-    MultiRolePermissionModel() {
-        // For serialization
-        this(List.of());
-    }
-
-    public MultiRolePermissionModel(List<RolePermissionModel> roles) {
-        this.roles = roles;
+public class MultiRolePermissionModel extends MultiResponseModel<RolePermissionModel> {
+    public MultiRolePermissionModel(final List<RolePermissionModel> models) {
+        super(models);
     }
 
     public List<RolePermissionModel> getRoles() {
-        return roles;
+        return getModels();
     }
 
 }
