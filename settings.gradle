@@ -5,6 +5,7 @@ include 'alert-database'
 include 'channel'
 include 'component'
 include 'provider'
+include 'ui'
 include 'web'
 include 'workflow'
 

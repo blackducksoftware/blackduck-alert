@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
 import AboutInfo from 'component/AboutInfo';
-import DistributionConfiguration from 'distribution/Index';
+import DistributionConfiguration from 'distribution';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import GlobalConfiguration from 'dynamic/GlobalConfiguration';
