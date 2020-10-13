@@ -419,7 +419,7 @@ class TableDisplay extends Component {
         const tableColumns = this.createTableColumns();
         const { showConfiguration, showDelete } = this.state;
         const {
-            id, selectRowBox, sortName, sortOrder, autoRefresh, tableMessage, newButton, deleteButton,
+            id, selectRowBox, sortName, sortOrder, autoRefresh, newButton, deleteButton,
             data, tableSearchable, enableEdit, editColumnText, enableCopy, copyColumnText, inProgress, tableRefresh
         } = this.props;
         if (enableEdit) {
