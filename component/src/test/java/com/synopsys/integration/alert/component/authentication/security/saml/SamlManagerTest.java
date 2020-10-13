@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opensaml.xml.parse.ParserPool;
@@ -22,20 +23,81 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 public class SamlManagerTest {
+    private Gson gson;
+    private SAMLContext context;
+    private ParserPool parserPool;
+    private ExtendedMetadata extendedMetadata;
+    private MetadataManager metadataManager;
+    private MetadataGenerator metadataGenerator;
+    private ConfigurationModel currentConfiguration;
+    private AlertProperties alertProperties;
+    private FilePersistenceUtil filePersistenceUtil;
+
+    @BeforeEach
+    public void init() throws Exception {
+        gson = new Gson();
+        context = Mockito.mock(SAMLContext.class);
+        parserPool = Mockito.mock(ParserPool.class);
+        extendedMetadata = Mockito.mock(ExtendedMetadata.class);
+        metadataManager = new CachingMetadataManager(Collections.emptyList());
+        metadataManager.setKeyManager(new EmptyKeyManager());
+        metadataGenerator = Mockito.mock(MetadataGenerator.class);
+        currentConfiguration = Mockito.mock(ConfigurationModel.class);
+        alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertSecretsDir()).thenReturn("./testDB/run/secrets");
+        filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
+    }
+
+    @Test
+    public void testInitializeEntityIDInvalid() throws Exception {
+        Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
+        Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn(null);
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        samlManager.initializeConfiguration();
+        Mockito.verify(context).disableSAML();
+
+    }
+
+    @Test
+    public void testInitializeHttpProviderInvalid() throws Exception {
+        Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
+        Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("entityId");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        samlManager.initializeConfiguration();
+        Mockito.verify(context).disableSAML();
+
+    }
+
+    @Test
+    public void testInitializeFileProviderInvalid() throws Exception {
+        Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
+        Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
+
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        samlManager.initializeConfiguration();
+        Mockito.verify(context).disableSAML();
+    }
+
+    @Test
+    public void testInitializeNoProvidersDisable() throws Exception {
+        Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
+        Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
+
+        SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
+        samlManager.initializeConfiguration();
+        Mockito.verify(context).disableSAML();
+    }
 
     @Test
     public void testUpdateSamlDisabled() throws Exception {
-        Gson gson = new Gson();
-        SAMLContext context = Mockito.mock(SAMLContext.class);
-        ParserPool parserPool = Mockito.mock(ParserPool.class);
-        ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        MetadataManager metadataManager = new CachingMetadataManager(Collections.emptyList());
-        metadataManager.setKeyManager(new EmptyKeyManager());
-        MetadataGenerator metadataGenerator = Mockito.mock(MetadataGenerator.class);
-        ConfigurationModel currentConfiguration = Mockito.mock(ConfigurationModel.class);
-        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertSecretsDir()).thenReturn("./testDB/run/secrets");
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.FALSE.booleanValue());
 
@@ -49,17 +111,6 @@ public class SamlManagerTest {
 
     @Test
     public void testUpdateSamlEnabled() throws Exception {
-        Gson gson = new Gson();
-        SAMLContext context = Mockito.mock(SAMLContext.class);
-        ParserPool parserPool = Mockito.mock(ParserPool.class);
-        ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
-        MetadataManager metadataManager = new CachingMetadataManager(Collections.emptyList());
-        metadataManager.setKeyManager(new EmptyKeyManager());
-        MetadataGenerator metadataGenerator = Mockito.mock(MetadataGenerator.class);
-        ConfigurationModel currentConfiguration = Mockito.mock(ConfigurationModel.class);
-        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertSecretsDir()).thenReturn("data/test/secrets");
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
         Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");

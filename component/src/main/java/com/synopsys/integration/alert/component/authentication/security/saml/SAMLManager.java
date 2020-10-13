@@ -200,6 +200,6 @@ public class SAMLManager {
         } catch (Exception ex) {
             logger.error("Validating SAML Metadata File error: ", ex);
         }
-        return entityIdValid || httpProviderValid || fileProviderValid;
+        return entityIdValid && (httpProviderValid || fileProviderValid);
     }
 }
