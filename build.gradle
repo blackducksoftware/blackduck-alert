@@ -91,7 +91,7 @@ dependencies {
     implementation project(':provider')
     implementation project(':workflow')
     implementation project(':web')
-    
+
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 
@@ -103,7 +103,9 @@ dependencies {
     // =============
     testImplementation 'org.testcontainers:postgresql:1.12.5'
     if (getGradle().getStartParameter().taskNames.contains('runServer')) {
-        runtimeClasspath 'org.testcontainers:postgresql:1.12.5'
+        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter:2.2.3.RELEASE'
+        runtimeClasspath "com.playtika.testcontainers:embedded-postgresql:1.78"
+        runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
     }
 }
 
