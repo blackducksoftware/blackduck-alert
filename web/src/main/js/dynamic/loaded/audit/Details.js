@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { Modal, Tab, Tabs } from 'react-bootstrap';
+import {
+    BootstrapTable,
+    TableHeaderColumn
+} from 'react-bootstrap-table';
+import {
+    Modal,
+    Tab,
+    Tabs
+} from 'react-bootstrap';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import StatusMessage from 'field/StatusMessage';
 
 class Details extends Component {
     constructor(props) {
@@ -20,8 +28,11 @@ class Details extends Component {
     }
 
     onResendClick(currentRowSelected) {
-        const currentEntry = currentRowSelected || this.state.currentRowSelected;
-        this.props.resendNotification(this.props.currentEntry.id, currentEntry.configId, this.props.currentPage, this.props.currentPageSize, this.props.searchTerm, this.props.sortField, this.props.sortOrder, this.props.onlyShowSentNotifications);
+        const currentEntry = currentRowSelected;
+        const {
+            currentEntry: currentSelectedEntry, currentPageSize, searchTerm, currentPage, resendNotification, sortField, onlyShowSentNotifications, sortOrder
+        } = this.props;
+        resendNotification(currentSelectedEntry.id, currentEntry.configId, currentPage, currentPageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
     }
 
     getEventType(eventType) {
@@ -106,6 +117,10 @@ class Details extends Component {
     }
 
     render() {
+        const {
+            actionMessage, errorMessage, currentEntry, show, handleClose, statusFormat, providerNameFormat, notificationTypeFormat
+        } = this.props;
+
         const jobTableOptions = {
             defaultSortName: 'timeLastSent',
             defaultSortOrder: 'desc',
@@ -115,37 +130,41 @@ class Details extends Component {
             expandBy: 'column',
             expandRowBgColor: '#e8e8e8'
         };
-        let jsonContent = null;
-        if (this.props.currentEntry.content) {
-            jsonContent = JSON.parse(this.props.currentEntry.content);
+        let jsonContent;
+        if (currentEntry.content) {
+            jsonContent = JSON.parse(currentEntry.content);
         } else {
             jsonContent = { warning: 'Content in an Unknown Format' };
         }
         const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
 
         let flatJobs = [];
-        if (this.props.currentEntry.jobs) {
-            flatJobs = this.flattenJobsForTable(this.props.currentEntry.jobs);
+        if (currentEntry.jobs) {
+            flatJobs = this.flattenJobsForTable(currentEntry.jobs);
         }
         return (
-            <Modal size="lg" show={this.props.show} onHide={this.props.handleClose}>
+            <Modal size="lg" show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <div className="notificationTitlePiece">
-                            {this.props.providerNameFormat(this.props.currentEntry.provider)}
+                            {providerNameFormat(currentEntry.provider)}
                         </div>
                         <div className="notificationTitlePiece">
-                            {this.props.notificationTypeFormat(this.props.currentEntry.notificationType)}
+                            {notificationTypeFormat(currentEntry.notificationType)}
                         </div>
                         <div className="notificationTitlePiece">
-                            {this.props.currentEntry.createdAt}
+                            {currentEntry.createdAt}
                         </div>
                         <div className="notificationTitlePiece">
-                            {this.props.statusFormat(this.props.currentEntry.overallStatus)}
+                            {statusFormat(currentEntry.overallStatus)}
                         </div>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <StatusMessage
+                        actionMessage={actionMessage}
+                        errorMessage={errorMessage}
+                    />
                     <div className="expandableContainer">
                         <Tabs defaultActiveKey={1} id="audit-details-tabs">
                             <Tab eventKey={1} title="Distribution Jobs">
@@ -193,7 +212,7 @@ class Details extends Component {
                                             dataField="status"
                                             dataSort
                                             columnClassName="tableCell"
-                                            dataFormat={this.props.statusFormat}
+                                            dataFormat={statusFormat}
                                         >
                                             Status
                                         </TableHeaderColumn>
@@ -222,7 +241,6 @@ class Details extends Component {
                                 </div>
                             </Tab>
                         </Tabs>
-                        <p name="message">{this.props.errorMessage}</p>
                     </div>
                 </Modal.Body>
 
@@ -233,6 +251,7 @@ class Details extends Component {
 
 Details.propTypes = {
     show: PropTypes.bool,
+    actionMessage: PropTypes.string,
     errorMessage: PropTypes.string,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     currentEntry: PropTypes.object.isRequired,
@@ -250,6 +269,7 @@ Details.propTypes = {
 };
 
 Details.defaultProps = {
+    actionMessage: null,
     errorMessage: null,
     show: false,
     descriptors: []
