@@ -21,6 +21,7 @@ import {
 import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 function fetchingJob() {
     return {
@@ -260,14 +261,14 @@ export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
         dispatch(checkingDescriptorGlobalConfig());
         const { csrfToken } = getState().session;
         const url = `${ConfigRequestBuilder.JOB_API_URL}/descriptorCheck`;
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         const request = fetch(url, {
             credentials: 'same-origin',
             method: 'POST',
             body: descriptorName,
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
+            headers: headersUtil.getHeaders()
         });
         request.then((response) => {
             if (response.ok) {

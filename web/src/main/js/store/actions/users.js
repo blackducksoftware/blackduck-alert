@@ -16,6 +16,7 @@ import {
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 function fetchingAllUsers() {
     return {
@@ -132,12 +133,12 @@ export function fetchUsers() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()
