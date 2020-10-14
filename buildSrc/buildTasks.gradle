@@ -50,8 +50,8 @@ task createAboutText(type: Task) {
     aboutFile << aboutJson
 }
 
-task copyStaticWebModuleContent(type: Copy, dependsOn: ':web:copyStaticWebContent') {
-    from "${project(':web').buildDir}/resources/main/static/"
+task copyStaticWebModuleContent(type: Copy, dependsOn: ':ui:copyStaticWebContent') {
+    from "${project(':ui').buildDir}/resources/main/static/"
     into "${project.buildDir}/resources/main/static/"
 }
 

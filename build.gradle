@@ -89,9 +89,10 @@ dependencies {
     implementation project(':channel')
     implementation project(':component')
     implementation project(':provider')
+    implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
-    
+
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 
