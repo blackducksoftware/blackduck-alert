@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +37,19 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     private DefaultUserAccessor userAccessor;
     @Autowired
     private AuthenticationTypeRepository authenticationTypeRepository;
+
+    @BeforeEach
+    public void cleanUpUsers() {
+        List<UserModel> userModels = userAccessor.getUsers();
+
+        for (UserModel user : userModels) {
+            try {
+                userAccessor.deleteUser(user.getId());
+            } catch (AlertForbiddenOperationException ex) {
+                // this exception is thrown if we delete reserved users.
+            }
+        }
+    }
 
     @Test
     public void testGetUsers() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
